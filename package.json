@@ -1,0 +1,19 @@
+{
+  "name": "mi-lib",
+  "version": "0.0.1",
+  "description": "mova.institute libs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/mova-institute/mi-lib.git"
+  },
+  "keywords": [
+    "mova"
+  ],
+  "author": "mova.institute",
+  "license": "UNLICENSED",
+  "homepage": "https://bitbucket.org/mova-institute/mi-lib#readme"
+}
