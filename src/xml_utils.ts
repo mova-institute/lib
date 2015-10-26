@@ -14,7 +14,6 @@ export function traverseDepth(el, callback) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function traverseDocumentOrder(node: Node, callback): boolean {
-	console.log(2**9);
   for (let curNode = node; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, callback) === false) {
       return true;

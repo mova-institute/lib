@@ -5,17 +5,23 @@ let ts = require('gulp-typescript');
 let babel = require('gulp-babel');
 
 
-let dist = 'dist';
+let dist = 'lib';
 
 let tsProjectFile = 'src/tsconfig.json';
+let babelOpts = {
+	stage: 1
+};
 gulp.task('typescript', () => {
 	let tsProject = ts.createProject(tsProjectFile, {
-		typescript: require('typescript')	// for local nightly build
+		//typescript: require('typescript')	// for local nightly build
 	});
 	
 	let tsResult = tsProject.src().pipe(ts(tsProject));
 	
-	tsResult.js.pipe(babel()).pipe(gulp.dest(dist));
+	tsResult.js
+		.pipe(babel(babelOpts))
+		//.on('error', (e) => {console.log(e);})
+		.pipe(gulp.dest(dist));
 	tsResult.dts.pipe(gulp.dest(dist));
 });
 
