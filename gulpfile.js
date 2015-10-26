@@ -2,6 +2,7 @@
 
 let gulp = require('gulp');
 let ts = require('gulp-typescript');
+let sourcemaps = require('gulp-sourcemaps');
 let babel = require('gulp-babel');
 
 
@@ -16,11 +17,14 @@ gulp.task('typescript', () => {
 		//typescript: require('typescript')	// for local nightly build
 	});
 	
-	let tsResult = tsProject.src().pipe(ts(tsProject));
+	let tsResult = tsProject.src()
+		//.pipe(sourcemaps.init())
+		.pipe(ts(tsProject));
 	
 	tsResult.js
 		.pipe(babel(babelOpts))
 		//.on('error', (e) => {console.log(e);})
+		//.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(dist));
 	tsResult.dts.pipe(gulp.dest(dist));
 });

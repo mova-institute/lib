@@ -84,36 +84,6 @@ export async function tokenizeUk(val: string): Promise<Array<string>> {
   return toret;
 }
 
-// export class WordMorph {
-//   constructor(public lemma: string, public tags: string) {
-
-//   }
-// }
-// ////////////////////////////////////////////////////////////////////////////////
-// export function rysinDict2Json(input, output) {
-//   let result = new Map();
-//   let curLemma;
-//   createInterface({ input, output: undefined }).on('line', (l: string) => {
-
-//     let arr = l.trim().split(' ');
-//     let word = arr[0];
-//     if (!l.startsWith(' ')) {
-//       curLemma = word;
-//     }
-//     let morph = new WordMorph(curLemma, arr[1]);
-//     (result[word] = result[word] || []).push(morph);
-
-//   }).on('close', () => {
-//     //let stream = new Readable({objectMode: true});
-//     //stringifyObject().push(result);
-//     //stream.pipe(stringifyObject());//.pipe(output);
-//     //let stream = stringifyObject();
-//     //stream.push(4);
-//     //stream.pipe(output)
-//     output.write(JSON.stringify(result));
-//   });
-// }
-
 export async function waheverasy(s) {
   return await tokenizeUk(s);
 }
