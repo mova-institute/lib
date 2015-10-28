@@ -10,7 +10,7 @@
       "taskName": "default",
       "isBuildCommand": true,
       "showOutput": "silent",
-      "isWatching": false
+      "isWatching": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-
+////////////////////////////////////////////////////////////////////////////////
 function dataDownloadOrOpen(data, mime: string, filename?: string) {
 	let blob = new Blob([data], { type: mime });
     let a = document.createElement('a');

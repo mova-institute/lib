@@ -1,9 +1,10 @@
 #!/usr/bin/env node --harmony
 'use strict';
 
+require("regenerator/runtime.js");
 let fs = require('fs');
 let readline = require('readline');
-let nlp = require('../lib/nlp_utils');
+let nlp = require('../lib/nlp.node');
 let commander = require('commander')
 	
 	
@@ -17,6 +18,7 @@ if (!commander.input || !commander.output) {
 }
 
 let input = fs.createReadStream(commander.input);
-let output = fs.createWriteStream(commander.output);
 
-nlp.rysinDict2Json(input, output);
+nlp.rysinDict2Json(readline.createInterface({input, output:undefined})).then(json => {
+	fs.writeFileSync(commander.output, JSON.stringify(json), 'utf8');
+});

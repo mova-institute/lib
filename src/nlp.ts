@@ -1,8 +1,30 @@
 /// <reference path="../typings/tsd.d.ts" />
+import {traverseDepth} from './xml_utils';
+import {r} from './lang';
 
-import {Tagger} from './tagger'
 
-let WCHAR_UK = 'АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’';
+export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя`;
+export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
+
+const PUNC_REG = [
+  r`\.`,
+  r`\.{4,}`,
+  r`…`,
+  r`:`,
+  r`;`,
+  r`,`,
+  r`[!?]+`,
+  r`!\.{2,}`,
+  r`\?\.{2,}`,
+  r`—`,
+  r`\(`,
+  r`\)`,
+  r`„`,
+  r`“`,
+  r`«`,
+  r`»`,
+];
+const PUNC_REG_JOIN = new RegExp(`^(${PUNC_REG.join('|')})$`);
 
 let PUNC_SPACING = {
   ',': ['', ' '],
@@ -60,30 +82,20 @@ export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function tokenizeUk(val: string): Promise<Array<string>> {
-  let toret: Array<string> = [];
-
-  let tagger = new Tagger();
-  let splitRegex = new RegExp(`([^${WCHAR_UK}\\w\\-]+)`);
-
-  for (let tok0 of val.split(splitRegex)) {
-    for (let tok1 of tok0.split(/\s+/)) {
-      if (tok1) {
-        if (tok1.includes('-')) {
-          if (!(await tagger.knows(tok1))) {
-            toret.push(...tok1.split(/(-)/));
-            continue;
-          }
-        }
-        toret.push(tok1);
-      }
-    }
-  }    
-  tagger.close();
-
+export function nodeFromToken(token: string, document: Document) {
+  let toret;
+  if (PUNC_REG_JOIN.test(token)) {
+    toret = document.createElement('pc');
+    toret.textContent = token;
+  }
+  else if (WCHAR_RE.test(token)) {
+    toret = document.createElement('w');
+    toret.textContent = token;
+  }
+  else {
+    console.log('DIE: ', token);
+    throw 'kuku';
+  }
+  
   return toret;
-}
-
-export async function waheverasy(s) {
-  return await tokenizeUk(s);
 }
