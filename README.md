@@ -6,6 +6,8 @@
 - streamytize dict json
 - getAttributeNS
 - WCHAR_RE to unicode
+- do type annotate return values?
+- TextEncoder in node?, check http://jsperf.com/nativeencodevsmanual
 
 
 
