@@ -21,14 +21,14 @@ export function traverseDepth(node: Node, onEnter, onLeave?) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function traverseDocumentOrder(node: Node, onEnter, onLeave?) {
+export function traverseDocumentOrder(node: Node, onEnter, onLeave?) {
   for (let curNode = node; curNode; curNode = curNode.nextSibling) {
-    if (await traverseDepth(curNode, onEnter, onLeave) === false) {
+    if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return true;
     }
   }
   if (node && node.parentNode) {
-    if (await traverseDocumentOrder(node.parentNode.nextSibling, onEnter, onLeave) === false) {
+    if (traverseDocumentOrder(node.parentNode.nextSibling, onEnter, onLeave) === false) {
       return false;
     }
   }

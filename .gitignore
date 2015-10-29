@@ -3,3 +3,4 @@ typings/
 lib/*
 !lib/package.json
 data/
+*.js.map

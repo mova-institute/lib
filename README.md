@@ -5,6 +5,7 @@
 - remove .js from bin files (globs support in jsconfig.json needed)
 - streamytize dict json
 - getAttributeNS
+- WCHAR_RE to unicode
 
 
 

@@ -56,8 +56,8 @@ let doc = jsdom(xmlstr, {
 // let $ = require('../lib/jquery')({
 // 	document: doc
 // });
-let start = new Date();
+let start = new Date().getTime();
 nlp.tokenizeTeiXmlUk(doc.documentElement);
 let stringi = new xmldom.XMLSerializer().serializeToString(doc);
 fs.writeFileSync('../data/kavaz-tokenized.xml', stringi);
-console.log('time: ', (new Date() - start) / 1000);
+console.log('time: ', (new Date().getTime() - start) / 1000);

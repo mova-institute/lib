@@ -23,10 +23,20 @@ gulp.task('typescript', () => {
 	
 	tsResult.js
 		.pipe(babel(babelOpts))
-		//.on('error', (e) => {console.log(e);})
+		.on('error', (e) => {console.log('eeeeeeeeeeeeeee', e);})
 		//.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest(dist));
 	tsResult.dts.pipe(gulp.dest(dist));
+});
+
+gulp.task('debug', () => {
+	let tsResult = gulp.src('dbg/**/*.ts')
+		.pipe(sourcemaps.init())
+		.pipe(ts());
+	tsResult.js
+		//.pipe(babel(babelOpts))
+		.pipe(sourcemaps.write('.'))
+		.pipe(gulp.dest('dbg'));
 });
 
 

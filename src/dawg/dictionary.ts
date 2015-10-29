@@ -1,4 +1,5 @@
-import {Readable} from 'stream'
+import {buffer2arrayBuffer, readNBytes} from '../stream_utils.node'; 
+import {Readable} from 'stream';
 
 let nBytesBase = 4;
 
@@ -7,52 +8,27 @@ module Unit {
 	const IS_LEAF_BIT = 1 << 31;
 	const HAS_LEAF_BIT = 1 << 8;
 	const EXTENSION_BIT = 1 << 9;
-	
+
 	export function hasLeaf(unit: number): boolean {
-			return (unit & HAS_LEAF_BIT) ? true : false;
+		return (unit & HAS_LEAF_BIT) ? true : false;
 	}
-	
+
 	export function offset(unit: number): number {
-			return (unit >> 10) << ((unit & EXTENSION_BIT) >> 6);
+		return (unit >> 10) << ((unit & EXTENSION_BIT) >> 6);
 	}
 }
-
-
-
-function readNBytes(n: number, istream: Readable): Promise<Buffer> {
-	return new Promise((resolve, reject) => {
-
-		let waitUntilNBytes = () => {
-			let buf = istream.read(n);
-			if (buf) {
-				resolve(buf);
-				return true;
-			}
-		};
-
-		if (!waitUntilNBytes()) {
-			istream.on('readable', waitUntilNBytes);
-		}
-	});
-}
-
 
 
 
 export class Dictionary {
-	private units: Buffer;	// | Uint32Array;
+	private buf: ArrayBuffer;
+	private units: Uint32Array;
 	private rootI = 0;
 
-	read(istream: Readable, callback) {
-		return new Promise((resolve, reject) => {
-			readNBytes(4, istream).then(size => {
-				return readNBytes(4 * size.readUInt32LE(0), istream);
-			})
-				.then(units => {
-					this.units = units;
-					resolve();
-				});
-		});
+	async read(istream: Readable) {
+		let size = (await readNBytes(4, istream)).readUInt32LE(0);
+		this.buf = buffer2arrayBuffer(await readNBytes(size, istream));
+		this.units = new Uint32Array(this.buf);
 	}
 
 	contains(bytes): boolean {
