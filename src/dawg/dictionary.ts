@@ -8,13 +8,18 @@ module Unit {
 	const IS_LEAF_BIT = 1 << 31;
 	const HAS_LEAF_BIT = 1 << 8;
 	const EXTENSION_BIT = 1 << 9;
+	
 
 	export function hasLeaf(unit: number): boolean {
 		return (unit & HAS_LEAF_BIT) ? true : false;
 	}
+	
+	export function value(unit: number) {
+		return unit & ~HAS_LEAF_BIT;
+	}
 
 	export function offset(unit: number): number {
-		return (unit >> 10) << ((unit & EXTENSION_BIT) >> 6);
+		return (unit >>> 10) << ((unit & EXTENSION_BIT) >>> 6);
 	}
 	
 	export function label(unit: number): number {
@@ -25,39 +30,49 @@ module Unit {
 
 
 export class Dictionary {
+	static rootIndex = 0;	// todo: add const,
+												// see https://github.com/Microsoft/TypeScript/issues/4045
 	private buf: ArrayBuffer;
 	private units: Uint32Array;
-	private static rootIndex = 0;	// todo: add const,
-																// see https://github.com/Microsoft/TypeScript/issues/4045
+
 
 	async read(istream: Readable) {
 		let size = (await readNBytes(4, istream)).readUInt32LE(0);
-		this.buf = buffer2arrayBuffer(await readNBytes(size, istream));
+		this.buf = buffer2arrayBuffer(await readNBytes(size * 4, istream));
 		this.units = new Uint32Array(this.buf);
 	}
 
 	has(bytes: Iterable<number>): boolean {
-		let index = this.followBytes(bytes, Dictionary.rootIndex);
+		let index = this.followBytes(bytes);
+		
 		return index !== null && Unit.hasLeaf(this.units[index]);
 	}
-
-	private followByte(label: number, index: number) {
-		let nextIndex = index ^ Unit.offset(this.units[index]) ^ label;
-		if (Unit.label(this.units[nextIndex]) !== label) {
-			return null;
-		}
-
-		return nextIndex;
+	
+	hasValue(index: number) {
+		return Unit.hasLeaf(this.units[index]);
 	}
 	
-	private followBytes(bytes: Iterable<number>, index) {
+	value(index: number) {
+		return Unit.value(this.units[index ^ Unit.offset(this.units[index])]);
+	}
+	
+	followBytes(bytes: Iterable<number>, index = Dictionary.rootIndex) {
 		for (let byte of bytes) {
-			index = this.followByte(byte, index);
-			if (index === null) {
+			if ((index = this.followByte(byte, index)) === null) {
 				return null;
 			}
 		}
 		
 		return index;
+	}
+
+	followByte(label: number, index: number) {
+		let offset = Unit.offset(this.units[index]);
+		let nextIndex = index ^ offset ^ label;
+		if (Unit.label(this.units[nextIndex]) !== label) {
+			return null;
+		}
+
+		return nextIndex;
 	}
 }

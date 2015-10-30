@@ -8,6 +8,9 @@
 - WCHAR_RE to unicode
 - do type annotate return values?
 - TextEncoder in node?, check http://jsperf.com/nativeencodevsmanual
+- toret vs res
+- exceptions in generators and stuff, why not propagated?
+- read on nodejs-browser compartiple code writing
 
 
 

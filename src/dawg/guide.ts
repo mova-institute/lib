@@ -5,11 +5,11 @@ import {Readable} from 'stream';
 export class Guide {
 	private buf: ArrayBuffer;
 	private units: Uint8Array;
-	private rootI = 0;
+	private rootIndex = 0;
 	
 	async read(istream: Readable) {
-		let size = 2 * (await readNBytes(4, istream)).readUInt32LE(0);
-		this.buf = buffer2arrayBuffer(await readNBytes(size, istream));
+		let size = (await readNBytes(4, istream)).readUInt32LE(0);
+		this.buf = buffer2arrayBuffer(await readNBytes(size * 4 * 2, istream));
 		this.units = new Uint8Array(this.buf);
 	}
 	
