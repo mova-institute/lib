@@ -16,6 +16,8 @@ export class Tagger {
 		for (let completion of this.dawg.completionStrings(token)) {
 			toret.push(completion.split(' '));
 		}
+		
+		return toret;
 	}
 	
 	knows(token: string) {

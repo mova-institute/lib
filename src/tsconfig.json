@@ -3,7 +3,6 @@
 		"target": "ES6",
 		"declaration": true,
 		"module": "commonjs",
-		"sourceMap": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"removeComments": false,

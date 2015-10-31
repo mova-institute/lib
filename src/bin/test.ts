@@ -1,9 +1,6 @@
-import 'regenerator/runtime';
-import {get} from 'http';
-import {createReadStream} from 'fs';
-import {b64decodeFromArray} from '../codec';
-import {Dawg, CompletionDawg, ObjectDawg} from '../dawg/dawg'
-import {Tagger} from '../tagger'
+import {createTaggerSync} from '../factories.node'
 
-let tagger = new Tagger();
-console.log(tagger.knows('душою'));
+
+let tagger = createTaggerSync();
+
+console.log(tagger.tag('життя'));
