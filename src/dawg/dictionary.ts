@@ -1,7 +1,3 @@
-import {buffer2arrayBuffer, readNBytes} from '../stream_utils.node'; 
-import {Readable} from 'stream';
-
-let nBytesBase = 4;
 
 module Unit {
 	const OFFSET_MAX = 1 << 21;
@@ -28,19 +24,12 @@ module Unit {
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////
 export class Dictionary {
 	static rootIndex = 0;	// todo: add const,
 												// see https://github.com/Microsoft/TypeScript/issues/4045
-	private buf: ArrayBuffer;
-	private units: Uint32Array;
-
-
-	async read(istream: Readable) {
-		let size = (await readNBytes(4, istream)).readUInt32LE(0);
-		this.buf = buffer2arrayBuffer(await readNBytes(size * 4, istream));
-		this.units = new Uint32Array(this.buf);
-	}
+	
+	constructor(private units: Uint32Array) {}
 
 	has(bytes: Iterable<number>): boolean {
 		let index = this.followBytes(bytes);

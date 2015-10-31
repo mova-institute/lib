@@ -25,6 +25,7 @@
   "dependencies": {
     "commander": "^2.9.0",
     "jsdom": "^7.0.2",
+    "minimist": "^1.2.0",
     "typescript": "^1.6.2",
     "xmldom": "^0.1.19"
   }

@@ -1,27 +1,23 @@
-import {Dictionary} from './dictionary'
-import {Guide} from './guide'
-import {encodeUtf8} from '../lang'
+import {Dictionary} from './dictionary';
+import {Guide} from './guide';
+import {encodeUtf8, b64decodeFromArray} from '../codec';
 import {Readable} from 'stream';
+import {StringDecoder} from 'string_decoder';		//todo
+import {openSync} from 'fs'
 
-
-import {StringDecoder} from 'string_decoder'
 let decoder = new StringDecoder('utf8');
 
 export class Dawg {
-	protected dict = new Dictionary();
+	constructor(protected dict: Dictionary) {}
 
-	async read(istream: Readable) {
-		await this.dict.read(istream);
-	}
-
-	has(val: string): boolean {
-		return this.dict.has(encodeUtf8(val));
+	has(key: string): boolean {
+		return this.dict.has(encodeUtf8(key));
 	}
 }
 
-function* completer(dic: Dictionary, guide: Guide,
-	index: number, prefix: Array<number>) {
-	
+
+function *completer(dic: Dictionary, guide: Guide, index: number) {
+	let completion: Array<number> = [];
 	let indexStack = [index];
 	while (indexStack.length) {
 		
@@ -32,18 +28,18 @@ function* completer(dic: Dictionary, guide: Guide,
 			if (index === null) {
 				return;
 			}
-			prefix.push(label);
+			completion.push(label);
 			indexStack.push(index);
 		}
 
-		yield prefix;
+		yield completion;
 
 		let childLabel = guide.child(index);
 		if (childLabel) {
 			if ((index = dic.followByte(childLabel, index)) === null) {
 				return;
 			}
-			prefix.push(childLabel);
+			completion.push(childLabel);
 			indexStack.push(index);
 		}
 		else {
@@ -53,7 +49,7 @@ function* completer(dic: Dictionary, guide: Guide,
 				if (!indexStack.length) {
 					return;
 				}
-				prefix.pop();			
+				completion.pop();			
 
 				let siblingLabel = guide.sibling(index);
 				index = indexStack[indexStack.length - 1];
@@ -61,7 +57,7 @@ function* completer(dic: Dictionary, guide: Guide,
 					if ((index = dic.followByte(siblingLabel, index)) === null) {
 						return;
 					}
-					prefix.push(siblingLabel);
+					completion.push(siblingLabel);
 					indexStack.push(index);
 					break;
 				}
@@ -70,29 +66,64 @@ function* completer(dic: Dictionary, guide: Guide,
 	}
 }
 
-export class CompletionDawg extends Dawg {
-	protected guide = new Guide();
 
-	async read(istream: Readable) {
-		await super.read(istream);
-		await this.guide.read(istream);
+export class CompletionDawg extends Dawg {
+	constructor(protected dict: Dictionary, protected guide: Guide) {
+		super(dict);
 	}
 
-	complete(val: string) {
-		let toret = [];
+	readSync(path: string) {
+		let f = openSync(path, 'r');
+	}
 
-		let valBytes = encodeUtf8(val);
-		let index = this.dict.followBytes(valBytes);
+	*completionBytes(key: Array<number>) {
+		let index = this.dict.followBytes(key);
 		if (index === null)
-			return toret;
+			return;
 
-		for (let bytes of completer(this.dict, this.guide, index, valBytes)) {
-			try {
-				console.log(decoder.write(new Buffer(bytes)));
-			}catch(e) {
-				console.log(e);
-			}
+		for (let completion of completer(this.dict, this.guide, index)) {
+			yield completion;
 		}
-		return toret;
+	}
+	
+	*completionStrings(key: string) {
+		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
+			yield decoder.write(new Buffer(completionBytes));
+		}
 	}
 }
+
+
+/*export class BytesDawg extends CompletionDawg {
+	
+	constructor(private payloadSeparator: number = 0) {
+		super();
+	}
+	
+	*payloadBytes(key: Array<number>) {
+		key.push(this.payloadSeparator);
+		for (let completed of super.completionBytes(key)) {
+			yield b64decodeFromArray(completed);
+		}
+	}
+}
+
+
+export class ObjectDawg extends BytesDawg {
+	
+	constructor(payloadSeparator: number = 1,
+		private deserializer: (bytes: Uint8Array) => any = bytes => bytes) {
+		
+		super(payloadSeparator);
+	}
+	
+	lookup(key: string) {
+		let toret = [];
+		
+		for (let payload of super.payloadBytes(encodeUtf8(key))) {
+			toret.push(this.deserializer(payload));
+		}
+		
+		return toret;
+	}
+}*/

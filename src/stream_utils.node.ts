@@ -16,13 +16,3 @@ export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
 		waitUntilNBytes();
 	});
 }
-
-export function buffer2arrayBuffer(val: Buffer) {
-	let toret = new ArrayBuffer(val.length);
-	let view = new Uint8Array(toret);
-	for (let i = 0; i < val.length; ++i) {
-		view[i] = val[i];
-	}
-	
-	return toret;
-}

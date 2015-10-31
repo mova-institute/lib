@@ -1,8 +1,8 @@
-#!/usr/bin/env node --es_staging
-'use strict';
+#!/usr/bin/env node --harmony
 require("regenerator/runtime.js");
+require('../lib/bin/test.js');
 
-let fs = require('fs');
+/*let fs = require('fs');
 let nlp = require('../lib/nlp.node');
 let commander = require('commander');
 //let dawg = require('../lib/dawg_interprocess');
@@ -60,4 +60,4 @@ let start = new Date().getTime();
 nlp.tokenizeTeiXmlUk(doc.documentElement);
 let stringi = new xmldom.XMLSerializer().serializeToString(doc);
 fs.writeFileSync('../data/kavaz-tokenized.xml', stringi);
-console.log('time: ', (new Date().getTime() - start) / 1000);
+console.log('time: ', (new Date().getTime() - start) / 1000);*/
