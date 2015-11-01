@@ -10,14 +10,6 @@ const PROJECR_ROOT = process.cwd();
 const dist = 'lib';
 
 let tsProjectFile = 'src/tsconfig.json';
-let babelOptions = {
-	whitelist: [
-		'strict',
-		'es6.destructuring',
-		'es6.modules',
-		'es6.parameters',
-	]
-};
 
 gulp.task('typescript', () => {
 	let tsProject = ts.createProject(tsProjectFile, {
@@ -29,7 +21,7 @@ gulp.task('typescript', () => {
 		.pipe(ts(tsProject));
 
 	tsResult.js
-		.pipe(babel(babelOptions))
+		.pipe(babel())
 		.on('error', (e) => { console.log('eeeeeeeeeeeeeee', e); })
 		.pipe(sourcemaps.write('.', {
 			includeContent: false,
@@ -38,16 +30,6 @@ gulp.task('typescript', () => {
 		.pipe(gulp.dest(dist));
 	tsResult.dts.pipe(gulp.dest(dist));
 
-});
-
-gulp.task('debug', () => {
-	let tsResult = gulp.src('dbg/**/*.ts')
-		//.pipe(sourcemaps.init())
-		.pipe(ts());
-	tsResult.js
-		//.pipe(babel(babelOpts))
-		//.pipe(sourcemaps.write('.'))
-		.pipe(gulp.dest('dbg'));
 });
 
 

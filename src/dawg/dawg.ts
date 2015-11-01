@@ -8,10 +8,10 @@ import {openSync} from 'fs'
 let decoder = new StringDecoder('utf8');
 
 export class Dawg {
-	constructor(protected dict: Dictionary) {}
+	constructor(protected dic: Dictionary) {}
 
 	has(key: string): boolean {
-		return this.dict.has(encodeUtf8(key));
+		return this.dic.has(encodeUtf8(key));
 	}
 }
 
@@ -68,8 +68,8 @@ function *completer(dic: Dictionary, guide: Guide, index: number) {
 
 
 export class CompletionDawg extends Dawg {
-	constructor(protected dict: Dictionary, protected guide: Guide) {
-		super(dict);
+	constructor(protected dic: Dictionary, protected guide: Guide) {
+		super(dic);
 	}
 
 	readSync(path: string) {
@@ -77,11 +77,11 @@ export class CompletionDawg extends Dawg {
 	}
 
 	*completionBytes(key: Array<number>) {
-		let index = this.dict.followBytes(key);
+		let index = this.dic.followBytes(key);
 		if (index === null)
 			return;
 
-		for (let completion of completer(this.dict, this.guide, index)) {
+		for (let completion of completer(this.dic, this.guide, index)) {
 			yield completion;
 		}
 	}
