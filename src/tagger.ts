@@ -12,12 +12,18 @@ export class Tagger {
 	constructor(private dawg: CompletionDawg) {}
 	
 	tag(token: string) {
-		let toret = [];
-		for (let completion of this.dawg.completionStrings(token)) {
-			toret.push(completion.split(' '));
+		let toret = new Set<string>();
+		for (let completion of this.dawg.completionStrings(token + ' ')) {
+			toret.add(completion);
+		}
+		let lowercase = token.toLowerCase();
+		if (lowercase !== token) {
+			for (let completion of this.dawg.completionStrings(lowercase + ' ')) {
+				toret.add(completion);
+			}
 		}
 		
-		return toret;
+		return Array.from(toret, x => x.split(' '));
 	}
 	
 	knows(token: string) {

@@ -1,11 +1,7 @@
 import {Dictionary} from './dictionary';
 import {Guide} from './guide';
-import {encodeUtf8, b64decodeFromArray} from '../codec';
+import {encodeUtf8, decodeUtf8, b64decodeFromArray} from '../codec';
 import {Readable} from 'stream';
-import {StringDecoder} from 'string_decoder';		//todo
-import {openSync} from 'fs'
-
-let decoder = new StringDecoder('utf8');
 
 export class Dawg {
 	constructor(protected dic: Dictionary) {}
@@ -72,10 +68,6 @@ export class CompletionDawg extends Dawg {
 		super(dic);
 	}
 
-	readSync(path: string) {
-		let f = openSync(path, 'r');
-	}
-
 	*completionBytes(key: Array<number>) {
 		let index = this.dic.followBytes(key);
 		if (index === null)
@@ -88,7 +80,7 @@ export class CompletionDawg extends Dawg {
 	
 	*completionStrings(key: string) {
 		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
-			yield decoder.write(new Buffer(completionBytes));
+			yield decodeUtf8(completionBytes);
 		}
 	}
 }

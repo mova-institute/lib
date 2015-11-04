@@ -1,6 +1,6 @@
 import {createTaggerSync} from '../factories.node'
 import {filename2jsdomRootSync} from '../utils.node'
-import {tokenizeTeiDom} from '../nlp'
+import {tokenizeTeiDom, tagTokenizedDom} from '../nlp'
 import {writeFileSync} from 'fs'
 
 let commander = require('commander');
@@ -17,7 +17,9 @@ if (!commander.input || !commander.output) {
 	console.log(commander.help());
 }
 
-let tokenizedDom = tokenizeTeiDom(
-	filename2jsdomRootSync(commander.input), createTaggerSync('../data/rysin-dict.dawg'))
+let tagger = createTaggerSync('../data/rysin-dict.dawg');
+
+let tokenizedDom = tokenizeTeiDom(filename2jsdomRootSync(commander.input), tagger);
+let taggedDom = tagTokenizedDom(tokenizedDom, tagger);
 let stringi = new xmldom.XMLSerializer().serializeToString(tokenizedDom.ownerDocument);
 writeFileSync(commander.output, stringi);

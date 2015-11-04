@@ -7,7 +7,13 @@ import {Tagger} from './tagger'
 export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя`;
 export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
 
-const PUNC_REG = [
+const PUNC_REGS = [
+  r`„`,
+  r`“`,
+  r`«`,
+  r`»`,
+  r`\(`,
+  r`\)`,
   r`\.`,
   r`\.{4,}`,
   r`…`,
@@ -18,32 +24,27 @@ const PUNC_REG = [
   r`!\.{2,}`,
   r`\?\.{2,}`,
   r`—`,
-  r`\(`,
-  r`\)`,
-  r`„`,
-  r`“`,
-  r`«`,
-  r`»`,
 ];
-const PUNC_REG_JOIN = new RegExp(`^(${PUNC_REG.join('|')})$`);
-
+const ANY_PUNC = PUNC_REGS.join('|');
+const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`);
+console.log(ANY_PUNC_OR_DASH_RE);
 let PUNC_SPACING = {
-  ',': ['', ' '],
-  '.': ['', ' '],
-  ':': ['', ' '],
-  ';': ['', ' '],
-  '-': ['', ''],    // dash
-  '–': ['', ''],    // n-dash
-  '—': [' ', ' '],  // m-dash
-  '(': [' ', ''],
-  ')': ['', ' '],
-  '„': [' ', ''],
-  '“': ['', ''],    // what about eng?
-  '«': [' ', ''],
-  '»': ['', ' '],
-  '!': ['', ' '],
-  '?': ['', ' '],
-  '…': ['', ' '],
+  ',': [false, true],
+  '.': [false, true],
+  ':': [false, true],
+  ';': [false, true],
+  '-': [false, false],    // dash
+  '–': [false, false],    // n-dash
+  '—': [true, true],  // m-dash
+  '(': [true, false],
+  ')': [false, true],
+  '„': [true, false],
+  '“': [false, false],    // what about eng?
+  '«': [true, false],
+  '»': [false, true],
+  '!': [false, true],
+  '?': [false, true],
+  '…': [false, true],
 };
 
 const WORD_TAGS = new Set(['w', 'mi:w_']);
@@ -53,29 +54,33 @@ export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
   if (!a || !b) {
     return false;
   }
+  let tagA = a.tagName;
+  let tagB = b.tagName;
+  let spaceA = !!PUNC_SPACING[a.innerHTML] && PUNC_SPACING[a.innerHTML][1];
+  let spaceB = !!PUNC_SPACING[b.innerHTML] && PUNC_SPACING[b.innerHTML][0];
+  let isWordA = WORD_TAGS.has(tagA);
+  let isWordB = WORD_TAGS.has(tagB);
 
-  if (WORD_TAGS.has(a.tagName) && WORD_TAGS.has(b.tagName)) {
+  if (isWordA && WORD_TAGS.has(tagB)) {
     return true;
   }
 
-  if (WORD_TAGS.has(a.tagName) && b.tagName === 'pc' && (b.innerHTML in PUNC_SPACING)) {
-    return PUNC_SPACING[b.innerHTML][0].length > 0;
+  if (isWordA && tagB === 'pc') {
+    return spaceB;
   }
-  if (WORD_TAGS.has(b.tagName) && a.tagName === 'pc' && (a.innerHTML in PUNC_SPACING)) {
-    return PUNC_SPACING[a.innerHTML][1].length > 0;
-  }
-
-  if (a.tagName === b.tagName && b.tagName === 'pc') {
-    if (a.innerHTML === b.innerHTML) {
-      return false;
-    }
+  if (isWordB && tagA === 'pc') {
+    return spaceA;
   }
 
-  if (b.tagName === 'pc' && (b.innerHTML in PUNC_SPACING)) {
-    return PUNC_SPACING[b.innerHTML][0].length > 0;
+  if (tagA === tagB && tagB === 'pc') {
+    return spaceA && spaceB;
   }
 
-  if (a.tagName === 'mi:se') {
+  if (tagB === 'pc') {
+    return spaceB;
+  }
+
+  if (tagA === 'mi:se') {
     return true;
   }
 
@@ -85,15 +90,14 @@ export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
 ////////////////////////////////////////////////////////////////////////////////
 export function tokenizeUk(val: string, tagger: Tagger) {
   let toret: Array<string> = [];
-
-  let splitRegex = new RegExp(`([^${WCHAR}]+)`);
+  let splitRegex = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
 
   for (let tok0 of val.trim().split(splitRegex)) {
     for (let tok1 of tok0.split(/\s+/)) {
       if (tok1) {
         if (tok1.includes('-')) {
           if (!(tagger.knows(tok1))) {
-            toret.push(...tok1.split(/(-)/));
+            toret.push(...tok1.split(/(-)/).filter(x => !!x));
             continue;
           }
         }
@@ -117,7 +121,7 @@ export function tokenizeTeiDom(root: Node, tagger: Tagger) {
       for (let tok of tokenizeUk(node.nodeValue, tagger)) {
         insertBefore(nodeFromToken(tok, root.ownerDocument), node);
       }
-      remove(node);                                                                                                                                
+      remove(node);
     }
   });
   
@@ -126,9 +130,8 @@ export function tokenizeTeiDom(root: Node, tagger: Tagger) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function nodeFromToken(token: string, document: Document) {
-  let toret;
-  if (PUNC_REG_JOIN.test(token)) {
-    toret = document.createElement('pc');
+  if (ANY_PUNC_OR_DASH_RE.test(token)) {
+    var toret = document.createElement('pc');
     toret.textContent = token;
   }
   else if (WCHAR_RE.test(token)) {
@@ -136,9 +139,51 @@ export function nodeFromToken(token: string, document: Document) {
     toret.textContent = token;
   }
   else {
-    console.log('DIE: ', token);
-    throw 'kuku';
+    console.error(`DIE, "${token}"`);
+    throw 'kuku' + token.length;
   }
   
   return toret;
+}
+
+//------------------------------------------------------------------------------
+function tagWord(el: Element, tags) {
+  let word = el.textContent;
+  if (!tags.length) {
+    el.setAttribute('lemma', word);
+    el.setAttribute('ana', 'X');
+  }
+  else if (tags.length === 1) {
+    let [lemma, tag] = tags[0];
+    el.setAttribute('lemma', lemma);
+    el.setAttribute('ana', tag);
+  }
+  else {
+    let w_ = el.ownerDocument.createElement('mi:w_');
+    for (let variant of tags) {
+      let w = el.ownerDocument.createElement('w');
+      w.textContent = word;
+      let [lemma, tag] = variant;
+      w.setAttribute('lemma', lemma);
+      w.setAttribute('ana', tag);
+      w_.appendChild(w);
+    }
+    replace(el, w_);    
+  }
+}
+////////////////////////////////////////////////////////////////////////////////
+export function tagTokenizedDom(root: Node, tagger: Tagger) {
+  traverseDepth(root, (node: Node) => {
+    if (isElement(node)) {
+      let el = <Element>node;
+      if (el.tagName === 'mi:w_') {
+        return 'skip';
+      }
+      if (el.tagName === 'w') {
+        tagWord(el, tagger.tag(el.textContent));
+      }
+    }
+  });
+  
+  return root;
 }

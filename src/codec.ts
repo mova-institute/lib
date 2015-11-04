@@ -1,3 +1,4 @@
+////////////////////////////////////////////////////////////////////////////////
 export function encodeUtf8(str: string) {	// todo: more octets?
 	let out = new Array<number>();
 	let p = 0;
@@ -18,6 +19,33 @@ export function encodeUtf8(str: string) {	// todo: more octets?
 	}
 
 	return out;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function decodeUtf8(bytes: Array<number>) {
+	
+	let toret = '';
+	for (let i = 0; i < bytes.length; ) {
+		let c = bytes[i];
+
+		if (c < 128) {
+			toret += String.fromCharCode(c);
+			++i;
+		}
+		else if ((c > 191) && (c < 224)) {
+			let c2 = bytes[i +1];
+			toret += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+			i += 2;
+		}
+		else {
+			let c2 = bytes[i + 1];
+			let c3 = bytes[i + 2];
+			toret += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+			i += 3;
+		}
+	}
+
+	return toret;
 }
 
 
@@ -51,6 +79,7 @@ function decode(code: number) {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export function b64decodeFromArray(b64: Array<number>) {
 	let len = b64.length;
 
