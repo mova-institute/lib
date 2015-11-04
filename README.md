@@ -11,6 +11,7 @@
 - toret vs res
 - exceptions in generators and stuff, why not propagated?
 - read on nodejs-browser compartiple code writing
+- xml traversing to generators
 
 - скорочення
 - <supplied>

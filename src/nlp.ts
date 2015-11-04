@@ -1,11 +1,15 @@
-import {traverseDepth, lang2, replace, isElement, isRoot, isText,
-  remove, insertBefore} from './xml_utils'
+import {traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
+  remove, insertBefore, insertAfter} from './xml_utils'
 import {r} from './lang';
 import {Tagger} from './tagger'
 
 
 export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя`;
 export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
+
+const ELEMS_BREAKING_SENTENCE = new Set([
+  'p', 'text'
+]);
 
 const PUNC_REGS = [
   r`„`,
@@ -27,7 +31,7 @@ const PUNC_REGS = [
 ];
 const ANY_PUNC = PUNC_REGS.join('|');
 const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`);
-console.log(ANY_PUNC_OR_DASH_RE);
+
 let PUNC_SPACING = {
   ',': [false, true],
   '.': [false, true],
@@ -47,7 +51,7 @@ let PUNC_SPACING = {
   '…': [false, true],
 };
 
-const WORD_TAGS = new Set(['w', 'mi:w_']);
+const WORD_TAGS = new Set(['w', 'mi:w_', 'num']);
 
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
@@ -61,7 +65,7 @@ export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
   let isWordA = WORD_TAGS.has(tagA);
   let isWordB = WORD_TAGS.has(tagB);
 
-  if (isWordA && WORD_TAGS.has(tagB)) {
+  if (isWordA && isWordB) {
     return true;
   }
 
@@ -130,8 +134,13 @@ export function tokenizeTeiDom(root: Node, tagger: Tagger) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function nodeFromToken(token: string, document: Document) {
-  if (ANY_PUNC_OR_DASH_RE.test(token)) {
-    var toret = document.createElement('pc');
+  let toret;
+  if (/^\d+$/.test(token)) {
+    toret = document.createElement('num');
+    toret.textContent = token;
+  }
+  else if (ANY_PUNC_OR_DASH_RE.test(token)) {
+    toret = document.createElement('pc');
     toret.textContent = token;
   }
   else if (WCHAR_RE.test(token)) {
@@ -186,4 +195,32 @@ export function tagTokenizedDom(root: Node, tagger: Tagger) {
   });
   
   return root;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function insertSentenceEnd(where: HTMLElement) {
+  traverseDocumentOrder(where, node => {
+    if (isElement(node)) {
+      if (ELEMS_BREAKING_SENTENCE.has(node.tagName)) {
+        
+      }
+      else if (/*node.nextElementSibling && */haveSpaceBetween(node, node.nextElementSibling)) {
+        where = node;
+        return false;
+      }
+      if (node.tagName === 'mi:w_') {
+        return 'skip';
+      }
+    }
+  }, node => {
+    if (isElement(node) && ELEMS_BREAKING_SENTENCE.has(node.tagName)) {
+      where = node.lastChild;
+      return false; 
+    }
+  });
+  
+  if (where.tagName !== 'mi:se') {
+    let se = where.ownerDocument.createElement('mi:se');
+    insertAfter(se, where);
+  }
 }

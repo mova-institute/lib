@@ -22,12 +22,15 @@ export function traverseDepth(node: Node, onEnter, onLeave?) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function traverseDocumentOrder(node: Node, onEnter, onLeave?) {
-  for (let curNode = node; curNode; curNode = curNode.nextSibling) {
+  for (var curNode = node; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
-      return true;
+      return false;
     }
   }
   if (node && node.parentNode) {
+    if (onLeave && !onLeave(node.parentNode)) {
+      return false;
+    }
     if (traverseDocumentOrder(node.parentNode.nextSibling, onEnter, onLeave) === false) {
       return false;
     }
@@ -92,8 +95,13 @@ export function isText(node: Node) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function insertBefore(insert: Node, beforeThis: Node) {
-  beforeThis.parentNode.insertBefore(insert, beforeThis);
+export function insertBefore(toInsert: Node, beforeThis: Node) {
+  beforeThis.parentNode.insertBefore(toInsert, beforeThis);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function insertAfter(toInsert: Node, afterThis: Node) {
+  afterThis.parentNode.insertBefore(toInsert, afterThis.nextSibling);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

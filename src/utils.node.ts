@@ -1,4 +1,4 @@
-import {createReadStream, createWriteStream, readFileSync, readSync} from 'fs'
+let {createReadStream, createWriteStream, readFileSync, readSync} = require('fs');
 
 
 let argv = require('minimist')(process.argv.slice(2));

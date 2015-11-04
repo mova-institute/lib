@@ -1,4 +1,5 @@
 #!/usr/bin/env node --harmony
+require('traceur/bin/traceur-runtime');
 require("regenerator/runtime.js");
 require('../lib/bin/test.js');
 

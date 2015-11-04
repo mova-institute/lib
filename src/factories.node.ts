@@ -1,6 +1,6 @@
 import {Tagger} from './tagger'
 import {createCompletionDawgSync} from './dawg/factories.node'
-import {dirname, normalize} from 'path'
+let {normalize, dirname} = require('path');
 
 const ROOT = normalize(dirname(__filename) + '/..');
 

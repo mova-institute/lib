@@ -5,7 +5,7 @@ import {Dawg, CompletionDawg} from './dawg'
 import {buffer2typedArray} from '../node_polyfill.node'
 import {readNBytesSync} from '../utils.node'
 
-import {openSync} from 'fs'
+let {openSync} = require('fs');
 
 
 ////////////////////////////////////////////////////////////////////////////////

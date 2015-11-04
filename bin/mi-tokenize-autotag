@@ -1,3 +1,3 @@
 #!/usr/bin/env node --harmony --use_strict
-require("regenerator/runtime.js");
+require('traceur/bin/traceur-runtime');
 require('../lib/bin/mi-tokenize-autotag.js');
