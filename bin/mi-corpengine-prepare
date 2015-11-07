@@ -1,0 +1,4 @@
+#!/usr/bin/env node --harmony --use_strict
+//require('traceur/bin/traceur-runtime');
+require('regenerator/runtime.js');
+require('../lib/bin/mi-corpengine-prepare.js');

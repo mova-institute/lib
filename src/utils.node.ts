@@ -14,7 +14,7 @@ export function filename2jsdomRootSync(filename: string) {
 	return doc.documentElement;
 }
 
-export function ioArgs(): [any, any] {
+/*export function ioArgs(): [any, any] {
 	if (argv._.length === 1) {
 		if (!process.stdin.isTTY) {
 			return [process.stdin, createWriteStream(argv._[0])];
@@ -32,7 +32,7 @@ export function ioArgs(): [any, any] {
 	
 	console.error(`arguments: <(std)input> <(std)output>`);
 	process.exit();
-}
+}*/
 
 export function readNBytesSync(n: number, fd: number) {
 	let buf = new Buffer(n);

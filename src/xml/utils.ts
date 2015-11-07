@@ -1,9 +1,42 @@
-const NS = {
-  xml: 'http://www.w3.org/XML/1998/namespace'
+export const NS = {
+  xml: 'http://www.w3.org/XML/1998/namespace',
+  tei: 'http://www.tei-c.org/ns/1.0',
+  mi: 'https://mova.institute/ns/mi/1',
+};
+
+////////////////////////////////////////////////////////////////////////////////
+export function namePrefixed(prefix: string, name: string) {
+  return prefix ? `${prefix}:${name}` : name;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDepth(node: Node, onEnter, onLeave?) {
+export function nameNs(ns: string, name: string) {
+  return `{${ns}}${name}`;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function tagStr(open: boolean, prefix: string, elem: string, attrs?) {
+  if (!open) {
+    return `</${namePrefixed(prefix, elem)}>`;
+  }
+  let toret = `<${namePrefixed(prefix, elem)}>`;
+  
+  return toret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function libxmlSaxAttrs(attrs: [[string, string, string, string]]) {
+  let toret = new Map();
+  for (let [name,,,val] of attrs) {
+    toret[name] = val;
+  }
+  
+  return toret;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+export function traverseDepth(node: Node, onEnter: Function, onLeave?: Function) {
   let directive = onEnter(node);
   if (directive === false) {
     return false;
@@ -21,7 +54,7 @@ export function traverseDepth(node: Node, onEnter, onLeave?) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrder(node: Node, onEnter, onLeave?) {
+export function traverseDocumentOrder(node: Node, onEnter: Function, onLeave?: Function) {
   for (var curNode = node; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return false;

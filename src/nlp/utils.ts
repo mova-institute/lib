@@ -1,12 +1,19 @@
-import {traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
-  remove, insertBefore, insertAfter} from './xml_utils'
-import {r} from './lang';
-import {Tagger} from './tagger'
+import {NS, nameNs, traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
+  remove, insertBefore, insertAfter} from '../xml/utils'
+import {W, W_, PC, SE} from './common_tags' 
+import {r} from '../lang';
+import {Tagger} from '../tagger'
 
 
 export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя`;
 export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
 
+//export const NOSPACE_ABLE_ELEMS
+export const ELEMS_BREAKING_SENTENCE_NS = new Set([
+  nameNs(NS.tei, 'p'),
+  nameNs(NS.tei, 'body'),
+  nameNs(NS.tei, 'text')
+]);
 const ELEMS_BREAKING_SENTENCE = new Set([
   'p', 'text'
 ]);
@@ -52,9 +59,53 @@ let PUNC_SPACING = {
 };
 
 const WORD_TAGS = new Set(['w', 'mi:w_', 'num']);
+const WORD_TAGS_NS = new Set([W, W_]);
+
 
 ////////////////////////////////////////////////////////////////////////////////
-export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
+export function haveSpaceBetween(tagA: string, textA: string,
+                                 tagB: string, textB: string) {
+  if (!tagA || !tagB) {
+    return null;
+  }
+  let spaceA = !!PUNC_SPACING[textA] && PUNC_SPACING[textA][1];
+  let spaceB = !!PUNC_SPACING[textB] && PUNC_SPACING[textB][0];
+  let isWordA = WORD_TAGS_NS.has(tagA);
+  let isWordB = WORD_TAGS_NS.has(tagB);
+
+  if (isWordA && isWordB) {
+    return true;
+  }
+
+  if (isWordA && tagB === PC) {
+    return spaceB;
+  }
+  if (isWordB && tagA === PC) {
+    return spaceA;
+  }
+
+  if (tagA === tagB && tagB === PC) {
+    return spaceA && spaceB;
+  }
+
+  if (tagB === PC) {
+    return spaceB;
+  }
+
+  if (tagA === SE) {
+    return true;
+  }
+
+  return null;
+}
+////////////////////////////////////////////////////////////////////////////////
+// todo: merge, rename
+// export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
+//   return isSpaceBetweenTokens(a.tagName, a.textContent, b.tagName, b.textContent);
+// }
+
+////////////////////////////////////////////////////////////////////////////////
+export function haveSpaceBetween2(a: HTMLElement, b: HTMLElement): boolean {
   if (!a || !b) {
     return false;
   }
@@ -199,7 +250,7 @@ export function tagTokenizedDom(root: Node, tagger: Tagger) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function insertSentenceEnd(where: HTMLElement) {
-  traverseDocumentOrder(where, node => {
+  traverseDocumentOrder(where, (node): any => {
     if (isElement(node)) {
       if (ELEMS_BREAKING_SENTENCE.has(node.tagName)) {
         

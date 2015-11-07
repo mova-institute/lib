@@ -12,6 +12,8 @@
 - exceptions in generators and stuff, why not propagated?
 - read on nodejs-browser compartiple code writing
 - xml traversing to generators
+- foreign words
+- remove num
 
 - скорочення
 - <supplied>

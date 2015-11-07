@@ -1,6 +1,6 @@
 import {createTaggerSync} from '../factories.node'
 import {filename2jsdomRootSync} from '../utils.node'
-import {tokenizeTeiDom, tagTokenizedDom} from '../nlp'
+import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'
 let {writeFileSync} = require('fs');
 
 let commander = require('commander');
