@@ -1,5 +1,4 @@
 import {ManateeFormatter} from '../nlp/manatee_formatter'
-import {tei2vertical} from '../corpengine_utils.node'
 import {SaxEventObjectifier} from '../xml/sax_event_objectifier'
 import {SaxEventSerializer} from '../xml/sax_event_serializer'
 import {SentenceStartInjector} from '../nlp/sentence_start_injector'

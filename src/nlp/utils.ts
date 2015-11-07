@@ -255,7 +255,7 @@ export function insertSentenceEnd(where: HTMLElement) {
       if (ELEMS_BREAKING_SENTENCE.has(node.tagName)) {
         
       }
-      else if (/*node.nextElementSibling && */haveSpaceBetween(node, node.nextElementSibling)) {
+      else if (/*node.nextElementSibling && */haveSpaceBetween2(node, node.nextElementSibling)) {
         where = node;
         return false;
       }
