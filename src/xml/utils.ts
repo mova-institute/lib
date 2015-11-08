@@ -15,6 +15,21 @@ export function nameNs(ns: string, name: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function nameNsEl(el: Element) {
+  if (el.namespaceURI) {
+    return nameNs(el.namespaceURI, el.localName);
+  }
+  let [prefix, localName] = el.tagName.split(':');
+  let ns = el.ownerDocument.documentElement.getAttribute(`xmlns:${prefix}`);
+  
+  if (!localName || !ns) {
+    throw 'Not implemented';
+  }
+  
+  return nameNs(ns, localName);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function tagStr(open: boolean, prefix: string, elem: string, attrs?) {
   if (!open) {
     return `</${namePrefixed(prefix, elem)}>`;
@@ -68,6 +83,17 @@ export function traverseDocumentOrder(node: Node, onEnter: Function, onLeave?: F
       return false;
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function nextEl(base: Element, predicate: Function) {
+  for (var toret = base.nextElementSibling; toret; toret = base.nextElementSibling) {
+    if (predicate(toret)) {
+      break;
+    }
+  }
+  
+  return toret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

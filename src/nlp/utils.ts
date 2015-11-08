@@ -1,4 +1,4 @@
-import {NS, nameNs, traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
+import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
   remove, insertBefore, insertAfter} from '../xml/utils'
 import {W, W_, PC, SE} from './common_tags' 
 import {r} from '../lang';
@@ -58,8 +58,7 @@ let PUNC_SPACING = {
   '…': [false, true],
 };
 
-const WORD_TAGS = new Set(['w', 'mi:w_', 'num']);
-const WORD_TAGS_NS = new Set([W, W_]);
+const WORD_TAGS = new Set([W, W_]);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,8 +69,8 @@ export function haveSpaceBetween(tagA: string, textA: string,
   }
   let spaceA = !!PUNC_SPACING[textA] && PUNC_SPACING[textA][1];
   let spaceB = !!PUNC_SPACING[textB] && PUNC_SPACING[textB][0];
-  let isWordA = WORD_TAGS_NS.has(tagA);
-  let isWordB = WORD_TAGS_NS.has(tagB);
+  let isWordA = WORD_TAGS.has(tagA);
+  let isWordB = WORD_TAGS.has(tagB);
 
   if (isWordA && isWordB) {
     return true;
@@ -98,48 +97,14 @@ export function haveSpaceBetween(tagA: string, textA: string,
 
   return null;
 }
-////////////////////////////////////////////////////////////////////////////////
-// todo: merge, rename
-// export function haveSpaceBetween(a: HTMLElement, b: HTMLElement): boolean {
-//   return isSpaceBetweenTokens(a.tagName, a.textContent, b.tagName, b.textContent);
-// }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function haveSpaceBetween2(a: HTMLElement, b: HTMLElement): boolean {
-  if (!a || !b) {
-    return false;
-  }
-  let tagA = a.tagName;
-  let tagB = b.tagName;
-  let spaceA = !!PUNC_SPACING[a.innerHTML] && PUNC_SPACING[a.innerHTML][1];
-  let spaceB = !!PUNC_SPACING[b.innerHTML] && PUNC_SPACING[b.innerHTML][0];
-  let isWordA = WORD_TAGS.has(tagA);
-  let isWordB = WORD_TAGS.has(tagB);
-
-  if (isWordA && isWordB) {
-    return true;
-  }
-
-  if (isWordA && tagB === 'pc') {
-    return spaceB;
-  }
-  if (isWordB && tagA === 'pc') {
-    return spaceA;
-  }
-
-  if (tagA === tagB && tagB === 'pc') {
-    return spaceA && spaceB;
-  }
-
-  if (tagB === 'pc') {
-    return spaceB;
-  }
-
-  if (tagA === 'mi:se') {
-    return true;
-  }
-
-  return false;
+export function haveSpaceBetweenEl(a: HTMLElement, b: HTMLElement): boolean {
+  let tagA = a ? nameNsEl(a) : null;
+  let textA = a ? a.textContent : null;
+  let tagB = b ? nameNsEl(b) : null;
+  let textB = b ? b.textContent : null; 
+  return haveSpaceBetween(tagA, textA, tagB, textB);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,15 +151,15 @@ export function tokenizeTeiDom(root: Node, tagger: Tagger) {
 ////////////////////////////////////////////////////////////////////////////////
 export function nodeFromToken(token: string, document: Document) {
   let toret;
-  if (/^\d+$/.test(token)) {
+  /*if (/^\d+$/.test(token)) {
     toret = document.createElement('num');
     toret.textContent = token;
   }
-  else if (ANY_PUNC_OR_DASH_RE.test(token)) {
+  else*/ if (ANY_PUNC_OR_DASH_RE.test(token)) {
     toret = document.createElement('pc');
     toret.textContent = token;
   }
-  else if (WCHAR_RE.test(token)) {
+  else if (/^\d+$/.test(token) || WCHAR_RE.test(token)) {
     toret = document.createElement('w');
     toret.textContent = token;
   }
@@ -210,7 +175,6 @@ export function nodeFromToken(token: string, document: Document) {
 function tagWord(el: Element, tags) {
   let word = el.textContent;
   if (!tags.length) {
-    el.setAttribute('lemma', word);
     el.setAttribute('ana', 'X');
   }
   else if (tags.length === 1) {
@@ -246,32 +210,4 @@ export function tagTokenizedDom(root: Node, tagger: Tagger) {
   });
   
   return root;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function insertSentenceEnd(where: HTMLElement) {
-  traverseDocumentOrder(where, (node): any => {
-    if (isElement(node)) {
-      if (ELEMS_BREAKING_SENTENCE.has(node.tagName)) {
-        
-      }
-      else if (/*node.nextElementSibling && */haveSpaceBetween2(node, node.nextElementSibling)) {
-        where = node;
-        return false;
-      }
-      if (node.tagName === 'mi:w_') {
-        return 'skip';
-      }
-    }
-  }, node => {
-    if (isElement(node) && ELEMS_BREAKING_SENTENCE.has(node.tagName)) {
-      where = node.lastChild;
-      return false; 
-    }
-  });
-  
-  if (where.tagName !== 'mi:se') {
-    let se = where.ownerDocument.createElement('mi:se');
-    insertAfter(se, where);
-  }
 }
