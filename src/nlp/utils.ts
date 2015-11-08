@@ -1,6 +1,6 @@
 import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
   remove, insertBefore, insertAfter} from '../xml/utils'
-import {W, W_, PC, SE} from './common_tags' 
+import {W, W_, PC, SE} from './common_elements' 
 import {r} from '../lang';
 import {Tagger} from '../tagger'
 
@@ -173,37 +173,31 @@ export function nodeFromToken(token: string, document: Document) {
 
 //------------------------------------------------------------------------------
 function tagWord(el: Element, tags) {
-  let word = el.textContent;
+  //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
+  let w_ = el.ownerDocument.createElement('mi:w_'); // todo
+  
   if (!tags.length) {
-    el.setAttribute('ana', 'X');
+    tags.push([el.textContent, 'X']);
   }
-  else if (tags.length === 1) {
-    let [lemma, tag] = tags[0];
-    el.setAttribute('lemma', lemma);
-    el.setAttribute('ana', tag);
+  for (let tag of tags) {
+    let w = el.ownerDocument.createElement('w');
+    w.textContent = el.textContent;
+    let [lemma, ana] = tag;
+    w.setAttribute('lemma', lemma);
+    w.setAttribute('ana', ana);
+    w_.appendChild(w);
   }
-  else {
-    let w_ = el.ownerDocument.createElement('mi:w_');
-    for (let variant of tags) {
-      let w = el.ownerDocument.createElement('w');
-      w.textContent = word;
-      let [lemma, tag] = variant;
-      w.setAttribute('lemma', lemma);
-      w.setAttribute('ana', tag);
-      w_.appendChild(w);
-    }
-    replace(el, w_);    
-  }
+  replace(el, w_);
 }
 ////////////////////////////////////////////////////////////////////////////////
 export function tagTokenizedDom(root: Node, tagger: Tagger) {
   traverseDepth(root, (node: Node) => {
     if (isElement(node)) {
       let el = <Element>node;
-      if (el.tagName === 'mi:w_') {
+      if (nameNsEl(el) === W_) {
         return 'skip';
-      }
-      if (el.tagName === 'w') {
+      }// todo: wait https://github.com/tmpvar/jsdom/issues/1276#issuecomment-154660180
+      if (el.tagName==='w'/*nameNsEl(el) === W*/) {
         tagWord(el, tagger.tag(el.textContent));
       }
     }

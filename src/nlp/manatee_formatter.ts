@@ -1,5 +1,5 @@
 import {NS, nameNs, tagStr, libxmlSaxAttrs} from '../xml/utils'
-import {W, W_, PC, S, SS, SE, G} from './common_tags'
+import {W, W_, PC, S, SS, SE, G} from './common_elements'
 import {Transform} from 'stream'
 import {SaxEventObject} from '../xml/sax_event_object'
 

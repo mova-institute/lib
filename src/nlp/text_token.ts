@@ -1,5 +1,5 @@
 import {XmlElement} from '../xml/xml_element'
-import {W, W_} from './common_tags'
+import {W, W_, P, L, SE} from './common_elements'
 import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils'
 import {traverseDepth, traverseDocumentOrder, NS, isElement, nameNsEl, remove, insertAfter} from '../xml/utils'
 
@@ -12,62 +12,61 @@ export class TextToken extends XmlElement {
 	tag() {
 		return this.element.tagName; 	// todo
 	}
-	
+
 	is(tagName: string) {
-		return this.tag() === tagName;
+		return this.tag() === tagName;	// todo
 	}
-	
+
 	equals(other: TextToken) {
 		return other && other.element === this.element;
 	}
-	
+
 	text() {	// todo
 		if (nameNsEl(this.element) === W_) {
 			return this.element.children[0].textContent;
 		}
+		
 		return this.element.textContent;
 	}
 
 	ana() {
-		return this.element.getAttribute('ana');
+		return this.element.getAttribute('ana')
+			|| this.element.children[0].getAttribute('ana');
 	}
 
 	isWord() {
-		return this.element.tagName === 'mi:w_' || this.element.tagName === 'w';	// todo
+		return nameNsEl(this.element) === W_;
 	}
 
 	isAmbig() {
-		return nameNsEl(this.element) === W_ && !this.ana();
+		return this.element.children.length > 1 && !this.element.getAttribute('ana');
 	}
 
 	isUntagged() {
 		return this.ana() === 'X';
 	}
-	
+
 	morphTag() {
-		if (this.element.tagName === 'mi:w_') {
-			let disambIndex = parseInt(this.element.getAttribute('ana'));
-			return this.element.children[disambIndex].getAttribute('ana');
-		}
-		return this.ana();
+		let disambIndex = parseInt(this.element.getAttribute('ana'));
+
+		return this.element.children[disambIndex].getAttribute('ana');
 	}
 
-	tags() {
+	morphTags() {
 		let toret = [];
-		traverseDepth(this.element, (node) => {
-			if (isElement(node) && node !== this.element) {
-				toret.push({
-					ana: node.getAttribute('ana'),
-					lemma: node.getAttribute('lemma')
-				});
-			}
-		});
-		
+		for (let i = 0; i < this.element.children.length; ++i) {
+			toret.push({
+				ana: this.element.children[i].getAttribute('ana'),
+				lemma: this.element.children[i].getAttribute('lemma')
+			});
+		}
+
 		return toret;
 	}
 
 	breaksLine() {
-		return this.element.tagName === 'p' || this.element.tagName === 'l';
+		let elName = nameNsEl(this.element);
+		return elName === P || elName === L;
 	}
 
 	disambig(index: number) {
@@ -85,7 +84,7 @@ export class TextToken extends XmlElement {
 					where = node;
 					return false;
 				}
-				if (node.tagName === 'mi:w_') {
+				if (nameNsEl(node) === W_) {
 					return 'skip';
 				}
 			}
@@ -96,7 +95,7 @@ export class TextToken extends XmlElement {
 			}
 		});
 
-		if (where.tagName !== 'mi:se') {
+		if (nameNsEl(where) !== SE) {
 			let se = where.ownerDocument.createElement('mi:se');
 			insertAfter(se, where);
 		}
@@ -105,7 +104,7 @@ export class TextToken extends XmlElement {
 	nextAmbigWord() {
 		let toret = null;
 		traverseDocumentOrder(this.element, node => {
-			if (isElement(node)) {
+			if (isElement(node) && nameNsEl(node) === W_) {
 				let token = new TextToken(node);
 				if (token.isAmbig()) {
 					toret = token;

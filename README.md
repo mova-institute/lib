@@ -2,7 +2,6 @@
 #TODO
 - endiannes
 - switch to async
-- remove .js from bin files (globs support in jsconfig.json needed)
 - streamytize dict json
 - WCHAR_RE to unicode
 - do type annotate return values?
@@ -12,11 +11,10 @@
 - read on nodejs-browser compartiple code writing
 - xml traversing to generators
 - foreign words
-- remove num
+- namespaces
 
 - скорочення
 - <supplied>
-- <g/> glue-tag, space around tokens logic
 
 
 
