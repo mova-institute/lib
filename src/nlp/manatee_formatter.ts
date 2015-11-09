@@ -7,7 +7,6 @@ const AMBIG_SEP = ';';
 const ELEMS_TO_REPUSH = new Set([nameNs(NS.tei, 'p'), nameNs(NS.tei, 's')]);
 
 export class ManateeFormatter extends Transform {
-	private insideAmbig = false;
 	private curTags: Array<string> = [];
 	private curLemmata: Array<string> = [];
 	private curMorpheme: string;
@@ -24,18 +23,10 @@ export class ManateeFormatter extends Transform {
 			if (ELEMS_TO_REPUSH.has(event.el)) {
 				this.pushln(tagStr(true, event.prefix, event.elem, event.attr));
 			}
-			else if (event.el === W_) {
-				this.insideAmbig = true;
-			}
 			else if (event.el === W) {
-				if (this.insideAmbig) {
-					this.curMorpheme = event.text;
-					this.curTags.push(event.attr['ana']);
-					this.curLemmata.push(event.attr['lemma']);
-				}
-				else {
-					this.pushln(event.text, event.attr['ana'], event.attr['lemma']);
-				}
+				this.curMorpheme = event.text;
+				this.curTags.push(event.attr['ana']);
+				this.curLemmata.push(event.attr['lemma']);
 			}
 			else if (event.el === PC) {
 				this.pushln(event.text, 'PUN');
@@ -57,7 +48,6 @@ export class ManateeFormatter extends Transform {
 				this.pushln(tagStr(false, event.prefix, event.elem));
 			}
 			else if (event.el === W_) {
-				this.insideAmbig = false;
 				this.pushln(this.curMorpheme, this.curTags.join(AMBIG_SEP), this.curLemmata.join(AMBIG_SEP));
 				this.curTags = [];
 				this.curLemmata = [];

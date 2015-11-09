@@ -9,7 +9,6 @@ export class SentenceStartInjector extends Transform {
 	private static objectEnd = new SaxEventObject('end', SS);
 	
 	private openSentenceOnNextWord = false;
-	private insideAmbig = false;
 
 	constructor() {
 		super({
@@ -26,22 +25,13 @@ export class SentenceStartInjector extends Transform {
 			else if (el === S || el === SS) {
 				this.openSentenceOnNextWord = false;
 			}
-			else if (el === W && !this.insideAmbig && this.openSentenceOnNextWord) {
+			else if (el === W_ && this.openSentenceOnNextWord) {
 				this.pushSentenceStart();
-			}
-			else if (el === W_) {
-				this.insideAmbig = true;
-				if (this.openSentenceOnNextWord) {
-					this.pushSentenceStart();
-				}
 			}
 		}
 		else if (event.type === 'end') {
 			if (el === S) {
 				this.openSentenceOnNextWord = true;
-			}
-			else if (el === W_) {
-				this.insideAmbig = false;
 			}
 		}
 
