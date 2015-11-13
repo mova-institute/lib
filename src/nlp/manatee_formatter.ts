@@ -1,16 +1,17 @@
 import {NS, nameNs, tagStr, libxmlSaxAttrs} from '../xml/utils'
-import {W, W_, PC, S, SS, SE, G} from './common_elements'
+import {W, W_, PC, SS, SE, G, P, S, SP, TEI} from './common_elements'
 import {Transform} from 'stream'
 import {SaxEventObject} from '../xml/sax_event_object'
 
 const AMBIG_SEP = ';';
-const ELEMS_TO_REPUSH = new Set([nameNs(NS.tei, 'p'), nameNs(NS.tei, 's')]);
+const ELEMS_TO_REPUSH = new Set([P, S, SP]);
 
 export class ManateeFormatter extends Transform {
 	private curTags: Array<string> = [];
 	private curLemmata: Array<string> = [];
 	private curMorpheme: string;
-	
+	private curDisambIndex: number = null;
+
 	constructor() {
 		super({
 			objectMode: true
@@ -19,14 +20,23 @@ export class ManateeFormatter extends Transform {
 
 	_transform(event: SaxEventObject, encoding, callback) {
 		if (event.type === 'start') {
-			
-			if (ELEMS_TO_REPUSH.has(event.el)) {
+
+			if (event.el === TEI) {
+				this.pushln('<text>');
+			}
+			else if (ELEMS_TO_REPUSH.has(event.el)) {
 				this.pushln(tagStr(true, event.prefix, event.elem, event.attr));
 			}
+			else if (event.el === W_) {
+				let ana = event.attr['ana'];
+				this.curDisambIndex = ana ? parseInt(ana) : null;
+			}
 			else if (event.el === W) {
-				this.curMorpheme = event.text;
-				this.curTags.push(event.attr['ana']);
-				this.curLemmata.push(event.attr['lemma']);
+				if (this.curDisambIndex === null || !(this.curDisambIndex--)) {
+					this.curMorpheme = event.text;
+					this.curTags.push(event.attr.get('ana'));
+					this.curLemmata.push(event.attr.get('lemma'));
+				}
 			}
 			else if (event.el === PC) {
 				this.pushln(event.text, 'PUN');
@@ -41,10 +51,13 @@ export class ManateeFormatter extends Transform {
 				this.pushln('<g/>');
 			}
 		}
-		
+
 		else if (event.type === 'end') {
-			
-			if (ELEMS_TO_REPUSH.has(event.el)) {
+
+			if (event.el === TEI) {
+				this.pushln('</text>');
+			}
+			else if (ELEMS_TO_REPUSH.has(event.el)) {
 				this.pushln(tagStr(false, event.prefix, event.elem));
 			}
 			else if (event.el === W_) {
@@ -52,9 +65,8 @@ export class ManateeFormatter extends Transform {
 				this.curTags = [];
 				this.curLemmata = [];
 			}
-			
 		}
-		
+
 		callback();
 	}
 

@@ -30,11 +30,15 @@ export function nameNsEl(el: Element) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tagStr(open: boolean, prefix: string, elem: string, attrs?) {
+export function tagStr(open: boolean, prefix: string, elem: string, attrs = new Map()) {
   if (!open) {
     return `</${namePrefixed(prefix, elem)}>`;
   }
-  let toret = `<${namePrefixed(prefix, elem)}>`;
+  let toret = `<${namePrefixed(prefix, elem)}`;
+  for (var [key, value] of attrs.entries()) {
+    toret += ` ${key}="${value}"`;
+  }
+  toret += '>';
   
   return toret;
 }
@@ -43,7 +47,7 @@ export function tagStr(open: boolean, prefix: string, elem: string, attrs?) {
 export function libxmlSaxAttrs(attrs: [[string, string, string, string]]) {
   let toret = new Map();
   for (let [name,,,val] of attrs) {
-    toret[name] = val;
+    toret.set(name, val);
   }
   
   return toret;
@@ -102,7 +106,7 @@ export function isRoot(el: Node): boolean {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function lang(node: Node): string {
+/*export function lang(node: Node): string {
   if (node.nodeType !== node.ELEMENT_NODE) {
     return lang(node.parentElement);
   }
@@ -118,7 +122,7 @@ export function lang(node: Node): string {
   }
 
   return el.getAttributeNS(NS.xml, 'lang');
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////
 export function lang2(node: Node): string {
@@ -155,6 +159,10 @@ export function isText(node: Node) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function insertBefore(toInsert: Node, beforeThis: Node) {
+  if (!toInsert || !beforeThis) {
+    console.log('toInsert', toInsert)
+    console.log('beforeThis', beforeThis)
+  }
   beforeThis.parentNode.insertBefore(toInsert, beforeThis);
 }
 

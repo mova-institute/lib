@@ -4,7 +4,7 @@ let gulp = require('gulp');
 //let gutil = require('gulp-util');
 let ts = require('gulp-typescript');
 let sourcemaps = require('gulp-sourcemaps');
-let traceur = require('gulp-traceur');
+//let traceur = require('gulp-traceur');
 let babel = require('gulp-babel');
 let dirname = require('path').dirname;
 

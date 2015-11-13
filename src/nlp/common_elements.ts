@@ -11,3 +11,5 @@ export const G = nameNs(NS.mi, 'g');
 export const P = nameNs(NS.tei, 'p');
 export const L = nameNs(NS.tei, 'l');
 export const LG = nameNs(NS.tei, 'lg');
+export const SP = nameNs(NS.tei, 'sp');
+export const TEI = nameNs(NS.tei, 'tei');

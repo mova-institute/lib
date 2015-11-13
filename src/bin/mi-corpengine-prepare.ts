@@ -28,7 +28,8 @@ let manateeFormatter = new ManateeFormatter();
 				.pipe(new SentenceStartInjector())
 				.pipe(new ManateeFormatter())
 				//.pipe(new SaxEventSerializer())
-				.pipe(process.stdout);
+				//.pipe(process.stdout);
+				.pipe(output);
 		}
 	}
 })();

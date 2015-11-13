@@ -5,7 +5,7 @@ import {traverseDepth, traverseDocumentOrder, NS, isElement, nameNsEl, remove, i
 
 export class TextToken extends XmlElement {
 
-	constructor(element: HTMLElement, public hasSpaceBefore = true) {
+	constructor(public element: HTMLElement, public hasSpaceBefore = true) {
 		super(element);
 	}	// todo getter?
 	
@@ -29,11 +29,6 @@ export class TextToken extends XmlElement {
 		return this.element.textContent;
 	}
 
-	ana() {
-		return this.element.getAttribute('ana')
-			|| this.element.children[0].getAttribute('ana');
-	}
-
 	isWord() {
 		return nameNsEl(this.element) === W_;
 	}
@@ -43,18 +38,28 @@ export class TextToken extends XmlElement {
 	}
 
 	isUntagged() {
-		return this.ana() === 'X';
+		return this.morphTag() === 'X';
+	}
+	
+	disambIndex() {
+		let ana = this.element.getAttribute('ana');
+		return (ana === null) ? null : parseInt(ana);
 	}
 
 	morphTag() {
-		let disambIndex = parseInt(this.element.getAttribute('ana'));
-
-		return this.element.children[disambIndex].getAttribute('ana');
+		if (this.element.children.length === 1) {
+			return this.element.firstElementChild.getAttribute('ana')
+		}
+		
+		let ana = this.element.getAttribute('ana');
+		if (ana !== null) {
+			return this.element.children[parseInt(ana)].getAttribute('ana');
+		}
 	}
 
 	morphTags() {
 		let toret = [];
-		for (let i = 0; i < this.element.children.length; ++i) {
+		for (let i = 0; i < this.element.childElementCount; ++i) {
 			toret.push({
 				ana: this.element.children[i].getAttribute('ana'),
 				lemma: this.element.children[i].getAttribute('lemma')
