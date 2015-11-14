@@ -25,17 +25,17 @@ export class ManateeFormatter extends Transform {
 				this.pushln('<text>');
 			}
 			else if (ELEMS_TO_REPUSH.has(event.el)) {
-				this.pushln(tagStr(true, event.prefix, event.elem, event.attr));
+				this.pushln(tagStr(true, event.prefix, event.elem, event.attrs()));
 			}
 			else if (event.el === W_) {
-				let ana = event.attr['ana'];
+				let ana = event.attrs().get('ana');
 				this.curDisambIndex = ana ? parseInt(ana) : null;
 			}
 			else if (event.el === W) {
 				if (this.curDisambIndex === null || !(this.curDisambIndex--)) {
 					this.curMorpheme = event.text;
-					this.curTags.push(event.attr.get('ana'));
-					this.curLemmata.push(event.attr.get('lemma'));
+					this.curTags.push(event.attrs().get('ana'));
+					this.curLemmata.push(event.attrs().get('lemma'));
 				}
 			}
 			else if (event.el === PC) {

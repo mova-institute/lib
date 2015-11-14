@@ -1,4 +1,5 @@
 import {Transform} from 'stream'
+import {SaxEventObject} from './sax_event_object'
 
 
 export class SaxEventSerializer extends Transform {
@@ -9,8 +10,8 @@ export class SaxEventSerializer extends Transform {
 		});
 	}
 	
-	_transform(chunk, encoding, callback) {
-		this.push(chunk.toString() + '\n');
+	_transform(event: SaxEventObject, encoding, callback) {
+		this.push(event.serialize());
 		callback();
 	}
 }

@@ -34,3 +34,7 @@ brew install git node
 
 git config --global core.quotepath false
 git config --global core.precomposeunicode true
+
+npm install -g gulp tsd
+tsd install
+gulp build

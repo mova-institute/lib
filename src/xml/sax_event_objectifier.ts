@@ -1,5 +1,5 @@
 import {SaxEventObject} from './sax_event_object'
-import {nameNs, libxmlSaxAttrs} from '../xml/utils'
+import {nameNs} from '../xml/utils'
 import {Transform} from 'stream'
 import {SaxPushParserExt} from '../xml/sax_push_parser_ext'
 
@@ -27,7 +27,7 @@ export class SaxEventObjectifier extends Transform {
 				'start',
 				nameNs(uri, elem),
 				text,
-				libxmlSaxAttrs(attrs),
+				attrs,
 				prefix, elem, uri, ns));
 			
 		}).on('endElementNS', (elem, prefix, uri) => {

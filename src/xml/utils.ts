@@ -4,6 +4,16 @@ export const NS = {
   mi: 'https://mova.institute/ns/mi/1',
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function escape(val: string) {   // todo
+  return val.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function namePrefixed(prefix: string, name: string) {
   return prefix ? `${prefix}:${name}` : name;
@@ -44,7 +54,7 @@ export function tagStr(open: boolean, prefix: string, elem: string, attrs = new 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function libxmlSaxAttrs(attrs: [[string, string, string, string]]) {
+export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
   let toret = new Map();
   for (let [name,,,val] of attrs) {
     toret.set(name, val);
@@ -53,6 +63,15 @@ export function libxmlSaxAttrs(attrs: [[string, string, string, string]]) {
   return toret;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function traverseDepthEl(node: Node, onEnter: Function, onLeave?: Function) {
+  let onEnterFiltered = node => {
+    if (node.nodeType === node.ELEMENT_NODE) {
+      onEnter(node);
+    }
+  }
+  traverseDepth(node, onEnterFiltered, onLeave);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function traverseDepth(node: Node, onEnter: Function, onLeave?: Function) {
@@ -159,10 +178,6 @@ export function isText(node: Node) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function insertBefore(toInsert: Node, beforeThis: Node) {
-  if (!toInsert || !beforeThis) {
-    console.log('toInsert', toInsert)
-    console.log('beforeThis', beforeThis)
-  }
   beforeThis.parentNode.insertBefore(toInsert, beforeThis);
 }
 
