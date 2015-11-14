@@ -1,11 +1,11 @@
 import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
   remove, insertBefore, insertAfter} from '../xml/utils'
-import {W, W_, PC, SE} from './common_elements' 
+import {W, W_, PC, SE, P} from './common_elements' 
 import {r} from '../lang';
 import {Tagger} from '../tagger'
 
 
-export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя`;
+export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
 export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
 
 //export const NOSPACE_ABLE_ELEMS
@@ -21,10 +21,13 @@ const ELEMS_BREAKING_SENTENCE = new Set([
 const PUNC_REGS = [
   r`„`,
   r`“`,
+  r`”`,
   r`«`,
   r`»`,
   r`\(`,
   r`\)`,
+  r`\[`,
+  r`\]`,
   r`\.`,
   r`\.{4,}`,
   r`…`,
@@ -49,8 +52,11 @@ let PUNC_SPACING = {
   '—': [true, true],  // m-dash
   '(': [true, false],
   ')': [false, true],
+  '[': [true, false],
+  ']': [false, true],
   '„': [true, false],
-  '“': [false, false],    // what about eng?
+  '“': [true, false],    // what about ukr/eng?
+  '”': [false, true],
   '«': [true, false],
   '»': [false, true],
   '!': [false, true],
@@ -89,6 +95,10 @@ export function haveSpaceBetween(tagA: string, textA: string,
 
   if (tagB === PC) {
     return spaceB;
+  }
+  
+  if (tagB === P) {
+    return false;
   }
 
   if (tagA === SE) {
@@ -151,11 +161,7 @@ export function tokenizeTeiDom(root: Node, tagger: Tagger) {
 ////////////////////////////////////////////////////////////////////////////////
 export function nodeFromToken(token: string, document: Document) {
   let toret;
-  /*if (/^\d+$/.test(token)) {
-    toret = document.createElement('num');
-    toret.textContent = token;
-  }
-  else*/ if (ANY_PUNC_OR_DASH_RE.test(token)) {
+  if (ANY_PUNC_OR_DASH_RE.test(token)) {
     toret = document.createElement('pc');
     toret.textContent = token;
   }
@@ -164,8 +170,10 @@ export function nodeFromToken(token: string, document: Document) {
     toret.textContent = token;
   }
   else {
-    console.error(`DIE, "${token}"`);
-    throw 'kuku' + token.length;
+    console.error(`Unknown token: "${token}"`); // todo
+    toret = document.createElement('w');
+    toret.textContent = token;
+    //throw 'kuku' + token.length;
   }
   
   return toret;

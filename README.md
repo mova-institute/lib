@@ -12,6 +12,7 @@
 - xml traversing to generators
 - foreign words
 - namespaces
+- uglify es6
 
 - скорочення
 - <supplied>
