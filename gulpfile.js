@@ -47,7 +47,9 @@ gulp.task('typescript', [], () => {
 });
 
 
-gulp.task('develop', ['typescript'], () => {
+gulp.task('build', ['typescript']);
+
+gulp.task('develop', ['build'], () => {
 	gulp.watch(['src/**/*.ts', tsProjectFile], ['typescript']);
 });
 
