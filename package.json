@@ -2,8 +2,12 @@
   "name": "mi-lib",
   "version": "0.0.1",
   "private": true,
-  "description": "mova.institute libs",
+  "preferGlobal": true,
+  "description": "mova.institute libs and cli utils",
   "main": "index.js",
+  "bin": {
+    "mi-tokenize-autotag": "bin/mi-tokenize-autotag"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,9 +15,6 @@
     "type": "git",
     "url": "git+https://bitbucket.org/mova-institute/mi-lib.git"
   },
-  "keywords": [
-    "mova"
-  ],
   "author": "mova.institute",
   "license": "UNLICENSED",
   "homepage": "https://bitbucket.org/mova-institute/mi-lib#readme",
