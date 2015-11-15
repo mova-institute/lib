@@ -31,13 +31,14 @@ let server = createServer(options, (req, res) => {
 	res.setHeader("Content-Type", 'application/xml; charset=UTF-8');
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.writeHead(200);
-	let counter = 0;
+	let counter = -1;
 	createReadStream('../data/' + query.file, { encoding: 'utf8' })
 		.pipe(new SaxEventObjectifier())
 		.pipe(new SaxEventStacker())
 		.pipe(new SaxStreamSlicer(e => {
 			if (e.el === W_) {
-				return counter++ > query.begin && counter < query.end;
+				++counter;
+				return counter >= query.begin && counter <= query.end;
 			}
 		}))
 		.pipe(new SaxEventSerializer())

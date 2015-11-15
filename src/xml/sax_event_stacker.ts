@@ -18,8 +18,7 @@ export class SaxEventStacker extends Transform {
 			this.push(this.stack);
 		}
 		else if (event.type === 'end') {
-			this.stack.pop();
-			this.stack.push(event);
+			this.stack[this.stack.length - 1] = event;
 			this.push(this.stack);
 			this.stack.pop();
 		}

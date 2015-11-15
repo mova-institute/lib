@@ -19,7 +19,7 @@ export class SaxEventObjectifier extends Transform {
 		this.parser.push(chunk);
 		callback();
 	}
-	
+
 	private initParser() {
 		this.parser.on('startElementNSExt', (elem, attrs, prefix, uri, ns, text) => {
 			

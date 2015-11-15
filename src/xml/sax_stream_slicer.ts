@@ -17,8 +17,8 @@ export class SaxStreamSlicer extends Transform {
 		let el = event.el;
 		if (event.type === 'start') {
 			if (this.state === State.PRISINE && this.predicate(event) === true) {
-				this.openParents(eventStack);
 				this.state = State.STARTED;
+				this.openParents(eventStack);
 			}
 			else if (this.state === State.STARTED) {
 				if (this.predicate(event) === false) {
