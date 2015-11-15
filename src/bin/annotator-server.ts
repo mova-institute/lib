@@ -5,15 +5,22 @@ import {SaxEventSerializer} from '../xml/sax_event_serializer'
 
 import {W_} from '../nlp/common_elements'
 
-import {createServer} from 'http'
+import {createServer} from 'https'
+//import {createServer as createServerHttps} from 'https'
 import {parse} from 'querystring'
 import {Readable, Writable} from 'stream'
-import {createReadStream} from 'fs'
+import {readFileSync, createReadStream} from 'fs'
 
 
-let docs = new Map<string, HTMLElement>();
 
-let server = createServer((req, res) => {
+let options = {
+  key: readFileSync('/etc/ssl/private/mova.institute.key'),
+  cert: readFileSync('/etc/ssl/certs/mova.institute.crt'),
+	ca: readFileSync('/etc/ssl/certs/sub.class1.server.ca.pem')
+};
+
+
+let server = createServer(options, (req, res) => {
 	if (req.url.startsWith('/favi')) {
 		return;
 	}
@@ -21,7 +28,7 @@ let server = createServer((req, res) => {
 	let query = parse(req.url.substr(2));
 	query.begin = Number.parseInt(query.begin) || 0;
 	query.end = Number.parseInt(query.end) || 0;
-	res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.writeHead(200);
 	let counter = 0;
 	createReadStream('../data/' + query.file, { encoding: 'utf8' })
