@@ -4,7 +4,6 @@
   "private": true,
   "preferGlobal": true,
   "description": "mova.institute libs and cli utils",
-  "main": "index.js",
   "bin": {
     "mi-tokenize-autotag": "bin/mi-tokenize-autotag"
   },
@@ -41,6 +40,7 @@
     "libxmljs": "^0.15.0",
     "minimist": "^1.2.0",
     "pretty-data2": "^0.40.1",
+    "regenerator": "^0.8.42",
     "xmldom": "^0.1.19"
   }
 }
