@@ -39,9 +39,9 @@ function serve(req, res) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.writeHead(200);
 	let counter = -1;
-	let str = readFileSync('../data/' + query.file, 'utf8');
-	let stream = new SaxEventObjectifier(true);
-	stream.pipe(new SaxEventStacker())
+	createReadStream('../data/' + query.file, 'utf8')
+		.pipe(new SaxEventObjectifier())
+		.pipe(new SaxEventStacker())
 		.pipe(new SaxStreamSlicer(e => {
 			if (e.el === W_) {
 				++counter;
@@ -50,5 +50,4 @@ function serve(req, res) {
 		}))
 		.pipe(new SaxEventSerializer())
 		.pipe(res);
-	stream.write(str);
 }
