@@ -5,7 +5,9 @@
   "preferGlobal": true,
   "description": "mova.institute libs and cli utils",
   "bin": {
-    "mi-tokenize-autotag": "bin/mi-tokenize-autotag"
+    "mi-tokenize-autotag": "bin/mi-tokenize-autotag",
+    "mi-corpengine-prepare": "bin/mi-corpengine-prepare",
+    "mi-enumerate-words": "bin/mi-enumerate-words"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,15 +29,17 @@
     "babel-plugin-transform-runtime": "^6.1.2",
     "babel-plugin-transform-strict-mode": "^6.1.2",
     "babel-preset-es2015": "^6.1.2",
+    "del": "^2.1.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.0",
     "gulp-traceur": "^0.17.1",
     "gulp-typescript": "^2.9.2",
-    "typescript": "^1.8.0-dev.20151105"
+    "gulp-uglify": "^1.5.1",
+    "typescript": "^1.8.0-dev.20151116"
   },
   "dependencies": {
     "commander": "^2.9.0",
-    "glob": "^5.0.15",
+    "glob": "^6.0.1",
     "jsdom": "^7.0.2",
     "libxmljs": "^0.15.0",
     "minimist": "^1.2.0",

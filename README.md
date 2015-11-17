@@ -29,12 +29,29 @@ Their motives <emph rend="italics">might</emph> be pure
 <div xml:base="http://www.example.org/somewhere.xml">
 
 
-**INSTALLATION**
+#INSTALLATION
+##Windows
+
+node
+python 2.7
+git - chose both
+vs wdexpfull
+
+git config --global credential.helper wincred
+git ls-remote https://bitbucket.org/mova-institute/mi-lib-dist.git
+npm i -g npm
+
+
+##OS X
 brew install git node
 
 git config --global core.quotepath false
 git config --global core.precomposeunicode true
 
+npm install -g npm
 npm install -g gulp tsd
 tsd install
 gulp build
+
+
+sudo npm i -g git+https://bitbucket.org/mova-institute/mi-lib-dist.git

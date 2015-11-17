@@ -1,11 +1,11 @@
 'use strict';
 
 let gulp = require('gulp');
-//let gutil = require('gulp-util');
 let ts = require('gulp-typescript');
 let sourcemaps = require('gulp-sourcemaps');
-//let traceur = require('gulp-traceur');
 let babel = require('gulp-babel');
+let uglify = require('gulp-uglify');
+let del = require('del');
 let dirname = require('path').dirname;
 
 const PROJECR_ROOT = process.cwd();
@@ -17,14 +17,11 @@ function swallowError (error) {
   this.emit('end');
 }
 
-function nop() {
-	
-}
+function nop() {}
 
-let traceurOptions = {
-	
-};
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 gulp.task('typescript', [], () => {
 	let tsProject = ts.createProject(tsProjectFile, {
 		typesctipt: require('typescript')
@@ -34,7 +31,7 @@ gulp.task('typescript', [], () => {
 		//.pipe(sourcemaps.init({ debug: true }))
 		.pipe(ts(tsProject));
 	
-	tsResult.dts.pipe(gulp.dest(dist));
+	tsResult.dts.pipe(gulp.dest('lib'));
 	
 	return tsResult.js
 		//.pipe(traceur(traceurOptions)/*.on('error', swallowError)*/)
@@ -43,10 +40,39 @@ gulp.task('typescript', [], () => {
 		// 	includeContent: false,
 		// 	sourceRoot: PROJECR_ROOT + '/src'
 		// }))
-		.pipe(gulp.dest(dist));
+		.pipe(gulp.dest('lib'));
 });
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+gulp.task('cleanup:dist', () => {
+	return del(['../mi-lib-dist/**/*'], { force: true });
+});
+////////////////////////////////////////////////////////////////////////////////
+gulp.task('typescript:dist', ['cleanup:dist'], () => {
+	let tsProject = ts.createProject(tsProjectFile, {
+		typesctipt: require('typescript')
+	});
+
+	return tsProject.src()
+		.pipe(ts(tsProject))
+		.js
+		.pipe(babel())
+		.pipe(uglify())
+		.pipe(gulp.dest('../mi-lib-dist/lib'));
+});
+
+gulp.task('copy:dist', ['cleanup:dist'], () => {
+	return gulp.src(['bin/**', 'data/**', 'package.json', '!data/**'/*sic, tmp*/], { base: '.' })
+		.pipe(gulp.dest('../mi-lib-dist/'));
+});
+
+
+
+
+gulp.task('build:dist', ['typescript:dist', 'copy:dist']);
 gulp.task('build', ['typescript']);
 
 gulp.task('develop', ['build'], () => {
