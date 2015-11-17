@@ -1,19 +1,13 @@
-import {SaxPushParser} from 'libxmljs'
+import {SaxParser, SaxPushParser} from 'libxmljs'
+import {EventEmitter} from 'events'
 
-export class SaxPushParserExt {
-	private parser = new SaxPushParser();
-	private listeners = new Array<Function>();
-	private textBuf = '';
-	private curElem = [];
 
-	constructor() {
-		this.initParser();
-	}
-
-	push(chunk: string) {
-		this.parser.push(chunk);
-	}
-
+export class SaxParserExtBase {
+	protected parser: EventEmitter;
+	protected listeners = new Array<Function>();
+	protected textBuf = '';
+	protected curElem = [];
+	
 	on(event: string, listener: Function) {
 		if (event === 'startElementNSExt') {
 			this.listeners.push(listener);
@@ -24,9 +18,11 @@ export class SaxPushParserExt {
 
 		return this;
 	}
-
-	private initParser() {
-		this.parser.on('startElementNS', (elem, attrs, prefix, uri, ns) => {
+	
+	push(chunk: string) {};
+	
+	protected initParser(parser: EventEmitter) {
+		parser.on('startElementNS', (elem, attrs, prefix, uri, ns) => {
 			this.emitStartIfBuffered();
 			this.curElem = [elem, attrs, prefix, uri, ns];
 
@@ -46,5 +42,31 @@ export class SaxPushParserExt {
 			///}
 		}
 		this.textBuf = '';
+	}
+}
+
+export class SaxPushParserExt extends SaxParserExtBase {
+	protected parser = new SaxPushParser();
+	
+	constructor() {
+		super();
+		this.initParser(this.parser);
+	}
+
+	push(chunk: string) {
+		this.parser.push(chunk);
+	}
+}
+
+export class SaxParserExt extends SaxParserExtBase {
+	protected parser = new SaxParser();
+	
+	constructor() {
+		super();
+		this.initParser(this.parser);
+	}
+
+	push(val: string) {
+		this.parser.parseString(val);
 	}
 }

@@ -5,22 +5,29 @@ import {SaxEventSerializer} from '../xml/sax_event_serializer'
 
 import {W_} from '../nlp/common_elements'
 
-import {createServer} from 'https'
-//import {createServer as createServerHttps} from 'https'
+import {createServer} from 'http'
+import {createServer as createServerHttps} from 'https'
 import {parse} from 'querystring'
 import {Readable, Writable} from 'stream'
 import {readFileSync, createReadStream} from 'fs'
 
+let argv = require('minimist')(process.argv.slice(2));
+
+if (argv.https) {
+	let options = {
+		key: readFileSync('../data/mova.institute.key'),
+		cert: readFileSync('/etc/ssl/certs/mova.institute.crt'),
+		ca: readFileSync('/etc/ssl/certs/sub.class1.server.ca.pem')
+	};
+	createServerHttps(options, serve).listen(8888);
+}
+else {
+	createServer(serve).listen(8888);
+}
 
 
-let options = {
-  key: readFileSync('../data/mova.institute.key'),
-  cert: readFileSync('/etc/ssl/certs/mova.institute.crt'),
-	ca: readFileSync('/etc/ssl/certs/sub.class1.server.ca.pem')
-};
 
-
-let server = createServer(options, (req, res) => {
+function serve(req, res) {
 	if (req.url.startsWith('/favi')) {
 		return;
 	}
@@ -32,9 +39,9 @@ let server = createServer(options, (req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.writeHead(200);
 	let counter = -1;
-	createReadStream('../data/' + query.file, { encoding: 'utf8' })
-		.pipe(new SaxEventObjectifier())
-		.pipe(new SaxEventStacker())
+	let str = readFileSync('../data/' + query.file, 'utf8');
+	let stream = new SaxEventObjectifier(true);
+	stream.pipe(new SaxEventStacker())
 		.pipe(new SaxStreamSlicer(e => {
 			if (e.el === W_) {
 				++counter;
@@ -43,5 +50,5 @@ let server = createServer(options, (req, res) => {
 		}))
 		.pipe(new SaxEventSerializer())
 		.pipe(res);
-	
-}).listen(8888);
+	stream.write(str);
+}

@@ -6,19 +6,19 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "35989a3ab4834b8e8b2b56788f1d4fc46a25dc8d"
+      "commit": "d401629469aceb5b2a23857aa448713f9771bd91"
     },
     "jsdom/jsdom.d.ts": {
-      "commit": "eb59a40d3c2f3257e34ec2ede181046230814a41"
+      "commit": "d401629469aceb5b2a23857aa448713f9771bd91"
     },
     "commander/commander.d.ts": {
-      "commit": "eb59a40d3c2f3257e34ec2ede181046230814a41"
+      "commit": "d401629469aceb5b2a23857aa448713f9771bd91"
     },
     "glob/glob.d.ts": {
-      "commit": "35989a3ab4834b8e8b2b56788f1d4fc46a25dc8d"
+      "commit": "d401629469aceb5b2a23857aa448713f9771bd91"
     },
     "libxmljs/libxmljs.d.ts": {
-      "commit": "35989a3ab4834b8e8b2b56788f1d4fc46a25dc8d"
+      "commit": "d401629469aceb5b2a23857aa448713f9771bd91"
     }
   }
 }

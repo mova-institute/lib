@@ -1,17 +1,18 @@
 import {SaxEventObject} from './sax_event_object'
 import {nameNs} from '../xml/utils'
 import {Transform} from 'stream'
-import {SaxPushParserExt} from '../xml/sax_push_parser_ext'
+import {SaxParserExtBase, SaxParserExt, SaxPushParserExt} from '../xml/sax_push_parser_ext'
 
 
 
 export class SaxEventObjectifier extends Transform {
-	private parser = new SaxPushParserExt();
+	private parser: SaxParserExtBase;
 
-	constructor() {
+	constructor(sync = false) {
 		super({
 			objectMode: true
 		});
+		this.parser = sync ? new SaxParserExt() : new SaxPushParserExt();
 		this.initParser();
 	}
 	
