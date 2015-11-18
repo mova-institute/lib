@@ -11,8 +11,7 @@
     "mi-update-dicts": "bin/mi-update-dicts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "lib/bin/mi-update-dicts.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -45,6 +44,7 @@
     "jsdom": "^7.0.2",
     "libxmljs": "^0.15.0",
     "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "pretty-data2": "^0.40.1",
     "regenerator": "^0.8.42",
     "xmldom": "^0.1.19"

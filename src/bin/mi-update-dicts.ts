@@ -4,17 +4,27 @@ import {createWriteStream} from 'fs'
 import {join} from 'path'
 import {parse} from 'url'
 
+let mkdirpSync = require('mkdirp').sync;
+let argv = require('minimist')(process.argv.slice(2));
+
+
 
 let reqOptions = <any>parse('https://mova:real-corpus-in-2016!@experimental.mova.institute/files/sheva-dict.dawg');
 
-let dictPath = join(__dirname, '..', '..', 'data', 'sheva-dict.dawg');
-let stats = tryStatSync(dictPath);
-if (stats) {
-	reqOptions.headers = { 'If-Modified-Since': stats.mtime.toUTCString() };
+let dataDir = join(__dirname, '..', '..', 'data');
+let dictPath = join(dataDir, 'sheva-dict.dawg');
+
+if (!argv.force) {
+	let stats = tryStatSync(dictPath);
+	if (stats) {
+		reqOptions.headers = { 'If-Modified-Since': stats.mtime.toUTCString() };
+	}
 }
+
 
 get(reqOptions, res => {
 	if (res.statusCode === 200) {
+		mkdirpSync(dataDir);
 		res.pipe(createWriteStream(dictPath));
 		console.log('Завантажую словники…');
 	}
