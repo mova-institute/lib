@@ -18,7 +18,7 @@ if (!commander.input || !commander.output) {
 	console.log(commander.help());
 }
 
-let tagger = createTaggerSync('../data/rysin-dict.dawg');
+let tagger = createTaggerSync();
 
 let tokenizedDom = tokenizeTeiDom(filename2jsdomRootSync(commander.input), tagger);
 let taggedDom = tagTokenizedDom(tokenizedDom, tagger);

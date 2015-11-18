@@ -15,11 +15,11 @@ export class SaxEventStacker extends Transform {
 	_transform(event: SaxEventObject, encoding, callback) {
 		if (event.type === 'start') {
 			this.stack.push(event);
-			this.push(this.stack);
+			this.push(this.stack.slice(0));
 		}
 		else if (event.type === 'end') {
 			this.stack[this.stack.length - 1] = event;
-			this.push(this.stack);
+			this.push(this.stack.slice(0));
 			this.stack.pop();
 		}
 		callback();

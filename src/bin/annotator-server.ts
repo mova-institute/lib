@@ -15,7 +15,7 @@ let argv = require('minimist')(process.argv.slice(2));
 
 if (argv.https) {
 	let options = {
-		key: readFileSync('../data/mova.institute.key'),
+		key: readFileSync('../../mova.institute.key'),
 		cert: readFileSync('/etc/ssl/certs/mova.institute.crt'),
 		ca: readFileSync('/etc/ssl/certs/sub.class1.server.ca.pem')
 	};
@@ -35,8 +35,10 @@ function serve(req, res) {
 	let query = parse(req.url.substr(2));
 	query.begin = Number.parseInt(query.begin) || 0;
 	query.end = Number.parseInt(query.end) || 0;
-	res.setHeader("Content-Type", 'application/xml; charset=UTF-8');
-	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Content-Type', 'application/xml; charset=UTF-8');
+	res.setHeader('Access-Control-Allow-Origin', 'https://experimental.mova.institute');
+	//res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.setHeader('Access-Control-Allow-Credentials', 'true');
 	res.writeHead(200);
 	let counter = -1;
 	createReadStream('../data/' + query.file, 'utf8')

@@ -13,6 +13,12 @@
 - foreign words
 - namespaces
 - uglify es6
+- how did dawg.has work with rysin's dic at all????
+- short circuit stream slicer
+- traverseDocumentOrder onleave
+- kill -i -o cmd args
+- pass dict as arg
+- pack dict in 5mb
 
 - скорочення
 - <supplied>

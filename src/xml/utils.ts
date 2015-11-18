@@ -8,10 +8,10 @@ export const NS = {
 ////////////////////////////////////////////////////////////////////////////////
 export function escape(val: string) {   // todo
   return val.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&apos;');
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,35 +31,35 @@ export function nameNsEl(el: Element) {
   }
   let [prefix, localName] = el.tagName.split(':');
   let ns = el.ownerDocument.documentElement.getAttribute(`xmlns:${prefix}`);
-  
+
   if (!localName || !ns) {
     throw 'Not implemented';
   }
-  
+
   return nameNs(ns, localName);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tagStr(open: boolean, prefix: string, elem: string, attrs = new Map()) {
   if (!open) {
-    return `</${namePrefixed(prefix, elem)}>`;
+    return `</${namePrefixed(prefix, elem) }>`;
   }
-  let toret = `<${namePrefixed(prefix, elem)}`;
+  let toret = `<${namePrefixed(prefix, elem) }`;
   for (var [key, value] of attrs.entries()) {
     toret += ` ${key}="${value}"`;
   }
   toret += '>';
-  
+
   return toret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
   let toret = new Map();
-  for (let [name,,,val] of attrs) {
+  for (let [name, , , val] of attrs) {
     toret.set(name, val);
   }
-  
+
   return toret;
 }
 
@@ -81,7 +81,7 @@ export function traverseDepth(node: Node, onEnter: Function, onLeave?: Function)
   }
   if (directive !== 'skip') {
     for (let cur = node.firstChild, next = cur && cur.nextSibling; cur;
-         cur = next, next = next && next.nextSibling) {
+      cur = next, next = next && next.nextSibling) {
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
       }
@@ -98,12 +98,12 @@ export function traverseDocumentOrder(node: Node, onEnter: Function, onLeave?: F
       return false;
     }
   }
-  if (node && node.parentNode) {
-    if (onLeave && !onLeave(node.parentNode)) {
-      return false;
-    }
-    if (traverseDocumentOrder(node.parentNode.nextSibling, onEnter, onLeave) === false) {
-      return false;
+  for (curNode = node && node.parentNode; curNode; curNode = curNode.parentNode) {
+    if (curNode.nextSibling) {
+      if (traverseDocumentOrder(curNode.nextSibling, onEnter, onLeave) === false) {
+        return false;
+      }
+      break;
     }
   }
 }
@@ -115,7 +115,7 @@ export function nextEl(base: Element, predicate: Function) {
       break;
     }
   }
-  
+
   return toret;
 }
 

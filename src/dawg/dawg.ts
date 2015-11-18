@@ -45,7 +45,7 @@ function *completer(dic: Dictionary, guide: Guide, index: number) {
 				if (!indexStack.length) {
 					return;
 				}
-				completion.pop();			
+				completion.pop();		
 
 				let siblingLabel = guide.sibling(index);
 				index = indexStack[indexStack.length - 1];
@@ -82,6 +82,10 @@ export class CompletionDawg extends Dawg {
 		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
 			yield decodeUtf8(completionBytes);
 		}
+	}
+	
+	hasKeyWithPrefix(key: string) {
+		return this.completionStrings(key).next().value !== null;
 	}
 }
 

@@ -7,6 +7,8 @@ export interface Tag {
 	tags: string;
 }
 
+const SEP = ',';
+
 export class Tagger {
 
 	constructor(private dawg: CompletionDawg) {}
@@ -17,20 +19,28 @@ export class Tagger {
 			return [[token, 'NUM']];
 		}
 		
-		for (let completion of this.dawg.completionStrings(token + ' ')) {
+		for (let completion of this.dawg.completionStrings(token + SEP)) {
 			toret.add(completion);
 		}
 		let lowercase = token.toLowerCase();
 		if (lowercase !== token) {
-			for (let completion of this.dawg.completionStrings(lowercase + ' ')) {
+			for (let completion of this.dawg.completionStrings(lowercase + SEP)) {
 				toret.add(completion);
 			}
 		}
 		
-		return Array.from(toret, x => x.split(' '));
+		return Array.from(toret, x => x.split(SEP));
 	}
 	
 	knows(token: string) {
-		return this.dawg.has(token + ' ');
+		if (this.dawg.hasKeyWithPrefix(token + SEP)) {
+			return true;
+		}
+		let lowercase = token.toLowerCase();
+		if (lowercase !== token) {
+			return this.dawg.hasKeyWithPrefix(lowercase + SEP);
+		}
+		
+		return false;
 	}
 }
