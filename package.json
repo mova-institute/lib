@@ -39,7 +39,6 @@
     "typescript": "^1.8.0-dev.20151116"
   },
   "dependencies": {
-    "commander": "^2.9.0",
     "glob": "^6.0.1",
     "jsdom": "^7.0.2",
     "libxmljs": "^0.15.0",

@@ -8,6 +8,11 @@ let pd = require('pretty-data2').pd
 
 
 ////////////////////////////////////////////////////////////////////////////////
+export function str2jsdomRoot(str: string) {
+	return jsdom(str, { parsingMode: 'xml' }).documentElement;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function filename2jsdomRootSync(filename: string) {
 	var xmlstr = readFileSync(filename, 'utf-8');
 	let doc = jsdom(xmlstr, {

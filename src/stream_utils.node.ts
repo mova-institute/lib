@@ -16,3 +16,14 @@ export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
 		waitUntilNBytes();
 	});
 }
+
+export function readTillEnd(istream: Readable): Promise<string> {
+	let toret = '';
+	
+	return new Promise((resolve, reject) => {
+		
+		istream.on('data', chunk => toret += chunk)
+			.on('end', () => resolve(toret));
+		
+	});
+}

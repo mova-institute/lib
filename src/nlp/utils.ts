@@ -147,11 +147,14 @@ export function tokenizeTeiDom(root: Node, tagger: Tagger) {
     if (isElement(node) && TOSKIP.has((<Element>node).tagName)) {
       return 'skip';
     }
-    if (isText(node) && lang2(node) === 'uk') {
-      for (let tok of tokenizeUk(node.nodeValue, tagger)) {
-        insertBefore(nodeFromToken(tok, root.ownerDocument), node);
+    if (isText(node)) {
+      let lang = lang2(node);
+      if (lang === 'uk' || lang === '') { // consider 'uk' as default
+        for (let tok of tokenizeUk(node.nodeValue, tagger)) {
+          insertBefore(nodeFromToken(tok, root.ownerDocument), node);
+        }
+        remove(node);
       }
-      remove(node);
     }
   });
   

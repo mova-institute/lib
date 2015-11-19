@@ -4,7 +4,7 @@ import {encodeUtf8, decodeUtf8, b64decodeFromArray} from '../codec';
 import {Readable} from 'stream';
 
 export class Dawg {
-	constructor(protected dic: Dictionary) {}
+	constructor(protected dic: Dictionary) { }
 
 	has(key: string): boolean {
 		return this.dic.has(encodeUtf8(key));
@@ -12,7 +12,7 @@ export class Dawg {
 }
 
 
-function *completer(dic: Dictionary, guide: Guide, index: number) {
+function* completer(dic: Dictionary, guide: Guide, index: number) {
 	let completion: Array<number> = [];
 	let indexStack = [index];
 	while (indexStack.length) {
@@ -45,7 +45,7 @@ function *completer(dic: Dictionary, guide: Guide, index: number) {
 				if (!indexStack.length) {
 					return;
 				}
-				completion.pop();		
+				completion.pop();
 
 				let siblingLabel = guide.sibling(index);
 				index = indexStack[indexStack.length - 1];
@@ -77,15 +77,15 @@ export class CompletionDawg extends Dawg {
 			yield completion;
 		}
 	}
-	
+
 	*completionStrings(key: string) {
 		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
 			yield decodeUtf8(completionBytes);
 		}
 	}
-	
+
 	hasKeyWithPrefix(key: string) {
-		return this.completionStrings(key).next().value !== null;
+		return !this.completionStrings(key).next().done;
 	}
 }
 
