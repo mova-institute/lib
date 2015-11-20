@@ -1,26 +1,29 @@
 import {ioArgs} from '../cli_utils'
 import {createTaggerSync} from '../factories.node'
 import {readTillEnd} from '../stream_utils.node'
-import {str2jsdomRoot} from '../utils.node'
 import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'
-let pd = require('pretty-data2').pd;
-let xmldom = require('xmldom');
-
+import {str2lxmlRoot} from '../utils.node'
+import {cantBeXml} from '../xml/utils'
 
 
 let [input, output] = ioArgs();
 let tagger = createTaggerSync();
 
+
+
 (async () => {
-	let inputStr = await readTillEnd(input);
-	let dom = str2jsdomRoot(inputStr);
-	if (!dom) {  // plain text
-		inputStr = '<text>' + inputStr + '</text>';
-		dom = str2jsdomRoot(inputStr);
+	try {
+		let inputStr = await readTillEnd(input);
+		if (cantBeXml(inputStr)) {
+			inputStr = '<text>' + inputStr + '</text>';
+		}
+		let root = str2lxmlRoot(inputStr);
+		tokenizeTeiDom(root, tagger);
+		tagTokenizedDom(root, tagger);
+		output.write(root.ownerDocument.toString());
+		output.write('\n');
 	}
-	let tokenizedDom = tokenizeTeiDom(dom, tagger);
-	let taggedDom = tagTokenizedDom(tokenizedDom, tagger);
-	let stringi = new xmldom.XMLSerializer().serializeToString(tokenizedDom.ownerDocument);
-	output.write(pd.xml(stringi));
-	output.write('\n');
+	catch(e) {
+		console.log(e);
+	}
 })();

@@ -1,8 +1,9 @@
-import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder, lang2, replace, isElement, isRoot, isText,
+import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder, replace, isElement, isText,
   remove, insertBefore, insertAfter} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements' 
 import {r} from '../lang';
 import {Tagger} from '../tagger'
+import {INode, IElement, IDocument} from '../xml/interfaces'
 
 
 export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
@@ -142,18 +143,18 @@ export function tokenizeUk(val: string, tagger: Tagger) {
 ////////////////////////////////////////////////////////////////////////////////
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenizeTeiDom(root: Node, tagger: Tagger) {
-  traverseDepth(root, (node: Node) => {
-    if (isElement(node) && TOSKIP.has((<Element>node).tagName)) {
+export function tokenizeTeiDom(root: IElement, tagger: Tagger) {
+  traverseDepth(root, (node: INode) => {
+    if (TOSKIP.has(node.nodeName)) {
       return 'skip';
     }
-    if (isText(node)) {
-      let lang = lang2(node);
-      if (lang === 'uk' || lang === '') { // consider 'uk' as default
-        for (let tok of tokenizeUk(node.nodeValue, tagger)) {
-          insertBefore(nodeFromToken(tok, root.ownerDocument), node);
+    if (node.isText()) {
+      let lang = node.lang();
+      if (lang === 'uk' || lang === '') {
+        for (let tok of tokenizeUk(node.textContent, tagger)) {
+          node.insertBefore(elementFromToken(tok, root.ownerDocument));
         }
-        remove(node);
+        node.remove();
       }
     }
   });
@@ -162,7 +163,7 @@ export function tokenizeTeiDom(root: Node, tagger: Tagger) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function nodeFromToken(token: string, document: Document) {
+export function elementFromToken(token: string, document: IDocument): IElement {
   let toret;
   if (ANY_PUNC_OR_DASH_RE.test(token)) {
     toret = document.createElement('pc');
@@ -183,7 +184,7 @@ export function nodeFromToken(token: string, document: Document) {
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: Element, tags) {
+function tagWord(el: IElement, tags) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let w_ = el.ownerDocument.createElement('mi:w_'); // todo
   
@@ -198,17 +199,18 @@ function tagWord(el: Element, tags) {
     w.setAttribute('ana', ana);
     w_.appendChild(w);
   }
-  replace(el, w_);
+  el.replace(w_);
 }
 ////////////////////////////////////////////////////////////////////////////////
-export function tagTokenizedDom(root: Node, tagger: Tagger) {
-  traverseDepth(root, (node: Node) => {
-    if (isElement(node)) {
-      let el = <Element>node;
-      if (nameNsEl(el) === W_) {
+export function tagTokenizedDom(root: IElement, tagger: Tagger) {
+  traverseDepth(root, (node: INode) => {
+    if (node.isElement()) {
+      let el = <IElement>node;
+      let nameNs = el.nameNs();
+      if (nameNs === W_) {
         return 'skip';
-      }// todo: wait https://github.com/tmpvar/jsdom/issues/1276#issuecomment-154660180
-      if (el.tagName==='w'/*nameNsEl(el) === W*/) {
+      }
+      if (nameNs === W) {
         tagWord(el, tagger.tag(el.textContent));
       }
     }

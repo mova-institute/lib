@@ -8,6 +8,11 @@ export const NS = {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+export function cantBeXml(str: string) {
+  return !/^\s*\</.test(str);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function escape(val: string) {   // todo
   return val.replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -124,42 +129,18 @@ export function nextEl(base: Element, predicate: Function) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isRoot(el: Node): boolean {
-  return el === el.ownerDocument.documentElement;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/*export function lang(node: Node): string {
-  if (node.nodeType !== node.ELEMENT_NODE) {
-    return lang(node.parentElement);
+export function lang(node: INode): string {
+  if (!node.isElement()) {
+    return lang(node.parentNode);
   }
-  let el = <Element>node;
-  let hasAttr = el.hasAttributeNS(NS.xml, 'lang');
-  if (!hasAttr) {
-    if (isRoot(node)) {
-      return null;
-    }
-    if (!node.parentElement)
-      console.log('uuu', el.tagName);
-    return lang(node.parentElement);
-  }
-
-  return el.getAttributeNS(NS.xml, 'lang');
-}*/
-
-////////////////////////////////////////////////////////////////////////////////
-export function lang2(node: Node): string {
-  if (node.nodeType !== node.ELEMENT_NODE) {
-    return lang2(node.parentElement);
-  }
-  let el = <Element>node;
-  let toret = el.getAttribute('xml:lang');
+  let el = <IElement>node;
+  let toret = el.getAttribute('lang') || el.getAttribute('xml:lang'); // todo
   if (!toret) {
-    if (isRoot(el)) {
+    if (el.isRoot()) {
       return '';
     }
 
-    return lang2(el.parentElement);
+    return lang(el.parentNode);
   }
 
   return toret;
