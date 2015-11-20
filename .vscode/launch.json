@@ -5,8 +5,9 @@
 		{
 			"name": "default",
 			"type": "node",
+			"request": "launch",
 			"program": "src/bin/test.ts",
-			"stopOnEntry": false,
+			"stopOnEntry": true,
 			"args": [],
 			"cwd": ".",
 			// Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
@@ -21,10 +22,23 @@
 			"outDir": "lib"
 		},
 		{
+			"name": "js",
+			"type": "node",
+			"request": "launch",
+			"program": "lib/bin/test.js",
+			"stopOnEntry": true,
+			"args": [],
+			"cwd": ".",
+			"runtimeArgs": ["--nolazy"],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"sourceMaps": false
+		},
+		{
 			"name": "Attach",
 			"type": "node",
-			// TCP/IP address. Default is "localhost".
-			"address": "localhost",
+			"request": "attach",
 			// Port to attach to.
 			"port": 5858,
 			"sourceMaps": false
