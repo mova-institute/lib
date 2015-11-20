@@ -1,3 +1,5 @@
+import {INode, IElement, IDocument} from './interfaces'
+
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
   tei: 'http://www.tei-c.org/ns/1.0',
@@ -64,9 +66,9 @@ export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDepthEl(node: Node, onEnter: Function, onLeave?: Function) {
+export function traverseDepthEl(node: INode, onEnter: Function, onLeave?: Function) {
   let onEnterFiltered = node => {
-    if (node.nodeType === node.ELEMENT_NODE) {
+    if (isElement(node)) {
       onEnter(node);
     }
   }
@@ -74,14 +76,16 @@ export function traverseDepthEl(node: Node, onEnter: Function, onLeave?: Functio
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDepth(node: Node, onEnter: Function, onLeave?: Function) {
+export function traverseDepth(node: INode, onEnter: Function, onLeave?: Function) {
   let directive = onEnter(node);
   if (directive === false) {
     return false;
   }
   if (directive !== 'skip') {
-    for (let cur = node.firstChild, next = cur && cur.nextSibling; cur;
-      cur = next, next = next && next.nextSibling) {
+    //console.log('entered for - ', node.firstChild && node.firstChild.nodeName);
+    for (let cur = node.firstChild, next = cur && cur.nextSibling;
+         cur;
+         cur = next, next = next && next.nextSibling) {
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
       }
@@ -92,7 +96,7 @@ export function traverseDepth(node: Node, onEnter: Function, onLeave?: Function)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrder(node: Node, onEnter: Function, onLeave?: Function) {
+export function traverseDocumentOrder(node: INode, onEnter: Function, onLeave?: Function) {
   for (var curNode = node; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return false;
@@ -167,12 +171,12 @@ export function replace(what: Node, replacement: Node) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isElement(node: Node) {
-  return node.nodeType === node.ELEMENT_NODE
+export function isElement(node: INode) {
+  return node.nodeType === node.ELEMENT_NODE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isText(node: Node) {
+export function isText(node: INode) {
   return node.nodeType === node.TEXT_NODE;
 }
 

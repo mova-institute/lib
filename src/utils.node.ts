@@ -1,4 +1,6 @@
+import {LibxmlDocument, LibxmlElement} from './xml/libxmljs_webapi_adapter'
 import {createReadStream, createWriteStream, readFileSync, writeFileSync, readSync, Stats, statSync} from 'fs';
+import {parseXmlString} from 'libxmljs'
 
 
 let argv = require('minimist')(process.argv.slice(2));
@@ -6,6 +8,20 @@ let jsdom = require('jsdom').jsdom;
 let xmldom = require('xmldom');
 let pd = require('pretty-data2').pd
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function str2lxmlRoot(xmlstr: string) {
+	let lxmlXml = parseXmlString(xmlstr);
+	return new LibxmlDocument(lxmlXml).documentElement;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function filename2lxmlRootSync(filename: string) {
+	let xmlstr = readFileSync(filename, 'utf8');
+	let lxmlXml = parseXmlString(xmlstr);
+	
+	return new LibxmlDocument(lxmlXml).documentElement;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function str2jsdomRoot(str: string) {
