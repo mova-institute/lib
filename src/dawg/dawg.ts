@@ -3,6 +3,10 @@ import {Guide} from './guide';
 import {encodeUtf8, decodeUtf8, b64decodeFromArray} from '../codec';
 import {Readable} from 'stream';
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 export class Dawg {
 	constructor(protected dic: Dictionary) { }
 
@@ -12,6 +16,78 @@ export class Dawg {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+export class CompletionDawg extends Dawg {
+	constructor(dic: Dictionary, protected guide: Guide) {
+		super(dic);
+	}
+
+	*completionBytes(key: Array<number>) {
+		let index = this.dic.followBytes(key);
+		if (index === null)
+			return;
+
+		for (let completion of completer(this.dic, this.guide, index)) {
+			yield completion;
+		}
+	}
+
+	*completionStrings(key: string) {
+		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
+			yield decodeUtf8(completionBytes);
+		}
+	}
+
+	hasKeyWithPrefix(key: string) {
+		return !this.completionStrings(key).next().done;
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+export class BytesDawg extends CompletionDawg {
+	
+	constructor(dic: Dictionary, guide: Guide, private payloadSeparator: number = 0) {
+		super(dic, guide);
+	}
+	
+	has(key: string): boolean {
+		return super.has(key + this.payloadSeparator);
+	}
+	
+	*payloadBytes(key: Array<number>) {
+		key.push(this.payloadSeparator);
+		for (let completed of super.completionBytes(key)) {
+			yield b64decodeFromArray(completed);
+		}
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+export class ObjectDawg<T> extends BytesDawg {
+	
+	constructor(dic: Dictionary, guide: Guide, payloadSeparator: number,
+		private deserializer: (bytes: Uint8Array) => T) {
+		
+		super(dic, guide, payloadSeparator);
+	}
+	
+	get(key: string) {
+		let toret = new Array<T>();
+		
+		for (let payload of super.payloadBytes(encodeUtf8(key))) {
+			toret.push(this.deserializer(payload));
+		}
+		
+		return toret;
+	}
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 function* completer(dic: Dictionary, guide: Guide, index: number) {
 	let completion: Array<number> = [];
 	let indexStack = [index];
@@ -61,65 +137,3 @@ function* completer(dic: Dictionary, guide: Guide, index: number) {
 		}
 	}
 }
-
-
-export class CompletionDawg extends Dawg {
-	constructor(protected dic: Dictionary, protected guide: Guide) {
-		super(dic);
-	}
-
-	*completionBytes(key: Array<number>) {
-		let index = this.dic.followBytes(key);
-		if (index === null)
-			return;
-
-		for (let completion of completer(this.dic, this.guide, index)) {
-			yield completion;
-		}
-	}
-
-	*completionStrings(key: string) {
-		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
-			yield decodeUtf8(completionBytes);
-		}
-	}
-
-	hasKeyWithPrefix(key: string) {
-		return !this.completionStrings(key).next().done;
-	}
-}
-
-
-/*export class BytesDawg extends CompletionDawg {
-	
-	constructor(private payloadSeparator: number = 0) {
-		super();
-	}
-	
-	*payloadBytes(key: Array<number>) {
-		key.push(this.payloadSeparator);
-		for (let completed of super.completionBytes(key)) {
-			yield b64decodeFromArray(completed);
-		}
-	}
-}
-
-
-export class ObjectDawg extends BytesDawg {
-	
-	constructor(payloadSeparator: number = 1,
-		private deserializer: (bytes: Uint8Array) => any = bytes => bytes) {
-		
-		super(payloadSeparator);
-	}
-	
-	lookup(key: string) {
-		let toret = [];
-		
-		for (let payload of super.payloadBytes(encodeUtf8(key))) {
-			toret.push(this.deserializer(payload));
-		}
-		
-		return toret;
-	}
-}*/

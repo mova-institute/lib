@@ -1,6 +1,6 @@
 import {Dictionary} from './dictionary'
 import {Guide} from './guide'
-import {Dawg, CompletionDawg} from './dawg'
+import {Dawg, CompletionDawg, BytesDawg, ObjectDawg} from './dawg'
 
 import {buffer2typedArray} from '../node_polyfill.node'
 import {readNBytesSync} from '../utils.node'
@@ -36,4 +36,11 @@ export function createCompletionDawgSync(filename: string) {
 	let fd = openSync(filename, 'r');
 	
 	return new CompletionDawg(createDictionarySync(fd), createGuideSync(fd));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function createObjectDawgSync(filename: string, deserializer) {
+	let fd = openSync(filename, 'r');
+	
+	return new ObjectDawg(createDictionarySync(fd), createGuideSync(fd), 0, deserializer);
 }
