@@ -1,5 +1,5 @@
-import {INode, IElement, IDocument} from '../xml/interfaces'
-import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/libxmljs_adapters'
+import {INode, IElement, IDocument} from '../xml/api/interfaces'
+import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/api/libxmljs_adapters'
 import {readFileSync} from 'fs'
 import {dirname} from 'path'
 import * as libxmljs from 'libxmljs'

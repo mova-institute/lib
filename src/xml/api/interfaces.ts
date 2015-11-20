@@ -13,10 +13,6 @@ export interface INode {
 	nodeName: string;
 	textContent: string;
 	nodeType: number;
-	ELEMENT_NODE: number;
-	TEXT_NODE: number;
-	ATTRIBUTE_NODE: number;
-	COMMENT_NODE: number;
 	isElement(): boolean;
 	isText(): boolean;
 	isRoot(): boolean;

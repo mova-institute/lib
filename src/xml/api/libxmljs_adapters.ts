@@ -24,11 +24,6 @@ export class LibxmlDocument implements IDocument {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class LibxmlNode implements INode {
-	ELEMENT_NODE = 1;
-	TEXT_NODE = 3;
-	ATTRIBUTE_NODE = 2;
-	COMMENT_NODE = 8;
-	
 	constructor(public underlying) {	} // todo: protected
 	
 	get nodeType() {

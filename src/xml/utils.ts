@@ -1,4 +1,4 @@
-import {INode, IElement, IDocument} from './interfaces'
+import {INode, IElement, IDocument} from './api/interfaces'
 
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
@@ -152,12 +152,12 @@ export function replace(what: Node, replacement: Node) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isElement(node: INode) {
+export function isElement(node: Node) {
   return node.nodeType === node.ELEMENT_NODE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isText(node: INode) {
+export function isText(node: Node) {
   return node.nodeType === node.TEXT_NODE;
 }
 
