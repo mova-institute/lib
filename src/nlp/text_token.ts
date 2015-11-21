@@ -1,40 +1,31 @@
-import {XmlElement} from '../xml/xml_element'
+import {INode, IElement} from '../xml/api/interfaces'
 import {W, W_, P, L, SE} from './common_elements'
 import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils'
-import {traverseDepth, traverseDocumentOrder, NS, isElement, nameNsEl, remove, insertAfter} from '../xml/utils'
+import {traverseDocumentOrderEl, NS} from '../xml/utils'
 
-export class TextToken extends XmlElement {
+export class TextToken {
 
-	constructor(public element: HTMLElement, public hasSpaceBefore = true) {
-		super(element);
-	}	// todo getter?
-	
-	tag() {
-		return this.element.tagName; 	// todo
-	}
-
-	is(tagName: string) {
-		return this.tag() === tagName;	// todo
+	constructor(public elem: IElement, public hasSpaceBefore = true) {
 	}
 
 	equals(other: TextToken) {
-		return other && other.element === this.element;
+		return other && other.elem.equals(this.elem);
 	}
 
 	text() {	// todo
-		if (nameNsEl(this.element) === W_) {
-			return this.element.children[0].textContent;
+		if (this.elem.nameNs() === W_) {
+			return this.elem.childElement(0).textContent;
 		}
 		
-		return this.element.textContent;
+		return this.elem.textContent;
 	}
 
 	isWord() {
-		return nameNsEl(this.element) === W_;
+		return this.elem.nameNs() === W_;
 	}
 
 	isAmbig() {
-		return this.element.children.length > 1 && !this.element.getAttribute('ana');
+		return this.elem.childElement(1) && !this.elem.getAttribute('ana');
 	}
 
 	isUntagged() {
@@ -42,27 +33,27 @@ export class TextToken extends XmlElement {
 	}
 	
 	disambIndex() {
-		let ana = this.element.getAttribute('ana');
+		let ana = this.elem.getAttribute('ana');
 		return (ana === null) ? null : parseInt(ana);
 	}
 
 	morphTag() {
-		if (this.element.children.length === 1) {
-			return this.element.firstElementChild.getAttribute('ana')
+		if (!this.elem.childElement(1)) {
+			return this.elem.childElement(0).getAttribute('ana')
 		}
 		
-		let ana = this.element.getAttribute('ana');
+		let ana = this.elem.getAttribute('ana');
 		if (ana !== null) {
-			return this.element.children[parseInt(ana)].getAttribute('ana');
+			return this.elem.childElement(parseInt(ana)).getAttribute('ana');
 		}
 	}
 
 	morphTags() {
 		let toret = [];
-		for (let i = 0; i < this.element.childElementCount; ++i) {
+		for (let child of this.elem.childElements()) {
 			toret.push({
-				ana: this.element.children[i].getAttribute('ana'),
-				lemma: this.element.children[i].getAttribute('lemma')
+				ana: child.getAttribute('ana'),
+				lemma: child.getAttribute('lemma')
 			});
 		}
 
@@ -70,47 +61,45 @@ export class TextToken extends XmlElement {
 	}
 
 	breaksLine() {
-		let elName = nameNsEl(this.element);
+		let elName = this.elem.nameNs();
 		return elName === P || elName === L;
 	}
 
 	disambig(index: number) {
-		this.element.setAttribute('ana', index.toString());
+		this.elem.setAttribute('ana', index.toString());
 	}
 
 	insertSentenceEnd() {
-		let where = this.element;
-		traverseDocumentOrder(where, (node): any => {
-			if (isElement(node)) {
-				if (ELEMS_BREAKING_SENTENCE_NS.has(nameNsEl(node))) {
+		let where: INode = this.elem;
+		traverseDocumentOrderEl(where, el => {
+			if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
 
-				}
-				else if (!node.nextElementSibling || haveSpaceBetweenEl(node, node.nextElementSibling)) {
-					where = node;
-					return false;
-				}
-				if (nameNsEl(node) === W_) {
-					return 'skip';
-				}
 			}
-		}, node => {
-			if (isElement(node) && ELEMS_BREAKING_SENTENCE_NS.has(nameNsEl(node))) {
-				where = node.lastChild;
+			else if (!el.nextElementSibling || haveSpaceBetweenEl(el, el.nextElementSibling)) {
+				where = el;
+				return false;
+			}
+			if (el.nameNs() === W_) {
+				return 'skip';
+			}
+		}, el => {
+			if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
+				where = el.lastChild;
 				return false;
 			}
 		});
 
-		if (nameNsEl(where) !== SE) {
+		if (where.isElement() && (<IElement>where).nameNs() !== SE) {
 			let se = where.ownerDocument.createElement('mi:se');
-			insertAfter(se, where);
+			where.insertAfter(se);
 		}
 	}
 
 	nextAmbigWord() {
 		let toret = null;
-		traverseDocumentOrder(this.element, node => {
-			if (isElement(node) && nameNsEl(node) === W_) {
-				let token = new TextToken(node);
+		traverseDocumentOrderEl(this.elem, el => {
+			if (el.nameNs() === W_) {
+				let token = new TextToken(el);
 				if (token.isAmbig()) {
 					toret = token;
 					return false;

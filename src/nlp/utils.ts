@@ -1,9 +1,8 @@
-import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder, replace, isElement, isText,
-  remove, insertBefore, insertAfter} from '../xml/utils'
+import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements' 
 import {r} from '../lang';
 import {Tagger} from '../tagger'
-import {INode, IElement, IDocument} from '../xml/interfaces'
+import {INode, IElement, IDocument} from '../xml/api/interfaces'
 
 
 export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
@@ -110,10 +109,10 @@ export function haveSpaceBetween(tagA: string, textA: string,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function haveSpaceBetweenEl(a: HTMLElement, b: HTMLElement): boolean {
-  let tagA = a ? nameNsEl(a) : null;
+export function haveSpaceBetweenEl(a: IElement, b: IElement): boolean {
+  let tagA = a ? a.nameNs() : null;
   let textA = a ? a.textContent : null;
-  let tagB = b ? nameNsEl(b) : null;
+  let tagB = b ? b.nameNs() : null;
   let textB = b ? b.textContent : null; 
   return haveSpaceBetween(tagA, textA, tagB, textB);
 }

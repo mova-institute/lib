@@ -3,23 +3,27 @@
 export interface IDocument {
 	documentElement: IElement;
 	createElement(name: string): IElement;
+	serialize(): string;
+	xpath(xpath: string): any; // todo
 }
 
 export interface INode {
+	equals(other: INode): boolean;
 	ownerDocument: IDocument;
 	firstChild: INode;
 	nextSibling: INode;
 	parentNode: INode;
 	nodeName: string;
 	textContent: string;
-	nodeType: number;
 	isElement(): boolean;
 	isText(): boolean;
 	isRoot(): boolean;
 	replace(replacement: INode);
 	insertBefore(newNode: INode): INode;	// todo
+	insertAfter(newNode: INode);
 	remove();
 	lang(): string;
+	is(name: string): boolean;
 }
 
 export interface IElement extends INode {
@@ -28,4 +32,9 @@ export interface IElement extends INode {
 	setAttribute(name: string, value: string);
 	appendChild(child: INode): INode;
 	nameNs(): string;
+	//isNs(otherName: string): boolean;
+	nextElementSibling: IElement;
+	lastChild: INode;
+	childElements(): Iterable<IElement>;
+	childElement(index: number): IElement;
 }

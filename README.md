@@ -24,6 +24,10 @@
 - cmd convinience
 - backup server
 - isTTY
+- isNs
+- iterable vs iterableiterator vs iterator..?
+- tag name
+- xpath thing
 
 - скорочення
 - <supplied>

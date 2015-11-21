@@ -72,12 +72,7 @@ export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function traverseDepthEl(node: INode, onEnter: Function, onLeave?: Function) {
-  let onEnterFiltered = node => {
-    if (isElement(node)) {
-      onEnter(node);
-    }
-  }
-  traverseDepth(node, onEnterFiltered, onLeave);
+  traverseDepth(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +82,6 @@ export function traverseDepth(node: INode, onEnter: Function, onLeave?: Function
     return false;
   }
   if (directive !== 'skip') {
-    //console.log('entered for - ', node.firstChild && node.firstChild.nodeName);
     for (let cur = node.firstChild, next = cur && cur.nextSibling;
          cur;
          cur = next, next = next && next.nextSibling) {
@@ -118,6 +112,11 @@ export function traverseDocumentOrder(node: INode, onEnter: Function, onLeave?: 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function traverseDocumentOrderEl(node: INode, onEnter: (el: IElement) => any, onLeave?: (el: IElement) => any) {
+  traverseDocumentOrder(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
+}
+
+/*////////////////////////////////////////////////////////////////////////////////
 export function nextEl(base: Element, predicate: Function) {
   for (var toret = base.nextElementSibling; toret; toret = base.nextElementSibling) {
     if (predicate(toret)) {
@@ -126,7 +125,7 @@ export function nextEl(base: Element, predicate: Function) {
   }
 
   return toret;
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////
 export function lang(node: INode): string {
@@ -146,32 +145,13 @@ export function lang(node: INode): string {
   return toret;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-export function replace(what: Node, replacement: Node) {
-  what.parentNode.replaceChild(replacement, what);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isElement(node: Node) {
-  return node.nodeType === node.ELEMENT_NODE;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
-export function isText(node: Node) {
-  return node.nodeType === node.TEXT_NODE;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function insertBefore(toInsert: Node, beforeThis: Node) {
-  beforeThis.parentNode.insertBefore(toInsert, beforeThis);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function insertAfter(toInsert: Node, afterThis: Node) {
-  afterThis.parentNode.insertBefore(toInsert, afterThis.nextSibling);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function remove(node: Node) {
-  node.parentNode.removeChild(node)
+function callbackIfElement(cb) {
+  return node => {
+    if (cb && node.isElement()) {
+      cb(node);
+    }
+  }
 }

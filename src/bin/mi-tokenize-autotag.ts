@@ -20,10 +20,10 @@ let tagger = createTaggerSync();
 		let root = str2lxmlRoot(inputStr);
 		tokenizeTeiDom(root, tagger);
 		tagTokenizedDom(root, tagger);
-		output.write(root.ownerDocument.toString());
+		output.write(root.ownerDocument.serialize());
 		output.write('\n');
 	}
 	catch(e) {
-		console.log(e);
+		console.error(e.stack);
 	}
 })();

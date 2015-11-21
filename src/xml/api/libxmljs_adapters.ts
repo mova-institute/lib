@@ -1,7 +1,7 @@
 import {IDocument, INode, IElement} from './interfaces'
 import * as libxmljs from 'libxmljs'
-import {lang} from './utils'
-
+import {lang} from '../utils'
+import {wrappedOrNull, ithGenerated} from '../../lang' 
 
 
 
@@ -17,8 +17,12 @@ export class LibxmlDocument implements IDocument {
 		return new LibxmlElement(new libxmljs.Element(this.underlying, name));
 	}
 	
-	toString() {
+	serialize() {
 		return this.underlying.toString();
+	}
+	
+	xpath(xpath: string) {
+		// todo
 	}
 }
 
@@ -26,19 +30,8 @@ export class LibxmlDocument implements IDocument {
 export class LibxmlNode implements INode {
 	constructor(public underlying) {	} // todo: protected
 	
-	get nodeType() {
-		switch (this.underlying.type()) {
-			case 'element':
-				return this.ELEMENT_NODE;
-			case 'text':
-				return this.TEXT_NODE;
-			case 'attribute':
-				return this.ATTRIBUTE_NODE;
-			case 'comment':
-				return this.COMMENT_NODE;
-			default:
-				throw 'Can’t be';
-		}
+	equals(other: LibxmlNode) {
+		return other && this.underlying === other.underlying;
 	}
 	
 	lang() {
@@ -65,6 +58,10 @@ export class LibxmlNode implements INode {
 		return '#' + this.underlying.type();
 	}
 	
+	is(name: string) {
+		return this.nodeName === name;
+	}
+	
 	get textContent() {
 		return this.underlying.text();
 	}
@@ -74,7 +71,7 @@ export class LibxmlNode implements INode {
 	}
 	
 	get ownerDocument()  {
-		return new LibxmlDocument(this.underlying.doc());
+		return wrappedOrNull(LibxmlDocument, this.underlying.doc());
 	}
 	
 	get firstChild() {
@@ -82,8 +79,7 @@ export class LibxmlNode implements INode {
 	}
 	
 	get parentNode() {
-		return this.underlying.parent() ?
-			new LibxmlElement(this.underlying.parent()) : null;
+		return wrappedOrNull(LibxmlElement, this.underlying.parent());
 	}
 	
 	get nextSibling() {
@@ -102,6 +98,10 @@ export class LibxmlNode implements INode {
 		this.underlying.addPrevSibling(newNode.underlying);
 		return newNode;
 	}
+	
+	insertAfter(newNode: LibxmlNode) {
+		this.underlying.addNextSibling(newNode.underlying);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -114,12 +114,46 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 		return this.underlying.name();
 	}
 	
+	get firstElementChild() {
+		let firstChild = this.underlying.child(0);
+		while (firstChild && firstChild.type() !== 'element') {
+			firstChild = firstChild.nextSibling();
+		}
+				
+		return wrappedOrNull(LibxmlElement, firstChild);
+	}
+	
+	get lastChild() {
+		let children = this.underlying.childNodes;
+		return wrappedOrNull(LibxmlNode, children[children.length - 1]);
+	}
+	
+	*childElements() {
+		for (let child of this.underlying.childNodes()) {
+			if (child.type() === 'element') {
+				yield new LibxmlElement(child);
+			}
+		}
+	}
+	
+	childElement(index: number) {
+		return ithGenerated(this.childElements(), index);
+	}
+	
+	get nextElementSibling() {
+		return wrappedOrNull(LibxmlElement, this.underlying.nextElement());
+	}
+	
 	nameNs() {
 		let ns = this.underlying.namespace();
 		let uri = ns ? ns.href() : 'http://www.tei-c.org/ns/1.0';		// todo: how to handle default properly?
 		
 		return '{' + uri + '}' + this.underlying.name();
 	}
+	
+	// isNs(otherName: string) {
+	// 	return this.nameNs() === otherName;
+	// }
 	
 	getAttribute(name: string) {
 		let attr = this.underlying.attr(name);
@@ -142,13 +176,6 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-function switchReturnNodeType(node: libxmljs.Node) {
-	if (!node) {
-		return null;
-	}
-	if (node.type() === 'element') {
-		return new LibxmlElement(node)
-	}
-
-	return new LibxmlNode(node);
+function switchReturnNodeType(node) {
+	return wrappedOrNull(node && node.type() === 'element' ? LibxmlElement : LibxmlNode, node);
 }
