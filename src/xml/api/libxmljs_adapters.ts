@@ -160,8 +160,8 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 		return attr === null ? null : attr.value();
 	}
 	
-	setAttribute(name: string, value: string) {
-		this.underlying.attr({[name]: value});
+	setAttribute(name: string, value: any) {
+		this.underlying.attr({[name]: value.toString()});
 	}
 	
 	appendChild(child: LibxmlNode) {

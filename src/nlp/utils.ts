@@ -1,4 +1,4 @@
-import {NS, nameNs, nameNsEl, traverseDepth, traverseDocumentOrder} from '../xml/utils'
+import {NS, nameNs, traverseDepth, traverseDocumentOrder} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements' 
 import {r} from '../lang';
 import {Tagger} from '../tagger'

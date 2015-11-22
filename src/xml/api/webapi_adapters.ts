@@ -1,5 +1,5 @@
 import {IDocument, INode, IElement} from './interfaces'
-import {lang} from '../utils'
+import {lang, nameNs} from '../utils'
 import {wrappedOrNull} from '../../lang' 
 
 
@@ -161,7 +161,7 @@ export class WebapiElement extends WebapiNode implements IElement {
 		return (<Element>this.underlying).getAttribute(name);
 	}
 
-	setAttribute(name: string, value: string) {
+	setAttribute(name: string, value: any) {
 		(<Element>this.underlying).setAttribute(name, value);
 	}
 
@@ -176,10 +176,6 @@ export class WebapiElement extends WebapiNode implements IElement {
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-function switchReturnNodeType(node) {
-	return wrappedOrNull(node && node.type() === 'element' ? WebapiElement : WebapiNode, node);
-}
-
-function nameNs(ns: string, name: string) {	// todo: remove other nameNs
-  return `{${ns}}${name}`;
+function switchReturnNodeType(node: Node) {
+	return wrappedOrNull(node && node.nodeType === Node.ELEMENT_NODE ? WebapiElement : WebapiNode, node);
 }

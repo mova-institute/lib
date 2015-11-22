@@ -22,28 +22,13 @@ export function escape(val: string) {   // todo
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function namePrefixed(prefix: string, name: string) {
-  return prefix ? `${prefix}:${name}` : name;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function nameNs(ns: string, name: string) {
   return `{${ns}}${name}`;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function nameNsEl(el: Element) {
-  if (el.namespaceURI) {
-    return nameNs(el.namespaceURI, el.localName);
-  }
-  let [prefix, localName] = el.tagName.split(':');
-  let ns = el.ownerDocument.documentElement.getAttribute(`xmlns:${prefix}`);
-
-  if (!localName || !ns) {
-    throw 'Not implemented';
-  }
-
-  return nameNs(ns, localName);
+export function namePrefixed(prefix: string, name: string) {
+  return prefix ? `${prefix}:${name}` : name;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,12 +56,12 @@ export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDepthEl(node: INode, onEnter: Function, onLeave?: Function) {
+export function traverseDepthEl(node: INode, onEnter: (el: IElement) => any, onLeave?: (el: IElement) => any) {
   traverseDepth(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDepth(node: INode, onEnter: Function, onLeave?: Function) {
+export function traverseDepth(node: INode, onEnter: (el: INode) => any, onLeave?: (el: INode) => any) {
   let directive = onEnter(node);
   if (directive === false) {
     return false;
@@ -95,7 +80,7 @@ export function traverseDepth(node: INode, onEnter: Function, onLeave?: Function
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrder(node: INode, onEnter: Function, onLeave?: Function) {
+export function traverseDocumentOrder(node: INode, onEnter: (el: INode) => any, onLeave?: (el: INode) => any) {
   for (var curNode = node; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return false;
@@ -116,16 +101,16 @@ export function traverseDocumentOrderEl(node: INode, onEnter: (el: IElement) => 
   traverseDocumentOrder(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
 }
 
-/*////////////////////////////////////////////////////////////////////////////////
-export function nextEl(base: Element, predicate: Function) {
-  for (var toret = base.nextElementSibling; toret; toret = base.nextElementSibling) {
-    if (predicate(toret)) {
-      break;
-    }
-  }
+// ////////////////////////////////////////////////////////////////////////////////
+// export function nextEl(base: Element, predicate: Function) {
+//   for (var toret = base.nextElementSibling; toret; toret = base.nextElementSibling) {
+//     if (predicate(toret)) {
+//       break;
+//     }
+//   }
 
-  return toret;
-}*/
+//   return toret;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function lang(node: INode): string {
@@ -151,7 +136,7 @@ export function lang(node: INode): string {
 function callbackIfElement(cb) {
   return node => {
     if (cb && node.isElement()) {
-      cb(node);
+      return cb(node);
     }
   }
 }
