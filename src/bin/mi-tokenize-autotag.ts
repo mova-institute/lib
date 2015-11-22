@@ -1,4 +1,4 @@
-import {ioArgs} from '../cli_utils'
+import {ioArgs} from '../cli_utils.node'
 import {createTaggerSync} from '../factories.node'
 import {readTillEnd} from '../stream_utils.node'
 import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'

@@ -1,6 +1,6 @@
 //import {logException} from '../lang'
 import {IElement} from '../xml/api/interfaces'
-import {ioArgs} from '../cli_utils'
+import {ioArgs} from '../cli_utils.node'
 import {readTillEnd} from '../stream_utils.node'
 import {W_} from '../nlp/common_elements'
 import {traverseDepthEl} from '../xml/utils'

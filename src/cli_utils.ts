@@ -15,7 +15,7 @@ export function ioArgs(): [any, any] {
 		return [process.stdin, process.stdout];
 	}
 	else if (argv.length === 2) {
-		return [createReadStream(argv[0], 'utf8'), createWriteStream(argv[0])];
+		return [createReadStream(argv[0], 'utf8'), createWriteStream(argv[1])];
 	}
 
 	console.error(`arguments: <(std)input> <(std)output>`);

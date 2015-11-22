@@ -189,6 +189,7 @@ function tagWord(el: IElement, tags) {
   
   if (!tags.length) {
     tags.push([el.textContent, 'X']);
+    //console.log('Unknown word: "' + el.textContent + '"');
   }
   for (let tag of tags) {
     let w = el.ownerDocument.createElement('w');
