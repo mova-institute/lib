@@ -39,13 +39,14 @@ export class TextToken {
 	}
 
 	morphTag() {
-		if (!this.elem.childElement(1)) {
-			return this.elem.childElement(0).getAttribute('ana')
-		}
-		
 		let ana = this.elem.getAttribute('ana');
 		if (ana !== null) {
-			return this.elem.childElement(parseInt(ana)).getAttribute('ana');
+			let wElem = this.elem.childElement(parseInt(ana));
+			return wElem ? wElem.getAttribute('ana') : '*';
+		}
+		
+		if (!this.elem.childElement(1)) {
+			return this.elem.childElement(0).getAttribute('ana')
 		}
 	}
 
