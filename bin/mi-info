@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+require('regenerator/runtime.js');
+require('../lib/bin/mi-info.js');

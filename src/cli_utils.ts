@@ -2,22 +2,23 @@ import {createReadStream, createWriteStream} from 'fs'
 let minimist = require('minimist');
 
 
-export function ioArgs(): [any, any] {
-	let argv = minimist(process.argv.slice(2))._;
-
-	if (argv.length === 1) {
-		if (!process.stdin.isTTY) {
-			return [process.stdin, createWriteStream(argv[0])];
+export function ioArgs(): [any, any, Object] {
+	let args = minimist(process.argv.slice(2))._;
+	if (args) {
+		if (args.length === 1) {
+			if (!process.stdin.isTTY) {
+				return [process.stdin, createWriteStream(args[0]), args];
+			}
+			return [createReadStream(args[0], 'utf8'), process.stdout, args];
 		}
-		return [createReadStream(argv[0], 'utf8'), process.stdout];
+		else if (args.length === 0 && !process.stdin.isTTY) {
+			return [process.stdin, process.stdout, args];
+		}
+		else if (args.length === 2) {
+			return [createReadStream(args[0], 'utf8'), createWriteStream(args[1]), args];
+		}
 	}
-	else if (argv.length === 0 && !process.stdin.isTTY) {
-		return [process.stdin, process.stdout];
-	}
-	else if (argv.length === 2) {
-		return [createReadStream(argv[0], 'utf8'), createWriteStream(argv[1])];
-	}
-
+	
 	console.error(`arguments: <(std)input> <(std)output>`);
 	process.exit();
 }

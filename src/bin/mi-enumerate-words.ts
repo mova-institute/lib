@@ -1,10 +1,6 @@
-//import {logException} from '../lang'
-import {IElement} from '../xml/api/interfaces'
-import {ioArgs} from '../cli_utils.node'
-import {readTillEnd} from '../stream_utils.node'
-import {W_} from '../nlp/common_elements'
-import {traverseDepthEl} from '../xml/utils'
-import {str2lxmlRoot} from '../utils.node'
+import {ioArgs} from '../cli_utils'
+import {stream2lxmlRoot} from '../utils.node'
+import {enumerateWords} from '../nlp/utils'
 
 
 let [input, output] = ioArgs();
@@ -12,13 +8,8 @@ let [input, output] = ioArgs();
 
 (async() => {
 	try {
-		let root = str2lxmlRoot(await readTillEnd(input));
-		let idGen = 0;
-		traverseDepthEl(root, el => {
-			if (el.nameNs() === W_) {
-				el.setAttribute('word-id', (idGen++).toString());
-			}
-		});
+		let root = await stream2lxmlRoot(input);
+		enumerateWords(root);
 		output.write(root.ownerDocument.serialize());
 	}
 	catch (e) {

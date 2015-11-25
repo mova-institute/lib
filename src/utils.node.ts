@@ -1,11 +1,15 @@
 import {LibxmlDocument, LibxmlElement} from './xml/api/libxmljs_adapters'
 import {createReadStream, createWriteStream, readFileSync, writeFileSync, readSync, Stats, statSync} from 'fs';
 import {parseXmlString} from 'libxmljs'
-
-
+import {readTillEnd} from './stream_utils.node'
 
 ////////////////////////////////////////////////////////////////////////////////
-export function str2lxmlRoot(xmlstr: string) {
+export async function stream2lxmlRoot(stream) {
+	return string2lxmlRoot(await readTillEnd(stream));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function string2lxmlRoot(xmlstr: string) {
 	let lxmlXml = parseXmlString(xmlstr);
 	return new LibxmlDocument(lxmlXml).documentElement;
 }

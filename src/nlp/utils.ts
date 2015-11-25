@@ -1,5 +1,5 @@
-import {NS, nameNs, traverseDepth, traverseDocumentOrder} from '../xml/utils'
-import {W, W_, PC, SE, P} from './common_elements' 
+import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder} from '../xml/utils'
+import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
 import {Tagger} from '../tagger'
 import {INode, IElement, IDocument} from '../xml/api/interfaces'
@@ -69,7 +69,7 @@ const WORD_TAGS = new Set([W, W_]);
 
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetween(tagA: string, textA: string,
-                                 tagB: string, textB: string) {
+  tagB: string, textB: string) {
   if (!tagA || !tagB) {
     return null;
   }
@@ -96,7 +96,7 @@ export function haveSpaceBetween(tagA: string, textA: string,
   if (tagB === PC) {
     return spaceB;
   }
-  
+
   if (tagB === P) {
     return false;
   }
@@ -113,7 +113,7 @@ export function haveSpaceBetweenEl(a: IElement, b: IElement): boolean {
   let tagA = a ? a.nameNs() : null;
   let textA = a ? a.textContent : null;
   let tagB = b ? b.nameNs() : null;
-  let textB = b ? b.textContent : null; 
+  let textB = b ? b.textContent : null;
   return haveSpaceBetween(tagA, textA, tagB, textB);
 }
 
@@ -157,7 +157,7 @@ export function tokenizeTeiDom(root: IElement, tagger: Tagger) {
       }
     }
   });
-  
+
   return root;
 }
 
@@ -173,12 +173,12 @@ export function elementFromToken(token: string, document: IDocument): IElement {
     toret.textContent = token;
   }
   else {
-    console.error(`Unknown token: "${token}"`); // todo
+    //console.error(`Unknown token: "${token}"`); // todo
     toret = document.createElement('w');
     toret.textContent = token;
     //throw 'kuku' + token.length;
   }
-  
+
   return toret;
 }
 
@@ -203,18 +203,66 @@ function tagWord(el: IElement, tags) {
 }
 ////////////////////////////////////////////////////////////////////////////////
 export function tagTokenizedDom(root: IElement, tagger: Tagger) {
-  traverseDepth(root, (node: INode) => {
-    if (node.isElement()) {
-      let el = <IElement>node;
-      let nameNs = el.nameNs();
-      if (nameNs === W_) {
-        return 'skip';
-      }
-      if (nameNs === W) {
-        tagWord(el, tagger.tag(el.textContent));
-      }
+  traverseDepthEl(root, (node: IElement) => {
+    let el = <IElement>node;
+    let nameNs = el.nameNs();
+    if (nameNs === W_) {
+      return 'skip';
+    }
+    if (nameNs === W) {
+      tagWord(el, tagger.tag(el.textContent));
+    }
+  });
+
+  return root;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function enumerateWords(root: IElement) {
+  let idGen = 0;
+  traverseDepthEl(root, el => {
+    if (el.nameNs() === W_) {
+      el.setAttribute('word-id', (idGen++).toString());
     }
   });
   
-  return root;
+  return idGen;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function normalizeForm(str: string) {
+  return cantBeLowerCase(str) ? str : str.toLowerCase()
+}
+export function getStats(root: IElement) {
+  let wordCount = 0;
+  let dictUnknownCount = 0;
+  let words = new Set<string>();
+  let dictUnknowns = new Set<string>();
+  traverseDepthEl(root, elem => {
+    let name = elem.nameNs();
+    if (name === W_) {
+      ++wordCount;
+      // todo: use TextToken
+      //...
+    }
+    else if (name === W && elem.getAttribute('ana') === 'X') {
+      dictUnknowns.add(normalizeForm(elem.textContent));
+      ++dictUnknownCount;
+    }
+  });
+  
+  return {
+    wordCount,
+    dictUnknownCount,
+    dictUnknowns: Array.from(dictUnknowns)
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function cantBeLowerCase(word: string) {
+  if (word.length < 2) {
+    return false;
+  }
+  let subsr = word.substr(1);
+  return subsr !== subsr.toLowerCase();
 }

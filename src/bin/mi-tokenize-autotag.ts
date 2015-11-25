@@ -1,8 +1,8 @@
-import {ioArgs} from '../cli_utils.node'
+import {ioArgs} from '../cli_utils'
 import {createTaggerSync} from '../factories.node'
 import {readTillEnd} from '../stream_utils.node'
 import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'
-import {str2lxmlRoot} from '../utils.node'
+import {string2lxmlRoot} from '../utils.node'
 import {cantBeXml} from '../xml/utils'
 
 
@@ -17,7 +17,7 @@ let tagger = createTaggerSync();
 		if (cantBeXml(inputStr)) {
 			inputStr = '<text>' + inputStr + '</text>';
 		}
-		let root = str2lxmlRoot(inputStr);
+		let root = string2lxmlRoot(inputStr);
 		tokenizeTeiDom(root, tagger);
 		tagTokenizedDom(root, tagger);
 		output.write(root.ownerDocument.serialize());
