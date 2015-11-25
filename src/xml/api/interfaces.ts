@@ -30,6 +30,7 @@ export interface IElement extends INode {
 	localName: string;
 	getAttribute(name: string): string;
 	setAttribute(name: string, value: any);
+	removeAttribute(name: string);
 	appendChild(child: INode): INode;
 	nameNs(): string;
 	//isNs(otherName: string): boolean;

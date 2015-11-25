@@ -28,7 +28,10 @@ export class WebapiDocument implements IDocument {
 	
 	xpath(xpath: string) {
 		// todo
-		return wrappedOrNull(WebapiElement, this.underlying.querySelectorAll(xpath)[0]);
+		// let result = this.underlying.evaluate('//w[ana]',
+		// 	this.underlying.documentElement, null, XPathResult.ANY_TYPE, null);
+		// console.log(result.iterateNext());
+		return wrappedOrNull(WebapiElement, this.underlying.querySelector(xpath));
 	}
 }
 
@@ -163,6 +166,10 @@ export class WebapiElement extends WebapiNode implements IElement {
 
 	setAttribute(name: string, value: any) {
 		(<Element>this.underlying).setAttribute(name, value);
+	}
+	
+	removeAttribute(name: string) {
+		(<Element>this.underlying).removeAttribute(name);
 	}
 
 	appendChild(child: WebapiNode) {

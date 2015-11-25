@@ -164,6 +164,10 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 		this.underlying.attr({[name]: value.toString()});
 	}
 	
+	removeAttribute(name: string) {
+		throw 'Not implemented'
+	}
+	
 	appendChild(child: LibxmlNode) {
 		this.underlying.addChild(child.underlying);
 		return child;

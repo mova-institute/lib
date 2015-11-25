@@ -2,6 +2,7 @@ import {INode, IElement} from '../xml/api/interfaces'
 import {W, W_, P, L, SE} from './common_elements'
 import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils'
 import {traverseDocumentOrderEl, NS} from '../xml/utils'
+import {highlightIndexwiseStringDiff} from '../html_utils'
 
 export class TextToken {
 
@@ -34,7 +35,7 @@ export class TextToken {
 	
 	disambIndex() {
 		let ana = this.elem.getAttribute('ana');
-		return (ana === null) ? null : parseInt(ana);
+		return ana ? parseInt(ana) : null;
 	}
 
 	morphTag() {
@@ -49,15 +50,15 @@ export class TextToken {
 	}
 
 	morphTags() {
-		let toret = [];
+		let tags = new Array<string>();
+		let lemmas = new Array<string>();
 		for (let child of this.elem.childElements()) {
-			toret.push({
-				ana: child.getAttribute('ana'),
-				lemma: child.getAttribute('lemma')
-			});
+			tags.push(child.getAttribute('ana'));
+			lemmas.push(child.getAttribute('lemma'));
 		}
-
-		return toret;
+		
+		return {tags, lemmas};
+		//return highlightIndexwiseStringDiff(toret, 'morph-feature-highlight');
 	}
 
 	breaksLine() {
@@ -66,7 +67,11 @@ export class TextToken {
 	}
 
 	disambig(index: number) {
-		this.elem.setAttribute('ana', index.toString());
+		if (this.disambIndex() === index) {
+			this.elem.removeAttribute('ana');
+		} else {
+			this.elem.setAttribute('ana', index.toString());
+		}
 	}
 
 	insertSentenceEnd() {
@@ -108,5 +113,9 @@ export class TextToken {
 		});
 
 		return toret;
+	}
+	
+	wordNum() {
+		return parseInt(this.elem.getAttribute('word-id'));
 	}
 }

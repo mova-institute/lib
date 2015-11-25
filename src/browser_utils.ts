@@ -34,3 +34,26 @@ export function scrolledToBottom(endIsTop: boolean) {
 	}
 	return window.scrollY + document.documentElement.clientHeight >= document.documentElement.offsetHeight;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function openLocalFile(cb: (files: FileList) => any) {
+	let fileInput = document.createElement('input');
+	fileInput.setAttribute('type', 'file');
+		fileInput.addEventListener('change', () => {
+		cb(fileInput.files);
+		fileInput.remove();
+	});
+	fileInput.click();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function readLocalFile(cb: (fileContents: string, filename?: string) => any) {
+	openLocalFile(files => {
+		let reader = new FileReader();
+		let file = files.item(0);
+		reader.readAsText(file);
+		reader.onload = () => {
+			cb(reader.result, file.name);
+		};
+	});
+}
