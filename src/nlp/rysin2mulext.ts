@@ -3,18 +3,24 @@ const animacyMap = {
 	'anim': 'y',
 	'inanim': 'n',
 };
-
 const aspectMap = {
 	'imperf': 'p',
 	'perf': 'e'
 };
-
 const tenseMap = {
 	'past': 's',
 	'pres': 'p',
 	'futr': 'f',
 };
-
+const verbFormMap = {
+	'impr': 'm',
+	'inf': 'n',
+	'impers': 'o',
+};
+const voiceMap = {
+	'actv': 'a',
+	'pasv': 'p',
+};
 const caseMap = {
 	'v_naz': 'n',
 	'v_rod': 'g',
@@ -24,13 +30,11 @@ const caseMap = {
 	'v_mis': 'l',
 	'v_kly': 'v',
 };
-
 const adverbDegreeMap = {
 	'compb': 'p',
 	'compr': 'c',
 	'super': 's',
 };
-
 const pronounTypeMap = {
 	'pers': 'p',
 	'refl': 'x',
@@ -43,11 +47,16 @@ const pronounTypeMap = {
 	'gen': 'g',
 	// ?
 };
-
+const pronounSyntacticTypeMap = {
+	'noun': 'n',
+	'adj': 'a',
+	'adv': 'r',
+};
 const сonjunctionTypeMap = {
 	'coord': 'c',
 	'subord': 's',
 };
+
 
 const tagType = {
 	'noun': 'pos',
@@ -72,6 +81,9 @@ const tagType = {
 	'pres': 'tense',
 	'futr': 'tense',
 
+	'impr': 'verbForm',
+	'inf': 'verbForm',
+	'impers': 'verbForm',
 
 	'anim': 'animacy',
 	'inanim': 'animacy',
@@ -117,16 +129,22 @@ const tagType = {
 
 	'subord': 'сonjunctionType',
 	'coord': 'сonjunctionType',
+
+	'np': 'numberTantum',
+	'ns': 'numberTantum',
 	
 	'': '',
 };
 
+////////////////////////////////////////////////////////////////////////////////
 class RysinTag {
 	pos: string;
 	aspect: string;
 	tense: string;
+	verbForm: string;
 	person: string;
 	animacy: string;
+	voice: string;
 	case: string;
 	prepositionCases: Array<string>;
 	gender: string;
@@ -134,9 +152,10 @@ class RysinTag {
 	degree: string;
 	pronounType: string;
 	сonjunctionType: string;
+	numberTantum: string;
 
-	constructor(str: string) {
-		for (let flag of str.split(':')) {
+	constructor(flags: Array<string>) {
+		for (let flag of flags) {
 			let feature = tagType[flag];
 			if (!feature) {
 				throw `Unknown feature for "${flag}"`;
@@ -154,156 +173,143 @@ class RysinTag {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// NOTES:
+// never biaspectual
+//
 export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, formTagStr: string) {
 	let toret = new Array<string>();
 
-	let lemmaTag = new RysinTag(lemmaTagStr);
-	let formTag = new RysinTag(formTagStr);
-	if (lemmaTag.pos !== '&pron') {
-		switch (formTag.pos) {
-			case 'noun': {
-				let isProper = startsWithCap(form);  // todo: abbrs
-				let type = isProper ? 'p' : 'c';
+	let lemmaFlags = lemmaTagStr.split(':');
+	let formFlags = formTagStr.split(':');
+	let lemmaTag = new RysinTag(lemmaFlags);
+	let formTag = new RysinTag(formFlags);
+	
+	switch (formTag.pos) {
+		case 'noun': {
+			let isProper = startsWithCap(form);  // todo: abbrs
+			let type = isProper ? 'p' : 'c';
 
-				let gender = formTag.gender;  // todo: common, pluralia tantum
-				
-				let number_ = formTag.number || 's';
-
-				let case_ = caseMap[formTag.case];
-
-				let animacy = animacyMap[formTag.animacy];
-
-				toret.push('N' + type + gender + number_ + case_ + animacy);
-				break;
+			// todo: common, filter plu tantum
+			let gender = lemmaTag.gender || (lemmaTag.numberTantum === 'ns' ? '-' : null);
+			if (!gender) {
+				throw 'Gender problem…';
 			}
-			case 'verb': {
-				let type = lemma === 'бути' ? 'a' : 'm';
+			let number_ = formTag.number || 's';
+			let case_ = caseMap[formTag.case];
+			let animacy = animacyMap[formTag.animacy];
 
-				let aspect = aspectMap[formTag.aspect];	 // never biaspectual
-				
-				let form = '';  // todo, indicative — якщо не інша, але -но, -то
-				
-				let tense = tenseMap[formTag.tense];
-
-				let person = formTag.person || '-';
-
-				let number_ = '';  // todo
-				
-				let gender = '';
-
-				toret.push('V' + type + aspect + form + tense + person + number_ + gender);
-				break;
-			}
-			case 'adj': {
-				// qualificative/ordinal взяти з наявності форми порівн
-				// загальний??
-				// нема нестягненої взагалі
-				// двовидовість?
-				// чому тут дієприкм?
-				break;
-			}
-			case 'numr': {
-				let type = 'c';  // todo: ordinal
-				
-				let gender = formTag.gender || '-';
-				
-				let number_ = formTag.number || 's';
-				
-				let case_ = caseMap[formTag.case];
-				
-				let animacy = '';  // todo
-				
-				toret.push('Ml' + type + gender + number_ + case_ + animacy)
-				break;
-			}
-			case 'adjp': {
-				break;				
-			}
-			case 'adv':
-				toret.push('R' + (adverbDegreeMap[formTag.degree] || ''));
-				break;
-			case 'prep': {
-				let formation = form.includes('-') ? 'c' : 's';
-
-				for (let rysinCase of formTag.prepositionCases) {
-					let case_ = caseMap[rysinCase];
-					if (!'gdail'.includes(case_)) {
-						throw 'Unexpected case';
-					}
-					toret.push('Sp' + formation + case_);
-				}
-				
-				break;
-			}
-			case 'conj': {
-				let type = сonjunctionTypeMap[formTag.сonjunctionType];  // todo: do all have?
-				let formation = form.includes('-') ? 'c' : 's';
-				
-				toret.push('C' + type + formation);
-				break;
-			}
-			case 'part':
-				toret.push('Q');
-				break;
-			case 'excl':
-				toret.push('I');
-				break;
-
-			default:
-				throw `Unexpected POS tag: "${formTag.pos}"`;
+			toret.push('N' + type + gender + number_ + case_ + animacy);
+			break;
 		}
-	} else {
+		case 'verb': {
+			let type = lemma === 'бути' ? 'a' : 'm';  // todo
+			let aspect = aspectMap[formTag.aspect];
+			let form = verbFormMap[formTag.verbForm] || 'i';
+			let tense = tenseMap[formTag.tense] || '-';
+			let person = formTag.person || '-';
+			let number_ = formTag.number || '-';
+			let gender = formTag.gender || '-';
 
-	}
-		
-	/*} else {
-		let prevConverted = toret[toret.length - 1];
-		switch (secondPosSubtags[0]) {
-			case '&pron':
-				let topush = 'P';
-				
-				// Type
-				topush += pronounType[secondPosSubtags[1]];	 // problems here
-				
-				// Referent_Type
-				topush += '-'; // ?????????????
-				
-				let syntacticType = prevConverted.charAt(0).toLowerCase();
-				if (syntacticType === 'r') {
-					topush += '-----r';
-				} else {
-					
-					// Person
-					topush += topush.charAt(1) === 'p' ? secondPosSubtags[2] : '-';
+			toret.push('V' + type + aspect + form + tense + person + number_ + gender);
+			break;
+		}
+		case 'advp': {
+			let type = 'm';  // todo
+			let aspect = aspectMap[formTag.aspect];
+			let tense = '-';  // todo: за закінченнями?
 
-					// Gender
-					// Animate
-					// Number
-					// Case
-					
-					// Syntactic_Type
-					topush += syntacticType;
+			toret.push('V' + type + aspect + 'g' + tense + '---');
+			break;
+		}
+		case 'adj': {
+			let type = formTag.degree ? 'f' : 'o';
+			let degree = formTag.degree || '-';
+			let gender = formTag.gender || '-';  // todo: загальний??
+			let number_ = formTag.number || 's';
+			let case_ = caseMap[formTag.case];
+			let definiteness = 's';  // todo: додати нестягнену?
+			let animacy = '-';  // todo: wut?
+			
+			toret.push('A' + type + degree + gender + number_ + case_ + definiteness + animacy + '---');
+			break;
+		}
+		case 'adjp': {
+			let gender = formTag.gender || '-';  // todo: загальний буває у дієприкм??
+			let number_ = formTag.number || 's';
+			let case_ = caseMap[formTag.case];
+			let definiteness = 's';  // todo: додати нестягнену?
+			let animacy = '-';  // todo: wut?
+			let aspect = aspectMap[formTag.aspect];
+			let voice = voiceMap[formTag.voice];
+			let tense = formTag.tense === 'past' ? 's' : 'p';  // AR: тимчасово, todo
+			
+			toret.push('Ap-' + gender + number_ + case_ + definiteness + animacy + aspect + voice + tense);
+			break;
+		}
+		case 'numr': {
+			let type = 'c';  // todo: ordinal
+			let gender = formTag.gender || '-';
+			let number_ = formTag.number || 's';
+			let case_ = caseMap[formTag.case];
+			let animacy = '';  // todo
+				
+			toret.push('Ml' + type + gender + number_ + case_ + animacy)
+			break;
+		}
+		case 'adv':
+			toret.push('R' + (adverbDegreeMap[formTag.degree] || ''));
+			break;
+		case 'prep': {
+			let formation = form.includes('-') ? 'c' : 's';
+
+			for (let rysinCase of formTag.prepositionCases) {
+				let case_ = caseMap[rysinCase];
+				if (!'gdail'.includes(case_)) {
+					throw 'Unexpected case';
 				}
+				toret.push('Sp' + formation + case_);
+			}
 
-				toret.push(topush);
-				break;
-			default:
-				throw `Unexpected second POS tag: "${secondPosSubtags[0]}"`;
-		}*/
+			break;
+		}
+		case 'conj': {
+			let type = сonjunctionTypeMap[formTag.сonjunctionType];  // todo: do all have?
+			let formation = form.includes('-') ? 'c' : 's';
+
+			toret.push('C' + type + formation);
+			break;
+		}
+		case 'part':
+			toret.push('Q');
+			break;
+		case 'excl':
+			toret.push('I');
+			break;
+		case '&pron': {
+			let type = pronounTypeMap[formTag.pronounType];  // todo
+			let referentType = '-';  // todo
+			let person = formTag.person || '-';
+			let gender = formTag.gender || '-';
+			let animacy = animacyMap[formTag.animacy] || '-';
+			let number_ = formTag.number || (formTag.gender ? 's' : '-');
+			let case_ = caseMap[formTag.case] || '-';
+			let syntacticType = pronounSyntacticTypeMap[formFlags[0]];
+
+			toret.push('P' + type + referentType + person + gender + animacy + number_ + case_ + syntacticType);
+			break;
+		}
+		default:
+			throw `Unexpected POS tag: "${formTag.pos}"`;
+	}
 
 	return toret;
 }
 
 
 
-// дієприкметник?
-// чому у скорочення немає нічого
-// Abbreviation?
-
-
 
 /*
-	
+
 3.11.3.  Ukrainian Noun
 3.11.4.  Ukrainian Verb
 3.11.5.  Ukrainian Adjective
