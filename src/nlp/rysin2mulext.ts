@@ -15,7 +15,7 @@ const tagMap = {
 	'rv_zna': { feature: 'case', mte: 'a' },
 	'rv_oru': { feature: 'case', mte: 'i' },
 	'rv_mis': { feature: 'case', mte: 'l' },
-	
+
 	'imperf': { feature: 'aspect', mte: 'p' },
 	'perf': { feature: 'aspect', mte: 'e' },
 	
@@ -77,7 +77,7 @@ const tagMap = {
 	'np': { feature: 'numberTantum', mte: null },
 	'ns': { feature: 'numberTantum', mte: null },
 };
-
+//------------------------------------------------------------------------------
 function mapTag(flag: string) {
 	return (flag in tagMap) ? tagMap[flag].mte : null;
 }
@@ -96,7 +96,7 @@ class RysinTag {
 	gender: string;
 	number: string;
 	degree: string;
-	pronounType: string;
+	pronounType: Array<string>;
 	сonjunctionType: string;
 	numberTantum: string;
 
@@ -110,6 +110,9 @@ class RysinTag {
 			if (this.pos === 'prep' && feature === 'case') {
 				this.prepositionCases = this.prepositionCases || new Array<string>();
 				this.prepositionCases.push(flag);
+			} else if (this.pos === '&pron' && feature === 'pronounType') {
+				this.pronounType = this.pronounType || new Array<string>();
+				this.pronounType.push(flag);
 			} else {
 				this[feature] = flag;
 			}
@@ -198,8 +201,8 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			let number_ = formTag.number || 's';
 			let case_ = mapTag(formTag.case);
 			let animacy = '';  // todo
-				
-			toret.push('Ml' + type + gender + number_ + case_ + animacy)
+			
+			toret.push('Ml' + type + gender + number_ + case_ + animacy);
 			break;
 		}
 		case 'adv':
@@ -232,7 +235,6 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			toret.push('I');
 			break;
 		case '&pron': {
-			let type = mapTag(formTag.pronounType);  // todo
 			let referentType = '-';  // todo
 			let person = formTag.person || '-';
 			let gender = formTag.gender || '-';
@@ -240,8 +242,11 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			let number_ = formTag.number || (formTag.gender ? 's' : '-');
 			let case_ = mapTag(formTag.case) || '-';
 			let syntacticType = mapTag(formFlags[0]);
+			
+			for (let type of formTag.pronounType) {
+				toret.push('P' + mapTag(type) + referentType + person + gender + animacy + number_ + case_ + syntacticType);
+			}
 
-			toret.push('P' + type + referentType + person + gender + animacy + number_ + case_ + syntacticType);
 			break;
 		}
 		default:
