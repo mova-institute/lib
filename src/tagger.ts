@@ -16,7 +16,7 @@ export class Tagger {
 	tag(token: string) {
 		let toret = new Set<string>();
 		if (/^\d+$/.test(token)) {
-			return [[token, 'NUM']];
+			return [[token, 'Md']];
 		}
 		
 		for (let completion of this.dawg.completionStrings(token + SEP)) {
