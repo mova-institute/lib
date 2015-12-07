@@ -2,7 +2,7 @@
 const tagMap = {
 	'anim': { feature: 'animacy', mte: 'y' },
 	'inanim': { feature: 'animacy', mte: 'n' },
-	
+
 	'v_naz': { feature: 'case', mte: 'n' },
 	'v_rod': { feature: 'case', mte: 'g' },
 	'v_dav': { feature: 'case', mte: 'd' },
@@ -11,6 +11,7 @@ const tagMap = {
 	'v_mis': { feature: 'case', mte: 'l' },
 	'v_kly': { feature: 'case', mte: 'v' },
 	'rv_naz': { feature: 'case', mte: 'n' }, 	// ?
+	'rv_rod': { feature: 'case', mte: 'g' },
 	'rv_dav': { feature: 'case', mte: 'd' },
 	'rv_zna': { feature: 'case', mte: 'a' },
 	'rv_oru': { feature: 'case', mte: 'i' },
@@ -18,22 +19,22 @@ const tagMap = {
 
 	'imperf': { feature: 'aspect', mte: 'p' },
 	'perf': { feature: 'aspect', mte: 'e' },
-	
+
 	'past': { feature: 'tense', mte: 's' },
 	'pres': { feature: 'tense', mte: 'p' },
 	'futr': { feature: 'tense', mte: 'f' },
-	
+
 	'impr': { feature: 'verbForm', mte: 'm' },
 	'inf': { feature: 'verbForm', mte: 'n' },
 	'impers': { feature: 'verbForm', mte: 'o' },
-	
+
 	'actv': { feature: 'voice', mte: 'a' },
 	'pasv': { feature: 'voice', mte: 'p' },
-	
+
 	'compb': { feature: 'degree', mte: 'p' },
 	'compr': { feature: 'degree', mte: 'c' },
 	'super': { feature: 'degree', mte: 's' },
-	
+
 	'pers': { feature: 'pronounType', mte: 'p' },
 	'refl': { feature: 'pronounType', mte: 'x' },
 	'pos': { feature: 'pronounType', mte: 's' },
@@ -43,11 +44,11 @@ const tagMap = {
 	'neg': { feature: 'pronounType', mte: 'z' },
 	'ind': { feature: 'pronounType', mte: 'i' },
 	'gen': { feature: 'pronounType', mte: 'g' },
-	// ?
+	'def': { feature: 'pronounType', mte: '?' },  // todo
 	
 	'coord': { feature: 'сonjunctionType', mte: 'c' },
 	'subord': { feature: 'сonjunctionType', mte: 's' },
-	
+
 	'noun': { feature: 'pos', mte: 'N' },
 	'&pron': { feature: 'pos', mte: null },
 	'verb': { feature: 'pos', mte: 'V' },
@@ -62,7 +63,7 @@ const tagMap = {
 	'part': { feature: 'pos', mte: 'Q' },
 	'excl': { feature: 'pos', mte: 'I' },
 	'numr': { feature: 'pos', mte: 'M' },
-	
+
 	'm': { feature: 'gender', mte: 'm' },
 	'f': { feature: 'gender', mte: 'f' },
 	'n': { feature: 'gender', mte: 'n' },
@@ -78,8 +79,17 @@ const tagMap = {
 	'ns': { feature: 'numberTantum', mte: null },
 };
 //------------------------------------------------------------------------------
-function mapTag(flag: string) {
+function tryMapTag(flag: string): string {
 	return (flag in tagMap) ? tagMap[flag].mte : null;
+}
+
+function mapTag(flag: string): string {
+	let toret = tryMapTag(flag);
+	if (!toret) {
+		throw new Error(`Unmappable flag: ${flag}`);
+	}
+
+	return toret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,21 +112,22 @@ class RysinTag {
 
 	constructor(flags: Array<string>) {
 		for (let flag of flags) {
-			let feature = tagMap[flag].feature;
-			if (!feature) {
-				throw `Unknown feature for "${flag}"`;
-			}
-
-			if (this.pos === 'prep' && feature === 'case') {
-				this.prepositionCases = this.prepositionCases || new Array<string>();
-				this.prepositionCases.push(flag);
-			} else if (this.pos === '&pron' && feature === 'pronounType') {
-				this.pronounType = this.pronounType || new Array<string>();
-				this.pronounType.push(flag);
-			} else {
-				this[feature] = flag;
+			if (flag in tagMap) {
+				let feature = tagMap[flag].feature;
+				if (this.pos === 'prep' && feature === 'case') {
+					this.pushToArrayFeature('prepositionCases', flag);
+				} else if (feature === 'pronounType') {
+					this.pushToArrayFeature('pronounType', flag);
+				} else {
+					this[feature] = flag;
+				}
 			}
 		}
+	}
+
+	private pushToArrayFeature(feature: string, flag: string) {
+		this[feature] = this[feature] || new Array<string>();
+		this[feature].push(flag);
 	}
 }
 
@@ -128,10 +139,12 @@ class RysinTag {
 export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, formTagStr: string) {
 	let toret = new Array<string>();
 
-	let lemmaFlags = lemmaTagStr.split(':');
-	let formFlags = formTagStr.split(':');
+	let lemmaFlags = lemmaTagStr.split(':');//console.log(lemmaFlags);
+	let formFlags = formTagStr.split(':');//console.log(formFlags);
 	let lemmaTag = new RysinTag(lemmaFlags);
 	let formTag = new RysinTag(formFlags);
+
+
 
 	switch (formTag.pos) {
 		case 'noun': {
@@ -141,10 +154,12 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			// todo: common, filter plu tantum
 			let gender = lemmaTag.gender || (lemmaTag.numberTantum === 'ns' ? '-' : null);
 			if (!gender) {
-				throw 'Gender problem…';
+				//throw 'Gender problem…';
+				//console.error('Gender problem…');
+				gender = '?';
 			}
 			let number_ = formTag.number || 's';
-			let case_ = mapTag(formTag.case);
+			let case_ = /*mapTag(formTag.case)*/ tryMapTag(formTag.case) || '?';
 			let animacy = mapTag(formTag.animacy);
 
 			toret.push('N' + type + gender + number_ + case_ + animacy);
@@ -152,9 +167,9 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 		}
 		case 'verb': {
 			let type = lemma === 'бути' ? 'a' : 'm';  // todo
-			let aspect = mapTag(formTag.aspect);
-			let form = mapTag(formTag.verbForm) || 'i';
-			let tense = mapTag(formTag.tense) || '-';
+			let aspect = /*mapTag(formTag.aspect)*/ tryMapTag(formTag.aspect) || '?';
+			let form = tryMapTag(formTag.verbForm) || 'i';
+			let tense = tryMapTag(formTag.tense) || '-';
 			let person = formTag.person || '-';
 			let number_ = formTag.number || '-';
 			let gender = formTag.gender || '-';
@@ -164,7 +179,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 		}
 		case 'advp': {
 			let type = 'm';  // todo
-			let aspect = mapTag(formTag.aspect);
+			let aspect = /*mapTag(formTag.aspect)*/ tryMapTag(formTag.aspect) || '?';
 			let tense = '-';  // todo: за закінченнями?
 
 			toret.push('V' + type + aspect + 'g' + tense + '---');
@@ -188,9 +203,9 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			let case_ = mapTag(formTag.case);
 			let definiteness = 's';  // todo: додати нестягнену?
 			let animacy = '-';  // todo: wut?
-			let aspect = mapTag(formTag.aspect);
+			let aspect = tryMapTag(formTag.aspect) || '?';  // todo
 			let voice = mapTag(formTag.voice);
-			let tense = formTag.tense === 'past' ? 's' : 'p';  // AR: тимчасово, todo
+			let tense = tryMapTag(formTag.tense) || '?';  // AR: тимчасово, todo
 			
 			toret.push('Ap-' + gender + number_ + case_ + definiteness + animacy + aspect + voice + tense);
 			break;
@@ -199,30 +214,34 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			let type = 'c';  // todo: ordinal
 			let gender = formTag.gender || '-';
 			let number_ = formTag.number || 's';
-			let case_ = mapTag(formTag.case);
+			let case_ = /*mapTag(formTag.case)*/ tryMapTag(formTag.case) || '?' // todo;
 			let animacy = '';  // todo
 			
 			toret.push('Ml' + type + gender + number_ + case_ + animacy);
 			break;
 		}
 		case 'adv':
-			toret.push('R' + (mapTag(formTag.degree) || ''));
+			toret.push('R' + (tryMapTag(formTag.degree) || ''));
 			break;
 		case 'prep': {
 			let formation = form.includes('-') ? 'c' : 's';
 
-			for (let rysinCase of formTag.prepositionCases) {
-				let case_ = mapTag(rysinCase);
-				if (!'gdail'.includes(case_)) {
-					throw 'Unexpected case';
+			if (formTag.prepositionCases) {
+				for (let rysinCase of formTag.prepositionCases) {
+					let case_ = mapTag(rysinCase);
+					if (!'gdail'.includes(case_)) {
+						throw new Error('Unexpected case');
+					}
+					toret.push('Sp' + formation + case_);
 				}
-				toret.push('Sp' + formation + case_);
+			} else {
+				toret.push('Sp' + formation + '?');  // todo
 			}
-
 			break;
 		}
 		case 'conj': {
-			let type = mapTag(formTag.сonjunctionType);  // todo: do all have?
+			let type = /*mapTag(formTag.сonjunctionType)*/
+				tryMapTag(formTag.сonjunctionType) || '?';  // todo	
 			let formation = form.includes('-') ? 'c' : 's';
 
 			toret.push('C' + type + formation);
@@ -238,19 +257,25 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			let referentType = '-';  // todo
 			let person = formTag.person || '-';
 			let gender = formTag.gender || '-';
-			let animacy = mapTag(formTag.animacy) || '-';
+			let animacy = tryMapTag(formTag.animacy) || '-';
 			let number_ = formTag.number || (formTag.gender ? 's' : '-');
-			let case_ = mapTag(formTag.case) || '-';
-			let syntacticType = mapTag(formFlags[0]);
-			
-			for (let type of formTag.pronounType) {
-				toret.push('P' + mapTag(type) + referentType + person + gender + animacy + number_ + case_ + syntacticType);
+			let case_ = tryMapTag(formTag.case) || '-';
+			let syntacticType = mapTag(formFlags[0]).toLocaleLowerCase();
+
+			if (formTag.pronounType) {
+				for (let type of formTag.pronounType) {
+					toret.push('P' + mapTag(type) + referentType + person + gender + animacy + number_ + case_ + syntacticType);
+				}
+			} else {  // todo
+				toret.push('P' + '?' + referentType + person + gender + animacy + number_ + case_ + syntacticType);
 			}
+
 
 			break;
 		}
 		default:
-			throw `Unexpected POS tag: "${formTag.pos}"`;
+			//throw new Error(`Unexpected POS tag: '${formTag.pos}'`);
+			console.log(`Unexpected POS tag: '${formTag.pos}'`);
 	}
 
 	return toret;
