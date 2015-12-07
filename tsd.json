@@ -6,19 +6,19 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     },
     "glob/glob.d.ts": {
-      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     },
     "libxmljs/libxmljs.d.ts": {
-      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     },
     "minimist/minimist.d.ts": {
-      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     },
     "minimatch/minimatch.d.ts": {
-      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     }
   }
 }
