@@ -8,7 +8,8 @@
     "mi-tokenize-autotag": "bin/mi-tokenize-autotag",
     "mi-corpengine-prepare": "bin/mi-corpengine-prepare",
     "mi-enumerate-words": "bin/mi-enumerate-words",
-    "mi-update-dicts": "bin/mi-update-dicts"
+    "mi-update-dicts": "bin/mi-update-dicts",
+    "mi-dict-add-mte": "bin/mi-dict-add-mte"    
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
