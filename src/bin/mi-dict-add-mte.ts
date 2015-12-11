@@ -19,7 +19,12 @@ createInterface({input}).on('line', (line: string) => {
 	}
 	
 	//console.log(lemma, lemmaTag, word, tag);
-	let multextTag = rysin2multext(lemma, lemmaTag, word, tag);
+	try {
+		var multextTag = rysin2multext(lemma, lemmaTag, word, tag);
+	} catch(e) {
+		console.error('EERR!!    ', lemma, lemmaTag, word, tag);
+		///throw e;
+	}
 	
-	output.write(word + ' ' + multextTag.join(',') + ' ' + tag + '\n');
+	output.write(word + ' ' + (multextTag||[]).join(',') + ' ' + tag + '\n');
 });
