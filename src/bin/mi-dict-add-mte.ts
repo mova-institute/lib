@@ -22,7 +22,9 @@ createInterface({input}).on('line', (line: string) => {
 	try {
 		var multextTag = rysin2multext(lemma, lemmaTag, word, tag);
 	} catch(e) {
-		console.error('EERR!!    ', lemma, lemmaTag, word, tag);
+		if (!/\bbad\b/.test(lemmaTag)) {
+			console.error('EERR!!    ', lemma, lemmaTag, word, tag);
+		}
 		///throw e;
 	}
 	
