@@ -35,6 +35,7 @@ const tagMap = {
 	'compr': { feature: 'degree', mte: 'c' },
 	'super': { feature: 'degree', mte: 's' },
 
+	'short': { feature: 'definiteness', mte: 's' },
 	'uncontr': { feature: 'definiteness', mte: 'f' },
 
 	'pers': { feature: 'pronounType', mte: 'p' },
@@ -207,7 +208,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let gender = formTag.gender || '-';
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
-				let definiteness = tryMapTag(formTag.definiteness) || 's';
+				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, case_);
 				let animacy = '';  // todo
 				
 				toret.push('A' + type + degree + gender + number_ + case_ + definiteness + animacy);
@@ -217,7 +218,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let gender = formTag.gender || '-';
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
-				let definiteness = tryMapTag(formTag.definiteness) || 's';
+				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, case_);
 				let animacy = '-';  // todo
 				let aspect = mapTag(formTag.aspect);
 				let voice = mapTag(formTag.voice);
@@ -317,6 +318,14 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 _________3.11.14. Ukrainian Residual
 	
 */
+
+function defaultDefiniteness(gender: string, case_: string) {  // todo: загалний
+	if ((gender === 'f' || gender === 'n') && (case_ === 'n' || case_ === 'a')) {
+		return 's';
+	}
+	
+	return 'f';
+}
 
 function startsWithCap(str: string) {
 		return str.length && str.charAt(0).toLowerCase() !== str.charAt(0);
