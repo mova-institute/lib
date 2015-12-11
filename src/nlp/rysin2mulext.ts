@@ -82,19 +82,6 @@ const tagMap = {
 	'np': { feature: 'numberTantum', mte: null },
 	'ns': { feature: 'numberTantum', mte: null },
 };
-//------------------------------------------------------------------------------
-function tryMapTag(flag: string): string {
-	return (flag in tagMap) ? tagMap[flag].mte : null;
-}
-
-function mapTag(flag: string): string {
-	let toret = tryMapTag(flag);
-	if (!toret) {
-		throw new Error(`Unmappable flag: ${flag}`);
-	}
-
-	return toret;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 class RysinTag {
@@ -156,9 +143,6 @@ class RysinTag {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// NOTES:
-// never biaspectual
-//
 export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, formTagStr: string) {
 	let toret = new Array<string>();
 
@@ -183,7 +167,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				break;
 			}
 			case 'verb': {
-				let type = lemma === 'бути' ? 'a' : 'm';  // todo
+				let type = lemma === 'бути' ? 'a' : 'm';
 				let aspect = mapTag(formTag.aspect);
 				let form = tryMapTag(formTag.verbForm) || 'i';
 				let tense = tryMapTag(formTag.tense) || '-';
@@ -290,6 +274,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 
 				break;
 			}
+			// todo: abbr
 			default:
 			//throw new Error(`Unexpected POS tag: '${formTag.pos}'`);
 			//console.log(`Unexpected POS tag: '${formTag.pos}'`);
@@ -301,24 +286,22 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+function tryMapTag(flag: string): string {
+	return (flag in tagMap) ? tagMap[flag].mte : null;
+}
 
-/*
+////////////////////////////////////////////////////////////////////////////////
+function mapTag(flag: string): string {
+	let toret = tryMapTag(flag);
+	if (!toret) {
+		throw new Error(`Unmappable flag: ${flag}`);
+	}
 
-3.11.3.  Ukrainian Noun
-3.11.4.  Ukrainian Verb
-3.11.5.  Ukrainian Adjective
-3.11.6.  Ukrainian Pronoun
----------3.11.7.  Ukrainian Adverb
----------3.11.8.  Ukrainian Adposition
----------3.11.9.  Ukrainian Conjunction
-3.11.10. Ukrainian Numeral
----------3.11.11. Ukrainian Particle
----------3.11.12. Ukrainian Interjection
-3.11.13. Ukrainian Abbreviation
-_________3.11.14. Ukrainian Residual
-	
-*/
+	return toret;
+}
 
+////////////////////////////////////////////////////////////////////////////////
 function defaultDefiniteness(gender: string, case_: string) {  // todo: загалний
 	if ((gender === 'f' || gender === 'n') && (case_ === 'n' || case_ === 'a')) {
 		return 's';
@@ -327,10 +310,12 @@ function defaultDefiniteness(gender: string, case_: string) {  // todo: зага
 	return 'f';
 }
 
+////////////////////////////////////////////////////////////////////////////////
 function startsWithCap(str: string) {
 		return str.length && str.charAt(0).toLowerCase() !== str.charAt(0);
 }
 
+////////////////////////////////////////////////////////////////////////////////
 function trimTrailingDash(str: string) {
 	for (var i = str.length;
 		i >= 0 && str.charAt(i - 1) === '-'; --i);
