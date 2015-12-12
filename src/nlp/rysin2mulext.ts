@@ -227,17 +227,9 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			case 'prep': {
 				let formation = form.includes('-') ? 'c' : 's';
 
-				if (formTag.prepositionCases) {
-					for (let rysinCase of formTag.prepositionCases) {
-						let case_ = mapTag(rysinCase);
-						if (!'gdail'.includes(case_)) {
-							throw new Error('Unexpected case');
-						}
-						toret.push('Sp' + formation + case_);
-					}
-				} else {
-					throw {};
-					//toret.push('Sp' + formation + '?');  // todo
+				for (let rysinCase of formTag.prepositionCases) {
+					let case_ = mapTag(rysinCase);
+					toret.push('Sp' + formation + case_);
 				}
 				break;
 			}
