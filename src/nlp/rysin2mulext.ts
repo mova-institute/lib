@@ -2,6 +2,8 @@
 const tagMap = {
 	'anim': { feature: 'animacy', mte: 'y' },
 	'inanim': { feature: 'animacy', mte: 'n' },
+	'ranim': { feature: 'animacy', mte: 'y' },
+	'rinanim': { feature: 'animacy', mte: 'n' },
 
 	'v_naz': { feature: 'case', mte: 'n' },
 	'v_rod': { feature: 'case', mte: 'g' },
@@ -193,7 +195,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
 				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, case_);
-				let animacy = '';  // todo
+				let animacy = tryMapTag(formTag.animacy) || '';
 				
 				toret.push('A' + type + degree + gender + number_ + case_ + definiteness + animacy);
 				break;
@@ -203,7 +205,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
 				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, case_);
-				let animacy = '-';  // todo
+				let animacy = tryMapTag(formTag.animacy) || '-';
 				let aspect = mapTag(formTag.aspect);
 				let voice = mapTag(formTag.voice);
 				let tense = tryMapTag(formTag.tense) || '';  // todo
@@ -216,7 +218,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let gender = formTag.gender || '-';
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
-				let animacy = '';  // todo
+				let animacy = tryMapTag(formTag.animacy) || '';
 				
 				toret.push('Ml' + type + gender + number_ + case_ + animacy);
 				break;
