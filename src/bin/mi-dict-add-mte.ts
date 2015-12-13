@@ -10,23 +10,26 @@ let lemma: string;
 let lemmaTag: string;
 createInterface({input}).on('line', (line: string) => {
 	let isLemma = !line.startsWith(' ');
-	let [word, tag] = line.trim().split(' ');
+	let [word, tag] = line.trim().replace('\'', '’').split(' ');
 	if (isLemma) {
 		lemma = word;
 		lemmaTag = tag;
-	} else {
-		output.write('  ');
 	}
 	
 	//console.log(lemma, lemmaTag, word, tag);
 	try {
-		var multextTag = rysin2multext(lemma, lemmaTag, word, tag);
-	} catch(e) {
+		var multextTags = rysin2multext(lemma, lemmaTag, word, tag);
+		for (tag of multextTags) {
+			if (!isLemma) {
+				output.write('  ');  // todo
+			}
+			output.write(word + ' ' + tag + '\n');
+		}
+	}
+	catch(e) {
 		if (!/\bbad\b/.test(lemmaTag)) {
 			console.error('EERR!!    ', lemma, lemmaTag, word, tag);
 		}
-		///throw e;
+		//throw e;
 	}
-	
-	output.write(word + ' ' + (multextTag||[]).join(',') + ' ' + tag + '\n');
 });

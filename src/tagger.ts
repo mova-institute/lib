@@ -7,7 +7,7 @@ export interface Tag {
 	tags: string;
 }
 
-const SEP = ',';
+const SEP = ' ';
 
 export class Tagger {
 

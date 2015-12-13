@@ -4,6 +4,6 @@ let {normalize, dirname} = require('path');
 
 const ROOT = normalize(dirname(__filename) + '/..');
 
-export function createTaggerSync(dawgFilename: string = ROOT + '/data/sheva-dict.dawg'): Tagger {
-	return new Tagger(createCompletionDawgSync(dawgFilename));
+export function createTaggerSync(dawgFilename: string = 'sheva-dict'): Tagger {
+	return new Tagger(createCompletionDawgSync(ROOT + '/data/' + dawgFilename + '.dawg'));
 }

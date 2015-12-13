@@ -5,9 +5,11 @@ import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'
 import {string2lxmlRoot} from '../utils.node'
 import {cantBeXml} from '../xml/utils'
 
+let args = require('minimist')(process.argv.slice(2));
+
 
 let [input, output] = ioArgs();
-let tagger = createTaggerSync();
+let tagger = createTaggerSync(args.dict);
 
 
 

@@ -24,7 +24,7 @@ for (let regex of regexps) {
 		}
 	}
 	if (!wasMatched) {
-		throw Error('No match for ' + regex);
+		throw new Error('No match for ' + regex);
 	}
 }
 

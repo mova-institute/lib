@@ -55,7 +55,7 @@ const tagMap = {
 	'subord': { feature: 'сonjunctionType', mte: 's' },
 
 	'noun': { feature: 'pos', mte: 'N' },
-	'&pron': { feature: 'pos', mte: null },
+	'pron': { feature: 'pos', mte: null },
 	'verb': { feature: 'pos', mte: 'V' },
 	'adj': { feature: 'pos', mte: 'A' },
 	'adjp': { feature: 'pos', mte: null },
@@ -112,9 +112,11 @@ class RysinTag {
 				let feature = tagMap[flag].feature;
 				if (this.pos === 'prep' && feature === 'case') {
 					this.pushToArrayFeature('prepositionCases', flag);
-				} else if (feature === 'pronounType') {
+				}
+				else if (feature === 'pronounType') {
 					this.pushToArrayFeature('pronounType', flag);
-				} else {
+				}
+				else {
 					this[feature] = flag;
 				}
 			}
@@ -158,6 +160,11 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			continue;
 		}
 		
+		if (formTag.pos !== 'pron' && formTag.pos !== 'numr'
+			&& formTag.altPoses && formTag.altPoses.indexOf('pron') >= 0) {
+			continue;  // when &pron present only add main pos if numr
+		}
+
 		switch (formTag.pos) {
 			case 'noun': {
 				let isProper = startsWithCap(form);  // todo: abbrs
@@ -177,9 +184,9 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let aspect = mapTag(formTag.aspect);
 				let form = tryMapTag(formTag.verbForm) || 'i';
 				let tense = tryMapTag(formTag.tense) || '-';
-				let person = formTag.person || '-';
-				let number_ = formTag.number || '-';
-				let gender = formTag.gender || '';
+				let person = tryMapTag(formTag.person) || '-';
+				let number_ = tryMapTag(formTag.number) || formTag.gender ? 's' : '-';
+				let gender = tryMapTag(formTag.gender) || '';
 
 				toret.push(trimTrailingDash('V' + type + aspect + form + tense + person + number_ + gender));
 				break;
@@ -187,14 +194,18 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			case 'advp': {
 				let type = 'm';  // todo: wait for дієслівна лема
 				let aspect = mapTag(formTag.aspect);
-				let tense = '-';  // todo: за закінченнями?
+				if (!lemma.endsWith('чи') && !lemma.endsWith('ши')
+					&& !lemma.endsWith('чись') && !lemma.endsWith('шись')) {
+					throw new Error('');
+				}
+				let tense = (lemma.endsWith('чи') || lemma.endsWith('чись')) ? 'p' : 's';  // todo: за закінченнями?
 	
 				toret.push('V' + type + aspect + 'g' + tense);
 				break;
 			}
 			case 'adj': {
 				let type = formTag.degree ? 'f' : 'o';
-				let degree = formTag.degree || '-';
+				let degree = tryMapTag(formTag.degree) || '-';
 				let gender = formTag.gender || '-';
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
@@ -252,14 +263,14 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 			case 'excl':
 				toret.push('I');
 				break;
-			case '&pron': {
+			case 'pron': {
 				let referentType = '-';  // todo
 				let person = formTag.person || '-';
 				let gender = formTag.gender || '-';
 				let animacy = tryMapTag(formTag.animacy) || '-';
 				let number_ = formTag.number || (formTag.gender ? 's' : '-');
 				let case_ = tryMapTag(formTag.case) || '-';
-				let syntacticType = mapTag(formFlags[0]).toLocaleLowerCase();
+				let syntacticType = mapTag(formTag.shadowPos).toLocaleLowerCase();
 
 				if (formTag.pronounType) {
 					for (let type of formTag.pronounType) {
@@ -269,12 +280,11 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 					toret.push('P' + '?' + referentType + person + gender + animacy + number_ + case_ + syntacticType);
 				}
 
-
 				break;
 			}
 			// todo: abbr
 			default:
-			//throw new Error(`Unexpected POS tag: '${formTag.pos}'`);
+				throw new Error(`Unexpected POS tag: '${formTag.pos}'`);
 			//console.log(`Unexpected POS tag: '${formTag.pos}'`);
 		}
 	}
@@ -328,3 +338,5 @@ function treatSpecialCases(out: Array<string>, form: string, formTag: RysinTag) 
 		return true;
 	}
 }
+
+// todo: його/нього і різні форми з однаковими тегами загалом
