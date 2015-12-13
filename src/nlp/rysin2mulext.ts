@@ -154,6 +154,10 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 	let formTag = new RysinTag(formFlags);
 
 	for (let pos of formTag.poses()) {
+		if (treatSpecialCases(toret, form, formTag)) {
+			continue;
+		}
+		
 		switch (formTag.pos) {
 			case 'noun': {
 				let isProper = startsWithCap(form);  // todo: abbrs
@@ -315,4 +319,12 @@ function trimTrailingDash(str: string) {
 		i >= 0 && str.charAt(i - 1) === '-'; --i);
 	
 	return str.substring(0, i);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function treatSpecialCases(out: Array<string>, form: string, formTag: RysinTag) {
+	if (form === 'незважаючи' && formTag.pos === 'prep') {
+		out.push('Vmpgp');
+		return true;
+	}
 }
