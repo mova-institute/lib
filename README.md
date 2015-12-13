@@ -47,3 +47,6 @@ Their motives <emph rend="italics">might</emph> be pure
 tsd update --save --overwrite
 
 зворотна форма дієслова: в АР є тег, а у нас? — оминути в MT
+
+python real	4m8.794s
+pypy real	5m8.061s
