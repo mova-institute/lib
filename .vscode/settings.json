@@ -4,6 +4,8 @@
 	"files.exclude": {
 		"node_modules": true,
 		"lib": true,
-		"typings": true
+		"typings": true,
+		"**/__pycache__": true,
+		".idea": true
 	}
 }

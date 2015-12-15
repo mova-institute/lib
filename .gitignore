@@ -4,3 +4,8 @@ lib/*
 !lib/package.json
 data/
 *.js.map
+
+**/__pycache__/
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+**/.idea/*.iws
