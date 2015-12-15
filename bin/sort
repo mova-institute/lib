@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
 require('regenerator/runtime.js');
-require('../lib/bin/mi-corpengine-prepare.js');
+require('../lib/bin/sort.js');

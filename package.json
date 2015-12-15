@@ -5,11 +5,11 @@
   "preferGlobal": true,
   "description": "mova.institute libs and cli utils",
   "bin": {
-    "mi-tokenize-autotag": "bin/mi-tokenize-autotag",
-    "mi-corpengine-prepare": "bin/mi-corpengine-prepare",
-    "mi-enumerate-words": "bin/mi-enumerate-words",
-    "mi-update-dicts": "bin/mi-update-dicts",
-    "mi-dict-add-mte": "bin/mi-dict-add-mte"    
+    "mi-tokenize-autotag": "bin/tokenize-autotag",
+    "mi-corpengine-prepare": "bin/corpengine-prepare",
+    "mi-enumerate-words": "bin/enumerate-words",
+    "mi-update-dicts": "bin/update-dicts",
+    "mi-dict-add-mte": "bin/dict-add-mte"    
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

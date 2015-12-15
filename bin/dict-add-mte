@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
 require('regenerator/runtime.js');
-require('../lib/bin/mi-sort.js');
+require('../lib/bin/dict-add-mte.js');
