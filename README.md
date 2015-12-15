@@ -1,5 +1,11 @@
 
 #TODO
+
+##Словник
+- cd out/
+- подвійний рід 
+
+##Це
 - endiannes
 - switch to async
 - streamytize dict json
