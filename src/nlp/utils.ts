@@ -229,10 +229,11 @@ export function enumerateWords(root: IElement) {
   return idGen;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 function normalizeForm(str: string) {
   return cantBeLowerCase(str) ? str : str.toLowerCase()
 }
+////////////////////////////////////////////////////////////////////////////////
 export function getStats(root: IElement) {
   let wordCount = 0;
   let dictUnknownCount = 0;

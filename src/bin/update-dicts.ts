@@ -8,30 +8,34 @@ let mkdirpSync = require('mkdirp').sync;
 let argv = require('minimist')(process.argv.slice(2));
 
 
-
-let reqOptions = <any>parse('https://mova:real-corpus-in-2016!@experimental.mova.institute/files/sheva-dict.dawg');
+let urlBase = 'https://mova:real-corpus-in-2016!@experimental.mova.institute/files/';
+let fileNames = ['sheva.dawg', 'rysin-mte.dawg'];
 
 let dataDir = join(__dirname, '..', '..', 'data');
-let dictPath = join(dataDir, 'sheva-dict.dawg');
 
-if (!argv.force) {
-	let stats = tryStatSync(dictPath);
-	if (stats) {
-		reqOptions.headers = { 'If-Modified-Since': stats.mtime.toUTCString() };
+for (let dictName of fileNames) {
+	let reqOptions = <any>parse(urlBase + dictName);
+
+	let dictPath = join(dataDir, dictName);
+
+	if (!argv.force) {
+		let stats = tryStatSync(dictPath);
+		if (stats) {
+			reqOptions.headers = { 'If-Modified-Since': stats.mtime.toUTCString() };
+		}
 	}
+
+	get(reqOptions, res => {
+		if (res.statusCode === 200) {
+			mkdirpSync(dataDir);
+			res.pipe(createWriteStream(dictPath));
+			console.log('Завантажую словники…');
+		}
+		else if (res.statusCode === 304) {
+			console.log('Немає оновлень словників.');
+		}
+		else {
+			console.error('Unexpected HTTP response code: ', res.statusCode);
+		}
+	});
 }
-
-
-get(reqOptions, res => {
-	if (res.statusCode === 200) {
-		mkdirpSync(dataDir);
-		res.pipe(createWriteStream(dictPath));
-		console.log('Завантажую словники…');
-	}
-	else if (res.statusCode === 304) {
-		console.log('Немає оновлень словників.');
-	}
-	else {
-		console.error('Unexpected HTTP response code: ', res.statusCode);
-	}
-});

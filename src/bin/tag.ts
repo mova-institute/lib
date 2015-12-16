@@ -4,22 +4,34 @@ import {readTillEnd} from '../stream_utils.node'
 import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'
 import {string2lxmlRoot} from '../utils.node'
 import {cantBeXml} from '../xml/utils'
+import {createReadStream} from 'fs'
 
 let args = require('minimist')(process.argv.slice(2));
 
 
-let [input, output] = ioArgs();
-let tagger = createTaggerSync(args.dict);
+// todo: treat same file, temp
 
 
 
 (async () => {
 	try {
-		let inputStr = await readTillEnd(input);
+		let inputStr = args.t || args.text;
+		let output;
+		if (inputStr) {
+			output = args._[0] && createReadStream(args._[0]) || process.stdout;
+		}
+		else {
+			let [input, outputFromIoargs] = ioArgs();
+			output = outputFromIoargs;
+			inputStr = await readTillEnd(input);
+		}
+		
 		if (cantBeXml(inputStr)) {
-			inputStr = '<text>' + inputStr + '</text>';
+			inputStr = '<text xmlns="http://www.tei-c.org/ns/1.0" xmlns:mi="https://mova.institute/ns/mi/1" xml:lang="uk">'
+				+ inputStr + '</text>';
 		}
 		let root = string2lxmlRoot(inputStr);
+		let tagger = createTaggerSync(args.d || args.dict);
 		tokenizeTeiDom(root, tagger);
 		tagTokenizedDom(root, tagger);
 		output.write(root.ownerDocument.serialize());

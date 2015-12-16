@@ -25,7 +25,6 @@
 - kill -i -o cmd args
 - pass dict as arg
 - pack dict in 5mb
-- mi-tokenize-autotag plaintext
 - store dicts outside or persist somehow
 - cmd convinience
 - backup server

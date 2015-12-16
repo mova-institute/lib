@@ -5,7 +5,8 @@
   "preferGlobal": true,
   "description": "mova.institute libs and cli utils",
   "bin": {
-    "mi-tokenize-autotag": "bin/tokenize-autotag",
+    "mi-tag": "bin/tag",
+    "mi-info": "bin/info",
     "mi-corpengine-prepare": "bin/corpengine-prepare",
     "mi-enumerate-words": "bin/enumerate-words",
     "mi-update-dicts": "bin/update-dicts",

@@ -11,7 +11,7 @@ export function ioArgs(): [any, any, Object] {
 			}
 			return [createReadStream(args[0], 'utf8'), process.stdout, args];
 		}
-		else if (args.length === 0 && !process.stdin.isTTY) {
+		else if (args.length === 0) {
 			return [process.stdin, process.stdout, args];
 		}
 		else if (args.length === 2) {
