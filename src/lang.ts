@@ -18,3 +18,8 @@ export function ithGenerated<T>(generator: Iterator<T>, index: number) {
 		map.set(key, [val]);
 	}
 }*/
+
+////////////////////////////////////////////////////////////////////////////////
+export function complement<T>(a: Set<T>, b: Set<T>) {
+	return new Set([...a].filter(x => !b.has(x)));
+}

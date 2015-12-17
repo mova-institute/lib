@@ -162,7 +162,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 		
 		if (formTag.pos !== 'pron' && formTag.pos !== 'numr'
 			&& formTag.altPoses && formTag.altPoses.indexOf('pron') >= 0) {
-			continue;  // when &pron present only add main pos if numr
+			continue;  // when &pron present, only add main pos if numr
 		}
 
 		switch (formTag.pos) {
@@ -185,7 +185,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let form = tryMapTag(formTag.verbForm) || 'i';
 				let tense = tryMapTag(formTag.tense) || '-';
 				let person = tryMapTag(formTag.person) || '-';
-				let number_ = tryMapTag(formTag.number) || formTag.gender ? 's' : '-';
+				let number_ = tryMapTag(formTag.number) || (formTag.gender ? 's' : '-');
 				let gender = tryMapTag(formTag.gender) || '';
 
 				toret.push(trimTrailingDash('V' + type + aspect + form + tense + person + number_ + gender));
@@ -198,7 +198,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 					&& !lemma.endsWith('чись') && !lemma.endsWith('шись')) {
 					throw new Error('');
 				}
-				let tense = (lemma.endsWith('чи') || lemma.endsWith('чись')) ? 'p' : 's';  // todo: за закінченнями?
+				let tense = (lemma.endsWith('чи') || lemma.endsWith('чись')) ? 'p' : 's';  // todo: test
 	
 				toret.push('V' + type + aspect + 'g' + tense);
 				break;
@@ -209,7 +209,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let gender = formTag.gender || '-';
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
-				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, case_);
+				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, number_, case_);
 				let animacy = tryMapTag(formTag.animacy) || '';
 				
 				toret.push('A' + type + degree + gender + number_ + case_ + definiteness + animacy);
@@ -219,7 +219,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 				let gender = formTag.gender || '-';
 				let number_ = formTag.number || 's';
 				let case_ = mapTag(formTag.case);
-				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, case_);
+				let definiteness = tryMapTag(formTag.definiteness) || defaultDefiniteness(gender, number_, case_);
 				let animacy = tryMapTag(formTag.animacy) || '-';
 				let aspect = mapTag(formTag.aspect);
 				let voice = mapTag(formTag.voice);
@@ -310,8 +310,10 @@ function mapTag(flag: string): string {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function defaultDefiniteness(gender: string, case_: string) {  // todo: загалний
-	if ((gender === 'f' || gender === 'n') && (case_ === 'n' || case_ === 'a')) {
+function defaultDefiniteness(gender: string, number_: string, case_: string) {  // todo: загалний
+	if ((gender === 'f' || gender === 'n' || number_ === 'p')
+		&& (case_ === 'n' || case_ === 'a')) {
+			
 		return 's';
 	}
 	
