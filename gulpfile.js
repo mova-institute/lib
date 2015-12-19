@@ -28,18 +28,17 @@ gulp.task('typescript', [], () => {
 	});
 
 	let tsResult = tsProject.src()
-		//.pipe(sourcemaps.init({ debug: true }))
+		.pipe(sourcemaps.init({ debug: true }))
 		.pipe(ts(tsProject));
 	
 	tsResult.dts.pipe(gulp.dest('lib'));
 	
 	return tsResult.js
-		//.pipe(traceur(traceurOptions)/*.on('error', swallowError)*/)
 		.pipe(babel().on('error', swallowError))
-		// .pipe(sourcemaps.write('.', {
-		// 	includeContent: false,
-		// 	sourceRoot: PROJECR_ROOT + '/src'
-		// }))
+		.pipe(sourcemaps.write('.', {
+			includeContent: false,
+			sourceRoot: PROJECR_ROOT + '/src'
+		}))
 		.pipe(gulp.dest('lib'));
 });
 

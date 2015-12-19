@@ -6,8 +6,8 @@
 			"name": "default",
 			"type": "node",
 			"request": "launch",
-			"program": "src/bin/test.ts",
-			"stopOnEntry": true,
+			"program": "src/bin/morphanal.ts",
+			"stopOnEntry": false,
 			"args": [],
 			"cwd": ".",
 			// Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
