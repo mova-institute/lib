@@ -7,32 +7,26 @@
 
 ##Це
 - endiannes
-- switch to async
-- streamytize dict json
 - WCHAR_RE to unicode
 - do type annotate return values?
 - TextEncoder in node?, check http://jsperf.com/nativeencodevsmanual
-- toret vs res
+- toret vs res vs out
 - exceptions in generators and stuff, why not propagated?
 - read on nodejs-browser compartiple code writing
 - xml traversing to generators
 - foreign words
-- namespaces
 - uglify es6
-- how did dawg.has work with rysin's dic at all????
 - short circuit stream slicer
 - traverseDocumentOrder onleave
-- kill -i -o cmd args
-- pass dict as arg
 - pack dict in 5mb
 - store dicts outside or persist somehow
 - cmd convinience
 - backup server
 - isTTY
-- isNs
 - iterable vs iterableiterator vs iterator..?
 - tag name
 - xpath thing
+- gulp sound
 
 - скорочення
 - <supplied>
