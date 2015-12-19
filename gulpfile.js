@@ -24,7 +24,7 @@ function nop() {}
 ////////////////////////////////////////////////////////////////////////////////
 gulp.task('typescript', [], () => {
 	let tsProject = ts.createProject(tsProjectFile, {
-		typesctipt: require('typescript')
+		//typesctipt: require('typescript')
 	});
 
 	let tsResult = tsProject.src()
@@ -53,7 +53,7 @@ gulp.task('cleanup:dist', () => {
 ////////////////////////////////////////////////////////////////////////////////
 gulp.task('typescript:dist', ['cleanup:dist'], () => {
 	let tsProject = ts.createProject(tsProjectFile, {
-		typesctipt: require('typescript')
+		//typesctipt: require('typescript')
 	});
 
 	return tsProject.src()
