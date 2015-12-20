@@ -58,13 +58,13 @@ gulp.task('typescript:dist', ['cleanup:dist'], () => {
 	return tsProject.src()
 		.pipe(ts(tsProject))
 		.js
-		.pipe(babel())
+		.pipe(babel({presets: ['es2015']}))
 		.pipe(uglify())
 		.pipe(gulp.dest('../mi-lib-dist/lib'));
 });
 
 gulp.task('copy:dist', ['cleanup:dist'], () => {
-	return gulp.src(['bin/**', 'data/**', 'package.json', '!data/**'/*sic, tmp*/], { base: '.' })
+	return gulp.src(['bin/**', 'data/dict/**', 'package.json'], { base: '.' })
 		.pipe(gulp.dest('../mi-lib-dist/'));
 });
 
