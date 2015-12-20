@@ -53,3 +53,19 @@ export function* linesSync(filename: string) {  // todo: do not buffer file
 		yield line;
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+function buffer2arrayBuffer(val: Buffer, start = 0, length = val.length) {	// todo: copy 64?
+	let toret = new ArrayBuffer(length);
+	let view = new Uint8Array(toret);
+	for (let i = 0; i < length; ++i) {
+		view[i] = val[start + i];
+	}
+	
+	return toret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function buffer2typedArray(buffer: Buffer, ArrayType, startByte = 0, byteLength = buffer.length) {
+	return new ArrayType(buffer2arrayBuffer(buffer, startByte, byteLength));
+}

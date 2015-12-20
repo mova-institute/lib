@@ -32,33 +32,33 @@ export class CompletionDawg extends Dawg {
 		}
 	}
 
-	*completionStrings(key: string) {
+	/**completionStrings(key: string) {
 		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
 			yield decodeUtf8(completionBytes);
 		}
 	}
 
 	hasKeyWithPrefix(key: string) {
-		return !this.completionStrings(key).next().done;
-	}
+		return !this.completionBytes(encodeUtf8(key)).next().done;
+	}*/
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class BytesDawg extends CompletionDawg {
 	
-	constructor(dic: Dictionary, guide: Guide, private payloadSeparator: number = 0) {
+	constructor(dic: Dictionary, guide: Guide, private payloadSeparator: number = 1) {
 		super(dic, guide);
 	}
 	
 	has(key: string): boolean {
-		return super.has(key + this.payloadSeparator);
+		return !super.completionBytes([...encodeUtf8(key), this.payloadSeparator]).next().done;
 	}
 	
 	*payloadBytes(key: Array<number>) {
 		key.push(this.payloadSeparator);
 		for (let completed of super.completionBytes(key)) {
-			yield b64decodeFromArray(completed);
+			yield b64decodeFromArray(completed.slice(0, -1));  // todo: why \n is there? 
 		}
 	}
 }
@@ -68,7 +68,7 @@ export class BytesDawg extends CompletionDawg {
 export class ObjectDawg<T> extends BytesDawg {
 	
 	constructor(dic: Dictionary, guide: Guide, payloadSeparator: number,
-		private deserializer: (bytes: Uint8Array) => T) {
+		private deserializer: (bytes: ArrayBuffer) => T) {
 		
 		super(dic, guide, payloadSeparator);
 	}

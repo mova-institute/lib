@@ -1,10 +1,11 @@
 import {ioArgs} from '../cli_utils'
-import {createTaggerSync} from '../factories.node'
+import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node'
 import {readTillEnd} from '../stream_utils.node'
 import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'
 import {string2lxmlRoot} from '../utils.node'
 import {cantBeXml} from '../xml/utils'
 import {createReadStream} from 'fs'
+import {join} from 'path';
 
 let args = require('minimist')(process.argv.slice(2));
 
@@ -30,8 +31,12 @@ let args = require('minimist')(process.argv.slice(2));
 			inputStr = '<text xmlns="http://www.tei-c.org/ns/1.0" xmlns:mi="https://mova.institute/ns/mi/1" xml:lang="uk">'
 				+ inputStr + '</text>';
 		}
+    
+    let dictName = args.d || args.dict || 'rysin-mte';
+    let dictDir = join(__dirname, '../../data/dict', dictName);
+		let tagger = createMorphAnalyserSync(dictDir);
+    
 		let root = string2lxmlRoot(inputStr);
-		let tagger = createTaggerSync(args.d || args.dict);
 		tokenizeTeiDom(root, tagger);
 		tagTokenizedDom(root, tagger);
 		output.write(root.ownerDocument.serialize());

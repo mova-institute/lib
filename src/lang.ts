@@ -1,25 +1,41 @@
 export let r = String.raw;
 
 // todo: ...rest?
-export function wrappedOrNull<T>(construct: {new(val): T; }, val) {
+////////////////////////////////////////////////////////////////////////////////
+export function wrappedOrNull<T>(construct: { new (val): T; }, val) {
 	return val ? new construct(val) : null;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export function ithGenerated<T>(generator: Iterator<T>, index: number) {
 	for (var cur = generator.next(); index >= 0 && !cur.done; --index, cur = generator.next());
 	return cur.value;
 }
 
-/*export function newOrPush<K, V>(map: Map<K, Array<V>>, key: K, val: V) {
-	if (map.has(key)) {
-		map.get(key).push(val);
-	}
-	else {
-		map.set(key, [val]);
-	}
-}*/
-
 ////////////////////////////////////////////////////////////////////////////////
 export function complement<T>(a: Set<T>, b: Set<T>) {
 	return new Set([...a].filter(x => !b.has(x)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* zip(...arrays: Array<Array<any>>) {
+	if (arrays && arrays.length) {
+		for (let i = 0; i < arrays[0].length; ++i) {
+			let zipped = [];
+			for (let arr of arrays) {
+				zipped.push(arr[i]);
+			}
+			yield {zipped, i};
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function collectForof<T>(iterator: Iterable<T>) {
+  let toret = new Array<T>();
+  for (let val of iterator) {
+    toret.push(val);
+  }
+  
+  return toret;
 }

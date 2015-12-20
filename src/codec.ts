@@ -97,24 +97,25 @@ export function b64decodeFromArray(b64: Array<number>) {
 		padding = 0;
 	}
 
-	let toret = new Uint8Array(len * 3 / 4 - padding);
+  let toret = new ArrayBuffer(len * 3 / 4 - padding);
+	let view = new Uint8Array(toret);
 
 	let p = 0;
 	let iBound = padding > 0 ? len - 4 : len;
 	for (var i = 0, j = 0; i < iBound; i += 4, j += 3) {
 		let tmp = (decode(b64[i]) << 18) | (decode(b64[i + 1]) << 12) | (decode(b64[i + 2]) << 6) | decode(b64[i + 3]);
-		toret[p++] = (tmp & 0xFF0000) >> 16;
-		toret[p++] = (tmp & 0xFF00) >> 8;
-		toret[p++] = tmp & 0xFF;
+		view[p++] = (tmp & 0xFF0000) >> 16;
+		view[p++] = (tmp & 0xFF00) >> 8;
+		view[p++] = tmp & 0xFF;
 	}
 	if (padding === 2) {
 		let tmp = (decode(b64[i]) << 2) | (decode(b64[i + 1]) >> 4);
-		toret[p++] = (tmp & 0xFF);
+		view[p++] = (tmp & 0xFF);
 	}
 	else if (padding === 1) {
 		let tmp = (decode(b64[i]) << 10) | (decode(b64[i + 1]) << 4) | (decode(b64[i + 2]) >> 2);
-		toret[p++] = ((tmp >> 8) & 0xFF);
-		toret[p++] = tmp & 0xFF;
+		view[p++] = ((tmp >> 8) & 0xFF);
+		view[p++] = tmp & 0xFF;
 	}
 
 	return toret;

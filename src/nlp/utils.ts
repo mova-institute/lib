@@ -1,8 +1,8 @@
 import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
-import {Tagger} from '../tagger'
 import {INode, IElement, IDocument} from '../xml/api/interfaces'
+import {MorphAnalyzer, MorphTag} from './morph_analyzer/morph_analyzer';
 
 
 export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
@@ -118,7 +118,7 @@ export function haveSpaceBetweenEl(a: IElement, b: IElement): boolean {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenizeUk(val: string, tagger: Tagger) {
+export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
   let toret: Array<string> = [];
   let splitRegex = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
 
@@ -126,7 +126,7 @@ export function tokenizeUk(val: string, tagger: Tagger) {
     for (let tok1 of tok0.split(/\s+/)) {
       if (tok1) {
         if (tok1.includes('-')) {
-          if (!(tagger.knows(tok1))) {
+          if (!(analyzer.dictHas(tok1))) {
             toret.push(...tok1.split(/(-)/).filter(x => !!x));
             continue;
           }
@@ -142,7 +142,7 @@ export function tokenizeUk(val: string, tagger: Tagger) {
 ////////////////////////////////////////////////////////////////////////////////
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenizeTeiDom(root: IElement, tagger: Tagger) {
+export function tokenizeTeiDom(root: IElement, tagger: MorphAnalyzer) {
   traverseDepth(root, (node: INode) => {
     if (TOSKIP.has(node.nodeName)) {
       return 'skip';
@@ -183,26 +183,26 @@ export function elementFromToken(token: string, document: IDocument): IElement {
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: IElement, tags) {
+function tagWord(el: IElement, morphTags: Set<MorphTag>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let w_ = el.ownerDocument.createElement('mi:w_'); // todo
   
-  if (!tags.length) {
-    tags.push([el.textContent, 'X']);
+  if (!morphTags.size) {
+    morphTags.add({lemma: el.textContent, tag: 'X'});
     //console.log('Unknown word: "' + el.textContent + '"');
   }
-  for (let tag of tags) {
+  for (let morphTag of morphTags) {
     let w = el.ownerDocument.createElement('w');
     w.textContent = el.textContent;
-    let [lemma, ana] = tag;
+    let {lemma, tag} = morphTag;
     w.setAttribute('lemma', lemma);
-    w.setAttribute('ana', ana);
+    w.setAttribute('ana', tag);
     w_.appendChild(w);
   }
   el.replace(w_);
 }
 ////////////////////////////////////////////////////////////////////////////////
-export function tagTokenizedDom(root: IElement, tagger: Tagger) {
+export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
   traverseDepthEl(root, (node: IElement) => {
     let el = <IElement>node;
     let nameNs = el.nameNs();
@@ -210,7 +210,7 @@ export function tagTokenizedDom(root: IElement, tagger: Tagger) {
       return 'skip';
     }
     if (nameNs === W) {
-      tagWord(el, tagger.tag(el.textContent));
+      tagWord(el, analyzer.tag(el.textContent));
     }
   });
 

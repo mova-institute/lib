@@ -3,7 +3,9 @@
 	"editor.tabSize": 2,
 	"files.exclude": {
 		"node_modules": true,
-		"lib": true,
+		"lib/**/*.js": true,
+		"lib/**/*.map": true,
+		"lib/**/*.d.ts": true,
 		"typings": true,
 		"**/__pycache__": true,
 		".idea": true

@@ -2,6 +2,7 @@ node_modules/
 typings/
 lib/*
 !lib/package.json
+!lib/**/*.py
 data/
 *.js.map
 

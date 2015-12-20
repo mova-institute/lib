@@ -26,8 +26,7 @@ module Unit {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Dictionary {
-	static rootIndex = 0;	// todo: add const,
-												// see https://github.com/Microsoft/TypeScript/issues/4045
+	rootIndex = 0;
 	
 	constructor(private units: Uint32Array) {}
 
@@ -45,7 +44,7 @@ export class Dictionary {
 		return Unit.value(this.units[index ^ Unit.offset(this.units[index])]);
 	}
 	
-	followBytes(bytes: Iterable<number>, index = Dictionary.rootIndex) {
+	followBytes(bytes: Iterable<number>, index = this.rootIndex) {
 		for (let byte of bytes) {
 			if ((index = this.followByte(byte, index)) === null) {
 				return null;

@@ -2,7 +2,7 @@ import {Dictionary} from './dictionary'
 import {Guide} from './guide'
 import {Dawg, CompletionDawg, BytesDawg, ObjectDawg} from './dawg'
 
-import {buffer2typedArray} from '../node_polyfill.node'
+import {buffer2typedArray} from '../utils.node'
 import {readNBytesSync} from '../utils.node'
 
 let {openSync} = require('fs');
@@ -39,8 +39,8 @@ export function createCompletionDawgSync(filename: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function createObjectDawgSync(filename: string, deserializer) {
+export function createObjectDawgSync<T>(filename: string, deserializer: (ArrayBuffer) => T) {
 	let fd = openSync(filename, 'r');
 	
-	return new ObjectDawg(createDictionarySync(fd), createGuideSync(fd), 0, deserializer);
+	return new ObjectDawg<T>(createDictionarySync(fd), createGuideSync(fd), 0b1, deserializer);
 }

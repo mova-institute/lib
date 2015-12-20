@@ -1,4 +1,5 @@
-import {Tagger} from './tagger'
+
+/*
 import {Dictionary} from './dawg/dictionary'
 import {Guide} from './dawg/guide'
 import {Dawg, CompletionDawg} from './dawg/dawg'
@@ -17,4 +18,8 @@ export async function createTagger(dawgUri: string) {
 	let guide = new Guide(new Uint8Array(data, 4 + dicLen*4 + 4, guideLen));
 	
 	return new Tagger(new CompletionDawg(dic, guide));
+  */
+
+export function createMorphAnalyserSync() {
+  
 }
