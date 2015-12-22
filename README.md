@@ -18,7 +18,6 @@
 - uglify es6
 - short circuit stream slicer
 - traverseDocumentOrder onleave
-- pack dict in 5mb
 - store dicts outside or persist somehow
 - cmd convinience
 - backup server

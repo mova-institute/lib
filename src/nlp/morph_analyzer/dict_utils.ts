@@ -1,7 +1,7 @@
 import {JsonCompareMap, NumeratedSet} from '../../data_structures'
 import {longestCommonSubstring} from '../../algo';
 
-export const PARADIGM_PREFIXES = NumeratedSet.fromUniqueArray(['', 'най', 'що'].sort());
+export const PARADIGM_PREFIXES = NumeratedSet.fromUniqueArray([''].sort());  // todo
 export const COMPARATOR = new Intl.Collator('uk-UA').compare;
 
 
