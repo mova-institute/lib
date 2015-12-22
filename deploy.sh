@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ERRORSTRING="Error. Please make sure you've indicated correct parameters"
 REMOTE="ubuntu@mova.institute:/home/ubuntu/mova-institute/mi-lib"
