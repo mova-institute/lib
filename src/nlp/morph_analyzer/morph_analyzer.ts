@@ -46,7 +46,7 @@ export class MorphAnalyzer {
 
     let formSuffix = this.suffixes[paradigm[paraIndex.indexInPradigm]];
     let lemmaSuffix = this.suffixes[paradigm[0]];
-    let lemma = word.slice(0, -formSuffix.length) + lemmaSuffix;
+    let lemma = word.slice(0, -formSuffix.length || word.length) + lemmaSuffix;
     // todo: prefixed
 
     let tag = this.tags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
