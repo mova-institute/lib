@@ -26,6 +26,9 @@ for (let line of linesSync(args.rysin)) {
 for (let [lemma, tags] of lemmataSheva) {
   for (let tag of tags) {
     if (tag && /^A[fo]/.test(tag) && !/^.........a/.test(tag)) {
+      if (tag.startsWith('Ao')) {
+        console.error('ordinal: '+ lemma);
+      }
       let rysins = Array.from(lemmataRysin.get(lemma) || []);
       if (rysins.length
           && rysins.some(x => x.startsWith('Ap'))
