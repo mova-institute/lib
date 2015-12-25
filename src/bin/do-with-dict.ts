@@ -121,6 +121,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
 		  && tagSet.has('impers')
 			&& forms.length === 2
 			&& (forms[0].endsWith('ено') && forms[1].endsWith('уто')
+        || forms[0].endsWith('ено') && forms[1].endsWith('ото')
 				)) {
 			dupTags.delete(tagNorm);
 		}
