@@ -1,98 +1,42 @@
-const TABLE = '0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя';
+import {numericCompare} from './algo';
 
-export function miEncode(str: string) {
-  let toret = new Array<number>();
-  for (let i = 0; i < str.length; ++i) {
-    let c = str.codePointAt(i);
+const TABLE =
+  ' !\'()*+,-./0123456789:;<=>?@' +
+  'АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя’' +
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+  '[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+
+
+let table = TABLE.split('').map(x => x.codePointAt(0));
+let tableSorted = table.slice(0).sort(numericCompare);
+
+const REVERSE_TABLE = new Uint16Array(tableSorted[tableSorted.length - 1] + 1);  // todo
+for (let i = 0, j = 0; i < table.length; ++i) {
+  let c = tableSorted[i];
+  REVERSE_TABLE.fill(-1, j, c);
+  REVERSE_TABLE[c] = table.indexOf(c);
+  j = c + 1;
+}
+//console.log(REVERSE_TABLE);
+const TABLE_SHIFT = 2;
+
+////////////////////////////////////////////////////////////////////////////////
+export function miDecode(bytes: Array<number>) {
+  let out = '';
+  for (let byte of bytes) {
+    out += TABLE.charAt(byte - TABLE_SHIFT);
   }
-  
-  return toret;
+
+  return out;
 }
 
-/*
+////////////////////////////////////////////////////////////////////////////////
+export function miEncode(str: string) {
+  let out = new Array<number>();
+  for (let i = 0; i < str.length; ++i) {
+    let c = str.codePointAt(i);
+    out.push(REVERSE_TABLE[c] + TABLE_SHIFT); // todo ’, sparse array
+  }
 
-0 => 48
-1 => 49
-2 => 50
-3 => 51
-4 => 52
-5 => 53
-6 => 54
-7 => 55
-8 => 56
-9 => 57
-
-А => 1040
-Б => 1041
-В => 1042
-Г => 1043
-
-Ґ => 1168
-
-Д => 1044
-Е => 1045
-
-Є => 1028
-
-Ж => 1046
-З => 1047
-И => 1048
-
-І => 1030
-Ї => 1031
-
-Й => 1049
-К => 1050
-Л => 1051
-М => 1052
-Н => 1053
-О => 1054
-П => 1055
-Р => 1056
-С => 1057
-Т => 1058
-У => 1059
-Ф => 1060
-Х => 1061
-Ц => 1062
-Ч => 1063
-Ш => 1064
-Щ => 1065
-Ь => 1068
-Ю => 1070
-Я => 1071
-а => 1072
-б => 1073
-в => 1074
-г => 1075
-ґ => 1169
-д => 1076
-е => 1077
-є => 1108
-ж => 1078
-з => 1079
-и => 1080
-і => 1110
-ї => 1111
-й => 1081
-к => 1082
-л => 1083
-м => 1084
-н => 1085
-о => 1086
-п => 1087
-р => 1088
-с => 1089
-т => 1090
-у => 1091
-ф => 1092
-х => 1093
-ц => 1094
-ч => 1095
-ш => 1096
-щ => 1097
-ь => 1100
-ю => 1102
-я => 1103
-
-*/
+  return out;
+}

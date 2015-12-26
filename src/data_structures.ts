@@ -1,19 +1,6 @@
 import {zip} from './lang'
 
 
-/*////////////////////////////////////////////////////////////////////////////////
-export function linearizeWide(arrays: Array<Array<number>>, base = Uint32Array) {
-  let linearLength = arrays.length * arrays[0].length;
-  let toret = new base(linearLength);
-  for (let {zipped} of zip(arrays)) {
-    for (let num of zipped) {
-      toret[toret.length] = num;
-    }
-  }
-  
-  return toret;
-}*/
-
 ////////////////////////////////////////////////////////////////////////////////
 export interface IMap<K, V> {
   has(key: K): boolean;

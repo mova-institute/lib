@@ -39,6 +39,10 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
 		
 		for (let i = 0; i < forms.length; ++i) {
 			allWords.push([forms[i], paradigmId, i]);
+      /*let topush = [...miEncode(forms[i]), 1,
+        ...b64encode([...num2Uint16BytesBE(paradigmId), ...num2Uint16BytesBE(i)])];
+      allWords.push(topush);
+      //console.log(topush);*/
 		}
 	}
 	

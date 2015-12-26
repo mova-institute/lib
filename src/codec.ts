@@ -1,54 +1,78 @@
 ////////////////////////////////////////////////////////////////////////////////
-export function encodeUtf8(str: string) {	// todo: more octets?
-	let out = new Array<number>();
-	let p = 0;
-	for (let i = 0; i < str.length; ++i) {
-		let c = str.charCodeAt(i);
-		if (c < 128) {
-			out[p++] = c;
-		}
-		else if (c < 2048) {
-			out[p++] = (c >>> 6) | 192;
-			out[p++] = (c & 63) | 128;
-		}
-		else {
-			out[p++] = (c >>> 12) | 224;
-			out[p++] = ((c >>> 6) & 63) | 128;
-			out[p++] = (c & 63) | 128;
-		}
-	}
+export function num2Uint16BytesBE(num: number) {
+  let out = new Uint8Array(2);
+  new DataView(out.buffer).setUint16(0, num);
 
-	return out;
+  return out;
+}
+
+/*////////////////////////////////////////////////////////////////////////////////
+export function nonzeroBytesEncode(bytes: Array<number>) {
+  let overflow = 0;
+  for (let i = 0; i < bytes.length; ++i) {
+    overflow = bytes[i] += 1 + overflow;
+    overflow = ~~(overflow / 255) * (overflow % 255);
+    bytes[i] -= overflow;
+  }
+  if (overflow) {
+    bytes.push(overflow);  // todo
+  }
+  
+  return bytes;
+}*/
+
+////////////////////////////////////////////////////////////////////////////////
+export function encodeUtf8(str: string) {	// todo: more octets?
+  let out = new Array<number>();
+  let p = 0;
+  for (let i = 0; i < str.length; ++i) {
+    let c = str.charCodeAt(i);
+    if (c < 128) {
+      out[p++] = c;
+    }
+    else if (c < 2048) {
+      out[p++] = (c >>> 6) | 192;
+      out[p++] = (c & 63) | 128;
+    }
+    else {
+      out[p++] = (c >>> 12) | 224;
+      out[p++] = ((c >>> 6) & 63) | 128;
+      out[p++] = (c & 63) | 128;
+    }
+  }
+
+  return out;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function decodeUtf8(bytes: Array<number>) {
-	
-	let toret = '';
-	for (let i = 0; i < bytes.length; ) {
-		let c = bytes[i];
 
-		if (c < 128) {
-			toret += String.fromCharCode(c);
-			++i;
-		}
-		else if ((c > 191) && (c < 224)) {
-			let c2 = bytes[i +1];
-			toret += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-			i += 2;
-		}
-		else {
-			let c2 = bytes[i + 1];
-			let c3 = bytes[i + 2];
-			toret += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-			i += 3;
-		}
-	}
+  let toret = '';
+  for (let i = 0; i < bytes.length;) {
+    let c = bytes[i];
 
-	return toret;
+    if (c < 128) {
+      toret += String.fromCharCode(c);
+      ++i;
+    }
+    else if ((c > 191) && (c < 224)) {
+      let c2 = bytes[i + 1];
+      toret += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+      i += 2;
+    }
+    else {
+      let c2 = bytes[i + 1];
+      let c3 = bytes[i + 2];
+      toret += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+      i += 3;
+    }
+  }
+
+  return toret;
 }
 
 
+const BASIS_64 = ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/').split('').map(x => x.codePointAt(0));
 const PLUS = '+'.charCodeAt(0);
 const SLASH = '/'.charCodeAt(0);
 const NUMBER = '0'.charCodeAt(0);
@@ -58,65 +82,98 @@ const PLUS_URL_SAFE = '-'.charCodeAt(0);
 const SLASH_URL_SAFE = '_'.charCodeAt(0);
 const PADD = '='.charCodeAt(0);
 
-function decode(code: number) {
-	if (code === PLUS || code === PLUS_URL_SAFE) {
-		return 62;	// '+'
-	}
-	if (code === SLASH || code === SLASH_URL_SAFE) {
-		return 63;	 // '/'
-	}
-	if (code < NUMBER + 10) {
-		return code - NUMBER + 26 + 26;
-	}
-	if (code < UPPER + 26) {
-		return code - UPPER;
-	}
-	if (code < LOWER + 26) {
-		return code - LOWER + 26;
-	}
-	if (code < NUMBER) {
-		throw '';  //return -1;	// no match
-	}
+function b64decode(code: number) {
+  if (code === PLUS || code === PLUS_URL_SAFE) {
+    return 62;	// '+'
+  }
+  if (code === SLASH || code === SLASH_URL_SAFE) {
+    return 63;	 // '/'
+  }
+  if (code < NUMBER + 10) {
+    return code - NUMBER + 26 + 26;
+  }
+  if (code < UPPER + 26) {
+    return code - UPPER;
+  }
+  if (code < LOWER + 26) {
+    return code - LOWER + 26;
+  }
+  if (code < NUMBER) {
+    throw '';  //return -1;	// no match
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function b64decodeFromArray(b64: Array<number>) {
-	let len = b64.length;
+  let len = b64.length;
 
-	if (len % 4 > 0) {
-		throw new Error('Invalid string. Length must be a multiple of 4');
-	}
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4');
+  }
 
-	if (b64[len - 2] === PADD) {
-		var padding = 2;
-	}
-	else if (b64[len - 1] === PADD) {
-		padding = 1;
-	}
-	else {
-		padding = 0;
-	}
+  if (b64[len - 2] === PADD) {
+    var padding = 2;
+  }
+  else if (b64[len - 1] === PADD) {
+    padding = 1;
+  }
+  else {
+    padding = 0;
+  }
 
   let toret = new ArrayBuffer(len * 3 / 4 - padding);
-	let view = new Uint8Array(toret);
+  let view = new Uint8Array(toret);
 
-	let p = 0;
-	let iBound = padding > 0 ? len - 4 : len;
-	for (var i = 0, j = 0; i < iBound; i += 4, j += 3) {
-		let tmp = (decode(b64[i]) << 18) | (decode(b64[i + 1]) << 12) | (decode(b64[i + 2]) << 6) | decode(b64[i + 3]);
-		view[p++] = (tmp & 0xFF0000) >> 16;
-		view[p++] = (tmp & 0xFF00) >> 8;
-		view[p++] = tmp & 0xFF;
-	}
-	if (padding === 2) {
-		let tmp = (decode(b64[i]) << 2) | (decode(b64[i + 1]) >> 4);
-		view[p++] = (tmp & 0xFF);
-	}
-	else if (padding === 1) {
-		let tmp = (decode(b64[i]) << 10) | (decode(b64[i + 1]) << 4) | (decode(b64[i + 2]) >> 2);
-		view[p++] = ((tmp >> 8) & 0xFF);
-		view[p++] = tmp & 0xFF;
-	}
+  let p = 0;
+  let iBound = padding > 0 ? len - 4 : len;
+  for (var i = 0, j = 0; i < iBound; i += 4, j += 3) {
+    let tmp = (b64decode(b64[i]) << 18) | (b64decode(b64[i + 1]) << 12) | (b64decode(b64[i + 2]) << 6) | b64decode(b64[i + 3]);
+    view[p++] = (tmp & 0xFF0000) >> 16;
+    view[p++] = (tmp & 0xFF00) >> 8;
+    view[p++] = tmp & 0xFF;
+  }
+  if (padding === 2) {
+    let tmp = (b64decode(b64[i]) << 2) | (b64decode(b64[i + 1]) >> 4);
+    view[p++] = (tmp & 0xFF);
+  }
+  else if (padding === 1) {
+    let tmp = (b64decode(b64[i]) << 10) | (b64decode(b64[i + 1]) << 4) | (b64decode(b64[i + 2]) >> 2);
+    view[p++] = ((tmp >> 8) & 0xFF);
+    view[p++] = tmp & 0xFF;
+  }
 
-	return toret;
+  return toret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function b64encode(bytes: Array<number>) {
+  let out = new Array<number>();
+  let cursor = 0;
+  for (let i = 0; i < bytes.length / 3; ++i) {
+    var temp = bytes[cursor++] << 16; //Convert to big endian
+    temp += bytes[cursor++] << 8;
+    temp += bytes[cursor++];
+    out.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
+    out.push(BASIS_64[(temp & 0x0003F000) >> 12]);
+    out.push(BASIS_64[(temp & 0x00000FC0) >> 6]);
+    out.push(BASIS_64[(temp & 0x0000003F)]);
+  }
+  switch (bytes.length % 3) {
+    case 1:
+      temp = bytes[cursor++] << 16; //Convert to big endian
+      out.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
+      out.push(BASIS_64[(temp & 0x0003F000) >> 12]);
+      out.push(PADD, PADD);
+      break;
+    case 2:
+      temp = bytes[cursor++] << 16; //Convert to big endian
+      temp += bytes[cursor++] << 8;
+      out.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
+      out.push(BASIS_64[(temp & 0x0003F000) >> 12]);
+      out.push(BASIS_64[(temp & 0x00000FC0) >> 6]);
+      out.push(PADD);
+      break;
+  }
+
+  return out;
 }

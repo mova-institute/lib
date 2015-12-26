@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
+
 import sys
-import os
-import struct
 import json
 import dawg
 
@@ -17,4 +16,3 @@ with open(base + '/words.dawg.json') as file:
 
     dwg = dawg.RecordDAWG('>HH', dawg_data)
     dwg.write(open(base + '/words.dawg', 'wb'))
-    os.remove(base + '/words.dawg.json')

@@ -19,7 +19,3 @@ export async function createTagger(dawgUri: string) {
 	
 	return new Tagger(new CompletionDawg(dic, guide));
   */
-
-export function createMorphAnalyserSync() {
-  
-}
