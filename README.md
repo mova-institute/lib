@@ -1,9 +1,6 @@
 
 #TODO
 
-##Словник
-- cd out/
-- подвійний рід 
 
 ##Це
 - endiannes
@@ -37,9 +34,6 @@ grunt custom:-ajax,-ajax/xhr,-ajax/script,-ajax/jsonp,-css,-css/showHide,-deprec
 
 compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 
-<term xml:lang="la">ex post facto</term>
-Their motives <emph rend="italics">might</emph> be pure
-<div xml:base="http://www.example.org/somewhere.xml">
 
 
 tsd update --save --overwrite
