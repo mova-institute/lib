@@ -35,7 +35,6 @@
     "glob": "^6.0.1",
     "libxmljs": "^0.16.1",
     "minimist": "^1.2.0",
-    "mkdirp": "^0.5.1",
-    "regenerator": "^0.8.42"
+    "mkdirp": "^0.5.1"
   }
 }

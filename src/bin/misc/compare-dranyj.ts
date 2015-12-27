@@ -1,4 +1,3 @@
-//require('regenerator/runtime.js');  // todo
 import {linesSync} from '../../utils.node';
 
 let args = require('minimist')(process.argv.slice(2));

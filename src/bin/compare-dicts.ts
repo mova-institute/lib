@@ -1,5 +1,3 @@
-require('regenerator/runtime.js');  // todo
-
 import {linesSync} from '../utils.node';
 import {complement} from '../lang';
 import {writeFileSync} from 'fs';
