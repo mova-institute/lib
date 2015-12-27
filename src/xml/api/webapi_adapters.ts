@@ -1,6 +1,7 @@
-import {IDocument, INode, IElement} from './interfaces'
-import {lang, nameNs} from '../utils'
-import {wrappedOrNull} from '../../lang' 
+import {IDocument, INode, IElement} from './interfaces';
+import {lang, nameNs} from '../utils';
+import {wrappedOrNull} from '../../lang';
+import {getXmlSerializer} from '../../utils.web';
 
 
 // todo: get rid of (<Element>this.underlying)
@@ -12,7 +13,7 @@ export function $el(element: Element) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class WebapiDocument implements IDocument {
-	constructor(private underlying: Document) { }
+	constructor(public underlying: Document) { }
 
 	get documentElement() {
 		return wrappedOrNull(WebapiElement, this.underlying.documentElement);
@@ -23,7 +24,7 @@ export class WebapiDocument implements IDocument {
 	}
 
 	serialize() {
-		return new XMLSerializer().serializeToString(this.underlying);
+		return getXmlSerializer().serializeToString(this.underlying);
 	}
 	
 	xpath(xpath: string) {

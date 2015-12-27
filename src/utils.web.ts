@@ -1,4 +1,18 @@
 ////////////////////////////////////////////////////////////////////////////////
+let xmlSerializer;
+//------------------------------------------------------------------------------
+export function getXmlSerializer() {
+  return xmlSerializer || (xmlSerializer = new XMLSerializer());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+let domParser;
+//------------------------------------------------------------------------------
+export function getDomParser() {
+  return domParser || (domParser = new DOMParser());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 function dataDownloadOrOpen(data, mime: string, filename?: string) {
 	let blob = new Blob([data], { type: mime });
 	let a = document.createElement('a');
