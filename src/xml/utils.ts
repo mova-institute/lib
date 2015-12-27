@@ -101,6 +101,24 @@ export function traverseDocumentOrderEl(node: INode, onEnter: (el: IElement) => 
   traverseDocumentOrder(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function walkUpUntil(node, predicate: (node) => boolean) {
+  while (node && predicate(node.parentNode)) {
+    node = node.parentNode;
+  }
+  
+  return node;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function nLevelsDeep(node, n: number) {
+  while (node && n--) {
+    node = node.firstChild;  // todo: element?
+  }
+  
+  return node;
+}
+
 // ////////////////////////////////////////////////////////////////////////////////
 // export function nextEl(base: Element, predicate: Function) {
 //   for (var toret = base.nextElementSibling; toret; toret = base.nextElementSibling) {
@@ -131,7 +149,10 @@ export function lang(node: INode): string {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 function callbackIfElement(cb) {
   return node => {

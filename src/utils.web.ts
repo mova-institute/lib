@@ -1,15 +1,23 @@
 ////////////////////////////////////////////////////////////////////////////////
-let xmlSerializer;
-//------------------------------------------------------------------------------
-export function getXmlSerializer() {
+let xmlSerializer: XMLSerializer;
+function getXmlSerializer() {
   return xmlSerializer || (xmlSerializer = new XMLSerializer());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-let domParser;
-//------------------------------------------------------------------------------
-export function getDomParser() {
+let domParser: DOMParser;
+function getDomParser() {
   return domParser || (domParser = new DOMParser());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function parseXml(str: string) {
+  return getDomParser().parseFromString(str, 'application/xml');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function serializeXml(node: Node) {
+  return getXmlSerializer().serializeToString(node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

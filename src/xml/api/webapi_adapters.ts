@@ -1,7 +1,7 @@
 import {IDocument, INode, IElement} from './interfaces';
 import {lang, nameNs} from '../utils';
 import {wrappedOrNull} from '../../lang';
-import {getXmlSerializer} from '../../utils.web';
+import {serializeXml} from '../../utils.web';
 
 
 // todo: get rid of (<Element>this.underlying)
@@ -24,7 +24,7 @@ export class WebapiDocument implements IDocument {
 	}
 
 	serialize() {
-		return getXmlSerializer().serializeToString(this.underlying);
+		return serializeXml(this.underlying);
 	}
 	
 	xpath(xpath: string) {
