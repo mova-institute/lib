@@ -222,7 +222,7 @@ export function enumerateWords(root: IElement) {
   let idGen = 0;
   traverseDepthEl(root, el => {
     if (el.nameNs() === W_) {
-      el.setAttribute('word-id', (idGen++).toString());
+      el.setAttribute('n', (idGen++).toString());
     }
   });
   
