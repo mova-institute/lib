@@ -1,8 +1,8 @@
-import {LibxmlDocument, LibxmlElement} from './xml/api/libxmljs_adapters'
+import {LibxmlDocument, LibxmlElement} from './xml/api/libxmljs_adapters';
 import {createReadStream, createWriteStream, readFileSync, writeFileSync, readSync, Stats, statSync} from 'fs';
-import {parseXmlString} from 'libxmljs'
-import {readTillEnd} from './stream_utils.node'
-import {createInterface} from 'readline'
+import {parseXmlString} from 'libxmljs';
+import {readTillEnd} from './stream_utils.node';
+import {createInterface} from 'readline';
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function stream2lxmlRoot(stream) {
@@ -51,6 +51,16 @@ export function tryStatSync(path: string): Stats {
 export function* linesSync(filename: string) {  // todo: do not buffer file
 	for (let line of readFileSync(filename, 'utf8').split('\n')) {
 		yield line;
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+export function* nonemptyLinesSync(filename: string) {
+	for (let line of linesSync(filename)) {
+    if (line) {
+		  yield line;
+    }
 	}
 }
 

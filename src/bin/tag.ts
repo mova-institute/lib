@@ -1,10 +1,10 @@
-import {ioArgs} from '../cli_utils'
-import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node'
-import {readTillEnd} from '../stream_utils.node'
-import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils'
-import {string2lxmlRoot} from '../utils.node'
-import {cantBeXml} from '../xml/utils'
-import {createReadStream} from 'fs'
+import {ioArgs} from '../cli_utils';
+import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
+import {readTillEnd} from '../stream_utils.node';
+import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils';
+import {string2lxmlRoot} from '../utils.node';
+import {cantBeXml} from '../xml/utils';
+import {createReadStream} from 'fs';
 import {join} from 'path';
 
 let args = require('minimist')(process.argv.slice(2));

@@ -2,6 +2,27 @@ import {zip} from './lang'
 
 
 ////////////////////////////////////////////////////////////////////////////////
+export class JsonCompareSet<T> {
+  private map = new Map<string, T>();
+  constructor(iterable?: Iterable<T>) {
+    //super(iterable);  // todo
+  }
+  
+  add(value: T) {
+    this.map.set(JSON.stringify(value), value);
+    return this;
+  }
+  
+  keys() {
+    return this.map.values();
+  }
+  
+  values() {
+    return this.map.values();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export interface IMap<K, V> {
   has(key: K): boolean;
   get(key: K): V;

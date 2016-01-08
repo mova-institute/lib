@@ -5,7 +5,7 @@ import {INode, IElement, IDocument} from '../xml/api/interfaces'
 import {MorphAnalyzer, MorphTag} from './morph_analyzer/morph_analyzer';
 
 
-export const WCHAR = r`\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
+export const WCHAR = r `\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
 export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
 
 //export const NOSPACE_ABLE_ELEMS
@@ -19,25 +19,25 @@ const ELEMS_BREAKING_SENTENCE = new Set([
 ]);
 
 const PUNC_REGS = [
-  r`„`,
-  r`“`,
-  r`”`,
-  r`«`,
-  r`»`,
-  r`\(`,
-  r`\)`,
-  r`\[`,
-  r`\]`,
-  r`\.`,
-  r`\.{4,}`,
-  r`…`,
-  r`:`,
-  r`;`,
-  r`,`,
-  r`[!?]+`,
-  r`!\.{2,}`,
-  r`\?\.{2,}`,
-  r`—`,
+  r `„`,
+  r `“`,
+  r `”`,
+  r `«`,
+  r `»`,
+  r `\(`,
+  r `\)`,
+  r `\[`,
+  r `\]`,
+  r `\.`,
+  r `\.{4,}`,
+  r `…`,
+  r `:`,
+  r `;`,
+  r `,`,
+  r `[!?]+`,
+  r `!\.{2,}`,
+  r `\?\.{2,}`,
+  r `—`,
 ];
 const ANY_PUNC = PUNC_REGS.join('|');
 const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`);
@@ -188,7 +188,7 @@ function tagWord(el: IElement, morphTags: Set<MorphTag>) {
   let w_ = el.ownerDocument.createElement('mi:w_'); // todo
   
   if (!morphTags.size) {
-    morphTags.add({lemma: el.textContent, tag: 'X'});
+    morphTags.add({ lemma: el.textContent, tag: 'X' });
     //console.log('Unknown word: "' + el.textContent + '"');
   }
   for (let morphTag of morphTags) {
@@ -225,7 +225,7 @@ export function enumerateWords(root: IElement) {
       el.setAttribute('n', (idGen++).toString());
     }
   });
-  
+
   return idGen;
 }
 
@@ -251,7 +251,7 @@ export function getStats(root: IElement) {
       ++dictUnknownCount;
     }
   });
-  
+
   return {
     wordCount,
     dictUnknownCount,
@@ -266,4 +266,20 @@ export function cantBeLowerCase(word: string) {
   }
   let subsr = word.substr(1);
   return subsr !== subsr.toLowerCase();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* dictFormLemmaTag(lines: Array<string>) {
+  let lemma;
+  for (let line of lines) {
+    let isLemma = !line.startsWith(' ');
+    line = line.trim();
+    if (line) {
+      let [form, tag] = line.split(' ');
+      if (isLemma) {
+        lemma = form;
+      }
+      yield { form, lemma, tag };
+    }
+  }
 }

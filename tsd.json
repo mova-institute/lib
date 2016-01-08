@@ -6,19 +6,25 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
     },
     "glob/glob.d.ts": {
-      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
     },
     "libxmljs/libxmljs.d.ts": {
-      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
     },
     "minimist/minimist.d.ts": {
-      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
     },
     "minimatch/minimatch.d.ts": {
-      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+    },
+    "tmp/tmp.d.ts": {
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+    },
+    "pg/pg.d.ts": {
+      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
     }
   }
 }

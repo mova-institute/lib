@@ -17,4 +17,4 @@ let a: Node;
 
 traverseDepth(root, (node: INode) => {
 	console.log(node.lang());
-})
+});

@@ -1,0 +1,200 @@
+import {stream2lxmlRoot, nonemptyLinesSync, filename2lxmlRootSync} from './utils.node';
+import {IElement} from './xml/api/interfaces';
+import {readTillEnd} from './stream_utils.node';
+import {JsonCompareSet} from './data_structures';
+import {dictFormLemmaTag} from './nlp/utils';
+import {traverseDocumentOrderEl} from './xml/utils';
+import {readFileSync, createWriteStream, renameSync} from 'fs';
+import {join} from 'path';
+import * as tmp from 'tmp';
+
+
+tmp.setGracefulCleanup();
+////////////////////////////////////////////////////////////////////////////////
+export function ugtag2mi(input, output) {
+  (async () => {
+    try {
+      let root = await stream2lxmlRoot(input);
+      output.write(root.ownerDocument.serialize());
+    }
+    catch (e) {
+      console.error(e.stack);
+    }
+  })();
+}
+
+function _ugtag2mi(root: IElement) {
+
+}
+
+function isOpenClassTag(tag: string) {
+  return tag.startsWith('N') || tag.startsWith('V') || tag.startsWith('A') || tag.startsWith('R');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function ugtag2tt(args) {
+  let lines = readFileSync(args.dict, 'utf-8').trim().replace('\'', '’').split('\n');
+  let map = new Map<string, Set<string>>();
+  let openClassTags = new Set<string>();
+  for (let line of lines) {
+    if (line && !line.includes(' ')) {
+      let [form, lemma, tag] = line.split(',');
+      if (isOpenClassTag(tag)) {
+        openClassTags.add(tag);
+      }
+      let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
+      if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+        set.add(tag + ' ' + lemma);
+      }
+    }
+  }
+
+
+  console.log('reading training data…');
+  let tmpName;
+  let root = filename2lxmlRootSync(args.train);
+  let out = createWriteStream(tmpName = tmp.tmpNameSync());
+  try {
+    traverseDocumentOrderEl(root, el => {
+      if (el.localName === 'w') {
+        let tag = el.getAttribute('ana');
+        let form = el.textContent;
+        let lemma = el.getAttribute('lemma');
+        if (isOpenClassTag(tag)) {
+          openClassTags.add(tag);
+        }
+        let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
+        if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+          set.add(tag + ' ' + lemma);
+        }
+        out.write(form + '\t' + tag + '\n');
+      }
+      else if (el.localName === 'c') {
+        out.write(el.textContent + '\tPUN\n');
+      }
+    });
+  }
+  catch (e) {
+    
+  }
+  renameSync(tmpName, join(args.out, 'tt-train.txt'));
+
+
+  tmpName = tmp.tmpNameSync();
+  out = createWriteStream(tmpName);
+  for (let [form, iterpretaions] of map) {
+    out.write(form + '\t');
+    out.write(Array.from(iterpretaions).join('\t'));
+    out.write('\n');
+  }
+  out.write('гарнорото\tR гарнорото\n');
+  ttWriteOther(out);
+  renameSync(tmpName, join(args.out, 'tt-lexicon.txt'));
+
+
+  out = createWriteStream(tmpName = tmp.tmpNameSync());
+  out.write(Array.from(openClassTags).join(' '));
+  renameSync(tmpName, join(args.out, 'tt-open-class-tags.txt'));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function shevaCsv2ttLexicon(input, output) {
+  let lines = (await readTillEnd(input)).trim().replace('\'', '’').split('\n');
+  let map = new Map<string, Set<string>>();
+  for (let line of lines) {
+    if (line && !line.includes(' ')) {
+      let [form, lemma, tag] = line.split(',');
+      let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
+      if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+        set.add(tag + ' ' + lemma);
+      }
+    }
+  }
+
+  for (let [form, iterpretaions] of map) {
+    output.write(form + '\t');
+    output.write(Array.from(iterpretaions).join('\t'));
+    output.write('\n');
+  }
+
+  output.write('гарнорото\tR гарнорото\n');
+
+  ttWriteOther(output);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function shevaCsv2ttOpenTags(input, output) {
+  let lines = (await readTillEnd(input)).trim().replace('\'', '’').split('\n');
+  let set = new Set<string>();
+  for (let line of lines) {
+    if (line && !line.includes(' ')) {
+      let tag = line.split(',')[2];
+      if (tag.startsWith('N') || tag.startsWith('V') || tag.startsWith('A') || tag.startsWith('R')) {
+        set.add(tag);
+      }
+    }
+  }
+  output.write(Array.from(set).join(' '));
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+export async function dict2ttLexicon(input, output) {
+  let lines = (await readTillEnd(input)).split('\n');
+  let map = new Map<string, Set<string>>();
+  for (let {form, lemma, tag} of dictFormLemmaTag(lines)) {
+    let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
+    if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+      set.add(tag + ' ' + lemma);
+    }
+  }
+
+  for (let [form, iterpretaions] of map) {
+    output.write(form + '\t');
+    output.write(Array.from(iterpretaions).join('\t'));
+    output.write('\n');
+  }
+
+  ttWriteOther(output);
+}
+
+function ttWriteOther(output) {
+  output.write('0\tMd 0\n');
+  output.write('.\tPUN .\n');
+  output.write(',\tPUN ,\n');
+  output.write('!\tPUN ,\n');
+  output.write('?\tPUN ,\n');
+  output.write('-\tPUN -\n');
+  output.write('–\tPUN –\n');
+  output.write('—\tPUN —\n');
+  output.write(':\tPUN :\n');
+  output.write('(\tPUN (\n');
+  output.write(')\tPUN )\n');
+  output.write('</s>\tSENT -');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function tagsJson2ttOpenClass(input, output) {
+  let tags: Array<string> = JSON.parse(await readTillEnd(input));
+  let openClassTags = tags.filter(tag => tag.startsWith('N')
+    || tag.startsWith('V') || tag.startsWith('A') || tag.startsWith('R'));
+  output.write(openClassTags.join(' '));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function kotsybaDisambed2ttTraining(input, output) {
+  try {
+    let root = await stream2lxmlRoot(input);
+    traverseDocumentOrderEl(root, el => {
+      if (el.localName === 'w') {
+        output.write(el.textContent + '\t' + el.getAttribute('ana') + '\n');
+      }
+      else if (el.localName === 'c') {
+        output.write(el.textContent + '\tPUN\n');
+      }
+    });
+  }
+  catch (e) {
+    console.error(e.stack);
+  }
+}
