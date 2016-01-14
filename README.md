@@ -23,6 +23,7 @@
 - tag name
 - xpath thing
 - gulp sound
+- wait for promise support in node-postgres
 
 - скорочення
 - <supplied>

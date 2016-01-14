@@ -6,25 +6,46 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
     },
     "glob/glob.d.ts": {
-      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
     },
     "libxmljs/libxmljs.d.ts": {
-      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
     },
     "minimist/minimist.d.ts": {
-      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
     },
     "minimatch/minimatch.d.ts": {
-      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
     },
     "tmp/tmp.d.ts": {
-      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
     },
     "pg/pg.d.ts": {
-      "commit": "ba257a9b91bc0de1bdd9091b6723194c905a902a"
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+    },
+    "express/express.d.ts": {
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+    },
+    "mime/mime.d.ts": {
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+    },
+    "serve-static/serve-static.d.ts": {
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+    },
+    "form-data/form-data.d.ts": {
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+    },
+    "request/request.d.ts": {
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+    },
+    "cookie-parser/cookie-parser.d.ts": {
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+    },
+    "body-parser/body-parser.d.ts": {
+      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
     }
   }
 }
