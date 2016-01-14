@@ -22,6 +22,11 @@ export function escape(val: string) {   // todo
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function xmlNsResolver(prefix: string) {
+  return NS[prefix] || null;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function nameNs(ns: string, name: string) {
   return `{${ns}}${name}`;
 }
@@ -29,6 +34,27 @@ export function nameNs(ns: string, name: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function namePrefixed(prefix: string, name: string) {
   return prefix ? `${prefix}:${name}` : name;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function removeXmlns(xmlstr: string) {
+  return xmlstr.replace(/ xmlns(:\w+)?="[^"]+"/g, '')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function encloseInRoot(xmlstr: string, defaultNs: string, rootName = 'mi:fragment') {
+  let out = '<' + rootName;
+  if (NS[defaultNs]) {
+    out += ' xmlns="' + NS[defaultNs] + '"';
+  }
+  for (let prefix in NS) {
+    if (prefix !== defaultNs) {
+      out += ' xmlns:' + prefix + '="' + NS[prefix] + '"';
+    }
+  }
+  out += '>\n' + xmlstr + '\n</' + rootName + '>';
+  
+  return out;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
