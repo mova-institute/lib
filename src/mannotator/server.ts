@@ -10,7 +10,7 @@ import {ClientConfig} from 'pg';
 
 
 export const config: ClientConfig = {
-  host: 'localhost',
+  host: 'mova.institute',
   database: 'movainstitute',
   user: 'movainstitute',
   password: 'movainstituteP@ss'
