@@ -23,7 +23,7 @@ let app = express();
 
 app.disable('x-powered-by');
 app.use(cookieParser());
-// app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.text({ limit: '50mb' }));
 app.use(reqBagMiddleware);
 app.use(loginMiddleware);

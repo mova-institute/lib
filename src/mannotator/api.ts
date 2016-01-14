@@ -69,16 +69,15 @@ export async function getFragments(req: express.Request, res: express.Response) 
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function newText(req: express.Request, res: express.Response) {
-  let data = JSON.parse(req.body);  // todo
   let { connection, done } = await getConnection(config);
 
   await query(connection, "BEGIN");
-  let id = await queryScalarCon(connection, "INSERT INTO corpus_doc (name) VALUES ($1) RETURNING corpus_doc.id", [data.docName]);
-
+  let id = await queryScalarCon(connection, "INSERT INTO corpus_doc (name) VALUES ($1) RETURNING corpus_doc.id", [req.body.docName]);
+  
   let i = 0;
-  for (let fragment of data.fragments) {
+  for (let fragment of req.body.fragments) {
     await query(connection, "INSERT INTO corpus_fragment (doc_id, index, is_pooled, content) VALUES ($1, $2, $3, $4)",
-      [id, i++, data.isForPool, fragment]);
+      [id, i++, req.body.isForPool, fragment]);
 
   }
   await query(connection, "COMMIT");
