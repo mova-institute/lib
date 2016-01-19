@@ -64,7 +64,7 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
 ////////////////////////////////////////////////////////////////////////////////
 export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
   let { client, done } = await getClient(config);
-
+  
   while (true) {
     try {
       await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
@@ -72,7 +72,7 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
       let fRes = await f(client);
       if (fRes === false) {
         await query(client, "ROLLBACK");
-        break;
+        return false;
       }
 
       await query(client, "COMMIT");
