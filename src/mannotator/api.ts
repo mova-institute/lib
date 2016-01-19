@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {ClientConfig} from 'pg';
-import {queryScalar, queryScalarCon, queryNumRows, getlient, query, transaction} from '../pg_utils';
+import {query1, query1Client, queryNumRows, query, transaction} from '../pg_utils';
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req} from './server'
@@ -31,7 +31,7 @@ export async function login(req: Req, res: express.Response) {
     if (await queryNumRows(config, "UPDATE login SET access_token=$1 WHERE fb_id=$2", [token, fbInfo.id])) {
       res.cookie('accessToken', token, { maxAge: 1000 * 3600 * 24 * 100, httpOnly: true });
 
-      let role = await queryScalar(config, "SELECT annotator_user.role FROM annotator_user" +
+      let role = await query1(config, "SELECT annotator_user.role FROM annotator_user" +
         " JOIN login ON annotator_user.person_id=login.person_id WHERE access_token=$1", [token]);
       res.json(role);
     }
@@ -42,14 +42,14 @@ export async function login(req: Req, res: express.Response) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function grabFragment(req: Req, res: express.Response) {
-  let out = await queryScalar(config, "SELECT grab_fragment($1, $2)", [req.bag.user.id, req.query.fragmentId]);
+export async function assignFragment(req: Req, res: express.Response) {
+  let out = await query1(config, "SELECT grab_fragment($1, $2)", [req.bag.user.id, req.query.fragmentId]);
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function fragment(req: Req, res: express.Response) {
-  let out = await queryScalar(config, "SELECT fragment_details($1, $2)", [req.bag.user.id, req.query.id]);
+  let out = await query1(config, "SELECT fragment_details($1, $2)", [req.bag.user.id, req.query.id]);
   res.json(out || null);
 }
 
@@ -61,7 +61,7 @@ export async function checkTextName(req: Req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getTasks(req: Req, res: express.Response) {
-  res.json(await queryScalar(config, "SELECT annotator_fragments($1)", [req.query.userId]));
+  res.json(await query1(config, "SELECT annotator_fragments($1)", [req.query.userId]));
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ export async function grabTask(req: Req, res: express.Response) {
 export async function getFragments(req: Req, res: express.Response) {
   let input = JSON.parse(req.body);  // todo
   if (input.assignee) {
-    let out = await queryScalar(config, "", [input.assignee]);
+    let out = await query1(config, "", [input.assignee]);
   }
   else {
 
@@ -89,7 +89,7 @@ export async function getFragments(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function newText(req: Req, res: express.Response) {
   let result = await transaction(config, async (client) => {
-    let id = await queryScalarCon(client, "INSERT INTO corpus_doc (name) VALUES ($1) RETURNING corpus_doc.id", [req.body.docName]);
+    let id = await query1Client(client, "INSERT INTO corpus_doc (name) VALUES ($1) RETURNING corpus_doc.id", [req.body.docName]);
 
     let i = 0;
     for (let fragment of req.body.fragments) {

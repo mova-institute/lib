@@ -4,7 +4,7 @@ import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
-import {queryScalar, queryNumRows} from '../pg_utils';
+import {query1, queryNumRows} from '../pg_utils';
 import {ClientConfig} from 'pg';
 
 
@@ -80,7 +80,7 @@ async function authorize(action: string, req: Req, res: express.Response) {
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
-    return req.bag.user = await queryScalar(config, "SELECT user_by_token($1)", [accessToken]);
+    return req.bag.user = await query1(config, "SELECT user_by_token($1)", [accessToken]);
   }
 }
 

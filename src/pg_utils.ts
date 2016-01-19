@@ -32,7 +32,7 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function queryScalarCon(client: Client, queryStr: string, params: Array<any> = []) {
+export async function query1Client(client: Client, queryStr: string, params: Array<any> = []) {
   let result = await query(client, queryStr, params);
   if (result && result.rows.length) {
     let row = result.rows[0];
@@ -43,9 +43,9 @@ export async function queryScalarCon(client: Client, queryStr: string, params: A
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function queryScalar(config: ClientConfig, queryStr: string, params: Array<any> = []) {
+export async function query1(config: ClientConfig, queryStr: string, params: Array<any> = []) {
   let { client, done } = await getClient(config);
-  let result = await queryScalarCon(client, queryStr, params);
+  let result = await query1Client(client, queryStr, params);
   done();
 
   return result;

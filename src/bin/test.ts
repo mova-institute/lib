@@ -20,7 +20,7 @@ export const config: ClientConfig = {
 (async () => {
   try {
     await pgUtils.transaction(config, async (client) => {
-      let sum = await pgUtils.queryScalarCon(client, "SELECT sum(value) FROM test");
+      let sum = await pgUtils.query1Client(client, "SELECT sum(value) FROM test");
       console.log('sum', sum);
       console.log('sleeping');
       await sleep(5000);
