@@ -62,16 +62,16 @@ UK_ALPHABET_MAP = {key: value for value, key in enumerate(
 
 
 def mimic_strxfrm_sort_key(word):
-    out = []
+    ret = []
     for c in word:
         if c in UK_ALPHABET_MAP:
-            out.append(UK_ALPHABET_MAP[c])
+            ret.append(UK_ALPHABET_MAP[c])
         elif re.match("[a-zA-Z_]", c):
-            out.append(len(UK_ALPHABET_MAP) + ord(c))
+            ret.append(len(UK_ALPHABET_MAP) + ord(c))
         else:
-            out.append(len(UK_ALPHABET_MAP) + ord(c) + ord("z"))
+            ret.append(len(UK_ALPHABET_MAP) + ord(c) + ord("z"))
 
-    return out
+    return ret
 
 
 

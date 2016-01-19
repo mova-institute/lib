@@ -119,7 +119,7 @@ export function haveSpaceBetweenEl(a: IElement, b: IElement): boolean {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
-  let toret: Array<string> = [];
+  let ret: Array<string> = [];
   let splitRegex = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
 
   for (let tok0 of val.trim().split(splitRegex)) {
@@ -127,16 +127,16 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
       if (tok1) {
         if (tok1.includes('-')) {
           if (!(analyzer.dictHas(tok1))) {
-            toret.push(...tok1.split(/(-)/).filter(x => !!x));
+            ret.push(...tok1.split(/(-)/).filter(x => !!x));
             continue;
           }
         }
-        toret.push(tok1);
+        ret.push(tok1);
       }
     }
   }
 
-  return toret;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -163,23 +163,23 @@ export function tokenizeTeiDom(root: IElement, tagger: MorphAnalyzer) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function elementFromToken(token: string, document: IDocument): IElement {
-  let toret;
+  let ret;
   if (ANY_PUNC_OR_DASH_RE.test(token)) {
-    toret = document.createElement('pc');
-    toret.textContent = token;
+    ret = document.createElement('pc');
+    ret.textContent = token;
   }
   else if (/^\d+$/.test(token) || WCHAR_RE.test(token)) {
-    toret = document.createElement('w');
-    toret.textContent = token;
+    ret = document.createElement('w');
+    ret.textContent = token;
   }
   else {
     //console.error(`Unknown token: "${token}"`); // todo
-    toret = document.createElement('w');
-    toret.textContent = token;
+    ret = document.createElement('w');
+    ret.textContent = token;
     //throw 'kuku' + token.length;
   }
 
-  return toret;
+  return ret;
 }
 
 //------------------------------------------------------------------------------

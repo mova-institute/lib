@@ -80,22 +80,22 @@ export class NumeratedSet<T> {  // todo move somewhere
   }
 
   static fromUniqueArray(array: Array<any>) {
-    let toret = new NumeratedSet();
-    toret.values = array;
+    let ret = new NumeratedSet();
+    ret.values = array;
     for (let i = 0; i < array.length; ++i) {
-      toret.ids.set(array[i], i);
+      ret.ids.set(array[i], i);
     }
 
-    return toret;
+    return ret;
   }
 
   static fromSet(set: Set<any>) {
-    let toret = new NumeratedSet();
+    let ret = new NumeratedSet();
     for (let val of set) {
-      toret.ids.set(val, toret.values.push(val) - 1);
+      ret.ids.set(val, ret.values.push(val) - 1);
     }
 
-    return toret;
+    return ret;
   }
 }
 

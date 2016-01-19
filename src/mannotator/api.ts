@@ -43,14 +43,14 @@ export async function login(req: Req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignFragment(req: Req, res: express.Response) {
-  let out = await query1(config, "SELECT grab_fragment($1, $2)", [req.bag.user.id, req.query.fragmentId]);
+  let ret = await query1(config, "SELECT grab_fragment($1, $2)", [req.bag.user.id, req.query.fragmentId]);
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function fragment(req: Req, res: express.Response) {
-  let out = await query1(config, "SELECT fragment_details($1, $2)", [req.bag.user.id, req.query.id]);
-  res.json(out || null);
+  let ret = await query1(config, "SELECT fragment_details($1, $2)", [req.bag.user.id, req.query.id]);
+  res.json(ret || null);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ export async function grabTask(req: Req, res: express.Response) {
 export async function getFragments(req: Req, res: express.Response) {
   let input = JSON.parse(req.body);  // todo
   if (input.assignee) {
-    let out = await query1(config, "", [input.assignee]);
+    let ret = await query1(config, "", [input.assignee]);
   }
   else {
 

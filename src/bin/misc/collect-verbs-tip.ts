@@ -20,7 +20,7 @@ verbs = Array.from(new Set(verbs));
 let index = args.start || 0;
 let numConcReq = args.conc || 1;
 let numPending = numConcReq;
-let out = {};
+let ret = {};
 
 debugger;
 console.log('loh');
@@ -33,7 +33,7 @@ async function worker() {
     if (index < verbs.length) {
       let verb = verbs[index++];
       let res = await translate(verb);
-      out[verb] = [];
+      ret[verb] = [];
       worker();
     }
     else {
@@ -51,8 +51,8 @@ async function worker() {
 
 ////////////////////////////////////////////////////////////////////////////////
 function save() {
-  let name = `from-${args.start || 0}-to-${Object.keys(out).length}.json`;
-  fs.writeFileSync(name, JSON.stringify(out), 'utf8');
+  let name = `from-${args.start || 0}-to-${Object.keys(ret).length}.json`;
+  fs.writeFileSync(name, JSON.stringify(ret), 'utf8');
 }
 
 ////////////////////////////////////////////////////////////////////////////////

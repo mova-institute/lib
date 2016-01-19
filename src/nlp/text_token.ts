@@ -59,7 +59,7 @@ export class TextToken {
 		}
 		
 		return {tags, lemmas};
-		//return highlightIndexwiseStringDiff(toret, 'morph-feature-highlight');
+		//return highlightIndexwiseStringDiff(ret, 'morph-feature-highlight');
 	}
 
 	breaksLine() {
@@ -102,18 +102,18 @@ export class TextToken {
 	}
 
 	nextAmbigWord() {
-		let toret = null;
+		let ret = null;
 		traverseDocumentOrderEl(this.elem, el => {
 			if (el.nameNs() === W_) {
 				let token = new TextToken(el);
 				if (token.isAmbig()) {
-					toret = token;
+					ret = token;
 					return false;
 				}
 			}
 		});
 
-		return toret;
+		return ret;
 	}
 	
 	wordNum() {

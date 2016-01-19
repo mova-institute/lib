@@ -22,21 +22,21 @@ const TABLE_SHIFT = 2;
 
 ////////////////////////////////////////////////////////////////////////////////
 export function miDecode(bytes: Array<number>) {
-  let out = '';
+  let ret = '';
   for (let byte of bytes) {
-    out += TABLE.charAt(byte - TABLE_SHIFT);
+    ret += TABLE.charAt(byte - TABLE_SHIFT);
   }
 
-  return out;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function miEncode(str: string) {
-  let out = new Array<number>();
+  let ret = new Array<number>();
   for (let i = 0; i < str.length; ++i) {
     let c = str.codePointAt(i);
-    out.push(REVERSE_TABLE[c] + TABLE_SHIFT); // todo ’, sparse array
+    ret.push(REVERSE_TABLE[c] + TABLE_SHIFT); // todo ’, sparse array
   }
 
-  return out;
+  return ret;
 }

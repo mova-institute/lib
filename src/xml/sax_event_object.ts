@@ -31,20 +31,20 @@ export class SaxEventObject {
 		}
 
 		if (this.type === 'start') {
-			let toret = `<${namePrefixed(this.prefix, this.elem) }`;
+			let ret = `<${namePrefixed(this.prefix, this.elem) }`;
 			for (let [key, prefix, uri, value] of this.attrsNs) {
-				toret += ` ${namePrefixed(prefix, key)}="${escape(value)}"`;
+				ret += ` ${namePrefixed(prefix, key)}="${escape(value)}"`;
 			}
 			for (let [prefix, uri] of this.ns) {
-				toret += ' xmlns';
+				ret += ' xmlns';
 				if (prefix) {
-					toret += ':' + prefix;
+					ret += ':' + prefix;
 				}
-				toret += `="${uri}"`;
+				ret += `="${uri}"`;
 			}
-			toret += '>' + escape(this.text);
+			ret += '>' + escape(this.text);
 			
-			return toret;
+			return ret;
 		}
 	}
 }

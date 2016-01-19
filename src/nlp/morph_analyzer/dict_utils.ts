@@ -106,8 +106,8 @@ function extractParadigm(lexeme: Array<[string, string]>, knownPrefixes) {
 
 ////////////////////////////////////////////////////////////////////////////////
 function linearizeParadigm(paradigm: Paradigm) {
-  let toret = new Uint16Array(3 * paradigm.prefixes.length);
-  let wiew = new DataView(toret.buffer);
+  let ret = new Uint16Array(3 * paradigm.prefixes.length);
+  let wiew = new DataView(ret.buffer);
   let i = 0;
   for (let prop of ['suffixes', 'tags', 'prefixes']) {
     for (let n of paradigm[prop]) {
@@ -115,5 +115,5 @@ function linearizeParadigm(paradigm: Paradigm) {
     }
   }
   
-  return toret;
+  return ret;
 }

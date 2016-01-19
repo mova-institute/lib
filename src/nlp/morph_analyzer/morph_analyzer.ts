@@ -25,7 +25,7 @@ export class MorphAnalyzer {
       return new Set<MorphTag>([{lemma: token, tag: 'Md'}]);
     }
 
-    let toret = new Set<MorphTag>();
+    let ret = new Set<MorphTag>();
 
     let toLookup = [token];
     let lowercase = token.toLowerCase();
@@ -34,11 +34,11 @@ export class MorphAnalyzer {
     }
     for (let word of toLookup) {
       for (let paraIndex of this.words.get(word)) {
-        toret.add(this.getTag(word, paraIndex));
+        ret.add(this.getTag(word, paraIndex));
       }
     }
 
-    return toret;
+    return ret;
   }
 
   private getTag(word: string, paraIndex: WordDawgPayload): MorphTag {

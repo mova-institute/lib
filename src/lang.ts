@@ -37,12 +37,12 @@ export function* zip(...arrays: Array<Array<any>>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function collectForof<T>(iterator: Iterable<T>) {
-  let toret = new Array<T>();
+  let ret = new Array<T>();
   for (let val of iterator) {
-    toret.push(val);
+    ret.push(val);
   }
   
-  return toret;
+  return ret;
 }
 
 export function sleep(ms = 0) {

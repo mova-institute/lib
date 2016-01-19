@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 export function num2Uint16BytesBE(num: number) {
-  let out = new Uint8Array(2);
-  new DataView(out.buffer).setUint16(0, num);
+  let ret = new Uint8Array(2);
+  new DataView(ret.buffer).setUint16(0, num);
 
-  return out;
+  return ret;
 }
 
 /*////////////////////////////////////////////////////////////////////////////////
@@ -23,52 +23,52 @@ export function nonzeroBytesEncode(bytes: Array<number>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function encodeUtf8(str: string) {	// todo: more octets?
-  let out = new Array<number>();
+  let ret = new Array<number>();
   let p = 0;
   for (let i = 0; i < str.length; ++i) {
     let c = str.charCodeAt(i);
     if (c < 128) {
-      out[p++] = c;
+      ret[p++] = c;
     }
     else if (c < 2048) {
-      out[p++] = (c >>> 6) | 192;
-      out[p++] = (c & 63) | 128;
+      ret[p++] = (c >>> 6) | 192;
+      ret[p++] = (c & 63) | 128;
     }
     else {
-      out[p++] = (c >>> 12) | 224;
-      out[p++] = ((c >>> 6) & 63) | 128;
-      out[p++] = (c & 63) | 128;
+      ret[p++] = (c >>> 12) | 224;
+      ret[p++] = ((c >>> 6) & 63) | 128;
+      ret[p++] = (c & 63) | 128;
     }
   }
 
-  return out;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function decodeUtf8(bytes: Array<number>) {
 
-  let toret = '';
+  let ret = '';
   for (let i = 0; i < bytes.length;) {
     let c = bytes[i];
 
     if (c < 128) {
-      toret += String.fromCharCode(c);
+      ret += String.fromCharCode(c);
       ++i;
     }
     else if ((c > 191) && (c < 224)) {
       let c2 = bytes[i + 1];
-      toret += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+      ret += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
       i += 2;
     }
     else {
       let c2 = bytes[i + 1];
       let c3 = bytes[i + 2];
-      toret += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+      ret += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
       i += 3;
     }
   }
 
-  return toret;
+  return ret;
 }
 
 
@@ -121,8 +121,8 @@ export function b64decodeFromArray(b64: Array<number>) {
     padding = 0;
   }
 
-  let toret = new ArrayBuffer(len * 3 / 4 - padding);
-  let view = new Uint8Array(toret);
+  let ret = new ArrayBuffer(len * 3 / 4 - padding);
+  let view = new Uint8Array(ret);
 
   let p = 0;
   let iBound = padding > 0 ? len - 4 : len;
@@ -142,38 +142,38 @@ export function b64decodeFromArray(b64: Array<number>) {
     view[p++] = tmp & 0xFF;
   }
 
-  return toret;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function b64encode(bytes: Array<number>) {
-  let out = new Array<number>();
+  let ret = new Array<number>();
   let cursor = 0;
   for (let i = 0; i < bytes.length / 3; ++i) {
     var temp = bytes[cursor++] << 16; //Convert to big endian
     temp += bytes[cursor++] << 8;
     temp += bytes[cursor++];
-    out.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
-    out.push(BASIS_64[(temp & 0x0003F000) >> 12]);
-    out.push(BASIS_64[(temp & 0x00000FC0) >> 6]);
-    out.push(BASIS_64[(temp & 0x0000003F)]);
+    ret.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
+    ret.push(BASIS_64[(temp & 0x0003F000) >> 12]);
+    ret.push(BASIS_64[(temp & 0x00000FC0) >> 6]);
+    ret.push(BASIS_64[(temp & 0x0000003F)]);
   }
   switch (bytes.length % 3) {
     case 1:
       temp = bytes[cursor++] << 16; //Convert to big endian
-      out.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
-      out.push(BASIS_64[(temp & 0x0003F000) >> 12]);
-      out.push(PADD, PADD);
+      ret.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
+      ret.push(BASIS_64[(temp & 0x0003F000) >> 12]);
+      ret.push(PADD, PADD);
       break;
     case 2:
       temp = bytes[cursor++] << 16; //Convert to big endian
       temp += bytes[cursor++] << 8;
-      out.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
-      out.push(BASIS_64[(temp & 0x0003F000) >> 12]);
-      out.push(BASIS_64[(temp & 0x00000FC0) >> 6]);
-      out.push(PADD);
+      ret.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
+      ret.push(BASIS_64[(temp & 0x0003F000) >> 12]);
+      ret.push(BASIS_64[(temp & 0x00000FC0) >> 6]);
+      ret.push(PADD);
       break;
   }
 
-  return out;
+  return ret;
 }

@@ -165,7 +165,7 @@ export class UdFeaturesBag {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function rysin2ud(lemma: string, lemmaTagStr: string, form: string, formTagStr: string) {
-  let out = new Array<{ pos: string, features: string }>();
+  let ret = new Array<{ pos: string, features: string }>();
 
   let lemmaTag = new RysinTag(lemmaTagStr);
   let formTag = new RysinTag(formTagStr);
@@ -188,7 +188,7 @@ export function rysin2ud(lemma: string, lemmaTagStr: string, form: string, formT
     }
   }
 
-  return out;
+  return ret;
 }
 
 
@@ -200,13 +200,13 @@ function skipMainPos(tag: RysinTag) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, formTagStr: string) {
-  let toret = new Array<string>();
+  let ret = new Array<string>();
 
   let lemmaTag = new RysinTag(lemmaTagStr);
   let formTag = new RysinTag(formTagStr);
 
   for (let pos of formTag.poses()) {
-    if (treatSpecialCases(toret, form, formTag) || skipMainPos(formTag)) {
+    if (treatSpecialCases(ret, form, formTag) || skipMainPos(formTag)) {
       continue;
     }
 
@@ -221,7 +221,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         let case_ = mapTag(formTag.case);
         let animacy = mapTag(formTag.animacy);
 
-        toret.push('N' + type + gender + number_ + case_ + animacy);
+        ret.push('N' + type + gender + number_ + case_ + animacy);
         break;
       }
       case 'verb': {
@@ -233,7 +233,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         let number_ = tryMapTag(formTag.number) || (formTag.gender ? 's' : '-');
         let gender = tryMapTag(formTag.gender) || '';
 
-        toret.push(trimTrailingDash('V' + type + aspect + form + tense + person + number_ + gender));
+        ret.push(trimTrailingDash('V' + type + aspect + form + tense + person + number_ + gender));
         break;
       }
       case 'advp': {
@@ -245,7 +245,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         }
         let tense = (lemma.endsWith('чи') || lemma.endsWith('чись')) ? 'p' : 's';  // todo: test
 	
-        toret.push('V' + type + aspect + 'g' + tense);
+        ret.push('V' + type + aspect + 'g' + tense);
         break;
       }
       case 'adj': {
@@ -258,7 +258,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         let definiteness = tryMapTag(formTag.definiteness)
           || defaultDefiniteness(gender, number_, case_, animacy);
 
-        toret.push('A' + type + degree + gender + number_ + case_ + definiteness + animacy);
+        ret.push('A' + type + degree + gender + number_ + case_ + definiteness + animacy);
         break;
       }
       case 'adjp': {
@@ -272,7 +272,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         let voice = mapTag(formTag.voice);
         let tense = tryMapTag(formTag.tense) || '';  // todo
 				
-        toret.push('Ap-' + gender + number_ + case_ + definiteness + animacy + aspect + voice + tense);
+        ret.push('Ap-' + gender + number_ + case_ + definiteness + animacy + aspect + voice + tense);
         break;
       }
       case 'numr': {
@@ -282,18 +282,18 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         let case_ = mapTag(formTag.case);
         let animacy = tryMapTag(formTag.animacy) || '';
 
-        toret.push('Ml' + type + gender + number_ + case_ + animacy);
+        ret.push('Ml' + type + gender + number_ + case_ + animacy);
         break;
       }
       case 'adv':
-        toret.push('R' + (tryMapTag(formTag.degree) || ''));
+        ret.push('R' + (tryMapTag(formTag.degree) || ''));
         break;
       case 'prep': {
         let formation = form.includes('-') ? 'c' : 's';
 
         for (let rysinCase of formTag.prepositionCases) {
           let case_ = mapTag(rysinCase);
-          toret.push('Sp' + formation + case_);
+          ret.push('Sp' + formation + case_);
         }
         break;
       }
@@ -301,14 +301,14 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         let type = mapTag(formTag.сonjunctionType);
         let formation = form.includes('-') ? 'c' : 's';
 
-        toret.push('C' + type + formation);
+        ret.push('C' + type + formation);
         break;
       }
       case 'part':
-        toret.push('Q');
+        ret.push('Q');
         break;
       case 'excl':
-        toret.push('I');
+        ret.push('I');
         break;
       case 'pron': {
         let referentType = '-';  // todo
@@ -321,10 +321,10 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 
         if (formTag.pronounType) {
           for (let type of formTag.pronounType) {
-            toret.push('P' + mapTag(type) + referentType + person + gender + animacy + number_ + case_ + syntacticType);
+            ret.push('P' + mapTag(type) + referentType + person + gender + animacy + number_ + case_ + syntacticType);
           }
         } else {  // todo
-          toret.push('P' + '?' + referentType + person + gender + animacy + number_ + case_ + syntacticType);
+          ret.push('P' + '?' + referentType + person + gender + animacy + number_ + case_ + syntacticType);
         }
 
         break;
@@ -336,7 +336,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
     }
   }
 
-  return toret;
+  return ret;
 }
 
 
@@ -348,12 +348,12 @@ function tryMapTag(flag: string): string {
 
 ////////////////////////////////////////////////////////////////////////////////
 function mapTag(flag: string): string {
-  let toret = tryMapTag(flag);
-  if (!toret) {
+  let ret = tryMapTag(flag);
+  if (!ret) {
     throw new Error(`Unmappable flag: ${flag}`);
   }
 
-  return toret;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -381,9 +381,9 @@ function trimTrailingDash(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function treatSpecialCases(out: Array<string>, form: string, formTag: RysinTag) {
+function treatSpecialCases(ret: Array<string>, form: string, formTag: RysinTag) {
   if (form === 'незважаючи' && formTag.pos === 'prep') {
-    out.push('Vmpgp');
+    ret.push('Vmpgp');
     return true;
   }
 }

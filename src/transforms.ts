@@ -53,7 +53,7 @@ export function ugtag2tt(args) {
   console.log('reading training data…');
   let tmpName;
   let root = filename2lxmlRootSync(args.train);
-  let out = createWriteStream(tmpName = tmp.tmpNameSync());
+  let ret = createWriteStream(tmpName = tmp.tmpNameSync());
   try {
     traverseDocumentOrderEl(root, el => {
       if (el.localName === 'w') {
@@ -67,34 +67,34 @@ export function ugtag2tt(args) {
         if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
           set.add(tag + ' ' + lemma);
         }
-        out.write(form + '\t' + tag + '\n');
+        ret.write(form + '\t' + tag + '\n');
       }
       else if (el.localName === 'c') {
-        out.write(el.textContent + '\tPUN\n');
+        ret.write(el.textContent + '\tPUN\n');
       }
     });
   }
   catch (e) {
     
   }
-  renameSync(tmpName, join(args.out, 'tt-train.txt'));
+  renameSync(tmpName, join(args.ret, 'tt-train.txt'));
 
 
   tmpName = tmp.tmpNameSync();
-  out = createWriteStream(tmpName);
+  ret = createWriteStream(tmpName);
   for (let [form, iterpretaions] of map) {
-    out.write(form + '\t');
-    out.write(Array.from(iterpretaions).join('\t'));
-    out.write('\n');
+    ret.write(form + '\t');
+    ret.write(Array.from(iterpretaions).join('\t'));
+    ret.write('\n');
   }
-  out.write('гарнорото\tR гарнорото\n');
-  ttWriteOther(out);
-  renameSync(tmpName, join(args.out, 'tt-lexicon.txt'));
+  ret.write('гарнорото\tR гарнорото\n');
+  ttWriteOther(ret);
+  renameSync(tmpName, join(args.ret, 'tt-lexicon.txt'));
 
 
-  out = createWriteStream(tmpName = tmp.tmpNameSync());
-  out.write(Array.from(openClassTags).join(' '));
-  renameSync(tmpName, join(args.out, 'tt-open-class-tags.txt'));
+  ret = createWriteStream(tmpName = tmp.tmpNameSync());
+  ret.write(Array.from(openClassTags).join(' '));
+  renameSync(tmpName, join(args.ret, 'tt-open-class-tags.txt'));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

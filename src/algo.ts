@@ -34,17 +34,17 @@ export function* findIndexwiseDiff(input: Array<any>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function longestCommonSubstring(strings: Array<string>) {  // naive
-	let toret = '';
+	let ret = '';
 	if (strings.length) {
 		for (let i = 0; i < strings[0].length; ++i) {
 			for (let j = 0; j < strings[0].length - i + 1; ++j) {
 				let candidate = strings[0].substring(i, i + j);
-				if (j > toret.length && strings.every(x => x.indexOf(candidate) >= 0)) {
-					toret = candidate;
+				if (j > ret.length && strings.every(x => x.indexOf(candidate) >= 0)) {
+					ret = candidate;
 				}
 			}
 		}
 	}
 
-	return toret;
+	return ret;
 }

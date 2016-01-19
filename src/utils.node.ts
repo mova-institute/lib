@@ -66,13 +66,13 @@ export function* nonemptyLinesSync(filename: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 function buffer2arrayBuffer(val: Buffer, start = 0, length = val.length) {	// todo: copy 64?
-	let toret = new ArrayBuffer(length);
-	let view = new Uint8Array(toret);
+	let ret = new ArrayBuffer(length);
+	let view = new Uint8Array(ret);
 	for (let i = 0; i < length; ++i) {
 		view[i] = val[start + i];
 	}
 	
-	return toret;
+	return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

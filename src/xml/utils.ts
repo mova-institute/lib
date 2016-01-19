@@ -43,18 +43,18 @@ export function removeXmlns(xmlstr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function encloseInRoot(xmlstr: string, defaultNs: string, rootName = 'mi:fragment') {
-  let out = '<' + rootName;
+  let ret = '<' + rootName;
   if (NS[defaultNs]) {
-    out += ' xmlns="' + NS[defaultNs] + '"';
+    ret += ' xmlns="' + NS[defaultNs] + '"';
   }
   for (let prefix in NS) {
     if (prefix !== defaultNs) {
-      out += ' xmlns:' + prefix + '="' + NS[prefix] + '"';
+      ret += ' xmlns:' + prefix + '="' + NS[prefix] + '"';
     }
   }
-  out += '>\n' + xmlstr + '\n</' + rootName + '>';
+  ret += '>\n' + xmlstr + '\n</' + rootName + '>';
   
-  return out;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,23 +62,23 @@ export function tagStr(open: boolean, prefix: string, elem: string, attrs = new 
   if (!open) {
     return `</${namePrefixed(prefix, elem) }>`;
   }
-  let toret = `<${namePrefixed(prefix, elem) }`;
+  let ret = `<${namePrefixed(prefix, elem) }`;
   for (var [key, value] of attrs.entries()) {
-    toret += ` ${key}="${value}"`;
+    ret += ` ${key}="${value}"`;
   }
-  toret += '>';
+  ret += '>';
 
-  return toret;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
-  let toret = new Map();
+  let ret = new Map();
   for (let [name, , , val] of attrs) {
-    toret.set(name, val);
+    ret.set(name, val);
   }
 
-  return toret;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,13 +147,13 @@ export function nLevelsDeep(node, n: number) {
 
 // ////////////////////////////////////////////////////////////////////////////////
 // export function nextEl(base: Element, predicate: Function) {
-//   for (var toret = base.nextElementSibling; toret; toret = base.nextElementSibling) {
-//     if (predicate(toret)) {
+//   for (var ret = base.nextElementSibling; ret; ret = base.nextElementSibling) {
+//     if (predicate(ret)) {
 //       break;
 //     }
 //   }
 
-//   return toret;
+//   return ret;
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -162,8 +162,8 @@ export function lang(node: INode): string {
     return lang(node.parentNode);
   }
   let el = <IElement>node;
-  let toret = el.getAttribute('lang') || el.getAttribute('xml:lang'); // todo
-  if (!toret) {
+  let ret = el.getAttribute('lang') || el.getAttribute('xml:lang'); // todo
+  if (!ret) {
     if (el.isRoot()) {
       return '';
     }
@@ -171,7 +171,7 @@ export function lang(node: INode): string {
     return lang(el.parentNode);
   }
 
-  return toret;
+  return ret;
 }
 
 

@@ -74,13 +74,13 @@ export class ObjectDawg<T> extends BytesDawg {
 	}
 	
 	get(key: string) {
-		let toret = new Array<T>();
+		let ret = new Array<T>();
 		
 		for (let payload of super.payloadBytes(encodeUtf8(key))) {
-			toret.push(this.deserializer(payload));
+			ret.push(this.deserializer(payload));
 		}
 		
-		return toret;
+		return ret;
 	}
 }
 

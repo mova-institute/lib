@@ -6,7 +6,7 @@ import {W, W_, PC, SE, P} from './common_elements'
 ////////////////////////////////////////////////////////////////////////////////
 export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 150;
-  let out = new Array<DocumentFragment>();
+  let ret = new Array<DocumentFragment>();
   
   let paragraphs = doc.evaluate('/tei:TEI/tei:text//tei:p', doc, <any>xmlNsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
   let curNumWords = 0;
@@ -21,14 +21,14 @@ export function fragmentCorpusText(doc: Document) {
     
     if (curNumWords >= NUM_WORDS || i === paragraphs.snapshotLength - 1) {
       range.setEndAfter(p);
-      out.push(range.cloneContents());
+      ret.push(range.cloneContents());
       range.collapse(false);
       
       curNumWords = 0;
     }
   }
   
-  return out;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ export function textFragmentCorpusText(doc: Document) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getTeiName(doc: Document) {
-  let out = doc.evaluate('//tei:teiHeader//tei:titleStmt/tei:title', doc, <any>xmlNsResolver,
+  let ret = doc.evaluate('//tei:teiHeader//tei:titleStmt/tei:title', doc, <any>xmlNsResolver,
     XPathResult.STRING_TYPE, null).stringValue;
-  return out.trim() || null;
+  return ret.trim() || null;
 }

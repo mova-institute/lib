@@ -55,10 +55,10 @@ export async function query1(config: ClientConfig, queryStr: string, params: Arr
 export async function queryNumRows(config: ClientConfig, queryStr: string, params: Array<any> = []) {
   let { client, done } = await getClient(config);
   let result = await query(client, queryStr, params);
-  let out = result && (<any>result).rowCount || null;
+  let ret = result && (<any>result).rowCount || null;
   done();
 
-  return out;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

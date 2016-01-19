@@ -20,7 +20,7 @@ export function createMorphAnalyserSync(dictFolder: string) {
   
   let words = createObjectDawgSync<WordDawgPayload>(dictFolder + '/words.dawg', WordDawgPayload.create);
   
-  let toret = new MorphAnalyzer(words, paradigms, suffixes, tags);
+  let ret = new MorphAnalyzer(words, paradigms, suffixes, tags);
   
-  return toret;
+  return ret;
 }
