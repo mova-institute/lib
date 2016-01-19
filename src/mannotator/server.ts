@@ -16,38 +16,42 @@ export const config: ClientConfig = {
   password: 'movainstituteP@ss'
 };
 
-
+export interface Req extends express.Request {
+  bag: any;
+}
 
 
 let app = express();
 
 app.disable('x-powered-by');
+app.disable('etag');
+app.set('json spaces', 2);
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.text({ limit: '50mb' }));
-app.use(reqBagMiddleware);
-app.use(loginMiddleware);
-app.use(allowOrigin);
-//app.use(errorHandler);  // what for?
+app.use(reqBag);
+app.use(errorHandler);
 
 
-app.all('/api/*', async (req, res) => {
-  let action = actions[req.params[0]];
+app.all('/api/*', async (req: Req, res) => {
+  let actionName = req.params[0];
+  let action = actions[actionName];
   if (action) {
-    if (true /*todo: authorize*/) {
+    if (await authorize(actionName, req, res)) {
       try {
         await action(req, res);
       }
       catch (e) {
         console.error(e.stack);
+        sendError(res, 500);
       }
     }
     else {
-      res.status(403).end('403');
+      sendError(res, 403);
     }
   }
   else {
-    res.status(404).end('404');
+    sendError(res, 404);
   }
 });
 
@@ -60,38 +64,43 @@ app.listen(8888);
 
 
 
-//------------------------------------------------------------------------------
-function allowOrigin(req, res: express.Response, next) {
-  // res.header('Access-Control-Allow-Headers', 'Content-Type');
-  // res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:3000');
-  res.header('Access-Control-Allow-Origin', '*');
-  // res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  next();
-}
 
-/*//------------------------------------------------------------------------------
-function errorHandler(err, req, res, next) {
+//------------------------------------------------------------------------------
+function errorHandler(err, req, res: express.Response, next) {
   console.error(err);
   console.error(err.stack);
-  res.status(500).send('Something broke!');
-};*/
+  sendError(res, 500);
+};
 
 //------------------------------------------------------------------------------
-async function loginMiddleware(req, res: express.Response, next) {
-  if (req.query.action === 'login') {
-    return next();
+async function authorize(action: string, req: Req, res: express.Response) {
+  if (action === 'login') {
+    return true;
   }
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
-    req.bag.annotatorRole = await queryScalar(config, 'SELECT annotator_user.role FROM annotator_user' +
-      ' JOIN login ON annotator_user.person_id=login.person_id WHERE access_token=$1', [accessToken]);
+    return req.bag.user = await queryScalar(config, "SELECT user_by_token($1)", [accessToken]);
   }
+}
+
+//------------------------------------------------------------------------------
+function reqBag(req, res: express.Response, next) {
+  req.bag = req.bag || {};
   next();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function reqBagMiddleware(req, res: express.Response, next) {
-  req.bag = req.bag || {};
-  next();
+export function makeErrObj(code: number, message?: string) {
+  return {
+    error: {
+      code,
+      message
+    }
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function sendError(res: express.Response, code: number) {
+  res.status(code).json(makeErrObj(code));
 }

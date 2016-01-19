@@ -5,7 +5,7 @@ import {W, W_, PC, SE, P} from './common_elements'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function fragmentCorpusText(doc: Document) {
-  const NUM_WORDS = 300;
+  const NUM_WORDS = 150;
   let out = new Array<DocumentFragment>();
   
   let paragraphs = doc.evaluate('/tei:TEI/tei:text//tei:p', doc, <any>xmlNsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -23,6 +23,7 @@ export function fragmentCorpusText(doc: Document) {
       range.setEndAfter(p);
       out.push(range.cloneContents());
       range.collapse(false);
+      
       curNumWords = 0;
     }
   }
@@ -32,7 +33,8 @@ export function fragmentCorpusText(doc: Document) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function textFragmentCorpusText(doc: Document) {
-  return fragmentCorpusText(doc).map(x => encloseInRoot(removeXmlns(serializeXml(x)), 'tei'));
+  // return fragmentCorpusText(doc).map(x => encloseInRoot(removeXmlns(serializeXml(x)), 'tei'));
+  return fragmentCorpusText(doc).map(x => removeXmlns(serializeXml(x)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

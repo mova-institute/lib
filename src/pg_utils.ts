@@ -3,24 +3,24 @@ import {connect, Client, ClientConfig, QueryResult} from 'pg';
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function getConnection(config: ClientConfig) {
-  return new Promise<{ connection: Client, done }>((resolve, reject) => {
-    connect(config, (err, connection, done) => {
+export function getClient(config: ClientConfig) {
+  return new Promise<{ client: Client, done }>((resolve, reject) => {
+    connect(config, (err, client, done) => {
       if (err) {
         console.error(err);
         reject(err);
       }
       else {
-        resolve({ connection, done });
+        resolve({ client, done });
       }
     });
   });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function query(connection: Client, query: string, params: Array<any> = []) {
+export function query(client: Client, queryStr: string, params: Array<any> = []) {
   return new Promise<QueryResult>(async (resolve, reject) => {
-    connection.query(query, params, (err, result) => {
+    client.query(queryStr, params, (err, result) => {
       if (err) {
         reject(err);
       }
@@ -32,31 +32,66 @@ export function query(connection: Client, query: string, params: Array<any> = []
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function queryScalarCon(connection: Client, queryStr: string, params: Array<any> = []) {
-  let result = await query(connection, queryStr, params);
+export async function queryScalarCon(client: Client, queryStr: string, params: Array<any> = []) {
+  let result = await query(client, queryStr, params);
   if (result && result.rows.length) {
     let row = result.rows[0];
     return row[Object.keys(row)[0]] || null;
   }
-  
+
   return null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function queryScalar(config: ClientConfig, queryStr: string, params: Array<any> = []) {
-  let { connection, done } = await getConnection(config);
-  let result = await queryScalarCon(connection, queryStr, params);
+  let { client, done } = await getClient(config);
+  let result = await queryScalarCon(client, queryStr, params);
   done();
-  
+
   return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function queryNumRows(config: ClientConfig, queryStr: string, params: Array<any> = []) {
-  let { connection, done } = await getConnection(config);
-  let result = await query(connection, queryStr, params);
+  let { client, done } = await getClient(config);
+  let result = await query(client, queryStr, params);
   let out = result && (<any>result).rowCount || null;
   done();
-  
+
   return out;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
+  let { client, done } = await getClient(config);
+
+  while (true) {
+    try {
+      await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
+      
+      let fRes = await f(client);
+      if (fRes === false) {
+        await query(client, "ROLLBACK");
+        break;
+      }
+
+      await query(client, "COMMIT");
+    }
+    catch (e) {
+      if (e instanceof Error && e.code === '40001') {
+        await query(client, "ROLLBACK");
+        continue;
+      }
+      else {
+        throw e;
+      }
+    }
+    finally {
+      done();
+    }
+    
+    break;
+  }
+  
+  return true;
 }
