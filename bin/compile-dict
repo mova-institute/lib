@@ -3,7 +3,6 @@
 BASE=`dirname $0`/..
 cd $BASE
 
-test $1 -ge 4 && cd ../dict_uk/bin && ./convert_from_spell_uk.sh && cd ../../mi-lib
-test $1 -ge 3 && cd ../dict_uk/out && ../dict_uk/expand/expand_all.py -aff ../data/affix -dict ../data/dict -corp -indent --uncontr && cd ../../mi-lib
-test $1 -ge 2 && ./bin/dict-add-mte ../dict_uk/out/dict_corp_vis.txt ../dict_uk/out/dict_corp_vis-mte.txt
-test $1 -ge 1 && node lib/bin/compile-dict.js -i ../dict_uk/out/dict_corp_vis-mte.txt
+test $1 -ge 3 && cd ../dict_uk && gradle mi && cd ../mi-lib
+test $1 -ge 2 && ./bin/dict-add-mte ../dict_uk/out/dict_corp_vis.txt ../dict_uk/out/mte.txt
+test $1 -ge 1 && node lib/bin/compile-dict.js -i ../dict_uk/out/mte.txt
