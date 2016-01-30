@@ -5,9 +5,7 @@
 ##Це
 - endiannes
 - WCHAR_RE to unicode
-- do type annotate return values?
 - TextEncoder in node?, check http://jsperf.com/nativeencodevsmanual
-- toret vs res vs out
 - exceptions in generators and stuff, why not propagated?
 - read on nodejs-browser compartiple code writing
 - xml traversing to generators
