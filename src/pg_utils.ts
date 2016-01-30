@@ -1,6 +1,6 @@
 import {connect, Client, ClientConfig, QueryResult} from 'pg';
 
-
+const MAX_TRANSACTION_RETRY = 100;
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getClient(config: ClientConfig) {
@@ -69,7 +69,7 @@ export class ErrorInsideTransaction {
 export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
   let { client, done } = await getClient(config);
 
-  while (true) {
+  for (let i = 0; i < MAX_TRANSACTION_RETRY; ++i) {
     try {
       await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
       
@@ -83,6 +83,11 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
     }
     catch (e) {
       await query(client, "ROLLBACK");
+      
+      if (i === MAX_TRANSACTION_RETRY - 1) {
+        throw new Error('Max transaction retries exceeded');
+      }
+      
       if (e instanceof Error && e.code === '40001') {
         continue;
       }
