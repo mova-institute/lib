@@ -41,63 +41,10 @@ export async function login(req: Req, res: express.Response) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function assignTask(req: Req, res: express.Response) {  // todo: test
-  let id = await transaction(config, async (client) => {
-    let numAnnotating = await query1Client(client, "select count(*) from task where user_id=$1 and type='annotate'", [req.bag.user.id]);
-    if (numAnnotating >= MAX_CONCUR_ANNOT) {
-      sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
-      return new ErrorInsideTransaction();
-    }
-    return await query1Client(client, "SELECT assign_task_for_annotation($1)", [req.bag.user.id]);
-  });
-
-  res.json(id);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export async function checkDocName(req: Req, res: express.Response) {
   let free = !(await query1(config, "SELECT id FROM document WHERE name=$1", [req.query.name]));
   res.json({ free });
 }
-
-////////////////////////////////////////////////////////////////////////////////
-export async function getTask(req: Req, res: express.Response) {
-  let ret = await query1(config, "SELECT get_task($1, $2)", [req.bag.user.id, req.query.id]);
-  ret.content = mergeXmlFragments(ret.fragments.map(x => x.content));
-  delete ret.fragments;
-  res.json(ret);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export async function getTaskList(req: Req, res: express.Response) {
-  let ret = await query1(config, "SELECT get_task_list($1, $2)", [req.bag.user.id, req.query.status]);
-  res.json(wrapData(ret));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export async function getTaskCount(req: Req, res: express.Response) {
-  let ret = await query1(config, "SELECT get_task_count($1)", [req.bag.user.id]);
-  res.json(wrapData(ret));
-}
-
-/*
-
-
-////////////////////////////////////////////////////////////////////////////////
-export async function getTasks(req: Req, res: express.Response) {
-  res.json(await query1(config, "SELECT annotator_fragments($1)", [req.query.userId]));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export async function getFragments(req: Req, res: express.Response) {
-  let input = JSON.parse(req.body);  // todo
-  if (input.assignee) {
-    let ret = await query1(config, "", [input.assignee]);
-  }
-  else {
-
-  }
-}*/
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function addText(req: Req, res: express.Response) {
@@ -124,8 +71,52 @@ export async function addText(req: Req, res: express.Response) {
   res.json({ result: 'ok' });
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export async function assignTask(req: Req, res: express.Response) {  // todo: test
+  let id = await transaction(config, async (client) => {
+    let numAnnotating = await query1Client(client, "select count(*) from task where user_id=$1 and type='annotate'", [req.bag.user.id]);
+    if (numAnnotating >= MAX_CONCUR_ANNOT) {
+      sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
+      return new ErrorInsideTransaction();
+    }
+    return await query1Client(client, "SELECT assign_task_for_annotation($1)", [req.bag.user.id]);
+  });
+
+  res.json(id);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function getTaskList(req: Req, res: express.Response) {
+  let ret = await query1(config, "SELECT get_task_list($1, $2)", [req.bag.user.id, req.query.status]);
+  res.json(wrapData(ret));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function getTaskCount(req: Req, res: express.Response) {
+  let ret = await query1(config, "SELECT get_task_count($1)", [req.bag.user.id]);
+  res.json(wrapData(ret));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function getTask(req: Req, res: express.Response) {
+  let ret = await query1(config, "SELECT get_task($1, $2)", [req.bag.user.id, req.query.id]);
+  ret.content = mergeXmlFragments(ret.fragments.map(x => x.content));
+  delete ret.fragments;
+  res.json(ret);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function putTask(req: Req, res: express.Response) {
+  await transaction(config, async (client) => {
+    
+  });
+  res.json({});
+}
 
 
+
+
+//------------------------------------------------------------------------------
 function wrapData(data) {
   return { data };
 }
@@ -137,5 +128,6 @@ function wrapData(data) {
 TODO:
 
 - added_at
+- wrap all
 
 */
