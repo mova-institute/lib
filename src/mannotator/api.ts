@@ -1,9 +1,10 @@
 import * as express from 'express';
 import {ClientConfig} from 'pg';
-import {query1, query1Client, queryNumRows, query, transaction} from '../pg_utils';
+import {query1, query1Client, queryNumRows, query, transaction, ErrorInsideTransaction} from '../pg_utils';
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
-import {config, Req} from './server'
+import {config, Req, sendError} from './server';
+import {MAX_CONCUR_ANNOT, mergeXmlFragments} from './common';
 
 
 
@@ -20,60 +21,72 @@ export async function logoff(req: Req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function login(req: Req, res: express.Response) {
-  console.error('nonononr')
   let fbInfo = await tokenInfo(req.query.fbToken);
 
   if (fbInfo.error) {
-    res.status(403).json('403');
+    sendError(res, 403); console.error('tyloh');
   }
   else {
     let token = await genAccessToken();
     if (await queryNumRows(config, "UPDATE login SET access_token=$1 WHERE fb_id=$2", [token, fbInfo.id])) {
       res.cookie('accessToken', token, { maxAge: 1000 * 3600 * 24 * 100, httpOnly: true });
 
-      let role = await query1(config, "SELECT annotator_user.role FROM annotator_user" +
-        " JOIN login ON annotator_user.person_id=login.person_id WHERE access_token=$1", [token]);
+      let role = await query1(config, "SELECT role FROM appuser JOIN login ON appuser.person_id=login.person_id WHERE access_token=$1", [token]);
       res.json(role);
     }
     else {
-      res.status(403).json('403');
+      sendError(res, 403);
     }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function assignFragment(req: Req, res: express.Response) {
-  let ret = await query1(config, "SELECT grab_fragment($1, $2)", [req.bag.user.id, req.query.fragmentId]);
+export async function assignTask(req: Req, res: express.Response) {  // todo: test
+  let id = await transaction(config, async (client) => {
+    let numAnnotating = await query1Client(client, "select count(*) from task where user_id=$1 and type='annotate'", [req.bag.user.id]);
+    if (numAnnotating >= MAX_CONCUR_ANNOT) {
+      sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
+      return new ErrorInsideTransaction();
+    }
+    return await query1Client(client, "SELECT assign_task_for_annotation($1)", [req.bag.user.id]);
+  });
 
+  res.json(id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function fragment(req: Req, res: express.Response) {
-  let ret = await query1(config, "SELECT fragment_details($1, $2)", [req.bag.user.id, req.query.id]);
-  res.json(ret || null);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export async function checkTextName(req: Req, res: express.Response) {
-  let free = !(await queryNumRows(config, "SELECT id FROM corpus_doc WHERE name=$1", [req.query.name]));
+export async function checkDocName(req: Req, res: express.Response) {
+  let free = !(await query1(config, "SELECT id FROM document WHERE name=$1", [req.query.name]));
   res.json({ free });
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export async function getTask(req: Req, res: express.Response) {
+  let ret = await query1(config, "SELECT get_task($1, $2)", [req.bag.user.id, req.query.id]);
+  ret.content = mergeXmlFragments(ret.fragments.map(x => x.content));
+  delete ret.fragments;
+  res.json(ret);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function getTaskList(req: Req, res: express.Response) {
+  let ret = await query1(config, "SELECT get_task_list($1, $2)", [req.bag.user.id, req.query.status]);
+  res.json(wrapData(ret));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function getTaskCount(req: Req, res: express.Response) {
+  let ret = await query1(config, "SELECT get_task_count($1)", [req.bag.user.id]);
+  res.json(wrapData(ret));
+}
+
+/*
+
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getTasks(req: Req, res: express.Response) {
   res.json(await query1(config, "SELECT annotator_fragments($1)", [req.query.userId]));
 }
-
-/*////////////////////////////////////////////////////////////////////////////////
-export async function grabTask(req: Req, res: express.Response) {
-  let role = await queryAnnotatorRole(req.query.fb_token);
-  if (role) {
-    console.error(role);
-  }
-  else {
-    res.status(400).end();
-  }
-}*/
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getFragments(req: Req, res: express.Response) {
@@ -84,48 +97,45 @@ export async function getFragments(req: Req, res: express.Response) {
   else {
 
   }
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function newText(req: Req, res: express.Response) {
-  let result = await transaction(config, async (client) => {
-    let id = await query1Client(client, "INSERT INTO corpus_doc (name) VALUES ($1) RETURNING corpus_doc.id", [req.body.docName]);
+export async function addText(req: Req, res: express.Response) {
+  await transaction(config, async (client) => {
+    let docId = await query1Client(client, "INSERT INTO document (name) VALUES ($1) RETURNING id", [req.body.docName]);
+    
+    let numFragments = req.body.fragments.length;
+    for (let i = 0; i < numFragments; ++i) {
+      await query(client, "INSERT INTO fragment_version (doc_id, index, content) VALUES ($1, $2, $3)",
+        [docId, i, req.body.fragments[i]]);
+    }
 
-    let i = 0;
-    for (let fragment of req.body.fragments) {
-      await query(client, "INSERT INTO corpus_fragment (doc_id, index, is_pooled, content) VALUES ($1, $2, $3, $4)",
-        [id, i++, req.body.isForPool, fragment]);
+    let segments = [[0, 0]];
+    for (let i = 0; i < numFragments - 1; ++i) {
+      segments.push([i, i + 1]);
+    }
+    segments.push([numFragments - 1, numFragments - 1]);
+
+    for (let segment of segments) {
+      await query1Client(client, "INSERT INTO task (doc_id, type, fragment_start, fragment_end) VALUES ($1, 'annotate', $2, $3)",
+        [docId, segment[0], segment[1]]);
     }
   });
-
   res.json({ result: 'ok' });
 }
 
-/*////////////////////////////////////////////////////////////////////////////////
-async function queryAnnotatorRole(fbToken: string) {
-  let result = await queryScalar(config, "SELECT to_json(t) FROM (SELECT login.fb_id, annotator_user.role FROM annotator_user JOIN login ON "
-    + "annotator_user.person_id=login.person_id WHERE fb_token_updated_at > now() - INTERVAL '2 hours'"
-    + " AND fb_token=$1) t", [fbToken]);
 
-  if (result) {
-    return result.role;
-  }
-  else {
-    let fbInfo = await tokenInfo(fbToken);
-    if (fbInfo.error) {
-      return null;
-    }
-    else {
-      if (await queryNumRows(config, 'UPDATE login SET fb_token=$1, fb_token_updated_at=now() WHERE fb_id=$2', [fbToken, fbInfo.id])) {
-        return await queryScalar(config, 'SELECT annotator_user.role FROM annotator_user' +
-          ' JOIN login ON annotator_user.person_id=login.person_id WHERE fb_id=$1', [fbInfo.id]);
-      }
 
-      return null;
-    }
-  }
+function wrapData(data) {
+  return { data };
 }
 
-// async function _getRole(token: string) {
-//   let result = await queryScalar(config, "SELECT role FROM annotator_user JOIN login ON annotator_user.person_id=login.person_id WHERE access_token=$1", [token]);
-// }*/
+
+
+/*
+
+TODO:
+
+- added_at
+
+*/

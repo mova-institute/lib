@@ -12,8 +12,9 @@ import {ClientConfig} from 'pg';
 export const config: ClientConfig = {
   host: 'mova.institute',
   database: 'movainstitute',
-  user: 'movainstitute',
-  password: 'movainstituteP@ss'
+  user: 'annotator',
+  password: '@nn0t@t0zh3',
+  ssl: true
 };
 
 export interface Req extends express.Request {
@@ -59,8 +60,9 @@ app.listen(8888);
 
 
 
-
-
+let actionRoles = {
+  
+};
 
 
 
@@ -77,6 +79,7 @@ async function authorize(action: string, req: Req, res: express.Response) {
   if (action === 'login') {
     return true;
   }
+  // todo
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
@@ -101,6 +104,6 @@ export function makeErrObj(code: number, message?: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function sendError(res: express.Response, code: number) {
-  res.status(code).json(makeErrObj(code));
+export function sendError(res: express.Response, code: number, message?: string) {
+  res.status(code).json(makeErrObj(code, message));
 }

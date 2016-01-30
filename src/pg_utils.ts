@@ -62,24 +62,28 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export class ErrorInsideTransaction {
+
+}
+////////////////////////////////////////////////////////////////////////////////
 export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
   let { client, done } = await getClient(config);
-  
+
   while (true) {
     try {
       await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
       
-      let fRes = await f(client);
-      if (fRes === false) {
+      var res = await f(client);
+      if (res instanceof ErrorInsideTransaction) {
         await query(client, "ROLLBACK");
-        return false;
+        return res;
       }
 
       await query(client, "COMMIT");
     }
     catch (e) {
+      await query(client, "ROLLBACK");
       if (e instanceof Error && e.code === '40001') {
-        await query(client, "ROLLBACK");
         continue;
       }
       else {
@@ -89,9 +93,9 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
     finally {
       done();
     }
-    
+
     break;
   }
-  
-  return true;
+
+  return res;
 }
