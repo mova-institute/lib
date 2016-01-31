@@ -64,6 +64,7 @@ const tagMap = {
   'ind': { feat: 'pronounType', mte: 'i' },
   'gen': { feat: 'pronounType', mte: 'g' },
   'def': { feat: 'pronounType', mte: '?' },  // todo
+  'emph': { feat: 'pronounType', mte: 'h' },
 	
   'coord': { feat: 'сonjunctionType', mte: 'c' },
   'subord': { feat: 'сonjunctionType', mte: 's' },
@@ -323,7 +324,8 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
           for (let type of formTag.pronounType) {
             ret.push('P' + mapTag(type) + referentType + person + gender + animacy + number_ + case_ + syntacticType);
           }
-        } else {  // todo
+        }
+        else {  // todo
           ret.push('P' + '?' + referentType + person + gender + animacy + number_ + case_ + syntacticType);
         }
 
