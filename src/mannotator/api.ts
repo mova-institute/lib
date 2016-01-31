@@ -5,7 +5,11 @@ import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments} from './common';
+import {parseXmlString} from 'libxmljs';
 
+
+
+const ERROR_INSIDE_TRANSACTION = new ErrorInsideTransaction();
 
 
 
@@ -50,7 +54,7 @@ export async function checkDocName(req: Req, res: express.Response) {
 export async function addText(req: Req, res: express.Response) {
   await transaction(config, async (client) => {
     let docId = await query1Client(client, "INSERT INTO document (name) VALUES ($1) RETURNING id", [req.body.docName]);
-    
+
     let numFragments = req.body.fragments.length;
     for (let i = 0; i < numFragments; ++i) {
       await query(client, "INSERT INTO fragment_version (doc_id, index, content) VALUES ($1, $2, $3)",
@@ -77,7 +81,7 @@ export async function assignTask(req: Req, res: express.Response) {  // todo: te
     let numAnnotating = await query1Client(client, "select count(*) from task where user_id=$1 and type='annotate'", [req.bag.user.id]);
     if (numAnnotating >= MAX_CONCUR_ANNOT) {
       sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
-      return new ErrorInsideTransaction();
+      return ERROR_INSIDE_TRANSACTION;
     }
     return await query1Client(client, "SELECT assign_task_for_annotation($1)", [req.bag.user.id]);
   });
@@ -106,11 +110,23 @@ export async function getTask(req: Req, res: express.Response) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function putTask(req: Req, res: express.Response) {
+export async function saveTask(req: Req, res: express.Response) {
+  let now = new Date();
   await transaction(config, async (client) => {
-    
+    let taskInDb = await query1Client(client, "SELECT row_to_json(t) FROM (SELECT * FROM task WHERE id=$1 AND type=$2) AS t",
+      [req.body.id, req.body.type]);
+
+    if (!taskInDb || req.body.fragments.length !== taskInDb.fragment_end - taskInDb.fragment_start + 1) {
+      return ERROR_INSIDE_TRANSACTION;
+    }
+
+    for (let i = 0; i < req.body.fragments.length; ++i) {  // todo: status
+      await query1Client(client, "INSERT INTO fragment_version(task_id, doc_id, index, status, added_at, content) VALUES($1, $2, $3, $4, $5, $6)",
+        [req.body.id, taskInDb.doc_id, taskInDb.fragment_start + i, 'annotating', now, req.body.fragments[i]]);
+    }
   });
-  res.json({});
+  
+  res.json('ok');
 }
 
 
@@ -120,8 +136,6 @@ export async function putTask(req: Req, res: express.Response) {
 function wrapData(data) {
   return { data };
 }
-
-
 
 /*
 

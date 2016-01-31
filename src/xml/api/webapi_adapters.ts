@@ -27,7 +27,7 @@ export class WebapiDocument implements IDocument {
 		return serializeXml(this.underlying);
 	}
 	
-	xpath(xpath: string) {
+	xpath(xpath: string) {  // todo: kill?
 		// todo
 		// let result = this.underlying.evaluate('//w[ana]',
 		// 	this.underlying.documentElement, null, XPathResult.ANY_TYPE, null);

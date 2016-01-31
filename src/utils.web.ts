@@ -12,11 +12,6 @@ function getDomParser() {
   return domParser || (domParser = new DOMParser());
 }
 
-// //------------------------------------------------------------------------------
-// function xpathXml(xpath: string, node: Node) {
-//   return node.ownerDocument.evaluate(xpath, node, xmlNsResolver, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
-// }
-
 ////////////////////////////////////////////////////////////////////////////////
 export function parseXml(str: string) {
   let doc = getDomParser().parseFromString(str, 'application/xml');

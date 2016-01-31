@@ -1,5 +1,5 @@
 // import {$el} from './api/webapi_adapters';
-import {walkUpUntil, nLevelsDeep} from './utils';
+import {walkUpUntil, nLevelsDeep, xmlNsResolver} from './utils';
 import {parseXml, serializeXml} from '../utils.web';
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,9 +25,9 @@ export function insertRangeStr(hole: Range, rangeStr: string) {
     ++destDepth
     return x.parentNode === hole.commonAncestorContainer
   });
-  
+
   let source = nLevelsDeep(fragment.documentElement.firstChild, destDepth);
-  
+
   mergeTrees(source, hole.startContainer, hole.endContainer)
 }
 
@@ -36,4 +36,21 @@ export function insertRangeStr(hole: Range, rangeStr: string) {
 function mergeTrees(source: Node, dest: Node, destEnd: Node) {
   //(<HTMLElement>dest).innerHTML = '<mi:w_><w lemma="loh">oooo</w></mi:w_>';
   //console.log('mergetrees');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function xpath(doc: Document, query: string, type: number) {
+  let res = doc.evaluate(query, doc, xmlNsResolver, type, null);
+  
+  if (type === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+    || type === XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE) {
+    let ret = [];
+    for (let i = 0; i < res.snapshotLength; ++i) {
+      ret.push(res.snapshotItem(i));
+    }
+    
+    return ret;
+  }
+  
+  return res;
 }

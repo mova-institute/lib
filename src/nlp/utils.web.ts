@@ -33,7 +33,6 @@ export function fragmentCorpusText(doc: Document) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function textFragmentCorpusText(doc: Document) {
-  // return fragmentCorpusText(doc).map(x => encloseInRoot(removeXmlns(serializeXml(x)), 'tei'));
   return fragmentCorpusText(doc).map(x => removeXmlns(serializeXml(x)));
 }
 

@@ -69,7 +69,7 @@ export class ErrorInsideTransaction {
 export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
   let { client, done } = await getClient(config);
 
-  for (let i = 0; i < MAX_TRANSACTION_RETRY; ++i) {
+  for (let i = 1;; ++i) {
     try {
       await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
       
@@ -84,7 +84,7 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
     catch (e) {
       await query(client, "ROLLBACK");
       
-      if (i === MAX_TRANSACTION_RETRY - 1) {
+      if (i === MAX_TRANSACTION_RETRY) {
         throw new Error('Max transaction retries exceeded');
       }
       
