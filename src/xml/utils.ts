@@ -128,6 +128,19 @@ export function traverseDocumentOrderEl(node: INode, onEnter: (el: IElement) => 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function nextElDocumentOrder(context: IElement, elsOfInterest?: Set<string>) {
+  let ret: IElement = null;
+  traverseDocumentOrder(context, callbackIfElement(el => {
+    if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs()))) {
+      ret = el;
+      return false;
+    }
+  }));
+  
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function walkUpUntil(node, predicate: (node) => boolean) {
   while (node && predicate(node.parentNode)) {
     node = node.parentNode;
@@ -180,7 +193,7 @@ export function lang(node: INode): string {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-function callbackIfElement(cb) {
+function callbackIfElement(cb: (el:IElement) => any) {
   return node => {
     if (cb && node.isElement()) {
       return cb(node);

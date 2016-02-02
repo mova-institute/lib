@@ -58,10 +58,16 @@ export function* linesSync(filename: string) {  // todo: do not buffer file
 ////////////////////////////////////////////////////////////////////////////////
 export function* nonemptyLinesSync(filename: string) {
 	for (let line of linesSync(filename)) {
+    line = line.trim();
     if (line) {
 		  yield line;
     }
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function nonemptyLinesSyncArray(filename: string) {
+	return readFileSync(filename, 'utf8').split('\n').map(x => x.trim()).filter(x => !!x);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
