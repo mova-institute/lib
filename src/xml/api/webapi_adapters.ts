@@ -27,12 +27,12 @@ export class WebapiDocument implements IDocument {
 		return serializeXml(this.underlying);
 	}
 	
-	xpath(xpath: string) {  // todo: kill?
+	xpath(query: string, nsMap?) {  // todo: kill?
 		// todo
 		// let result = this.underlying.evaluate('//w[ana]',
 		// 	this.underlying.documentElement, null, XPathResult.ANY_TYPE, null);
 		// console.log(result.iterateNext());
-		return wrappedOrNull(WebapiElement, this.underlying.querySelector(xpath));
+		return []; // todo
 	}
 }
 
@@ -135,7 +135,7 @@ export class WebapiElement extends WebapiNode implements IElement {
 	*childElements() {
 		let children = (<HTMLElement>this.underlying).children;
 		for (let i = 0; i < children.length; ++i) {
-			yield new WebapiElement(children[i]);
+			yield new WebapiElement(children.item(i));
 		}
 	}
 	

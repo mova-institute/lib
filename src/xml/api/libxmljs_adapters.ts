@@ -21,8 +21,8 @@ export class LibxmlDocument implements IDocument {
 		return this.underlying.toString();
 	}
 	
-	xpath(xpath: string) {
-		// todo
+	xpath(query: string, nsMap?) {
+		return this.underlying.find(query, nsMap).map(x => new LibxmlElement(x));
 	}
 }
 
@@ -137,7 +137,15 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 	}
 	
 	childElement(index: number) {
-		return ithGenerated(this.childElements(), index);
+    for (let child of this.underlying.childNodes()) {
+      if (child.type() === 'element') {
+        if (--index < 0) {
+          return new LibxmlElement(child);
+        }
+      }
+    }
+    
+    return null;
 	}
 	
 	get nextElementSibling() {

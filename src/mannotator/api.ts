@@ -28,7 +28,7 @@ export async function login(req: Req, res: express.Response) {
   let fbInfo = await tokenInfo(req.query.fbToken);
 
   if (fbInfo.error) {
-    sendError(res, 403); console.error('tyloh');
+    sendError(res, 403);
   }
   else {
     let token = await genAccessToken();
@@ -55,12 +55,12 @@ export async function addText(req: Req, res: express.Response) {
   await transaction(config, async (client) => {
     let docId = await query1Client(client, "INSERT INTO document (name) VALUES ($1) RETURNING id", [req.body.docName]);
 
-    let numFragments = req.body.fragments.length;
-    for (let i = 0; i < numFragments; ++i) {
+    for (let [i, fragment] of req.body.fragments.entries()) {
       await query(client, "INSERT INTO fragment_version (doc_id, index, content) VALUES ($1, $2, $3)",
-        [docId, i, req.body.fragments[i]]);
+        [docId, i, fragment.xmlstr]);
     }
 
+    let numFragments = req.body.fragments.length;
     let segments = [[0, 0]];
     for (let i = 0; i < numFragments - 1; ++i) {
       segments.push([i, i + 1]);
@@ -68,8 +68,8 @@ export async function addText(req: Req, res: express.Response) {
     segments.push([numFragments - 1, numFragments - 1]);
 
     for (let segment of segments) {
-      await query1Client(client, "INSERT INTO task (doc_id, type, fragment_start, fragment_end) VALUES ($1, 'annotate', $2, $3)",
-        [docId, segment[0], segment[1]]);
+      await query1Client(client, "INSERT INTO task (doc_id, type, fragment_start, fragment_end, name) VALUES ($1, 'annotate', $2, $3, $4)",
+        [docId, segment[0], segment[1], req.body.fragments[segment[0]].firstWords.join(' ')]);
     }
   });
   res.json({ result: 'ok' });
@@ -91,7 +91,7 @@ export async function assignTask(req: Req, res: express.Response) {  // todo: te
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getTaskList(req: Req, res: express.Response) {
-  let ret = await query1(config, "SELECT get_task_list($1, $2)", [req.bag.user.id, req.query.status]);
+  let ret = await query1(config, "SELECT get_task_list($1, $2)", [req.bag.user.id, req.query.type]);
   res.json(wrapData(ret));
 }
 

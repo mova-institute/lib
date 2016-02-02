@@ -1,4 +1,5 @@
 import {xmlNsResolver, removeXmlns, encloseInRoot} from '../xml/utils';
+import {xpath} from '../xml/utils.web';
 import {serializeXml} from '../utils.web';
 import {W, W_, PC, SE, P} from './common_elements'
 
@@ -32,8 +33,19 @@ export function fragmentCorpusText(doc: Document) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function firstNWords(n: number, from: Node) {
+  let words = xpath(from, `//mi:w_[position() < ${n}]`, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  return (<Element[]>words).map(x => x.firstElementChild.textContent);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function textFragmentCorpusText(doc: Document) {
-  return fragmentCorpusText(doc).map(x => removeXmlns(serializeXml(x)));
+  // debugger;
+  // console.log(fragmentCorpusText(doc).map(x => firstNWords(4, x)));
+  return fragmentCorpusText(doc).map(x => ({
+    xmlstr: removeXmlns(serializeXml(x)),
+    firstWords: firstNWords(4, x.firstElementChild)
+  }));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

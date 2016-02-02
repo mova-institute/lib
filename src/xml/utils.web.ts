@@ -39,8 +39,9 @@ function mergeTrees(source: Node, dest: Node, destEnd: Node) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function xpath(doc: Document, query: string, type: number) {
-  let res = doc.evaluate(query, doc, xmlNsResolver, type, null);
+export function xpath(context: Node, query: string, type: number) {
+  let doc = context.ownerDocument || <Document>context;
+  let res = doc.evaluate(query, context, xmlNsResolver, type, null);
   
   if (type === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
     || type === XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE) {
