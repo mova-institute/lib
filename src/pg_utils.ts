@@ -1,10 +1,9 @@
 import {connect, Client, ClientConfig, QueryResult} from 'pg';
 const camelCase = require('camelcase');
 
+
+////////////////////////////////////////////////////////////////////////////////
 export const BUSINESS_ERROR = Symbol();
-
-
-const MAX_TRANSACTION_RETRY = 100;
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getClient(config: ClientConfig) {
@@ -69,10 +68,11 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+const MAX_TRANSACTION_RETRY = 100;
 export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
   let { client, done } = await getClient(config);
 
-  for (let i = 1;; ++i) {
+  for (let i = 1; ; ++i) {
     try {
       await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
       
@@ -94,9 +94,8 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
       if (e instanceof Error && e.code === '40001') {
         continue;
       }
-      else {
-        throw e;
-      }
+      
+      throw e;
     }
     finally {
       done();
