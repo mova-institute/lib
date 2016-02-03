@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {ClientConfig} from 'pg';
-import {query1, query1Client, queryNumRows, query, transaction, ErrorInsideTransaction} from '../pg_utils';
+import {query1, query1Client, queryNumRows, query, transaction, BUSINESS_ERROR} from '../pg_utils';
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
@@ -9,7 +9,6 @@ import {parseXmlString} from 'libxmljs';
 
 
 
-const ERROR_INSIDE_TRANSACTION = new ErrorInsideTransaction();
 
 
 
@@ -81,7 +80,7 @@ export async function assignTask(req: Req, res: express.Response) {  // todo: te
     let numAnnotating = (await query1Client(client, "SELECT get_task_count($1)", [req.bag.user.id])).annotate;
     if (numAnnotating >= MAX_CONCUR_ANNOT) {
       sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
-      return ERROR_INSIDE_TRANSACTION;
+      return BUSINESS_ERROR;
     }
     return await query1Client(client, "SELECT assign_task_for_annotation($1)", [req.bag.user.id]);
   });
@@ -117,7 +116,7 @@ export async function saveTask(req: Req, res: express.Response) {
       [req.body.id]);
 
     if (!taskInDb || req.body.fragments.length !== taskInDb.fragment_end - taskInDb.fragment_start + 1) {
-      return ERROR_INSIDE_TRANSACTION;
+      return BUSINESS_ERROR;
     }
 
     for (let [i, fragment] of req.body.fragments.entries()) {  // todo: status

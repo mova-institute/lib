@@ -1,6 +1,9 @@
 import {connect, Client, ClientConfig, QueryResult} from 'pg';
 const camelCase = require('camelcase');
 
+export const BUSINESS_ERROR = Symbol();
+
+
 const MAX_TRANSACTION_RETRY = 100;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,10 +69,6 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class ErrorInsideTransaction {
-
-}
-////////////////////////////////////////////////////////////////////////////////
 export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
   let { client, done } = await getClient(config);
 
@@ -78,7 +77,7 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
       await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
       
       var res = await f(client);
-      if (res instanceof ErrorInsideTransaction) {
+      if (res === BUSINESS_ERROR) {
         await query(client, "ROLLBACK");
         return res;
       }
