@@ -3,6 +3,7 @@ import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interfaces'
 import {MorphAnalyzer, MorphTag} from './morph_analyzer/morph_analyzer';
+import {getUnambMorphTag} from './text_token';
 
 
 export const WCHAR = r `\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
@@ -47,9 +48,9 @@ let PUNC_SPACING = {
   '.': [false, true],
   ':': [false, true],
   ';': [false, true],
-  '-': [false, false],    // dash
-  '–': [false, false],    // n-dash
-  '—': [true, true],  // m-dash
+  '-': [false, false],   // dash
+  '–': [false, false],   // n-dash
+  '—': [true, true],     // m-dash
   '(': [true, false],
   ')': [false, true],
   '[': [true, false],
@@ -282,4 +283,29 @@ export function* dictFormLemmaTag(lines: Array<string>) {
       yield { form, lemma, tag };
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function markWordwiseDiff(mine: IElement, theirs: IElement) {
+  let wordsMine = <IElement[]>mine.xpath('//mi:w_', NS);
+  let wordsTheirs = <IElement[]>theirs.xpath('//mi:w_', NS);
+
+  if (wordsMine.length !== wordsTheirs.length) {
+    // console.error(wordsMine.length);
+    // console.error(wordsTheirs.length);
+    // console.error(mine.ownerDocument.serialize());
+    // console.error(theirs.ownerDocument.serialize());
+    throw new Error('Diff for docs with uneven word count not implemented');
+  }
+
+  let numDiffs = 0;
+  for (let [i, mine] of wordsMine.entries()) {
+    if (getUnambMorphTag(mine) !== getUnambMorphTag(wordsTheirs[i])) {
+      ++numDiffs;
+      mine.setAttribute('mark', 'diff');
+      // wordsTheirs[i].setAttribute('mark', 'diff');
+    }
+  }
+  
+  return numDiffs;
 }

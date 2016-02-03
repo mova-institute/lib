@@ -1,4 +1,4 @@
-import {xmlNsResolver} from './xml/utils';
+import {xmlNsResolver, removeXmlns} from './xml/utils';
 
 //------------------------------------------------------------------------------
 let xmlSerializer: XMLSerializer;
@@ -23,6 +23,11 @@ export function parseXml(str: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function serializeXml(node: Node) {
   return getXmlSerializer().serializeToString(node);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function serializeXmlNoNs(node: Node) {
+  return removeXmlns(serializeXml(node));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

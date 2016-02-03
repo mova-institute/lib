@@ -42,27 +42,35 @@ export function removeXmlns(xmlstr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function encloseInRoot(xmlstr: string, defaultNs: string, rootName = 'mi:fragment') {
+export function removeRoot(xmlstr: string) {
+  return xmlstr.replace(/^\s*<[^>]+>/, '').replace(/<\/[^>]+>\s*$/, '');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function encloseInRoot(xmlstr: string, rootName = 'root') {
+  return `<${rootName}>${xmlstr}</${rootName}>`;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function encloseInRootNs(xmlstr: string, rootName = 'mi:fragment', ns = ['tei', 'mi']) {
   let ret = '<' + rootName;
-  if (NS[defaultNs]) {
-    ret += ' xmlns="' + NS[defaultNs] + '"';
+  if (NS[ns[0]]) {
+    ret += ' xmlns="' + NS[ns[0]] + '"';
   }
-  for (let prefix in NS) {
-    if (prefix !== defaultNs) {
-      ret += ' xmlns:' + prefix + '="' + NS[prefix] + '"';
-    }
+  for (let i = 1; i < ns.length; ++i) {
+    ret += ' xmlns:' + ns[i] + '="' + NS[ns[i]] + '"';
   }
   ret += '>\n' + xmlstr + '\n</' + rootName + '>';
-  
+
   return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tagStr(open: boolean, prefix: string, elem: string, attrs = new Map()) {
   if (!open) {
-    return `</${namePrefixed(prefix, elem) }>`;
+    return `</${namePrefixed(prefix, elem)}>`;
   }
-  let ret = `<${namePrefixed(prefix, elem) }`;
+  let ret = `<${namePrefixed(prefix, elem)}`;
   for (var [key, value] of attrs.entries()) {
     ret += ` ${key}="${value}"`;
   }
@@ -94,8 +102,8 @@ export function traverseDepth(node: INode, onEnter: (el: INode) => any, onLeave?
   }
   if (directive !== 'skip') {
     for (let cur = node.firstChild, next = cur && cur.nextSibling;
-         cur;
-         cur = next, next = next && next.nextSibling) {
+      cur;
+      cur = next, next = next && next.nextSibling) {
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
       }
@@ -136,7 +144,7 @@ export function nextElDocumentOrder(context: IElement, elsOfInterest?: Set<strin
       return false;
     }
   }));
-  
+
   return ret;
 }
 
@@ -145,7 +153,7 @@ export function walkUpUntil(node, predicate: (node) => boolean) {
   while (node && predicate(node.parentNode)) {
     node = node.parentNode;
   }
-  
+
   return node;
 }
 
@@ -154,7 +162,7 @@ export function nLevelsDeep(node, n: number) {
   while (node && n--) {
     node = node.firstChild;  // todo: element?
   }
-  
+
   return node;
 }
 
@@ -193,7 +201,7 @@ export function lang(node: INode): string {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-function callbackIfElement(cb: (el:IElement) => any) {
+function callbackIfElement(cb: (el: IElement) => any) {
   return node => {
     if (cb && node.isElement()) {
       return cb(node);

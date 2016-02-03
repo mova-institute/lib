@@ -1,6 +1,6 @@
-import {xmlNsResolver, removeXmlns, encloseInRoot} from '../xml/utils';
+import {xmlNsResolver} from '../xml/utils';
 import {xpath} from '../xml/utils.web';
-import {serializeXml} from '../utils.web';
+import {serializeXmlNoNs} from '../utils.web';
 import {W, W_, PC, SE, P} from './common_elements'
 
 
@@ -9,18 +9,15 @@ export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 150;
   let ret = new Array<DocumentFragment>();
   
-  let paragraphs = xpath(doc, '/tei:TEI/tei:text//tei:p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  let paragraphs: any[] = xpath(doc, '/tei:TEI/tei:text//tei:p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   let curNumWords = 0;
   let range = doc.createRange();
-  let p = paragraphs.snapshotItem(0);
-  p && range.setStartBefore(p);
-  for (let i = 0; i < paragraphs.snapshotLength; ++i) {
-    p = paragraphs.snapshotItem(i);
-    
+  paragraphs[0] && range.setStartBefore(paragraphs[0]);
+  for (let [i, p] of paragraphs.entries()) {console.log(i);
     let numWords = doc.evaluate('count(.//mi:w_)', p, <any>xmlNsResolver, XPathResult.NUMBER_TYPE, null).numberValue;
     curNumWords += numWords;
     
-    if (curNumWords >= NUM_WORDS || i === paragraphs.snapshotLength - 1) {
+    if (true|| curNumWords >= NUM_WORDS || i === paragraphs.length - 1) {
       range.setEndAfter(p);
       ret.push(range.cloneContents());
       range.collapse(false);
@@ -40,10 +37,8 @@ export function firstNWords(n: number, from: Node) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function textFragmentCorpusText(doc: Document) {
-  // debugger;
-  // console.log(fragmentCorpusText(doc).map(x => firstNWords(4, x)));
   return fragmentCorpusText(doc).map(x => ({
-    xmlstr: removeXmlns(serializeXml(x)),
+    xmlstr: serializeXmlNoNs(x),
     firstWords: firstNWords(4, x.firstElementChild)
   }));
 }

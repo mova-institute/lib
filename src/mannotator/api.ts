@@ -4,10 +4,11 @@ import {query1, query1Client, queryNumRows, query, transaction, BUSINESS_ERROR} 
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
-import {MAX_CONCUR_ANNOT, mergeXmlFragments} from './common';
-import {parseXmlString} from 'libxmljs';
+import {MAX_CONCUR_ANNOT, mergeXmlFragments} from './business';
+import {highlightConflicts} from './business.node';
+import {markWordwiseDiff} from '../nlp/utils';
 
-
+import {inspect} from 'util';
 
 
 
@@ -110,22 +111,50 @@ export async function getTask(req: Req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function saveTask(req: Req, res: express.Response) {
-  let now = new Date();
-  await transaction(config, async (client) => {
-    let taskInDb = await query1Client(client, "SELECT row_to_json(task) FROM task WHERE id=$1",
-      [req.body.id]);
-
-    if (!taskInDb || req.body.fragments.length !== taskInDb.fragment_end - taskInDb.fragment_start + 1) {
+  const now = new Date();
+  let result = await transaction(config, async (client) => {
+    const taskInDb = await query1Client(client, "SELECT get_task($1, $2)", [req.bag.user.id, req.body.id]);
+    
+    if (!taskInDb || taskInDb.status === 'done' || req.body.fragments.length !== taskInDb.fragments.length) {
+      // console.error('BUSINESS_ERROR');
+      // console.error(taskInDb);
+      // console.error(req.body.fragments.length !== taskInDb.fragments.length);
       return BUSINESS_ERROR;
     }
 
     for (let [i, fragment] of req.body.fragments.entries()) {  // todo: status
       await query1Client(client, "INSERT INTO fragment_version(task_id, doc_id, index, status, added_at, content) VALUES($1, $2, $3, $4, $5, $6)",
-        [req.body.id, taskInDb.doc_id, taskInDb.fragment_start + i, 'in progress', now, fragment]);
+        [req.body.id, taskInDb.docId, taskInDb.fragmentStart + i, 'in progress', now, fragment]);
     }
+    if (/*true || */req.body.complete) {
+      let tocheck = await query1Client(client, "SELECT complete_task($1)", [req.body.id]);
+      // console.error(inspect(tocheck, {depth:null}) || 'nothing to check');
+      // return BUSINESS_ERROR;
+      for (let task of tocheck) {
+        let highlightedFragments = [];
+        let diffsTotal = 0;
+        for (let fagment of task.fragments) {
+          let [mine, theirs] = fagment.annotations;
+          let {highlighted, numDiffs} = highlightConflicts(taskInDb.type, mine.content, theirs.content);
+          highlightedFragments.push(highlighted);
+          diffsTotal += numDiffs;
+        }
+        if (diffsTotal) {
+          
+          console.error('there are diffs!');
+        }
+      }
+    }
+    
+    // return BUSINESS_ERROR;
   });
-  
-  res.json('ok');
+
+  if (result === BUSINESS_ERROR) {
+    sendError(res, 400);
+  }
+  else {
+    res.json('ok');
+  }
 }
 
 
