@@ -1,16 +1,16 @@
 'use strict';
 
-let gulp = require('gulp');
-let ts = require('gulp-typescript');
-let sourcemaps = require('gulp-sourcemaps');
-let babel = require('gulp-babel');
-let uglify = require('gulp-uglify');
-let del = require('del');
-let dirname = require('path').dirname;
+const gulp = require('gulp');
+const ts = require('gulp-typescript');
+const sourcemaps = require('gulp-sourcemaps');
+const babel = require('gulp-babel');
+const uglify = require('gulp-uglify');
+const del = require('del');
+const dirname = require('path').dirname;
 
 const PROJECR_ROOT = process.cwd();
 const dist = 'lib';
-let tsProjectFile = 'src/tsconfig.json';
+const tsProjectFile = 'src/tsconfig.json';
 
 function swallowError (error) {
   console.log(error.toString());

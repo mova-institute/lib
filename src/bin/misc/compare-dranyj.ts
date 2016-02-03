@@ -1,6 +1,6 @@
 import {linesSync} from '../../utils.node';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 let lemmataSheva = new Map<string, Set<string>>();
 for (let line of linesSync(args.sheva)) {

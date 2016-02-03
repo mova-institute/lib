@@ -3,7 +3,7 @@ import {parseXmlString, Element} from 'libxmljs';
 import * as fs from 'fs';
 import {NS} from '../../xml/utils';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 let doc = parseXmlString(fs.readFileSync(args._[0], 'utf8'));
 

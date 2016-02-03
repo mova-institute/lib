@@ -2,7 +2,8 @@ import {linesSync} from '../utils.node';
 import {complement} from '../lang';
 import {writeFileSync} from 'fs';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
+
 
 let lemmataSheva = new Set<string>();
 for (let line of linesSync(args._[0])) {

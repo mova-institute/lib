@@ -1,7 +1,7 @@
 import {ioArgs2} from '../cli_utils';
 import * as transforms from '../transforms';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 
 let command = args._[0];

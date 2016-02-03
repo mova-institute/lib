@@ -2,7 +2,7 @@ import {createReadStream, createWriteStream, renameSync} from 'fs';
 import {Readable} from 'stream';
 import * as tmp from 'tmp';
 
-let minimist = require('minimist');
+const minimist = require('minimist');
 tmp.setGracefulCleanup();
 
 

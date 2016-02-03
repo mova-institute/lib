@@ -4,11 +4,11 @@ import {SaxEventSerializer} from '../xml/sax_event_serializer'
 import {SentenceStartInjector} from '../nlp/sentence_start_injector'
 import {GlueInjector} from '../nlp/glue_injector'
 
-let {createReadStream, createWriteStream} = require('fs');
-let {basename} = require('path');
-let globSync = require('glob').sync;
+const {createReadStream, createWriteStream} = require('fs');
+const {basename} = require('path');
+const globSync = require('glob').sync;
 
-let argv = require('minimist')(process.argv.slice(2));
+const argv = require('minimist')(process.argv.slice(2));
 
 if (argv._.length < 2) {
 	console.error(`Usage: ${basename(process.argv[1]) } <input file> [others...] <out file>`);

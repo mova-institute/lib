@@ -6,9 +6,9 @@ import {writeCompiledDict} from '../nlp/morph_analyzer/utils.node';
 import {join} from 'path';
 import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
 
-var mkdirp = require('mkdirp');
+const mkdirp = require('mkdirp');
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 let input = args.i || args.input || join(__dirname, '../../../dict_uk/out/dict_corp_viz-mte.txt');
 let name = args.name || 'rysin-mte';
 let destDir = join(args.d || args.dest || join(__dirname, '../../data/dict'), name);

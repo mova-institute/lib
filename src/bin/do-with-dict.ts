@@ -1,11 +1,11 @@
 import {createReadStream} from 'fs';
 import {createInterface} from 'readline';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 let input = createReadStream(args._[0], 'utf8');
 
-let collator = new Intl.Collator('uk-UA');
+const collator = new Intl.Collator('uk-UA');
 
 
 type Pack = Array<{ form: string, tag: string }>;

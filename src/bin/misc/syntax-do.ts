@@ -7,7 +7,7 @@ import {W, W_, PC, SE, P} from '../../nlp/common_elements';
 import {nextElDocumentOrder} from '../../xml/utils';
 import {TextToken} from '../../nlp/text_token';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 
 const WCHAR = `’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;

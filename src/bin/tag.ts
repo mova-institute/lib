@@ -7,7 +7,7 @@ import {cantBeXml} from '../xml/utils';
 import {createReadStream} from 'fs';
 import {join} from 'path';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 
 // todo: treat same file, temp

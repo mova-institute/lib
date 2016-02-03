@@ -1,7 +1,7 @@
 import {nonemptyLinesSync} from '../../utils.node';
 import {createWriteStream} from 'fs';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 let output = createWriteStream(args.o);
 

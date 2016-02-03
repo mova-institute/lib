@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as request from 'request';
 
-let args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
 
 const URI = 'http://dict-api.tip.net.pl:8888/?type=json&key=177a37ebd4d2f45ecd3e2a6e7de33a87&call=translate&lang_in=pl&lang_out=ua&data=';
