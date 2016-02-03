@@ -26,14 +26,6 @@ export class WebapiDocument implements IDocument {
 	serialize() {
 		return serializeXml(this.underlying);
 	}
-	
-	xpath(query: string, nsMap?) {  // todo: kill?
-		// todo
-		// let result = this.underlying.evaluate('//w[ana]',
-		// 	this.underlying.documentElement, null, XPathResult.ANY_TYPE, null);
-		// console.log(result.iterateNext());
-		return []; // todo
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -177,6 +169,11 @@ export class WebapiElement extends WebapiNode implements IElement {
 		this.underlying.appendChild(child.underlying);
 		return child;
 	}
+  
+  xpath(query: string, nsMap?) {
+    throw new Error('Not implemented');
+    return [];
+  }
 }
 
 

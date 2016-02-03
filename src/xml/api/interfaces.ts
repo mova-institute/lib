@@ -4,7 +4,6 @@ export interface IDocument {
 	documentElement: IElement;
 	createElement(name: string): IElement;
 	serialize(): string;
-	xpath(query: string, nsMap?): IElement[]; // todo
 }
 
 export interface INode {
@@ -38,4 +37,5 @@ export interface IElement extends INode {
 	lastChild: INode;
 	childElements(): Iterable<IElement>;
 	childElement(index: number): IElement;
+	xpath(query: string, nsMap?): INode[];
 }

@@ -20,10 +20,6 @@ export class LibxmlDocument implements IDocument {
 	serialize() {
 		return this.underlying.toString();
 	}
-	
-	xpath(query: string, nsMap?) {
-		return this.underlying.find(query, nsMap).map(x => new LibxmlElement(x));
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +176,10 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 		this.underlying.addChild(child.underlying);
 		return child;
 	}
+  
+  xpath(query: string, nsMap?) {
+    return this.underlying.find(query, nsMap).map(x => new LibxmlElement(x));
+  }
 }
 
 
