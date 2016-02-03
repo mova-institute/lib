@@ -22,6 +22,8 @@
 - xpath thing
 - gulp sound
 - wait for promise support in node-postgres
+- optimize camelized()
+
 
 - скорочення
 - <supplied>

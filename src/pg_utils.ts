@@ -1,4 +1,5 @@
 import {connect, Client, ClientConfig, QueryResult} from 'pg';
+const camelCase = require('camelcase');
 
 const MAX_TRANSACTION_RETRY = 100;
 
@@ -25,6 +26,9 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
         reject(err);
       }
       else {
+        if (result && typeof result === 'object') {
+          result = camelized(result);
+        }
         resolve(result);
       }
     });
@@ -103,4 +107,10 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
   }
 
   return res;
+}
+
+//------------------------------------------------------------------------------
+function camelized(obj) {  // dirty
+  let json = JSON.stringify(obj).replace(/"(\w+)":/g, (a, b) => `"${camelCase(b)}":`);
+  return JSON.parse(json);
 }
