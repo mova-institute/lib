@@ -83,7 +83,8 @@ async function authorize(action: string, req: Req, res: express.Response) {
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
-    return req.bag.user = await query1(config, "SELECT user_by_token($1)", [accessToken]);
+    req.bag.user = await query1(config, "SELECT get_user_by_token($1)", [accessToken]);
+    return req.bag.user;
   }
 }
 

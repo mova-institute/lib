@@ -78,7 +78,7 @@ export async function addText(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignTask(req: Req, res: express.Response) {  // todo: test
   let id = await transaction(config, async (client) => {
-    let numAnnotating = await query1Client(client, "select count(*) from task where user_id=$1 and type='annotate'", [req.bag.user.id]);
+    let numAnnotating = (await query1Client(client, "SELECT get_task_count($1)", [req.bag.user.id])).annotate;
     if (numAnnotating >= MAX_CONCUR_ANNOT) {
       sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
       return ERROR_INSIDE_TRANSACTION;
@@ -113,21 +113,22 @@ export async function getTask(req: Req, res: express.Response) {
 export async function saveTask(req: Req, res: express.Response) {
   let now = new Date();
   await transaction(config, async (client) => {
-    let taskInDb = await query1Client(client, "SELECT row_to_json(t) FROM (SELECT * FROM task WHERE id=$1 AND type=$2) AS t",
-      [req.body.id, req.body.type]);
+    let taskInDb = await query1Client(client, "SELECT row_to_json(task) FROM task WHERE id=$1",
+      [req.body.id]);
 
     if (!taskInDb || req.body.fragments.length !== taskInDb.fragment_end - taskInDb.fragment_start + 1) {
       return ERROR_INSIDE_TRANSACTION;
     }
 
-    for (let i = 0; i < req.body.fragments.length; ++i) {  // todo: status
+    for (let [i, fragment] of req.body.fragments.entries()) {  // todo: status
       await query1Client(client, "INSERT INTO fragment_version(task_id, doc_id, index, status, added_at, content) VALUES($1, $2, $3, $4, $5, $6)",
-        [req.body.id, taskInDb.doc_id, taskInDb.fragment_start + i, 'annotating', now, req.body.fragments[i]]);
+        [req.body.id, taskInDb.doc_id, taskInDb.fragment_start + i, 'in progress', now, fragment]);
     }
   });
   
   res.json('ok');
 }
+
 
 
 
