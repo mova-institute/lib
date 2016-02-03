@@ -45,6 +45,7 @@ export function collectForof<T>(iterator: Iterable<T>) {
   return ret;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export function sleep(ms = 0) {
   return new Promise(() => setTimeout(null, ms));
 }
