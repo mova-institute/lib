@@ -9,7 +9,7 @@ export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 150;
   let ret = new Array<DocumentFragment>();
   
-  let paragraphs = doc.evaluate('/tei:TEI/tei:text//tei:p', doc, <any>xmlNsResolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+  let paragraphs = xpath(doc, '/tei:TEI/tei:text//tei:p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   let curNumWords = 0;
   let range = doc.createRange();
   let p = paragraphs.snapshotItem(0);
