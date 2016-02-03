@@ -4,7 +4,7 @@ import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
-import {query1, queryNumRows} from '../pg_utils';
+import {query1} from '../pg_utils';
 import {ClientConfig} from 'pg';
 
 
