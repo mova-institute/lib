@@ -26,9 +26,6 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
         reject(err);
       }
       else {
-        if (result && typeof result === 'object') {
-          result = camelized(result);
-        }
         resolve(result);
       }
     });
@@ -40,10 +37,13 @@ export async function query1Client(client: Client, queryStr: string, params: Arr
   let result = await query(client, queryStr, params);
   if (result && result.rows.length) {
     let row = result.rows[0];
-    return row[Object.keys(row)[0]] || null;
+    var ret = row[Object.keys(row)[0]] || null;
+    if (ret && typeof ret === 'object') {
+      ret = camelized(ret);
+    }
   }
 
-  return null;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,11 +87,11 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
     }
     catch (e) {
       await query(client, "ROLLBACK");
-      
+
       if (i === MAX_TRANSACTION_RETRY) {
         throw new Error('Max transaction retries exceeded');
       }
-      
+
       if (e instanceof Error && e.code === '40001') {
         continue;
       }
