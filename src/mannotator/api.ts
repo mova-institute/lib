@@ -4,7 +4,7 @@ import {query1, query1Client, queryNumRows, query, transaction, BUSINESS_ERROR} 
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
-import {MAX_CONCUR_ANNOT, mergeXmlFragments} from './business';
+import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
 import {highlightConflicts} from './business.node';
 import {markWordwiseDiff} from '../nlp/utils';
 
@@ -114,7 +114,7 @@ export async function saveTask(req: Req, res: express.Response) {
   const now = new Date();
   let result = await transaction(config, async (client) => {
     const taskInDb = await query1Client(client, "SELECT get_task($1, $2)", [req.bag.user.id, req.body.id]);
-    
+
     if (!taskInDb || taskInDb.status === 'done' || req.body.fragments.length !== taskInDb.fragments.length) {
       // console.error('BUSINESS_ERROR');
       // console.error(taskInDb);
@@ -126,10 +126,9 @@ export async function saveTask(req: Req, res: express.Response) {
       await query1Client(client, "INSERT INTO fragment_version(task_id, doc_id, index, status, added_at, content) VALUES($1, $2, $3, $4, $5, $6)",
         [req.body.id, taskInDb.docId, taskInDb.fragmentStart + i, 'in progress', now, fragment]);
     }
-    if (/*true || */req.body.complete) {
+    if (req.body.complete) {
       let tocheck = await query1Client(client, "SELECT complete_task($1)", [req.body.id]);
-      // console.error(inspect(tocheck, {depth:null}) || 'nothing to check');
-      // return BUSINESS_ERROR;
+      // console.error(JSON.stringify(tocheck, null, 2));
       for (let task of tocheck) {
         let highlightedFragments = [];
         let diffsTotal = 0;
@@ -140,13 +139,18 @@ export async function saveTask(req: Req, res: express.Response) {
           diffsTotal += numDiffs;
         }
         if (diffsTotal) {
+          let taskToReview = await query1Client(client, "SELECT row_to_json(task) FROM task WHERE id=$1", [task.taskId]);
+          let reviewTaskId = await query1Client(client, "INSERT INTO task values (DEFAULT, $1, $2, $3, $4, $5, $6) RETURNING id",
+            [task.docId, task.userId, nextTaskType(taskToReview.type),
+              taskToReview.fragmentStart, taskToReview.fragmentEnd, taskToReview.name]);
           
-          console.error('there are diffs!');
+          for (let [i, fragment] of highlightedFragments.entries()) {
+            await query1Client(client, "INSERT INTO fragment_version(task_id, doc_id, index, status, added_at, content) VALUES($1, $2, $3, $4, $5, $6)",
+              [reviewTaskId, task.docId, taskToReview.fragmentStart + i, 'pristine', now, fragment]);
+          }
         }
       }
     }
-    
-    // return BUSINESS_ERROR;
   });
 
   if (result === BUSINESS_ERROR) {
