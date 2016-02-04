@@ -5,6 +5,50 @@ const camelCase = require('camelcase');
 ////////////////////////////////////////////////////////////////////////////////
 export const BUSINESS_ERROR = Symbol();
 
+const MAX_TRANSACTION_RETRY = 100;
+
+
+////////////////////////////////////////////////////////////////////////////////
+export class PgClient {
+  
+  static async get(config: ClientConfig) {
+    let { client, done } = await getClient(config);
+    return new PgClient(client, done);
+  }
+
+  constructor(private client: Client, private done = null) { }
+  
+  release() {
+    this.client = null;
+    this.done && this.done();
+  }
+  
+  async query(queryStr: string) {
+    return await query(this.client, queryStr);
+  }
+
+  async call(func: string, ...params) {
+    let queryStr = `SELECT ${func}(${nDollars(params.length)})`;
+    
+    return await query1Client(this.client, queryStr, params);
+  }
+  
+  async select(table: string, where: string, ...params) {
+    let queryStr = `SELECT row_to_json(${table}) FROM ${table} WHERE ${where}`;
+    return await query1Client(this.client, queryStr, params);    
+  }
+  
+  async insert(table: string, dict: Object, returning?: string) {
+    let keys = Object.keys(dict);
+    let queryStr = `INSERT INTO ${table}(${keys.join(',')}) VALUES (${nDollars(keys.length)})`;
+    if (returning) {
+      queryStr += ' RETURNING ' + returning;
+    }
+    
+    return await query1Client(this.client, queryStr, keys.map(x => dict[x]));    
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function getClient(config: ClientConfig) {
   return new Promise<{ client: Client, done }>((resolve, reject) => {
@@ -68,24 +112,23 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const MAX_TRANSACTION_RETRY = 100;
-export async function transaction(config: ClientConfig, f: (client: Client) => Promise<any>) {
-  let { client, done } = await getClient(config);
+export async function transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
+  let client = await PgClient.get(config);
 
   for (let i = 1; ; ++i) {
     try {
-      await query(client, "BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
+      await client.query("BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
       
       var res = await f(client);
       if (res === BUSINESS_ERROR) {
-        await query(client, "ROLLBACK");
+        await client.query("ROLLBACK");
         return res;
       }
 
-      await query(client, "COMMIT");
+      await client.query("COMMIT");
     }
     catch (e) {
-      await query(client, "ROLLBACK");
+      await client.query("ROLLBACK");
 
       if (i === MAX_TRANSACTION_RETRY) {
         throw new Error('Max transaction retries exceeded');
@@ -94,11 +137,11 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
       if (e instanceof Error && e.code === '40001') {
         continue;
       }
-      
+
       throw e;
     }
     finally {
-      done();
+      client.release();
     }
 
     break;
@@ -107,8 +150,22 @@ export async function transaction(config: ClientConfig, f: (client: Client) => P
   return res;
 }
 
+
 //------------------------------------------------------------------------------
 function camelized(obj) {  // dirty
   let json = JSON.stringify(obj).replace(/"(\w+)":/g, (a, b) => `"${camelCase(b)}":`);
   return JSON.parse(json);
+}
+
+//------------------------------------------------------------------------------
+function nDollars(n: number) {
+  let ret = '';
+  if (n) {
+    for (var i = 1; i < n; ++i) {
+      ret += '$' + i + ', ';
+    }
+    ret += '$' + n;
+  }
+
+  return ret;
 }

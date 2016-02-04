@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {ClientConfig} from 'pg';
-import {query1, query1Client, queryNumRows, query, transaction, BUSINESS_ERROR} from '../pg_utils';
+import {query1, queryNumRows, transaction, BUSINESS_ERROR} from '../postrges';
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
@@ -53,11 +53,14 @@ export async function checkDocName(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function addText(req: Req, res: express.Response) {
   await transaction(config, async (client) => {
-    let docId = await query1Client(client, "INSERT INTO document (name) VALUES ($1) RETURNING id", [req.body.docName]);
+    let docId = await client.insert('document', { name: req.body.docName} , 'id');
 
     for (let [i, fragment] of req.body.fragments.entries()) {
-      await query(client, "INSERT INTO fragment_version (doc_id, index, content) VALUES ($1, $2, $3)",
-        [docId, i, fragment.xmlstr]);
+      await client.insert('fragment_version', {
+        doc_id: docId,
+        index: i,
+        content: fragment.xmlstr
+      });
     }
 
     let numFragments = req.body.fragments.length;
@@ -68,8 +71,13 @@ export async function addText(req: Req, res: express.Response) {
     segments.push([numFragments - 1, numFragments - 1]);
 
     for (let segment of segments) {
-      await query1Client(client, "INSERT INTO task (doc_id, type, fragment_start, fragment_end, name) VALUES ($1, 'annotate', $2, $3, $4)",
-        [docId, segment[0], segment[1], req.body.fragments[segment[0]].firstWords.join(' ')]);
+      await client.insert('task', {
+        doc_id: docId,
+        type: 'annotate',
+        fragment_start: segment[0],
+        fragment_end: segment[1],
+        name: req.body.fragments[segment[0]].firstWords.join(' '),
+      });
     }
   });
   res.json({ result: 'ok' });
@@ -78,12 +86,12 @@ export async function addText(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignTask(req: Req, res: express.Response) {  // todo: test
   let id = await transaction(config, async (client) => {
-    let numAnnotating = (await query1Client(client, "SELECT get_task_count($1)", [req.bag.user.id])).annotate;
+    let numAnnotating = (await client.call('get_task_count', req.bag.user.id)).annotate;
     if (numAnnotating >= MAX_CONCUR_ANNOT) {
       sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
       return BUSINESS_ERROR;
     }
-    return await query1Client(client, "SELECT assign_task_for_annotation($1)", [req.bag.user.id]);
+    return await client.call('assign_task_for_annotation', req.bag.user.id);
   });
 
   res.json(id);
@@ -113,7 +121,7 @@ export async function getTask(req: Req, res: express.Response) {
 export async function saveTask(req: Req, res: express.Response) {
   const now = new Date();
   let result = await transaction(config, async (client) => {
-    const taskInDb = await query1Client(client, "SELECT get_task($1, $2)", [req.bag.user.id, req.body.id]);
+    const taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
 
     if (!taskInDb || taskInDb.status === 'done' || req.body.fragments.length !== taskInDb.fragments.length) {
       // console.error('BUSINESS_ERROR');
@@ -123,13 +131,21 @@ export async function saveTask(req: Req, res: express.Response) {
     }
 
     for (let [i, fragment] of req.body.fragments.entries()) {  // todo: status
-      await query1Client(client, "INSERT INTO fragment_version(task_id, doc_id, index, status, added_at, content) VALUES($1, $2, $3, $4, $5, $6)",
-        [req.body.id, taskInDb.docId, taskInDb.fragmentStart + i, 'in progress', now, fragment]);
+      await client.insert('fragment_version', {
+        task_id: req.body.id,
+        doc_id: taskInDb.docId,
+        index: taskInDb.fragmentStart + i,
+        status: 'in progress',
+        added_at: now,
+        content: fragment
+      });
     }
+    
     if (req.body.complete) {
-      let tocheck = await query1Client(client, "SELECT complete_task($1)", [req.body.id]);
+      let tocheck = await client.call('complete_task', req.body.id);
       // console.error(JSON.stringify(tocheck, null, 2));
       for (let task of tocheck) {
+        
         let highlightedFragments = [];
         let diffsTotal = 0;
         for (let fagment of task.fragments) {
@@ -138,15 +154,27 @@ export async function saveTask(req: Req, res: express.Response) {
           highlightedFragments.push(highlighted);
           diffsTotal += numDiffs;
         }
+        
         if (diffsTotal) {
-          let taskToReview = await query1Client(client, "SELECT row_to_json(task) FROM task WHERE id=$1", [task.taskId]);
-          let reviewTaskId = await query1Client(client, "INSERT INTO task values (DEFAULT, $1, $2, $3, $4, $5, $6) RETURNING id",
-            [task.docId, task.userId, nextTaskType(taskToReview.type),
-              taskToReview.fragmentStart, taskToReview.fragmentEnd, taskToReview.name]);
-          
+          let taskToReview = await client.select('task', 'id=$1', task.taskId);
+          let reviewTaskId = await client.insert('task', {
+            doc_id: task.docId,
+            user_id: task.userId,
+            type: nextTaskType(taskToReview.type),
+            fragment_start: taskToReview.fragmentStart,
+            fragment_end: taskToReview.fragmentEnd,
+            name: taskToReview.name
+          }, 'id');
+
           for (let [i, fragment] of highlightedFragments.entries()) {
-            await query1Client(client, "INSERT INTO fragment_version(task_id, doc_id, index, status, added_at, content) VALUES($1, $2, $3, $4, $5, $6)",
-              [reviewTaskId, task.docId, taskToReview.fragmentStart + i, 'pristine', now, fragment]);
+            await client.insert('fragment_version', {
+              task_id: reviewTaskId,
+              doc_id: task.docId,
+              index: taskToReview.fragmentStart + i,
+              status: 'pristine',
+              added_at: now,
+              content: fragment
+            });
           }
         }
       }
