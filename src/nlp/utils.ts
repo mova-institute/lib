@@ -287,10 +287,10 @@ export function* dictFormLemmaTag(lines: Array<string>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markWordwiseDiff(mine: IElement, theirs: IElement) {
-  let wordsMine = <IElement[]>mine.xpath('//mi:w_', NS);
-  let wordsTheirs = <IElement[]>theirs.xpath('//mi:w_', NS);
+  let mineWords = <IElement[]>mine.xpath('//mi:w_', NS);
+  let theirWords = <IElement[]>theirs.xpath('//mi:w_', NS);
 
-  if (wordsMine.length !== wordsTheirs.length) {
+  if (mineWords.length !== theirWords.length) {
     // console.error(wordsMine.length);
     // console.error(wordsTheirs.length);
     // console.error(mine.ownerDocument.serialize());
@@ -299,11 +299,10 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
   }
 
   let numDiffs = 0;
-  for (let [i, mine] of wordsMine.entries()) {
-    if (getUnambMorphTag(mine) !== getUnambMorphTag(wordsTheirs[i])) {
+  for (let [i, mine] of mineWords.entries()) {
+    if (getUnambMorphTag(mine) !== getUnambMorphTag(theirWords[i])) {
       ++numDiffs;
       mine.setAttribute('mark', 'diff');
-      // wordsTheirs[i].setAttribute('mark', 'diff');
     }
   }
   

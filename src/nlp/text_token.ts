@@ -2,7 +2,7 @@ import {INode, IElement} from '../xml/api/interfaces'
 import {W, W_, P, L, SE, PC} from './common_elements'
 import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils'
 import {traverseDocumentOrderEl, NS, nextElDocumentOrder} from '../xml/utils'
-import {highlightIndexwiseStringDiff} from '../html_utils'
+import {markIndexwiseStringDiff} from '../html_utils'
 import {wrappedOrNull} from '../lang';
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,16 +29,26 @@ export class TextToken {
   }
 
   isAmbig() {
-    return this.elem.childElement(1) && !this.elem.getAttribute('ana');
+    return !!this.elem.childElement(1) && !this.elem.getAttribute('disamb');
   }
 
   isUntagged() {
     return this.morphTag() === 'X';
   }
+  
+  isMarked() {
+    let mark = this.elem.getAttribute('mark');
+    return mark ? new Set(mark.split(':')).has('diff') : false;
+  }
+  
+  isReviewed() {
+    let mark = this.elem.getAttribute('mark');
+    return mark ? new Set(mark.split(':')).has('reviewed') : false;
+  }
 
   disambIndex() {
-    let ana = this.elem.getAttribute('ana');
-    return ana ? parseInt(ana) : null;
+    let ret = this.elem.getAttribute('disamb');
+    return ret ? parseInt(ret) : null;
   }
 
   morphTag() {
@@ -54,7 +64,7 @@ export class TextToken {
     }
 
     return { tags, lemmas };
-    //return highlightIndexwiseStringDiff(ret, 'morph-feature-highlight');
+    //return markedIndexwiseStringDiff(ret, 'morph-feature-marked');
   }
 
   breaksLine() {
@@ -64,10 +74,15 @@ export class TextToken {
 
   disambig(index: number) {
     if (this.disambIndex() === index) {
-      this.elem.removeAttribute('ana');
+      this.elem.removeAttribute('disamb');
     } else {
-      this.elem.setAttribute('ana', index.toString());
+      this.elem.setAttribute('disamb', index.toString());
     }
+  }
+  
+  review(index: number) {
+    this.elem.setAttribute('disamb', index.toString());
+    this.elem.setAttribute('mark', addFeature(this.elem.getAttribute('mark'), 'reviewed'));
   }
 
   insertSentenceEnd() {
@@ -96,40 +111,59 @@ export class TextToken {
     }
   }
 
-  nextAmbigWord() {
+  next(f: (token: TextToken) => boolean) {
     let ret = null;
     traverseDocumentOrderEl(this.elem, el => {
-      if (el.nameNs() === W_) {
+      if (el !== this.elem && el.nameNs() === W_) {
         let token = new TextToken(el);
-        if (token.isAmbig()) {
+        if (f(token)) {
           ret = token;
           return false;
         }
       }
     });
-
+    
     return ret;
   }
-  
+
+  nextAmbigWord() {
+    return this.next(token => token.isAmbig());
+  }
+
+  nextMarked() {
+    let ret = this.next(token => token.isMarked());//console.log(ret);
+    return ret;    
+  }
+
   nextToken() {
     let next = nextElDocumentOrder(this.elem, TextToken.TOKEN_ELEMS);
     return wrappedOrNull(TextToken, next);
   }
 
-  wordNum() {
-    return parseInt(this.elem.getAttribute('word-id'));
+  wordNum() {  // todo: real, ordered num?
+    let n = this.elem.getAttribute('n');
+    return n ? parseInt(n) : null;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getUnambMorphTag(w_: IElement) {
-  let ana = w_.getAttribute('ana');
-  if (ana !== null) {
-    let wElem = w_.childElement(parseInt(ana));
+  let disamb = Number(w_.getAttribute('disamb'));
+  if (disamb) {
+    let wElem = w_.childElement(disamb);
     return wElem ? wElem.getAttribute('ana') : '*';  // todo: throw?
   }
 
   if (!w_.childElement(1)) {
-    return w_.childElement(0).getAttribute('ana')
+    return w_.childElement(0).getAttribute('ana');
   }
+}
+
+//------------------------------------------------------------------------------
+function addFeature(setStr: string, feature: string) {
+  let set = new Set(setStr.split(':'));
+  set.add(feature);
+  let ret = Array.from(set).sort().join(':');
+  
+  return ret;
 }

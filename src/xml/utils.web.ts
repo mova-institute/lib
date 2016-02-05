@@ -53,5 +53,13 @@ export function xpath(context: Node, query: string, type: number) {
     return ret;
   }
   
+  if (type === XPathResult.NUMBER_TYPE) {
+    return res.numberValue;
+  }
+  
+  if (type === XPathResult.FIRST_ORDERED_NODE_TYPE) {
+    return res.singleNodeValue;
+  }
+  
   return res;
 }
