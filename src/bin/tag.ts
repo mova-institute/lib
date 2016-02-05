@@ -40,11 +40,9 @@ const args = require('minimist')(process.argv.slice(2));
 		tokenizeTeiDom(root, tagger);
 		tagTokenizedDom(root, tagger);
     
-    // console.log(root.underlying.namespaces());
     if (args.n || args.numerate) {
       enumerateWords(root);
     }
-    // console.log(root.nameNs());
     
 		output.write(root.ownerDocument.serialize());
 		output.write('\n');
