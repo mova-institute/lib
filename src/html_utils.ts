@@ -1,6 +1,6 @@
 import {findIndexwiseDiff} from './algo'
 
-export function highlightIndexwiseStringDiff(arr: Array<string>, spanClass: string) {
+export function markIndexwiseStringDiff(arr: Array<string>, spanClass: string) {
 	let ret = new Array<string>(arr.length).fill('');
 	let curIndex = 0;
 	for (let [diffIndex, diffLen] of findIndexwiseDiff(arr)) {

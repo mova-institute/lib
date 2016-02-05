@@ -4,10 +4,10 @@ import {LibxmlElement} from '../xml/api/libxmljs_adapters';
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function highlightConflicts(taskType: string, mine: string, theirs: string) {
+export function markConflicts(taskType: string, mine: string, theirs: string) {
   if (taskType === 'annotate') {
     let res: any = markWordwiseDiffStr(encloseInRootNs(mine), encloseInRootNs(theirs));
-    res.highlighted = removeXmlns(removeRoot(res.highlighted.ownerDocument.serialize()))
+    res.marked = removeXmlns(removeRoot(res.marked.ownerDocument.serialize()));
     return res;
   }
   

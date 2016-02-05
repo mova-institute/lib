@@ -5,7 +5,7 @@ import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
-import {highlightConflicts} from './business.node';
+import {markConflicts} from './business.node';
 import {markWordwiseDiff} from '../nlp/utils';
 
 import {inspect} from 'util';
@@ -145,12 +145,12 @@ export async function saveTask(req: Req, res: express.Response) {
       let tocheck = await client.call('complete_task', req.body.id);
 
       for (let task of tocheck) {
-        let highlightedFragments = [];
+        let markedFragments = [];
         let diffsTotal = 0;
         for (let fagment of task.fragments) {
           let [mine, theirs] = fagment.annotations;
-          let {highlighted, numDiffs} = highlightConflicts(taskInDb.type, mine.content, theirs.content);
-          highlightedFragments.push(highlighted);
+          let {marked, numDiffs} = markConflicts(taskInDb.type, mine.content, theirs.content);
+          markedFragments.push(marked);
           diffsTotal += numDiffs;
         }
 
@@ -165,7 +165,7 @@ export async function saveTask(req: Req, res: express.Response) {
             name: taskToReview.name
           }, 'id');
 
-          for (let [i, fragment] of highlightedFragments.entries()) {
+          for (let [i, fragment] of markedFragments.entries()) {
             await client.insert('fragment_version', {
               task_id: reviewTaskId,
               doc_id: task.docId,
