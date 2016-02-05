@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ERRORSTRING="Error. Please make sure you've indicated correct parameters"
-REMOTE="ubuntu@mova.institute:/home/ubuntu/mova-institute/mi-lib"
+REMOTE="ubuntu@mova.institute:/opt/node/mi-lib"
 REMOTE_KEY="/Users/msklvsk/.ssh/aws.pem"
 
 if [ $# -eq 0 ]
