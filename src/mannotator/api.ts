@@ -31,7 +31,7 @@ export async function login(req: Req, res: express.Response) {
     sendError(res, 403);
   }
   else {
-    let token = await genAccessToken();
+    let token = await genAccessToken();  // todo: transaction?
     if (await queryNumRows(config, "UPDATE login SET access_token=$1 WHERE fb_id=$2", [token, fbInfo.id])) {
       res.cookie('accessToken', token, { maxAge: 1000 * 3600 * 24 * 100, httpOnly: true });
 
@@ -53,7 +53,7 @@ export async function checkDocName(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function addText(req: Req, res: express.Response) {
   await transaction(config, async (client) => {
-    let docId = await client.insert('document', { name: req.body.docName} , 'id');
+    let docId = await client.insert('document', { name: req.body.docName }, 'id');
 
     for (let [i, fragment] of req.body.fragments.entries()) {
       await client.insert('fragment_version', {
@@ -119,14 +119,14 @@ export async function getTask(req: Req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function saveTask(req: Req, res: express.Response) {
+  let ret: any = { msg: 'ok' };
+  
   const now = new Date();
+  
   let result = await transaction(config, async (client) => {
     const taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
 
     if (!taskInDb || taskInDb.status === 'done' || req.body.fragments.length !== taskInDb.fragments.length) {
-      // console.error('BUSINESS_ERROR');
-      // console.error(taskInDb);
-      // console.error(req.body.fragments.length !== taskInDb.fragments.length);
       return BUSINESS_ERROR;
     }
 
@@ -140,12 +140,11 @@ export async function saveTask(req: Req, res: express.Response) {
         content: fragment
       });
     }
-    
+
     if (req.body.complete) {
       let tocheck = await client.call('complete_task', req.body.id);
-      // console.error(JSON.stringify(tocheck, null, 2));
+
       for (let task of tocheck) {
-        
         let highlightedFragments = [];
         let diffsTotal = 0;
         for (let fagment of task.fragments) {
@@ -154,7 +153,7 @@ export async function saveTask(req: Req, res: express.Response) {
           highlightedFragments.push(highlighted);
           diffsTotal += numDiffs;
         }
-        
+
         if (diffsTotal) {
           let taskToReview = await client.select('task', 'id=$1', task.taskId);
           let reviewTaskId = await client.insert('task', {
@@ -180,12 +179,27 @@ export async function saveTask(req: Req, res: express.Response) {
       }
     }
   });
+  
+
+  if (req.body.grabNext) {
+    result = await transaction(config, async (client) => {
+      let reviewDoc = (await client.call('get_task_list', req.bag.user.id, 'review'))[0];
+      if (reviewDoc) {
+        var nextTaskId = reviewDoc.tasks[0].taskId;
+      }
+      else {
+        nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id);
+      }
+      
+      ret.data = nextTaskId || null;
+    });
+  }
 
   if (result === BUSINESS_ERROR) {
     sendError(res, 400);
   }
   else {
-    res.json('ok');
+    res.json(ret);
   }
 }
 
