@@ -14,12 +14,20 @@ export class LibxmlDocument implements IDocument {
 	}
 	
 	createElement(name: string) {
-		return new LibxmlElement(new libxmljs.Element(this.underlying, name));
+    let [localName, prefix] = name.split(':').reverse();
+		let ret = new libxmljs.Element(this.underlying, localName);
+    prefix && ret.namespace(this.getNsByPrefix(prefix));
+    
+    return new LibxmlElement(ret);
 	}
 	
 	serialize() {
 		return this.underlying.toString();
 	}
+  
+  private getNsByPrefix(prefix: string) {
+    return this.underlying.root().namespaces().find(x => x.prefix() === prefix);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +160,7 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 		let ns = this.underlying.namespace();
 		let uri = ns ? ns.href() : 'http://www.tei-c.org/ns/1.0';		// todo: how to handle default properly?
 		
-		return '{' + uri + '}' + this.underlying.name();
+    return '{' + uri + '}' + this.underlying.name();
 	}
 	
 	// isNs(otherName: string) {
