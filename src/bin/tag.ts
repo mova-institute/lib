@@ -1,7 +1,7 @@
 import {ioArgs} from '../cli_utils';
 import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
 import {readTillEnd} from '../stream_utils.node';
-import {tokenizeTeiDom, tagTokenizedDom} from '../nlp/utils';
+import {tokenizeTeiDom, tagTokenizedDom, enumerateWords} from '../nlp/utils';
 import {string2lxmlRoot} from '../utils.node';
 import {cantBeXml} from '../xml/utils';
 import {createReadStream} from 'fs';
@@ -39,6 +39,13 @@ const args = require('minimist')(process.argv.slice(2));
 		let root = string2lxmlRoot(inputStr);
 		tokenizeTeiDom(root, tagger);
 		tagTokenizedDom(root, tagger);
+    
+    // console.log(root.underlying.namespaces());
+    if (args.n || args.numerate) {
+      enumerateWords(root);
+    }
+    // console.log(root.nameNs());
+    
 		output.write(root.ownerDocument.serialize());
 		output.write('\n');
 	}
