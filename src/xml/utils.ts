@@ -43,7 +43,7 @@ export function removeXmlns(xmlstr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function removeRoot(xmlstr: string) {
-  return xmlstr.replace(/^\s*<[^>]+>/, '').replace(/<\/[^>]+>\s*$/, '');
+  return xmlstr.replace(/^\s*(<\?xml[^>]+\?>)?\s*<[^>]+>/, '').replace(/<\/[^>]+>\s*$/, '');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
