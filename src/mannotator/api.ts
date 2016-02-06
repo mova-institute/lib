@@ -94,7 +94,7 @@ export async function assignTask(req: Req, res: express.Response) {  // todo: te
     return await client.call('assign_task_for_annotation', req.bag.user.id);
   });
 
-  res.json(id);
+  res.json(wrapData(id));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +180,11 @@ export async function saveTask(req: Req, res: express.Response) {
     }
   });
   
-
+  if (result === BUSINESS_ERROR) {
+    sendError(res, 400);
+    return;
+  }
+  
   if (req.body.grabNext) {
     result = await transaction(config, async (client) => {
       let reviewDoc = (await client.call('get_task_list', req.bag.user.id, 'review'))[0];

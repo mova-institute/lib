@@ -76,7 +76,7 @@ function errorHandler(err, req, res: express.Response, next) {
 
 //------------------------------------------------------------------------------
 async function authorize(action: string, req: Req, res: express.Response) {
-  if (action === 'login') {
+  if (action === 'login' || action === 'getRole') {
     return true;
   }
   // todo
