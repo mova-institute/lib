@@ -2,6 +2,8 @@ node_modules/
 npm-debug.log
 typings/
 lib/*
+libes5/*
+!libes5/package.json
 !lib/package.json
 !lib/**/*.py
 data/

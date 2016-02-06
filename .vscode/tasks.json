@@ -7,7 +7,7 @@
   ],
   "tasks": [
     {
-      "taskName": "default",
+      "taskName": "develop",
       "isBuildCommand": true,
       "showOutput": "silent",
       "isWatching": true
