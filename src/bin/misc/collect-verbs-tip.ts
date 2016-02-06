@@ -22,8 +22,6 @@ let numConcReq = args.conc || 1;
 let numPending = numConcReq;
 let ret = {};
 
-debugger;
-console.log('loh');
 Array(numConcReq).fill(0).forEach(worker);
 
 
@@ -59,7 +57,7 @@ function save() {
 function translate(word: string) {
   return new Promise((resolve, reject) => {
     request({
-      uri: URI + encodeURIComponent(''),
+      uri: URI + encodeURIComponent(word),
       json: true
     }, (error, response, body) => {
       if (error) {
