@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('fs');
+
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
@@ -67,7 +69,14 @@ gulp.task('copy:dist', ['cleanup:dist'], () => {
 
 
 gulp.task('mannotator', ['typescript'], () => {
-  return gulp.src(['lib/**/*.js', 'package.json'], { base: '.' })
+  let packageJson = {
+    name: 'mi-lib',
+    private: true,
+    dependencies: JSON.parse(fs.readFileSync('package.json', 'utf8')).dependencies
+  };
+  fs.writeFileSync('dist/mannotator/package.json', JSON.stringify(packageJson, null, 2));
+  
+  return gulp.src(['lib/**/*.js'], { base: '.' })
     .pipe(gulp.dest('dist/mannotator/'));
 });
 
