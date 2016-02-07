@@ -61,10 +61,6 @@ app.listen(8888);
 
 
 
-let actionRoles = {
-  
-};
-
 
 
 
@@ -77,16 +73,17 @@ function errorHandler(err, req, res: express.Response, next) {
 
 //------------------------------------------------------------------------------
 async function authorize(action: string, req: Req, res: express.Response) {
-  if (action === 'login' || action === 'getRole') {
+  if (action === 'login') {
     return true;
   }
   // todo
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
-    req.bag.user = await query1(config, "SELECT get_user_by_token($1)", [accessToken]);
-    return req.bag.user;
+    var ret = req.bag.user = await query1(config, "SELECT get_user_by_token($1)", [accessToken]);
   }
+  
+  return ret || action === 'getRole';
 }
 
 //------------------------------------------------------------------------------
