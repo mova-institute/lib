@@ -62,12 +62,13 @@ gulp.task('typescript:dist', ['cleanup:dist'], () => {
     .pipe(gulp.dest('../mi-lib-dist/lib'));
 });
 
+////////////////////////////////////////////////////////////////////////////////
 gulp.task('copy:dist', ['cleanup:dist'], () => {
   return gulp.src(['bin/**', 'data/dict/**', 'package.json'], { base: '.' })
     .pipe(gulp.dest('../mi-lib-dist/'));
 });
 
-
+////////////////////////////////////////////////////////////////////////////////
 gulp.task('mannotator', ['typescript'], () => {
   let packageJson = {
     name: 'mi-lib',
