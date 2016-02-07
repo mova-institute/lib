@@ -10,12 +10,13 @@ import {ClientConfig} from 'pg';
 
 
 export const config: ClientConfig = {
-  host: 'mova.institute',
+  host: process.env.NODE_ENV === 'dev' ? 'mova.institute' : '/var/run/postgresql',
   database: 'movainstitute',
   user: 'annotator',
   password: '@nn0t@t0zh3',
-  ssl: true
+  ssl: process.env.NODE_ENV === 'dev' ? true : false
 };
+
 
 export interface Req extends express.Request {
   bag: any;
