@@ -5,7 +5,6 @@ DEST="/srv/www/mova-institute/mi-lib"
 SOURCE="./dist/mannotator/"
 ERRORSTRING="Wrong params"
 
-# echo $REMOTE:$DEST && exit 0
 
 if [ $# -eq 0 ]
     then
