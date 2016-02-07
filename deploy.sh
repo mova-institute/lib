@@ -14,11 +14,11 @@ elif [ $1 == "mannotator" ]
     if [[ -z $2 ]]
       then
         echo "Running dry-run"
-        rsync --dry-run -az --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY -p22" $SOURCE $REMOTE:$DEST
+        rsync --dry-run -az --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY" $SOURCE $REMOTE:$DEST
     elif [ $2 == "go" ]
       then
         echo "Running actual deploy"
-        rsync           -az --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY -p22" $SOURCE $REMOTE:$DEST || exit 1
+        rsync           -az --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY" $SOURCE $REMOTE:$DEST || exit 1
         ssh -i $SSH_KEY $REMOTE "cd $DEST && npm prune && npm update && pm2 restart mannotator" || exit 1
     else
       echo $ERRORSTRING;
