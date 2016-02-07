@@ -1,8 +1,9 @@
-#!/usr/bin/env bash
 
-ERRORSTRING="Error. Please make sure you've indicated correct parameters"
-REMOTE="ubuntu@mova.institute:/opt/node/mi-lib"
-REMOTE_KEY="/Users/msklvsk/.ssh/aws.pem"
+SSH_KEY="/Users/msklvsk/.ssh/aws.pem"  # todo
+REMOTE="ubuntu@mova.institute:/srv/www/mova-institute/mi-lib"
+SOURCE="./dist/mannotator"
+
+
 
 if [ $# -eq 0 ]
     then
@@ -12,14 +13,13 @@ elif [ $1 == "prod" ]
         if [[ -z $2 ]]
             then
                 echo "Running dry-run"
-                rsync --dry-run -az --force --delete --progress --exclude="node_modules" -e "ssh -i $REMOTE_KEY -p22" ./* $REMOTE
+                DRY="--dry-run"
         elif [ $2 == "go" ]
             then
                 echo "Running actual deploy"
-                rsync -az --force --delete --progress --exclude="node_modules" -e "ssh -i $REMOTE_KEY -p22" ./* $REMOTE
         else
             echo $ERRORSTRING;
+            exit 1
         fi
+        rsync $DRY -az --force --delete --progress -e "ssh -i $SSH_KEY -p22" $SOURCE $REMOTE
 fi
-
-# --exclude-from=rsync_exclude.txt

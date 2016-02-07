@@ -20,22 +20,17 @@ function swallowError(error) {
 
 //------------------------------------------------------------------------------
 function tsTask(target) {
-  let dest = target === 'es6' ? 'lib' : 'libes5';
+  let dest = target === 'es6' ? 'lib' : 'lib5';
   let babelOpts = target === 'es6' ? undefined : { presets: ['es2015'] };
   
   let tsProject = ts.createProject(TS_PROJ_FILE);
   let tsResult = tsProject.src()
-		//.pipe(sourcemaps.init({ debug: true }))
     .pipe(ts(tsProject));
 
   tsResult.dts.pipe(gulp.dest(dest));
 
   return tsResult.js
     .pipe(babel(babelOpts).on('error', swallowError))
-		// .pipe(sourcemaps.write('.', {
-		// 	includeContent: false,
-		// 	sourceRoot: PROJECR_ROOT + '/src'
-		// }))
     .pipe(gulp.dest(dest));
 }
 
@@ -57,7 +52,6 @@ gulp.task('cleanup:dist', () => {
 ////////////////////////////////////////////////////////////////////////////////
 gulp.task('typescript:dist', ['cleanup:dist'], () => {
   let tsProject = ts.createProject(TS_PROJ_FILE);
-
   return tsProject.src()
     .pipe(ts(tsProject))
     .js
@@ -72,6 +66,10 @@ gulp.task('copy:dist', ['cleanup:dist'], () => {
 });
 
 
+gulp.task('mannotator', ['typescript'], () => {
+  return gulp.src(['lib/**/*.js', 'package.json'], { base: '.' })
+    .pipe(gulp.dest('dist/mannotator/'));
+});
 
 
 gulp.task('dist', ['typescript:dist', 'copy:dist']);
