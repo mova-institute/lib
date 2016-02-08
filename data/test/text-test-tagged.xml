@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:mi="https://mova.institute/ns/mi/1" xml:lang="uk">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>
+          <mi:w_ n="0">
+            <w lemma="Ьімьа" ana="X">Ьімьа</w>
+          </mi:w_>
+        </title>
+        <author>
+          <mi:w_ n="1">
+            <w lemma="Джорж" ana="Npmsny">Джорж</w>
+          </mi:w_>
+          <mi:w_ n="2">
+            <w lemma="Орвел" ana="X">Орвел</w>
+          </mi:w_>
+        </author>
+      </titleStmt>
+      <publicationStmt>
+        <p/>
+      </publicationStmt>
+      <sourceDesc>
+        <p/>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="part" n="1">
+        <div type="chapter" n="1">
+          <p>
+            <mi:w_ n="3">
+              <w lemma="стояти" ana="Vmpis-sf">Стояла</w>
+            </mi:w_>
+            <mi:w_ n="4">
+              <w lemma="ясний" ana="Afpfsns">ясна</w>
+              <w lemma="ясна" ana="Nc-pnn">ясна</w>
+              <w lemma="ясна" ana="Nc-pan">ясна</w>
+            </mi:w_>
+            <mi:w_ n="5">
+              <w lemma="та" ana="Ccs">та</w>
+              <w lemma="та" ana="Q">та</w>
+              <w lemma="той" ana="Pd--f-sna">та</w>
+            </mi:w_>
+            <mi:w_ n="6">
+              <w lemma="прохолодний" ana="Afpfsns">прохолодна</w>
+            </mi:w_>
+            <mi:w_ n="7">
+              <w lemma="квітневий" ana="Ao-fsns">квітнева</w>
+            </mi:w_>
+            <mi:w_ n="8">
+              <w lemma="днина" ana="Ncfsnn">днина</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="9">
+              <w lemma="на" ana="I">на</w>
+              <w lemma="на" ana="Q">на</w>
+              <w lemma="на" ana="Spsa">на</w>
+              <w lemma="на" ana="Spsl">на</w>
+            </mi:w_>
+            <mi:w_ n="10">
+              <w lemma="годинник" ana="Ncmpln">годинниках</w>
+            </mi:w_>
+            <mi:w_ n="11">
+              <w lemma="пробити" ana="Vmeis-sn">пробило</w>
+            </mi:w_>
+            <mi:w_ n="12">
+              <w lemma="тринадцятий" ana="Mlofsa">тринадцяту</w>
+            </mi:w_>
+            <mi:w_ n="13">
+              <w lemma="година" ana="Ncfsan">годину</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+            <mi:w_ n="14">
+              <w lemma="Вінстон" ana="Npmsny">Вінстон</w>
+            </mi:w_>
+            <mi:w_ n="15">
+              <w lemma="Сміт" ana="Npmsny">Сміт</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="16">
+              <w lemma="притискуючи" ana="Vmpgp">притискуючи</w>
+            </mi:w_>
+            <mi:w_ n="17">
+              <w lemma="підборіддя" ana="Ncnsnn">підборіддя</w>
+              <w lemma="підборіддя" ana="Ncnsgn">підборіддя</w>
+              <w lemma="підборіддя" ana="Ncnsan">підборіддя</w>
+              <w lemma="підборіддя" ana="Ncnpnn">підборіддя</w>
+              <w lemma="підборіддя" ana="Ncnpan">підборіддя</w>
+            </mi:w_>
+            <mi:w_ n="18">
+              <w lemma="до" ana="Ncnsnn">до</w>
+              <w lemma="до" ana="Ncnsgn">до</w>
+              <w lemma="до" ana="Ncnsdn">до</w>
+              <w lemma="до" ana="Ncnsan">до</w>
+              <w lemma="до" ana="Ncnsin">до</w>
+              <w lemma="до" ana="Ncnsln">до</w>
+              <w lemma="до" ana="Ncnpnn">до</w>
+              <w lemma="до" ana="Ncnpgn">до</w>
+              <w lemma="до" ana="Ncnpdn">до</w>
+              <w lemma="до" ana="Ncnpan">до</w>
+              <w lemma="до" ana="Ncnpin">до</w>
+              <w lemma="до" ana="Ncnpln">до</w>
+              <w lemma="до" ana="Spsg">до</w>
+            </mi:w_>
+            <mi:w_ n="19">
+              <w lemma="груди" ana="Nc-pgn">грудей</w>
+            </mi:w_>
+            <mi:w_ n="20">
+              <w lemma="щоб" ana="Q">щоб</w>
+              <w lemma="щоб" ana="Css">щоб</w>
+            </mi:w_>
+            <mi:w_ n="21">
+              <w lemma="сховатися" ana="Vmen">сховатися</w>
+            </mi:w_>
+            <mi:w_ n="22">
+              <w lemma="від" ana="Spsg">від</w>
+            </mi:w_>
+            <mi:w_ n="23">
+              <w lemma="підступний" ana="Afpmsgf">підступного</w>
+              <w lemma="підступний" ana="Afpmsafy">підступного</w>
+              <w lemma="підступний" ana="Afpnsgf">підступного</w>
+            </mi:w_>
+            <mi:w_ n="24">
+              <w lemma="вітер" ana="Ncmsgn">вітру</w>
+              <w lemma="вітер" ana="Ncmsdn">вітру</w>
+              <w lemma="вітер" ana="Ncmsln">вітру</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="25">
+              <w lemma="швидко" ana="Rp">швидко</w>
+            </mi:w_>
+            <mi:w_ n="26">
+              <w lemma="ковзнути" ana="Vmeis-sm">ковзнув</w>
+            </mi:w_>
+            <mi:w_ n="27">
+              <w lemma="крізь" ana="Spsa">крізь</w>
+            </mi:w_>
+            <mi:w_ n="28">
+              <w lemma="скляний" ana="Ao--pns">скляні</w>
+              <w lemma="скляний" ana="Ao--pasn">скляні</w>
+            </mi:w_>
+            <mi:w_ n="29">
+              <w lemma="двері" ana="Nc-pnn">двері</w>
+              <w lemma="двері" ana="Nc-pan">двері</w>
+            </mi:w_>
+            <mi:w_ n="30">
+              <w lemma="великий" ana="Afpmsgf">великого</w>
+              <w lemma="великий" ana="Afpmsafy">великого</w>
+              <w lemma="великий" ana="Afpnsgf">великого</w>
+            </mi:w_>
+            <mi:w_ n="31">
+              <w lemma="панельний" ana="Ao-msgf">панельного</w>
+              <w lemma="панельний" ana="Ao-msafy">панельного</w>
+              <w lemma="панельний" ana="Ao-nsgf">панельного</w>
+            </mi:w_>
+            <mi:w_ n="32">
+              <w lemma="будинок" ana="Ncmsgn">будинку</w>
+              <w lemma="будинок" ana="Ncmsdn">будинку</w>
+              <w lemma="будинок" ana="Ncmsln">будинку</w>
+            </mi:w_>
+            <mi:w_ n="33">
+              <w lemma="що" ana="Css">що</w>
+              <w lemma="що" ana="Pq--nnsnn">що</w>
+              <w lemma="що" ana="Pr--nnsnn">що</w>
+              <w lemma="що" ana="Pq--nnsan">що</w>
+              <w lemma="що" ana="Pr--nnsan">що</w>
+            </mi:w_>
+            <mi:w_ n="34">
+              <w lemma="зватися" ana="Vmpis-sm">звався</w>
+            </mi:w_>
+            <pc>“</pc>
+            <mi:w_ n="35">
+              <w lemma="перемога" ana="Ncfsnn">Перемога</w>
+            </mi:w_>
+            <pc>”</pc>
+            <pc>,</pc>
+            <mi:w_ n="36">
+              <w lemma="але" ana="Ccs">але</w>
+              <w lemma="але" ana="I">але</w>
+              <w lemma="але" ana="Q">але</w>
+            </mi:w_>
+            <mi:w_ n="37">
+              <w lemma="не" ana="Q">не</w>
+            </mi:w_>
+            <mi:w_ n="38">
+              <w lemma="достатньо" ana="R">достатньо</w>
+            </mi:w_>
+            <mi:w_ n="39">
+              <w lemma="швидко" ana="Rp">швидко</w>
+            </mi:w_>
+            <mi:w_ n="40">
+              <w lemma="щоб" ana="Q">щоб</w>
+              <w lemma="щоб" ana="Css">щоб</w>
+            </mi:w_>
+            <mi:w_ n="41">
+              <w lemma="завадити" ana="Vmen">завадити</w>
+              <w lemma="завадити" ana="Vmen">завадити</w>
+            </mi:w_>
+            <mi:w_ n="42">
+              <w lemma="вихор" ana="Ncmsgn">вихру</w>
+              <w lemma="вихор" ana="Ncmsdn">вихру</w>
+              <w lemma="вихор" ana="Ncmsln">вихру</w>
+              <w lemma="вихор" ana="Ncmsdn">вихру</w>
+              <w lemma="вихор" ana="Ncmsln">вихру</w>
+            </mi:w_>
+            <mi:w_ n="43">
+              <w lemma="з" ana="Spsg">з</w>
+              <w lemma="з" ana="Spsa">з</w>
+              <w lemma="з" ana="Spsi">з</w>
+            </mi:w_>
+            <mi:w_ n="44">
+              <w lemma="пісок" ana="Ncmsgn">піску</w>
+              <w lemma="пісок" ana="Ncmsdn">піску</w>
+              <w lemma="пісок" ana="Ncmsln">піску</w>
+            </mi:w_>
+            <mi:w_ n="45">
+              <w lemma="та" ana="Ccs">та</w>
+              <w lemma="та" ana="Q">та</w>
+              <w lemma="той" ana="Pd--f-sna">та</w>
+            </mi:w_>
+            <mi:w_ n="46">
+              <w lemma="пилюка" ana="Ncfsgn">пилюки</w>
+            </mi:w_>
+            <mi:w_ n="47">
+              <w lemma="увійти" ana="Vmen">увійти</w>
+            </mi:w_>
+            <mi:w_ n="48">
+              <w lemma="раз" ana="Ncmsin">разом</w>
+              <w lemma="разом" ana="R">разом</w>
+            </mi:w_>
+            <mi:w_ n="49">
+              <w lemma="з" ana="Spsg">з</w>
+              <w lemma="з" ana="Spsa">з</w>
+              <w lemma="з" ana="Spsi">з</w>
+            </mi:w_>
+            <mi:w_ n="50">
+              <w lemma="він" ana="Pp-3m-sin">ним</w>
+              <w lemma="воно" ana="Pp-3n-sin">ним</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+          </p>
+        </div>
+        <div type="chapter" n="3">
+          <p>
+            <pc>“</pc>
+            <mi:w_ n="51">
+              <w lemma="бути" ana="Vapip1s">Є</w>
+              <w lemma="бути" ana="Vapip2s">Є</w>
+              <w lemma="бути" ana="Vapip3s">Є</w>
+              <w lemma="бути" ana="Vapip1p">Є</w>
+              <w lemma="бути" ana="Vapip2p">Є</w>
+              <w lemma="бути" ana="Vapip3p">Є</w>
+            </mi:w_>
+            <mi:w_ n="52">
+              <w lemma="терти" ana="Vmpm-2s">три</w>
+              <w lemma="три" ana="Mlc-pn">три</w>
+              <w lemma="три" ana="Mlc-pa">три</w>
+            </mi:w_>
+            <mi:w_ n="53">
+              <w lemma="стадія" ana="Ncfsgn">стадії</w>
+              <w lemma="стадія" ana="Ncfsdn">стадії</w>
+              <w lemma="стадія" ana="Ncfsln">стадії</w>
+              <w lemma="стадія" ana="Ncfpnn">стадії</w>
+              <w lemma="стадія" ana="Ncfpan">стадії</w>
+            </mi:w_>
+            <mi:w_ n="54">
+              <w lemma="у" ana="Spsg">у</w>
+              <w lemma="у" ana="Spsa">у</w>
+              <w lemma="у" ana="Spsl">у</w>
+            </mi:w_>
+            <mi:w_ n="55">
+              <w lemma="твій" ana="Ps--f-sda">твоїй</w>
+              <w lemma="твій" ana="Ps--f-sla">твоїй</w>
+            </mi:w_>
+            <mi:w_ n="56">
+              <w lemma="реінтеграція" ana="Ncfsgn">реінтеграції</w>
+              <w lemma="реінтеграція" ana="Ncfsdn">реінтеграції</w>
+              <w lemma="реінтеграція" ana="Ncfsln">реінтеграції</w>
+            </mi:w_>
+            <pc>,</pc>
+            <pc>”</pc>
+            <pc>—</pc>
+            <mi:w_ n="57">
+              <w lemma="сказати" ana="Vmeis-sm">сказав</w>
+            </mi:w_>
+            <mi:w_ n="58">
+              <w lemma="О’Брайєн" ana="X">О’Брайєн</w>
+            </mi:w_>
+            <pc>—</pc>
+            <pc>“</pc>
+            <mi:w_ n="59">
+              <w lemma="цей" ana="Pd--n-sna">Це</w>
+              <w lemma="цей" ana="Pd--n-saa">Це</w>
+            </mi:w_>
+            <mi:w_ n="60">
+              <w lemma="вивчення" ana="Ncnsnn">вивчення</w>
+              <w lemma="вивчення" ana="Ncnsgn">вивчення</w>
+              <w lemma="вивчення" ana="Ncnsan">вивчення</w>
+              <w lemma="вивчення" ana="Ncnpnn">вивчення</w>
+              <w lemma="вивчення" ana="Ncnpan">вивчення</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="61">
+              <w lemma="цей" ana="Pd--n-sna">це</w>
+              <w lemma="цей" ana="Pd--n-saa">це</w>
+            </mi:w_>
+            <mi:w_ n="62">
+              <w lemma="розуміння" ana="Ncnsnn">розуміння</w>
+              <w lemma="розуміння" ana="Ncnsgn">розуміння</w>
+              <w lemma="розуміння" ana="Ncnsan">розуміння</w>
+              <w lemma="розуміння" ana="Ncnpnn">розуміння</w>
+              <w lemma="розуміння" ana="Ncnpan">розуміння</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="63">
+              <w lemma="і" ana="Ccs">і</w>
+              <w lemma="і" ana="Q">і</w>
+            </mi:w_>
+            <mi:w_ n="64">
+              <w lemma="цей" ana="Pd--n-sna">це</w>
+              <w lemma="цей" ana="Pd--n-saa">це</w>
+            </mi:w_>
+            <mi:w_ n="65">
+              <w lemma="прийняття" ana="Ncnsnn">прийняття</w>
+              <w lemma="прийняття" ana="Ncnsgn">прийняття</w>
+              <w lemma="прийняття" ana="Ncnsan">прийняття</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+            <mi:w_ n="66">
+              <w lemma="вже" ana="R">Вже</w>
+            </mi:w_>
+            <mi:w_ n="67">
+              <w lemma="час" ana="Ncmsnn">час</w>
+              <w lemma="час" ana="Ncmsan">час</w>
+            </mi:w_>
+            <mi:w_ n="68">
+              <w lemma="для" ana="Spsg">для</w>
+            </mi:w_>
+            <mi:w_ n="69">
+              <w lemma="ти" ana="Pp-2-ysgn">тебе</w>
+              <w lemma="ти" ana="Pp-2-ysan">тебе</w>
+            </mi:w_>
+            <mi:w_ n="70">
+              <w lemma="увійти" ana="Vmen">увійти</w>
+            </mi:w_>
+            <mi:w_ n="71">
+              <w lemma="у" ana="Spsg">у</w>
+              <w lemma="у" ana="Spsa">у</w>
+              <w lemma="у" ana="Spsl">у</w>
+            </mi:w_>
+            <mi:w_ n="72">
+              <w lemma="цей" ana="Pd--f-saa">цю</w>
+            </mi:w_>
+            <mi:w_ n="73">
+              <w lemma="другий" ana="Ao-fsas">другу</w>
+              <w lemma="другий" ana="Mlofsa">другу</w>
+              <w lemma="друг" ana="Ncmsdy">другу</w>
+              <w lemma="друг" ana="Ncmsly">другу</w>
+            </mi:w_>
+            <mi:w_ n="74">
+              <w lemma="стадія" ana="Ncfsan">стадію</w>
+            </mi:w_>
+            <pc>.</pc>
+            <pc>”</pc>
+            <mi:se/>
+          </p>
+          <p>
+            <mi:w_ n="75">
+              <w lemma="як" ana="Pq------r">Як</w>
+              <w lemma="як" ana="Pr------r">Як</w>
+              <w lemma="як" ana="Q">Як</w>
+              <w lemma="як" ana="Css">Як</w>
+              <w lemma="як" ana="Ncmsny">Як</w>
+            </mi:w_>
+            <mi:w_ n="76">
+              <w lemma="і" ana="Ccs">і</w>
+              <w lemma="і" ana="Q">і</w>
+            </mi:w_>
+            <mi:w_ n="77">
+              <w lemma="завжди" ana="Pg------r">завжди</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="78">
+              <w lemma="Вінстон" ana="Npmsny">Вінстон</w>
+            </mi:w_>
+            <mi:w_ n="79">
+              <w lemma="лежати" ana="Vmpis-sm">лежав</w>
+            </mi:w_>
+            <mi:w_ n="80">
+              <w lemma="плиском" ana="R">плиском</w>
+            </mi:w_>
+            <mi:w_ n="81">
+              <w lemma="на" ana="I">на</w>
+              <w lemma="на" ana="Q">на</w>
+              <w lemma="на" ana="Spsa">на</w>
+              <w lemma="на" ana="Spsl">на</w>
+            </mi:w_>
+            <mi:w_ n="82">
+              <w lemma="свій" ana="Ps--f-sda">своїй</w>
+              <w lemma="свій" ana="Ps--f-sla">своїй</w>
+            </mi:w_>
+            <mi:w_ n="83">
+              <w lemma="спина" ana="Ncfsdn">спині</w>
+              <w lemma="спина" ana="Ncfsln">спині</w>
+              <w lemma="спин" ana="Ncmsln">спині</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+            <mi:w_ n="84">
+              <w lemma="але" ana="Ccs">Але</w>
+              <w lemma="але" ana="I">Але</w>
+              <w lemma="але" ana="Q">Але</w>
+            </mi:w_>
+            <mi:w_ n="85">
+              <w lemma="останній" ana="Afpmsif">останнім</w>
+              <w lemma="останній" ana="Afpmslf">останнім</w>
+              <w lemma="останній" ana="Afpnsif">останнім</w>
+              <w lemma="останній" ana="Afpnslf">останнім</w>
+              <w lemma="останній" ana="Afp-pdf">останнім</w>
+            </mi:w_>
+            <mi:w_ n="86">
+              <w lemma="час" ana="Ncmsin">часом</w>
+              <w lemma="часом" ana="R">часом</w>
+            </mi:w_>
+            <mi:w_ n="87">
+              <w lemma="він" ana="Pp-3m-sgn">його</w>
+              <w lemma="він" ana="Pp-3m-san">його</w>
+              <w lemma="воно" ana="Pp-3n-sgn">його</w>
+              <w lemma="воно" ana="Pp-3n-san">його</w>
+              <w lemma="його" ana="Ps--m-sna">його</w>
+              <w lemma="його" ana="Ps--m-sga">його</w>
+              <w lemma="його" ana="Ps--m-sda">його</w>
+              <w lemma="його" ana="Ps--m-saa">його</w>
+              <w lemma="його" ana="Ps--m-sia">його</w>
+              <w lemma="його" ana="Ps--m-sla">його</w>
+              <w lemma="його" ana="Ps--f-sna">його</w>
+              <w lemma="його" ana="Ps--f-sga">його</w>
+              <w lemma="його" ana="Ps--f-sda">його</w>
+              <w lemma="його" ana="Ps--f-saa">його</w>
+              <w lemma="його" ana="Ps--f-sia">його</w>
+              <w lemma="його" ana="Ps--f-sla">його</w>
+              <w lemma="його" ana="Ps--n-sna">його</w>
+              <w lemma="його" ana="Ps--n-sga">його</w>
+              <w lemma="його" ana="Ps--n-sda">його</w>
+              <w lemma="його" ana="Ps--n-saa">його</w>
+              <w lemma="його" ana="Ps--n-sia">його</w>
+              <w lemma="його" ana="Ps--n-sla">його</w>
+            </mi:w_>
+            <mi:w_ n="88">
+              <w lemma="кріплення" ana="Ncnsnn">кріплення</w>
+              <w lemma="кріплення" ana="Ncnsgn">кріплення</w>
+              <w lemma="кріплення" ana="Ncnsan">кріплення</w>
+              <w lemma="кріплення" ana="Ncnpnn">кріплення</w>
+              <w lemma="кріплення" ana="Ncnpan">кріплення</w>
+            </mi:w_>
+            <mi:w_ n="89">
+              <w lemma="бути" ana="Vapis-p">були</w>
+            </mi:w_>
+            <mi:w_ n="90">
+              <w lemma="не" ana="Q">не</w>
+            </mi:w_>
+            <mi:w_ n="91">
+              <w lemma="такий" ana="Pd----pia">такими</w>
+            </mi:w_>
+            <mi:w_ n="92">
+              <w lemma="щільний" ana="Afp-pif">щільними</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+          </p>
+          <p>
+            <pc>“</pc>
+            <mi:w_ n="93">
+              <w lemma="доки" ana="Pq------r">Доки</w>
+              <w lemma="доки" ana="Pr------r">Доки</w>
+              <w lemma="док" ana="Ncmpnn">Доки</w>
+              <w lemma="док" ana="Ncmpan">Доки</w>
+              <w lemma="доки" ana="Css">Доки</w>
+            </mi:w_>
+            <mi:w_ n="94">
+              <w lemma="ти" ana="Pp-2-ysnn">ти</w>
+              <w lemma="ти" ana="Pp-2-ysvn">ти</w>
+            </mi:w_>
+            <mi:w_ n="95">
+              <w lemma="тут" ana="Pd------r">тут</w>
+            </mi:w_>
+            <mi:w_ n="96">
+              <w lemma="лежати" ana="Vmpis-sm">лежав</w>
+            </mi:w_>
+            <pc>,</pc>
+            <pc>”</pc>
+            <pc>—</pc>
+            <mi:w_ n="97">
+              <w lemma="сказати" ana="Vmeis-sm">сказав</w>
+            </mi:w_>
+            <mi:w_ n="98">
+              <w lemma="О’Брайєн" ana="X">О’Брайєн</w>
+            </mi:w_>
+            <pc>—</pc>
+            <pc>“</pc>
+            <mi:w_ n="99">
+              <w lemma="ти" ana="Pp-2-ysnn">ти</w>
+              <w lemma="ти" ana="Pp-2-ysvn">ти</w>
+            </mi:w_>
+            <mi:w_ n="100">
+              <w lemma="мати" ana="Vmpis-sm">мав</w>
+            </mi:w_>
+            <mi:w_ n="101">
+              <w lemma="часто" ana="Rp">часто</w>
+            </mi:w_>
+            <mi:w_ n="102">
+              <w lemma="гадати" ana="Vmpn">гадати</w>
+            </mi:w_>
+            <pc>—</pc>
+            <mi:w_ n="103">
+              <w lemma="ти" ana="Pp-2-ysnn">ти</w>
+              <w lemma="ти" ana="Pp-2-ysvn">ти</w>
+            </mi:w_>
+            <mi:w_ n="104">
+              <w lemma="навіть" ana="Q">навіть</w>
+            </mi:w_>
+            <mi:w_ n="105">
+              <w lemma="запитувати" ana="Vmpis-sm">запитував</w>
+            </mi:w_>
+            <mi:w_ n="106">
+              <w lemma="я" ana="Pp-1-ysgn">мене</w>
+              <w lemma="я" ana="Pp-1-ysan">мене</w>
+            </mi:w_>
+            <mi:w_ n="107">
+              <w lemma="про" ana="Spsa">про</w>
+            </mi:w_>
+            <mi:w_ n="108">
+              <w lemma="цей" ana="Pd--n-sna">це</w>
+              <w lemma="цей" ana="Pd--n-saa">це</w>
+            </mi:w_>
+            <pc>—</pc>
+            <mi:w_ n="109">
+              <w lemma="чому" ana="Pq------r">чому</w>
+              <w lemma="чому" ana="Pr------r">чому</w>
+              <w lemma="що" ana="Pq--nnsdn">чому</w>
+              <w lemma="що" ana="Pr--nnsdn">чому</w>
+              <w lemma="що" ana="Pq--nnsln">чому</w>
+              <w lemma="що" ana="Pr--nnsln">чому</w>
+            </mi:w_>
+            <mi:w_ n="110">
+              <w lemma="міністерство" ana="Ncnsnn">Міністерство</w>
+              <w lemma="міністерство" ana="Ncnsan">Міністерство</w>
+            </mi:w_>
+            <mi:w_ n="111">
+              <w lemma="Любов" ana="Npfsgy">Любові</w>
+              <w lemma="Любов" ana="Npfsdy">Любові</w>
+              <w lemma="Любов" ana="Npfsly">Любові</w>
+              <w lemma="любов" ana="Ncfsgn">Любові</w>
+              <w lemma="любов" ana="Ncfsdn">Любові</w>
+              <w lemma="любов" ana="Ncfsln">Любові</w>
+            </mi:w_>
+            <mi:w_ n="112">
+              <w lemma="мати" ana="Vmpip3s">має</w>
+              <w lemma="маяти" ana="Vmpip3s">має</w>
+            </mi:w_>
+            <mi:w_ n="113">
+              <w lemma="витрачати" ana="Vmpn">витрачати</w>
+            </mi:w_>
+            <mi:w_ n="114">
+              <w lemma="так" ana="Pd------r">так</w>
+              <w lemma="так" ana="Q">так</w>
+              <w lemma="так" ana="Css">так</w>
+            </mi:w_>
+            <mi:w_ n="115">
+              <w lemma="багато" ana="Rp">багато</w>
+              <w lemma="багато" ana="Mlc-pn">багато</w>
+              <w lemma="багато" ana="Pi----pnm">багато</w>
+              <w lemma="багато" ana="Mlc-pa">багато</w>
+              <w lemma="багато" ana="Pi----pam">багато</w>
+            </mi:w_>
+            <mi:w_ n="116">
+              <w lemma="час" ana="Ncmsgn">часу</w>
+              <w lemma="час" ana="Ncmsdn">часу</w>
+              <w lemma="час" ana="Ncmsln">часу</w>
+            </mi:w_>
+            <mi:w_ n="117">
+              <w lemma="та" ana="Ccs">та</w>
+              <w lemma="та" ana="Q">та</w>
+              <w lemma="той" ana="Pd--f-sna">та</w>
+            </mi:w_>
+            <mi:w_ n="118">
+              <w lemma="клопіт" ana="Ncmsgn">клопоту</w>
+              <w lemma="клопіт" ana="Ncmsdn">клопоту</w>
+              <w lemma="клопіт" ana="Ncmsln">клопоту</w>
+            </mi:w_>
+            <mi:w_ n="119">
+              <w lemma="на" ana="I">на</w>
+              <w lemma="на" ana="Q">на</w>
+              <w lemma="на" ana="Spsa">на</w>
+              <w lemma="на" ana="Spsl">на</w>
+            </mi:w_>
+            <mi:w_ n="120">
+              <w lemma="ти" ana="Pp-2-ysgn">тебе</w>
+              <w lemma="ти" ana="Pp-2-ysan">тебе</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+          </p>
+          <p>
+            <pc>“</pc>
+            <mi:w_ n="121">
+              <w lemma="ти" ana="Pp-2-ysnn">Ти</w>
+              <w lemma="ти" ana="Pp-2-ysvn">Ти</w>
+            </mi:w_>
+            <mi:w_ n="122">
+              <w lemma="читати" ana="Vmpis-sm">читав</w>
+            </mi:w_>
+            <mi:w_ n="123">
+              <w lemma="вона" ana="Pp-3f-sgn">її</w>
+              <w lemma="вона" ana="Pp-3f-san">її</w>
+              <w lemma="її" ana="Ps--m-sna">її</w>
+              <w lemma="її" ana="Ps--m-sga">її</w>
+              <w lemma="її" ana="Ps--m-sda">її</w>
+              <w lemma="її" ana="Ps--m-saa">її</w>
+              <w lemma="її" ana="Ps--m-sia">її</w>
+              <w lemma="її" ana="Ps--m-sla">її</w>
+              <w lemma="її" ana="Ps--f-sna">її</w>
+              <w lemma="її" ana="Ps--f-sga">її</w>
+              <w lemma="її" ana="Ps--f-sda">її</w>
+              <w lemma="її" ana="Ps--f-saa">її</w>
+              <w lemma="її" ana="Ps--f-sia">її</w>
+              <w lemma="її" ana="Ps--f-sla">її</w>
+              <w lemma="її" ana="Ps--n-sna">її</w>
+              <w lemma="її" ana="Ps--n-sga">її</w>
+              <w lemma="її" ana="Ps--n-sda">її</w>
+              <w lemma="її" ana="Ps--n-saa">її</w>
+              <w lemma="її" ana="Ps--n-sia">її</w>
+              <w lemma="її" ana="Ps--n-sla">її</w>
+            </mi:w_>
+            <pc>?</pc>
+            <pc>”</pc>
+            <pc>—</pc>
+            <mi:w_ n="124">
+              <w lemma="запитати" ana="Vmeis-sm">запитав</w>
+            </mi:w_>
+            <mi:w_ n="125">
+              <w lemma="Вінстон" ana="Npmsny">Вінстон</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+          </p>
+          <p>
+            <pc>“</pc>
+            <mi:w_ n="126">
+              <w lemma="я" ana="Pp-1-ysnn">Я</w>
+            </mi:w_>
+            <mi:w_ n="127">
+              <w lemma="написати" ana="Vmeis-sm">написав</w>
+            </mi:w_>
+            <mi:w_ n="128">
+              <w lemma="вона" ana="Pp-3f-sgn">її</w>
+              <w lemma="вона" ana="Pp-3f-san">її</w>
+              <w lemma="її" ana="Ps--m-sna">її</w>
+              <w lemma="її" ana="Ps--m-sga">її</w>
+              <w lemma="її" ana="Ps--m-sda">її</w>
+              <w lemma="її" ana="Ps--m-saa">її</w>
+              <w lemma="її" ana="Ps--m-sia">її</w>
+              <w lemma="її" ana="Ps--m-sla">її</w>
+              <w lemma="її" ana="Ps--f-sna">її</w>
+              <w lemma="її" ana="Ps--f-sga">її</w>
+              <w lemma="її" ana="Ps--f-sda">її</w>
+              <w lemma="її" ana="Ps--f-saa">її</w>
+              <w lemma="її" ana="Ps--f-sia">її</w>
+              <w lemma="її" ana="Ps--f-sla">її</w>
+              <w lemma="її" ana="Ps--n-sna">її</w>
+              <w lemma="її" ana="Ps--n-sga">її</w>
+              <w lemma="її" ana="Ps--n-sda">її</w>
+              <w lemma="її" ana="Ps--n-saa">її</w>
+              <w lemma="її" ana="Ps--n-sia">її</w>
+              <w lemma="її" ana="Ps--n-sla">її</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+            <mi:w_ n="129">
+              <w lemma="краще" ana="Rc">Краще</w>
+              <w lemma="кращий" ana="Afcnsns">Краще</w>
+              <w lemma="кращий" ana="Afcnsas">Краще</w>
+              <w lemma="кращий" ana="Afcnsns">Краще</w>
+              <w lemma="кращий" ana="Afcnsas">Краще</w>
+              <w lemma="кращий" ana="Afcnsns">Краще</w>
+              <w lemma="кращий" ana="Afcnsas">Краще</w>
+            </mi:w_>
+            <mi:w_ n="130">
+              <w lemma="сказати" ana="Vmen">сказати</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="131">
+              <w lemma="я" ana="Pp-1-ysnn">я</w>
+            </mi:w_>
+            <mi:w_ n="132">
+              <w lemma="співробітничати" ana="Vmpis-sm">співробітничав</w>
+            </mi:w_>
+            <mi:w_ n="133">
+              <w lemma="у" ana="Spsg">у</w>
+              <w lemma="у" ana="Spsa">у</w>
+              <w lemma="у" ana="Spsl">у</w>
+            </mi:w_>
+            <mi:w_ n="134">
+              <w lemma="вона" ana="Pp-3f-sgn">її</w>
+              <w lemma="вона" ana="Pp-3f-san">її</w>
+              <w lemma="її" ana="Ps--m-sna">її</w>
+              <w lemma="її" ana="Ps--m-sga">її</w>
+              <w lemma="її" ana="Ps--m-sda">її</w>
+              <w lemma="її" ana="Ps--m-saa">її</w>
+              <w lemma="її" ana="Ps--m-sia">її</w>
+              <w lemma="її" ana="Ps--m-sla">її</w>
+              <w lemma="її" ana="Ps--f-sna">її</w>
+              <w lemma="її" ana="Ps--f-sga">її</w>
+              <w lemma="її" ana="Ps--f-sda">її</w>
+              <w lemma="її" ana="Ps--f-saa">її</w>
+              <w lemma="її" ana="Ps--f-sia">її</w>
+              <w lemma="її" ana="Ps--f-sla">її</w>
+              <w lemma="її" ana="Ps--n-sna">її</w>
+              <w lemma="її" ana="Ps--n-sga">її</w>
+              <w lemma="її" ana="Ps--n-sda">її</w>
+              <w lemma="її" ana="Ps--n-saa">її</w>
+              <w lemma="її" ana="Ps--n-sia">її</w>
+              <w lemma="її" ana="Ps--n-sla">її</w>
+            </mi:w_>
+            <mi:w_ n="135">
+              <w lemma="написання" ana="Ncnsln">написанні</w>
+            </mi:w_>
+            <pc>.</pc>
+            <mi:se/>
+            <mi:w_ n="136">
+              <w lemma="жодний" ana="Pz--f-sna">Жодна</w>
+            </mi:w_>
+            <mi:w_ n="137">
+              <w lemma="книга" ana="Ncfsnn">книга</w>
+            </mi:w_>
+            <mi:w_ n="138">
+              <w lemma="не" ana="Q">не</w>
+            </mi:w_>
+            <mi:w_ n="139">
+              <w lemma="виготовлятися" ana="Vmpip3s">виготовляється</w>
+            </mi:w_>
+            <mi:w_ n="140">
+              <w lemma="індивідуально" ana="R">індивідуально</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="141">
+              <w lemma="як" ana="Pq------r">як</w>
+              <w lemma="як" ana="Pr------r">як</w>
+              <w lemma="як" ana="Q">як</w>
+              <w lemma="як" ana="Css">як</w>
+              <w lemma="як" ana="Ncmsny">як</w>
+            </mi:w_>
+            <mi:w_ n="142">
+              <w lemma="ти" ana="Pp-2-ysnn">ти</w>
+              <w lemma="ти" ana="Pp-2-ysvn">ти</w>
+            </mi:w_>
+            <mi:w_ n="143">
+              <w lemma="знати" ana="Vmpip2s">знаєш</w>
+            </mi:w_>
+            <pc>.</pc>
+            <pc>”</pc>
+            <mi:se/>
+          </p>
+          <p>
+            <pc>“</pc>
+            <mi:w_ n="144">
+              <w lemma="цей" ana="Pd--n-sna">Це</w>
+              <w lemma="цей" ana="Pd--n-saa">Це</w>
+            </mi:w_>
+            <mi:w_ n="145">
+              <w lemma="правда" ana="Ncfsnn">правда</w>
+            </mi:w_>
+            <pc>,</pc>
+            <mi:w_ n="146">
+              <w lemma="що" ana="Css">що</w>
+              <w lemma="що" ana="Pq--nnsnn">що</w>
+              <w lemma="що" ana="Pr--nnsnn">що</w>
+              <w lemma="що" ana="Pq--nnsan">що</w>
+              <w lemma="що" ana="Pr--nnsan">що</w>
+            </mi:w_>
+            <mi:w_ n="147">
+              <w lemma="у" ana="Spsg">у</w>
+              <w lemma="у" ana="Spsa">у</w>
+              <w lemma="у" ana="Spsl">у</w>
+            </mi:w_>
+            <mi:w_ n="148">
+              <w lemma="вона" ana="Pp-3f-sln">ній</w>
+            </mi:w_>
+            <mi:w_ n="149">
+              <w lemma="сказати" ana="Vmeo">сказано</w>
+            </mi:w_>
+            <pc>?</pc>
+            <pc>”</pc>
+            <mi:se/>
+          </p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>
+
