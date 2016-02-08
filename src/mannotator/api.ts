@@ -15,7 +15,7 @@ import {inspect} from 'util';
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getRole(req, res: express.Response) {
-  res.json(req.bag.user && req.bag.user.annotatorRole || 'none');
+  res.json(req.bag.user && req.bag.user.annotatorRole || null);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

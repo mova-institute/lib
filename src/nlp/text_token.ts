@@ -66,6 +66,13 @@ export class TextToken {
     return { tags, lemmas };
     //return markedIndexwiseStringDiff(ret, 'morph-feature-marked');
   }
+  
+  lemmaIfUnamb() {
+    let lemmas = this.morphTags().lemmas;
+    if (lemmas.every(x => x === lemmas[0])) {
+      return lemmas[0];
+    }
+  }
 
   breaksLine() {
     let elName = this.elem.nameNs();
