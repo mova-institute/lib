@@ -10,6 +10,7 @@ export class TextToken {
   private static TOKEN_ELEMS = new Set<string>([W_, PC]);
 
   constructor(public elem: IElement, public hasSpaceBefore = true) {
+    
   }
 
   equals(other: TextToken) {
@@ -175,9 +176,9 @@ export class TextToken {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getUnambMorphTag(w_: IElement) {
-  let disamb = Number(w_.getAttribute('disamb'));
-  if (disamb) {
-    let wElem = w_.childElement(disamb);
+  let disamb = w_.getAttribute('disamb');
+  if (disamb !== null) {
+    let wElem = w_.childElement(Number(disamb));
     return wElem ? wElem.getAttribute('ana') : '*';  // todo: throw?
   }
 
