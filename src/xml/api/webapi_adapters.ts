@@ -20,7 +20,10 @@ export class WebapiDocument implements IDocument {
 	}
 
 	createElement(name: string) {
-		return new WebapiElement(this.underlying.createElement(name));
+    let [localName, prefix] = name.split(':').reverse();
+    let uri = this.underlying.lookupNamespaceURI(prefix || null);
+    
+    return new WebapiElement(this.underlying.createElementNS(uri, localName));
 	}
 
 	serialize() {
@@ -134,25 +137,19 @@ export class WebapiElement extends WebapiNode implements IElement {
 	childElement(index: number) {
 		return wrappedOrNull(WebapiElement, (<HTMLElement>this.underlying).children[index]);
 	}
+  
+  get childElementCount() {
+    return (<HTMLElement>this.underlying).childElementCount;
+  }
 
 	nameNs() {	// todo
 		if (this.underlying.namespaceURI) {
 			return nameNs(this.underlying.namespaceURI, this.underlying.localName);
 		}
-		let [prefix, localName] = this.underlying.nodeName.split(':');
-		let ns = this.underlying.ownerDocument.documentElement.getAttribute(`xmlns:${prefix}`);
-
-		if (!localName || !ns) {
-			throw 'Not implemented';
-		}
-
-		return nameNs(ns, localName);
+    
+    throw new Error('Should not happen');
 	}
 	
-	// isNs(otherName: string) {
-	// 	return this.nameNs() === otherName;
-	// }
-
 	getAttribute(name: string) {
 		return (<Element>this.underlying).getAttribute(name);
 	}
@@ -171,7 +168,7 @@ export class WebapiElement extends WebapiNode implements IElement {
 	}
   
   xpath(query: string, nsMap?) {
-    throw new Error('Not implemented');
+    throw new Error('Not implemented: xpath');
     return [];
   }
 }

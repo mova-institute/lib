@@ -37,5 +37,6 @@ export interface IElement extends INode {
 	lastChild: INode;
 	childElements(): Iterable<IElement>;
 	childElement(index: number): IElement;
+  childElementCount: number;
 	xpath(query: string, nsMap?): INode[];
 }

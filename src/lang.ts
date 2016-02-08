@@ -12,8 +12,17 @@ export function wrappedOrNull<T>(construct: { new (val): T; }, val) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function countGenerated<T>(generator: Iterator<T>) {
+  for (var i = 0; !generator.next().done; ++i);
+  return i;
+}
+////////////////////////////////////////////////////////////////////////////////
 export function ithGenerated<T>(generator: Iterator<T>, index: number) {
-	for (var cur = generator.next(); index >= 0 && !cur.done; --index, cur = generator.next());
+	let cur = generator.next();
+  while (index-- && !cur.done) {
+    cur = generator.next()
+  };
+  
 	return cur.value;
 }
 

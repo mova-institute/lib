@@ -1,7 +1,7 @@
 import {IDocument, INode, IElement} from './interfaces'
 import * as libxmljs from 'libxmljs'
 import {lang} from '../utils'
-import {wrappedOrNull, ithGenerated} from '../../lang' 
+import {wrappedOrNull, ithGenerated, countGenerated} from '../../lang' 
 
 
 
@@ -141,16 +141,12 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 	}
 	
 	childElement(index: number) {
-    for (let child of this.underlying.childNodes()) {
-      if (child.type() === 'element') {
-        if (--index < 0) {
-          return new LibxmlElement(child);
-        }
-      }
-    }
-    
-    return null;
+    return ithGenerated(this.childElements(), index) || null;
 	}
+  
+  get childElementCount() {
+    return countGenerated(this.childElements());
+  }
 	
 	get nextElementSibling() {
 		return wrappedOrNull(LibxmlElement, this.underlying.nextElement());
@@ -177,7 +173,7 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 	}
 	
 	removeAttribute(name: string) {
-		throw 'Not implemented'
+		throw 'Not implemented: removeAttribute'
 	}
 	
 	appendChild(child: LibxmlNode) {

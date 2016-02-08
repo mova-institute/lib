@@ -6,7 +6,9 @@ import {MorphAnalyzer, MorphTag} from './morph_analyzer/morph_analyzer';
 import {getUnambMorphTag} from './text_token';
 
 
-export const WCHAR = r `\-\w’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
+export const WCHAR_UK = r`\-’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
+export const WCHAR_UK_RE = new RegExp(`^[${WCHAR_UK}]+$`);
+export const WCHAR = r `\w${WCHAR_UK}`;
 export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
 
 //export const NOSPACE_ABLE_ELEMS
@@ -267,6 +269,16 @@ export function cantBeLowerCase(word: string) {
   }
   let subsr = word.substr(1);
   return subsr !== subsr.toLowerCase();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isSaneLemma(value: string) {
+  return WCHAR_UK_RE.test(value) || /^\d+$/.test(value);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isSaneMte5Tag(value: string) {
+  return /^[A-Z][a-z0-9\-]*$/.test(value);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

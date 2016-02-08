@@ -14,5 +14,5 @@ export function nextTaskType(type: string) {
     return 'review';
   }
   
-  throw new Error('Not implemented');
+  throw new Error('Not implemented: nextTaskType');
 }

@@ -83,13 +83,31 @@ export class TextToken {
     if (this.disambIndex() === index) {
       this.elem.removeAttribute('disamb');
     } else {
-      this.elem.setAttribute('disamb', index.toString());
+      this.elem.setAttribute('disamb', index);
     }
+  }
+  
+  disambigLast() {
+    this.elem.setAttribute('disamb', this.elem.childElementCount - 1);
+    return this;
+  }
+  
+  addInterp(tag: string, lemma: string) {
+    let newInterp = this.elem.ownerDocument.createElement('w');
+    newInterp.textContent = this.text();
+    newInterp.setAttribute('lemma', lemma);
+    newInterp.setAttribute('ana', tag);
+    newInterp.setAttribute('type', 'manual');
+    this.elem.appendChild(newInterp);
+    
+    return this;
   }
   
   review(index: number) {
     this.elem.setAttribute('disamb', index.toString());
     this.elem.setAttribute('mark', addFeature(this.elem.getAttribute('mark'), 'reviewed'));
+    
+    return this;
   }
 
   insertSentenceEnd() {
@@ -116,6 +134,8 @@ export class TextToken {
       let se = where.ownerDocument.createElement('mi:se');
       where.insertAfter(se);
     }
+    
+    return this;
   }
 
   next(f: (token: TextToken) => boolean) {

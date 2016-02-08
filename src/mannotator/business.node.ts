@@ -11,5 +11,5 @@ export function markConflicts(taskType: string, mine: string, theirs: string) {
     return res;
   }
   
-  throw new Error('Not implemented');
+  throw new Error('Not implemented: markConflicts');
 }
