@@ -7,26 +7,26 @@ import {wrappedOrNull, ithGenerated, countGenerated} from '../../lang'
 
 ////////////////////////////////////////////////////////////////////////////////
 export class LibxmlDocument implements IDocument {
-	constructor(private underlying: libxmljs.XMLDocument) {	}
+	constructor(private _underlying: libxmljs.XMLDocument) {	}
 	
 	get documentElement() {
-		return new LibxmlElement(this.underlying.root());
+		return new LibxmlElement(this._underlying.root());
 	}
 	
 	createElement(name: string) {
     let [localName, prefix] = name.split(':').reverse();
-		let ret = new libxmljs.Element(this.underlying, localName);
-    prefix && ret.namespace(this.getNsByPrefix(prefix));
+		let ret = new libxmljs.Element(this._underlying, localName);
+    prefix && ret.namespace(this._getNsByPrefix(prefix));
     
     return new LibxmlElement(ret);
 	}
 	
 	serialize() {
-		return this.underlying.toString();
+		return this._underlying.toString();
 	}
   
-  private getNsByPrefix(prefix: string) {
-    return this.underlying.root().namespaces().find(x => x.prefix() === prefix);
+  private _getNsByPrefix(prefix: string) {
+    return this._underlying.root().namespaces().find(x => x.prefix() === prefix);
   }
 }
 

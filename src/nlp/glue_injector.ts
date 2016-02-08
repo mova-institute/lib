@@ -9,7 +9,7 @@ export class GlueInjector extends Transform {
 	private static gObjectStart = new SaxEventObject('start', G);
 	private static gObjectEnd = new SaxEventObject('end', G);
 
-	private prevEvent;
+	private _prevEvent;
 
 	constructor() {
 		super({
@@ -20,23 +20,23 @@ export class GlueInjector extends Transform {
 	_transform(event: SaxEventObject, encoding, callback) {
 		if (event.el === W_ || event.el === PC) {
 			if (event.type === 'start') {
-				if (this.prevEvent && !haveSpaceBetween(
-					this.prevEvent.el, this.prevEvent.text, event.el, event.text)) {
+				if (this._prevEvent && !haveSpaceBetween(
+					this._prevEvent.el, this._prevEvent.text, event.el, event.text)) {
 				
-					this.pushGlue();
+					this._pushGlue();
 				}
-				this.prevEvent = event;
+				this._prevEvent = event;
 			}
 		}
 		else if (event.el !== W) {
-			this.prevEvent = null;
+			this._prevEvent = null;
 		}
 		
 		this.push(event);
 		callback();
 	}
 
-	private pushGlue() {
+	private _pushGlue() {
 		this.push(GlueInjector.gObjectStart);
 		this.push(GlueInjector.gObjectEnd);
 	}

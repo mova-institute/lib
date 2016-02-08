@@ -6,23 +6,23 @@ import {SaxParserExtBase, SaxParserExt, SaxPushParserExt} from '../xml/sax_push_
 
 
 export class SaxEventObjectifier extends Transform {
-	private parser: SaxParserExtBase;
+	private _parser: SaxParserExtBase;
 
 	constructor(/*sync = false*/) {
 		super({
 			objectMode: true
 		});
-		this.parser = /*sync ? new SaxParserExt() :*/ new SaxPushParserExt();
-		this.initParser();
+		this._parser = /*sync ? new SaxParserExt() :*/ new SaxPushParserExt();
+		this._initParser();
 	}
 	
 	_transform(chunk: string, encoding, callback) {
-		this.parser.push(chunk);
+		this._parser.push(chunk);
 		callback();
 	}
 
-	private initParser() {
-		this.parser.on('startElementNSExt', (elem, attrs, prefix, uri, ns, text) => {
+	private _initParser() {
+		this._parser.on('startElementNSExt', (elem, attrs, prefix, uri, ns, text) => {
 
 			this.push(new SaxEventObject(
 				'start',

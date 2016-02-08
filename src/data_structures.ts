@@ -3,22 +3,22 @@ import {zip} from './lang'
 
 ////////////////////////////////////////////////////////////////////////////////
 export class JsonCompareSet<T> {
-  private map = new Map<string, T>();
+  private _map = new Map<string, T>();
   constructor(iterable?: Iterable<T>) {
     //super(iterable);  // todo
   }
 
   add(value: T) {
-    this.map.set(JSON.stringify(value), value);
+    this._map.set(JSON.stringify(value), value);
     return this;
   }
 
   keys() {
-    return this.map.values();
+    return this._map.values();
   }
 
   values() {
-    return this.map.values();
+    return this._map.values();
   }
 }
 
@@ -101,36 +101,36 @@ export class NumeratedSet<T> {  // todo move somewhere
 
 ////////////////////////////////////////////////////////////////////////////////
 export class CachedValue<T> {
-  private value: T;
-  private argsHash: string = null;
+  private _value: T;
+  private _argsHash: string = null;
 
-  constructor(private calculator: (...args) => T) {
+  constructor(private _calculator: (...args) => T) {
 
   }
 
   get(...args) {
     let hash = JSON.stringify(args);
-    if (this.isInvalid() || (args && args.length && hash !== this.argsHash)) {
-      this.value = this.calculator(...args);
+    if (this._isInvalid() || (args && args.length && hash !== this._argsHash)) {
+      this._value = this._calculator(...args);
     }
-    this.argsHash = hash;
+    this._argsHash = hash;
 
-    return this.value;
+    return this._value;
   }
 
   invalidate() {
-    this.argsHash = null;
+    this._argsHash = null;
   }
 
-  private isInvalid() {
-    return this.argsHash === null;
+  private _isInvalid() {
+    return this._argsHash === null;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export class DefaultMap<K, V> extends Map<K, V> {
   constructor(
-    private v: { new (): V; },
+    private _v: { new (): V; },
     iterable?: Iterable<[K, V]>) {
       
     super(iterable);
@@ -139,7 +139,7 @@ export class DefaultMap<K, V> extends Map<K, V> {
   get(key: K) {
     let ret = super.get(key);
     if (!ret) {
-      ret = new this.v();
+      ret = new this._v();
       super.set(key, ret);
     }
 

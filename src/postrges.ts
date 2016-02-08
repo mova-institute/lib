@@ -16,26 +16,26 @@ export class PgClient {
     return new PgClient(client, done);
   }
 
-  constructor(private client: Client, private done = null) { }
+  constructor(private _client: Client, private _done = null) { }
   
   release() {
-    this.client = null;
-    this.done && this.done();
+    this._client = null;
+    this._done && this._done();
   }
   
   async query(queryStr: string) {
-    return await query(this.client, queryStr);
+    return await query(this._client, queryStr);
   }
 
   async call(func: string, ...params) {
     let queryStr = `SELECT ${func}(${nDollars(params.length)})`;
     
-    return await query1Client(this.client, queryStr, params);
+    return await query1Client(this._client, queryStr, params);
   }
   
   async select(table: string, where: string, ...params) {
     let queryStr = `SELECT row_to_json(${table}) FROM ${table} WHERE ${where}`;
-    return await query1Client(this.client, queryStr, params);    
+    return await query1Client(this._client, queryStr, params);    
   }
   
   async insert(table: string, dict: Object, returning?: string) {
@@ -45,7 +45,7 @@ export class PgClient {
       queryStr += ' RETURNING ' + returning;
     }
     
-    return await query1Client(this.client, queryStr, keys.map(x => dict[x]));    
+    return await query1Client(this._client, queryStr, keys.map(x => dict[x]));    
   }
 }
 

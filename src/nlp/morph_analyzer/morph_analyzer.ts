@@ -9,15 +9,15 @@ export interface MorphTag {  // todo
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
   constructor(
-    private words: ObjectDawg<WordDawgPayload>,
-    private paradigms: Array<Uint16Array>,
-    private suffixes: Array<string>,
-    private tags: Array<string>) {
+    private _words: ObjectDawg<WordDawgPayload>,
+    private _paradigms: Array<Uint16Array>,
+    private _suffixes: Array<string>,
+    private _tags: Array<string>) {
       
     }
 
   dictHas(token: string) {
-    return this.words.has(token);
+    return this._words.has(token);
   }
 
   tag(token: string) {
@@ -33,23 +33,23 @@ export class MorphAnalyzer {
       toLookup.push(lowercase);
     }
     for (let word of toLookup) {
-      for (let paraIndex of this.words.get(word)) {
-        ret.add(this.getTag(word, paraIndex));
+      for (let paraIndex of this._words.get(word)) {
+        ret.add(this._getTag(word, paraIndex));
       }
     }
 
     return ret;
   }
 
-  private getTag(word: string, paraIndex: WordDawgPayload): MorphTag {
-    let paradigm = this.paradigms[paraIndex.paradigmId];
+  private _getTag(word: string, paraIndex: WordDawgPayload): MorphTag {
+    let paradigm = this._paradigms[paraIndex.paradigmId];
 
-    let formSuffix = this.suffixes[paradigm[paraIndex.indexInPradigm]];
-    let lemmaSuffix = this.suffixes[paradigm[0]];
+    let formSuffix = this._suffixes[paradigm[paraIndex.indexInPradigm]];
+    let lemmaSuffix = this._suffixes[paradigm[0]];
     let lemma = word.slice(0, -formSuffix.length || word.length) + lemmaSuffix;
     // todo: prefixed
 
-    let tag = this.tags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
+    let tag = this._tags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
 
     return { lemma, tag };
   }

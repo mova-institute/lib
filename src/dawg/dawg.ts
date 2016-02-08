@@ -47,16 +47,16 @@ export class CompletionDawg extends Dawg {
 ////////////////////////////////////////////////////////////////////////////////
 export class BytesDawg extends CompletionDawg {
 	
-	constructor(dic: Dictionary, guide: Guide, private payloadSeparator: number = 1) {
+	constructor(dic: Dictionary, guide: Guide, private _payloadSeparator: number = 1) {
 		super(dic, guide);
 	}
 	
 	has(key: string): boolean {
-		return !super.completionBytes([...encodeUtf8(key), this.payloadSeparator]).next().done;
+		return !super.completionBytes([...encodeUtf8(key), this._payloadSeparator]).next().done;
 	}
 	
 	*payloadBytes(key: Array<number>) {
-		key.push(this.payloadSeparator);
+		key.push(this._payloadSeparator);
 		for (let completed of super.completionBytes(key)) {
 			yield b64decodeFromArray(completed.slice(0, -1));  // todo: why \n is there? 
 		}
@@ -68,7 +68,7 @@ export class BytesDawg extends CompletionDawg {
 export class ObjectDawg<T> extends BytesDawg {
 	
 	constructor(dic: Dictionary, guide: Guide, payloadSeparator: number,
-		private deserializer: (bytes: ArrayBuffer) => T) {
+		private _deserializer: (bytes: ArrayBuffer) => T) {
 		
 		super(dic, guide, payloadSeparator);
 	}
@@ -77,7 +77,7 @@ export class ObjectDawg<T> extends BytesDawg {
 		let ret = new Array<T>();
 		
 		for (let payload of super.payloadBytes(encodeUtf8(key))) {
-			ret.push(this.deserializer(payload));
+			ret.push(this._deserializer(payload));
 		}
 		
 		return ret;
