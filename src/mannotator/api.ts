@@ -8,7 +8,6 @@ import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
 import {markConflicts} from './business.node';
 import {markWordwiseDiff} from '../nlp/utils';
 
-import {inspect} from 'util';
 
 
 
