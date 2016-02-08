@@ -7,16 +7,16 @@ export class JsonCompareSet<T> {
   constructor(iterable?: Iterable<T>) {
     //super(iterable);  // todo
   }
-  
+
   add(value: T) {
     this.map.set(JSON.stringify(value), value);
     return this;
   }
-  
+
   keys() {
     return this.map.values();
   }
-  
+
   values() {
     return this.map.values();
   }
@@ -114,7 +114,7 @@ export class CachedValue<T> {
       this.value = this.calculator(...args);
     }
     this.argsHash = hash;
-    
+
     return this.value;
   }
 
@@ -124,5 +124,25 @@ export class CachedValue<T> {
 
   private isInvalid() {
     return this.argsHash === null;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export class DefaultMap<K, V> extends Map<K, V> {
+  constructor(
+    private v: { new (): V; },
+    iterable?: Iterable<[K, V]>) {
+      
+    super(iterable);
+  }
+
+  get(key: K) {
+    let ret = super.get(key);
+    if (!ret) {
+      ret = new this.v();
+      super.set(key, ret);
+    }
+
+    return ret;
   }
 }
