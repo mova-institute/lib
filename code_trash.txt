@@ -60,3 +60,52 @@ export class DawgInterprocess {
 }
 
 
+
+
+enum NounType { common, proper }
+
+enum Gender { masculine, feminine, neuter }
+enum Case { nominative, genitive, dative, accusative, instrumental, locative, vocative }
+enum Number_ { singular, dual, plural }
+enum Person { first, second, third }
+enum Tense { present, future, past }
+enum Aspect { progressive, perfective }
+enum VerbType { main, auxilary }
+enum Mood { indicative, imperative, infinitive, impersonal }
+enum Animacy { animate, inanimate }
+enum Degree { positive, comparative, superlative }
+enum Definiteness { short, full }
+
+
+
+export class UdFeaturesBag {
+  
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function rysin2ud(lemma: string, lemmaTagStr: string, form: string, formTagStr: string) {
+  let ret = new Array<{ pos: string, features: string }>();
+
+  let lemmaTag = new RysinTag(lemmaTagStr);
+  let formTag = new RysinTag(formTagStr);
+
+  for (let pos of formTag.poses()) {
+    // todo: treat special
+    if (!skipMainPos(formTag)) {
+      switch (formTag.pos) {
+        case 'noun': {
+          let isProper = startsWithCap(form);  // todo: abbrs
+          
+          break;
+        }
+        case 'verb': {
+          
+        }
+        default:
+          throw new Error(`Unexpected POS tag: '${formTag.pos}'`);
+      }
+    }
+  }
+
+  return ret;
+}
