@@ -6,46 +6,46 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "glob/glob.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "libxmljs/libxmljs.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "minimist/minimist.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "minimatch/minimatch.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "tmp/tmp.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "pg/pg.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "express/express.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "mime/mime.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "serve-static/serve-static.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "form-data/form-data.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "request/request.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "cookie-parser/cookie-parser.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     },
     "body-parser/body-parser.d.ts": {
-      "commit": "c393f8974d44840a6c9cc6d5b5c0188a8f05143d"
+      "commit": "f4b1797c1201b6c575668f5d7ea12d9b1ab21846"
     }
   }
 }
