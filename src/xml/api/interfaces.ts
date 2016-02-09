@@ -39,4 +39,5 @@ export interface IElement extends INode {
 	childElement(index: number): IElement;
   childElementCount: number;
 	xpath(query: string, nsMap?): INode[];
+  clone(): IElement;  // always deep(?)
 }

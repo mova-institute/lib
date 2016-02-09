@@ -167,6 +167,10 @@ export class WebapiElement extends WebapiNode implements IElement {
 		return child;
 	}
   
+  clone() {
+    return new WebapiElement(<Element>this.underlying.cloneNode(true));
+  }
+  
   xpath(query: string, nsMap?) {
     throw new Error('Not implemented: xpath');
     return [];

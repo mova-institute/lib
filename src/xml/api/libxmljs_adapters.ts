@@ -181,6 +181,10 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 		return child;
 	}
   
+  clone() {
+    return new LibxmlElement(this.underlying.clone()); 
+  }
+  
   xpath(query: string, nsMap?) {
     return this.underlying.find(query, nsMap).map(x => new LibxmlElement(x));
   }
