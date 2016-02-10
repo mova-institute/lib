@@ -22,8 +22,9 @@ export class WebapiDocument implements IDocument {
 	createElement(name: string) {
     let [localName, prefix] = name.split(':').reverse();
     let uri = this.underlying.lookupNamespaceURI(prefix || null);
+    let elem = this.underlying.createElementNS(uri, name);
     
-    return new WebapiElement(this.underlying.createElementNS(uri, localName));
+    return new WebapiElement(elem);
 	}
 
 	serialize() {
