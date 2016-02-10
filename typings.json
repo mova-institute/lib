@@ -1,0 +1,18 @@
+{
+  "name": "mi-lib",
+  "dependencies": {
+    "glob": "github:typings/typed-glob#b6dcc545de0e25f2e4d6c9ee2c97f9fde0223d8f",
+    "minimist": "github:typings/typed-minimist#9bfb8ebb1cf82abe2e16b00d6e0f59492224728e",
+    "pg": "github:goenning/typed-pg#f97ad74f65f3ac8d5f18677ba5ebc930dbdf843c"
+  },
+  "devDependencies": {},
+  "ambientDependencies": {
+    "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#9a2c50ea846ee6ae36feaea0accc77ae7b08a748",
+    "cookie-parser": "github:DefinitelyTyped/DefinitelyTyped/cookie-parser/cookie-parser.d.ts#e2001653ffbd99c2fc80a272ca80d8c958136de4",
+    "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#bc92442c075929849ec41d28ab618892ba493504",
+    "libxmljs": "github:DefinitelyTyped/DefinitelyTyped/libxmljs/libxmljs.d.ts#9be44965a7092342d6f8ba5d62923c40e170245e",
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#aee0039a2d6686ec78352125010ebb38a7a7d743",
+    "request": "github:DefinitelyTyped/DefinitelyTyped/request/request.d.ts#e252a088123eb595d9d772eb373f41c084360278",
+    "tmp": "github:DefinitelyTyped/DefinitelyTyped/tmp/tmp.d.ts#48f20e97bfaf70fc1a9537b38aed98e9749be0ae"
+  }
+}
