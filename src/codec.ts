@@ -6,20 +6,20 @@ export function num2Uint16BytesBE(num: number) {
   return ret;
 }
 
-/*////////////////////////////////////////////////////////////////////////////////
-export function nonzeroBytesEncode(bytes: Array<number>) {
-  let overflow = 0;
-  for (let i = 0; i < bytes.length; ++i) {
-    overflow = bytes[i] += 1 + overflow;
-    overflow = ~~(overflow / 255) * (overflow % 255);
-    bytes[i] -= overflow;
-  }
-  if (overflow) {
-    bytes.push(overflow);  // todo
-  }
+// ////////////////////////////////////////////////////////////////////////////////
+// export function nonzeroBytesEncode(bytes: Array<number>) {
+//   let overflow = 0;
+//   for (let i = 0; i < bytes.length; ++i) {
+//     overflow = bytes[i] += 1 + overflow;
+//     overflow = ~~(overflow / 255) * (overflow % 255);
+//     bytes[i] -= overflow;
+//   }
+//   if (overflow) {
+//     bytes.push(overflow);  // todo
+//   }
   
-  return bytes;
-}*/
+//   return bytes;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function encodeUtf8(str: string) {	// todo: more octets?
