@@ -1,4 +1,4 @@
-import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder} from '../xml/utils'
+import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantBeXml} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interfaces'
@@ -6,7 +6,7 @@ import {MorphAnalyzer, MorphTag} from './morph_analyzer/morph_analyzer';
 import {getUnambMorphTag} from './text_token';
 
 
-export const WCHAR_UK = r`\-’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
+export const WCHAR_UK = r `\-’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
 export const WCHAR_UK_RE = new RegExp(`^[${WCHAR_UK}]+$`);
 export const WCHAR = r `\w${WCHAR_UK}`;
 export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
@@ -120,12 +120,11 @@ export function haveSpaceBetweenEl(a: IElement, b: IElement): boolean {
   return haveSpaceBetween(tagA, textA, tagB, textB);
 }
 
+const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
 ////////////////////////////////////////////////////////////////////////////////
 export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
   let ret: Array<string> = [];
-  let splitRegex = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
-
-  for (let tok0 of val.trim().split(splitRegex)) {
+  for (let tok0 of val.trim().split(SPLIT_REGEX)) {
     for (let tok1 of tok0.split(/\s+/)) {
       if (tok1) {
         if (tok1.includes('-')) {
@@ -317,6 +316,15 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
       mine.setAttribute('mark', 'diff');
     }
   }
-  
+
   return numDiffs;
+}
+
+export function wrapInXmlIfNeeds(value: string) {
+  if (cantBeXml(value)) {
+    value = '<text xmlns="http://www.tei-c.org/ns/1.0" xmlns:mi="https://mova.institute/ns/mi/1" xml:lang="uk">'
+      + value + '</text>';
+  }
+  
+  return value;
 }

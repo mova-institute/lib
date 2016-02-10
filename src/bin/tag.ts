@@ -3,7 +3,7 @@ import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
 import {readTillEnd} from '../stream_utils.node';
 import {tokenizeTeiDom, tagTokenizedDom, enumerateWords} from '../nlp/utils';
 import {string2lxmlRoot} from '../utils.node';
-import {cantBeXml} from '../xml/utils';
+import {encloseInRootNsIf} from '../xml/utils';
 import {createReadStream} from 'fs';
 import {join} from 'path';
 
@@ -27,10 +27,8 @@ const args = require('minimist')(process.argv.slice(2));
 			inputStr = await readTillEnd(input);
 		}
 		
-		if (cantBeXml(inputStr)) {
-			inputStr = '<text xmlns="http://www.tei-c.org/ns/1.0" xmlns:mi="https://mova.institute/ns/mi/1" xml:lang="uk">'
-				+ inputStr + '</text>';
-		}
+    inputStr = encloseInRootNsIf(inputStr);
+    
     
     let dictName = args.d || args.dict || 'rysin-mte';
     let dictDir = join(__dirname, '../../data/dict', dictName);

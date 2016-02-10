@@ -1,7 +1,10 @@
-import {xmlNsResolver} from '../xml/utils';
+import {xmlNsResolver, encloseInRootNsIf} from '../xml/utils';
+import {WebapiDocument} from '../xml/api/webapi_adapters';
 import {xpath} from '../xml/utils.web';
-import {serializeXmlNoNs} from '../utils.web';
-import {W, W_, PC, SE, P} from './common_elements'
+import {serializeXml, serializeXmlNoNs, parseXml} from '../utils.web';
+import {W, W_, PC, SE, P} from './common_elements';
+import {MorphAnalyzer} from '../nlp/morph_analyzer/morph_analyzer'; 
+import {tokenizeTeiDom, tagTokenizedDom} from './utils';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,4 +51,15 @@ export function getTeiName(doc: Document) {
   let ret = doc.evaluate('//tei:teiHeader//tei:titleStmt/tei:title', doc, <any>xmlNsResolver,
     XPathResult.STRING_TYPE, null).stringValue;
   return ret.trim() || null;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function morphTagText(value: string, tagger: MorphAnalyzer) {
+  value = encloseInRootNsIf(value, 'text');
+  let root = new WebapiDocument(parseXml(value)).documentElement;
+  tokenizeTeiDom(root, tagger);
+	tagTokenizedDom(root, tagger);
+  let ret = serializeXml(root.underlying);
+  
+  return ret;
 }

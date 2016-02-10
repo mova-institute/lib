@@ -31,16 +31,6 @@ export class CompletionDawg extends Dawg {
 			yield completion;
 		}
 	}
-
-	/**completionStrings(key: string) {
-		for (let completionBytes of this.completionBytes(encodeUtf8(key))) {
-			yield decodeUtf8(completionBytes);
-		}
-	}
-
-	hasKeyWithPrefix(key: string) {
-		return !this.completionBytes(encodeUtf8(key)).next().done;
-	}*/
 }
 
 
