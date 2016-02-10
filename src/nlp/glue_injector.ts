@@ -1,8 +1,8 @@
-import {Transform} from 'stream'
-import {G, W, W_, PC} from './common_elements'
-import {NS} from '../xml/utils'
-import {SaxEventObject} from '../xml/sax_event_object'
-import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetween} from '../nlp/utils'
+import {Transform} from 'stream';
+import {G, W, W_, PC} from './common_elements';
+import {NS} from '../xml/utils';
+import {SaxEventObject} from '../xml/sax_event_object';
+import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetween} from '../nlp/utils';
 
 
 export class GlueInjector extends Transform {
