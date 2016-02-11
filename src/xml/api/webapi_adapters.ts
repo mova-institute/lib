@@ -143,12 +143,8 @@ export class WebapiElement extends WebapiNode implements IElement {
     return (<HTMLElement>this.underlying).childElementCount;
   }
 
-	nameNs() {	// todo
-		if (this.underlying.namespaceURI) {
-			return nameNs(this.underlying.namespaceURI, this.underlying.localName);
-		}
-    
-    throw new Error('Should not happen');
+	nameNs() {
+    return nameNs(this.underlying.namespaceURI || 'nons', this.underlying.localName);
 	}
 	
 	getAttribute(name: string) {

@@ -13,10 +13,11 @@ function getDomParser() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseXml(str: string) {
+export function parseXml(str: string) {  // todo: test in non-chrome
   let doc = getDomParser().parseFromString(str, 'application/xml');
-  let error = doc.evaluate('/xml:html/xml:body/xml:parsererror', doc, <any>xmlNsResolver, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null).iterateNext();
-  
+  let error = doc.evaluate('//xhtml:parsererror', doc, <any>xmlNsResolver,
+    XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+
   return error ? null : doc;
 }
 
@@ -104,4 +105,20 @@ export function readLocalFile(cb: (fileContents: string, filename?: string) => a
 //////////////////////////////////////////////////////////////////////////////
 export async function readToXmlDoc(file: File) {
   return parseXml(await readFile(file));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+export interface WebapiCollection<T> {
+  item(i: number): T;
+  length: number;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+export function collection2array<T>(collection: WebapiCollection<T>) {
+  let ret = new Array<T>();
+  for (let i = 0; i < collection.length; ++i) {
+    ret.push(collection.item(i));
+  }
+  
+  return ret;
 }

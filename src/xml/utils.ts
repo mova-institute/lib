@@ -2,6 +2,7 @@ import {INode, IElement, IDocument} from './api/interfaces'
 
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
+  xhtml: 'http://www.w3.org/1999/xhtml',
   tei: 'http://www.tei-c.org/ns/1.0',
   mi: 'https://mova.institute/ns/mi/1',
 };
