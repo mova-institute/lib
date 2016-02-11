@@ -83,8 +83,8 @@ gulp.task('mannotator', ['typescript'], () => {
 
 
 gulp.task('dist', ['typescript:dist', 'copy:dist']);
-gulp.task('default', ['typescript']);
+gulp.task('default', ['typescript', 'es5']);
 
 gulp.task('develop', ['default'], () => {
-  gulp.watch(['src/**/*.ts', TS_PROJ_FILE], ['typescript']);
+  gulp.watch(['src/**/*.ts', TS_PROJ_FILE], ['default']);
 });
