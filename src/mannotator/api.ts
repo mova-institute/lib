@@ -1,11 +1,11 @@
 import * as express from 'express';
 import {ClientConfig} from 'pg';
-import {query1, queryNumRows, transaction, BUSINESS_ERROR} from '../postrges';
+import {query1, queryNumRows, transaction, BUSINESS_ERROR, PgClient} from '../postrges';
 import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
-import {markConflicts} from './business.node';
+import {markConflicts, markResolveConflicts} from './business.node';
 import {markWordwiseDiff} from '../nlp/utils';
 
 
@@ -98,6 +98,9 @@ export async function assignTask(req: Req, res: express.Response) {  // todo: te
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getTaskList(req: Req, res: express.Response) {
+  if (req.query.type === 'resolve') {
+    req.bag.user.id = null;  // temp, todo
+  }
   let ret = await query1(config, "SELECT get_task_list($1, $2)", [req.bag.user.id, req.query.type]);
   res.json(wrapData(ret));
 }
@@ -119,9 +122,9 @@ export async function getTask(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function saveTask(req: Req, res: express.Response) {
   let ret: any = { msg: 'ok' };
-  
+
   const now = new Date();
-  
+
   let result = await transaction(config, async (client) => {
     const taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
 
@@ -144,46 +147,52 @@ export async function saveTask(req: Req, res: express.Response) {
       let tocheck = await client.call('complete_task', req.body.id);
 
       for (let task of tocheck) {
-        let markedFragments = [];
-        let diffsTotal = 0;
-        for (let fagment of task.fragments) {
-          let [mine, theirs] = fagment.annotations;
-          let {marked, numDiffs} = markConflicts(taskInDb.type, mine.content, theirs.content);
-          markedFragments.push(marked);
-          diffsTotal += numDiffs;
+
+        if (taskInDb.type === 'review') {
+          await onReviewConflicts(task, now, client);
         }
+        else {
+          let markedFragments = [];
+          let diffsTotal = 0;
+          for (let fragment of task.fragments) {
+            let [mine, theirs] = fragment.annotations;
+            let {marked, numDiffs} = markConflicts(taskInDb.type, mine.content, theirs.content);
+            markedFragments.push(marked);
+            diffsTotal += numDiffs;
+          }
 
-        if (diffsTotal) {
-          let taskToReview = await client.select('task', 'id=$1', task.taskId);
-          let reviewTaskId = await client.insert('task', {
-            doc_id: task.docId,
-            user_id: task.userId,
-            type: nextTaskType(taskToReview.type),
-            fragment_start: taskToReview.fragmentStart,
-            fragment_end: taskToReview.fragmentEnd,
-            name: taskToReview.name
-          }, 'id');
-
-          for (let [i, fragment] of markedFragments.entries()) {
-            await client.insert('fragment_version', {
-              task_id: reviewTaskId,
+          if (diffsTotal) {
+            let taskToReview = await client.select('task', 'id=$1', task.taskId);
+            let reviewTaskId = await client.insert('task', {
               doc_id: task.docId,
-              index: taskToReview.fragmentStart + i,
-              status: 'pristine',
-              added_at: now,
-              content: fragment
-            });
+              user_id: task.userId,
+              type: nextTaskType(taskToReview.type),
+              fragment_start: taskToReview.fragmentStart,
+              fragment_end: taskToReview.fragmentEnd,
+              name: taskToReview.name
+            }, 'id');
+
+            for (let [i, fragment] of markedFragments.entries()) {
+              await client.insert('fragment_version', {
+                task_id: reviewTaskId,
+                doc_id: task.docId,
+                index: taskToReview.fragmentStart + i,
+                status: 'pristine',
+                added_at: now,
+                content: fragment
+              });
+            }
           }
         }
       }
     }
   });
-  
+
   if (result === BUSINESS_ERROR) {
     sendError(res, 400);
     return;
   }
-  
+
   if (req.body.grabNext) {
     result = await transaction(config, async (client) => {
       let reviewDoc = (await client.call('get_task_list', req.bag.user.id, 'review'))[0];
@@ -193,7 +202,7 @@ export async function saveTask(req: Req, res: express.Response) {
       else {
         nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id);
       }
-      
+
       ret.data = nextTaskId || null;
     });
   }
@@ -206,6 +215,44 @@ export async function saveTask(req: Req, res: express.Response) {
   }
 }
 
+
+
+//------------------------------------------------------------------------------
+async function onReviewConflicts(task, now: Date, client: PgClient) {
+
+  for (let fragment of task.fragments) {
+    let [his, her] = fragment.annotations;
+    let hisName = his.userId + ':' + (await client.call('get_user_details', his.userId)).nameLast;
+    let herName = her.userId + ':' + (await client.call('get_user_details', her.userId)).nameLast;
+    let {marked, numDiffs} = markResolveConflicts(hisName, his.content, herName, her.content);
+
+    if (numDiffs) {
+      console.error(marked);
+      let alreadyTask = await client.select('task', "doc_id=$1 and fragment_start=$2 and type='resolve'",
+        task.docId, fragment.index)
+      if (!alreadyTask) {
+
+        let newTaskId = await client.insert('task', {
+          doc_id: task.docId,
+          type: 'resolve',
+          fragment_start: fragment.index,
+          fragment_end: fragment.index,
+          name: 'todo'
+        }, 'id');
+
+        await client.insert('fragment_version', {
+          task_id: newTaskId,
+          doc_id: task.docId,
+          index: fragment.index,
+          status: 'pristine',
+          added_at: now,
+          content: marked
+        });
+      }
+      else console.error('task exists: ' + alreadyTask.id);
+    }
+  }
+}
 
 
 

@@ -1,7 +1,8 @@
 import {markWordwiseDiffStr} from '../nlp/utils.node';
 import {encloseInRootNs, removeRoot, removeXmlns} from '../xml/utils';
 import {LibxmlElement} from '../xml/api/libxmljs_adapters';
-
+import {string2lxmlRoot} from '../utils.node';
+import * as business from './business';
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markConflicts(taskType: string, mine: string, theirs: string) {
@@ -12,4 +13,16 @@ export function markConflicts(taskType: string, mine: string, theirs: string) {
   }
   
   throw new Error('Not implemented: markConflicts');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function markResolveConflicts(hisName: string, hisStr: string, herName: string, herStr: string) {
+  let his = string2lxmlRoot(encloseInRootNs(hisStr));
+  let her = string2lxmlRoot(encloseInRootNs(herStr));
+  
+  let numDiffs = business.markResolveConflicts(hisName, his, herName, her);
+  return {
+    numDiffs,
+    marked: removeXmlns(removeRoot(his.ownerDocument.serialize()))
+  };
 }

@@ -10,7 +10,7 @@ export class TextToken {
   private static TOKEN_ELEMS = new Set<string>([W_, PC]);
 
   constructor(public elem: IElement, public hasSpaceBefore = true) {
-    
+
   }
 
   equals(other: TextToken) {
@@ -36,15 +36,28 @@ export class TextToken {
   isUntagged() {
     return this.morphTag() === 'X';
   }
-  
+
   isMarked() {
     let mark = this.elem.getAttribute('mark');
     return mark ? new Set(mark.split(':')).has('diff') : false;
   }
-  
+
   isReviewed() {
     let mark = this.elem.getAttribute('mark');
     return mark ? new Set(mark.split(':')).has('reviewed') : false;
+  }
+  
+  getInterpElem(tag: string, lemma: string) {
+    return <IElement>(this.elem.xpath(`w[@ana='${tag}' and @lemma='${lemma}']`)[0]);
+  }
+  
+  getDisambedInterpElem() {
+    let disamb = this.elem.getAttribute('disamb');
+    if (disamb !== null) {
+      return this.elem.childElement(Number(disamb));
+    }
+    
+    return null;
   }
 
   disambIndex() {
@@ -67,7 +80,14 @@ export class TextToken {
     return { tags, lemmas };
     //return markedIndexwiseStringDiff(ret, 'morph-feature-marked');
   }
-  
+
+  lemma() {
+    let disamb = this.getDisambedInterpElem();
+    if (disamb) {
+      return disamb.getAttribute('lemma');
+    }
+  }
+
   lemmaIfUnamb() {
     let lemmas = this.morphTags().lemmas;
     if (lemmas.every(x => x === lemmas[0])) {
@@ -87,12 +107,16 @@ export class TextToken {
       this.elem.setAttribute('disamb', index);
     }
   }
-  
+
   disambigLast() {
     this.elem.setAttribute('disamb', this.elem.childElementCount - 1);
     return this;
   }
   
+  setDisambedInterpAuthor(value: string) {
+    this.getDisambedInterpElem().setAttribute('author', value);
+  }
+
   addInterp(tag: string, lemma: string) {
     let newInterp = this.elem.ownerDocument.createElement('w');
     newInterp.textContent = this.text();
@@ -100,14 +124,14 @@ export class TextToken {
     newInterp.setAttribute('ana', tag);
     newInterp.setAttribute('type', 'manual');
     this.elem.appendChild(newInterp);
-    
+
     return this;
   }
-  
+
   review(index: number) {
     this.elem.setAttribute('disamb', index.toString());
     this.elem.setAttribute('mark', addFeature(this.elem.getAttribute('mark'), 'reviewed'));
-    
+
     return this;
   }
 
@@ -135,7 +159,7 @@ export class TextToken {
       let se = where.ownerDocument.createElement('mi:se');
       where.insertAfter(se);
     }
-    
+
     return this;
   }
 
@@ -150,7 +174,7 @@ export class TextToken {
         }
       }
     });
-    
+
     return ret;
   }
 
@@ -159,8 +183,8 @@ export class TextToken {
   }
 
   nextMarked() {
-    let ret = this.next(token => token.isMarked());//console.log(ret);
-    return ret;    
+    let ret = this.next(token => token.isMarked());
+    return ret;
   }
 
   nextToken() {
@@ -192,6 +216,6 @@ function addFeature(setStr: string, feature: string) {
   let set = new Set(setStr.split(':'));
   set.add(feature);
   let ret = Array.from(set).sort().join(':');
-  
+
   return ret;
 }
