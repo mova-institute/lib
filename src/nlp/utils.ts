@@ -320,6 +320,7 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
   return numDiffs;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export function wrapInXmlIfNeeds(value: string) {
   if (cantBeXml(value)) {
     value = '<text xmlns="http://www.tei-c.org/ns/1.0" xmlns:mi="https://mova.institute/ns/mi/1" xml:lang="uk">'

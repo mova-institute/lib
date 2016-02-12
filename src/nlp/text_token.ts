@@ -32,6 +32,10 @@ export class TextToken {
   isAmbig() {
     return !!this.elem.childElement(1) && !this.elem.getAttribute('disamb');
   }
+  
+  isDisambed() {
+    return this.elem.getAttribute('disamb') !== null;
+  }
 
   isUntagged() {
     return this.morphTag() === 'X';

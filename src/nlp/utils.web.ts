@@ -4,7 +4,7 @@ import {xpath} from '../xml/utils.web';
 import {serializeXml, serializeXmlNoNs, parseXml} from '../utils.web';
 import {W, W_, PC, SE, P} from './common_elements';
 import {MorphAnalyzer} from '../nlp/morph_analyzer/morph_analyzer'; 
-import {tokenizeTeiDom, tagTokenizedDom} from './utils';
+import {tokenizeTeiDom, tagTokenizedDom, enumerateWords} from './utils';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ export function getTeiName(doc: Document) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function morphTagText(value: string, tagger: MorphAnalyzer) {
+export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boolean) {
   let doc = parseXml(value);
   if (!doc || !doc.lookupNamespaceURI('mi')) {
     doc = parseXml(encloseInRootNs(value, 'text'));
@@ -62,6 +62,9 @@ export function morphTagText(value: string, tagger: MorphAnalyzer) {
   let root = new WebapiDocument(doc).documentElement;
   tokenizeTeiDom(root, tagger);
 	tagTokenizedDom(root, tagger);
+  if (numerate) {
+    enumerateWords(root);
+  }
   let ret = serializeXml(root.underlying);
   
   return ret;

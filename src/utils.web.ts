@@ -80,26 +80,16 @@ export function scrolledToBottom(endIsTop: boolean) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function openLocalFile(cb: (files: FileList) => any) {
+export function openLocalFile(accept: string, multiple: boolean, cb: (files: FileList) => any) {
   let fileInput = document.createElement('input');
   fileInput.setAttribute('type', 'file');
-		fileInput.addEventListener('change', () => {
+  fileInput.setAttribute('accept', accept);
+  fileInput.setAttribute('multiple', multiple.toString());
+  fileInput.addEventListener('change', () => {
     cb(fileInput.files);
     fileInput.remove();
   });
   fileInput.click();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function readLocalFile(cb: (fileContents: string, filename?: string) => any) {
-  openLocalFile(files => {
-    let reader = new FileReader();
-    let file = files.item(0);
-    reader.readAsText(file);
-    reader.onload = () => {
-      cb(reader.result, file.name);
-    };
-  });
 }
 
 //////////////////////////////////////////////////////////////////////////////
