@@ -9,7 +9,10 @@ import {markWordwiseDiff} from '../nlp/utils';
 
 
 
-
+const COOKIE_CONFIG = {
+  maxAge: 1000 * 3600 * 24 * 100,
+  httpOnly: true
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getRole(req, res: express.Response) {
@@ -19,20 +22,47 @@ export async function getRole(req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function login(req, res: express.Response) {
   let authId = req.user.sub;
-  
-  await transaction(config, async (client) => {
-    let personId = (await client.select('login', 'auth_id=$1', authId)).personId;
+
+  let result = await transaction(config, async (client) => {
+    let personId = await client.select1('login', 'person_id', 'auth_id=$1', authId);
     if (personId) {
-      let token = await genAccessToken();
-      await client.update('login', 'access_token=$1', 'person_id=$2', token, personId);
-      res.cookie('accessToken', token, { maxAge: 1000 * 3600 * 24 * 100, httpOnly: true });
+      let accessToken = await genAccessToken();
+      await client.update('login', 'access_token=$1', 'person_id=$2', accessToken, personId);
       let role = (await client.select('appuser', 'person_id=$1', personId)).role;
+      res.cookie('accessToken', accessToken, COOKIE_CONFIG);
       res.json(role);
     }
-    else {
-      sendError(res, 403);
+    else if (req.body.invite) {
+      let invite = await client.update('invite', 'is_active=false', 'token=$1', req.body.invite);
+      if (!invite) {  // todo: throw?
+        return BUSINESS_ERROR;
+      }
+      console.error(req.body.profile);
+      personId = await client.insert('person', {
+        name_first: req.body.profile.given_name,
+        name_last: req.body.profile.family_name,
+      }, 'id');
+      
+      let accessToken = await genAccessToken(); 
+      await client.insert('login', {
+        person_id: personId,
+        access_token: accessToken,
+        auth_id: authId
+      });
+      
+      let role = await client.insert('appuser', {
+        person_id: personId,
+        role: 'annotator'
+      }, 'role');
+      
+      res.cookie('accessToken', accessToken, COOKIE_CONFIG);
+      res.json(role);
     }
   });
+  
+  if (result === BUSINESS_ERROR) {
+    sendError(res, 403);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +172,7 @@ export async function saveTask(req: Req, res: express.Response) {
 
     if (req.body.complete) {
       let tocheck = await client.call('complete_task', req.body.id);
-// console.error(JSON.stringify(tocheck, null, 2));
+      console.error(JSON.stringify(tocheck, null, 2));
       for (let task of tocheck) {
 
         if (taskInDb.type === 'review') {

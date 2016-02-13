@@ -38,8 +38,13 @@ export class PgClient {
     return await query1Client(this._client, queryStr, params);    
   }
   
+  async select1(table: string, column: string, where: string, ...params) {
+    let queryStr = `SELECT ${column} FROM ${table} WHERE ${where}`;
+    return await query1Client(this._client, queryStr, params);    
+  }
+  
   async update(table: string, set: string, where: string, ...params) {
-    let queryStr = `UPDATE ${table} SET ${set} WHERE ${where}`;
+    let queryStr = `UPDATE ${table} SET ${set} WHERE ${where} RETURNING to_json(${table})`;
     return await query1Client(this._client, queryStr, params);    
   }
   
@@ -51,6 +56,15 @@ export class PgClient {
     }
     
     return await query1Client(this._client, queryStr, keys.map(x => dict[x]));    
+  }
+  
+  async delete(table: string, where: string, returning: string, ...params) {
+    let queryStr = `DELETE FROM ${table} WHERE ${where}`;
+    if (returning) {
+      queryStr += ' RETURNING ' + returning;
+    }
+    
+    return await query1Client(this._client, queryStr, params);        
   }
 }
 
