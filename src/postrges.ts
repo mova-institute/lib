@@ -23,8 +23,8 @@ export class PgClient {
     this._done && this._done();
   }
   
-  async query(queryStr: string) {
-    return await query(this._client, queryStr);
+  async query(queryStr: string, ...params) {
+    return await query(this._client, queryStr, params);
   }
 
   async call(func: string, ...params) {
@@ -35,6 +35,11 @@ export class PgClient {
   
   async select(table: string, where: string, ...params) {
     let queryStr = `SELECT row_to_json(${table}) FROM ${table} WHERE ${where}`;
+    return await query1Client(this._client, queryStr, params);    
+  }
+  
+  async update(table: string, set: string, where: string, ...params) {
+    let queryStr = `UPDATE ${table} SET ${set} WHERE ${where}`;
     return await query1Client(this._client, queryStr, params);    
   }
   

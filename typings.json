@@ -9,6 +9,7 @@
     "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#9a2c50ea846ee6ae36feaea0accc77ae7b08a748",
     "cookie-parser": "github:DefinitelyTyped/DefinitelyTyped/cookie-parser/cookie-parser.d.ts#e2001653ffbd99c2fc80a272ca80d8c958136de4",
     "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#bc92442c075929849ec41d28ab618892ba493504",
+    "express-jwt": "github:DefinitelyTyped/DefinitelyTyped/express-jwt/express-jwt.d.ts#2cb8fd4638231efd24929f99d56372bdb57d337b",
     "libxmljs": "github:DefinitelyTyped/DefinitelyTyped/libxmljs/libxmljs.d.ts#9be44965a7092342d6f8ba5d62923c40e170245e",
     "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#aee0039a2d6686ec78352125010ebb38a7a7d743",
     "pg": "github:DefinitelyTyped/DefinitelyTyped/pg/pg.d.ts#8fb6309e8d96aefa1f2b2e6c9961d10cc136ae06",

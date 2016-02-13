@@ -2,11 +2,10 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
-import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {query1} from '../postrges';
 import {ClientConfig} from 'pg';
-
+const jwt = require('express-jwt');
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -18,6 +17,11 @@ export const config: ClientConfig = {
   ssl: IS_DEV
 };
 
+const jwtCheck = jwt({
+  secret: new Buffer('2P1lL3Sm1CavW2VPoZF9b-lzBDV1VQvdf_9tIaJeQ5EcLKLsd0UXCCYNA5DYKVOC', 'base64'),
+  audience: '043jypMQ2KNdgkfi8FbwHjSxYNXaISWg',
+  credentialsRequired: false
+});
 
 export interface Req extends express.Request {
   bag: any;
@@ -33,6 +37,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.text({ limit: '50mb' }));
 app.use(reqBag);
 app.use(errorHandler);
+app.use('/api/login', jwtCheck);
 
 
 app.all('/api/*', async (req: Req, res) => {

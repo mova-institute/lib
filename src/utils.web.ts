@@ -112,3 +112,21 @@ export function collection2array<T>(collection: WebapiCollection<T>) {
   
   return ret;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+export function loadScript(src: string) {
+  return new Promise<HTMLScriptElement>((resolve, reject) => {
+    let script = <HTMLScriptElement>document.getElementById(src);
+    if (script) {
+      resolve(script);
+    }
+    else {
+      script = document.createElement('script');
+      script.id = src;
+      script.src = src;
+      script.onload = () => resolve(script);
+      let head = document.getElementsByTagName('head')[0];
+      head.appendChild(script);
+    }
+  });
+}

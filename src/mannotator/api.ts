@@ -1,7 +1,6 @@
 import * as express from 'express';
 import {ClientConfig} from 'pg';
 import {query1, queryNumRows, transaction, BUSINESS_ERROR, PgClient} from '../postrges';
-import {tokenInfo} from '../fb_utils';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
@@ -18,29 +17,27 @@ export async function getRole(req, res: express.Response) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function logoff(req: Req, res: express.Response) {
-  res.clearCookie('accessToken').json('ok');
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export async function login(req: Req, res: express.Response) {
-  let fbInfo = await tokenInfo(req.query.fbToken);
-
-  if (fbInfo.error) {
-    sendError(res, 403);
-  }
-  else {
-    let token = await genAccessToken();  // todo: transaction?
-    if (await queryNumRows(config, "UPDATE login SET access_token=$1 WHERE fb_id=$2", [token, fbInfo.id])) {
+export async function login(req, res: express.Response) {
+  let authId = req.user.sub;
+  
+  await transaction(config, async (client) => {
+    let personId = (await client.select('login', 'auth_id=$1', authId)).personId;
+    if (personId) {
+      let token = await genAccessToken();
+      await client.update('login', 'access_token=$1', 'person_id=$2', token, personId);
       res.cookie('accessToken', token, { maxAge: 1000 * 3600 * 24 * 100, httpOnly: true });
-
-      let role = await query1(config, "SELECT role FROM appuser JOIN login ON appuser.person_id=login.person_id WHERE access_token=$1", [token]);
+      let role = (await client.select('appuser', 'person_id=$1', personId)).role;
       res.json(role);
     }
     else {
       sendError(res, 403);
     }
-  }
+  });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function logout(req: Req, res: express.Response) {
+  res.clearCookie('accessToken').json('ok');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +142,7 @@ export async function saveTask(req: Req, res: express.Response) {
 
     if (req.body.complete) {
       let tocheck = await client.call('complete_task', req.body.id);
-
+// console.error(JSON.stringify(tocheck, null, 2));
       for (let task of tocheck) {
 
         if (taskInDb.type === 'review') {
@@ -227,7 +224,7 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
     let {marked, numDiffs} = markResolveConflicts(hisName, his.content, herName, her.content);
 
     if (numDiffs) {
-      console.error(marked);
+      // console.error(marked);
       let alreadyTask = await client.select('task', "doc_id=$1 and fragment_start=$2 and type='resolve'",
         task.docId, fragment.index)
       if (!alreadyTask) {
