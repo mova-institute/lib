@@ -33,8 +33,8 @@ export async function login(req, res: express.Response) {
       res.json(role);
     }
     else if (req.body.invite) {
-      let invite = await client.update('invite', 'is_active=false', 'token=$1', req.body.invite);
-      if (!invite) {  // todo: throw?
+      let invite = await client.select('invite', 'token=$1', req.body.invite);
+      if (invite.usedBy !== null) {  // todo: throw?
         return BUSINESS_ERROR;
       }
       console.error(req.body.profile);
@@ -47,13 +47,16 @@ export async function login(req, res: express.Response) {
       await client.insert('login', {
         person_id: personId,
         access_token: accessToken,
-        auth_id: authId
+        auth_id: authId,
+        nickname: req.body.profile.nickname
       });
       
       let role = await client.insert('appuser', {
         person_id: personId,
         role: 'annotator'
       }, 'role');
+      
+      await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
       
       res.cookie('accessToken', accessToken, COOKIE_CONFIG);
       res.json(role);
