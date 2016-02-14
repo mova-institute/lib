@@ -2,7 +2,7 @@
 SSH_KEY="$HOME/.ssh/aws.pem"
 REMOTE="ubuntu@mova.institute"
 DEST="/opt/node/mannotator"
-SOURCE="./dist/mannotator/"
+SOURCE="dist/mannotator/"
 ERRORSTRING="Wrong params"
 
 
@@ -14,11 +14,11 @@ elif [ $1 == "mannotator" ]
     if [[ -z $2 ]]
       then
         echo "Running dry-run"
-        rsync --dry-run -az --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY" $SOURCE $REMOTE:$DEST
+        rsync --dry-run -rlpcgoD --force --delete --filter='P node_modules/' -i         -e "ssh -i $SSH_KEY" $SOURCE $REMOTE:$DEST | pcregrep '^[<>*]' || exit 1
     elif [ $2 == "go" ]
       then
         echo "Running actual deploy"
-        rsync           -az --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY" $SOURCE $REMOTE:$DEST || exit 1
+        rsync           -rlpcgoD --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY" $SOURCE $REMOTE:$DEST                    || exit 1
         ssh -i $SSH_KEY $REMOTE "cd $DEST && npm prune && npm update && pm2 restart mannotator" || exit 1
     else
       echo $ERRORSTRING;

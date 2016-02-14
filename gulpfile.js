@@ -8,6 +8,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const del = require('del');
+const mkdirp = require('mkdirp');
 
 
 const TS_PROJ_FILE = 'src/tsconfig.json';
@@ -75,6 +76,7 @@ gulp.task('mannotator', ['typescript'], () => {
     private: true,
     dependencies: JSON.parse(fs.readFileSync('package.json', 'utf8')).dependencies
   };
+  mkdirp.sync('dist/mannotator');
   fs.writeFileSync('dist/mannotator/package.json', JSON.stringify(packageJson, null, 2));
   
   return gulp.src(['lib/**/*.js'], { base: '.' })
