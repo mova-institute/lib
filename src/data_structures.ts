@@ -127,22 +127,46 @@ export class CachedValue<T> {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-export class DefaultMap<K, V> extends Map<K, V> {
-  constructor(
-    private _v: { new (): V; },
-    iterable?: Iterable<[K, V]>) {
+// todo: bring inheritance version back when es6 minifier comes out
+// ////////////////////////////////////////////////////////////////////////////////
+// export class DefaultMap<K, V> extends Map<K, V> {
+//   constructor(
+//     private _v: { new (): V; },
+//     iterable?: Iterable<[K, V]>) {
       
-    super(iterable);
+//     super(iterable);
+//   }
+
+//   get(key: K) {
+//     let ret = super.get(key);
+//     if (!ret) {
+//       ret = new this._v();
+//       super.set(key, ret);
+//     }
+
+//     return ret;
+//   }
+// }
+
+////////////////////////////////////////////////////////////////////////////////
+export class DefaultMap<K, V> {
+  private _map: Map<K, V>;
+  
+  constructor(private _v: { new (): V; }, iterable?: Iterable<[K, V]>) {
+    this._map = new Map<K, V>(iterable);
   }
 
   get(key: K) {
-    let ret = super.get(key);
+    let ret = this._map.get(key);
     if (!ret) {
       ret = new this._v();
-      super.set(key, ret);
+      this._map.set(key, ret);
     }
 
     return ret;
+  }
+  
+  [Symbol.iterator]() {
+    return this._map[Symbol.iterator]();
   }
 }
