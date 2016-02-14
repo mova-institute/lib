@@ -51,15 +51,15 @@ export async function login(req, res: express.Response) {
         nickname: req.body.profile.nickname
       });
       
-      let role = await client.insert('appuser', {
+      await client.insert('appuser', {
         person_id: personId,
-        role: 'annotator'
-      }, 'role');
+        role: invite.role
+      });
       
       await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
       
       res.cookie('accessToken', accessToken, COOKIE_CONFIG);
-      res.json(role);
+      res.json(invite.role);
     }
   });
   
