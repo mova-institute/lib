@@ -37,7 +37,7 @@ export async function login(req, res: express.Response) {
       if (!invite || invite.usedBy !== null) {  // todo: throw?
         return BUSINESS_ERROR;
       }
-      console.error(req.body.profile);
+
       personId = await client.insert('person', {
         name_first: req.body.profile.given_name,
         name_last: req.body.profile.family_name,
@@ -48,13 +48,17 @@ export async function login(req, res: express.Response) {
         person_id: personId,
         access_token: accessToken,
         auth_id: authId,
-        nickname: req.body.profile.nickname,
         auth0_profile: req.body.profile
       });
 
       await client.insert('appuser', {
         person_id: personId,
         role: invite.role
+      });
+      
+      await client.insert('team_user', {
+        team_id: invite.teamId,
+        person_id: personId
       });
 
       await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
@@ -85,7 +89,10 @@ export async function checkDocName(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function addText(req: Req, res: express.Response) {
   await transaction(config, async (client) => {
-    let docId = await client.insert('document', { name: req.body.docName }, 'id');
+    let docId = await client.insert('document', {
+      name: req.body.docName,
+      created_by: req.bag.user.id
+    }, 'id');
 
     for (let [i, fragment] of req.body.fragments.entries()) {
       await client.insert('fragment_version', {
