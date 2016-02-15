@@ -42,27 +42,26 @@ export async function login(req, res: express.Response) {
         name_first: req.body.profile.given_name,
         name_last: req.body.profile.family_name,
       }, 'id');
-      
-      let accessToken = await genAccessToken(); 
+
+      let accessToken = await genAccessToken();
       await client.insert('login', {
         person_id: personId,
         access_token: accessToken,
         auth_id: authId,
         nickname: req.body.profile.nickname
       });
-      
+
       await client.insert('appuser', {
         person_id: personId,
         role: invite.role
       });
-      
+
       await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
-      
-      res.cookie('accessToken', accessToken, COOKIE_CONFIG);
-      res.json(invite.role);
+
+      res.cookie('accessToken', accessToken, COOKIE_CONFIG).json(invite.role);
     }
   });
-  
+
   if (result === BUSINESS_ERROR) {
     sendError(res, 403);
   }
@@ -144,9 +143,11 @@ export async function getTaskCount(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function getTask(req: Req, res: express.Response) {
   let ret = await query1(config, "SELECT get_task($1, $2)", [req.bag.user.id, req.query.id]);
-  ret.content = mergeXmlFragments(ret.fragments.map(x => x.content));
-  delete ret.fragments;
-  res.json(ret);
+  if (ret) {
+    ret.content = mergeXmlFragments(ret.fragments.map(x => x.content));
+    delete ret.fragments;
+  }
+  res.json(wrapData(ret));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
