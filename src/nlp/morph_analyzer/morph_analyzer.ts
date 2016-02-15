@@ -31,7 +31,6 @@ export class MorphAnalyzer {
     let lowercase = token.toLowerCase();
     if (lowercase !== token) {
       toLookup.push(lowercase);
-      
     }
     for (let word of toLookup) {
       for (let paraIndex of this._words.get(word)) {

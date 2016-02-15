@@ -34,7 +34,7 @@ export async function login(req, res: express.Response) {
     }
     else if (req.body.invite) {
       let invite = await client.select('invite', 'token=$1', req.body.invite);
-      if (invite.usedBy !== null) {  // todo: throw?
+      if (!invite || invite.usedBy !== null) {  // todo: throw?
         return BUSINESS_ERROR;
       }
       console.error(req.body.profile);
@@ -48,7 +48,8 @@ export async function login(req, res: express.Response) {
         person_id: personId,
         access_token: accessToken,
         auth_id: authId,
-        nickname: req.body.profile.nickname
+        nickname: req.body.profile.nickname,
+        auth0_profile: req.body.profile
       });
 
       await client.insert('appuser', {
@@ -59,6 +60,9 @@ export async function login(req, res: express.Response) {
       await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
 
       res.cookie('accessToken', accessToken, COOKIE_CONFIG).json(invite.role);
+    }
+    else {
+      return BUSINESS_ERROR;
     }
   });
 
