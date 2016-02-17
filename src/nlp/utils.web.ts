@@ -3,7 +3,7 @@ import {WebapiDocument, WebapiElement} from '../xml/api/webapi_adapters';
 import {xpath} from '../xml/utils.web';
 import {serializeXml, serializeXmlNoNs, parseXml} from '../utils.web';
 import {W, W_, PC, SE, P} from './common_elements';
-import {MorphAnalyzer} from '../nlp/morph_analyzer/morph_analyzer'; 
+import {MorphAnalyzer} from '../nlp/morph_analyzer/morph_analyzer';
 import {tokenizeTeiDom, tagTokenizedDom, enumerateWords, firstNWords} from './utils';
 
 
@@ -11,24 +11,25 @@ import {tokenizeTeiDom, tagTokenizedDom, enumerateWords, firstNWords} from './ut
 export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 150;
   let ret = new Array<DocumentFragment>();
-  
+
   let paragraphs: any[] = xpath(doc, '/tei:TEI/tei:text//tei:p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   let curNumWords = 0;
   let range = doc.createRange();
-  paragraphs[0] && range.setStartBefore(paragraphs[0]);
-  for (let [i, p] of paragraphs.entries()) {console.log(i);
+  let rangeStart = paragraphs[0];
+  for (let [i, p] of paragraphs.entries()) {
     let numWords = doc.evaluate('count(.//mi:w_)', p, <any>xmlNsResolver, XPathResult.NUMBER_TYPE, null).numberValue;
     curNumWords += numWords;
-    
-    if (true|| curNumWords >= NUM_WORDS || i === paragraphs.length - 1) {
+
+    if (true||curNumWords >= NUM_WORDS || i === paragraphs.length - 1) {
+      range.setStartBefore(rangeStart);
       range.setEndAfter(p);
       ret.push(range.cloneContents());
-      range.collapse(false);
-      
+      rangeStart = paragraphs[i + 1];
+
       curNumWords = 0;
     }
   }
-  
+
   return ret;
 }
 
@@ -55,11 +56,11 @@ export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boo
   }
   let root = new WebapiDocument(doc).documentElement;
   tokenizeTeiDom(root, tagger);
-	tagTokenizedDom(root, tagger);
+  tagTokenizedDom(root, tagger);
   if (numerate) {
     enumerateWords(root);
   }
   let ret = serializeXml(root.underlying);
-  
+
   return ret;
 }
