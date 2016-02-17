@@ -1,10 +1,10 @@
 import {xmlNsResolver, encloseInRootNs} from '../xml/utils';
-import {WebapiDocument} from '../xml/api/webapi_adapters';
+import {WebapiDocument, WebapiElement} from '../xml/api/webapi_adapters';
 import {xpath} from '../xml/utils.web';
 import {serializeXml, serializeXmlNoNs, parseXml} from '../utils.web';
 import {W, W_, PC, SE, P} from './common_elements';
 import {MorphAnalyzer} from '../nlp/morph_analyzer/morph_analyzer'; 
-import {tokenizeTeiDom, tagTokenizedDom, enumerateWords} from './utils';
+import {tokenizeTeiDom, tagTokenizedDom, enumerateWords, firstNWords} from './utils';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,16 +33,10 @@ export function fragmentCorpusText(doc: Document) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function firstNWords(n: number, from: Node) {
-  let words = xpath(from, `//mi:w_[position() < ${n}]`, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
-  return (<Element[]>words).map(x => x.firstElementChild.textContent);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function textFragmentCorpusText(doc: Document) {
   return fragmentCorpusText(doc).map(x => ({
     xmlstr: serializeXmlNoNs(x),
-    firstWords: firstNWords(4, x.firstElementChild)
+    firstWords: firstNWords(4, new WebapiElement(x.firstElementChild))
   }));
 }
 

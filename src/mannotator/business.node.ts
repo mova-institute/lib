@@ -1,6 +1,6 @@
 import {markWordwiseDiffStr} from '../nlp/utils.node';
 import {encloseInRootNs, removeRoot, removeXmlns} from '../xml/utils';
-import {LibxmlElement} from '../xml/api/libxmljs_adapters';
+import {LibxmlElement, LibxmlDocument} from '../xml/api/libxmljs_adapters';
 import {string2lxmlRoot} from '../utils.node';
 import * as business from './business';
 
@@ -23,6 +23,7 @@ export function markResolveConflicts(hisName: string, hisStr: string, herName: s
   let numDiffs = business.markResolveConflicts(hisName, his, herName, her);
   return {
     numDiffs,
-    marked: removeXmlns(removeRoot(his.ownerDocument.serialize()))
+    markedStr: removeXmlns(removeRoot(his.ownerDocument.serialize())),
+    markedDoc: his.ownerDocument
   };
 }

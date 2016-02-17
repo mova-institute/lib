@@ -5,7 +5,8 @@ import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
-import {markWordwiseDiff} from '../nlp/utils';
+import {markWordwiseDiff, firstNWords} from '../nlp/utils';
+import * as assert from 'assert';
 
 
 
@@ -188,6 +189,7 @@ export async function saveTask(req: Req, res: express.Response) {
     if (req.body.complete) {
       let tocheck = await client.call('complete_task', req.body.id);
       console.error(JSON.stringify(tocheck, null, 2));
+      
       for (let task of tocheck) {
 
         if (taskInDb.type === 'review') {
@@ -197,6 +199,7 @@ export async function saveTask(req: Req, res: express.Response) {
           let markedFragments = [];
           let diffsTotal = 0;
           for (let fragment of task.fragments) {
+            assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts');
             let [mine, theirs] = fragment.annotations;
             let {marked, numDiffs} = markConflicts(taskInDb.type, mine.content, theirs.content);
             markedFragments.push(marked);
@@ -263,10 +266,12 @@ export async function saveTask(req: Req, res: express.Response) {
 async function onReviewConflicts(task, now: Date, client: PgClient) {
 
   for (let fragment of task.fragments) {
+    assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts');
+    
     let [his, her] = fragment.annotations;
     let hisName = his.userId + ':' + (await client.call('get_user_details', his.userId)).nameLast;
     let herName = her.userId + ':' + (await client.call('get_user_details', her.userId)).nameLast;
-    let {marked, numDiffs} = markResolveConflicts(hisName, his.content, herName, her.content);
+    let {markedStr, markedDoc, numDiffs} = markResolveConflicts(hisName, his.content, herName, her.content);
 
     if (numDiffs) {
       // console.error(marked);
@@ -279,7 +284,7 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
           type: 'resolve',
           fragment_start: fragment.index,
           fragment_end: fragment.index,
-          name: 'todo'
+          name: firstNWords(4, markedDoc.documentElement)
         }, 'id');
 
         await client.insert('fragment_version', {
@@ -288,7 +293,7 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
           index: fragment.index,
           status: 'pristine',
           added_at: now,
-          content: marked
+          content: markedStr
         });
       }
       else console.error('task exists: ' + alreadyTask.id);
