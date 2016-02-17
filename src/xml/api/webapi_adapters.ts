@@ -1,5 +1,6 @@
 import {IDocument, INode, IElement} from './interfaces';
 import {lang, nameNs} from '../utils';
+import {xpath} from '../utils.web';
 import {wrappedOrNull} from '../../lang';
 import {serializeXml} from '../../utils.web';
 
@@ -168,9 +169,9 @@ export class WebapiElement extends WebapiNode implements IElement {
     return new WebapiElement(<Element>this.underlying.cloneNode(true));
   }
   
-  xpath(query: string, nsMap?) {
-    throw new Error('Not implemented: xpath');
-    return [];
+  xpath(query: string, nsMap?) {  // todo: create node or elem depending on underlying type
+    return xpath(this.underlying, query, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+      .map(x => <WebapiNode>new WebapiElement(x));
   }
 }
 
