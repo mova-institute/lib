@@ -3,6 +3,7 @@
 	"editor.tabSize": 2,
 	"files.exclude": {
 		"node_modules": true,
+    "dist/": true,
 		"lib/**/*.js": true,
 		"lib/**/*.map": true,
 		"lib/**/*.d.ts": true,
