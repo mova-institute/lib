@@ -173,7 +173,8 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 	}
 	
 	removeAttribute(name: string) {
-		throw 'Not implemented: removeAttribute'
+    let attr = this.underlying.attr(name);
+    attr && attr.remove();
 	}
 	
 	appendChild(child: LibxmlNode) {
