@@ -3,15 +3,7 @@
   <teiHeader>
     <fileDesc>
       <titleStmt>
-        <title>
-          <mi:w_ n="0">
-            <w lemma="Ьімьа" ana="X">Ьімьа</w>
-          </mi:w_>
-          <pc>—</pc>
-          <mi:w_ n="1">
-            <w lemma="2" ana="Md">2</w>
-          </mi:w_>
-        </title>
+        <title>Тестовий документ</title>
         <author>
           <mi:w_ n="2">
             <w lemma="Джорж" ana="Npmsny">Джорж</w>
