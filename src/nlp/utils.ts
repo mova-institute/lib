@@ -313,7 +313,7 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
   for (let [i, mine] of mineWords.entries()) {
     if (getUnambMorphTag(mine) !== getUnambMorphTag(theirWords[i])) {
       ++numDiffs;
-      mine.setAttribute('mark', 'diff');
+      mine.setAttribute('mark', 'to-review');
     }
   }
 
@@ -321,11 +321,7 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function wrapInXmlIfNeeds(value: string) {
-  if (cantBeXml(value)) {
-    value = '<text xmlns="http://www.tei-c.org/ns/1.0" xmlns:mi="https://mova.institute/ns/mi/1" xml:lang="uk">'
-      + value + '</text>';
-  }
-  
-  return value;
+export function firstNWords(n: number, from: IElement) {
+  let words = from.xpath(`//mi:w_[position() < ${n}]`, NS);
+  return (<IElement[]>words).map(x => x.childElement(0).textContent);
 }

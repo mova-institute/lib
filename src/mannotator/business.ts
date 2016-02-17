@@ -22,7 +22,7 @@ export function nextTaskType(type: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markResolveConflicts(hisName: string, his: IElement, herName: string, her: IElement) {
-  const XPATH = `//mi:w_[@mark and contains(@mark, 'reviewed')]`;
+  const XPATH = `//mi:w_[@mark='reviewed']`;
   let hisWords = <IElement[]>his.xpath(XPATH, NS);
   let herWords = <IElement[]>her.xpath(XPATH, NS);
   
@@ -37,7 +37,8 @@ export function markResolveConflicts(hisName: string, his: IElement, herName: st
     
     if (hisWord.morphTag() !== herWord.morphTag() || hisWord.lemma() !== herWord.lemma()) {
       ++numDiffs;
-      hisWord.elem.setAttribute('mark', 'diff');
+      hisWord.resetDisamb();
+      hisWord.markOnly('to-resolve');
       hisWord.setDisambedInterpAuthor(hisName);
       herWord.setDisambedInterpAuthor(herName);
       

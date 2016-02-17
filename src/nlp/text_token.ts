@@ -42,13 +42,11 @@ export class TextToken {
   }
 
   isMarked() {
-    let mark = this.elem.getAttribute('mark');
-    return mark ? new Set(mark.split(':')).has('diff') : false;
+    return !!this.elem.getAttribute('mark');
   }
 
   isReviewed() {
-    let mark = this.elem.getAttribute('mark');
-    return mark ? new Set(mark.split(':')).has('reviewed') : false;
+    return this.elem.getAttribute('mark') === 'reviewed';
   }
   
   getInterpElem(tag: string, lemma: string) {
@@ -82,7 +80,6 @@ export class TextToken {
     }
 
     return { tags, lemmas };
-    //return markedIndexwiseStringDiff(ret, 'morph-feature-marked');
   }
 
   lemma() {
@@ -103,8 +100,15 @@ export class TextToken {
     let elName = this.elem.nameNs();
     return elName === P || elName === L;
   }
+  
+  getDisambAuthorName(i: number) {
+    let author = this.elem.childElement(i).getAttribute('author');
+    if (author) {
+      return author.split(':')[1];
+    }
+  }
 
-  disambig(index: number) {
+  disamb(index: number) {
     if (this.disambIndex() === index) {
       this.elem.removeAttribute('disamb');
     } else {
@@ -112,9 +116,17 @@ export class TextToken {
     }
   }
 
-  disambigLast() {
+  disambLast() {
     this.elem.setAttribute('disamb', this.elem.childElementCount - 1);
     return this;
+  }
+  
+  resetDisamb() {
+    this.elem.removeAttribute('disamb');
+  }
+  
+  markOnly(value: string) {
+    this.elem.setAttribute('mark', value);
   }
   
   setDisambedInterpAuthor(value: string) {
@@ -134,7 +146,7 @@ export class TextToken {
 
   review(index: number) {
     this.elem.setAttribute('disamb', index.toString());
-    this.elem.setAttribute('mark', addFeature(this.elem.getAttribute('mark'), 'reviewed'));
+    this.markOnly('reviewed')
 
     return this;
   }
@@ -186,10 +198,10 @@ export class TextToken {
     return this.next(token => token.isAmbig());
   }
 
-  nextMarked() {
-    let ret = this.next(token => token.isMarked());
-    return ret;
-  }
+  // nextMarked() {
+  //   let ret = this.next(token => token.isMarked());
+  //   return ret;
+  // }
 
   nextToken() {
     let next = nextElDocumentOrder(this.elem, TextToken.TOKEN_ELEMS);
