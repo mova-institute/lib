@@ -91,7 +91,8 @@ export async function checkDocName(req: Req, res: express.Response) {
 export async function addText(req: Req, res: express.Response) {
   await transaction(config, async (client) => {
     let docId = await client.insert('document', {
-      name: req.body.docName,
+      name: req.body.name,
+      content: req.body.content,
       created_by: req.bag.user.id
     }, 'id');
 
@@ -284,7 +285,7 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
           type: 'resolve',
           fragment_start: fragment.index,
           fragment_end: fragment.index,
-          name: firstNWords(4, markedDoc.documentElement)
+          name: firstNWords(4, markedDoc.documentElement).join(' ')
         }, 'id');
 
         await client.insert('fragment_version', {
@@ -296,7 +297,9 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
           content: markedStr
         });
       }
-      else console.error('task exists: ' + alreadyTask.id);
+      else {
+        console.error('task exists: ' + alreadyTask.id);
+      }
     }
   }
 }

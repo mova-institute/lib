@@ -37,10 +37,10 @@ export function markResolveConflicts(hisName: string, his: IElement, herName: st
     
     if (hisWord.morphTag() !== herWord.morphTag() || hisWord.lemma() !== herWord.lemma()) {
       ++numDiffs;
-      hisWord.resetDisamb();
       hisWord.markOnly('to-resolve');
       hisWord.setDisambedInterpAuthor(hisName);
       herWord.setDisambedInterpAuthor(herName);
+      hisWord.resetDisamb();
       
       let herChoiseInHisInterps = hisWord.getInterpElem(herWord.morphTag(), herWord.lemma());
       if (!herChoiseInHisInterps) {
