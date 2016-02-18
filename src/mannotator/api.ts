@@ -1,11 +1,10 @@
 import * as express from 'express';
-import {ClientConfig} from 'pg';
-import {query1, queryNumRows, transaction, BUSINESS_ERROR, PgClient} from '../postrges';
+import {query1, transaction, BUSINESS_ERROR, PgClient} from '../postrges';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
-import {markWordwiseDiff, firstNWords} from '../nlp/utils';
+import {firstNWords} from '../nlp/utils';
 import * as assert from 'assert';
 
 
@@ -25,13 +24,15 @@ export async function login(req, res: express.Response) {
   let authId = req.user.sub;
 
   let result = await transaction(config, async (client) => {
-    let personId = await client.select1('login', 'person_id', 'auth_id=$1', authId);
-    if (personId) {
-      let accessToken = await genAccessToken();
-      await client.update('login', 'access_token=$1', 'person_id=$2', accessToken, personId);
-      let role = (await client.select('appuser', 'person_id=$1', personId)).role;
-      res.cookie('accessToken', accessToken, COOKIE_CONFIG);
-      res.json(role);
+    let login = await client.select('login', 'auth_id=$1', authId);
+    if (login) {
+      if (!login.accessToken) {
+        login.accessToken = await genAccessToken();
+        await client.update('login', 'access_token=$1', 'person_id=$2', login.accessToken, login.personId);
+      }
+      let role = (await client.select('appuser', 'person_id=$1', login.personId)).role;
+      
+      res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(role);
     }
     else if (req.body.invite) {
       let invite = await client.select('invite', 'token=$1', req.body.invite);
@@ -39,7 +40,7 @@ export async function login(req, res: express.Response) {
         return BUSINESS_ERROR;
       }
 
-      personId = await client.insert('person', {
+      let personId = await client.insert('person', {
         name_first: req.body.profile.given_name,
         name_last: req.body.profile.family_name,
       }, 'id');
@@ -263,6 +264,9 @@ export async function saveTask(req: Req, res: express.Response) {
 
 
 
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 async function onReviewConflicts(task, now: Date, client: PgClient) {
 
@@ -304,19 +308,7 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
   }
 }
 
-
-
-
 //------------------------------------------------------------------------------
 function wrapData(data) {
   return { data };
 }
-
-/*
-
-TODO:
-
-- added_at
-- wrap all
-
-*/
