@@ -4,7 +4,11 @@ const camelCase = require('camelcase');
 
 ////////////////////////////////////////////////////////////////////////////////
 export const BUSINESS_ERROR = Symbol();
+export const PG_ERR = {
+  serialization_failure: '40001',
+}
 
+//------------------------------------------------------------------------------
 const MAX_TRANSACTION_RETRY = 100;
 
 
@@ -153,7 +157,7 @@ export async function transaction(config: ClientConfig, f: (client: PgClient) =>
         throw new Error('Max transaction retries exceeded');
       }
 
-      if (e instanceof Error && e.code === '40001') {
+      if (e instanceof Error && e.code === PG_ERR.serialization_failure) {
         continue;
       }
 
