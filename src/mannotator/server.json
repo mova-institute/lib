@@ -1,0 +1,10 @@
+[
+  {
+    "name": "annotator",
+    "script": "./server.js",
+    "env": {
+      "NODE_ENV": "production",
+      "DEBUG": "annotator"
+    }
+  }
+]

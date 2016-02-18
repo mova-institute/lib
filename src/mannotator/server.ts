@@ -5,9 +5,11 @@ import * as cookieParser from 'cookie-parser';
 import {genAccessToken} from '../crypto';
 import {query1} from '../postrges';
 import {ClientConfig} from 'pg';
+import * as debugFactory from 'debug';
 const jwt = require('express-jwt');
 
 const IS_DEV = process.env.NODE_ENV === 'development';
+export const debug = debugFactory('annotator');
 
 export const config: ClientConfig = {
   host: IS_DEV ? 'mova.institute' : '/var/run/postgresql',

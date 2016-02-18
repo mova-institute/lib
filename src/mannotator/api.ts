@@ -1,7 +1,7 @@
 import * as express from 'express';
 import {query1, transaction, BUSINESS_ERROR, PgClient} from '../postrges';
 import {genAccessToken} from '../crypto';
-import {config, Req, sendError} from './server';
+import {config, Req, sendError, debug} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
 import {firstNWords} from '../nlp/utils';
@@ -190,7 +190,7 @@ export async function saveTask(req: Req, res: express.Response) {
 
     if (req.body.complete) {
       let tocheck = await client.call('complete_task', req.body.id);
-      console.error(JSON.stringify(tocheck, null, 2));
+      debug(JSON.stringify(tocheck, null, 2));
       
       for (let task of tocheck) {
 
