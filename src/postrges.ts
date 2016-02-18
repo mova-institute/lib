@@ -4,7 +4,8 @@ const camelCase = require('camelcase');
 
 ////////////////////////////////////////////////////////////////////////////////
 export const BUSINESS_ERROR = Symbol();
-export const PG_ERR = {
+
+export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcodes-appendix.html
   serialization_failure: '40001',
 }
 
