@@ -182,7 +182,7 @@ export async function saveTask(req: Req, res: express.Response) {
         task_id: req.body.id,
         doc_id: taskInDb.docId,
         index: taskInDb.fragmentStart + i,
-        status: 'in progress',
+        status: 'in_progress',
         added_at: now,
         content: fragment
       });
