@@ -1,5 +1,5 @@
 
-SSH_KEY="$HOME/.ssh/aws.pem"
+SSH_KEY="$HOME/.ssh/mova.institute.key"
 REMOTE="ubuntu@mova.institute"
 DEST="/opt/node/mannotator"
 SOURCE="dist/mannotator/"
