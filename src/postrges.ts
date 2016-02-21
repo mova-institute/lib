@@ -53,14 +53,25 @@ export class PgClient {
     return await query1Client(this._client, queryStr, params);    
   }
   
-  async insert(table: string, dict: Object, returning?: string) {
+  private _insert(table: string, dict: Object, onConflict: string, returning: string) {
     let keys = Object.keys(dict);
     let queryStr = `INSERT INTO ${table}(${keys.join(',')}) VALUES (${nDollars(keys.length)})`;
+    if (onConflict) {
+      queryStr += ' ON CONFLICT DO ' + onConflict;
+    }
     if (returning) {
       queryStr += ' RETURNING ' + returning;
     }
     
-    return await query1Client(this._client, queryStr, keys.map(x => dict[x]));    
+    return query1Client(this._client, queryStr, keys.map(x => dict[x]));    
+  }
+  
+  insert(table: string, dict: Object, returning?: string) {
+    return this._insert(table, dict, null, returning);
+  }
+  
+  insertIfNotExists(table: string, dict: Object, returning?: string) {
+    return this._insert(table, dict, 'NOTHING', returning);
   }
   
   async delete(table: string, where: string, returning: string, ...params) {

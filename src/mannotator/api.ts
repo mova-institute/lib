@@ -16,60 +16,70 @@ const COOKIE_CONFIG = {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getRole(req, res: express.Response) {
-  res.json(req.bag.user && req.bag.user.annotatorRole || null);
+  res.json(req.bag.user && req.bag.user.role || null);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function login(req, res: express.Response) {
-  let authId = req.user.sub;
-
+export async function join(req, res: express.Response) {
   let result = await transaction(config, async (client) => {
-    let login = await client.select('login', 'auth_id=$1', authId);
-    if (login) {
-      if (!login.accessToken) {
-        login.accessToken = await genAccessToken();
-        await client.update('login', 'access_token=$1', 'person_id=$2', login.accessToken, login.personId);
-      }
-      let role = (await client.select('appuser', 'person_id=$1', login.personId)).role;
-      
-      res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(role);
+    
+    let invite = await client.select('invite', 'token=$1', req.body.invite);
+    if (!invite || invite.usedBy !== null) {  // todo: throw?
+      return BUSINESS_ERROR;
     }
-    else if (req.body.invite) {
-      let invite = await client.select('invite', 'token=$1', req.body.invite);
-      if (!invite || invite.usedBy !== null) {  // todo: throw?
-        return BUSINESS_ERROR;
-      }
 
-      let personId = await client.insert('person', {
+    let login = await client.select('login', 'auth_id=$1', req.user.sub);
+    if (!login) {
+      var personId = await client.insert('person', {
         name_first: req.body.profile.given_name,
         name_last: req.body.profile.family_name,
       }, 'id');
 
-      let accessToken = await genAccessToken();
+      var accessToken = await genAccessToken();
       await client.insert('login', {
         person_id: personId,
         access_token: accessToken,
-        auth_id: authId,
+        auth_id: req.user.sub,
         auth0_profile: req.body.profile
       });
-
-      await client.insert('appuser', {
-        person_id: personId,
-        role: invite.role
-      });
-      
-      await client.insert('team_user', {
-        team_id: invite.teamId,
-        person_id: personId
-      });
-
-      await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
-
-      res.cookie('accessToken', accessToken, COOKIE_CONFIG).json(invite.role);
+      res.cookie('accessToken', accessToken, COOKIE_CONFIG)
     }
-    else {
+    personId = personId || login.personId;
+    await client.insertIfNotExists('appuser', {
+      person_id: personId
+    });
+    
+    await client.insert('project_user', {
+      project_id: invite.projectId,
+      user_id: personId,
+      role: invite.role
+    });
+    
+    await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
+
+    res.json(invite.role);
+  });
+
+  if (result === BUSINESS_ERROR) {
+    sendError(res, 400);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function login(req, res: express.Response) {
+  let result = await transaction(config, async (client) => {
+    let login = await client.select('login', 'auth_id=$1', req.user.sub);
+    if (!login) {
       return BUSINESS_ERROR;
     }
+    
+    if (!login.accessToken) {
+      login.accessToken = await genAccessToken();
+      await client.update('login', 'access_token=$1', 'person_id=$2', login.accessToken, login.personId);
+    }
+    let role = (await client.select('project_user', 'person_id=$1', login.personId)).role;
+
+    res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(role);
   });
 
   if (result === BUSINESS_ERROR) {
@@ -94,7 +104,8 @@ export async function addText(req: Req, res: express.Response) {
     let docId = await client.insert('document', {
       name: req.body.name,
       content: req.body.content,
-      created_by: req.bag.user.id
+      created_by: req.bag.user.id,
+      project_id: 1,  // todo
     }, 'id');
 
     for (let [i, fragment] of req.body.fragments.entries()) {
@@ -191,7 +202,7 @@ export async function saveTask(req: Req, res: express.Response) {
     if (req.body.complete) {
       let tocheck = await client.call('complete_task', req.body.id);
       debug(JSON.stringify(tocheck, null, 2));
-      
+
       for (let task of tocheck) {
 
         if (taskInDb.type === 'review') {
@@ -272,7 +283,7 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
 
   for (let fragment of task.fragments) {
     assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts');
-    
+
     let [his, her] = fragment.annotations;
     let hisName = his.userId + ':' + (await client.call('get_user_details', his.userId)).nameLast;
     let herName = her.userId + ':' + (await client.call('get_user_details', her.userId)).nameLast;
