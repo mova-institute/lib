@@ -77,7 +77,7 @@ export async function login(req, res: express.Response) {
       login.accessToken = await genAccessToken();
       await client.update('login', 'access_token=$1', 'person_id=$2', login.accessToken, login.personId);
     }
-    let role = (await client.select('project_user', 'person_id=$1', login.personId)).role;
+    let role = (await client.select('project_user', 'user_id=$1', login.personId)).role;
 
     res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(role);
   });
