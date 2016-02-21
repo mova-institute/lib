@@ -12,11 +12,11 @@ const IS_DEV = process.env.NODE_ENV === 'development';
 export const debug = debugFactory('annotator');
 
 export const config: ClientConfig = {
-  host: IS_DEV ? 'mova.institute' : '/var/run/postgresql',
+  host: IS_DEV ? 'localhost' : '/var/run/postgresql',
+  port: IS_DEV ? 5433 : undefined,
   database: 'mi',
   user: 'annotator',
   password: '@nn0t@t0zh3',
-  ssl: IS_DEV
 };
 
 const jwtCheck = jwt({
