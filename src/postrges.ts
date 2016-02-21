@@ -1,5 +1,6 @@
 import {connect, Client, ClientConfig, QueryResult} from 'pg';
 const camelCase = require('camelcase');
+const decamelize = require('decamelize');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +55,8 @@ export class PgClient {
   }
   
   private _insert(table: string, dict: Object, onConflict: string, returning: string) {
+    dict = snakize(dict);
+    
     let keys = Object.keys(dict);
     let queryStr = `INSERT INTO ${table}(${keys.join(',')}) VALUES (${nDollars(keys.length)})`;
     if (onConflict) {
@@ -190,6 +193,19 @@ export async function transaction(config: ClientConfig, f: (client: PgClient) =>
 function camelized(obj) {  // dirty
   let json = JSON.stringify(obj).replace(/"(\w+)":/g, (a, b) => `"${camelCase(b)}":`);
   return JSON.parse(json);
+}
+
+//------------------------------------------------------------------------------
+function snakize(obj) {  // first-level only
+  for (let key of Object.keys(obj)) {
+    let snake = decamelize(key);
+    if (snake !== key) {
+      obj[snake] = obj[key];
+      delete obj[key];
+    }
+  }
+  
+  return obj;
 }
 
 //------------------------------------------------------------------------------

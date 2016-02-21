@@ -31,27 +31,27 @@ export async function join(req, res: express.Response) {
     let login = await client.select('login', 'auth_id=$1', req.user.sub);
     if (!login) {
       var personId = await client.insert('person', {
-        name_first: req.body.profile.given_name,
-        name_last: req.body.profile.family_name,
+        nameFirst: req.body.profile.given_name,
+        nameLast: req.body.profile.family_name,
       }, 'id');
 
       var accessToken = await genAccessToken();
       await client.insert('login', {
-        person_id: personId,
-        access_token: accessToken,
-        auth_id: req.user.sub,
-        auth0_profile: req.body.profile
+        personId,
+        accessToken,
+        authId: req.user.sub,
+        auth0Profile: req.body.profile
       });
       res.cookie('accessToken', accessToken, COOKIE_CONFIG)
     }
     personId = personId || login.personId;
     await client.insertIfNotExists('appuser', {
-      person_id: personId
+      personId
     });
     
     await client.insert('project_user', {
-      project_id: invite.projectId,
-      user_id: personId,
+      projectId: invite.projectId,
+      userId: personId,
       role: invite.role
     });
     
@@ -104,13 +104,13 @@ export async function addText(req: Req, res: express.Response) {
     let docId = await client.insert('document', {
       name: req.body.name,
       content: req.body.content,
-      created_by: req.bag.user.id,
-      project_id: 1,  // todo
+      createdBy: req.bag.user.id,
+      projectId: 1,  // todo
     }, 'id');
 
     for (let [i, fragment] of req.body.fragments.entries()) {
       await client.insert('fragment_version', {
-        doc_id: docId,
+        docId,
         index: i,
         content: fragment.xmlstr
       });
@@ -125,10 +125,10 @@ export async function addText(req: Req, res: express.Response) {
 
     for (let segment of segments) {
       await client.insert('task', {
-        doc_id: docId,
+        docId,
         type: 'annotate',
-        fragment_start: segment[0],
-        fragment_end: segment[1],
+        fragmentStart: segment[0],
+        fragmentEnd: segment[1],
         name: req.body.fragments[segment[0]].firstWords.join(' '),
       });
     }
@@ -190,11 +190,11 @@ export async function saveTask(req: Req, res: express.Response) {
 
     for (let [i, fragment] of req.body.fragments.entries()) {  // todo: status
       await client.insert('fragment_version', {
-        task_id: req.body.id,
-        doc_id: taskInDb.docId,
+        taskId: req.body.id,
+        docId: taskInDb.docId,
         index: taskInDb.fragmentStart + i,
         status: 'in_progress',
-        added_at: now,
+        addedAt: now,
         content: fragment
       });
     }
@@ -222,21 +222,21 @@ export async function saveTask(req: Req, res: express.Response) {
           if (diffsTotal) {
             let taskToReview = await client.select('task', 'id=$1', task.taskId);
             let reviewTaskId = await client.insert('task', {
-              doc_id: task.docId,
-              user_id: task.userId,
+              docId: task.docId,
+              userId: task.userId,
               type: nextTaskType(taskToReview.type),
-              fragment_start: taskToReview.fragmentStart,
-              fragment_end: taskToReview.fragmentEnd,
+              fragmentStart: taskToReview.fragmentStart,
+              fragmentEnd: taskToReview.fragmentEnd,
               name: taskToReview.name
             }, 'id');
 
             for (let [i, fragment] of markedFragments.entries()) {
               await client.insert('fragment_version', {
-                task_id: reviewTaskId,
-                doc_id: task.docId,
+                taskId: reviewTaskId,
+                docId: task.docId,
                 index: taskToReview.fragmentStart + i,
                 status: 'pristine',
-                added_at: now,
+                addedAt: now,
                 content: fragment
               });
             }
@@ -296,19 +296,19 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
       if (!alreadyTask) {
 
         let newTaskId = await client.insert('task', {
-          doc_id: task.docId,
+          docId: task.docId,
           type: 'resolve',
-          fragment_start: fragment.index,
-          fragment_end: fragment.index,
+          fragmentStart: fragment.index,
+          fragmentEnd: fragment.index,
           name: firstNWords(4, markedDoc.documentElement).join(' ')
         }, 'id');
 
         await client.insert('fragment_version', {
-          task_id: newTaskId,
-          doc_id: task.docId,
+          taskId: newTaskId,
+          docId: task.docId,
           index: fragment.index,
           status: 'pristine',
-          added_at: now,
+          addedAt: now,
           content: markedStr
         });
       }
