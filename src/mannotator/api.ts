@@ -37,16 +37,16 @@ export async function join(req, res: express.Response) {
 
       var accessToken = await genAccessToken();
       await client.insert('login', {
-        personId,
+        id: personId,
         accessToken,
         authId: req.user.sub,
         auth0Profile: req.body.profile
       });
       res.cookie('accessToken', accessToken, COOKIE_CONFIG)
     }
-    personId = personId || login.personId;
+    personId = personId || login.id;
     await client.insertIfNotExists('appuser', {
-      personId
+      id: personId
     });
     
     await client.insert('project_user', {
@@ -75,9 +75,9 @@ export async function login(req, res: express.Response) {
     
     if (!login.accessToken) {
       login.accessToken = await genAccessToken();
-      await client.update('login', 'access_token=$1', 'person_id=$2', login.accessToken, login.personId);
+      await client.update('login', 'access_token=$1', 'id=$2', login.accessToken, login.id);
     }
-    let role = (await client.select('project_user', 'user_id=$1', login.personId)).role;
+    let role = (await client.select('project_user', 'user_id=$1', login.id)).role;
 
     res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(role);
   });
