@@ -106,6 +106,7 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
   return new Promise<QueryResult>(async (resolve, reject) => {
     client.query(queryStr, params, (err, result) => {
       if (err) {
+        // console.error(err);
         reject(err);
       }
       else {

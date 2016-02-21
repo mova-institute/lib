@@ -46,17 +46,17 @@ app.all('/api/*', async (req: Req, res) => {
   let actionName = req.params[0];
   let action = actions[actionName];
   if (action) {
-    if (await authorize(actionName, req, res)) {
-      try {
+    try {
+      if (await authorize(actionName, req, res)) {
         await action(req, res);
       }
-      catch (e) {
-        console.error(e.stack);
-        sendError(res, 500);
+      else {
+        sendError(res, 403);
       }
     }
-    else {
-      sendError(res, 403);
+    catch (e) {
+      console.error(e.stack);
+      sendError(res, 500);
     }
   }
   else {
@@ -89,7 +89,7 @@ async function authorize(action: string, req: Req, res: express.Response) {
   if (accessToken) {
     req.bag.user = await query1(config, "SELECT get_user_by_token($1)", [accessToken]);
   }
-  
+
   return req.bag.user || action === 'getRole';
 }
 
