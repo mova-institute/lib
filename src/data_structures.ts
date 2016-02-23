@@ -52,7 +52,7 @@ export class JsonCompareMap<K, V> implements IMap<K, V> {
   }
 
   [Symbol.iterator]() {
-    // todo
+    throw new Error('Not impemented'); // todo
   }
 }
 

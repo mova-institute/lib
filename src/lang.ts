@@ -5,7 +5,6 @@ export function last<T>(array: Array<T>) {
   return array[array.length - 1];
 }
 
-// todo: ...rest?
 ////////////////////////////////////////////////////////////////////////////////
 export function wrappedOrNull<T>(construct: { new (val): T; }, val) {
 	return val ? new construct(val) : null;

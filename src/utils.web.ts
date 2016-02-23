@@ -48,8 +48,8 @@ function dataDownloadOrOpen(data, mime: string, filename?: string) {
   let a = document.createElement('a');
   a.href = window.URL.createObjectURL(blob);
   if (filename) {
-    a['download'] = filename;	// todo: a.download typescript
-    a.dataset['downloadurl'] = `${mime}:${filename}:${a.href}`;	// todo ^
+    a['download'] = filename;
+    a.dataset['downloadurl'] = `${mime}:${filename}:${a.href}`;
   }
   else {
     a.target = '_blank';
