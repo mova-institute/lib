@@ -13,5 +13,6 @@
 		"typings": true,
 		"**/__pycache__": true,
 		".idea": true
-	}
+	},
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

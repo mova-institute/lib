@@ -12,6 +12,7 @@ const mkdirp = require('mkdirp');
 
 
 const TS_PROJ_FILE = 'src/tsconfig.json';
+const tsProject = ts.createProject(TS_PROJ_FILE, { typescript: require('typescript') });
 
 
 //------------------------------------------------------------------------------
@@ -25,8 +26,7 @@ function swallowError(error) {
 function tsTask(target) {
   let dest = target === 'es6' ? 'lib' : 'lib5';
   let babelOpts = target === 'es6' ? undefined : { presets: ['es2015'] };
-  
-  let tsProject = ts.createProject(TS_PROJ_FILE);
+
   let tsResult = tsProject.src()
     .pipe(ts(tsProject));
 
@@ -78,14 +78,14 @@ gulp.task('mannotator', ['typescript'], () => {
   };
   mkdirp.sync('dist/mannotator');
   fs.writeFileSync('dist/mannotator/package.json', JSON.stringify(packageJson, null, 2));
-  
+
   return gulp.src(['lib/**/*.js'], { base: '.' })
     .pipe(gulp.dest('dist/mannotator/'));
 });
 
 
 gulp.task('dist', ['typescript:dist', 'copy:dist']);
-gulp.task('default', ['typescript', 'es5']);
+gulp.task('default', ['typescript'/*, 'es5'*/]);
 
 gulp.task('develop', ['default'], () => {
   gulp.watch(['src/**/*.ts', TS_PROJ_FILE], ['default']);
