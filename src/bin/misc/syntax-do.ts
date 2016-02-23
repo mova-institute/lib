@@ -1,11 +1,11 @@
 import * as fs from 'fs';
-import {nonemptyLinesSyncArray, filename2lxmlRootSync} from '../../utils.node';
+import {nonemptyLinesSyncArray, linesSyncArray, filename2lxmlRootSync} from '../../utils.node';
 import * as glob from 'glob';
 import {collectForof} from '../../lang';
 import * as assert from 'assert';
 import {W, W_, PC, SE, P} from '../../nlp/common_elements';
-import {nextElDocumentOrder} from '../../xml/utils';
-import {TextToken} from '../../nlp/text_token';
+import {nextElDocumentOrder, NS} from '../../xml/utils';
+import {$t, TextToken} from '../../nlp/text_token';
 
 const args = require('minimist')(process.argv.slice(2));
 
@@ -23,14 +23,14 @@ function main() {
     concat();
   }
   else if (args.extract) {
-    extract();
+    extract2();
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 function concat() {
   let retLines = new Array<string>();
-  let filenames = glob.sync('*.txt').sort(compare);
+  let filenames = glob.sync('*.out').sort(compare);
   for (let filename of filenames) {
     let lines = nonemptyLinesSyncArray(filename);
     retLines.push(...lines.slice(1));
@@ -40,12 +40,97 @@ function concat() {
 
 //------------------------------------------------------------------------------
 function compare(a: string, b: string) {
-  return parseInt(a.match(/(\d+)\.txt/)[1]) - parseInt(b.match(/(\d+)\.txt/)[1])
+  return parseInt(a.match(/(\d+)\.out/)[1]) - parseInt(b.match(/(\d+)\.out/)[1])
 }
 
-enum AmbigGroupLoc { outside, first, other };
-
 ////////////////////////////////////////////////////////////////////////////////
+function extract2() {
+  let lines = linesSyncArray(args.syntax);
+  let docRoot = filename2lxmlRootSync(args.doc);
+  // let elemsOfInterest = new Set<string>([W_]);
+  // let first = nextElDocumentOrder(docRoot, elemsOfInterest);
+  // let q = '//mi:w[0]';
+  // console.log(q, docRoot.xpath(q, NS));
+  
+  let docCursor = $t(docRoot.xpath('//mi:w_', NS)[0]);
+
+  const AmbigGroupPos = {
+    outside: 0,
+    first: 1,
+    inside: 2,
+  };
+
+  let ambigGroupPos = AmbigGroupPos.outside;
+  for (let [lineN, line] of lines.entries()) {
+    try {
+      line = line.trim();
+      if (!line || line.startsWith('#')) {
+        continue;
+      }
+
+      let flags = line.split(/\s/);
+
+      let [n, form, lemma, synTag, mteTag] = flags;
+
+
+      if (form === 'H1') {
+        ambigGroupPos = AmbigGroupPos.first;
+        continue;
+      }
+      else if (form === 'H2') {
+        ambigGroupPos = AmbigGroupPos.outside;
+        continue;
+      }
+
+      if (ambigGroupPos === AmbigGroupPos.first) {
+        if (n.includes('-')) {
+          let [nStart, nEnd] = n.split('-').map(x => parseInt(x));
+          for (let j = 0; j < nEnd - nStart; ++j) {
+            docCursor = docCursor.nextToken();
+          }
+        }
+        docCursor = docCursor.nextToken();
+        ambigGroupPos = AmbigGroupPos.inside;
+        continue;
+      }
+
+      if (n.includes('-') || ambigGroupPos !== AmbigGroupPos.outside) {
+        continue;
+      }
+
+      if (synTag !== 'PUNCT' && synTag !== '_' /*todo*/) {
+        let disambOptions = docCursor.getDisambOptions();
+        if (!disambOptions.length) {
+          console.log('aaa');
+          console.log(docCursor.elem.nameNs());
+        }
+        console.log([n, form, lemma, synTag, mteTag]);
+        console.log(disambOptions);
+        
+        let disambOptionIndex = disambOptions.findIndex(x => x.tag === mteTag);
+        if (disambOptionIndex < 0 && !docCursor.isUntagged()) {  // todo
+          // console.error(disambOptions);
+          // console.error([n, form, lemma, synTag, mteTag]);
+          throw new Error('haha hahaha');
+        }
+        if (disambOptions.length > 1) {
+          docCursor.disamb(disambOptionIndex);
+        }
+      }
+
+      docCursor = docCursor.nextToken();
+      // console.log('after next' + docCursor.elem.nameNs());
+    }
+    catch (e) {
+      console.error('ERROR LINE ' + (lineN + 1));
+      fs.writeFileSync('doc.syntdisambed.xml', docRoot.ownerDocument.serialize(), 'utf-8')
+      throw e;
+    }
+  }
+}
+
+
+/*////////////////////////////////////////////////////////////////////////////////
 function extract() {
   let lines = nonemptyLinesSyncArray(args.syntax).filter(x => !x.startsWith('#'));
   let docRoot = filename2lxmlRootSync(args.doc);
@@ -127,4 +212,4 @@ function extract() {
       }
     }
   }
-}
+}*/

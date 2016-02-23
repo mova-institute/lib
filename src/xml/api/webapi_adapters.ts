@@ -169,9 +169,9 @@ export class WebapiElement extends WebapiNode implements IElement {
     return new WebapiElement(<Element>this.underlying.cloneNode(true));
   }
   
-  xpath(query: string, nsMap?) {  // todo: create node or elem depending on underlying type
+  xpath(query: string, nsMap?) {
     return xpath(this.underlying, query, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-      .map(x => <WebapiNode>new WebapiElement(x));
+      .map(x => x.nodeType === Node.ELEMENT_NODE ? new WebapiElement(x) : new WebapiNode(x));
   }
 }
 

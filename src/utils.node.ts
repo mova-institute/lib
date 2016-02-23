@@ -66,6 +66,11 @@ export function* nonemptyLinesSync(filename: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function linesSyncArray(filename: string) {
+  return readFileSync(filename, 'utf8').split('\n');
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function nonemptyLinesSyncArray(filename: string) {
 	return readFileSync(filename, 'utf8').split('\n').map(x => x.trim()).filter(x => !!x);
 }

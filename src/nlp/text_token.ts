@@ -5,6 +5,13 @@ import {traverseDocumentOrderEl, NS, nextElDocumentOrder} from '../xml/utils'
 import {markIndexwiseStringDiff} from '../html_utils'
 import {wrappedOrNull} from '../lang';
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+export function $t(elem: IElement) {
+  return elem ? new TextToken(elem) : null;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export class TextToken {
   private static TOKEN_ELEMS = new Set<string>([W_, PC]);
@@ -106,6 +113,20 @@ export class TextToken {
     if (author) {
       return author.split(':')[1];
     }
+  }
+  
+  getDisambOptions() {
+    let ret = new Array<{lemma: string, tag: string}>();
+    for (let child of this.elem.childElements()) {
+      if (child.nameNs() === W) {
+        ret.push({
+          lemma: child.getAttribute('lemma'),
+          tag: child.getAttribute('ana'),
+        });
+      }
+    }
+    
+    return ret;
   }
 
   disamb(index: number) {
