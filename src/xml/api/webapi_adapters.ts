@@ -155,6 +155,10 @@ export class WebapiElement extends WebapiNode implements IElement {
 	setAttribute(name: string, value: any) {
 		(<Element>this.underlying).setAttribute(name, value);
 	}
+  
+  renameAttributeIfExists(nameOld: string, nameNew: string) {
+    throw new Error('renameAttribute() not implemented for WebapiElement yet');
+  }
 	
 	removeAttribute(name: string) {
 		(<Element>this.underlying).removeAttribute(name);

@@ -27,6 +27,25 @@ export function ioArgs(): [any, any, Object] {
   process.exit();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function ioArgs3(filename1: string, filename2: string): [any, any] {
+  if (!process.stdin.isTTY && filename1) {
+    return [process.stdin, createWriteStream(filename2)];
+  }
+  if (process.stdin.isTTY && filename1 && !filename2) {
+    return [createReadStream(filename1, 'utf8'), process.stdout];
+  }
+  if (!process.stdin.isTTY && !filename1 && !filename2) {
+    return [process.stdin, process.stdout];
+  }
+  if (filename1 && filename2) {
+    return [createReadStream(filename1, 'utf8'), createWriteStream(filename2)];
+  }
+  
+  throw new Error('No input argument');
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export async function ioArgs2(fileArgs: Array<string>, f: (input, output) => Promise<void>) {
 
   if (fileArgs[1]) {

@@ -325,3 +325,13 @@ export function firstNWords(n: number, from: IElement) {
   let words = from.xpath(`//mi:w_[position() < ${n}]`, NS);
   return (<IElement[]>words).map(x => x.childElement(0).textContent);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function oldZhyto2cur(root: IElement) {  // todo: remane xmlns
+  let miwords = root.xpath('//mi:w_', NS);
+  for (let miw of miwords) {
+    (<IElement>miw).renameAttributeIfExists('ana', 'disamb');
+    (<IElement>miw).renameAttributeIfExists('word-id', 'n');
+  }
+  return root;
+}

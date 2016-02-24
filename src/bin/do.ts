@@ -1,9 +1,33 @@
-import * as transforms from '../transforms';
+import {ioArgs3} from '../cli_utils';
+import {readTillEnd} from '../stream_utils.node'
+import {string2lxmlRoot} from '../utils.node';
+import {IElement} from '../xml/api/interfaces';
 
-const args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2), {
+  boolean: ['xml']
+});
+
+let [action, filename1, filename2] = args._;
+let [funcName, ...path] = action.split('.').reverse();
+let moduleObj = require('../' + path.reverse().join('/'));
+let func = moduleObj[funcName];
+let [input, output] = ioArgs3(filename1, filename2);
 
 
-let command = args._[0];
-args._ = args._.splice(1);
+main();
 
-transforms[command](args);
+
+async function main() {
+  try {
+    let inputStr = await readTillEnd(input);
+
+    if (args.xml) {
+      let root = string2lxmlRoot(inputStr);
+      let res: IElement = func(root);
+      output.write(res.ownerDocument.serialize());
+    }
+  }
+  catch (e) {
+    console.error(e)
+  }
+}

@@ -171,6 +171,14 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 	setAttribute(name: string, value: any) {
 		this.underlying.attr({[name]: value.toString()});
 	}
+  
+  renameAttributeIfExists(nameOld: string, nameNew: string) {
+    let attr = this.underlying.attr(nameOld);
+    if (attr) {
+      this.underlying.attr({ [nameNew]: attr.value() });
+      attr.remove();
+    }
+  }
 	
 	removeAttribute(name: string) {
     let attr = this.underlying.attr(name);
