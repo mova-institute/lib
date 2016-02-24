@@ -118,7 +118,7 @@ export async function addText(req: Req, res: express.Response) {
     for (let segment of segments) {
       await client.insert('task', {
         docId,
-        type: 'annotate',
+        type: ['disambiguate_morphologically'],
         fragmentStart: segment[0],
         fragmentEnd: segment[1],
         name: req.body.fragments[segment[0]].firstWords.join(' '),
@@ -129,13 +129,13 @@ export async function addText(req: Req, res: express.Response) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function assignTask(req: Req, res: express.Response) {  // todo: test
+export async function assignTask(req: Req, res: express.Response) {
   let id = await transaction(config, async (client) => {
-    let numAnnotating = (await client.call('get_task_count', req.bag.user.id)).annotate;
+    let numAnnotating = (await client.call('get_task_count', req.bag.user.id)).disambiguate_morphologically;  // todo
     if (numAnnotating >= MAX_CONCUR_ANNOT) {
       throw new HttpError(400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
     }
-    return await client.call('assign_task_for_annotation', req.bag.user.id);
+    return await client.call('assign_task_for_annotation', req.bag.user.id, 1);  // todo
   });
 
   res.json(wrapData(id));
@@ -145,8 +145,8 @@ export async function assignTask(req: Req, res: express.Response) {  // todo: te
 export async function getTaskList(req: Req, res: express.Response) {
   if (req.query.type === 'resolve') {
     req.bag.user.id = null;  // temp, todo
-  }
-  let ret = await query1(config, "SELECT get_task_list($1, $2)", [req.bag.user.id, req.query.type]);
+  }  // todo: project_id
+  let ret = await query1(config, "SELECT get_task_list($1, $2, 1)", [req.bag.user.id, req.query.type]);
   res.json(wrapData(ret));
 }
 
@@ -244,7 +244,7 @@ export async function saveTask(req: Req, res: express.Response) {
         var nextTaskId = reviewDoc.tasks[0].taskId;
       }
       else {
-        nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id);
+        nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id, 1);   // todo
       }
 
       ret.data = nextTaskId || null;
