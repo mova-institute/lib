@@ -1,4 +1,5 @@
 import {connect, Client, ClientConfig, QueryResult} from 'pg';
+const types = require('pg').types;
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
 
@@ -8,25 +9,32 @@ export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcod
   serialization_failure: '40001',
 }
 
-//------------------------------------------------------------------------------
-const MAX_TRANSACTION_RETRY = 100;
+////////////////////////////////////////////////////////////////////////////////
+export const PG_TYPES = {  // select typname, oid, typarray from pg_type where typtype = 'b';
+  json: 114,
+  jsonb: 3802
+}
 
+
+
+types.setTypeParser(PG_TYPES.json, camelizeParseJson);
+types.setTypeParser(PG_TYPES.jsonb, camelizeParseJson);
 
 ////////////////////////////////////////////////////////////////////////////////
 export class PgClient {
-  
+
   static async get(config: ClientConfig) {
     let { client, done } = await getClient(config);
     return new PgClient(client, done);
   }
 
   constructor(private _client: Client, private _done = null) { }
-  
+
   release() {
     this._client = null;
     this._done && this._done();
   }
-  
+
   query(queryStr: string, ...params) {
     return query(this._client, queryStr, params);
   }
@@ -35,42 +43,42 @@ export class PgClient {
     let queryStr = `SELECT ${func}(${nDollars(params.length)})`;
     return query1Client(this._client, queryStr, params);
   }
-  
+
   select(table: string, where: string, ...params) {
     let queryStr = `SELECT row_to_json(${table}) FROM ${table} WHERE ${where}`;
-    return query1Client(this._client, queryStr, params);    
+    return query1Client(this._client, queryStr, params);
   }
-  
+
   select1(table: string, column: string, where: string, ...params) {
     let queryStr = `SELECT ${column} FROM ${table} WHERE ${where}`;
-    return query1Client(this._client, queryStr, params);    
+    return query1Client(this._client, queryStr, params);
   }
-  
+
   update(table: string, set: string, where: string, ...params) {
     let queryStr = `UPDATE ${table} SET ${set} WHERE ${where} RETURNING to_json(${table})`;
-    return query1Client(this._client, queryStr, params);    
+    return query1Client(this._client, queryStr, params);
   }
-  
+
   insert(table: string, dict: Object, returning?: string) {
     return this._insert(table, dict, null, returning);
   }
-  
+
   insertIfNotExists(table: string, dict: Object, returning?: string) {
     return this._insert(table, dict, 'NOTHING', returning);
   }
-  
+
   delete(table: string, where: string, returning: string, ...params) {
     let queryStr = `DELETE FROM ${table} WHERE ${where}`;
     if (returning) {
       queryStr += ' RETURNING ' + returning;
     }
-    
-    return query1Client(this._client, queryStr, params);        
+
+    return query1Client(this._client, queryStr, params);
   }
-  
+
   private _insert(table: string, dict: Object, onConflict: string, returning: string) {
     dict = snakize(dict);
-    
+
     let keys = Object.keys(dict);
     let queryStr = `INSERT INTO ${table}(${keys.join(',')}) VALUES (${nDollars(keys.length)})`;
     if (onConflict) {
@@ -79,8 +87,8 @@ export class PgClient {
     if (returning) {
       queryStr += ' RETURNING ' + returning;
     }
-    
-    return query1Client(this._client, queryStr, keys.map(x => dict[x]));    
+
+    return query1Client(this._client, queryStr, keys.map(x => dict[x]));
   }
 }
 
@@ -102,13 +110,12 @@ export function getClient(config: ClientConfig) {
 ////////////////////////////////////////////////////////////////////////////////
 export function query(client: Client, queryStr: string, params: Array<any> = []) {
   return new Promise<QueryResult>(async (resolve, reject) => {
-    client.query(queryStr, params, (err, result) => {
+    client.query(queryStr, params, (err, res) => {
       if (err) {
-        // console.error(err);
         reject(err);
       }
       else {
-        resolve(result);
+        resolve(res);
       }
     });
   });
@@ -116,13 +123,10 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function query1Client(client: Client, queryStr: string, params: Array<any> = []) {
-  let result = await query(client, queryStr, params);
-  if (result && result.rows.length) {
-    let row = result.rows[0];
+  let res = await query(client, queryStr, params);
+  if (res && res.rows.length) {
+    let row = res.rows[0];
     var ret = row[Object.keys(row)[0]] || null;
-    if (ret && typeof ret === 'object') {
-      ret = camelized(ret);
-    }
   }
 
   return ret;
@@ -131,17 +135,17 @@ export async function query1Client(client: Client, queryStr: string, params: Arr
 ////////////////////////////////////////////////////////////////////////////////
 export async function query1(config: ClientConfig, queryStr: string, params: Array<any> = []) {
   let { client, done } = await getClient(config);
-  let result = await query1Client(client, queryStr, params);
+  let ret = await query1Client(client, queryStr, params);
   done();
 
-  return result;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function queryNumRows(config: ClientConfig, queryStr: string, params: Array<any> = []) {
   let { client, done } = await getClient(config);
-  let result = await query(client, queryStr, params);
-  let ret = result && (<any>result).rowCount || null;
+  let res = await query(client, queryStr, params);
+  let ret = res && (<any>res).rowCount || null;
   done();
 
   return ret;
@@ -150,7 +154,7 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
 ////////////////////////////////////////////////////////////////////////////////
 export async function transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
   let client = await PgClient.get(config);
-  
+
   for (let i = 1; ; ++i) {
     try {
       await client.query("BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
@@ -160,6 +164,7 @@ export async function transaction(config: ClientConfig, f: (client: PgClient) =>
     catch (e) {
       await client.query("ROLLBACK");
 
+      const MAX_TRANSACTION_RETRY = 100;
       if (i === MAX_TRANSACTION_RETRY) {
         throw new Error('Max transaction retries exceeded');
       }
@@ -182,9 +187,9 @@ export async function transaction(config: ClientConfig, f: (client: PgClient) =>
 
 
 //------------------------------------------------------------------------------
-function camelized(obj) {  // dirty
-  let json = JSON.stringify(obj).replace(/"(\w+)":/g, (a, b) => `"${camelCase(b)}":`);
-  return JSON.parse(json);
+function camelizeParseJson(jsonStr: string) {
+  let camelized = jsonStr.replace(/"(\w+)"\s*:/g, (a, b) => `"${camelCase(b)}":`);
+  return JSON.parse(camelized);
 }
 
 //------------------------------------------------------------------------------
@@ -196,7 +201,7 @@ function snakize(obj) {  // first-level only
       delete obj[key];
     }
   }
-  
+
   return obj;
 }
 
