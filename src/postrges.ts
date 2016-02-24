@@ -10,7 +10,9 @@ export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcod
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export const PG_TYPES = {  // select typname, oid, typarray from pg_type where typtype = 'b';
+// see https://github.com/brianc/node-pg-types
+// select typname, oid, typarray from pg_type where typtype = 'b';
+export const PG_TYPES = {
   json: 114,
   jsonb: 3802
 }
