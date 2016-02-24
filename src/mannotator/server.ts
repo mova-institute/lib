@@ -47,7 +47,7 @@ app.all('/api/*', async (req: Req, res) => {
   let action = actions[actionName];
   if (action) {
     try {
-      if (await authorize(actionName, req, res)) {
+      if (await preauth(actionName, req, res)) {
         await action(req, res);
       }
       else {
@@ -56,7 +56,12 @@ app.all('/api/*', async (req: Req, res) => {
     }
     catch (e) {
       console.error(e.stack);
-      sendError(res, 500);
+      if (e instanceof HttpError) {
+        sendError(res, e.code, e.message)
+      }
+      else {
+        sendError(res, 500);
+      }
     }
   }
   else {
@@ -79,11 +84,11 @@ function errorHandler(err, req, res: express.Response, next) {
 };
 
 //------------------------------------------------------------------------------
-async function authorize(action: string, req: Req, res: express.Response) {
-  if (action === 'login') {
+async function preauth(action: string, req: Req, res: express.Response) {
+  if (action === 'login' || action === 'join') {
     return true;
   }
-  // todo
+
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
@@ -112,4 +117,11 @@ export function makeErrObj(code: number, message?: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function sendError(res: express.Response, code: number, message?: string) {
   res.status(code).json(makeErrObj(code, message));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export class HttpError extends Error {
+  constructor(public code: number, public message?: string) {
+    super(message);
+  }
 }

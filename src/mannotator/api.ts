@@ -1,7 +1,7 @@
 import * as express from 'express';
-import {query1, transaction, BUSINESS_ERROR, PgClient} from '../postrges';
+import {query1, transaction, PgClient} from '../postrges';
 import {genAccessToken} from '../crypto';
-import {config, Req, sendError, debug} from './server';
+import {config, Req, sendError, debug, HttpError} from './server';
 import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
 import {firstNWords} from '../nlp/utils';
@@ -21,11 +21,11 @@ export async function getRole(req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function join(req, res: express.Response) {
-  let result = await transaction(config, async (client) => {
+  await transaction(config, async (client) => {
     
     let invite = await client.select('invite', 'token=$1', req.body.invite);
-    if (!invite || invite.usedBy !== null) {  // todo: throw?
-      return BUSINESS_ERROR;
+    if (!invite || invite.usedBy !== null) {
+      throw new HttpError(400);
     }
 
     let login = await client.select('login', 'auth_id=$1', req.user.sub);
@@ -59,18 +59,14 @@ export async function join(req, res: express.Response) {
 
     res.json(invite.role);
   });
-
-  if (result === BUSINESS_ERROR) {
-    sendError(res, 400);
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function login(req, res: express.Response) {
-  let result = await transaction(config, async (client) => {
+  await transaction(config, async (client) => {
     let login = await client.select('login', 'auth_id=$1', req.user.sub);
     if (!login) {
-      return BUSINESS_ERROR;
+      throw new HttpError(403);
     }
     
     if (!login.accessToken) {
@@ -81,10 +77,6 @@ export async function login(req, res: express.Response) {
 
     res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(role);
   });
-
-  if (result === BUSINESS_ERROR) {
-    sendError(res, 403);
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,8 +133,7 @@ export async function assignTask(req: Req, res: express.Response) {  // todo: te
   let id = await transaction(config, async (client) => {
     let numAnnotating = (await client.call('get_task_count', req.bag.user.id)).annotate;
     if (numAnnotating >= MAX_CONCUR_ANNOT) {
-      sendError(res, 400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
-      return BUSINESS_ERROR;
+      throw new HttpError(400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
     }
     return await client.call('assign_task_for_annotation', req.bag.user.id);
   });
@@ -185,7 +176,7 @@ export async function saveTask(req: Req, res: express.Response) {
     const taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
 
     if (!taskInDb || taskInDb.status === 'done' || req.body.fragments.length !== taskInDb.fragments.length) {
-      return BUSINESS_ERROR;
+      throw new HttpError(400);
     }
 
     for (let [i, fragment] of req.body.fragments.entries()) {  // todo: status
@@ -246,11 +237,6 @@ export async function saveTask(req: Req, res: express.Response) {
     }
   });
 
-  if (result === BUSINESS_ERROR) {
-    sendError(res, 400);
-    return;
-  }
-
   if (req.body.grabNext) {
     result = await transaction(config, async (client) => {
       let reviewDoc = (await client.call('get_task_list', req.bag.user.id, 'review'))[0];
@@ -264,13 +250,8 @@ export async function saveTask(req: Req, res: express.Response) {
       ret.data = nextTaskId || null;
     });
   }
-
-  if (result === BUSINESS_ERROR) {
-    sendError(res, 400);
-  }
-  else {
-    res.json(ret);
-  }
+  
+  res.json(ret);
 }
 
 

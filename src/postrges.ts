@@ -4,8 +4,6 @@ const decamelize = require('decamelize');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export const BUSINESS_ERROR = Symbol();
-
 export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcodes-appendix.html
   serialization_failure: '40001',
 }
@@ -152,17 +150,11 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
 ////////////////////////////////////////////////////////////////////////////////
 export async function transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
   let client = await PgClient.get(config);
-
+  
   for (let i = 1; ; ++i) {
     try {
       await client.query("BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
-      
-      var res = await f(client);
-      if (res === BUSINESS_ERROR) {
-        await client.query("ROLLBACK");
-        return res;
-      }
-
+      var ret = await f(client);
       await client.query("COMMIT");
     }
     catch (e) {
@@ -185,7 +177,7 @@ export async function transaction(config: ClientConfig, f: (client: PgClient) =>
     break;
   }
 
-  return res;
+  return ret;
 }
 
 
