@@ -1,6 +1,6 @@
 import {IDocument, INode, IElement} from './interfaces'
 import * as libxmljs from 'libxmljs'
-import {lang} from '../utils'
+import {lang, pretty} from '../utils'
 import {wrappedOrNull, ithGenerated, countGenerated} from '../../lang' 
 
 
@@ -22,7 +22,7 @@ export class LibxmlDocument implements IDocument {
 	}
 	
 	serialize() {
-		return this._underlying.toString();
+		return pretty(this._underlying.toString());  // todo: report a bug it's not pretty in libxmljs?
 	}
   
   private _getNsByPrefix(prefix: string) {
