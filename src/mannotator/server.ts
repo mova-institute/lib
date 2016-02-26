@@ -3,7 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
 import {genAccessToken} from '../crypto';
-import {transaction} from '../postrges';
+import {transaction, PgClient} from '../postrges';
 import {ClientConfig} from 'pg';
 import * as debugFactory from 'debug';
 const jwt = require('express-jwt');
@@ -43,17 +43,17 @@ app.use('/api/login', jwtCheck);
 app.use('/api/join', jwtCheck);
 
 
-app.all('/api/*', async (req: Req, res) => {
+app.all('/api/*', async (req: Req, res: express.Response) => {
   let actionName = req.params[0];
   let action = actions[actionName];
   if (action) {
     try {
-      if (await preauth(actionName, req, res)) {
-        await action(req, res);
-      }
-      else {
-        sendError(res, 403);
-      }
+      await transaction(config, async (client) => {
+        if (!(await preauth(actionName, req, client))) {
+          throw new HttpError(403);
+        }
+        await action(req, res, client);
+      });
     }
     catch (e) {
       console.error(e.stack);
@@ -85,17 +85,14 @@ function errorHandler(err, req, res: express.Response, next) {
 };
 
 //------------------------------------------------------------------------------
-async function preauth(action: string, req: Req, res: express.Response) {
+async function preauth(action: string, req: Req, client: PgClient) {
   if (action === 'login' || action === 'getInviteDetails' || action === 'join') {
     return true;
   }
 
-
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
-    req.bag.user = await transaction(config, async (client) => {  // todo: don't use transaction but keep api
-      return await client.call('get_user_by_token', accessToken);
-    });
+    req.bag.user = await client.call('get_user_by_token', accessToken);
   }
 
   return req.bag.user || action === 'getRole';

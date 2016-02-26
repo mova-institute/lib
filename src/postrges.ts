@@ -134,7 +134,7 @@ export async function query1Client(client: Client, queryStr: string, params: Arr
   return ret;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+/*////////////////////////////////////////////////////////////////////////////////
 export async function query1(config: ClientConfig, queryStr: string, params: Array<any> = []) {
   let { client, done } = await getClient(config);
   let ret = await query1Client(client, queryStr, params);
@@ -151,7 +151,7 @@ export async function queryNumRows(config: ClientConfig, queryStr: string, param
   done();
 
   return ret;
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
