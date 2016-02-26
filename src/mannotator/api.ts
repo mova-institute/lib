@@ -37,7 +37,14 @@ export async function join(req, res: express.Response) {  // todo: implement upp
     }
 
     let login = await client.select('login', 'auth_id=$1', req.user.sub);
-    if (!login) {
+    if (login) {
+      if (!login.accessToken) {
+        login.accessToken = await genAccessToken();
+        await client.update('login', 'access_token=$1', 'id=$2', login.accessToken, login.id);
+      }
+      res.cookie('accessToken', login.accessToken, COOKIE_CONFIG)
+    }
+    else {
       var personId = await client.insert('person', {
         nameFirst: req.body.profile.given_name,
         nameLast: req.body.profile.family_name,
@@ -50,9 +57,10 @@ export async function join(req, res: express.Response) {  // todo: implement upp
         authId: req.user.sub,
         auth0Profile: req.body.profile
       });
-      res.cookie('accessToken', accessToken, COOKIE_CONFIG)
+      res.cookie('accessToken', accessToken, COOKIE_CONFIG);
     }
     personId = personId || login.id;
+    accessToken = accessToken || login.accessToken;
     await client.insertIfNotExists('appuser', {
       id: personId
     });
@@ -64,8 +72,10 @@ export async function join(req, res: express.Response) {  // todo: implement upp
     });
     
     await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
+    
+    let user = await client.call('get_user_by_token', accessToken);
 
-    res.json(invite.role);
+    res.json(user.roles);
   });
 }
 
@@ -94,8 +104,9 @@ export async function logout(req: Req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function checkDocName(req: Req, res: express.Response) {
-  let free = !(await query1(config, "SELECT id FROM document WHERE name=$1", [req.query.name]));
-  res.json({ free });
+  // todo
+  // let free = await query1(config, "SELECT is_doc_name_free($1, $2)", [req.query.teamId, req.query.name]);
+  // res.json({ free });
 }
 
 ////////////////////////////////////////////////////////////////////////////////

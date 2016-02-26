@@ -93,7 +93,7 @@ async function preauth(action: string, req: Req, res: express.Response) {
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
-    req.bag.user = await transaction(config, async (client) => {
+    req.bag.user = await transaction(config, async (client) => {  // todo: don't use transaction but keep api
       return await client.call('get_user_by_token', accessToken);
     });
   }
