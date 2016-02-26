@@ -6,6 +6,11 @@ import {TextToken} from '../nlp/text_token';
 export const MAX_CONCUR_ANNOT = 3;
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isSupervisor(roles) {
+  Object.keys(roles).some(x => roles[x] === 'supervisor');
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function mergeXmlFragments(fragments: Array<string>) {
   fragments = fragments.map(x => encloseInRoot(x, 'mi:fragment'));
   return encloseInRootNs(fragments.join(''), 'mi:segment');
