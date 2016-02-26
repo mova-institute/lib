@@ -98,13 +98,16 @@ export async function logout(req: Req, res: express.Response, client: PgClient) 
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function checkDocName(req: Req, res: express.Response, client: PgClient) {
-  // todo
-  // let free = await query1(config, "SELECT is_doc_name_free($1, $2)", [req.query.teamId, req.query.name]);
-  // res.json({ free });
+  if (req.bag.user.roles[req.query.projectName] !== 'supervisor') {
+    throw new HttpError(400);
+  }
+  let projectId = client.select1('project', 'id', 'name=$1', req.query.projectName);
+  let isFree = client.call('is_doc_name_free', 1, req.query.value, projectId)
+  res.json({ isFree });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function addText(req: Req, res: express.Response, client: PgClient) {
+export async function addText(req: Req, res: express.Response, client: PgClient) {  // todo
   let docId = await client.insert('document', {
     name: req.body.name,
     content: req.body.content,
@@ -141,6 +144,10 @@ export async function addText(req: Req, res: express.Response, client: PgClient)
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignTask(req: Req, res: express.Response, client: PgClient) {
+  if (!req.bag.user.roles[req.query.projectName]) {
+    throw new HttpError(400);
+  }
+  
   let projectId = await client.select1('project', 'id', 'name=$1', req.query.projectName);
   let id = await client.call('assign_task_for_annotation', req.bag.user.id, projectId);
 
@@ -150,12 +157,10 @@ export async function assignTask(req: Req, res: express.Response, client: PgClie
 ////////////////////////////////////////////////////////////////////////////////
 export async function disownTask(req: Req, res: express.Response, client: PgClient) {
   let task = await client.select('task', 'id=$1 and user_id=$2', req.query.id, req.bag.user.id);
-  if (task && task.step === 'annotate') {
-    await client.call('disown_task', req.query.id);
-  }
-  else {
+  if (!task || task.step !== 'annotate') {
     throw new HttpError(400);
   }
+  await client.call('disown_task', req.query.id);
 
   res.json('ok');
 }
