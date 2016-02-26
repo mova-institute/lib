@@ -3,7 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
 import {genAccessToken} from '../crypto';
-import {query1} from '../postrges';
+import {transaction} from '../postrges';
 import {ClientConfig} from 'pg';
 import * as debugFactory from 'debug';
 const jwt = require('express-jwt');
@@ -93,7 +93,9 @@ async function preauth(action: string, req: Req, res: express.Response) {
 
   let accessToken = req.query.accessToken || req.cookies.accessToken;
   if (accessToken) {
-    req.bag.user = await query1(config, "SELECT get_user_by_token($1)", [accessToken]);
+    req.bag.user = await transaction(config, async (client) => {
+      return await client.call('get_user_by_token', accessToken);
+    });
   }
 
   return req.bag.user || action === 'getRole';

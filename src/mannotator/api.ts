@@ -2,7 +2,7 @@ import * as express from 'express';
 import {query1, transaction, PgClient} from '../postrges';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError, debug, HttpError} from './server';
-import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskType} from './business';
+import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskStep} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
 import {firstNWords} from '../nlp/utils';
 import * as assert from 'assert';
@@ -15,13 +15,15 @@ const COOKIE_CONFIG = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function getRole(req, res: express.Response) {
-  res.json(req.bag.user && req.bag.user.role || null);
+export async function getRoles(req, res: express.Response) {
+  res.json(req.bag.user && req.bag.user.roles || null);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getInviteDetails(req, res: express.Response) {
-  let details = await (await PgClient.get(config)).call('get_invite_details', req.query.token);
+  let details = await transaction(config, async (client) => {
+    return await client.call('get_invite_details', req.query.token);
+  });
   res.json(details);
 }
 
@@ -79,9 +81,9 @@ export async function login(req, res: express.Response) {
       login.accessToken = await genAccessToken();
       await client.update('login', 'access_token=$1', 'id=$2', login.accessToken, login.id);
     }
-    let role = (await client.select('project_user', 'user_id=$1', login.id)).role;
+    let user = await client.call('get_user_by_token', login.accessToken);
 
-    res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(role);
+    res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(user.roles);
   });
 }
 
@@ -137,11 +139,8 @@ export async function addText(req: Req, res: express.Response) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignTask(req: Req, res: express.Response) {
   let id = await transaction(config, async (client) => {
-    let numAnnotating = (await client.call('get_task_count', req.bag.user.id)).disambiguate_morphologically;  // todo
-    if (numAnnotating >= MAX_CONCUR_ANNOT) {
-      throw new HttpError(400, `Max allowed concurrent annotations (${MAX_CONCUR_ANNOT}) exceeded`);
-    }
-    return await client.call('assign_task_for_annotation', req.bag.user.id, 1);  // todo
+    let projectId = await client.select1('project', 'id', 'name=$1', req.query.projectName);
+    return await client.call('assign_task_for_annotation', req.bag.user.id, projectId);
   });
 
   res.json(wrapData(id));
@@ -151,7 +150,12 @@ export async function assignTask(req: Req, res: express.Response) {
 export async function disownTask(req: Req, res: express.Response) {
   await transaction(config, async (client) => {
     let task = await client.select('task', 'id=$1 and user_id=$2', req.query.id, req.bag.user.id);
-    task && await client.call('disown_task', req.query.id);
+    if (task && task.step === 'annotate') {
+      await client.call('disown_task', req.query.id);
+    }
+    else {
+      throw new HttpError(400);
+    }
   });
   
   res.json('ok');
@@ -159,10 +163,10 @@ export async function disownTask(req: Req, res: express.Response) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getTaskList(req: Req, res: express.Response) {
-  if (req.query.type === 'resolve') {
+  if (req.query.step === 'resolve') {
     req.bag.user.id = null;  // temp, todo
   }  // todo: project_id
-  let ret = await query1(config, "SELECT get_task_list($1, $2, 1)", [req.bag.user.id, req.query.type]);
+  let ret = await query1(config, "SELECT get_task_list($1, $2, null)", [req.bag.user.id, req.query.step]);
   res.json(wrapData(ret));
 }
 
@@ -188,14 +192,14 @@ export async function saveTask(req: Req, res: express.Response) {
 
   const now = new Date();
 
-  let result = await transaction(config, async (client) => {
-    const taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
+  let taskInDb = await transaction(config, async (client) => {
+    let taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
 
     if (!taskInDb || taskInDb.status === 'done' || req.body.fragments.length !== taskInDb.fragments.length) {
       throw new HttpError(400);
     }
 
-    for (let [i, fragment] of req.body.fragments.entries()) {  // todo: status
+    for (let [i, fragment] of req.body.fragments.entries()) {
       await client.insert('fragment_version', {
         taskId: req.body.id,
         docId: taskInDb.docId,
@@ -212,7 +216,7 @@ export async function saveTask(req: Req, res: express.Response) {
 
       for (let task of tocheck) {
 
-        if (taskInDb.type === 'review') {
+        if (taskInDb.step === 'review') {
           await onReviewConflicts(task, now, client);
         }
         else {
@@ -221,7 +225,7 @@ export async function saveTask(req: Req, res: express.Response) {
           for (let fragment of task.fragments) {
             assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts');
             let [mine, theirs] = fragment.annotations;
-            let {marked, numDiffs} = markConflicts(taskInDb.type, mine.content, theirs.content);
+            let {marked, numDiffs} = markConflicts(taskInDb.step, mine.content, theirs.content);
             markedFragments.push(marked);
             diffsTotal += numDiffs;
           }
@@ -231,7 +235,8 @@ export async function saveTask(req: Req, res: express.Response) {
             let reviewTaskId = await client.insert('task', {
               docId: task.docId,
               userId: task.userId,
-              type: nextTaskType(taskToReview.type),
+              type: ['disambiguate_morphologically'],  // todo
+              step: nextTaskStep(taskToReview.step),
               fragmentStart: taskToReview.fragmentStart,
               fragmentEnd: taskToReview.fragmentEnd,
               name: taskToReview.name
@@ -251,16 +256,19 @@ export async function saveTask(req: Req, res: express.Response) {
         }
       }
     }
+    return taskInDb;
   });
 
   if (req.body.grabNext) {
-    result = await transaction(config, async (client) => {
-      let reviewDoc = (await client.call('get_task_list', req.bag.user.id, 'review'))[0];
-      if (reviewDoc) {
-        var nextTaskId = reviewDoc.tasks[0].taskId;
+    await transaction(config, async (client) => {
+      let projectId = await client.select1('document', 'project_id', 'id=$1', taskInDb.docId);
+      let reviewTasks: any[] = await client.call('get_task_list', req.bag.user.id, 'review', null);
+      if (reviewTasks.length) {  // todo: take review from current project if can
+        let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).docs[0];
+        var nextTaskId = doc.tasks[0].taskId;
       }
       else {
-        nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id, 1);   // todo
+        nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id, projectId);
       }
 
       ret.data = nextTaskId || null;
@@ -288,13 +296,14 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
 
     if (numDiffs) {
       // console.error(marked);
-      let alreadyTask = await client.select('task', "doc_id=$1 and fragment_start=$2 and type='resolve'",
+      let alreadyTask = await client.select('task', "doc_id=$1 and fragment_start=$2 and step='resolve'",
         task.docId, fragment.index)
       if (!alreadyTask) {
 
         let newTaskId = await client.insert('task', {
           docId: task.docId,
-          type: 'resolve',
+          type: ['disambiguate_morphologically'],  // todo, test
+          step: 'resolve',
           fragmentStart: fragment.index,
           fragmentEnd: fragment.index,
           name: firstNWords(4, markedDoc.documentElement).join(' ')

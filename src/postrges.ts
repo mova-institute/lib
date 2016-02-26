@@ -33,8 +33,8 @@ export class PgClient {
   constructor(private _client: Client, private _done = null) { }
 
   release() {
-    this._client = null;
     this._done && this._done();
+    this._client = null;
   }
 
   query(queryStr: string, ...params) {

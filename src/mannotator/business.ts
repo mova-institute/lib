@@ -12,7 +12,7 @@ export function mergeXmlFragments(fragments: Array<string>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function nextTaskType(type: string) {
+export function nextTaskStep(type: string) {
   if (type === 'annotate') {
     return 'review';
   }
