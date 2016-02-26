@@ -20,7 +20,13 @@ export async function getRole(req, res: express.Response) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function join(req, res: express.Response) {
+export async function getInviteDetails(req, res: express.Response) {
+  let details = await (await PgClient.get(config)).call('get_invite_details', req.query.token);
+  res.json(details);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function join(req, res: express.Response) {  // todo: implement uppriv, prevent underpriv
   await transaction(config, async (client) => {
     
     let invite = await client.select('invite', 'token=$1', req.body.invite);
@@ -139,6 +145,16 @@ export async function assignTask(req: Req, res: express.Response) {
   });
 
   res.json(wrapData(id));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function disownTask(req: Req, res: express.Response) {
+  await transaction(config, async (client) => {
+    let task = await client.select('task', 'id=$1 and user_id=$2', req.query.id, req.bag.user.id);
+    task && await client.call('disown_task', req.query.id);
+  });
+  
+  res.json('ok');
 }
 
 ////////////////////////////////////////////////////////////////////////////////

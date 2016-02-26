@@ -40,6 +40,7 @@ app.use(bodyParser.text({ limit: '50mb' }));
 app.use(reqBag);
 app.use(errorHandler);
 app.use('/api/login', jwtCheck);
+app.use('/api/join', jwtCheck);
 
 
 app.all('/api/*', async (req: Req, res) => {
@@ -85,7 +86,7 @@ function errorHandler(err, req, res: express.Response, next) {
 
 //------------------------------------------------------------------------------
 async function preauth(action: string, req: Req, res: express.Response) {
-  if (action === 'login' || action === 'join') {
+  if (action === 'login' || action === 'getInviteDetails' || action === 'join') {
     return true;
   }
 
