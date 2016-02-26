@@ -3,7 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
 import {genAccessToken} from '../crypto';
-import {transaction, PgClient} from '../postrges';
+import {PgClient} from '../postrges';
 import {ClientConfig} from 'pg';
 import * as debugFactory from 'debug';
 const jwt = require('express-jwt');
@@ -48,7 +48,7 @@ app.all('/api/*', async (req: Req, res: express.Response) => {
   let action = actions[actionName];
   if (action) {
     try {
-      await transaction(config, async (client) => {
+      await PgClient.transaction(config, async (client) => {
         if (!(await preauth(actionName, req, client))) {
           throw new HttpError(403);
         }

@@ -4,33 +4,35 @@ import {readFileSync} from 'fs'
 import {dirname} from 'path'
 import * as libxmljs from 'libxmljs'
 import {traverseDepth} from '../xml/utils'
-import * as pgUtils from '../postrges';
+import {PgClient} from '../postrges';
 import {ClientConfig} from 'pg';
 import {sleep} from '../lang';
 
-
-
 export const config: ClientConfig = {
-  host: 'mova.institute',
-  database: 'movainstitute',
-  user: 'movainstitute',
-  password: 'movainstituteP@ss'
+  host: 'localhost',
+  port: 5433,
+  database: 'mi_dev',
+  user: 'annotator',
+  password: '@nn0t@t0zh3',
 };
 
-/*(async () => {
+
+main();
+
+
+
+async function main () {
   try {
-    await pgUtils.transaction(config, async (client) => {
-      let sum = await pgUtils.query1Client(client, "SELECT sum(value) FROM test");
-      console.log('sum', sum);
-      console.log('sleeping');
-      await sleep(5000);
-      console.log('woke');
-      await pgUtils.query(client, "INSERT INTO test(value) VALUES($1)", [sum]);
+    PgClient.transaction(config, async (client) => {
+      client.call('popo');
+      let res = await client.call('get_task', 24, 847);
+      console.log('call done', res.docName);
     });
-    process.exit(0);
+    
+    console.log('done');
   }
   catch (e) {
     console.error('catched in main');
     console.error(e);
   }
-})();*/
+}

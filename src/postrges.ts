@@ -24,17 +24,56 @@ types.setTypeParser(PG_TYPES.jsonb, camelizeParseJson);
 
 ////////////////////////////////////////////////////////////////////////////////
 export class PgClient {
+  private _client: Client;
+  private _done: Function;
 
-  static async get(config: ClientConfig) {
+  private static async create(config: ClientConfig) {
     let { client, done } = await getClient(config);
-    return new PgClient(client, done);
+    let ret = new PgClient();
+    ret._client = client;
+    ret._done = done;
+
+    return ret;
   }
 
-  constructor(private _client: Client, private _done = null) { }
+  static async transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
+    let client = await PgClient.create(config);
+
+    for (let i = 1; ; ++i) {
+      try {
+        await client.query("BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
+        var ret = await f(client);
+        await client.query("COMMIT");
+      }
+      catch (e) {
+        await client.query("ROLLBACK");
+
+        const MAX_TRANSACTION_RETRY = 100;
+        if (i === MAX_TRANSACTION_RETRY) {
+          throw new Error('Max transaction retries exceeded');
+        }
+
+        if (e instanceof Error && e.code === PG_ERR.serialization_failure) {
+          continue;
+        }
+
+        throw e;
+      }
+      finally {
+        client.release();
+      }
+
+      break;
+    }
+
+    return ret;
+  }
+
+  constructor() { }
 
   release() {
-    this._done && this._done();
     this._client = null;
+    this._done && this._done();
   }
 
   query(queryStr: string, ...params) {
@@ -99,7 +138,6 @@ export function getClient(config: ClientConfig) {
   return new Promise<{ client: Client, done }>((resolve, reject) => {
     connect(config, (err, client, done) => {
       if (err) {
-        console.error(err);
         reject(err);
       }
       else {
@@ -134,58 +172,6 @@ export async function query1Client(client: Client, queryStr: string, params: Arr
   return ret;
 }
 
-/*////////////////////////////////////////////////////////////////////////////////
-export async function query1(config: ClientConfig, queryStr: string, params: Array<any> = []) {
-  let { client, done } = await getClient(config);
-  let ret = await query1Client(client, queryStr, params);
-  done();
-
-  return ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export async function queryNumRows(config: ClientConfig, queryStr: string, params: Array<any> = []) {
-  let { client, done } = await getClient(config);
-  let res = await query(client, queryStr, params);
-  let ret = res && (<any>res).rowCount || null;
-  done();
-
-  return ret;
-}*/
-
-////////////////////////////////////////////////////////////////////////////////
-export async function transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
-  let client = await PgClient.get(config);
-
-  for (let i = 1; ; ++i) {
-    try {
-      await client.query("BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
-      var ret = await f(client);
-      await client.query("COMMIT");
-    }
-    catch (e) {
-      await client.query("ROLLBACK");
-
-      const MAX_TRANSACTION_RETRY = 100;
-      if (i === MAX_TRANSACTION_RETRY) {
-        throw new Error('Max transaction retries exceeded');
-      }
-
-      if (e instanceof Error && e.code === PG_ERR.serialization_failure) {
-        continue;
-      }
-
-      throw e;
-    }
-    finally {
-      client.release();
-    }
-
-    break;
-  }
-
-  return ret;
-}
 
 
 //------------------------------------------------------------------------------
