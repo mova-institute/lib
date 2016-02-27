@@ -2,10 +2,9 @@
 
 
 enum NounType { common, proper }
-
 enum Gender { masculine, feminine, neuter }
 enum Case { nominative, genitive, dative, accusative, instrumental, locative, vocative }
-enum Number_ { singular, dual, plural }
+enum Numberr { singular, dual, plural }
 enum Person { first, second, third }
 enum Tense { present, future, past }
 enum Aspect { progressive, perfective }
@@ -23,7 +22,7 @@ interface CaseInflectable {
   case: Case;
 }
 interface NumberInflectable {
-  number: Number_;
+  number: Numberr;
 }
 interface TenseInflectable {
   tense: Tense;
@@ -56,7 +55,7 @@ class Token {
 ////////////////////////////////////////////////////////////////////////////////
 class Noun extends Token implements CaseInflectable, NumberInflectable {
   case: Case;
-  number: Number_;
+  number: Numberr;
 
   type_: NounType;
   gender_: Gender;
@@ -70,7 +69,7 @@ class Verb extends Token implements AspectInflectable, MoodInflectable, TenseInf
   mood: Mood;
   tense: Tense;
   person: Person;
-  number: Number_;
+  number: Numberr;
   gender: Gender;
   
 
@@ -82,7 +81,7 @@ class Adjective extends Token implements DegreeInflectable, GenderInflectable, N
                                          CaseInflectable, DefinitenessInflectable, AnimacyInflectable {
   degree: Degree;
   gender: Gender;
-  number: Number_;
+  number: Numberr;
   case: Case;
   definiteness: Definiteness;
   animacy: Animacy;

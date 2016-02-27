@@ -48,3 +48,13 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
 
 	return ret;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function indexTableByColumn(table: Object[], columnName: string) {
+  let ret = new Map();
+  for (let row of table) {
+    ret.set(row[columnName], row);
+  }
+  
+  return ret;
+}
