@@ -1,5 +1,5 @@
 import {ioArgs3} from '../cli_utils';
-import {readTillEnd} from '../stream_utils.node'
+import {readTillEnd} from '../stream_utils.node';
 import {string2lxmlRoot} from '../utils.node';
 import {IElement} from '../xml/api/interfaces';
 
@@ -25,6 +25,9 @@ async function main() {
       let root = string2lxmlRoot(inputStr);
       let res: IElement = func(root);
       output.write(res.ownerDocument.serialize());
+    }
+    else {
+      output.write(func(inputStr));
     }
   }
   catch (e) {

@@ -1,23 +1,22 @@
-import {ioArgs} from '../cli_utils';
-import {createInterface} from 'readline';
-import * as fs from 'fs';
+import {ioArgs3} from '../cli_utils';
+import {readTillEnd} from '../stream_utils.node';
 
-let filename = process.argv[2];
-let input = fs.createReadStream(filename, 'utf8');
+const args = require('minimist')(process.argv.slice(2));
 
-//let [input, output] = ioArgs();
+let [input, output] = ioArgs3(args._[0], args._[1]);
 
-let lines = [];
-createInterface({input}).on('line', (line: string) => {
-	lines.push(line);
-}).on('close', () => {
-	let collator = new Intl.Collator('uk-dict-UA', {
-		sensitivity: 'base',
-		//ignorePunctuation: true,
-		//localeMatcher: 'lookup',
-		//numeric: true,
-		caseFirst: 'upper'
-	});
-	lines.sort(collator.compare);
-	fs.createWriteStream(filename).write(lines.join('\n'));
-});
+
+let collator = new Intl.Collator('uk-dict-UA', {
+    sensitivity: 'base',
+    //ignorePunctuation: true,
+    //localeMatcher: 'lookup',
+    //numeric: true,
+    caseFirst: 'upper'
+  });
+
+async function main() {
+  let inputStr = await readTillEnd(input);
+  output.write(inputStr.split('\n').filter(x => !!x).sort(collator.compare).join('\n'));
+}
+
+main();
