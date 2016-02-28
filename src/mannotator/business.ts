@@ -11,6 +11,13 @@ export function isSupervisor(roles) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function canDisownTask(task) {
+  return task
+    && task.isMine
+    && (task.step === 'annotate' || task.step === 'resolve');
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function mergeXmlFragments(fragments: Array<string>) {
   fragments = fragments.map(x => encloseInRoot(x, 'mi:fragment'));
   return encloseInRootNs(fragments.join(''), 'mi:segment');

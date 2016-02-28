@@ -2,7 +2,7 @@ import * as express from 'express';
 import {PgClient} from '../postrges';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError, debug, HttpError} from './server';
-import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskStep} from './business';
+import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskStep, canDisownTask} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
 import {firstNWords} from '../nlp/utils';
 import * as assert from 'assert';
@@ -155,9 +155,14 @@ export async function assignTask(req: Req, res: express.Response, client: PgClie
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export async function assignResolveTask(req: Req, res: express.Response, client: PgClient) {
+  // todo
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export async function disownTask(req: Req, res: express.Response, client: PgClient) {
-  let task = await client.select('task', 'id=$1 and user_id=$2', req.query.id, req.bag.user.id);
-  if (!task || task.step !== 'annotate') {
+  let task = await client.call('get_task', req.bag.user.id, req.query.id);
+  if (!canDisownTask(task)) {
     throw new HttpError(400);
   }
   await client.call('disown_task', req.query.id);
@@ -166,10 +171,13 @@ export async function disownTask(req: Req, res: express.Response, client: PgClie
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export async function getResolvePool(req: Req, res: express.Response, client: PgClient) {
+  let ret = await client.call('get_resolve_pool', req.bag.user.id);
+  res.json(wrapData(ret));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export async function getTaskList(req: Req, res: express.Response, client: PgClient) {
-  if (req.query.step === 'resolve') {
-    req.bag.user.id = null;  // temp, todo
-  }  // todo: project_id
   let ret = await client.call('get_task_list', req.bag.user.id, req.query.step, null);
   res.json(wrapData(ret));
 }
@@ -198,7 +206,10 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
 
   let taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
 
-  if (!taskInDb || taskInDb.status === 'done' || req.body.fragments.length !== taskInDb.fragments.length) {
+  if (!taskInDb
+    || !taskInDb.isMine
+    || taskInDb.status === 'done'
+    || req.body.fragments.length !== taskInDb.fragments.length) {
     throw new HttpError(400);
   }
 
