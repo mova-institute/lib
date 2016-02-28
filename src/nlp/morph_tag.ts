@@ -50,7 +50,8 @@ export enum Degree {
 
 ///// Verbal /////
 export enum VerbForm {
-  // todo
+  participle,  // дієприкм
+  transgressive,  // дієприсл
 };
 export enum Mood {
   indicative,
@@ -151,8 +152,8 @@ export const featureTable = [
   { feat: 'сonjunctionType', featMi: null, mi: Pos.coordinatingConjunction, vesum: 'coord', mte: 'c' },
   { feat: 'сonjunctionType', featMi: null, mi: Pos.subordinatingConjunction, vesum: 'subord', mte: 's' },
 
-  { feat: 'pos', featMi: null, mi: null, vesum: 'noun', mte: 'N' },  // todo
-  { feat: 'pos', featMi: Pos, mi: Pos.pronoun, vesum: 'pron', mte: null },
+  { feat: 'pos', featMi: null, mi: null, vesum: 'noun', mte: 'N' },
+  { feat: 'pos', featMi: Pos, mi: Pos.pronoun, vesum: 'pron', mte: null },  // todo: null?
   { feat: 'pos', featMi: Pos, mi: Pos.verb, vesum: 'verb', mte: 'V' },
   { feat: 'pos', featMi: Pos, mi: Pos.adjective, vesum: 'adj', mte: 'A' },
   { feat: 'pos', featMi: null, mi: null, vesum: 'adjp', mte: null },
@@ -208,10 +209,10 @@ export class MorphTag {
   }
 
   // expects altFlagsStr() output
-  static fromVesum(value: string[]) {
+  static fromVesum(lemma: string, flags: string[]) {
     let ret = new MorphTag();
 
-    for (let flag of value) {
+    for (let flag of flags) {
       let row = mapVesum.get(flag);
       if (row) {
         if (row.featMi) {
@@ -222,8 +223,16 @@ export class MorphTag {
           if (feature === 'сonjunctionType') {
             ret.pos = row.mi;
           }
+          else if (flag === 'conj') { }
           else if (flag === 'noun') {
-
+            ret.pos = startsWithCapital(lemma) ? Pos.properNoun : Pos.noun;  // todo: abbrs
+          }
+          else if (flag === '&pron') {
+            
+            ret.pos = Pos.pronoun;
+          }
+          else if (flag === 'advp') {
+            ret.pos = Pos.verb;
           }
         }
       }
@@ -335,15 +344,19 @@ export function expandVesumTag(value: string) {
 
 
 
-
+//------------------------------------------------------------------------------
+function startsWithCapital(str: string) {
+  return str && str.charAt(0).toLowerCase() !== str.charAt(0);
+}
 
 
 /*
 
 todo:
-- strings to symbol/enum
+- all string identifiers/symbols to symbol/enum
+- verb form/mood
 
-
-vesum tests: conjunction always has type
+vesum tests:
+- conjunction always has type
 
 */
