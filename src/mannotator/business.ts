@@ -11,10 +11,13 @@ export function isSupervisor(roles) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function canEditTask(task) {
+  return task && task.isMine && task.status !== 'done';
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function canDisownTask(task) {
-  return task
-    && task.isMine
-    && (task.step === 'annotate' || task.step === 'resolve');
+  return canEditTask(task) && (task.step === 'annotate' || task.step === 'resolve');
 }
 
 ////////////////////////////////////////////////////////////////////////////////

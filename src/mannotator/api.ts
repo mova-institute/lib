@@ -2,7 +2,7 @@ import * as express from 'express';
 import {PgClient} from '../postrges';
 import {genAccessToken} from '../crypto';
 import {config, Req, sendError, debug, HttpError} from './server';
-import {MAX_CONCUR_ANNOT, mergeXmlFragments, nextTaskStep, canDisownTask} from './business';
+import {mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
 import {firstNWords} from '../nlp/utils';
 import * as assert from 'assert';
@@ -202,14 +202,8 @@ export async function getTask(req: Req, res: express.Response, client: PgClient)
 export async function saveTask(req: Req, res: express.Response, client: PgClient) {
   let ret: any = { msg: 'ok' };
 
-  const now = new Date();
-
   let taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
-
-  if (!taskInDb
-    || !taskInDb.isMine
-    || taskInDb.status === 'done'
-    || req.body.fragments.length !== taskInDb.fragments.length) {
+  if (!canEditTask(taskInDb) || req.body.fragments.length !== taskInDb.fragments.length) {
     throw new HttpError(400);
   }
 
@@ -219,7 +213,6 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
       docId: taskInDb.docId,
       index: taskInDb.fragmentStart + i,
       status: 'in_progress',
-      addedAt: now,
       content: fragment
     });
   }
@@ -231,7 +224,7 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
     for (let task of tocheck) {
 
       if (taskInDb.step === 'review') {
-        await onReviewConflicts(task, now, client);
+        await onReviewConflicts(task, client);
       }
       else {
         let markedFragments = [];
@@ -262,7 +255,6 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
               docId: task.docId,
               index: taskToReview.fragmentStart + i,
               status: 'pristine',
-              addedAt: now,
               content: fragment
             });
           }
@@ -295,7 +287,7 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-async function onReviewConflicts(task, now: Date, client: PgClient) {
+async function onReviewConflicts(task, client: PgClient) {
 
   for (let fragment of task.fragments) {
     assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts');
@@ -325,7 +317,6 @@ async function onReviewConflicts(task, now: Date, client: PgClient) {
           docId: task.docId,
           index: fragment.index,
           status: 'pristine',
-          addedAt: now,
           content: markedStr
         });
       }
