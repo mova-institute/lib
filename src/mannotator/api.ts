@@ -269,7 +269,7 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
     let reviewTasks: any[] = await client.call('get_task_list', req.bag.user.id, 'review', null);
     if (reviewTasks.length) {  // todo: take review from current project if can
       let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).docs[0];
-      var nextTaskId = doc.tasks[0].taskId;
+      var nextTaskId = doc.tasks[0].id;
     }
     else {
       nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id, projectId);
