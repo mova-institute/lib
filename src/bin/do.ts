@@ -27,10 +27,11 @@ async function main() {
       output.write(res.ownerDocument.serialize());
     }
     else {
-      output.write(func(inputStr));
+      let res = func(inputStr);
+      res && output.write(res);
     }
   }
   catch (e) {
-    console.error(e)
+    console.error(e.stack)
   }
 }

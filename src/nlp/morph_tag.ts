@@ -1,27 +1,54 @@
 import {indexTableByColumns} from '../algo';
 
-export enum Pos { // todo
-  adjective,
-  adposition,
-  adverb,
-  auxiliaryVerb, // ?
-  coordinatingConjunction, // ?
-  // determiner,
-  interjection,
+export enum Pos {
   noun,
-  numeral,
+  verb,
+  adjective,
+  adverb,
+  transgressive,
+  preposition,
+  predic,  // todo
+  insert,  // todo
+  conjunction,
   particle,
-  pronoun,
-  properNoun,  // ?
-  //punctuation,
-  subordinatingConjunction, //?
-  //symbol
-  verb
+  interjection,
+  transl,  // todo
+  numeral,
 };
 
+export enum Pos2 {
+  pronoun,
+  participle,
+  numeral
+};
+
+
 ///// Nominal /////
-export enum Gender { masculine, feminine, neuter, /*common*/ };
-export enum Animacy { animate, inanimate };
+
+export enum NounType {
+  common,
+  proper
+};
+
+export enum Gender {
+  masculine,
+  feminine,
+  neuter,
+  // common,
+};
+
+export enum Animacy {
+  animate,
+  inanimate,
+  undefined,  // ?
+};
+
+export enum RequiredAnimacy {
+  animate,
+  inanimate
+};
+
+
 export enum Numberr {
   singular,
   plural,
@@ -39,6 +66,15 @@ export enum Case {
   locative,
   vocative,
   // other non-ukr
+};
+
+export enum RequiredCase {
+  // nominative,
+  genitive,
+  dative,
+  accusative,
+  instrumental,
+  locative,
 };
 
 export enum Degree {
@@ -64,7 +100,7 @@ export enum Aspect { imperfect, perfect };
 export enum Voice { active, passive };
 export enum Person { first, second, third };
 export enum VerbNegative { positive, negative };  // todo
-// export enum VerbType { main, auxilary };
+export enum VerbType { main, auxilary };
 
 ///// Lexical /////
 export enum PronominalType {
@@ -77,269 +113,251 @@ export enum PronominalType {
   reflexive,
   negative,
   general,
-  emphatic
-}
+  emphatic,
+  definitive,  // todo
+};
 
 export enum NumeralType {
-
-}
+  
+};
 
 export enum Variant {
   short,
   full
-}
+};
 
 export enum Style {
   colloquial,
   archaic,
   rare,
+  slang,
+};
+
+export enum ConjunctionType { 
+  coordinating,
+  subordinating
+};
+
+export enum NumberTantum {
+  noPlural,
+  noSingular
+};
+
+export enum NameType {
+  first,
+  last,
+  patronym
 }
+
+// export enum CaseInflected {
+//   yes,
+//   no,
+// }
+
 
 
 export const featureTable = [
-  { feat: 'animacy', featMi: Animacy, mi: Animacy.animate, vesum: 'anim', mte: 'y' },
-  { feat: 'animacy', featMi: Animacy, mi: Animacy.inanimate, vesum: 'inanim', mte: 'n' },
-  { feat: 'animacy', featMi: Animacy, mi: Animacy.animate, vesum: 'ranim', mte: 'y' },  // ?
-  { feat: 'animacy', featMi: Animacy, mi: Animacy.inanimate, vesum: 'rinanim', mte: 'n' },  // ?
+  
+  { featStr: 'nounType', mte: 'c' },
+  { featStr: 'nounType', mte: 'p' },
+  
+  // { featStr: 'caseInflected', featVesum: CaseInflected, vesum: CaseInflected.no, vesumStr: 'nv' },
+  
+  { featStr: 'style', featVesum: Style, vesum: Style.rare, vesumStr: 'rare' },
+  { featStr: 'style', featVesum: Style, vesum: Style.colloquial, vesumStr: 'coll' },
+  { featStr: 'style', featVesum: Style, vesum: Style.slang, vesumStr: 'slang' },
+  
+  { featStr: 'nameType', featVesum: NameType, vesum: NameType.first, vesumStr: 'fname' },
+  { featStr: 'nameType', featVesum: NameType, vesum: NameType.last, vesumStr: 'lname' },
+  { featStr: 'nameType', featVesum: NameType, vesum: NameType.patronym, vesumStr: 'patr' },
+  
+  { featStr: 'animacy', featVesum: Animacy, vesum: Animacy.animate, vesumStr: 'anim', mte: 'y' },
+  { featStr: 'animacy', featVesum: Animacy, vesum: Animacy.inanimate, vesumStr: 'inanim', mte: 'n' },
+  { featStr: 'animacy', featVesum: Animacy, vesum: Animacy.undefined, vesumStr: 'unanim' },
+  
+  { featStr: 'requiredAnimacy', featVesum: RequiredAnimacy, vesum: Animacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
+  { featStr: 'requiredAnimacy', featVesum: RequiredAnimacy, vesum: Animacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
 
-  { feat: 'case', featMi: Case, mi: Case.nominative, vesum: 'v_naz', mte: 'n' },
-  { feat: 'case', featMi: Case, mi: Case.genitive, vesum: 'v_rod', mte: 'g' },
-  { feat: 'case', featMi: Case, mi: Case.dative, vesum: 'v_dav', mte: 'd' },
-  { feat: 'case', featMi: Case, mi: Case.accusative, vesum: 'v_zna', mte: 'a' },
-  { feat: 'case', featMi: Case, mi: Case.instrumental, vesum: 'v_oru', mte: 'i' },
-  { feat: 'case', featMi: Case, mi: Case.locative, vesum: 'v_mis', mte: 'l' },
-  { feat: 'case', featMi: Case, mi: Case.vocative, vesum: 'v_kly', mte: 'v' },
-  // { feat: 'case', featMi: Case, mi: Case, vesum: 'rv_naz', mte: 'n' }, 	// featMi: Case?
-  { feat: 'case', featMi: Case, mi: Case.genitive, vesum: 'rv_rod', mte: 'g' }, 	// featMi: Case?
-  { feat: 'case', featMi: Case, mi: Case.dative, vesum: 'rv_dav', mte: 'd' }, 	// featMi: Case?
-  { feat: 'case', featMi: Case, mi: Case.accusative, vesum: 'rv_zna', mte: 'a' }, 	// featMi: Case?
-  { feat: 'case', featMi: Case, mi: Case.instrumental, vesum: 'rv_oru', mte: 'i' }, 	// featMi: Case?
-  { feat: 'case', featMi: Case, mi: Case.locative, vesum: 'rv_mis', mte: 'l' }, 	// featMi: Case?
+  { featStr: 'reflexive', vesum: true, vesumStr: 'rev' },  // ?
+  
+  { featStr: 'case', featVesum: Case, vesum: Case.nominative, vesumStr: 'v_naz', mte: 'n' },
+  { featStr: 'case', featVesum: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
+  { featStr: 'case', featVesum: Case, vesum: Case.dative, vesumStr: 'v_dav', mte: 'd' },
+  { featStr: 'case', featVesum: Case, vesum: Case.accusative, vesumStr: 'v_zna', mte: 'a' },
+  { featStr: 'case', featVesum: Case, vesum: Case.instrumental, vesumStr: 'v_oru', mte: 'i' },
+  { featStr: 'case', featVesum: Case, vesum: Case.locative, vesumStr: 'v_mis', mte: 'l' },
+  { featStr: 'case', featVesum: Case, vesum: Case.vocative, vesumStr: 'v_kly', mte: 'v' },
+  
+  { featStr: 'requiredCase', featVesum: RequiredCase, vesum: RequiredCase.genitive, vesumStr: 'rv_rod', mte: 'g' },
+  { featStr: 'requiredCase', featVesum: RequiredCase, vesum: RequiredCase.dative, vesumStr: 'rv_dav', mte: 'd' },
+  { featStr: 'requiredCase', featVesum: RequiredCase, vesum: RequiredCase.accusative, vesumStr: 'rv_zna', mte: 'a' },
+  { featStr: 'requiredCase', featVesum: RequiredCase, vesum: RequiredCase.instrumental, vesumStr: 'rv_oru', mte: 'i' },
+  { featStr: 'requiredCase', featVesum: RequiredCase, vesum: RequiredCase.locative, vesumStr: 'rv_mis', mte: 'l' },
 
-  { feat: 'aspect', featMi: Aspect, mi: Aspect.imperfect, vesum: 'imperf', mte: 'p' },
-  { feat: 'aspect', featMi: Aspect, mi: Aspect.perfect, vesum: 'perf', mte: 'e' },
+  { featStr: 'aspect', featVesum: Aspect, vesum: Aspect.imperfect, vesumStr: 'imperf', mte: 'p' },
+  { featStr: 'aspect', featVesum: Aspect, vesum: Aspect.perfect, vesumStr: 'perf', mte: 'e' },
 
-  { feat: 'tense', featMi: Tense, mi: Tense.past, vesum: 'past', mte: 's' },
-  { feat: 'tense', featMi: Tense, mi: Tense.present, vesum: 'pres', mte: 'p' },
-  { feat: 'tense', featMi: Tense, mi: Tense.future, vesum: 'futr', mte: 'f' },
+  { featStr: 'tense', featVesum: Tense, vesum: Tense.past, vesumStr: 'past', mte: 's' },
+  { featStr: 'tense', featVesum: Tense, vesum: Tense.present, vesumStr: 'pres', mte: 'p' },
+  { featStr: 'tense', featVesum: Tense, vesum: Tense.future, vesumStr: 'futr', mte: 'f' },
 
-  { feat: 'verbForm', featMi: Mood, mi: Mood.imperative, vesum: 'impr', mte: 'm' },
-  { feat: 'verbForm', featMi: Mood, mi: Mood.infinitive, vesum: 'inf', mte: 'n' },
-  { feat: 'verbForm', featMi: Mood, mi: Mood.impersonal, vesum: 'impers', mte: 'o' },
+  { featStr: 'mood', featVesum: Mood, vesum: Mood.imperative, vesumStr: 'impr', mte: 'm' },
+  { featStr: 'mood', featVesum: Mood, vesum: Mood.infinitive, vesumStr: 'inf', mte: 'n' },
+  { featStr: 'mood', featVesum: Mood, vesum: Mood.impersonal, vesumStr: 'impers', mte: 'o' },
 
-  { feat: 'voice', featMi: Voice, mi: Voice.active, vesum: 'actv', mte: 'a' },
-  { feat: 'voice', featMi: Voice, mi: Voice.passive, vesum: 'pasv', mte: 'p' },
+  { featStr: 'voice', featVesum: Voice, vesum: Voice.active, vesumStr: 'actv', mte: 'a' },
+  { featStr: 'voice', featVesum: Voice, vesum: Voice.passive, vesumStr: 'pasv', mte: 'p' },
 
-  { feat: 'degree', featMi: Degree, mi: Degree.positive, vesum: 'compb', mte: 'p' },
-  { feat: 'degree', featMi: Degree, mi: Degree.comparative, vesum: 'compr', mte: 'c' },
-  { feat: 'degree', featMi: Degree, mi: Degree.superlative, vesum: 'super', mte: 's' },
+  { featStr: 'degree', featVesum: Degree, vesum: Degree.positive, vesumStr: 'compb', mte: 'p' },
+  { featStr: 'degree', featVesum: Degree, vesum: Degree.comparative, vesumStr: 'compr', mte: 'c' },
+  { featStr: 'degree', featVesum: Degree, vesum: Degree.superlative, vesumStr: 'super', mte: 's' },
 
-  { feat: 'definiteness', featMi: Variant, mi: Variant.short, vesum: 'short', mte: 's' },
-  { feat: 'definiteness', featMi: Variant, mi: Variant.full, vesum: 'uncontr', mte: 'f' },
+  { featStr: 'variant', featVesum: Variant, vesum: Variant.short, vesumStr: 'short', mte: 's' },
+  { featStr: 'variant', featVesum: Variant, vesum: Variant.full, vesumStr: 'uncontr', mte: 'f' },
 
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.personal, vesum: 'pers', mte: 'p' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.reflexive, vesum: 'refl', mte: 'x' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.possessive, vesum: 'pos', mte: 's' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.demonstrative, vesum: 'dem', mte: 'd' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.interrogative, vesum: 'int', mte: 'q' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.relative, vesum: 'rel', mte: 'r' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.negative, vesum: 'neg', mte: 'z' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.indefinite, vesum: 'ind', mte: 'i' },
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.general, vesum: 'gen', mte: 'g' },
-  { feat: 'pronounType', featMi: null, mi: null, vesum: 'def', mte: '?' },  // todo
-  { feat: 'pronounType', featMi: PronominalType, mi: PronominalType.emphatic, vesum: 'emph', mte: 'h' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.possessive, vesumStr: 'pos', mte: 's' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.demonstrative, vesumStr: 'dem', mte: 'd' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.interrogative, vesumStr: 'int', mte: 'q' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.relative, vesumStr: 'rel', mte: 'r' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.negative, vesumStr: 'neg', mte: 'z' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.indefinite, vesumStr: 'ind', mte: 'i' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.general, vesumStr: 'gen', mte: 'g' },
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.definitive, vesumStr: 'def', mte: '?' },  // todo
+  { featStr: 'pronominalType', featVesum: PronominalType, vesum: PronominalType.emphatic, vesumStr: 'emph', mte: 'h' },
 
-  { feat: 'сonjunctionType', featMi: null, mi: Pos.coordinatingConjunction, vesum: 'coord', mte: 'c' },
-  { feat: 'сonjunctionType', featMi: null, mi: Pos.subordinatingConjunction, vesum: 'subord', mte: 's' },
+  { featStr: 'сonjunctionType', featVesum: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
+  { featStr: 'сonjunctionType', featVesum: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
 
-  { feat: 'pos', featMi: null, mi: null, vesum: 'noun', mte: 'N' },
-  { feat: 'pos', featMi: Pos, mi: Pos.pronoun, vesum: 'pron', mte: null },  // todo: null?
-  { feat: 'pos', featMi: Pos, mi: Pos.verb, vesum: 'verb', mte: 'V' },
-  { feat: 'pos', featMi: Pos, mi: Pos.adjective, vesum: 'adj', mte: 'A' },
-  { feat: 'pos', featMi: null, mi: null, vesum: 'adjp', mte: null },
-  { feat: 'pos', featMi: Pos, mi: Pos.adverb, vesum: 'adv', mte: 'R' },
-  { feat: 'pos', featMi: null, mi: null, vesum: 'advp', mte: null },
-  { feat: 'pos', featMi: Pos, mi: Pos, vesum: 'prep', mte: 'S' },
-  { feat: 'pos', featMi: null, mi: null, vesum: 'predic', mte: null },  // ?
-  { feat: 'pos', featMi: null, mi: null, vesum: 'insert', mte: null },  // ?
-  { feat: 'pos', featMi: null, mi: null, vesum: 'transl', mte: null },  // ?
-  { feat: 'pos', featMi: null, mi: null, vesum: 'conj', mte: 'C' },
-  { feat: 'pos', featMi: Pos, mi: Pos.particle, vesum: 'part', mte: 'Q' },
-  { feat: 'pos', featMi: Pos, mi: Pos.interjection, vesum: 'excl', mte: 'I' },
-  { feat: 'pos', featMi: Pos, mi: Pos.numeral, vesum: 'numr', mte: 'M' },
-  // { feat: 'pos', featMi: Pos, mi: Pos.auxiliaryVerb, mte: 'M' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.noun, vesumStr: 'noun', mte: 'N' },
+  { featStr: 'pos', mte: 'P' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.verb, vesumStr: 'verb', mte: 'V' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.adjective, vesumStr: 'adj', mte: 'A' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.adverb, vesumStr: 'adv', mte: 'R' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.transgressive, vesumStr: 'advp' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.preposition, vesumStr: 'prep', mte: 'S' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.predic, vesumStr: 'predic' },  // ?
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.insert, vesumStr: 'insert' },  // ?
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.transl, vesumStr: 'transl' },  // ?
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.conjunction, vesumStr: 'conj', mte: 'C' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.interjection, vesumStr: 'excl', mte: 'I' },
+  { featStr: 'pos', featVesum: Pos, vesum: Pos.numeral, vesumStr: 'numr', mte: 'M' },
+  
+  { featStr: 'pos2', featVesum: Pos2, vesum: Pos2.numeral, vesumStr: '&numr' },
+  { featStr: 'pos2', featVesum: Pos2, vesum: Pos2.participle, vesumStr: '&adjp' },
+  { featStr: 'pos2', featVesum: Pos2, vesum: Pos2.pronoun, vesumStr: '&pron' },
 
-  { feat: 'gender', featMi: Gender, mi: Gender.masculine, vesum: 'm', mte: 'm' },
-  { feat: 'gender', featMi: Gender, mi: Gender.feminine, vesum: 'f', mte: 'f' },
-  { feat: 'gender', featMi: Gender, mi: Gender.neuter, vesum: 'n', mte: 'n' },
+  { featStr: 'gender', featVesum: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
+  { featStr: 'gender', featVesum: Gender, vesum: Gender.feminine, vesumStr: 'f', mte: 'f' },
+  { featStr: 'gender', featVesum: Gender, vesum: Gender.neuter, vesumStr: 'n', mte: 'n' },
 
-  { feat: 'number', featMi: Numberr, mi: Numberr.plural, vesum: 'p', mte: 'p' },
-  { feat: 'number', featMi: Numberr, mi: Numberr.singular, vesum: 's', mte: 's' },
+  { featStr: 'number', featVesum: Numberr, vesum: Numberr.plural, vesumStr: 'p', mte: 'p' },
+  { featStr: 'number', featVesum: Numberr, vesum: Numberr.singular, vesumStr: 's', mte: 's' },
 
-  { feat: 'person', featMi: Person, mi: Person.first, vesum: '1', mte: '1' },
-  { feat: 'person', featMi: Person, mi: Person.second, vesum: '2', mte: '2' },
-  { feat: 'person', featMi: Person, mi: Person.third, vesum: '3', mte: '3' },
+  { featStr: 'person', featVesum: Person, vesum: Person.first, vesumStr: '1', mte: '1' },
+  { featStr: 'person', featVesum: Person, vesum: Person.second, vesumStr: '2', mte: '2' },
+  { featStr: 'person', featVesum: Person, vesum: Person.third, vesumStr: '3', mte: '3' },
 
-  { feat: 'numberTantum', featMi: null, vesum: 'np', mte: null },
-  { feat: 'numberTantum', featMi: null, vesum: 'ns', mte: null },
+  { featStr: 'numberTantum', featVesum: NumberTantum, vesum: NumberTantum.noPlural, vesumStr: 'np' },
+  { featStr: 'numberTantum', featVesum: NumberTantum, vesum: NumberTantum.noSingular, vesumStr: 'ns' },
 ];
 
+export const mteFeatures = {
+  'N': [NounType, Gender, Numberr, Case, Animacy],
+  'V': [VerbType, Aspect, VerbForm, Tense, Person, Numberr, Gender],
+  // 'A': [null, Degree, Gender, Numberr, Case, Definiteness, Animacy, Aspect, Voice, Tense],
+  'P': [PronominalType, null, Person, Gender, Animacy, Numberr, Case, null],
+  'R': [Degree],
+  'S': [null, null, Case],
+  'C': [ConjunctionType, null],
+  'M': [NumeralType, ],
+  '': [],
+};
 
-const mapMi = indexTableByColumns(featureTable, ['featMi', 'mi']);
-const mapVesum: Map<string, any> = indexTableByColumns(featureTable, ['vesum']);
+
+export const MAP_VESUM_FEAT = indexTableByColumns(featureTable, ['featStr', 'vesum']);
+export const MAP_VESUM: Map<string, any> =
+  indexTableByColumns(featureTable.filter((x: any) => x.vesum !== undefined), ['vesumStr']);
 
 
+// console.log(MAP_VESUM);
 
 
+////////////////////////////////////////////////////////////////////////////////
+// represents a single unambiguous morphological interpretation
 export class MorphTag {
+  private static otherFlagsAllowed = new Set([
+    'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
+    'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin']);
+  
   pos: Pos;
+  pos2: Pos2;
   case: Case;
+  requiredCase: RequiredCase;
   number: Numberr;
   aspect: Aspect;
   tense: Tense;
   mood: Mood;
   person: Person;
-  // voice: Voice;
+  voice: Voice;
   animacy: Animacy;
+  requiredAnimacy: RequiredAnimacy;
   gender: Gender;
   degree: Degree;
-
-  static fromMte5(value: string): any {
-    return featureTable;
-  }
-
-  // expects altFlagsStr() output
-  static fromVesum(lemma: string, flags: string[]) {
+  variant: Variant;
+  pronominalType: PronominalType;
+  numberTantum: NumberTantum;
+  reflexive: boolean;
+  style: Style;
+  
+  otherFlags = new Set<string>();
+  
+  
+  static fromVesum(tag: string, lemma?: string) {
     let ret = new MorphTag();
-
-    for (let flag of flags) {
-      let row = mapVesum.get(flag);
+    
+    for (let flag of tag.split(':')) {
+      let row = MAP_VESUM.get(flag);
       if (row) {
-        if (row.featMi) {
-          ret[row.feat] = row.mi;  // todo
-        }
-        else {
-          let feature = row.feat;
-          if (feature === 'сonjunctionType') {
-            ret.pos = row.mi;
-          }
-          else if (flag === 'conj') { }
-          else if (flag === 'noun') {
-            ret.pos = startsWithCapital(lemma) ? Pos.properNoun : Pos.noun;  // todo: abbrs
-          }
-          else if (flag === '&pron') {
-            
-            ret.pos = Pos.pronoun;
-          }
-          else if (flag === 'advp') {
-            ret.pos = Pos.verb;
-          }
-        }
+        ret[row.featStr] = row.vesum;
       }
       else {
-        console.error(`No mapping for vesum’s '${flag}'`);
+        if (MorphTag.otherFlagsAllowed.has(flag)) {
+          ret.otherFlags.add(flag);
+        }
+        else {
+          throw new Error(`Unknow flag "${flag}" in tag "${tag}" lemma ${lemma}`);
+        }
       }
     }
-
+    
+    if (false && lemma) {
+      
+    }
+    
     return ret;
   }
 
-  static fromUd(value: string) {
-
-  }
-
-  toMte5() {
-    switch (this.pos) {
-      case Pos.noun:
-      case Pos.properNoun: {
-        return 'N'
-          + ''
-      }
-      
-      case Pos.verb:
-      case Pos.auxiliaryVerb: {
-        let ret = 'V'
-          + (this.pos === Pos.verb ? 'm' : 'a')
-        // + ;
-        return ret;
-      }
-      
-      case Pos.numeral:
-        return 'Ml'
-          + ''
-      
-      case Pos.adverb:
-        return 'R'
-          + '';
-      
-      case Pos.adposition:
-        return 'Sp'
-          + '-'  // todo: formation
-          + mapMi.get(Case).get(this.case);
-          
-      case Pos.coordinatingConjunction:
-      case Pos.coordinatingConjunction:
-        return 'C'
-          + (this.pos === Pos.coordinatingConjunction ? 'c' : 's')
-          + '';  // todo: simple/compound
-          
-      case Pos.interjection:
-        return 'I';
-        
-      case Pos.particle:
-        return 'Q';
-    }
-
-  }
-
   toVesum() {
-
-  }
-
-  toUd() {
-
-  }
-}
-
-
-// Expands dict_corp_viz.txt tag into an array of unambiguous morph interpretations
-////////////////////////////////////////////////////////////////////////////////
-export function expandVesumTag(value: string) {
-  let [mainFlagsStr, altFlagsStr] = value.split(/:&_|:&(?=adjp)/);  // adj:m:v_zna:rinanim:&adjp:pasv:imperf
-
-  let mainFlagsArray = mainFlagsStr.split(':');
-  let mainFlags = new Set(mainFlagsArray);
-  let arrayFeature = [];
-  for (let flag of mainFlagsArray) {
-    if (mapVesum.has(flag)) {
-      let feature = mapVesum.get(flag).feat;
-      if (mainFlagsArray[0] === 'prep' && feature === 'case' || feature === 'pronounType') {
-        arrayFeature.push(flag);
-        mainFlags.delete(flag);
+    let flags = [...this.otherFlags];
+    
+    for (let name in this) {
+      let value = this[name];
+      if (value !== undefined && value !== null) {
+        let flagStr = MAP_VESUM_FEAT.get(name).get(value);
+        flags.push(flagStr);
       }
     }
+    
+    return flags;  // todo: sort
   }
-
-  let ret = new Array<Array<string>>();
-  if (arrayFeature.length) {
-    let base = Array.from(mainFlags);
-    for (let flag of arrayFeature) {
-      ret.push([...base, flag]);
-    }
-  }
-  else {
-    ret.push(mainFlagsArray);
-  }
-
-  if (altFlagsStr) {
-    let altFlagArray = altFlagsStr.split(':');
-    for (let i = 0, length = ret.length; i < length; ++i) {
-      ret.push([...ret[i], '&' + altFlagArray[0], ...altFlagArray.slice(1)]);
-    }
-  }
-
-  return ret;
 }
+
+
+
 
 
 
@@ -353,6 +371,7 @@ function startsWithCapital(str: string) {
 /*
 
 todo:
+- numr
 - all string identifiers/symbols to symbol/enum
 - verb form/mood
 
