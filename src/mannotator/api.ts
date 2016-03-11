@@ -156,7 +156,11 @@ export async function assignTask(req: Req, res: express.Response, client: PgClie
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignResolveTask(req: Req, res: express.Response, client: PgClient) {
-  // todo
+  let task = await client.update('task', 'user_id=$1', 'id=$2 and user_id is null', req.bag.user.id, req.query.id);
+  if (!task) {
+    throw new HttpError(400);
+  }
+  res.json('ok');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
