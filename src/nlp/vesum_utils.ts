@@ -1,6 +1,8 @@
 import {MAP_VESUM, MorphTag} from './morph_tag';
 
+
 const FORM_PADDING = '  ';
+
 
 // Expands dict_corp_viz.txt tag into an array of unambiguous morph interpretations
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,12 +45,18 @@ export function expandVesumTag(value: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* iterateDictCorpViz(lines: string[]) {
+  let lineNum = -1;
   for (let line of lines) {
+    ++lineNum;
     let isLemma = !line.startsWith(' ');
     line = line.trim();
     if (line) {
       let [form, tag] = line.split(' ');
-      yield {form, tag, isLemma};
+      if (isLemma) {
+        var lemma = form;
+        var lemmaTag = tag;
+      }
+      yield {form, tag, lemma, lemmaTag, isLemma, line, lineNum};
     }
   }
 }

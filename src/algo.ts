@@ -52,15 +52,17 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
 ////////////////////////////////////////////////////////////////////////////////
 export function indexTableByColumns(table: Object[], colNames: string[]) {
   let ret = new Map();
-  
+
   for (let row of table) {
-    let cur = ret;
-    for (let i = 0, bound = colNames.length - 1; i < bound; ++i) {
-      let col = colNames[i];
-      let cell = row[col];
-      cur = cur.get(cell) || cur.set(cell, new Map()).get(cell);
+    if (colNames[colNames.length - 1] in row) {
+      let cur = ret;
+      for (let i = 0, bound = colNames.length - 1; i < bound; ++i) {
+        let col = colNames[i];
+        let cell = row[col];
+        cur = cur.get(cell) || cur.set(cell, new Map()).get(cell);
+      }
+      cur.set(row[colNames[colNames.length - 1]], row);
     }
-    cur.set(row[colNames[colNames.length - 1]], row);
   }
 
   return ret;

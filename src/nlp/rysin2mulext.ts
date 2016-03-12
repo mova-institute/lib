@@ -3,6 +3,7 @@ const tagMap = {
   'inanim': { feat: 'animacy', mte: 'n' },
   'ranim': { feat: 'animacy', mte: 'y' },
   'rinanim': { feat: 'animacy', mte: 'n' },
+  'unanim': { feat: 'animacy', mte: 'n' },
 
   'v_naz': { feat: 'case', mte: 'n' },
   'v_rod': { feat: 'case', mte: 'g' },
@@ -115,6 +116,9 @@ class RysinTag {
         }
         else if (feature === 'pronounType') {
           this._pushToArrayFeature('pronounType', flag);
+        }
+        else if (feature === 'pos' && this.pos) {
+          this.shadowPos = flag;
         }
         else {
           this[feature] = flag;
