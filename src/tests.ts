@@ -8,16 +8,13 @@ const debug = require('debug')('testo');
 
 ////////////////////////////////////////////////////////////////////////////////
 export function testConverter(fileStr: string) {
-  debug('splitting');
   let lines = fileStr.split('\n');
-  debug('splitted');
   for (let {form, tag, lemma, lemmaTag, isLemma, lineNum} of iterateDictCorpViz(lines)) {
     try {
       try {
         var mte = rysin2multext(lemma, lemmaTag, form, tag)[0];
       }
       catch (e) {
-        // console.error('rysin2multext error');
         console.error(e);
         if (e.message.startsWith('Unma')) {
           console.error({form, tag, lemma, lemmaTag, isLemma, mte, vesumBack, reMte, fromMte, lineNum});
@@ -36,6 +33,25 @@ export function testConverter(fileStr: string) {
     }
     catch (e) {
       console.error({form, tag, lemma, lemmaTag, isLemma, mte, vesumBack, reMte, fromMte, lineNum});
+      throw e;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function testSorter(fileStr: string) {
+  let lines = fileStr.split('\n');
+  for (let {form, tag, lemma, lemmaTag, isLemma, lineNum} of iterateDictCorpViz(lines)) {
+    try {
+      let internal = MorphTag.fromVesumStr(tag);
+      let backVesum = internal.toVesumStr();
+      if (tag !== backVesum && !tag.includes(':xp')) {
+        console.log({form, tagO: tag, tagM: backVesum, internal, lineNum});
+        console.log('===========================');
+      }
+    }
+    catch (e) {
+      console.error({form, tag, lemma, lemmaTag, isLemma, lineNum});
       throw e;
     }
   }

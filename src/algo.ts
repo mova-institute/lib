@@ -67,3 +67,13 @@ export function indexTableByColumns(table: Object[], colNames: string[]) {
 
   return ret;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function arr2indexMap<T>(value: Array<T>) {
+  let ret = new Map<T, number>();
+  for (let i = 0; i < value.length; ++i) {
+    ret.set(value[i], i);
+  }
+
+  return ret;
+}

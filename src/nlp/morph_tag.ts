@@ -1,4 +1,4 @@
-import {indexTableByColumns} from '../algo';
+import {indexTableByColumns, arr2indexMap} from '../algo';
 
 
 export enum Pos {
@@ -142,6 +142,7 @@ export enum Style {
   archaic,
   rare,
   slang,
+  bad
 };
 export enum ConjunctionType {
   coordinating,
@@ -157,6 +158,14 @@ export enum NameType {
   patronym
 };
 
+export enum CaseInflectability {
+  no,
+};
+export enum Alternative {
+  yes,
+}
+export enum ParadigmOmohnym { };
+export enum SemanticOmohnym { };
 
 
 export const FEATURE_TABLE = [
@@ -271,6 +280,10 @@ export const FEATURE_TABLE = [
 
   { featStr: 'numberTantum', feat: NumberTantum, vesum: NumberTantum.noPlural, vesumStr: 'np' },
   { featStr: 'numberTantum', feat: NumberTantum, vesum: NumberTantum.noSingular, vesumStr: 'ns' },
+
+  { featStr: 'caseInflectability', feat: CaseInflectability, vesum: CaseInflectability.no, vesumStr: 'nv' },
+
+  { featStr: 'alternative', feat: Alternative, vesum: Alternative.yes, vesumStr: 'alt' },
 ];
 
 export const MTE_FEATURES = {
@@ -324,17 +337,18 @@ export class MorphTag {
   verbType: VerbType;
   numeralForm: NumeralForm;
   сonjunctionType: ConjunctionType;
-  
+
   nounType: NounType;
 
   otherFlags = new Set<string>();
 
 
-  static fromVesum(tag: string, lemma?: string) {
+  
+  static fromVesum(flags: string[], lemma?: string) {
     let ret = new MorphTag();
-
-    for (let flag of tag.split(':')) {
-      let row = MAP_VESUM.get(flag);
+    
+    for (let flag of flags) {
+      let row = mapVesumFlag(flag);
       if (row) {
         ret[row.featStr] = row.vesum;
       }
@@ -343,7 +357,7 @@ export class MorphTag {
           ret.otherFlags.add(flag);
         }
         else {
-          throw new Error(`Unknow flag "${flag}" in tag "${tag}" lemma ${lemma}`);
+          throw new Error(`Unknow flag "${flag}" in tag "${flags.join(':')}" lemma ${lemma}`);
         }
       }
     }
@@ -353,6 +367,10 @@ export class MorphTag {
     }
 
     return ret;
+  }
+  
+  static fromVesumStr(tag: string, lemma?: string) {
+    return MorphTag.fromVesum(tag.split(':'), lemma);
   }
 
   static fromMte(tag: string) {
@@ -365,7 +383,7 @@ export class MorphTag {
       case 'V':
         ret.pos = flags[3] === 'g' ? Pos.transgressive : Pos.verb;
         break;
-        
+
       case 'A':
         if (flags[1] === 'p') {
           ret.pos2 = Pos2.participle;
@@ -380,7 +398,7 @@ export class MorphTag {
           ret.variant = Variant.full;
         }
         break;
-        
+
       case 'P': // todo: Referent_Type
         ret.pos2 = Pos2.pronoun;
         switch (flags[8]) {
@@ -418,7 +436,7 @@ export class MorphTag {
       case 'Q':
       case 'I':
         break;
-        
+
       default:
         throw new Error(`Unknown MTE POS: ${flags[0]}`);
     }
@@ -457,24 +475,95 @@ export class MorphTag {
     for (let name in this) {
       let value = this[name];
       if (value !== null) {
-        let featMap = MAP_VESUM_FEAT.get(name);
-        if (featMap) {
-          let row = featMap.get(value);
-          row && row.vesumStr && flags.push(row.vesumStr);
+        let flag = mapVesumFeatureValue(name, value);
+        if (flag) {
+          flags.push(flag);
         }
-        
       }
     }
 
-    return flags;  // todo: sort
+    return flags.sort(vesumFlagComparator);
+  }
+
+  toVesumStr() {
+    return this.toVesum().join(':');
   }
 }
 
 
 
+const FEATURE_ORDER = [
+  Pos,
+  Animacy, RequiredAnimacy,
+  Gender, Numberr,
+  Person,
+  Case, RequiredCase,
+  CaseInflectability,
+  Variant,
+  Alternative,
+  NumberTantum,
+  ParadigmOmohnym,
+  SemanticOmohnym,
+  NameType,
+  Style,
+  Pos2,
+  Voice,
+  Aspect,
+  Tense,
+  Style,
+  PronominalType,
+];
+const FEATURE_ORDER_MAP = arr2indexMap(FEATURE_ORDER);
 
+////////////////////////////////////////////////////////////////////////////////
+export function vesumFlagComparator(a: string, b: string) {
+  let rowA = mapVesumFlag(a);
+  let rowB = mapVesumFlag(b);
+  if (rowA && rowB) {
+    let featA = rowA.feat;
+    let featB = rowB.feat;
 
+    return FEATURE_ORDER_MAP.get(featA) - FEATURE_ORDER_MAP.get(featB);
+  }
 
+  // return a.localeCompare(b);
+  return Number.MAX_SAFE_INTEGER;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function mapVesumFlag(value: string) {
+  let match = /^x[vp](\d+)$/.exec(value);
+  if (match) {
+    return {
+      featStr: value.charAt(1) === 'p' ? 'paradigmOmohnym' : 'semanticOmohnym',
+      feat: value.charAt(1) === 'p' ? ParadigmOmohnym : SemanticOmohnym,
+      vesum: Number.parseInt(match[1]),
+      vesumStr: value
+    };
+  }
+
+  return MAP_VESUM.get(value);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function mapVesumFeatureValue(featureName: string, value) {
+  if (featureName === 'paradigmOmohnym') {
+    return 'xp' + value;
+  }
+  if (featureName === 'semanticOmohnym') {
+    return 'xv' + value;
+  }
+
+  let featMap = MAP_VESUM_FEAT.get(featureName);
+  if (featMap) {
+    let row = featMap.get(value);
+    if (row && row.vesumStr) {
+      return row.vesumStr;
+    }
+  }
+
+  return null;
+}
 
 //------------------------------------------------------------------------------
 function startsWithCapital(str: string) {
