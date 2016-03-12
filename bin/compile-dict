@@ -4,5 +4,5 @@ BASE=`dirname $0`/..
 cd $BASE
 
 test $1 -ge 3 && cd ../dict_uk && gradle mi && cd ../mi-lib
-test $1 -ge 2 && ./bin/dict-add-mte ../dict_uk/out/dict_corp_vis.txt ../dict_uk/out/mte.txt
-test $1 -ge 1 && node --max_old_space_size=4096 lib/bin/compile-dict.js -i ../dict_uk/out/mte.txt
+test $1 -ge 2 && ./bin/do nlp.vesum_utils.expandDictCorpViz ../dict_uk/out/dict_corp_vis.txt ../dict_uk/out/expanded.txt
+test $1 -ge 1 && node --max_old_space_size=4096 lib/bin/compile-dict.js -i ../dict_uk/out/expanded.txt --name vesum
