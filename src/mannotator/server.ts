@@ -95,7 +95,7 @@ async function preauth(action: string, req: Req, client: PgClient) {
     req.bag.user = await client.call('get_user_by_token', accessToken);
   }
 
-  return req.bag.user || action === 'getRole';
+  return req.bag.user || action === 'getRoles';
 }
 
 //------------------------------------------------------------------------------
