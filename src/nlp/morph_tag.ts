@@ -301,7 +301,7 @@ export const MTE_FEATURES = {
 
 
 export const MAP_VESUM_FEAT = indexTableByColumns(FEATURE_TABLE, ['featStr', 'vesum']);
-export const MAP_VESUM: Map<string, any> =
+const MAP_VESUM: Map<string, any> =
   indexTableByColumns(FEATURE_TABLE.filter((x: any) => x.vesum !== undefined), ['vesumStr']);
 export const MAP_MTE: Map<string, any> = indexTableByColumns(FEATURE_TABLE, ['feat', 'mte']);
 
@@ -492,7 +492,7 @@ export class MorphTag {
 
 
 
-const FEATURE_ORDER = [
+export const FEATURE_ORDER = [
   Pos,
   Animacy, RequiredAnimacy,
   Gender, Numberr,
@@ -543,6 +543,16 @@ export function mapVesumFlag(value: string) {
   }
 
   return MAP_VESUM.get(value);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function mapVesumFlagToFeature(value: string) {
+  let row = mapVesumFlag(value);
+  if (row && row.feat) {
+    return row.feat;
+  }
+  
+  return null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -50,18 +50,30 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function indexTableByColumns(table: Object[], colNames: string[]) {
+export function groupTableBy(table: any[], groupProp: string|number|symbol) {
+  let ret = new Map<string|number, any[]>();
+  
+  for (let row of table) {
+    let cell = row[groupProp];
+    (ret.get(cell) || ret.set(cell, []).get(cell)).push(row);
+  }
+  
+  return ret;  
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function indexTableByColumns(table: Object[], propNames: any[]) {
   let ret = new Map();
 
   for (let row of table) {
-    if (colNames[colNames.length - 1] in row) {
+    if (propNames[propNames.length - 1] in row) {
       let cur = ret;
-      for (let i = 0, bound = colNames.length - 1; i < bound; ++i) {
-        let col = colNames[i];
+      for (let i = 0, bound = propNames.length - 1; i < bound; ++i) {
+        let col = propNames[i];
         let cell = row[col];
         cur = cur.get(cell) || cur.set(cell, new Map()).get(cell);
       }
-      cur.set(row[colNames[colNames.length - 1]], row);
+      cur.set(row[propNames[propNames.length - 1]], row);
     }
   }
 
