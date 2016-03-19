@@ -50,15 +50,15 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function groupTableBy(table: any[], groupProp: string|number|symbol) {
-  let ret = new Map<string|number, any[]>();
-  
+export function groupTableBy(table: any[], groupProp: string | number | symbol) {
+  let ret = new Map<string | number, any[]>();
+
   for (let row of table) {
     let cell = row[groupProp];
     (ret.get(cell) || ret.set(cell, []).get(cell)).push(row);
   }
-  
-  return ret;  
+
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,4 +88,22 @@ export function arr2indexMap<T>(value: Array<T>) {
   }
 
   return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function combinations(arr: any[]) {
+  return <Array<any>>Array.from(_combinations(arr));
+}
+
+function* _combinations(arr: any[], state = []) {
+  if (state.length < arr.length) {
+    for (let x of arr[state.length]) {
+      state.push(x);
+      yield* _combinations(arr, state);
+      state.pop();
+    }
+  }
+  else {
+    yield [...state];
+  }
 }

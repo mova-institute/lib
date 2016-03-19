@@ -1,53 +1,58 @@
-import {mapVesumFlag, mapVesumFlagToFeature, MorphTag, FEATURE_ORDER} from './morph_tag';
-import {groupTableBy, arr2indexMap} from '../algo';
+import {tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER, FEAT_MAP_STRING,
+  RequiredCase, PronominalType, Aspect, ConjunctionType} from './morph_tag';
+import {groupTableBy, arr2indexMap, combinations} from '../algo';
 
 
 const FORM_PADDING = '  ';
 
 
+const expandableFeatures = new Set([RequiredCase, PronominalType, Aspect, ConjunctionType]);
+
 // Expands dict_corp_viz.txt tag into an array of unambiguous morph interpretations
 ////////////////////////////////////////////////////////////////////////////////
 export function expandVesumTag(value: string) {
-  let [mainFlagsStr, altFlagsStr] = value.split(/:&_|:&(?=adjp)/);  // adj:m:v_zna:rinanim:&adjp:pasv:imperf
-
-  let mainFlagsArray = mainFlagsStr.split(':');
-  let mainFlags = new Set(mainFlagsArray);
-  let arrayFeature = [];
-  for (let flag of mainFlagsArray) {
-    if (mapVesumFlag(flag)) {
-      let feature = mapVesumFlag(flag).featStr;
-      if (mainFlagsArray[0] === 'prep' && feature === 'requiredCase' || feature === 'pronounType') {
-        arrayFeature.push(flag);
-        mainFlags.delete(flag);
-      }
-    }
-  }
-
-  let res = new Array<Array<string>>();
-  if (arrayFeature.length) {
-    let base = Array.from(mainFlags);
-    for (let flag of arrayFeature) {
-      res.push([...base, flag]);
-    }
-  }
-  else {
-    res.push(mainFlagsArray);
-  }
-
+  let [mainFlagsStr, altFlagsStr] = value.split(/:&_|:&(?=adjp)/);  // consider &adjp as omohnymy
+  
+  let ret = combinations(groupExpandableFlags(mainFlagsStr.split(':')));
   if (altFlagsStr) {
     let altFlagArray = altFlagsStr.split(':');
-    for (let i = 0, length = res.length; i < length; ++i) {
-      res.push([...res[i], '&' + altFlagArray[0], ...altFlagArray.slice(1)]);
+    altFlagArray[0] = '&' + altFlagArray[0];
+    for (let x of [...ret]) {
+      ret.push([...x, ...altFlagArray]);
     }
   }
+  
+  return ret;
+}
 
-  let ret = res.map(x => MorphTag.fromVesum(x).toVesumStr());  // sort flags
+//------------------------------------------------------------------------------
+function groupExpandableFlags(flags: string[]) {
+  if (!flags.length) {
+    return [];
+  }
+
+  let ret = [[flags[0]]];
+  for (let i = 1; i < flags.length; ++i) {
+    let feature = tryMapVesumFlagToFeature(flags[i]);
+    if (expandableFeatures.has(feature)) {
+      let prev = ret[ret.length - 1];
+      if (tryMapVesumFlagToFeature(prev[0]) === feature) {
+        prev.push(flags[i]);
+      }
+      else {
+        ret.push([flags[i]]);
+      }
+    }
+    else {
+      ret.push([flags[i]]);
+    }
+  }
 
   return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* iterateDictCorpViz(lines: string[]) {
+export function* iterateDictCorpVizLines(lines: string[]) {
   let lineNum = -1;
   for (let line of lines) {
     ++lineNum;
@@ -67,7 +72,7 @@ export function* iterateDictCorpViz(lines: string[]) {
 ////////////////////////////////////////////////////////////////////////////////
 export function expandDictCorpViz(fileStr: string) {
   let ret = new Array<string>();
-  for (let {form, tag, isLemma} of iterateDictCorpViz(fileStr.split('\n'))) {
+  for (let {form, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
     let padd = isLemma ? '' : FORM_PADDING;
     ret.push(...expandVesumTag(tag).map(x => padd + form + ' ' + x));
   }
@@ -82,34 +87,29 @@ export function sortVesumFlags(flags: string[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {
-  for (let {form, tag, isLemma} of iterateDictCorpViz(fileStr.split('\n'))) {
+  for (let {form, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
     MorphTag.fromVesumStr(tag, form);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function presentTagsForDisamb(tags: string[]) {
-  let res = tags.map(x => new Array<string>());
-  let shift = 0;
+  let aligned = alignTagList(tags);
+  let ret = aligned.map(x => x.map(x => []));
 
-  for (let posAgg of alignTagList(tags)) {
+  for (let [i, posAgg] of aligned.entries()) {
     let maxNumFlags = Math.max(...posAgg.map(x => x.length));
-    for (let j = 0; j < maxNumFlags; ++j) {
-      let areAllEqual = posAgg.every(x => x[j] === posAgg[0][j]);
-      let maxFlagLen = Math.max(...posAgg.map(x => x[j] ? x[j].length : 0));
-      for (let i = 0; i < posAgg.length; ++i) {
-        let cur = posAgg[i][j] || '';
-        cur += '&nbsp;'.repeat(maxFlagLen - cur.length);
-        if (!areAllEqual) {
-          cur = '<b>' + cur + '</b>';
-        }
-        res[shift + i].push(cur);
+    for (let k = 0; k < maxNumFlags; ++k) {
+      let areAllEqual = posAgg.every(x => x[k] === posAgg[0][k]);
+      for (let j = 0; j < posAgg.length; ++j) {
+        ret[i][j].push({
+          content: posAgg[j][k] || '',
+          isMarked: !areAllEqual
+        });
       }
     }
-    shift += posAgg.length;
   }
 
-  let ret = res.map(x => x.join(' '));
   return ret;
 }
 
@@ -123,7 +123,7 @@ function alignTagList(tags: string[]) {
     let features = new Set();
     for (let flags of posAgg) {
       for (let flag of flags) {
-        let feature = mapVesumFlagToFeature(flag);
+        let feature = tryMapVesumFlagToFeature(flag);
         if (feature) {
           features.add(feature);
         }
@@ -138,7 +138,7 @@ function alignTagList(tags: string[]) {
       posAligned.push(tagAligned);
       let flagsOfUnknownFeature = new Array<string>();
       for (let flag of flags) {
-        let feature = mapVesumFlagToFeature(flag);
+        let feature = tryMapVesumFlagToFeature(flag);
         if (feature) {
           let featureIndex = featureOrderMap.get(feature);
           tagAligned[featureIndex] = flag;

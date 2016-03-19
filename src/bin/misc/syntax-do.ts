@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import {nonemptyLinesSyncArray, linesSyncArray, filename2lxmlRootSync} from '../../utils.node';
 import * as glob from 'glob';
-import {collectForof} from '../../lang';
 import * as assert from 'assert';
 import {W, W_, PC, SE, P} from '../../nlp/common_elements';
 import {nextElDocumentOrder, NS} from '../../xml/utils';

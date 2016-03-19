@@ -44,16 +44,6 @@ export function* zip(...arrays: Array<Array<any>>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function collectForof<T>(iterator: Iterable<T>) {
-  let ret = new Array<T>();
-  for (let val of iterator) {
-    ret.push(val);
-  }
-  
-  return ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function sleep(ms = 0) {
   return new Promise(() => setTimeout(null, ms));
 }

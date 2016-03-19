@@ -1,6 +1,5 @@
 // todo: everything
 import {readFileSync, writeFileSync} from 'fs';
-import {collectForof} from '../lang';
 import {lexemes, compileDict, CompiledDict} from '../nlp/morph_analyzer/dict_utils';
 import {writeCompiledDict} from '../nlp/morph_analyzer/utils.node';
 import {join} from 'path';
@@ -15,7 +14,7 @@ let destDir = join(args.d || args.dest || join(__dirname, '../../data/dict'), na
 
 
 let lines = readFileSync(input, 'utf8').trim().replace('\'', '’').split('\n');
-let lexemes_ = collectForof(lexemes(lines));
+let lexemes_ = Array.from(lexemes(lines));
 let compiledDict = compileDict(<[string, string][][]>lexemes_);
 
 mkdirp.sync(destDir);

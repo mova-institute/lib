@@ -137,12 +137,18 @@ export enum Variant {
   short,
   full
 };
-export enum Style {
-  colloquial,
+export enum Rarity {
   archaic,
-  rare,
-  slang,
-  bad
+  rare
+};
+export enum Slang {
+  yes
+};
+export enum Colloquial {
+  yes
+};
+export enum Bad {
+  yes
 };
 export enum ConjunctionType {
   coordinating,
@@ -164,6 +170,9 @@ export enum CaseInflectability {
 export enum Alternative {
   yes,
 }
+export enum Abbreviation {
+  yes
+}
 export enum ParadigmOmohnym { };
 export enum SemanticOmohnym { };
 
@@ -180,9 +189,10 @@ export const FEATURE_TABLE = [
   { featStr: 'verbType', feat: VerbType, mi: VerbType.main, mte: 'm' },
   { featStr: 'verbType', feat: VerbType, mi: VerbType.auxilary, mte: 'a' },
 
-  { featStr: 'style', feat: Style, vesum: Style.rare, vesumStr: 'rare' },
-  { featStr: 'style', feat: Style, vesum: Style.colloquial, vesumStr: 'coll' },
-  { featStr: 'style', feat: Style, vesum: Style.slang, vesumStr: 'slang' },
+  { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
+  { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
+  { featStr: 'slang', feat: Slang, vesum: Slang.yes, vesumStr: 'slang' },
+  { featStr: 'bad', feat: Bad, vesum: Bad.yes, vesumStr: 'bad' },
 
   { featStr: 'nameType', feat: NameType, vesum: NameType.first, vesumStr: 'fname' },
   { featStr: 'nameType', feat: NameType, vesum: NameType.last, vesumStr: 'lname' },
@@ -284,6 +294,8 @@ export const FEATURE_TABLE = [
   { featStr: 'caseInflectability', feat: CaseInflectability, vesum: CaseInflectability.no, vesumStr: 'nv' },
 
   { featStr: 'alternative', feat: Alternative, vesum: Alternative.yes, vesumStr: 'alt' },
+  
+  { featStr: 'abbreviation', feat: Abbreviation, vesum: Abbreviation.yes, vesumStr: 'abbr' },
 ];
 
 export const MTE_FEATURES = {
@@ -305,7 +317,12 @@ const MAP_VESUM: Map<string, any> =
   indexTableByColumns(FEATURE_TABLE.filter((x: any) => x.vesum !== undefined), ['vesumStr']);
 export const MAP_MTE: Map<string, any> = indexTableByColumns(FEATURE_TABLE, ['feat', 'mte']);
 
-
+export const FEAT_MAP_STRING = new Map<Object, string>();
+for (let row of FEATURE_TABLE) {
+  if (row.feat && row.featStr) {
+    FEAT_MAP_STRING.set(row.feat, row.featStr);
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // represents a single unambiguous morphological interpretation
@@ -333,7 +350,6 @@ export class MorphTag {
   pronominalType: PronominalType;
   numberTantum: NumberTantum;
   reflexive: boolean;
-  style: Style;
   verbType: VerbType;
   numeralForm: NumeralForm;
   сonjunctionType: ConjunctionType;
@@ -496,7 +512,6 @@ export const FEATURE_ORDER = [
   Pos,
   Animacy, RequiredAnimacy,
   Gender, Numberr,
-  Person,
   Case, RequiredCase,
   CaseInflectability,
   Variant,
@@ -505,20 +520,19 @@ export const FEATURE_ORDER = [
   ParadigmOmohnym,
   SemanticOmohnym,
   NameType,
-  Style,
   Pos2,
+  Person,
   Voice,
   Aspect,
   Tense,
-  Style,
   PronominalType,
 ];
 const FEATURE_ORDER_MAP = arr2indexMap(FEATURE_ORDER);
 
 ////////////////////////////////////////////////////////////////////////////////
 export function vesumFlagComparator(a: string, b: string) {
-  let rowA = mapVesumFlag(a);
-  let rowB = mapVesumFlag(b);
+  let rowA = tryMapVesumFlag(a);
+  let rowB = tryMapVesumFlag(b);
   if (rowA && rowB) {
     let featA = rowA.feat;
     let featB = rowB.feat;
@@ -531,7 +545,7 @@ export function vesumFlagComparator(a: string, b: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function mapVesumFlag(value: string) {
+export function tryMapVesumFlag(value: string) {
   let match = /^x[vp](\d+)$/.exec(value);
   if (match) {
     return {
@@ -542,12 +556,23 @@ export function mapVesumFlag(value: string) {
     };
   }
 
-  return MAP_VESUM.get(value);
+  let ret = MAP_VESUM.get(value);
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function mapVesumFlagToFeature(value: string) {
-  let row = mapVesumFlag(value);
+export function mapVesumFlag(value: string) {
+  let ret = tryMapVesumFlag(value);
+  if (!ret) {
+    throw new Error(`Unknown flag: ${value}`)
+  }
+  
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function tryMapVesumFlagToFeature(value: string) {
+  let row = tryMapVesumFlag(value);
   if (row && row.feat) {
     return row.feat;
   }
