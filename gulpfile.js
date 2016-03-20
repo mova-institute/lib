@@ -70,17 +70,17 @@ gulp.task('copy:dist', ['cleanup:dist'], () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-gulp.task('mannotator', ['typescript'], () => {
+gulp.task('mi-web', ['typescript'], () => {
   let packageJson = {
     name: 'mi-lib',
     private: true,
     dependencies: JSON.parse(fs.readFileSync('package.json', 'utf8')).dependencies
   };
-  mkdirp.sync('dist/mannotator');
-  fs.writeFileSync('dist/mannotator/package.json', JSON.stringify(packageJson, null, 2));
+  mkdirp.sync('dist/mi-web');
+  fs.writeFileSync('dist/mi-web/package.json', JSON.stringify(packageJson, null, 2));
 
   return gulp.src(['lib/**/*.js'], { base: '.' })
-    .pipe(gulp.dest('dist/mannotator/'));
+    .pipe(gulp.dest('dist/mi-web/'));
 });
 
 

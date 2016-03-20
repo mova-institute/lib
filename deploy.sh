@@ -1,15 +1,15 @@
 
 SSH_KEY="$HOME/.ssh/mova.institute.key"
 REMOTE="ubuntu@mova.institute"
-DEST="/opt/node/mannotator"
-SOURCE="dist/mannotator/"
+DEST="/opt/node/mi-web"
+SOURCE="dist/mi-web/"
 ERRORSTRING="Wrong params"
 
 
 if [ $# -eq 0 ]
   then
     echo $ERRORSTRING;
-elif [ $1 == "mannotator" ]
+elif [ $1 == "mi-web" ]
   then
     if [[ -z $2 ]]
       then
@@ -19,7 +19,7 @@ elif [ $1 == "mannotator" ]
       then
         echo "Running actual deploy"
         rsync           -rlpcgoD --force --delete --filter='P node_modules/' --progress -e "ssh -i $SSH_KEY" $SOURCE $REMOTE:$DEST                    || exit 1
-        ssh -i $SSH_KEY $REMOTE "cd $DEST && npm prune && npm update && pm2 restart mannotator" || exit 1
+        ssh -i $SSH_KEY $REMOTE "cd $DEST && npm prune && npm update && pm2 restart mi-web" || exit 1
     else
       echo $ERRORSTRING;
       exit 1
