@@ -74,7 +74,7 @@ export function expandDictCorpViz(fileStr: string) {
   let ret = new Array<string>();
   for (let {form, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
     let padd = isLemma ? '' : FORM_PADDING;
-    ret.push(...expandVesumTag(tag).map(x => padd + form + ' ' + x));
+    ret.push(...expandVesumTag(tag).map(x => padd + form + ' ' + x.join(':')));
   }
 
   return ret.join('\n');
@@ -129,7 +129,8 @@ function alignTagList(tags: string[]) {
         }
       }
     }
-    let featureOrderMap = arr2indexMap(FEATURE_ORDER.filter(x => features.has(x)));
+    let pos = tryMapVesumFlag(posAgg[0][0]).vesum;
+    let featureOrderMap = arr2indexMap(FEATURE_ORDER[pos].filter(x => features.has(x)));
 
     let posAligned = new Array<Array<string>>();
     ret.push(posAligned);

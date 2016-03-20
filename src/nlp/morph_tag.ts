@@ -1,4 +1,4 @@
-import {indexTableByColumns, arr2indexMap} from '../algo';
+import {indexTableByColumns, arr2indexMap, overflowNegative} from '../algo';
 
 
 export enum Pos {
@@ -113,6 +113,9 @@ export enum VerbType {
   main,
   auxilary
 };
+export enum Reflexive {
+  yes
+}
 
 ///// Lexical /////
 export enum PronominalType {
@@ -169,10 +172,16 @@ export enum CaseInflectability {
 };
 export enum Alternative {
   yes,
-}
+};
+export enum VuAlternative {
+  yes
+};
 export enum Abbreviation {
   yes
-}
+};
+export enum Dimin {
+  yes
+};
 export enum ParadigmOmohnym { };
 export enum SemanticOmohnym { };
 
@@ -205,7 +214,7 @@ export const FEATURE_TABLE = [
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
 
-  { featStr: 'reflexive', vesum: true, vesumStr: 'rev' },  // ?
+  { featStr: 'reflexive', feat: Reflexive, vesum: Reflexive.yes, vesumStr: 'rev' },  // ?
 
   { featStr: 'case', feat: Case, vesum: Case.nominative, vesumStr: 'v_naz', mte: 'n' },
   { featStr: 'case', feat: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
@@ -294,8 +303,12 @@ export const FEATURE_TABLE = [
   { featStr: 'caseInflectability', feat: CaseInflectability, vesum: CaseInflectability.no, vesumStr: 'nv' },
 
   { featStr: 'alternative', feat: Alternative, vesum: Alternative.yes, vesumStr: 'alt' },
-  
+
   { featStr: 'abbreviation', feat: Abbreviation, vesum: Abbreviation.yes, vesumStr: 'abbr' },
+  
+  { featStr: 'vuAlternatibe', feat: VuAlternative, vesum: VuAlternative.yes, vesumStr: 'v-u' },
+  
+  { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
 ];
 
 export const MTE_FEATURES = {
@@ -359,12 +372,12 @@ export class MorphTag {
   otherFlags = new Set<string>();
 
 
-  
+
   static fromVesum(flags: string[], lemma?: string) {
     let ret = new MorphTag();
-    
+
     for (let flag of flags) {
-      let row = mapVesumFlag(flag);
+      let row = tryMapVesumFlag(flag);
       if (row) {
         ret[row.featStr] = row.vesum;
       }
@@ -384,7 +397,7 @@ export class MorphTag {
 
     return ret;
   }
-  
+
   static fromVesumStr(tag: string, lemma?: string) {
     return MorphTag.fromVesum(tag.split(':'), lemma);
   }
@@ -498,7 +511,7 @@ export class MorphTag {
       }
     }
 
-    return flags.sort(vesumFlagComparator);
+    return flags.sort(createVesumFlagComparator(this.pos));
   }
 
   toVesumStr() {
@@ -508,40 +521,101 @@ export class MorphTag {
 
 
 
-export const FEATURE_ORDER = [
-  Pos,
-  Animacy, RequiredAnimacy,
-  Gender, Numberr,
-  Case, RequiredCase,
-  CaseInflectability,
-  Variant,
-  Alternative,
-  NumberTantum,
-  ParadigmOmohnym,
-  SemanticOmohnym,
-  NameType,
-  Pos2,
-  Person,
-  Voice,
-  Aspect,
-  Tense,
-  PronominalType,
+export const FEATURE_ORDER = {
+  [Pos.noun]: [
+    Pos,
+    Animacy,
+    Gender,
+    Numberr,
+    Case,
+    CaseInflectability,
+    NumberTantum,
+    Alternative,
+    NameType,
+    Pos2,
+    PronominalType,
+    Colloquial,
+    Bad,
+  ],
+  [Pos.adjective]: [
+    Pos,
+    Gender,
+    Numberr,
+    Case,
+    RequiredAnimacy,
+    Variant,
+    Degree,  
+  ],
+  [Pos.verb]: [
+    Pos,
+    Reflexive,
+    Voice,
+    Aspect,
+    Tense,
+    Mood,
+    Numberr,
+    Person,
+    Gender,
+    Dimin,
+    VuAlternative,
+    Rarity,
+    Colloquial,
+  ],
+  [Pos.numeral]: [
+    Pos,
+    Gender,
+    Numberr,
+    Case,
+    CaseInflectability,
+    Pos2,
+    PronominalType,
+  ],
+  [Pos.transgressive]: [
+    Pos,
+    Reflexive,
+    Voice,
+    Aspect,
+    Alternative,
+  ],
+  other: [  // todo check
+    Pos,
+    Degree,
+    ConjunctionType,
+    Case, RequiredCase,
+    RequiredAnimacy,
+    CaseInflectability,
+    Alternative,
+    NumberTantum,
+    ParadigmOmohnym,
+    SemanticOmohnym,
+    NameType,
+    Pos2,
+    PronominalType,
+    Person,
+    Rarity,
+  ]
+};
+
+const common = [  // todo
+  Rarity,
 ];
-const FEATURE_ORDER_MAP = arr2indexMap(FEATURE_ORDER);
 
 ////////////////////////////////////////////////////////////////////////////////
-export function vesumFlagComparator(a: string, b: string) {
-  let rowA = tryMapVesumFlag(a);
-  let rowB = tryMapVesumFlag(b);
-  if (rowA && rowB) {
-    let featA = rowA.feat;
-    let featB = rowB.feat;
+export function createVesumFlagComparator(pos: Pos) {
+  return (a: string, b: string) => {
+    let rowA = tryMapVesumFlag(a);
+    let rowB = tryMapVesumFlag(b);
+    if (rowA && rowB) {
+      let featA = rowA.feat;
+      let featB = rowB.feat;
+      
+      let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other;
+      return overflowNegative(order.indexOf(featA)) - overflowNegative(order.indexOf(featB));
+    }
 
-    return FEATURE_ORDER_MAP.get(featA) - FEATURE_ORDER_MAP.get(featB);
+    // return a.localeCompare(b);
+    return Number.MAX_SAFE_INTEGER;
   }
-
-  // return a.localeCompare(b);
-  return Number.MAX_SAFE_INTEGER;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -566,7 +640,7 @@ export function mapVesumFlag(value: string) {
   if (!ret) {
     throw new Error(`Unknown flag: ${value}`)
   }
-  
+
   return ret;
 }
 
@@ -576,7 +650,7 @@ export function tryMapVesumFlagToFeature(value: string) {
   if (row && row.feat) {
     return row.feat;
   }
-  
+
   return null;
 }
 

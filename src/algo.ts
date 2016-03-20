@@ -107,3 +107,20 @@ function* _combinations(arr: any[], state = []) {
     yield [...state];
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function overflowNegative(value: number) {
+  return value & 0x7FFFFFFF;  // todo: MAX_SAFE_INTEGER?
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/** see https://bost.ocks.org/mike/shuffle/ */
+export function shuffle(array: any[]) {
+  let m = array.length;
+  while (m) {
+    let i = Math.floor(Math.random() * m--);
+    [array[m], array[i]] = [array[i], array[m]];
+  }
+
+  return array;
+}
