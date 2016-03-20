@@ -14,7 +14,7 @@ export const debug = debugFactory('annotator');
 export const config: ClientConfig = {
   host: IS_DEV ? 'localhost' : '/var/run/postgresql',
   port: IS_DEV ? 5433 : undefined,
-  database: 'mi_dev',
+  database: 'mi',
   user: 'annotator',
   password: '@nn0t@t0zh3',
 };
