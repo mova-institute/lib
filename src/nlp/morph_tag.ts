@@ -1,5 +1,5 @@
 import {indexTableByColumns, arr2indexMap, overflowNegative} from '../algo';
-
+import {startsWithCapital} from '../string_utils';
 
 export enum Pos {
   noun,
@@ -673,9 +673,4 @@ export function mapVesumFeatureValue(featureName: string, value) {
   }
 
   return null;
-}
-
-//------------------------------------------------------------------------------
-function startsWithCapital(str: string) {
-  return str && str.charAt(0).toLowerCase() !== str.charAt(0);
 }

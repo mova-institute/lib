@@ -84,6 +84,8 @@ const tagMap = {
 
   'np': { feat: 'numberTantum', mte: null },
   'ns': { feat: 'numberTantum', mte: null },
+  
+  'prop': { feat: 'nounType', mte: 'p' },
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +108,7 @@ class RysinTag {
   pronounType: Array<string>;
   сonjunctionType: string;
   numberTantum: string;
+  nounType: string;
 
   constructor(flags: string) {
     for (let flag of flags.split(':')) {
@@ -164,8 +167,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
 
       switch (formTag.pos) {
         case 'noun': {
-          let isProper = startsWithCap(form);  // todo: abbrs
-          let type = isProper ? 'p' : 'c';
+          let type = tryMapTag(formTag.nounType) || 'c';
 	
           // todo: common, filter plu tantum
           let gender = lemmaTag.numberTantum === 'ns' ? '-' : mapTag(lemmaTag.gender);
@@ -322,11 +324,6 @@ function defaultDefiniteness(gender: string, number_: string, case_: string, ani
 }
 
 //------------------------------------------------------------------------------
-function startsWithCap(str: string) {
-  return str.length && str.charAt(0).toLowerCase() !== str.charAt(0);
-}
-
-//------------------------------------------------------------------------------
 function trimTrailingDash(str: string) {
   for (var i = str.length;
     i >= 0 && str.charAt(i - 1) === '-'; --i);
@@ -343,3 +340,4 @@ function treatSpecialCases(ret: Array<string>, form: string, formTag: RysinTag) 
 }
 
 // todo: його/нього і різні форми з однаковими тегами загалом
+//       abbr
