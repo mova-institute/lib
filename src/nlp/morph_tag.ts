@@ -192,8 +192,8 @@ export const FEATURE_TABLE = [
   { featStr: 'numeralForm', feat: NumeralForm, mi: NumeralForm.roman, mte: 'r' },
   { featStr: 'numeralForm', feat: NumeralForm, mi: NumeralForm.letter, mte: 'l' },
 
-  { featStr: 'nounType', feat: NounType, mi: NounType.common, vesumStr: 'prop', mte: 'c' },
-  { featStr: 'nounType', feat: NounType, mi: NounType.proper, mte: 'p' },
+  { featStr: 'nounType', feat: NounType, mi: NounType.common, mte: 'c' },
+  { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
 
   { featStr: 'verbType', feat: VerbType, mi: VerbType.main, mte: 'm' },
   { featStr: 'verbType', feat: VerbType, mi: VerbType.auxilary, mte: 'a' },
@@ -268,7 +268,7 @@ export const FEATURE_TABLE = [
   { featStr: 'сonjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
 
   { featStr: 'pos', feat: Pos, vesum: Pos.noun, vesumStr: 'noun', mte: 'N' },
-  { featStr: 'pos', mte: 'P' },
+  { featStr: 'pos', feat: null, mte: 'P' },
   { featStr: 'pos', feat: Pos, vesum: Pos.verb, vesumStr: 'verb', mte: 'V' },
   { featStr: 'pos', feat: Pos, vesum: Pos.adjective, vesumStr: 'adj', mte: 'A' },
   { featStr: 'pos', feat: Pos, vesum: Pos.adverb, vesumStr: 'adv', mte: 'R' },
@@ -345,29 +345,28 @@ export class MorphTag {
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
     'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl']);
 
-  pos: Pos;
-  pos2: Pos2;
-  case: Case;
-  requiredCase: RequiredCase;
-  number: Numberr;
-  aspect: Aspect;
-  tense: Tense;
-  mood: Mood;
-  person: Person;
-  voice: Voice;
-  animacy: Animacy;
-  requiredAnimacy: RequiredAnimacy;
-  gender: Gender;
-  degree: Degree;
-  variant: Variant;
-  pronominalType: PronominalType;
-  numberTantum: NumberTantum;
-  reflexive: boolean;
-  verbType: VerbType;
-  numeralForm: NumeralForm;
-  сonjunctionType: ConjunctionType;
-
-  nounType: NounType;
+  pos: Pos = null;
+  pos2: Pos2 = null;
+  case: Case = null;
+  requiredCase: RequiredCase = null;
+  number: Numberr = null;
+  aspect: Aspect = null;
+  tense: Tense = null;
+  mood: Mood = null;
+  person: Person = null;
+  voice: Voice = null;
+  animacy: Animacy = null;
+  requiredAnimacy: RequiredAnimacy = null;
+  gender: Gender = null;
+  degree: Degree = null;
+  variant: Variant = null;
+  pronominalType: PronominalType = null;
+  numberTantum: NumberTantum = null;
+  reflexive: boolean = null;
+  verbType: VerbType = null;
+  numeralForm: NumeralForm = null;
+  сonjunctionType: ConjunctionType = null;
+  nounType: NounType = null;
 
   otherFlags = new Set<string>();
 
@@ -486,9 +485,9 @@ export class MorphTag {
       if (feature && mteFlag !== '-') {
         let row = MAP_MTE.get(feature).get(mteFlag);
         if (row) {
-          // if (!(row.featStr in this)) {
-          //   throw new Error(`${row.featStr} not in this`);
-          // }
+          if (!(row.featStr in this)) {
+            throw new Error(`${row.featStr} not in this`);
+          }
           this[row.featStr] = ('vesum' in row) ? row.vesum : row.mi;
           if (this[row.featStr] === undefined) {
             throw new Error(`Cannot map ${mteFlags.join('')}`);
