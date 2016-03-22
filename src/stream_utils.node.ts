@@ -1,5 +1,6 @@
 import {Readable} from 'stream';
 
+////////////////////////////////////////////////////////////////////////////////
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
 	return new Promise((resolve, reject) => {
 
@@ -17,6 +18,7 @@ export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
 	});
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export function readTillEnd(istream: Readable): Promise<string> {
 	let ret = '';
 	
