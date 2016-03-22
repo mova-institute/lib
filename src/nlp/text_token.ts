@@ -252,7 +252,7 @@ export function getUnambMorphTag(w_: IElement) {
 function addFeature(setStr: string, feature: string) {
   let set = new Set(setStr.split(':'));
   set.add(feature);
-  let ret = Array.from(set).sort().join(':');
+  let ret = [...set].sort().join(':');
 
   return ret;
 }

@@ -257,7 +257,7 @@ export function getStats(root: IElement) {
   return {
     wordCount,
     dictUnknownCount,
-    dictUnknowns: Array.from(dictUnknowns)
+    dictUnknowns: [...dictUnknowns]
   }
 }
 

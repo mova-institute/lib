@@ -46,7 +46,7 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
 		}
 	}
 	
-	let allSuffixes = NumeratedSet.fromUniqueArray(Array.from(suffixBag).sort(COMPARATOR));
+	let allSuffixes = NumeratedSet.fromUniqueArray([...suffixBag].sort(COMPARATOR));
 	
 	for (let par of paradigms) {
 		par.suffixes = par.suffixes.map(x => allSuffixes.id(x));

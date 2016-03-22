@@ -14,7 +14,7 @@ let destDir = join(args.d || args.dest || join(__dirname, '../../data/dict'), na
 
 
 let lines = readFileSync(input, 'utf8').trim().replace('\'', '’').split('\n');
-let lexemes_ = Array.from(lexemes(lines));
+let lexemes_ = [...lexemes(lines)];
 let compiledDict = compileDict(<[string, string][][]>lexemes_);
 
 mkdirp.sync(destDir);

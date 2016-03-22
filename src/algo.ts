@@ -92,7 +92,7 @@ export function arr2indexMap<T>(value: Array<T>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function combinations(arr: any[]) {
-  return <Array<any>>Array.from(_combinations(arr));
+  return [..._combinations(arr)];
 }
 
 function* _combinations(arr: any[], state = []) {

@@ -43,7 +43,7 @@ export function ugtag2tt(args) {
         openClassTags.add(tag);
       }
       let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
-      if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+      if (![...set].some(x => x.startsWith(tag + ' '))) {
         set.add(tag + ' ' + lemma);
       }
     }
@@ -64,7 +64,7 @@ export function ugtag2tt(args) {
           openClassTags.add(tag);
         }
         let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
-        if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+        if (![...set].some(x => x.startsWith(tag + ' '))) {
           set.add(tag + ' ' + lemma);
         }
         ret.write(form + '\t' + tag + '\n');
@@ -84,7 +84,7 @@ export function ugtag2tt(args) {
   ret = createWriteStream(tmpName);
   for (let [form, iterpretaions] of map) {
     ret.write(form + '\t');
-    ret.write(Array.from(iterpretaions).join('\t'));
+    ret.write([...iterpretaions].join('\t'));
     ret.write('\n');
   }
   ret.write('гарнорото\tR гарнорото\n');
@@ -93,7 +93,7 @@ export function ugtag2tt(args) {
 
 
   ret = createWriteStream(tmpName = tmp.tmpNameSync());
-  ret.write(Array.from(openClassTags).join(' '));
+  ret.write([...openClassTags].join(' '));
   renameSync(tmpName, join(args.ret, 'tt-open-class-tags.txt'));
 }
 
@@ -105,7 +105,7 @@ export async function shevaCsv2ttLexicon(input, output) {
     if (line && !line.includes(' ')) {
       let [form, lemma, tag] = line.split(',');
       let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
-      if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+      if (![...set].some(x => x.startsWith(tag + ' '))) {
         set.add(tag + ' ' + lemma);
       }
     }
@@ -113,7 +113,7 @@ export async function shevaCsv2ttLexicon(input, output) {
 
   for (let [form, iterpretaions] of map) {
     output.write(form + '\t');
-    output.write(Array.from(iterpretaions).join('\t'));
+    output.write([...iterpretaions].join('\t'));
     output.write('\n');
   }
 
@@ -134,7 +134,7 @@ export async function shevaCsv2ttOpenTags(input, output) {
       }
     }
   }
-  output.write(Array.from(set).join(' '));
+  output.write([...set].join(' '));
 }
 
 
@@ -144,14 +144,14 @@ export async function dict2ttLexicon(input, output) {
   let map = new Map<string, Set<string>>();
   for (let {form, lemma, tag} of dictFormLemmaTag(lines)) {
     let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
-    if (!Array.from(set).some(x => x.startsWith(tag + ' '))) {
+    if (![...set].some(x => x.startsWith(tag + ' '))) {
       set.add(tag + ' ' + lemma);
     }
   }
 
   for (let [form, iterpretaions] of map) {
     output.write(form + '\t');
-    output.write(Array.from(iterpretaions).join('\t'));
+    output.write([...iterpretaions].join('\t'));
     output.write('\n');
   }
 

@@ -15,7 +15,7 @@ let verbs = fs
   .split('\n')
   .filter(x => !x.startsWith('%'))
   .map(x => x.trim().split(/[:\s]/, 1)[0]);
-verbs = Array.from(new Set(verbs));
+verbs = [...new Set(verbs)];
 
 let index = args.start || 0;
 let numConcReq = args.conc || 1;
