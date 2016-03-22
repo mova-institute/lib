@@ -47,3 +47,13 @@ export function* zip(...arrays: Array<Array<any>>) {
 export function sleep(ms = 0) {
   return new Promise(() => setTimeout(null, ms));
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function isUndefined(value) {
+  return typeof value === 'undefined';
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isOddball(value) {
+  return isUndefined(value) || value === null;
+}

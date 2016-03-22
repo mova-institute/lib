@@ -1,5 +1,6 @@
 import {indexTableByColumns, arr2indexMap, overflowNegative} from '../algo';
 import {startsWithCapital} from '../string_utils';
+import {isOddball} from '../lang';
 
 export enum Pos {
   noun,
@@ -467,6 +468,12 @@ export class MorphTag {
 
       default:
         throw new Error(`Unknown MTE POS: ${flags[0]}`);
+    }
+    
+    // kill redundant info
+    if (!isOddball(ret.gender) && ret.number === Numberr.singular
+      && ret.pos !== Pos.numeral && ret.pos2 !== Pos2.numeral) {
+      ret.number = null;
     }
 
     return ret;
