@@ -192,7 +192,7 @@ export const FEATURE_TABLE = [
   { featStr: 'numeralForm', feat: NumeralForm, mi: NumeralForm.roman, mte: 'r' },
   { featStr: 'numeralForm', feat: NumeralForm, mi: NumeralForm.letter, mte: 'l' },
 
-  { featStr: 'nounType', feat: NounType, mi: NounType.common, mte: 'c' },
+  { featStr: 'nounType', feat: NounType, mi: NounType.common, vesumStr: 'prop', mte: 'c' },
   { featStr: 'nounType', feat: NounType, mi: NounType.proper, mte: 'p' },
 
   { featStr: 'verbType', feat: VerbType, mi: VerbType.main, mte: 'm' },
@@ -531,6 +531,7 @@ export const FEATURE_ORDER = {
     CaseInflectability,
     NumberTantum,
     Alternative,
+    NounType,
     NameType,
     Pos2,
     PronominalType,
