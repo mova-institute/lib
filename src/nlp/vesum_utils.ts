@@ -6,7 +6,7 @@ import {groupTableBy, arr2indexMap, combinations} from '../algo';
 const FORM_PADDING = '  ';
 
 
-const expandableFeatures = new Set([RequiredCase, PronominalType, Aspect, ConjunctionType]);
+const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionType]);
 
 // Expands dict_corp_viz.txt tag into an array of unambiguous morph interpretations
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,11 +78,6 @@ export function expandDictCorpViz(fileStr: string) {
   }
 
   return ret.join('\n');
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function sortVesumFlags(flags: string[]) {
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
