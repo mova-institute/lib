@@ -1,4 +1,4 @@
-import {iterateDictCorpVizLines, expandVesumTag} from './nlp/vesum_utils';
+import {iterateDictCorpVizLines, expandAndSortVesumTag} from './nlp/vesum_utils';
 import {MorphTag, mapVesumFlag} from './nlp/morph_tag';
 import {rysin2multext} from './nlp/rysin2mulext';
 

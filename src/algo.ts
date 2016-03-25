@@ -91,11 +91,11 @@ export function arr2indexMap<T>(value: Array<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function combinations(arr: any[]) {
+export function combinations<T>(arr: T[][]) {
   return [..._combinations(arr)];
 }
 
-function* _combinations(arr: any[], state = []) {
+function* _combinations<T>(arr: T[][], state = new Array<T>()): Iterable<T[]> {
   if (state.length < arr.length) {
     for (let x of arr[state.length]) {
       state.push(x);

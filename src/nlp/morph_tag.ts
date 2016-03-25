@@ -183,6 +183,9 @@ export enum Abbreviation {
 export enum Dimin {
   yes
 };
+export enum Possesive {
+  yes
+};
 export enum ParadigmOmohnym { };
 export enum SemanticOmohnym { };
 
@@ -255,15 +258,14 @@ export const FEATURE_TABLE = [
 
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.possessive, vesumStr: 'pos', mte: 's' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.demonstrative, vesumStr: 'dem', mte: 'd' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.interrogative, vesumStr: 'int', mte: 'q' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.relative, vesumStr: 'rel', mte: 'r' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.negative, vesumStr: 'neg', mte: 'z' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.indefinite, vesumStr: 'ind', mte: 'i' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.general, vesumStr: 'gen', mte: 'g' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.definitive, vesumStr: 'def', mte: '?' },  // todo
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.emphatic, vesumStr: 'emph', mte: 'h' },
+  { featStr: 'pronominalType', feat: null, mte: 's' },
 
   { featStr: 'сonjunctionType', feat: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
   { featStr: 'сonjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
@@ -310,6 +312,8 @@ export const FEATURE_TABLE = [
   { featStr: 'vuAlternatibe', feat: VuAlternative, vesum: VuAlternative.yes, vesumStr: 'v-u' },
   
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
+  
+  { featStr: 'poss', feat: Possesive, vesum: Possesive.yes, vesumStr: 'pos' },
 ];
 
 export const MTE_FEATURES = {
@@ -539,6 +543,7 @@ export const FEATURE_ORDER = {
     Alternative,
     NounType,
     NameType,
+    Possesive,    
     Pos2,
     PronominalType,
     Colloquial,
@@ -551,7 +556,12 @@ export const FEATURE_ORDER = {
     Case,
     RequiredAnimacy,
     Variant,
-    Degree,  
+    Degree,
+    Possesive,
+    CaseInflectability,
+    NumberTantum,
+    Pos2,
+    PronominalType,
   ],
   [Pos.verb]: [
     Pos,
@@ -596,6 +606,7 @@ export const FEATURE_ORDER = {
     ParadigmOmohnym,
     SemanticOmohnym,
     NameType,
+    Possesive,    
     Pos2,
     PronominalType,
     Person,

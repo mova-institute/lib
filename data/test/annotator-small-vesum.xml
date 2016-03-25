@@ -16,7 +16,7 @@
         </title>
         <author>
           <mi:w_>
-            <w lemma="Джорж" ana="noun:anim:m:v_naz:fname">Джорж</w>
+            <w lemma="Джорж" ana="noun:anim:m:v_naz:prop:fname">Джорж</w>
           </mi:w_>
           <mi:w_>
             <w lemma="Орвел" ana="X">Орвел</w>
@@ -39,8 +39,8 @@
             <mi:w_>
               <w lemma="перший" ana="adj:m:v_naz:compb">Перший</w>
               <w lemma="перший" ana="adj:m:v_naz:compb:&amp;numr">Перший</w>
-              <w lemma="перший" ana="adj:rinanim:m:v_zna:compb">Перший</w>
-              <w lemma="перший" ana="adj:rinanim:m:v_zna:compb:&amp;numr">Перший</w>
+              <w lemma="перший" ana="adj:m:v_zna:rinanim:compb">Перший</w>
+              <w lemma="перший" ana="adj:m:v_zna:rinanim:compb:&amp;numr">Перший</w>
               <w lemma="перший" ana="adj:m:v_kly:compb">Перший</w>
               <w lemma="перший" ana="adj:m:v_kly:compb:&amp;numr">Перший</w>
             </mi:w_>
@@ -51,8 +51,8 @@
             <mi:w_>
               <w lemma="перший" ana="adj:m:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:m:v_rod:compb:&amp;numr">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb:&amp;numr">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb:&amp;numr">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb:&amp;numr">першого</w>
             </mi:w_>
@@ -63,28 +63,31 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_kly:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_kly:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_kly:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>
@@ -92,8 +95,8 @@
             <mi:w_>
               <w lemma="другий" ana="adj:m:v_naz">Другий</w>
               <w lemma="другий" ana="adj:m:v_naz:&amp;numr">Другий</w>
-              <w lemma="другий" ana="adj:rinanim:m:v_zna">Другий</w>
-              <w lemma="другий" ana="adj:rinanim:m:v_zna:&amp;numr">Другий</w>
+              <w lemma="другий" ana="adj:m:v_zna:rinanim">Другий</w>
+              <w lemma="другий" ana="adj:m:v_zna:rinanim:&amp;numr">Другий</w>
               <w lemma="другий" ana="adj:m:v_kly">Другий</w>
               <w lemma="другий" ana="adj:m:v_kly:&amp;numr">Другий</w>
             </mi:w_>
@@ -104,8 +107,8 @@
             <mi:w_>
               <w lemma="перший" ana="adj:m:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:m:v_rod:compb:&amp;numr">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb:&amp;numr">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb:&amp;numr">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb:&amp;numr">першого</w>
             </mi:w_>
@@ -116,39 +119,38 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>
           <p>
             <mi:w_>
               <w lemma="третій" ana="adj:m:v_naz:&amp;numr">Третій</w>
-              <w lemma="третій" ana="adj:rinanim:m:v_zna:&amp;numr">Третій</w>
+              <w lemma="третій" ana="adj:m:v_zna:rinanim:&amp;numr">Третій</w>
               <w lemma="третій" ana="adj:m:v_kly:&amp;numr">Третій</w>
               <w lemma="третій" ana="adj:f:v_dav:&amp;numr">Третій</w>
               <w lemma="третій" ana="adj:f:v_mis:&amp;numr">Третій</w>
-              <w lemma="третій" ana="adj:f:v_kly:&amp;numr">Третій</w>
             </mi:w_>
             <mi:w_>
               <w lemma="абзац" ana="noun:inanim:m:v_naz">абзац</w>
@@ -157,8 +159,8 @@
             <mi:w_>
               <w lemma="перший" ana="adj:m:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:m:v_rod:compb:&amp;numr">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb:&amp;numr">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb:&amp;numr">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb:&amp;numr">першого</w>
             </mi:w_>
@@ -169,28 +171,28 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>
@@ -205,8 +207,8 @@
             <mi:w_>
               <w lemma="перший" ana="adj:m:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:m:v_rod:compb:&amp;numr">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb">першого</w>
-              <w lemma="перший" ana="adj:ranim:m:v_zna:compb:&amp;numr">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb">першого</w>
+              <w lemma="перший" ana="adj:m:v_zna:ranim:compb:&amp;numr">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb">першого</w>
               <w lemma="перший" ana="adj:n:v_rod:compb:&amp;numr">першого</w>
             </mi:w_>
@@ -217,28 +219,28 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>
@@ -248,8 +250,8 @@
             <mi:w_>
               <w lemma="перший" ana="adj:m:v_naz:compb">Перший</w>
               <w lemma="перший" ana="adj:m:v_naz:compb:&amp;numr">Перший</w>
-              <w lemma="перший" ana="adj:rinanim:m:v_zna:compb">Перший</w>
-              <w lemma="перший" ana="adj:rinanim:m:v_zna:compb:&amp;numr">Перший</w>
+              <w lemma="перший" ana="adj:m:v_zna:rinanim:compb">Перший</w>
+              <w lemma="перший" ana="adj:m:v_zna:rinanim:compb:&amp;numr">Перший</w>
               <w lemma="перший" ana="adj:m:v_kly:compb">Перший</w>
               <w lemma="перший" ana="adj:m:v_kly:compb:&amp;numr">Перший</w>
             </mi:w_>
@@ -260,8 +262,8 @@
             <mi:w_>
               <w lemma="другий" ana="adj:m:v_rod">другого</w>
               <w lemma="другий" ana="adj:m:v_rod:&amp;numr">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna:&amp;numr">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim:&amp;numr">другого</w>
               <w lemma="другий" ana="adj:n:v_rod">другого</w>
               <w lemma="другий" ana="adj:n:v_rod:&amp;numr">другого</w>
             </mi:w_>
@@ -272,28 +274,28 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>
@@ -301,8 +303,8 @@
             <mi:w_>
               <w lemma="другий" ana="adj:m:v_naz">Другий</w>
               <w lemma="другий" ana="adj:m:v_naz:&amp;numr">Другий</w>
-              <w lemma="другий" ana="adj:rinanim:m:v_zna">Другий</w>
-              <w lemma="другий" ana="adj:rinanim:m:v_zna:&amp;numr">Другий</w>
+              <w lemma="другий" ana="adj:m:v_zna:rinanim">Другий</w>
+              <w lemma="другий" ana="adj:m:v_zna:rinanim:&amp;numr">Другий</w>
               <w lemma="другий" ana="adj:m:v_kly">Другий</w>
               <w lemma="другий" ana="adj:m:v_kly:&amp;numr">Другий</w>
             </mi:w_>
@@ -313,8 +315,8 @@
             <mi:w_>
               <w lemma="другий" ana="adj:m:v_rod">другого</w>
               <w lemma="другий" ana="adj:m:v_rod:&amp;numr">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna:&amp;numr">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim:&amp;numr">другого</w>
               <w lemma="другий" ana="adj:n:v_rod">другого</w>
               <w lemma="другий" ana="adj:n:v_rod:&amp;numr">другого</w>
             </mi:w_>
@@ -325,39 +327,38 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>
           <p>
             <mi:w_>
               <w lemma="третій" ana="adj:m:v_naz:&amp;numr">Третій</w>
-              <w lemma="третій" ana="adj:rinanim:m:v_zna:&amp;numr">Третій</w>
+              <w lemma="третій" ana="adj:m:v_zna:rinanim:&amp;numr">Третій</w>
               <w lemma="третій" ana="adj:m:v_kly:&amp;numr">Третій</w>
               <w lemma="третій" ana="adj:f:v_dav:&amp;numr">Третій</w>
               <w lemma="третій" ana="adj:f:v_mis:&amp;numr">Третій</w>
-              <w lemma="третій" ana="adj:f:v_kly:&amp;numr">Третій</w>
             </mi:w_>
             <mi:w_>
               <w lemma="абзац" ana="noun:inanim:m:v_naz">абзац</w>
@@ -366,8 +367,8 @@
             <mi:w_>
               <w lemma="другий" ana="adj:m:v_rod">другого</w>
               <w lemma="другий" ana="adj:m:v_rod:&amp;numr">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna:&amp;numr">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim:&amp;numr">другого</w>
               <w lemma="другий" ana="adj:n:v_rod">другого</w>
               <w lemma="другий" ana="adj:n:v_rod:&amp;numr">другого</w>
             </mi:w_>
@@ -378,28 +379,28 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>
@@ -414,8 +415,8 @@
             <mi:w_>
               <w lemma="другий" ana="adj:m:v_rod">другого</w>
               <w lemma="другий" ana="adj:m:v_rod:&amp;numr">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna">другого</w>
-              <w lemma="другий" ana="adj:ranim:m:v_zna:&amp;numr">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim">другого</w>
+              <w lemma="другий" ana="adj:m:v_zna:ranim:&amp;numr">другого</w>
               <w lemma="другий" ana="adj:n:v_rod">другого</w>
               <w lemma="другий" ana="adj:n:v_rod:&amp;numr">другого</w>
             </mi:w_>
@@ -426,28 +427,28 @@
             </mi:w_>
             <mi:w_>
               <w lemma="йога" ana="noun:inanim:f:v_kly">його</w>
-              <w lemma="він" ana="noun:m:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="він" ana="noun:m:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_rod:&amp;pron:pers">його</w>
-              <w lemma="воно" ana="noun:n:3:v_zna:&amp;pron:pers">його</w>
-              <w lemma="його" ana="adj:m:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:m:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:f:v_mis:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_naz:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_rod:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_dav:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_zna:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_oru:nv:&amp;pron:pos">його</w>
-              <w lemma="його" ana="adj:n:v_mis:nv:&amp;pron:pos">його</w>
+              <w lemma="він" ana="noun:m:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="він" ana="noun:m:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_rod:&amp;pron:pers:3">його</w>
+              <w lemma="воно" ana="noun:n:v_zna:&amp;pron:pers:3">його</w>
+              <w lemma="його" ana="adj:m:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:m:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:f:v_mis:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_naz:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_rod:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_dav:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_zna:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_oru:pos:nv:&amp;pron:pers">його</w>
+              <w lemma="його" ana="adj:n:v_mis:pos:nv:&amp;pron:pers">його</w>
             </mi:w_>
             <pc>.</pc>
           </p>

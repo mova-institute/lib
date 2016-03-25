@@ -10,7 +10,7 @@ const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionTyp
 
 // Expands dict_corp_viz.txt tag into an array of unambiguous morph interpretations
 ////////////////////////////////////////////////////////////////////////////////
-export function expandVesumTag(value: string) {
+export function expandAndSortVesumTag(value: string) {
   let [mainFlagsStr, altFlagsStr] = value.split(/:&_|:&(?=adjp)/);  // consider &adjp as omohnymy
   
   let ret = combinations(groupExpandableFlags(mainFlagsStr.split(':')));
@@ -22,6 +22,7 @@ export function expandVesumTag(value: string) {
     }
   }
   
+  ret = ret.map(x => MorphTag.fromVesum(x).toVesum());
   return ret;
 }
 
@@ -74,7 +75,7 @@ export function expandDictCorpViz(fileStr: string) {
   let ret = new Array<string>();
   for (let {form, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
     let padd = isLemma ? '' : FORM_PADDING;
-    ret.push(...expandVesumTag(tag).map(x => padd + form + ' ' + x.join(':')));
+    ret.push(...expandAndSortVesumTag(tag).map(x => padd + form + ' ' + x.join(':')));
   }
 
   return ret.join('\n');
