@@ -1,10 +1,5 @@
-import {ObjectDawg} from '../../dawg/dawg'
-
-
-export interface MorphTag {  // todo
-  lemma: string;
-  tag: string;
-}
+import {ObjectDawg} from '../../dawg/dawg';
+import {MorphInterp} from '../interfaces';
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
@@ -22,10 +17,10 @@ export class MorphAnalyzer {
 
   tag(token: string) {
     if (/^\d+$/.test(token)) {
-      return new Set<MorphTag>([{lemma: token, tag: 'Md'}]);
+      return new Set<MorphInterp>([{lemma: token, tag: 'Md'}]);
     }
 
-    let ret = new Set<MorphTag>();
+    let ret = new Set<MorphInterp>();
 
     let toLookup = [token];
     let lowercase = token.toLowerCase();
@@ -41,7 +36,7 @@ export class MorphAnalyzer {
     return ret;
   }
 
-  private _getTag(word: string, paraIndex: WordDawgPayload): MorphTag {
+  private _getTag(word: string, paraIndex: WordDawgPayload): MorphInterp {
     let paradigm = this._paradigms[paraIndex.paradigmId];
 
     let formSuffix = this._suffixes[paradigm[paraIndex.indexInPradigm]];

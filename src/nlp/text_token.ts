@@ -4,6 +4,7 @@ import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils'
 import {traverseDocumentOrderEl, NS, nextElDocumentOrder} from '../xml/utils'
 import {markIndexwiseStringDiff} from '../html_utils'
 import {wrappedOrNull} from '../lang';
+import {MorphInterp} from './interfaces';
 
 
 
@@ -78,15 +79,16 @@ export class TextToken {
     return getUnambMorphTag(this.elem);
   }
 
-  morphTags() {
-    let tags = new Array<string>();
-    let lemmas = new Array<string>();
+  interps() {
+    let ret = new Array<MorphInterp>();
     for (let child of this.elem.childElements()) {
-      tags.push(child.getAttribute('ana'));
-      lemmas.push(child.getAttribute('lemma'));
+      ret.push({
+        tag: child.getAttribute('ana'),
+        lemma: child.getAttribute('lemma')
+      });
     }
-
-    return { tags, lemmas };
+    
+    return ret;
   }
 
   lemma() {
@@ -97,9 +99,9 @@ export class TextToken {
   }
 
   lemmaIfUnamb() {
-    let lemmas = this.morphTags().lemmas;
-    if (lemmas.every(x => x === lemmas[0])) {
-      return lemmas[0];
+    let tags = this.interps();
+    if (tags.every(x => x.lemma === tags[0].lemma)) {
+      return tags[0].lemma;
     }
   }
 

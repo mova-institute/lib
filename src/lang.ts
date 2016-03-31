@@ -57,3 +57,8 @@ export function isUndefined(value) {
 export function isOddball(value) {
   return isUndefined(value) || value === null;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function isString(value) {
+  return typeof value === 'string';
+}

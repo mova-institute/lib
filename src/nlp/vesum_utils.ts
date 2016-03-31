@@ -1,6 +1,7 @@
 import {tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER, FEAT_MAP_STRING,
   RequiredCase, PronominalType, Aspect, ConjunctionType} from './morph_tag';
-import {groupTableBy, arr2indexMap, combinations} from '../algo';
+import {groupTableBy, arr2indexMap, combinations, stableSort} from '../algo';
+import {MorphInterp} from './interfaces';
 
 
 const FORM_PADDING = '  ';
@@ -89,32 +90,43 @@ export function test(fileStr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function presentTagsForDisamb(tags: string[]) {
-  let aligned = alignTagList(tags);
-  let ret = aligned.map(x => x.map(x => []));
+export function presentTagsForDisamb(interps: MorphInterp[]) {
+  let splitted = interps.map(x => ({lemma: x.lemma, flags:x.tag.split(':')}));
+  let sorted = stableSort(splitted, (a, b) => a.flags[0].localeCompare(b.flags[0]));
+  
+  let aligned = alignTagList(sorted.map(x => x.flags));
+  let flags = aligned.map(x => x.map(x => []));
 
   for (let [i, posAgg] of aligned.entries()) {
     let maxNumFlags = Math.max(...posAgg.map(x => x.length));
     for (let k = 0; k < maxNumFlags; ++k) {
       let areAllEqual = posAgg.every(x => x[k] === posAgg[0][k]);
       for (let j = 0; j < posAgg.length; ++j) {
-        ret[i][j].push({
+        flags[i][j].push({
           content: posAgg[j][k] || '',
           isMarked: !areAllEqual
         });
       }
     }
   }
-
+  
+  let ret = [];
+  let shift = 0;
+  for (let posAgg of flags) {
+    ret.push(posAgg.map((x, i) => ({
+      flags: x,
+      lemma: sorted[shift + i].lemma
+    })));
+    shift += posAgg.length;
+  };
   return ret;
 }
 
 //------------------------------------------------------------------------------
-function alignTagList(tags: string[]) {
+function alignTagList(flags: string[][]) {
   let ret = new Array<Array<Array<string>>>();  // [pos][tag][flag]
 
-  let flagsArr = tags.map(x => x.split(':')).sort((a, b) => a[0].localeCompare(b[0]));
-  let poses = groupTableBy(flagsArr, 0);
+  let poses = groupTableBy(flags, 0);
   for (let posAgg of poses.values()) {
     let features = new Set();
     for (let flags of posAgg) {

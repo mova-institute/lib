@@ -124,3 +124,20 @@ export function shuffle(array: any[]) {
 
   return array;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function lexCompare(a, b) {
+  return String(a).localeCompare(String(b));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = lexCompare) {
+  let indexMap = arr2indexMap(array);
+  return array.sort((a, b) => {
+    let initialCompare = comparator(a, b);
+    if (!initialCompare) {
+      return indexMap.get(b) - indexMap.get(a);
+    }
+    return initialCompare;
+  });
+}

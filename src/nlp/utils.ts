@@ -2,9 +2,9 @@ import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantB
 import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interfaces'
-import {MorphAnalyzer, MorphTag} from './morph_analyzer/morph_analyzer';
+import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
 import {getUnambMorphTag} from './text_token';
-
+import {MorphInterp} from './interfaces';
 
 export const WCHAR_UK = r `\-’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
 export const WCHAR_UK_RE = new RegExp(`^[${WCHAR_UK}]+$`);
@@ -185,7 +185,7 @@ export function elementFromToken(token: string, document: IDocument): IElement {
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: IElement, morphTags: Set<MorphTag>) {
+function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let w_ = el.ownerDocument.createElement('mi:w_'); // todo
   
