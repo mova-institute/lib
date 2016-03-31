@@ -1,5 +1,5 @@
 import {tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER, FEAT_MAP_STRING,
-  RequiredCase, PronominalType, Aspect, ConjunctionType} from './morph_tag';
+  RequiredCase, PronominalType, Aspect, ConjunctionType, compare} from './morph_tag';
 import {groupTableBy, arr2indexMap, combinations, stableSort} from '../algo';
 import {MorphInterp} from './interfaces';
 
@@ -91,8 +91,8 @@ export function test(fileStr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function presentTagsForDisamb(interps: MorphInterp[]) {
-  let splitted = interps.map(x => ({lemma: x.lemma, flags:x.tag.split(':')}));
-  let sorted = stableSort(splitted, (a, b) => a.flags[0].localeCompare(b.flags[0]));
+  let splitted = interps.map((x, index) => ({index, lemma: x.lemma, flags:x.tag.split(':')}));
+  let sorted = stableSort(splitted, (a, b) => compare(MorphTag.fromVesum(a.flags), MorphTag.fromVesum(b.flags)));
   
   let aligned = alignTagList(sorted.map(x => x.flags));
   let flags = aligned.map(x => x.map(x => []));
@@ -115,7 +115,8 @@ export function presentTagsForDisamb(interps: MorphInterp[]) {
   for (let posAgg of flags) {
     ret.push(posAgg.map((x, i) => ({
       flags: x,
-      lemma: sorted[shift + i].lemma
+      lemma: sorted[shift + i].lemma,
+      index: sorted[shift + i].index
     })));
     shift += posAgg.length;
   };

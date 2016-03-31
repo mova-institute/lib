@@ -1,6 +1,6 @@
 import {indexTableByColumns, arr2indexMap, overflowNegative} from '../algo';
 import {startsWithCapital} from '../string_utils';
-import {isOddball} from '../lang';
+import {isOddball, compare} from '../lang';
 
 export enum Pos {
   noun,
@@ -527,6 +527,10 @@ export class MorphTag {
   toVesumStr() {
     return this.toVesum().join(':');
   }
+  
+  equals(other: MorphTag) {
+    return this.toVesumStr() === other.toVesumStr();
+  }
 }
 
 
@@ -690,4 +694,26 @@ export function mapVesumFeatureValue(featureName: string, value) {
   }
 
   return null;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const featureCompareOrder = new Set([Pos, Pos2, Animacy]);
+export function compare(a: MorphTag, b: MorphTag) {
+  for (let feature of featureCompareOrder) {
+    let prop = FEAT_MAP_STRING.get(feature);
+    if (isOddball(a[prop]) && !isOddball(b[prop])) {
+      return -1;
+    }
+    if (!isOddball(a[prop]) && isOddball(b[prop])) {
+      return 1;
+    }
+    if (!isOddball(a[prop]) && !isOddball(b[prop])) {
+      let res = compare(a[prop], b[prop]);
+      if (res) {
+        return res;
+      }
+    }
+  }
+  
+  return 0;//a.toVesumStr().localeCompare(b.toVesumStr());
 }

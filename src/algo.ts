@@ -1,7 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
-export function numericCompare(a: number, b: number) {
-  return a - b;
-}
+import {lexCompare} from './lang';
 
 ////////////////////////////////////////////////////////////////////////////////
 export function uniqValuedMap2array(map) {
@@ -126,17 +123,12 @@ export function shuffle(array: any[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function lexCompare(a, b) {
-  return String(a).localeCompare(String(b));
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = lexCompare) {
   let indexMap = arr2indexMap(array);
   return array.sort((a, b) => {
     let initialCompare = comparator(a, b);
     if (!initialCompare) {
-      return indexMap.get(b) - indexMap.get(a);
+      return indexMap.get(a) - indexMap.get(b);
     }
     return initialCompare;
   });

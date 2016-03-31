@@ -62,3 +62,27 @@ export function isOddball(value) {
 export function isString(value) {
   return typeof value === 'string';
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function isNumber(value) {
+  return typeof value === 'number';
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function compare(a, b) {
+  if (isNumber(a) && isNumber(b)) {
+    return numericCompare(a, b);
+  }
+  
+  return lexCompare(a, b);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function numericCompare(a: number, b: number) {
+  return a - b;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function lexCompare(a, b) {
+  return String(a).localeCompare(String(b));
+}
