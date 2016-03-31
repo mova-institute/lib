@@ -16,6 +16,7 @@ export enum Pos {
   interjection,
   transl,  // todo
   numeral,
+  x
 };
 export enum Pos2 {
   pronoun,
@@ -284,6 +285,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
   { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'excl', mte: 'I' },
   { featStr: 'pos', feat: Pos, vesum: Pos.numeral, vesumStr: 'numr', mte: 'M' },
+  { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'X', mte: 'X' },  // todo: lowercase it
 
   { featStr: 'pos2', feat: Pos2, vesum: Pos2.numeral, vesumStr: '&numr' },
   { featStr: 'pos2', feat: Pos2, vesum: Pos2.participle, vesumStr: '&adjp' },
