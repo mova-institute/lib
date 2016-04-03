@@ -5,14 +5,26 @@ import {config, Req, sendError, debug, HttpError} from './server';
 import {mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
 import {firstNWords} from '../nlp/utils';
+import {isUndefined} from '../lang';
 import * as assert from 'assert';
 
 
+// const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve']);
 
 const COOKIE_CONFIG = {
   maxAge: 1000 * 3600 * 24 * 100,
   httpOnly: true
 };
+
+////////////////////////////////////////////////////////////////////////////////
+export async function callDb(req, res: express.Response, client: PgClient) {
+  /*if (dbProceduresAllowedToBeCalledDirectly.has(req.query.name)) {
+    let result = await client.call(req.query.name, req.user.id, ...req.query.params);
+    res.json(result);
+  }*/
+
+  // todo
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getRoles(req, res: express.Response, client: PgClient) {
@@ -131,23 +143,33 @@ export async function addText(req: Req, res: express.Response, client: PgClient)
   segments.push([numFragments - 1, numFragments - 1]);
 
   for (let segment of segments) {
-    await client.insert('task', {
+    let taskId = await client.insert('task', {
       docId,
       type: ['disambiguate_morphologically'],
       fragmentStart: segment[0],
       fragmentEnd: segment[1],
       name: req.body.fragments[segment[0]].firstWords.join(' '),
-    });
+    }, 'id');
+
+    for (let i = segment[0]; i <= segment[1]; ++i) {
+      await client.insert('fragment_version', {
+        docId,
+        taskId,
+        index: i,
+        content: req.body.fragments[i].xmlstr
+      });
+    }
   }
+  
   res.json({ result: 'ok' });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function assignTask(req: Req, res: express.Response, client: PgClient) {
+export async function assignTask(req: Req, res: express.Response, client: PgClient) {  // todo: rename +forAnnotation?
   if (!req.bag.user.roles[req.query.projectName]) {
     throw new HttpError(400);
   }
-  
+
   let projectId = await client.select1('project', 'id', 'name=$1', req.query.projectName);
   let id = await client.call('assign_task_for_annotation', req.bag.user.id, projectId);
 
@@ -156,11 +178,12 @@ export async function assignTask(req: Req, res: express.Response, client: PgClie
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignResolveTask(req: Req, res: express.Response, client: PgClient) {
-  let task = await client.update('task', 'user_id=$1', 'id=$2 and user_id is null', req.bag.user.id, req.query.id);
-  if (!task) {
+  if (!(await client.call('assign_task_for_resolve', req.bag.user.id, req.query.id))) {
     throw new HttpError(400);
-  }
-  res.json('ok');
+  };
+
+  let ret = await client.call('get_task', req.bag.user.id, req.query.id);
+  res.json(wrapData(ret));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +295,7 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
     let projectId = await client.select1('document', 'project_id', 'id=$1', taskInDb.docId);
     let reviewTasks: any[] = await client.call('get_task_list', req.bag.user.id, 'review', null);
     if (reviewTasks.length) {  // todo: take review from current project if can
-      let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).docs[0];
+      let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).documents[0];
       var nextTaskId = doc.tasks[0].id;
     }
     else {

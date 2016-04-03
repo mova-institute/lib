@@ -69,6 +69,11 @@ export function isNumber(value) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isObject(value) {
+  return typeof value === 'object';
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function compare(a, b) {
   if (isNumber(a) && isNumber(b)) {
     return numericCompare(a, b);
