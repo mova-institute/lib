@@ -61,6 +61,7 @@ export function* iterateDictCorpVizLines(lines: string[]) {
     let isLemma = !line.startsWith(' ');
     line = line.trim();
     if (line) {
+      line = line.replace(/'/g, '’');  // fix apostrophe
       let [form, tag] = line.split(' ');
       if (isLemma) {
         var lemma = form;
