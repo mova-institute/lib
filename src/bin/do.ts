@@ -7,9 +7,8 @@ const args = require('minimist')(process.argv.slice(2), {
   boolean: ['xml']
 });
 
-let [action, filename1, filename2] = args._;
-let [funcName, ...path] = action.split('.').reverse();
-let moduleObj = require('../' + path.reverse().join('/'));
+let [path, funcName, filename1, filename2] = args._;
+let moduleObj = require('../' + path);
 let func = moduleObj[funcName];
 let [input, output] = ioArgs3(filename1, filename2);
 

@@ -1,10 +1,12 @@
-import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantBeXml} from '../xml/utils'
+import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantBeXml,
+  sortChildElements} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interfaces'
 import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
 import {getUnambMorphTag} from './text_token';
 import {MorphInterp} from './interfaces';
+import {MorphTag, compareTags} from './morph_tag';
 
 export const WCHAR_UK = r `\-’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
 export const WCHAR_UK_RE = new RegExp(`^[${WCHAR_UK}]+$`);
@@ -189,10 +191,6 @@ function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let w_ = el.ownerDocument.createElement('mi:w_'); // todo
   
-  if (!morphTags.size) {
-    morphTags.add({ lemma: el.textContent, tag: 'X' });
-    //console.log('Unknown word: "' + el.textContent + '"');
-  }
   for (let morphTag of morphTags) {
     let w = el.ownerDocument.createElement('w');
     w.textContent = el.textContent;
@@ -327,11 +325,76 @@ export function firstNWords(n: number, from: IElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function oldZhyto2cur(root: IElement) {  // todo: remane xmlns
-  let miwords = root.xpath('//mi:w_', NS);
+export function oldZhyto2newerFormat(root: IElement) {  // todo: rename xmlns
+  let miwords = <IElement[]>root.xpath('//mi:w_', NS);
   for (let miw of miwords) {
-    (<IElement>miw).renameAttributeIfExists('ana', 'disamb');
-    (<IElement>miw).renameAttributeIfExists('word-id', 'n');
+    // rename attributes
+    miw.renameAttributeIfExists('ana', 'disamb');
+    miw.renameAttributeIfExists('word-id', 'n');
+    
+    
+    
+    
+    // select unambig dict interps
+    if (miw.childElementCount === 1 && !miw.getAttribute('disamb')) {
+      miw.setAttribute('disamb', 0);
+    }
+    
+    for (let w of miw.childElements()) {
+      let mte = w.getAttribute('ana');
+      // console.log(`mte: ${mte}`);
+      let vesum = MorphTag.fromMte(mte, w.textContent).toVesumStr();
+      // console.log(`vesum: ${vesum}`);
+      
+      w.setAttribute('ana', vesum);
+    }
+    
+    // miw.removeAttribute('n');  // temp
+    // miw.removeAttribute('disamb');  // temp
   }
+  
+  sortInterps(root);
+  
+  return root;
+  
+  // todo: sort attributes
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function sortInterps(root: IElement) {
+  for (let miw of <IElement[]>root.xpath('//mi:w_', NS)) {
+    
+    let disambIndex = Number.parseInt(miw.getAttribute('disamb'));
+    if (!Number.isNaN(disambIndex)) {
+      var disambElem = miw.childElement(disambIndex);
+    }
+    
+    sortChildElements(miw, (a, b) => {
+      let ret = a.textContent.localeCompare(b.textContent);
+      if (ret) {
+        return ret;
+      }
+      
+      return compareTags(MorphTag.fromVesumStr(a.getAttribute('ana')), MorphTag.fromVesumStr(b.getAttribute('ana')));
+      // return a.getAttribute('ana').localeCompare(b.getAttribute('ana'));
+    });
+    
+    if (disambElem) {
+      miw.setAttribute('disamb', [...miw.childElements()].indexOf(disambElem));
+    }
+  }
+  
+  return root;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function untag(root: IElement) {
+  let doc = root.ownerDocument;
+  for (let miw of <IElement[]>root.xpath('//mi:w_', NS)) {
+    let replacer = doc.createElement('w');
+    replacer.textContent = miw.childElement(0).textContent;
+    miw.replace(replacer);
+  }
+  
   return root;
 }

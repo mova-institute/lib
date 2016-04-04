@@ -1,4 +1,4 @@
-export let r = String.raw;
+export const r = String.raw;
 
 ////////////////////////////////////////////////////////////////////////////////
 export function last<T>(array: Array<T>) {
@@ -7,7 +7,7 @@ export function last<T>(array: Array<T>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function wrappedOrNull<T>(construct: { new (val): T; }, val) {
-	return val ? new construct(val) : null;
+  return val ? new construct(val) : null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,30 +17,17 @@ export function countGenerated<T>(generator: Iterator<T>) {
 }
 ////////////////////////////////////////////////////////////////////////////////
 export function ithGenerated<T>(generator: Iterator<T>, index: number) {
-	let cur = generator.next();
+  let cur = generator.next();
   while (index-- && !cur.done) {
     cur = generator.next()
   };
-  
-	return cur.value;
+
+  return cur.value;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function complement<T>(a: Set<T>, b: Set<T>) {
-	return new Set([...a].filter(x => !b.has(x)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function* zip(...arrays: Array<Array<any>>) {
-	if (arrays && arrays.length) {
-		for (let i = 0; i < arrays[0].length; ++i) {
-			let zipped = [];
-			for (let arr of arrays) {
-				zipped.push(arr[i]);
-			}
-			yield {zipped, i};
-		}
-	}
+  return new Set([...a].filter(x => !b.has(x)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,10 +62,18 @@ export function isObject(value) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function compare(a, b) {
+  if (isOddball(a) && !isOddball(b)) {
+    return -1;
+  }
+  
+  if (!isOddball(a) && isOddball(b)) {
+    return 1;
+  }
+  
   if (isNumber(a) && isNumber(b)) {
     return numericCompare(a, b);
   }
-  
+
   return lexCompare(a, b);
 }
 
@@ -90,4 +85,30 @@ export function numericCompare(a: number, b: number) {
 ////////////////////////////////////////////////////////////////////////////////
 export function lexCompare(a, b) {
   return String(a).localeCompare(String(b));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/** pythonish */
+export function* zip<T>(...iterables: Iterable<T>[]) {
+  let iterators = iterables.map(x => x[Symbol.iterator]());
+
+  for (let state = iterators.map(x => x.next());
+    state.every(x => !x.done);
+    state = iterators.map(x => x.next())) {
+      
+    yield state.map(x => x.value);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/** pythonish */
+export function* zipLongest<T>(...iterables: Iterable<T>[]) {
+  let iterators = iterables.map(x => x[Symbol.iterator]());
+  
+  for (let state = iterators.map(x => x.next());
+    state.some(x => !x.done);
+    state = iterators.map(x => x.next())) {
+      
+    yield state.map(x => x.done ? undefined : x.value);
+  }
 }

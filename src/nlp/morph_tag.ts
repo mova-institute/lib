@@ -1,6 +1,6 @@
 import {indexTableByColumns, arr2indexMap, overflowNegative} from '../algo';
 import {startsWithCapital} from '../string_utils';
-import {isOddball, compare} from '../lang';
+import {isOddball, compare, zipLongest} from '../lang';
 
 export enum Pos {
   noun,
@@ -193,9 +193,9 @@ export enum SemanticOmohnym { };
 
 export const FEATURE_TABLE = [
 
-  { featStr: 'numeralForm', feat: NumeralForm, mi: NumeralForm.digit, mte: 'd' },
-  { featStr: 'numeralForm', feat: NumeralForm, mi: NumeralForm.roman, mte: 'r' },
-  { featStr: 'numeralForm', feat: NumeralForm, mi: NumeralForm.letter, mte: 'l' },
+  { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.digit, vesumStr: 'digit', mte: 'd' },  // todo: not vesum?
+  { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.roman, vesumStr: 'roman', mte: 'r' },  // todo: not vesum?
+  { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.letter, vesumStr: 'letter', mte: 'l' },  // todo: not vesum?
 
   { featStr: 'nounType', feat: NounType, mi: NounType.common, mte: 'c' },
   { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
@@ -285,7 +285,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
   { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'excl', mte: 'I' },
   { featStr: 'pos', feat: Pos, vesum: Pos.numeral, vesumStr: 'numr', mte: 'M' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'X', mte: 'X' },  // todo: lowercase it
+  { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },  // todo: lowercase it
 
   { featStr: 'pos2', feat: Pos2, vesum: Pos2.numeral, vesumStr: '&numr' },
   { featStr: 'pos2', feat: Pos2, vesum: Pos2.participle, vesumStr: '&adjp' },
@@ -310,11 +310,11 @@ export const FEATURE_TABLE = [
   { featStr: 'alternative', feat: Alternative, vesum: Alternative.yes, vesumStr: 'alt' },
 
   { featStr: 'abbreviation', feat: Abbreviation, vesum: Abbreviation.yes, vesumStr: 'abbr' },
-  
+
   { featStr: 'vuAlternatibe', feat: VuAlternative, vesum: VuAlternative.yes, vesumStr: 'v-u' },
-  
+
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
-  
+
   { featStr: 'poss', feat: Possesive, vesum: Possesive.yes, vesumStr: 'pos' },
 ];
 
@@ -324,11 +324,12 @@ export const MTE_FEATURES = {
   'A': [Pos.adjective, null, Degree, Gender, Numberr, Case, null, RequiredAnimacy, Aspect, Voice, Tense],
   'P': [null, PronominalType, null, Person, Gender, RequiredAnimacy, Numberr, Case, null],
   'R': [Pos.adverb, Degree],
-  'S': [Pos.preposition, null, null, Case],
+  'S': [Pos.preposition, null, null, RequiredCase],
   'C': [Pos.conjunction, ConjunctionType, null],
-  'M': [null, null, null, Gender, Numberr, Case, RequiredAnimacy],
+  'M': [Pos.numeral, NumeralForm, null, Gender, Numberr, Case, RequiredAnimacy],
   'Q': [Pos.particle],
   'I': [Pos.interjection],
+  'X': [Pos.x],
 };
 
 
@@ -337,21 +338,20 @@ const MAP_VESUM: Map<string, any> =
   indexTableByColumns(FEATURE_TABLE.filter((x: any) => x.vesum !== undefined), ['vesumStr']);
 export const MAP_MTE: Map<string, any> = indexTableByColumns(FEATURE_TABLE, ['feat', 'mte']);
 
+//export const FEAT_MAP_STRING = new Map<Object, string>(
+//FEATURE_TABLE.filter(row => row.feat && !!row.featStr).map(x => [x.feat, x.featStr]));
+// todo: follow https://github.com/Microsoft/TypeScript/issues/7799
+
 export const FEAT_MAP_STRING = new Map<Object, string>();
+export const STRING_MAP_FEAT = new Map<Object, string>();
 for (let row of FEATURE_TABLE) {
   if (row.feat && row.featStr) {
     FEAT_MAP_STRING.set(row.feat, row.featStr);
+    STRING_MAP_FEAT.set(row.featStr, row.feat);
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// represents a single unambiguous morphological interpretation
-export class MorphTag {
-  private static otherFlagsAllowed = new Set([
-    'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
-    'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl']);
-
+export class Features {
   pos: Pos = null;
   pos2: Pos2 = null;
   case: Case = null;
@@ -369,15 +369,36 @@ export class MorphTag {
   variant: Variant = null;
   pronominalType: PronominalType = null;
   numberTantum: NumberTantum = null;
-  reflexive: boolean = null;
+  reflexive: Reflexive = null;
   verbType: VerbType = null;
   numeralForm: NumeralForm = null;
   сonjunctionType: ConjunctionType = null;
   nounType: NounType = null;
+}
 
+////////////////////////////////////////////////////////////////////////////////
+// represents a single unambiguous morphological interpretation
+export class MorphTag {
+  private static otherFlagsAllowed = new Set([
+    'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
+    'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl'
+  ]);
+
+
+  features = new Features();
   otherFlags = new Set<string>();
 
 
+  static isValidVesumStr(value: string) {  // todo
+    try {
+      MorphTag.fromVesumStr(value);
+      return true;
+    }
+    catch (e) {
+      return false;
+    }
+  }
 
   static fromVesum(flags: string[], lemma?: string) {
     let ret = new MorphTag();
@@ -385,7 +406,7 @@ export class MorphTag {
     for (let flag of flags) {
       let row = tryMapVesumFlag(flag);
       if (row) {
-        ret[row.featStr] = row.vesum;
+        ret.features[row.featStr] = row.vesum;
       }
       else {
         if (MorphTag.otherFlagsAllowed.has(flag)) {
@@ -408,46 +429,51 @@ export class MorphTag {
     return MorphTag.fromVesum(tag.split(':'), lemma);
   }
 
-  static fromMte(tag: string) {
+  static fromMte(tag: string, form?: string) {
     let ret = new MorphTag();
 
     let flags = [...tag];
     ret._fromMte(flags);  // read all injections
 
     switch (flags[0]) {  // then tweak what's left
-      case 'V':
-        ret.pos = flags[3] === 'g' ? Pos.transgressive : Pos.verb;
+      case 'V': {
+        if (form && (form.endsWith('ся') || form.endsWith('сь'))) {
+          ret.features.reflexive = Reflexive.yes;
+        }
+        ret.features.pos = flags[3] === 'g' ? Pos.transgressive : Pos.verb;
         break;
+      }
+
 
       case 'A':
         if (flags[1] === 'p') {
-          ret.pos2 = Pos2.participle;
+          ret.features.pos2 = Pos2.participle;
         }
 
-        if (ret.gender === Gender.masculine) {
+        if (ret.features.gender === Gender.masculine) {
           if (flags[6] === 's') {
-            ret.variant = Variant.short;
+            ret.features.variant = Variant.short;
           }
         }
         else if (flags[6] === 'f') {
-          ret.variant = Variant.full;
+          ret.features.variant = Variant.full;
         }
         break;
 
       case 'P': // todo: Referent_Type
-        ret.pos2 = Pos2.pronoun;
+        ret.features.pos2 = Pos2.pronoun;
         switch (flags[8]) {
           case 'n':
-            ret.pos = Pos.noun;
+            ret.features.pos = Pos.noun;
             break;
           case 'a':
-            ret.pos = Pos.adjective;
+            ret.features.pos = Pos.adjective;
             break;
           case 'r':
-            ret.pos = Pos.adverb;
+            ret.features.pos = Pos.adverb;
             break;
           case 'm':
-            ret.pos = Pos.numeral;
+            ret.features.pos = Pos.numeral;
             break;
           default:
             throw new Error(`Unknown MTE pronoun Syntactic_Type: "${flags[8]}"`);
@@ -456,11 +482,11 @@ export class MorphTag {
 
       case 'M':
         if (flags[2] === 'o') {
-          ret.pos = Pos.adjective;
-          ret.pos2 = Pos2.numeral;
+          ret.features.pos = Pos.adjective;
+          ret.features.pos2 = Pos2.numeral;
         }
         else if (flags[2] === 'c') {
-          ret.pos = Pos.numeral;
+          ret.features.pos = Pos.numeral;
         }
         break;
 
@@ -470,16 +496,17 @@ export class MorphTag {
       case 'C':
       case 'Q':
       case 'I':
+      case 'X':
         break;
 
       default:
         throw new Error(`Unknown MTE POS: ${flags[0]}`);
     }
-    
+
     // kill redundant info
-    if (!isOddball(ret.gender) && ret.number === Numberr.singular
-      && ret.pos !== Pos.numeral && ret.pos2 !== Pos2.numeral) {
-      ret.number = null;
+    if (!isOddball(ret.features.gender) && ret.features.number === Numberr.singular
+      && ret.features.pos !== Pos.numeral && ret.features.pos2 !== Pos2.numeral) {
+      ret.features.number = null;
     }
 
     return ret;
@@ -489,7 +516,7 @@ export class MorphTag {
     let posFeatures = MTE_FEATURES[mteFlags[0]];
 
     if (posFeatures[0] !== null) {
-      this.pos = posFeatures[0];
+      this.features.pos = posFeatures[0];
     }
     for (let i = 1; i < posFeatures.length && i < mteFlags.length; ++i) {
       let feature = posFeatures[i];
@@ -498,11 +525,11 @@ export class MorphTag {
       if (feature && mteFlag !== '-') {
         let row = MAP_MTE.get(feature).get(mteFlag);
         if (row) {
-          if (!(row.featStr in this)) {
+          if (!(row.featStr in this.features)) {
             throw new Error(`${row.featStr} not in this`);
           }
-          this[row.featStr] = ('vesum' in row) ? row.vesum : row.mi;
-          if (this[row.featStr] === undefined) {
+          this.features[row.featStr] = ('vesum' in row) ? row.vesum : row.mi;
+          if (this.features[row.featStr] === undefined) {
             throw new Error(`Cannot map ${mteFlags.join('')}`);
           }
         }
@@ -513,8 +540,8 @@ export class MorphTag {
   toVesum() {
     let flags = [...this.otherFlags];
 
-    for (let name in this) {
-      let value = this[name];
+    for (let name in this.features) {
+      let value = this.features[name];
       if (value !== null) {
         let flag = mapVesumFeatureValue(name, value);
         if (flag) {
@@ -523,15 +550,44 @@ export class MorphTag {
       }
     }
 
-    return flags.sort(createVesumFlagComparator(this.pos));
+    flags = flags.filter(x => x !== 'letter');  // temp, hack
+
+    return flags.sort(createVesumFlagCompare(this.features.pos));
   }
 
   toVesumStr() {
     return this.toVesum().join(':');
   }
-  
+
   equals(other: MorphTag) {
     return this.toVesumStr() === other.toVesumStr();
+  }
+
+  grammaticallyEquals(other: MorphTag) {
+    // todo
+  }
+
+  getFeatures() {
+    let others = [...this.otherFlags].map(x => {
+      let row = mapVesumFlag(x);
+      return {
+        featureName: row.featStr,
+        feature: row.feat,
+        value: row.vesum || row.mi
+      };
+    });
+
+    let ret = Object.keys(this.features)
+      .filter(x => !isOddball(this.features[x]))
+      .map(x => ({
+        featureName: x,
+        feature: STRING_MAP_FEAT.get(x),
+        value: this.features[x]
+      }));
+    ret.push(...others);
+    ret.sort(createVesumFlagComparator2(this.features.pos));
+
+    return ret;
   }
 }
 
@@ -541,15 +597,15 @@ export const FEATURE_ORDER = {
   [Pos.noun]: [
     Pos,
     Animacy,
-    Gender,
     Numberr,
+    Gender,
     Case,
     CaseInflectability,
     NumberTantum,
     Alternative,
     NounType,
     NameType,
-    Possesive,    
+    Possesive,
     Pos2,
     PronominalType,
     Colloquial,
@@ -612,7 +668,7 @@ export const FEATURE_ORDER = {
     ParadigmOmohnym,
     SemanticOmohnym,
     NameType,
-    Possesive,    
+    Possesive,
     Pos2,
     PronominalType,
     Person,
@@ -625,20 +681,28 @@ const common = [  // todo
 ];
 
 ////////////////////////////////////////////////////////////////////////////////
-export function createVesumFlagComparator(pos: Pos) {
+export function createVesumFlagCompare(pos: Pos) {
   return (a: string, b: string) => {
     let rowA = tryMapVesumFlag(a);
     let rowB = tryMapVesumFlag(b);
     if (rowA && rowB) {
       let featA = rowA.feat;
       let featB = rowB.feat;
-      
+
       let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other;
       return overflowNegative(order.indexOf(featA)) - overflowNegative(order.indexOf(featB));
     }
 
     // return a.localeCompare(b);
     return Number.MAX_SAFE_INTEGER;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function createVesumFlagComparator2(pos: Pos) {
+  let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other;
+  return (a, b) => {
+    return overflowNegative(order.indexOf(a.feature)) - overflowNegative(order.indexOf(b.feature));
   }
 }
 
@@ -690,8 +754,11 @@ export function mapVesumFeatureValue(featureName: string, value) {
   let featMap = MAP_VESUM_FEAT.get(featureName);
   if (featMap) {
     let row = featMap.get(value);
-    if (row && row.vesumStr) {
-      return row.vesumStr;
+    if (row) {
+      let ret = row.vesumStr || row.miStr;
+      if (ret) {
+        return ret;
+      }
     }
   }
 
@@ -699,23 +766,25 @@ export function mapVesumFeatureValue(featureName: string, value) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const featureCompareOrder = new Set([Pos, Pos2, Animacy]);
-export function compare(a: MorphTag, b: MorphTag) {
+const featureCompareOrder = new Set([Pos, Pos2, Animacy/*, Case*/]);
+export function compareTags(a: MorphTag, b: MorphTag) {
   for (let feature of featureCompareOrder) {
     let prop = FEAT_MAP_STRING.get(feature);
-    if (isOddball(a[prop]) && !isOddball(b[prop])) {
-      return -1;
-    }
-    if (!isOddball(a[prop]) && isOddball(b[prop])) {
-      return 1;
-    }
-    if (!isOddball(a[prop]) && !isOddball(b[prop])) {
-      let res = compare(a[prop], b[prop]);
-      if (res) {
-        return res;
-      }
+    let res = compare(a.features[prop], b.features[prop]);
+    if (res) {
+      return res;
     }
   }
-  
-  return 0;//a.toVesumStr().localeCompare(b.toVesumStr());
+
+  for (let pair of zipLongest(a.getFeatures(), b.getFeatures())) {
+    if (pair[0] && pair[1] && pair[0].feature !== pair[1].feature) {
+      return 0;
+    }
+    let res = compare(pair[0] && pair[0].value, pair[1] && pair[1].value);
+    if (res) {
+      return res;
+    }
+  }
+
+  return 0;
 }

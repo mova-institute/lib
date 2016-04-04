@@ -46,7 +46,7 @@ export class TextToken {
   }
 
   isUntagged() {
-    return this.morphTag() === 'X';
+    return this.morphTag().toLowerCase() === 'x';
   }
 
   isMarked() {

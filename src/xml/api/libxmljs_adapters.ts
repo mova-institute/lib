@@ -91,7 +91,7 @@ export class LibxmlNode implements INode {
 	}
 	
 	remove() {
-		this.underlying.remove();
+		return wrappedOrNull(LibxmlNode, this.underlying.remove());
 	}
 	
 	replace(replacement: LibxmlNode) {

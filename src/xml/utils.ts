@@ -177,17 +177,6 @@ export function nLevelsDeep(node, n: number) {
   return node;
 }
 
-// ////////////////////////////////////////////////////////////////////////////////
-// export function nextEl(base: Element, predicate: Function) {
-//   for (var ret = base.nextElementSibling; ret; ret = base.nextElementSibling) {
-//     if (predicate(ret)) {
-//       break;
-//     }
-//   }
-
-//   return ret;
-// }
-
 ////////////////////////////////////////////////////////////////////////////////
 export function lang(node: INode): string {
   if (!node.isElement()) {
@@ -292,4 +281,12 @@ export function pretty(xmlstr: string) {
 		}
 
   return (str[0] == '\n') ? str.slice(1) : str;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function sortChildElements(el: IElement, compare: (a:IElement, b:IElement) => number) {
+  let childrenSorted = [...el.childElements()].sort(compare);
+  for (let child of childrenSorted) {
+    el.appendChild(child.remove());
+  }
 }

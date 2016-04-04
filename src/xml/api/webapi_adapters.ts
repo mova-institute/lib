@@ -90,7 +90,7 @@ export class WebapiNode implements INode {
 	}
 
 	remove() {
-		this.underlying.parentNode.removeChild(this.underlying)
+		return wrappedOrNull(WebapiNode, this.underlying.parentNode.removeChild(this.underlying))
 	}
 
 	replace(replacement: WebapiNode) {

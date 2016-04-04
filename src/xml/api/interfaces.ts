@@ -20,7 +20,7 @@ export interface INode {
 	replace(replacement: INode);
 	insertBefore(newNode: INode): INode;	// todo
 	insertAfter(newNode: INode);
-	remove();
+	remove(): INode;
 	lang(): string;
 	is(name: string): boolean;
 }

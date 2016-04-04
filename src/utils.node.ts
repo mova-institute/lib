@@ -41,19 +41,12 @@ export function tryStatSync(path: string): Stats {
 	}
 }
 
-// ////////////////////////////////////////////////////////////////////////////////
-// export function* lines(filename: string) {
-// 	createInterface({ input: createReadStream(filename) })
-// 		.on('line', line => yield line);
-// }
-
 ////////////////////////////////////////////////////////////////////////////////
 export function* linesSync(filename: string) {  // todo: do not buffer file
 	for (let line of readFileSync(filename, 'utf8').split('\n')) {
 		yield line;
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* nonemptyLinesSync(filename: string) {

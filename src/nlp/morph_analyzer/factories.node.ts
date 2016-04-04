@@ -20,7 +20,8 @@ export function createMorphAnalyserSync(dictFolder: string) {
   
   let words = createObjectDawgSync<WordDawgPayload>(dictFolder + '/words.dawg', WordDawgPayload.create);
   
-  let ret = new MorphAnalyzer(words, paradigms, suffixes, tags);
+  let numberTag = dictFolder.includes('vesum') ? 'numr:digit' : 'Md';  // todo
+  let ret = new MorphAnalyzer(words, paradigms, suffixes, tags, numberTag, 'x');
   
   return ret;
 }

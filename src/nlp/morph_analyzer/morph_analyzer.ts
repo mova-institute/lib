@@ -7,8 +7,9 @@ export class MorphAnalyzer {
     private _words: ObjectDawg<WordDawgPayload>,
     private _paradigms: Array<Uint16Array>,
     private _suffixes: Array<string>,
-    private _tags: Array<string>) {
-      
+    private _tags: Array<string>,
+    private _numberTag: string,
+    private _xTag: string) {
     }
 
   dictHas(token: string) {
@@ -17,7 +18,7 @@ export class MorphAnalyzer {
 
   tag(token: string) {
     if (/^\d+$/.test(token)) {
-      return new Set<MorphInterp>([{lemma: token, tag: 'Md'}]);
+      return new Set<MorphInterp>([{lemma: token, tag: this._numberTag}]);
     }
 
     let ret = new Set<MorphInterp>();
@@ -31,6 +32,13 @@ export class MorphAnalyzer {
       for (let paraIndex of this._words.get(word)) {
         ret.add(this._getTag(word, paraIndex));
       }
+    }
+    
+    if (!ret.size) {
+      ret.add({
+        lemma: token,
+        tag: this._xTag
+      });
     }
 
     return ret;
