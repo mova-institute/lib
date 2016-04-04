@@ -400,7 +400,7 @@ export class MorphTag {
     }
   }
 
-  static fromVesum(flags: string[], lemma?: string) {
+  static fromVesum(flags: string[], lemmaFlags?: string[]) {
     let ret = new MorphTag();
 
     for (let flag of flags) {
@@ -413,20 +413,27 @@ export class MorphTag {
           ret.otherFlags.add(flag);
         }
         else {
-          throw new Error(`Unknow flag "${flag}" in tag "${flags.join(':')}" lemma ${lemma}`);
+          throw new Error(`Unknow flag "${flag}" in tag "${flags.join(':')}"`);
         }
       }
     }
 
-    if (false && lemma) {
-
+    if (lemmaFlags) {
+      let lemmaTag = MorphTag.fromVesum(lemmaFlags);
+      
+      // gender for plural
+      if (ret.features.pos === Pos.noun) {
+        if (ret.features.number === Numberr.plural && !isOddball(lemmaTag.features.gender)) {
+          ret.features.gender = lemmaTag.features.gender;
+        }
+      }
     }
 
     return ret;
   }
 
-  static fromVesumStr(tag: string, lemma?: string) {
-    return MorphTag.fromVesum(tag.split(':'), lemma);
+  static fromVesumStr(tag: string, lemmaTag?: string) {
+    return MorphTag.fromVesum(tag.split(':'), lemmaTag.split(':'));
   }
 
   static fromMte(tag: string, form?: string) {

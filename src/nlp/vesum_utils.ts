@@ -11,8 +11,8 @@ const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionTyp
 
 // Expands dict_corp_viz.txt tag into an array of unambiguous morph interpretations
 ////////////////////////////////////////////////////////////////////////////////
-export function expandAndSortVesumTag(value: string) {
-  let [mainFlagsStr, altFlagsStr] = value.split(/:&_|:&(?=adjp)/);  // consider &adjp as omohnymy
+export function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
+  let [mainFlagsStr, altFlagsStr] = tag.split(/:&_|:&(?=adjp)/);  // consider &adjp as omohnymy
   
   let ret = combinations(groupExpandableFlags(mainFlagsStr.split(':')));
   if (altFlagsStr) {
@@ -23,7 +23,7 @@ export function expandAndSortVesumTag(value: string) {
     }
   }
   
-  ret = ret.map(x => MorphTag.fromVesum(x).toVesum());
+  ret = ret.map(x => MorphTag.fromVesum(x, lemmaFlags).toVesum());
   return ret;
 }
 
@@ -75,9 +75,12 @@ export function* iterateDictCorpVizLines(lines: string[]) {
 ////////////////////////////////////////////////////////////////////////////////
 export function expandDictCorpViz(fileStr: string) {
   let ret = new Array<string>();
-  for (let {form, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+  for (let {form, tag, lemmaTag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
     let padd = isLemma ? '' : FORM_PADDING;
-    ret.push(...expandAndSortVesumTag(tag).map(x => padd + form + ' ' + x.join(':')));
+    if (isLemma) {
+      var lemmaFlags = expandAndSortVesumTag(lemmaTag)[0];
+    }
+    ret.push(...expandAndSortVesumTag(tag, lemmaFlags).map(x => padd + form + ' ' + x.join(':')));
   }
 
   return ret.join('\n');
@@ -85,8 +88,8 @@ export function expandDictCorpViz(fileStr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {
-  for (let {form, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
-    MorphTag.fromVesumStr(tag, form);
+  for (let {lemmaTag, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+    MorphTag.fromVesumStr(tag, lemmaTag);
   }
 }
 
