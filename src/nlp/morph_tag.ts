@@ -433,7 +433,7 @@ export class MorphTag {
   }
 
   static fromVesumStr(tag: string, lemmaTag?: string) {
-    return MorphTag.fromVesum(tag.split(':'), lemmaTag.split(':'));
+    return MorphTag.fromVesum(tag.split(':'), lemmaTag && lemmaTag.split(':'));
   }
 
   static fromMte(tag: string, form?: string) {
@@ -450,7 +450,6 @@ export class MorphTag {
         ret.features.pos = flags[3] === 'g' ? Pos.transgressive : Pos.verb;
         break;
       }
-
 
       case 'A':
         if (flags[1] === 'p') {
