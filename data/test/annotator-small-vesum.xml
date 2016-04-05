@@ -7,7 +7,7 @@
       <titleStmt>
         <title>
           <mi:w_>
-            <w lemma="Ьімьа" ana="X">Ьімьа</w>
+            <w lemma="Ьімьа" ana="x">Ьімьа</w>
           </mi:w_>
           <pc>—</pc>
           <mi:w_>
@@ -19,7 +19,7 @@
             <w lemma="Джорж" ana="noun:anim:m:v_naz:prop:fname">Джорж</w>
           </mi:w_>
           <mi:w_>
-            <w lemma="Орвел" ana="X">Орвел</w>
+            <w lemma="Орвел" ana="x">Орвел</w>
           </mi:w_>
         </author>
       </titleStmt>
@@ -195,7 +195,7 @@
           </p>
           <p>
             <mi:w_>
-              <w lemma="Четвеотий" ana="X">Четвеотий</w>
+              <w lemma="Четвеотий" ana="x">Четвеотий</w>
             </mi:w_>
             <mi:w_>
               <w lemma="абзац" ana="noun:inanim:m:v_naz">абзац</w>
@@ -403,7 +403,7 @@
           </p>
           <p>
             <mi:w_>
-              <w lemma="Четвеотий" ana="X">Четвеотий</w>
+              <w lemma="Четвеотий" ana="x">Четвеотий</w>
             </mi:w_>
             <mi:w_>
               <w lemma="абзац" ana="noun:inanim:m:v_naz">абзац</w>
