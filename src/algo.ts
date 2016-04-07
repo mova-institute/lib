@@ -133,3 +133,8 @@ export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = l
     return initialCompare;
   });
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function unique<T>(array: T[]) {
+  return [...new Set(array)];
+}

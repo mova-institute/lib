@@ -1,6 +1,6 @@
 import {tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER, FEAT_MAP_STRING,
   RequiredCase, PronominalType, Aspect, ConjunctionType, compareTags} from './morph_tag';
-import {groupTableBy, arr2indexMap, combinations, stableSort} from '../algo';
+import {groupTableBy, arr2indexMap, combinations, stableSort, unique} from '../algo';
 import {MorphInterp} from './interfaces';
 
 
@@ -9,23 +9,6 @@ const FORM_PADDING = '  ';
 
 const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionType]);
 
-// Expands dict_corp_viz.txt tag into an array of unambiguous morph interpretations
-////////////////////////////////////////////////////////////////////////////////
-export function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
-  let [mainFlagsStr, altFlagsStr] = tag.split(/:&_|:&(?=adjp)/);  // consider &adjp as omohnymy
-  
-  let ret = combinations(groupExpandableFlags(mainFlagsStr.split(':')));
-  if (altFlagsStr) {
-    let altFlagArray = altFlagsStr.split(':');
-    altFlagArray[0] = '&' + altFlagArray[0];
-    for (let x of [...ret]) {
-      ret.push([...x, ...altFlagArray]);
-    }
-  }
-  
-  ret = ret.map(x => MorphTag.fromVesum(x, lemmaFlags).toVesum());
-  return ret;
-}
 
 //------------------------------------------------------------------------------
 function groupExpandableFlags(flags: string[]) {
@@ -73,17 +56,69 @@ export function* iterateDictCorpVizLines(lines: string[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export let dummyReturnVal = null && iterateDictCorpVizLines([]).next().value;  // todo: wait for https://github.com/Microsoft/TypeScript/issues/6606
+export type DictCorpVizLine = typeof dummyReturnVal;
+export function* iterateDictCorpVizLexemes(lines: string[]) {
+  let accum = new Array<DictCorpVizLine>();
+  for (let line of iterateDictCorpVizLines(lines)) {
+    if (accum.length && line.isLemma) {
+      yield accum;
+      accum = [];
+    }
+    accum.push(line);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function expandDictCorpViz(fileStr: string) {
   let ret = new Array<string>();
-  for (let {form, tag, lemmaTag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
-    let padd = isLemma ? '' : FORM_PADDING;
-    if (isLemma) {
-      var lemmaFlags = expandAndSortVesumTag(lemmaTag)[0];
+
+  for (let lexeme of iterateDictCorpVizLexemes(fileStr.split('\n'))) {
+    let main = [];
+    let alt = [];
+    let lemmaTag = expandAndSortVesumTag(lexeme[0].tag.replace('&_', '&'))[0];
+    for (let {form, tag, isLemma} of lexeme) {
+      let [mainFlagsStr, altFlagsStr] = splitMainAltFlags(tag);
+      main.push(...expandAndSortVesumTag(mainFlagsStr, lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')));
+      if (altFlagsStr) {
+        alt.push(...expandAndSortVesumTag(tag.replace('&_', '&'), lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')))
+      }
     }
-    ret.push(...expandAndSortVesumTag(tag, lemmaFlags).map(x => padd + form + ' ' + x.join(':')));
+    main = unique(main);
+    alt = unique(alt);
+    main[0] = main[0].substr(FORM_PADDING.length);
+    if (alt.length) {
+      alt[0] = alt[0].substr(FORM_PADDING.length);
+    }
+
+    ret.push(...main, ...alt);
   }
 
   return ret.join('\n');
+}
+
+//------------------------------------------------------------------------------
+function splitMainAltFlags(tag: string) {
+  let [main, alt] = tag.split(/:&_|:&(?=adjp)/);
+  if (alt) {
+    let altArr = alt.split(':');
+    let xp1Index = altArr.findIndex(x => /^x[pv]\d+$/.test(x));  // todo: one place
+    if (xp1Index >= 0) {
+      main += ':' + altArr[xp1Index];
+      altArr.splice(xp1Index, 1);
+    }
+    alt = altArr.join(':');
+  }
+
+  return [main, alt];
+}
+
+//------------------------------------------------------------------------------
+function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
+  let ret = combinations(groupExpandableFlags(tag.split(':')));
+  ret = ret.map(x => MorphTag.fromVesum(x, lemmaFlags).toVesum());
+
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,9 +130,9 @@ export function test(fileStr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function presentTagsForDisamb(interps: MorphInterp[]) {
-  let splitted = interps.map((x, index) => ({index, lemma: x.lemma, flags:x.tag.split(':')}));
+  let splitted = interps.map((x, index) => ({ index, lemma: x.lemma, flags: x.tag.split(':') }));
   let sorted = stableSort(splitted, (a, b) => compareTags(MorphTag.fromVesum(a.flags), MorphTag.fromVesum(b.flags)));
-  
+
   let aligned = alignTagList(sorted.map(x => x.flags));
   let flags = aligned.map(x => x.map(x => []));
 
@@ -113,7 +148,7 @@ export function presentTagsForDisamb(interps: MorphInterp[]) {
       }
     }
   }
-  
+
   let ret = [];
   let shift = 0;
   for (let posAgg of flags) {
@@ -166,4 +201,16 @@ function alignTagList(flags: string[][]) {
   }
 
   return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findUnidentifiableRows(fileStr: string) {
+  let set = new Set<string>();
+  for (let {form, tag, lemma, lemmaTag} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+    let key = `${form} ${tag} ${lemma}`;
+    if (set.has(key)) {
+      console.log(key);
+    }
+    set.add(key);
+  }
 }
