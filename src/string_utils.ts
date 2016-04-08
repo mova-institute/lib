@@ -2,3 +2,9 @@
 export function startsWithCapital(str: string) {
   return str && str.charAt(0).toLowerCase() !== str.charAt(0);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+const invisibleEntities = new Set(['nbsp']);
+export function literalizeVisibleEntities() {
+  // todo
+}

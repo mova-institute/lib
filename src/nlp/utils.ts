@@ -7,11 +7,7 @@ import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
 import {getUnambMorphTag} from './text_token';
 import {MorphInterp} from './interfaces';
 import {MorphTag, compareTags} from './morph_tag';
-
-export const WCHAR_UK = r `\-’АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`;
-export const WCHAR_UK_RE = new RegExp(`^[${WCHAR_UK}]+$`);
-export const WCHAR = r `\w${WCHAR_UK}`;
-export const WCHAR_RE = new RegExp(`^[${WCHAR}]+$`);
+import {WCHAR_UK_RE, WCHAR, WCHAR_RE, WCHAR_NOT_UK_RE} from './static';
 
 //export const NOSPACE_ABLE_ELEMS
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
@@ -24,25 +20,25 @@ const ELEMS_BREAKING_SENTENCE = new Set([
 ]);
 
 const PUNC_REGS = [
-  r `„`,
-  r `“`,
-  r `”`,
-  r `«`,
-  r `»`,
-  r `\(`,
-  r `\)`,
-  r `\[`,
-  r `\]`,
-  r `\.`,
-  r `\.{4,}`,
-  r `…`,
-  r `:`,
-  r `;`,
-  r `,`,
-  r `[!?]+`,
-  r `!\.{2,}`,
-  r `\?\.{2,}`,
-  r `—`,
+  r`„`,
+  r`“`,
+  r`”`,
+  r`«`,
+  r`»`,
+  r`\(`,
+  r`\)`,
+  r`\[`,
+  r`\]`,
+  r`\.`,
+  r`\.{4,}`,
+  r`…`,
+  r`:`,
+  r`;`,
+  r`,`,
+  r`[!?]+`,
+  r`!\.{2,}`,
+  r`\?\.{2,}`,
+  r`—`,
 ];
 const ANY_PUNC = PUNC_REGS.join('|');
 const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`);
@@ -70,7 +66,6 @@ let PUNC_SPACING = {
 };
 
 const WORD_TAGS = new Set([W, W_]);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetween(tagA: string, textA: string,
@@ -152,13 +147,13 @@ export function tokenizeTeiDom(root: IElement, tagger: MorphAnalyzer) {
       return 'skip';
     }
     if (node.isText()) {
-      let lang = node.lang();
-      if (lang === 'uk' || lang === '') {
-        for (let tok of tokenizeUk(node.textContent, tagger)) {
-          node.insertBefore(elementFromToken(tok, root.ownerDocument));
-        }
-        node.remove();
+      // let lang = node.lang();
+      // if (lang === 'uk' || lang === '') {
+      for (let tok of tokenizeUk(node.textContent, tagger)) {
+        node.insertBefore(elementFromToken(tok, root.ownerDocument));
       }
+      node.remove();
+      // }
     }
   });
 
@@ -190,7 +185,7 @@ export function elementFromToken(token: string, document: IDocument): IElement {
 function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let w_ = el.ownerDocument.createElement('mi:w_'); // todo
-  
+
   for (let morphTag of morphTags) {
     let w = el.ownerDocument.createElement('w');
     w.textContent = el.textContent;
@@ -200,7 +195,10 @@ function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
     w_.appendChild(w);
   }
   el.replace(w_);
+
+  return w_;
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
   traverseDepthEl(root, (node: IElement) => {
@@ -209,8 +207,12 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
     if (nameNs === W_) {
       return 'skip';
     }
+
     if (nameNs === W) {
-      tagWord(el, analyzer.tag(el.textContent));
+      let w_ = tagWord(el, analyzer.tag(el.textContent));
+      if (w_.lang() !== 'uk') {
+        w_.setAttribute('disamb', 0);
+      }
     }
   });
 
@@ -331,59 +333,59 @@ export function oldZhyto2newerFormat(root: IElement) {  // todo: rename xmlns
     // rename attributes
     miw.renameAttributeIfExists('ana', 'disamb');
     miw.renameAttributeIfExists('word-id', 'n');
-    
-    
-    
-    
+
+
+
+
     // select unambig dict interps
     if (miw.childElementCount === 1 && !miw.getAttribute('disamb')) {
       miw.setAttribute('disamb', 0);
     }
-    
+
     for (let w of miw.childElements()) {
       let mte = w.getAttribute('ana');
       // console.log(`mte: ${mte}`);
       let vesum = MorphTag.fromMte(mte, w.textContent).toVesumStr();
       // console.log(`vesum: ${vesum}`);
-      
+
       w.setAttribute('ana', vesum);
     }
-    
+
     // miw.removeAttribute('n');  // temp
     // miw.removeAttribute('disamb');  // temp
   }
-  
+
   sortInterps(root);
-  
+
   return root;
-  
+
   // todo: sort attributes
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sortInterps(root: IElement) {
   for (let miw of <IElement[]>root.xpath('//mi:w_', NS)) {
-    
+
     let disambIndex = Number.parseInt(miw.getAttribute('disamb'));
     if (!Number.isNaN(disambIndex)) {
       var disambElem = miw.childElement(disambIndex);
     }
-    
+
     sortChildElements(miw, (a, b) => {
       let ret = a.textContent.localeCompare(b.textContent);
       if (ret) {
         return ret;
       }
-      
+
       return compareTags(MorphTag.fromVesumStr(a.getAttribute('ana')), MorphTag.fromVesumStr(b.getAttribute('ana')));
       // return a.getAttribute('ana').localeCompare(b.getAttribute('ana'));
     });
-    
+
     if (disambElem) {
       miw.setAttribute('disamb', [...miw.childElements()].indexOf(disambElem));
     }
   }
-  
+
   return root;
 }
 
@@ -395,6 +397,6 @@ export function untag(root: IElement) {
     replacer.textContent = miw.childElement(0).textContent;
     miw.replace(replacer);
   }
-  
+
   return root;
 }

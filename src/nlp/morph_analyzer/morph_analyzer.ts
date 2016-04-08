@@ -1,5 +1,6 @@
 import {ObjectDawg} from '../../dawg/dawg';
 import {MorphInterp} from '../interfaces';
+// import {WCHAR_NOT_UK_RE} from '../static';
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
@@ -20,6 +21,10 @@ export class MorphAnalyzer {
     if (/^\d+$/.test(token)) {
       return new Set<MorphInterp>([{lemma: token, tag: this._numberTag}]);
     }
+    
+    // if (WCHAR_NOT_UK_RE.test(token)) {
+    //   return new Set<MorphInterp>([{lemma: token, tag: 'alien'}]);  // todo      
+    // }
 
     let ret = new Set<MorphInterp>();
 
