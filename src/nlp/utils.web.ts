@@ -12,7 +12,7 @@ export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 150;
   let ret = new Array<DocumentFragment>();
 
-  let paragraphs: any[] = xpath(doc, '/tei:TEI/tei:text//tei:p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  let paragraphs: any[] = xpath(doc, '//tei:title|//tei:text//tei:p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   let curNumWords = 0;
   let range = doc.createRange();
   let rangeStart = paragraphs[0];
@@ -38,13 +38,6 @@ export function textFragmentCorpusText(doc: Document) {
     xmlstr: serializeXmlNoNs(x),
     firstWords: firstNWords(4, new WebapiElement(x.firstElementChild))
   }));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function getTeiName(doc: Document) {
-  let ret = doc.evaluate('//tei:teiHeader//tei:titleStmt/tei:title', doc, <any>xmlNsResolver,
-    XPathResult.STRING_TYPE, null).stringValue;
-  return ret.trim() || null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

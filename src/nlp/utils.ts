@@ -201,20 +201,25 @@ function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
-  traverseDepthEl(root, (node: IElement) => {
-    let el = <IElement>node;
-    let nameNs = el.nameNs();
-    if (nameNs === W_) {
-      return 'skip';
-    }
-
-    if (nameNs === W) {
-      let w_ = tagWord(el, analyzer.tag(el.textContent));
-      if (w_.lang() !== 'uk') {
-        w_.setAttribute('disamb', 0);
+  let title = root.xpath('//tei:title', NS)[0];
+  let texts = root.xpath('//tei:text', NS);
+  
+  for (let subroot of [title, ...texts]) {
+    traverseDepthEl(subroot, (node: IElement) => {
+      let el = <IElement>node;
+      let nameNs = el.nameNs();
+      if (nameNs === W_) {
+        return 'skip';
       }
-    }
-  });
+
+      if (nameNs === W) {
+        let w_ = tagWord(el, analyzer.tag(el.textContent));
+        if (w_.lang() !== 'uk') {
+          w_.setAttribute('disamb', 0);
+        }
+      }
+    });
+  }
 
   return root;
 }
@@ -399,4 +404,15 @@ export function untag(root: IElement) {
   }
 
   return root;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function getTeiDocName(doc: IDocument) {  // todo
+  let title = <IElement>doc.documentElement.xpath('//tei:title', NS)[0];
+  if (title) {
+    title = untag(title.clone());
+    return title.textContent.trim().replace(/\s+/g, ' ') || null;
+  }
+  
+  return null;
 }
