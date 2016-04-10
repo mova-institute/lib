@@ -1,35 +1,32 @@
 import {Dictionary} from './dictionary';
 import {Guide} from './guide';
 import {encodeUtf8, decodeUtf8, b64decodeFromArray} from '../codec';
-import {Readable} from 'stream';
 
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Dawg {
-	constructor(protected dic: Dictionary) { }
+	constructor(protected _dictionary: Dictionary) { }
 
 	has(key: string): boolean {
-		return this.dic.has(encodeUtf8(key));
+		return this._dictionary.has(encodeUtf8(key));
 	}
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class CompletionDawg extends Dawg {
-	constructor(dic: Dictionary, protected guide: Guide) {
-		super(dic);
+	constructor(dictionary: Dictionary, protected _guide: Guide) {
+		super(dictionary);
 	}
 
 	*completionBytes(key: Array<number>) {
-		let index = this.dic.followBytes(key);
+		let index = this._dictionary.followBytes(key);
 		if (index === null)
 			return;
-
-		for (let completion of completer(this.dic, this.guide, index)) {
-			yield completion;
-		}
+    
+    yield* completer(this._dictionary, this._guide, index);
 	}
 }
 
@@ -57,7 +54,10 @@ export class BytesDawg extends CompletionDawg {
 ////////////////////////////////////////////////////////////////////////////////
 export class ObjectDawg<T> extends BytesDawg {
 	
-	constructor(dic: Dictionary, guide: Guide, payloadSeparator: number,
+	constructor(
+    dic: Dictionary,
+    guide: Guide,
+    payloadSeparator: number,
 		private _deserializer: (bytes: ArrayBuffer) => T) {
 		
 		super(dic, guide, payloadSeparator);
@@ -76,10 +76,9 @@ export class ObjectDawg<T> extends BytesDawg {
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 function* completer(dic: Dictionary, guide: Guide, index: number) {
-	let completion: Array<number> = [];
+	let completion = new Array<number>();
 	let indexStack = [index];
 	while (indexStack.length) {
 		
