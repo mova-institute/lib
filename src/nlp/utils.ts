@@ -225,11 +225,11 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function enumerateWords(root: IElement) {
+export function enumerateWords(root: IElement, attributeName = 'n') {
   let idGen = 0;
   traverseDepthEl(root, el => {
     if (el.nameNs() === W_) {
-      el.setAttribute('n', (idGen++).toString());
+      el.setAttribute(attributeName, (idGen++).toString());
     }
   });
 
@@ -327,7 +327,7 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function firstNWords(n: number, from: IElement) {
-  let words = from.xpath(`//mi:w_[position() < ${n}]`, NS);
+  let words = from.xpath(`(//mi:w_)[position() <= ${n}]`, NS);
   return (<IElement[]>words).map(x => x.childElement(0).textContent);
 }
 
