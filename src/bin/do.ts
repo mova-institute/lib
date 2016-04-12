@@ -22,7 +22,7 @@ async function main() {
 
     if (args.xml) {
       let root = string2lxmlRoot(inputStr);
-      let res: IElement = func(root);
+      let res: IElement = func(root) || root;
       output.write(res.ownerDocument.serialize());
     }
     else {

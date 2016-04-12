@@ -117,8 +117,8 @@ export function haveSpaceBetweenEl(a: IElement, b: IElement): boolean {
   return haveSpaceBetween(tagA, textA, tagB, textB);
 }
 
-const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
 ////////////////////////////////////////////////////////////////////////////////
+const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
 export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
   let ret: Array<string> = [];
   for (let tok0 of val.trim().split(SPLIT_REGEX)) {
@@ -213,9 +213,11 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
       }
 
       if (nameNs === W) {
-        let w_ = tagWord(el, analyzer.tag(el.textContent));
-        if (w_.lang() !== 'uk') {
-          w_.setAttribute('disamb', 0);
+        if (el.lang() !== 'uk') {
+          tagWord(el, new Set([{lemma: el.textContent, tag: 'foreign'}])).setAttribute('disamb', 0);
+        }
+        else {
+          tagWord(el, analyzer.tag(el.textContent));
         }
       }
     });
@@ -415,4 +417,11 @@ export function getTeiDocName(doc: IDocument) {  // todo
   }
   
   return null;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function normalizeCorpusText(root: IElement) {
+  for (let textNode of root.xpathIt('//*[text()]', NS)) {
+    console.log(textNode.textContent);
+  }
 }

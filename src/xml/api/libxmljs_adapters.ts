@@ -195,8 +195,14 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   }
   
   xpath(query: string, nsMap?) {
-    return this.underlying.find(query, nsMap).map(
-      x => x.type() === 'element' ? new LibxmlElement(x) : new LibxmlNode(x));
+    let result = this.underlying.find(query, nsMap);
+    
+    return (result || [])
+      .map(x => x.type() === 'element' ? new LibxmlElement(x) : new LibxmlNode(x));
+  }
+  
+  *xpathIt(query: string, nsMap?) {
+    yield* this.xpath(query, nsMap);
   }
 }
 

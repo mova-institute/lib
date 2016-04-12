@@ -177,6 +177,14 @@ export class WebapiElement extends WebapiNode implements IElement {
     return xpath(this.underlying, query, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
       .map(x => x.nodeType === Node.ELEMENT_NODE ? new WebapiElement(x) : new WebapiNode(x));
   }
+  
+  *xpathIt(query: string, nsMap?) {
+    let result = xpath(this.underlying, query, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
+    let node;
+    while (node = result.iterateNext()) {
+      yield new WebapiNode(node);
+    }
+  }
 }
 
 
