@@ -1,4 +1,4 @@
-import {LibxmlDocument, LibxmlElement} from './xml/api/libxmljs_adapters';
+import {LibxmlDocument, LibxmlElement} from './xml/api/libxmljs_implementation';
 import {createReadStream, createWriteStream, readFileSync, writeFileSync, readSync, Stats, statSync} from 'fs';
 import {parseXmlString} from 'libxmljs';
 import {readTillEnd} from './stream_utils.node';

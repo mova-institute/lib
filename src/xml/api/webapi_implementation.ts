@@ -1,4 +1,4 @@
-import {IDocument, INode, IElement} from './interfaces';
+import {IDocument, INode, IElement} from './abstract_base';
 import {lang, nameNs} from '../utils';
 import {xpath} from '../utils.web';
 import {wrappedOrNull} from '../../lang';

@@ -1,9 +1,11 @@
+////////////////////////////////////////////////////////////////////////////////
 export abstract class IDocument {
 	documentElement: IElement;
 	abstract createElement(name: string): IElement;
 	abstract serialize(): string;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export abstract class INode {
 	abstract equals(other: INode): boolean;
 	ownerDocument: IDocument;
@@ -23,6 +25,7 @@ export abstract class INode {
 	abstract is(name: string): boolean;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export abstract class IElement extends INode {
 	localName: string;
 	abstract getAttribute(name: string): string;

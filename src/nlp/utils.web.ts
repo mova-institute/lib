@@ -1,5 +1,5 @@
 import {xmlNsResolver, encloseInRootNs} from '../xml/utils';
-import {WebapiDocument, WebapiElement} from '../xml/api/webapi_adapters';
+import {WebapiDocument, WebapiElement} from '../xml/api/webapi_implementation';
 import {xpath} from '../xml/utils.web';
 import {serializeXml, serializeXmlNoNs, parseXml} from '../utils.web';
 import {W, W_, PC, SE, P} from './common_elements';

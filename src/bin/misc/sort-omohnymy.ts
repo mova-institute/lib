@@ -1,7 +1,7 @@
 import {filename2lxmlRootSync} from '../../utils.node';
 import * as fs from 'fs';
 import {NS} from '../../xml/utils';
-import {LibxmlElement} from '../../xml/api/libxmljs_adapters';
+import {LibxmlElement} from '../../xml/api/libxmljs_implementation';
 
 const args = require('minimist')(process.argv.slice(2));
 
