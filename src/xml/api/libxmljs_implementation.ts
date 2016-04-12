@@ -24,7 +24,7 @@ export class LibxmlDocument extends IDocument {
 	}
 	
 	serialize() {
-		return pretty(this._underlying.toString());  // todo: report a bug it's not pretty in libxmljs?
+		return this._underlying.toString();
 	}
   
   private _getNsByPrefix(prefix: string) {

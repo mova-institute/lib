@@ -22,17 +22,22 @@ main();
 
 
 async function main () {
-  try {
-    PgClient.transaction(config, async (client) => {
-      client.call('popo');
-      let res = await client.call('get_task', 24, 847);
-      console.log('call done', res.docName);
-    });
+  // try {
+  //   PgClient.transaction(config, async (client) => {
+  //     client.call('popo');
+  //     let res = await client.call('get_task', 24, 847);
+  //     console.log('call done', res.docName);
+  //   });
     
-    console.log('done');
-  }
-  catch (e) {
-    console.error('catched in main');
-    console.error(e);
-  }
+  //   console.log('done');
+  // }
+  // catch (e) {
+  //   console.error('catched in main');
+  //   console.error(e);
+  // }
+  // let doc = new LibxmlDocument(libxmljs.parseXml('<root></root>'));
+  // let smo = 
+  // doc.documentElement.appendChild(doc.createElement('shmo'));
+  // console.log(doc.serialize());
+  
 }
