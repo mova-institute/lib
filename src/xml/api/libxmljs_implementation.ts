@@ -1,4 +1,4 @@
-import {IDocument, INode, IElement} from './abstract_base';
+import {IDocument, INode, IElement} from './interface';
 import * as libxmljs from 'libxmljs';
 import {lang, pretty} from '../utils';
 import {wrappedOrNull, ithGenerated, countGenerated} from '../../lang'; 
@@ -6,8 +6,10 @@ import {wrappedOrNull, ithGenerated, countGenerated} from '../../lang';
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export class LibxmlDocument implements IDocument {
-	constructor(private _underlying: libxmljs.XMLDocument) {	}
+export class LibxmlDocument extends IDocument {
+	constructor(private _underlying: libxmljs.XMLDocument) {
+    super();
+  }
 	
 	get documentElement() {
 		return new LibxmlElement(this._underlying.root());
@@ -31,8 +33,10 @@ export class LibxmlDocument implements IDocument {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class LibxmlNode implements INode {
-	constructor(public underlying) {	} // todo: protected
+export class LibxmlNode extends INode {
+	constructor(public underlying) {  // todo: protected
+    super();
+  }
 	
 	equals(other: LibxmlNode) {
 		return other && this.underlying === other.underlying;
@@ -109,7 +113,7 @@ export class LibxmlNode implements INode {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class LibxmlElement extends LibxmlNode implements IElement {
+export class LibxmlElement extends LibxmlNode {
 	constructor(underlying: libxmljs.Element) {
 		super(underlying);
 	}

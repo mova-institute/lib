@@ -1,5 +1,5 @@
 import {stream2lxmlRoot, nonemptyLinesSync, filename2lxmlRootSync} from './utils.node';
-import {IElement} from './xml/api/abstract_base';
+import {IElement} from './xml/api/interface';
 import {readTillEnd} from './stream_utils.node';
 import {JsonCompareSet} from './data_structures';
 import {dictFormLemmaTag} from './nlp/utils';

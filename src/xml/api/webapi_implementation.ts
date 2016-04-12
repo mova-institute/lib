@@ -1,4 +1,4 @@
-import {IDocument, INode, IElement} from './abstract_base';
+import {IDocument, INode, IElement} from './interface';
 import {lang, nameNs} from '../utils';
 import {xpath} from '../utils.web';
 import {wrappedOrNull} from '../../lang';
@@ -108,7 +108,7 @@ export class WebapiNode implements INode {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class WebapiElement extends WebapiNode implements IElement {
+export class WebapiElement extends WebapiNode {
 	constructor(underlying: Element) {
 		super(underlying);
 	}
