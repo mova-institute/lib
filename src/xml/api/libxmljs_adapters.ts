@@ -1,7 +1,7 @@
-import {IDocument, INode, IElement} from './interfaces'
-import * as libxmljs from 'libxmljs'
-import {lang, pretty} from '../utils'
-import {wrappedOrNull, ithGenerated, countGenerated} from '../../lang' 
+import {IDocument, INode, IElement} from './abstract_base';
+import * as libxmljs from 'libxmljs';
+import {lang, pretty} from '../utils';
+import {wrappedOrNull, ithGenerated, countGenerated} from '../../lang'; 
 
 
 

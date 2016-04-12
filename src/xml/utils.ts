@@ -1,4 +1,4 @@
-import {INode, IElement, IDocument} from './api/interfaces'
+import {INode, IElement, IDocument} from './api/abstract_base'
 
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',

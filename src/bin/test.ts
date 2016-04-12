@@ -1,4 +1,4 @@
-import {INode, IElement, IDocument} from '../xml/api/interfaces'
+import {INode, IElement, IDocument} from '../xml/api/abstract_base'
 import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/api/libxmljs_adapters'
 import {readFileSync} from 'fs'
 import {dirname} from 'path'

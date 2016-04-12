@@ -2,7 +2,7 @@ import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantB
   sortChildElements} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
-import {INode, IElement, IDocument} from '../xml/api/interfaces'
+import {INode, IElement, IDocument} from '../xml/api/abstract_base'
 import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
 import {getUnambMorphTag} from './text_token';
 import {MorphInterp} from './interfaces';
