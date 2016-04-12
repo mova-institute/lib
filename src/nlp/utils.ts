@@ -201,10 +201,12 @@ function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
-  let title = root.xpath('//tei:title', NS)[0];
-  let texts = root.xpath('//tei:text', NS);
+  let subroots = [...root.xpath('//tei:title', NS), ...root.xpath('//tei:text', NS)];
+  if (!subroots.length) {
+    subroots = [root];
+  }
   
-  for (let subroot of [title, ...texts]) {
+  for (let subroot of subroots) {
     traverseDepthEl(subroot, (node: IElement) => {
       let el = <IElement>node;
       let nameNs = el.nameNs();
@@ -213,7 +215,8 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
       }
 
       if (nameNs === W) {
-        if (el.lang() !== 'uk') {
+        let lang = el.lang();
+        if (lang && lang !== 'uk') {
           tagWord(el, new Set([{lemma: el.textContent, tag: 'foreign'}])).setAttribute('disamb', 0);
         }
         else {
