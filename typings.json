@@ -1,24 +1,24 @@
 {
   "name": "mi-lib",
   "dependencies": {
-    "debug": "github:typed-typings/npm-debug#0e398cb21de268744dd048a11461be5c13230bad",
+    "debug": "registry:npm/debug#2.0.0+20160211003958",
     "form-data": "registry:npm/form-data#1.0.0+20160211003958",
-    "glob": "github:typings/typed-glob#b6dcc545de0e25f2e4d6c9ee2c97f9fde0223d8f",
-    "minimist": "github:typings/typed-minimist#9bfb8ebb1cf82abe2e16b00d6e0f59492224728e"
+    "glob": "registry:npm/glob#6.0.0+20160211003958",
+    "minimist": "registry:npm/minimist#1.0.0+20160229232932"
   },
   "devDependencies": {},
   "ambientDependencies": {
-    "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#9a2c50ea846ee6ae36feaea0accc77ae7b08a748",
-    "cookie-parser": "github:DefinitelyTyped/DefinitelyTyped/cookie-parser/cookie-parser.d.ts#e2001653ffbd99c2fc80a272ca80d8c958136de4",
-    "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#bc92442c075929849ec41d28ab618892ba493504",
-    "express-jwt": "github:DefinitelyTyped/DefinitelyTyped/express-jwt/express-jwt.d.ts#2cb8fd4638231efd24929f99d56372bdb57d337b",
-    "express-unless": "registry:dt/express-unless#0.0.0+20141121022219",
-    "libxmljs": "github:DefinitelyTyped/DefinitelyTyped/libxmljs/libxmljs.d.ts#9be44965a7092342d6f8ba5d62923c40e170245e",
-    "mime": "registry:dt/mime#0.0.0+20151204023458",
-    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#aee0039a2d6686ec78352125010ebb38a7a7d743",
-    "pg": "github:DefinitelyTyped/DefinitelyTyped/pg/pg.d.ts#8fb6309e8d96aefa1f2b2e6c9961d10cc136ae06",
-    "request": "github:DefinitelyTyped/DefinitelyTyped/request/request.d.ts#e252a088123eb595d9d772eb373f41c084360278",
-    "serve-static": "registry:dt/serve-static#0.0.0+20160104095738",
-    "tmp": "github:DefinitelyTyped/DefinitelyTyped/tmp/tmp.d.ts#48f20e97bfaf70fc1a9537b38aed98e9749be0ae"
+    "body-parser": "registry:dt/body-parser#0.0.0+20160317120654",
+    "cookie-parser": "registry:dt/cookie-parser#1.3.4+20160316155526",
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "express-jwt": "registry:dt/express-jwt#0.0.0+20160319033732",
+    "express-unless": "registry:dt/express-unless#0.0.0+20160317120654",
+    "libxmljs": "registry:dt/libxmljs#0.14.2+20160316155526",
+    "mime": "registry:dt/mime#0.0.0+20160316155526",
+    "node": "registry:dt/node#4.0.0+20160412142033",
+    "pg": "registry:dt/pg#0.0.0+20160323211726",
+    "request": "registry:dt/request#0.0.0+20160316155526",
+    "serve-static": "registry:dt/serve-static#1.7.1+20160104095738",
+    "tmp": "registry:dt/tmp#0.0.28+20160215162030"
   }
 }
