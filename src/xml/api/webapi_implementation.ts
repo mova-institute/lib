@@ -1,7 +1,7 @@
 import {IDocument, INode, IElement} from './interface';
 import {lang, nameNs} from '../utils';
 import {xpath} from '../utils.web';
-import {wrappedOrNull} from '../../lang';
+import {wrappedOrNull, applyMixins} from '../../lang';
 import {serializeXml} from '../../utils.web';
 
 
@@ -13,8 +13,10 @@ export function $el(element: Element) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export class WebapiDocument implements IDocument {
-	constructor(public underlying: Document) { }
+export class WebapiDocument extends IDocument {
+	constructor(public underlying: Document) {
+    super();
+  }
 
 	get documentElement() {
 		return wrappedOrNull(WebapiElement, this.underlying.documentElement);
@@ -34,8 +36,10 @@ export class WebapiDocument implements IDocument {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class WebapiNode implements INode {
-	constructor(public underlying: Node) { } // todo: protected
+export class WebapiNode extends INode {
+	constructor(public underlying: Node) {
+    super();
+  } // todo: protected
 	
 	equals(other: WebapiNode) {
 		return other && this.underlying === other.underlying;
@@ -108,7 +112,7 @@ export class WebapiNode implements INode {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class WebapiElement extends WebapiNode {
+export class WebapiElement extends WebapiNode implements IElement {
 	constructor(underlying: Element) {
 		super(underlying);
 	}
@@ -185,7 +189,11 @@ export class WebapiElement extends WebapiNode {
       yield new WebapiNode(node);
     }
   }
+  
+  // mixins
+  xpathEl: (query: string, nsMap?) => Array<IElement>;
 }
+applyMixins(WebapiElement, [IElement]);
 
 
 

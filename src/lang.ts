@@ -65,11 +65,11 @@ export function compare(a, b) {
   if (isOddball(a) && !isOddball(b)) {
     return -1;
   }
-  
+
   if (!isOddball(a) && isOddball(b)) {
     return 1;
   }
-  
+
   if (isNumber(a) && isNumber(b)) {
     return numericCompare(a, b);
   }
@@ -95,7 +95,7 @@ export function* zip<T>(...iterables: Iterable<T>[]) {
   for (let state = iterators.map(x => x.next());
     state.every(x => !x.done);
     state = iterators.map(x => x.next())) {
-      
+
     yield state.map(x => x.value);
   }
 }
@@ -104,11 +104,21 @@ export function* zip<T>(...iterables: Iterable<T>[]) {
 /** pythonish */
 export function* zipLongest<T>(...iterables: Iterable<T>[]) {
   let iterators = iterables.map(x => x[Symbol.iterator]());
-  
+
   for (let state = iterators.map(x => x.next());
     state.some(x => !x.done);
     state = iterators.map(x => x.next())) {
-      
+
     yield state.map(x => x.done ? undefined : x.value);
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/** see http://www.typescriptlang.org/docs/handbook/mixins.html */
+export function applyMixins(derivedCtor: any, baseCtors: any[]) {
+  baseCtors.forEach(baseCtor => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
+      derivedCtor.prototype[name] = baseCtor.prototype[name];
+    });
+  });
 }
