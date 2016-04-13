@@ -1,5 +1,5 @@
 import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantBeXml,
-  sortChildElements} from '../xml/utils'
+  sortChildElements, SKIP, STOP} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interface'
@@ -144,7 +144,7 @@ const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 export function tokenizeTeiDom(root: IElement, tagger: MorphAnalyzer) {
   traverseDepth(root, (node: INode) => {
     if (TOSKIP.has(node.nodeName)) {
-      return 'skip';
+      return SKIP;
     }
     if (node.isText()) {
       // let lang = node.lang();
@@ -428,7 +428,7 @@ export function normalizeCorpusText(root: IElement) {
       .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
       .replace(new RegExp(` [-–] `, 'g'), ' — ')
   }
-  
+
   // todo:
   // if orig has >2 words
 }

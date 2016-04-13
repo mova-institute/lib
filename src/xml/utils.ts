@@ -106,15 +106,21 @@ export function traverseDepthEl(node: INode, onEnter: (el: IElement) => any, onL
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDepth(node: INode, onEnter: (el: INode) => any, onLeave?: (el: INode) => any) {
+export const SKIP = Symbol();
+export const STOP = Symbol();
+export interface TraverseCallback {
+  (el: INode): Symbol;
+}
+export function traverseDepth(node: INode, onEnter: TraverseCallback, onLeave?: TraverseCallback) {
   let directive = onEnter(node);
-  if (directive === false) {
+  if (directive === STOP) {
     return false;
   }
-  if (directive !== 'skip') {
+  if (directive !== SKIP) {
     for (let cur = node.firstChild, next = cur && cur.nextSibling;
       cur;
       cur = next, next = next && next.nextSibling) {
+        
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
       }
@@ -125,7 +131,7 @@ export function traverseDepth(node: INode, onEnter: (el: INode) => any, onLeave?
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrder(node: INode, onEnter: (el: INode) => any, onLeave?: (el: INode) => any) {
+export function traverseDocumentOrder(node: INode, onEnter: TraverseCallback, onLeave?: TraverseCallback) {
   for (var curNode = node; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return false;
@@ -152,7 +158,7 @@ export function nextElDocumentOrder(context: IElement, elsOfInterest?: Set<strin
   traverseDocumentOrder(context, callbackIfElement(el => {
     if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs()))) {
       ret = el;
-      return false;
+      return STOP;
     }
   }));
 
@@ -201,7 +207,7 @@ export function lang(node: INode): string {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-function callbackIfElement(cb: (el: IElement) => any) {
+function callbackIfElement(cb: (el: IElement) => Symbol) {
   return node => {
     if (cb && node.isElement()) {
       return cb(node);
