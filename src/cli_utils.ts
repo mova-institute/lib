@@ -46,6 +46,43 @@ export function ioArgs3(filename1: string, filename2: string): [any, any] {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// todo: input, output types
+export async function ioArgs4(filename1: string, filename2: string, f: (input, output) => Promise<void>) {
+
+  if (filename2) {
+    var input: any = createReadStream(filename1, 'utf8');  // todo
+    var tmpFile = tmp.fileSync();
+    var output: any = createWriteStream(null, { fd: tmpFile.fd });
+  }
+  else if (filename1) {
+    if (process.stdin.isTTY) {
+      input = createReadStream(filename1, 'utf8');
+      output = process.stdout;
+    }
+    else {
+      input = process.stdin;
+      var tmpFile = tmp.fileSync();
+      output = createWriteStream(null, { fd: tmpFile.fd });
+    }
+  }
+  else {
+    input = process.stdin;
+    output = process.stdout;
+  }
+  
+  try {
+    f(input, output).then(() => {
+      if (tmpFile) {
+        renameSync(tmpFile.name, filename2 || filename1);
+      }
+    });
+  }
+  catch (e) {
+    console.error(e.stack);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export async function ioArgs2(fileArgs: Array<string>, f: (input, output) => Promise<void>) {
 
   if (fileArgs[1]) {

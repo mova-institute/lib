@@ -1,22 +1,22 @@
-import {ioArgs3} from '../cli_utils';
+import {ioArgs4} from '../cli_utils';
 import {readTillEnd} from '../stream_utils.node';
 import {string2lxmlRoot} from '../utils.node';
 import {IElement} from '../xml/api/interface';
 
 const args = require('minimist')(process.argv.slice(2), {
-  boolean: ['xml']
+  boolean: ['xml', 'inplace']
 });
 
 let [path, funcName, filename1, filename2] = args._;
+if (args.inplace) {
+  filename2 = filename1;
+}
+
 let moduleObj = require('../' + path);
 let func = moduleObj[funcName];
-let [input, output] = ioArgs3(filename1, filename2);
 
 
-main();
-
-
-async function main() {
+ioArgs4(filename1, filename2, async (input, output) => {
   try {
     let inputStr = await readTillEnd(input);
 
@@ -33,4 +33,4 @@ async function main() {
   catch (e) {
     console.error(e.stack)
   }
-}
+});
