@@ -205,10 +205,9 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
   if (!subroots.length) {
     subroots = [root];
   }
-  
+
   for (let subroot of subroots) {
-    traverseDepthEl(subroot, (node: IElement) => {
-      let el = <IElement>node;
+    traverseDepthEl(subroot, el => {
       let nameNs = el.nameNs();
       if (nameNs === W_) {
         return 'skip';
@@ -217,7 +216,7 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
       if (nameNs === W) {
         let lang = el.lang();
         if (lang && lang !== 'uk') {
-          tagWord(el, new Set([{lemma: el.textContent, tag: 'foreign'}])).setAttribute('disamb', 0);
+          tagWord(el, new Set([{ lemma: el.textContent, tag: 'foreign' }])).setAttribute('disamb', 0);
         }
         else {
           tagWord(el, analyzer.tag(el.textContent));
@@ -418,13 +417,18 @@ export function getTeiDocName(doc: IDocument) {  // todo
     title = untag(title.clone());
     return title.textContent.trim().replace(/\s+/g, ' ') || null;
   }
-  
+
   return null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusText(root: IElement) {
-  for (let textNode of root.xpathIt('//*[text()]', NS)) {
-    console.log(textNode.textContent);
+  for (let textNode of root.xpathIt('//text()', NS)) {
+    textNode.textContent = textNode.textContent
+      .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
+      .replace(new RegExp(` [-–] `, 'g'), ' — ')
   }
+  
+  // todo:
+  // if orig has >2 words
 }
