@@ -1,6 +1,7 @@
 import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantBeXml,
-  sortChildElements} from '../xml/utils'
-import {W, W_, PC, SE, P} from './common_elements'
+  sortChildElements} from '../xml/utils';
+import {W, W_, PC, SE, P} from './common_elements';
+import * as elements from './common_elements';
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interface'
 import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
@@ -208,12 +209,13 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
 
   for (let subroot of subroots) {
     traverseDepthEl(subroot, el => {
-      let nameNs = el.nameNs();
-      if (nameNs === W_) {
+      let name = el.nameNs();
+      if (name === W_
+        || name === elements.teiOrig && el.parent() && el.parent().nameNs() === elements.teiChoice) {
         return 'skip';
       }
 
-      if (nameNs === W) {
+      if (name === W) {
         let lang = el.lang();
         if (lang && lang !== 'uk') {
           tagWord(el, new Set([{ lemma: el.textContent, tag: 'foreign' }])).setAttribute('disamb', 0);

@@ -23,6 +23,7 @@ export abstract class INode {
 	abstract remove(): INode;
 	abstract lang(): string;
 	abstract is(name: string): boolean;
+  abstract parent(): IElement;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

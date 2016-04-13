@@ -110,6 +110,10 @@ export class LibxmlNode extends INode {
 	insertAfter(newNode: LibxmlNode) {
 		this.underlying.addNextSibling(newNode.underlying);
 	}
+  
+  parent() {
+    return wrappedOrNull(LibxmlElement, this.underlying.parent());  // todo: check it's always Element
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

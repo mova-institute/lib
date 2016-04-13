@@ -13,3 +13,7 @@ export const L = nameNs(NS.tei, 'l');
 export const LG = nameNs(NS.tei, 'lg');
 export const SP = nameNs(NS.tei, 'sp');
 export const TEI = nameNs(NS.tei, 'tei');
+
+export const teiOrig = nameNs(NS.tei, 'orig');
+export const teiReg = nameNs(NS.tei, 'reg');
+export const teiChoice = nameNs(NS.tei, 'choice');

@@ -109,6 +109,14 @@ export class WebapiNode extends INode {
 	insertAfter(newNode: WebapiNode) {
 		this.underlying.parentNode.insertBefore(newNode.underlying, this.underlying.nextSibling);
 	}
+  
+  parent() {
+    if (this.underlying.parentNode && this.underlying.parentNode.nodeType === Node.ELEMENT_NODE) {
+      return new WebapiElement(<Element>this.underlying.parentNode);
+    }
+    
+    return null;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

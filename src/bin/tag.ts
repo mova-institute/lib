@@ -30,7 +30,7 @@ const args = require('minimist')(process.argv.slice(2));
     inputStr = encloseInRootNsIf(inputStr);
     
     
-    let dictName = args.d || args.dict || 'rysin-mte';
+    let dictName = args.d || args.dict || 'vesum';
     let dictDir = join(__dirname, '../../data/dict', dictName);
 		let tagger = createMorphAnalyserSync(dictDir);
     
