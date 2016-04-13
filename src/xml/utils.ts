@@ -106,17 +106,16 @@ export function traverseDepthEl(node: INode, onEnter: (el: IElement) => any, onL
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export const SKIP = Symbol();
-export const STOP = Symbol();
+export type TraverseDirective = 'skip' | 'stop';
 export interface TraverseCallback {
-  (el: INode): Symbol;
+  (el: INode): TraverseDirective;
 }
 export function traverseDepth(node: INode, onEnter: TraverseCallback, onLeave?: TraverseCallback) {
   let directive = onEnter(node);
-  if (directive === STOP) {
+  if (directive === 'stop') {
     return false;
   }
-  if (directive !== SKIP) {
+  if (directive !== 'skip') {
     for (let cur = node.firstChild, next = cur && cur.nextSibling;
       cur;
       cur = next, next = next && next.nextSibling) {
@@ -158,7 +157,7 @@ export function nextElDocumentOrder(context: IElement, elsOfInterest?: Set<strin
   traverseDocumentOrder(context, callbackIfElement(el => {
     if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs()))) {
       ret = el;
-      return STOP;
+      return 'stop';
     }
   }));
 
@@ -207,7 +206,7 @@ export function lang(node: INode): string {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-function callbackIfElement(cb: (el: IElement) => Symbol) {
+function callbackIfElement(cb: (el: IElement) => TraverseDirective) {
   return node => {
     if (cb && node.isElement()) {
       return cb(node);

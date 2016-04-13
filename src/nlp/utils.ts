@@ -1,5 +1,5 @@
 import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantBeXml,
-  sortChildElements, SKIP, STOP} from '../xml/utils'
+  sortChildElements} from '../xml/utils'
 import {W, W_, PC, SE, P} from './common_elements'
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interface'
@@ -144,7 +144,7 @@ const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 export function tokenizeTeiDom(root: IElement, tagger: MorphAnalyzer) {
   traverseDepth(root, (node: INode) => {
     if (TOSKIP.has(node.nodeName)) {
-      return SKIP;
+      return 'skip';
     }
     if (node.isText()) {
       // let lang = node.lang();
