@@ -18,7 +18,7 @@ createInterface({input}).on('line', (line: string) => {
 
   //console.log(lemma, lemmaTag, word, tag);
   try {
-    var multextTags = rysin2multext(lemma, lemmaTag, word, tag);
+    let multextTags = rysin2multext(lemma, lemmaTag, word, tag);
     for (tag of multextTags) {
       if (!isLemma) {
         output.write('  ');  // todo

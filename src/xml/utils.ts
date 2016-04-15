@@ -82,7 +82,7 @@ export function tagStr(open: boolean, prefix: string, elem: string, attrs = new 
     return `</${namePrefixed(prefix, elem)}>`;
   }
   let ret = `<${namePrefixed(prefix, elem)}`;
-  for (var [key, value] of attrs.entries()) {
+  for (let [key, value] of attrs.entries()) {
     ret += ` ${key}="${value}"`;
   }
   ret += '>';
@@ -133,7 +133,8 @@ export function traverseDepth(node: INode, onEnter: ITraverseCallback, onLeave?:
 
 ////////////////////////////////////////////////////////////////////////////////
 export function traverseDocumentOrder(node: INode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
-  for (var curNode = node; curNode; curNode = curNode.nextSibling) {
+  let curNode = node;
+  for (; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return false;
     }
@@ -219,26 +220,26 @@ function callbackIfElement(cb: (el: IElement) => TraverseDirective) {
 ////////////////////////////////////////////////////////////////////////////////
 // taken from https://github.com/vkiryukhin/pretty-data
 export function pretty(xmlstr: string) {
-  var shift = ['\n']; // array of shifts
+  let shift = ['\n']; // array of shifts
   // var step = '  ';
   // var maxdeep = 100;  // nesting level
 
   // initialize array with shifts //
-  for (var i = 0; i < 100; ++i) {
+  for (let i = 0; i < 100; ++i) {
     shift.push(shift[i] + '  ');
   }
 
-  var ar = xmlstr
+  let ar = xmlstr
     .replace(/>\s{0,}</g, '><')
     .replace(/</g, '~::~<')
     .replace(/xmlns\:/g, '~::~xmlns:')
     .replace(/xmlns\=/g, '~::~xmlns=')
     .split('~::~');
 
-  var inComment = false;
-  var deep = 0;
-  var str = '';
-  for (i = 0; i < ar.length; i++) {
+  let inComment = false;
+  let deep = 0;
+  let str = '';
+  for (let i = 0; i < ar.length; i++) {
     // start comment or <![CDATA[...]]> or <!DOCTYPE //
     if (ar[i].search(/<!/) > -1) {
       str += shift[deep] + ar[i];

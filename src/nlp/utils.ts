@@ -372,8 +372,9 @@ export function sortInterps(root: IElement) {
   for (let miw of <IElement[]>root.xpath('//mi:w_', NS)) {
 
     let disambIndex = Number.parseInt(miw.getAttribute('disamb'));
+    let disambElem;
     if (!Number.isNaN(disambIndex)) {
-      var disambElem = miw.childElement(disambIndex);
+      disambElem = miw.childElement(disambIndex);
     }
 
     sortChildElements(miw, (a, b) => {

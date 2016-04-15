@@ -46,9 +46,11 @@ export function* iterateDictCorpVizLines(lines: string[]) {
     if (line) {
       line = line.replace(/'/g, '’');  // fix apostrophe
       let [form, tag] = line.split(' ');
+      let lemma;
+      let lemmaTag;
       if (isLemma) {
-        var lemma = form;
-        var lemmaTag = tag;
+        lemma = form;
+        lemmaTag = tag;
       }
       yield { form, tag, lemma, lemmaTag, isLemma, line, lineNum };
     }

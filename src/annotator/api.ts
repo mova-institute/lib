@@ -46,6 +46,7 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
 
   let login = await client.select('login', 'auth_id=$1', req.user.sub);
   let personId;
+  let accessToken;
   if (login) {
     if (!login.accessToken) {
       login.accessToken = await genAccessToken();
@@ -59,7 +60,7 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
       nameLast: req.body.profile.family_name,
     }, 'id');
 
-    var accessToken = await genAccessToken();
+    accessToken = await genAccessToken();
     await client.insert('login', {
       id: personId,
       accessToken,
@@ -294,9 +295,10 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
   if (req.body.grabNext) {
     let projectId = await client.select1('document', 'project_id', 'id=$1', taskInDb.docId);
     let reviewTasks: any[] = await client.call('get_task_list', req.bag.user.id, 'review', null);
+    let nextTaskId;
     if (reviewTasks.length) {  // todo: take review from current project if can
       let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).documents[0];
-      var nextTaskId = doc.tasks[0].id;
+      nextTaskId = doc.tasks[0].id;
     }
     else {
       nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id, projectId);
