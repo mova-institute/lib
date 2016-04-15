@@ -1,4 +1,4 @@
-import {findIndexwiseDiff} from './algo'
+import {findIndexwiseDiff} from './algo';
 
 export function markIndexwiseStringDiff(arr: Array<string>, spanClass: string) {
   let ret = new Array<string>(arr.length).fill('');

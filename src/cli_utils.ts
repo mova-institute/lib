@@ -1,5 +1,4 @@
 import {createReadStream, createWriteStream, renameSync} from 'fs';
-import {Readable} from 'stream';
 import * as tmp from 'tmp';
 
 const minimist = require('minimist');
@@ -41,7 +40,7 @@ export function ioArgs3(filename1: string, filename2: string): [any, any] {
   if (filename1 && filename2) {
     return [createReadStream(filename1, 'utf8'), createWriteStream(filename2)];
   }
-  
+
   throw new Error('No input argument');
 }
 
@@ -61,7 +60,7 @@ export async function ioArgs4(filename1: string, filename2: string, f: (input, o
     }
     else {
       input = process.stdin;
-      var tmpFile = tmp.fileSync();
+      tmpFile = tmp.fileSync();
       output = createWriteStream(null, { fd: tmpFile.fd });
     }
   }
@@ -69,7 +68,7 @@ export async function ioArgs4(filename1: string, filename2: string, f: (input, o
     input = process.stdin;
     output = process.stdout;
   }
-  
+
   try {
     f(input, output).then(() => {
       if (tmpFile) {
@@ -97,7 +96,7 @@ export async function ioArgs2(fileArgs: Array<string>, f: (input, output) => Pro
     }
     else {
       input = process.stdin;
-      var tmpFile = tmp.fileSync();
+      tmpFile = tmp.fileSync();
       output = createWriteStream(null, { fd: tmpFile.fd });
     }
   }

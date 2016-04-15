@@ -1,5 +1,5 @@
-import {SaxParser, SaxPushParser} from 'libxmljs'
-import {EventEmitter} from 'events'
+import {SaxParser, SaxPushParser} from 'libxmljs';
+import {EventEmitter} from 'events';
 
 
 export class SaxParserExtBase {
@@ -7,7 +7,7 @@ export class SaxParserExtBase {
   protected listeners = new Array<Function>();
   protected textBuf = '';
   protected curElem = [];
-  
+
   on(event: string, listener: Function) {
     if (event === 'startElementNSExt') {
       this.listeners.push(listener);
@@ -18,9 +18,9 @@ export class SaxParserExtBase {
 
     return this;
   }
-  
+
   push(chunk: string) {};
-  
+
   protected initParser(parser: EventEmitter) {
     parser.on('startElementNS', (elem, attrs, prefix, uri, ns) => {
       this._emitStartIfBuffered();
@@ -33,7 +33,7 @@ export class SaxParserExtBase {
       this.curElem = [];
     });
   }
-  
+
   private _emitStartIfBuffered() {
     if (this.curElem.length) {
       //for (let listener of this.listeners) {
@@ -47,7 +47,7 @@ export class SaxParserExtBase {
 
 export class SaxPushParserExt extends SaxParserExtBase {
   protected parser = new SaxPushParser();
-  
+
   constructor() {
     super();
     this.initParser(this.parser);
@@ -60,7 +60,7 @@ export class SaxPushParserExt extends SaxParserExtBase {
 
 export class SaxParserExt extends SaxParserExtBase {
   protected parser = new SaxParser();
-  
+
   constructor() {
     super();
     this.initParser(this.parser);

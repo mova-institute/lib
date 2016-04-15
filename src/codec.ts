@@ -17,7 +17,7 @@ export function num2Uint16BytesBE(num: number) {
 //   if (overflow) {
 //     bytes.push(overflow);  // todo
 //   }
-  
+
 //   return bytes;
 // }
 
@@ -48,7 +48,7 @@ export function encodeUtf8(str: string) {  // todo: more octets?
 export function decodeUtf8(bytes: Array<number>) {
 
   let ret = '';
-  for (let i = 0; i < bytes.length;) {
+  for (let i = 0; i < bytes.length; ) {
     let c = bytes[i];
 
     if (c < 128) {
@@ -150,7 +150,7 @@ export function b64encode(bytes: Array<number>) {
   let ret = new Array<number>();
   let cursor = 0;
   for (let i = 0; i < bytes.length / 3; ++i) {
-    var temp = bytes[cursor++] << 16; //Convert to big endian
+    var temp = bytes[cursor++] << 16;  // convert to big endian
     temp += bytes[cursor++] << 8;
     temp += bytes[cursor++];
     ret.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
@@ -160,18 +160,21 @@ export function b64encode(bytes: Array<number>) {
   }
   switch (bytes.length % 3) {
     case 1:
-      temp = bytes[cursor++] << 16; //Convert to big endian
+      temp = bytes[cursor++] << 16;  // convert to big endian
       ret.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
       ret.push(BASIS_64[(temp & 0x0003F000) >> 12]);
       ret.push(PADD, PADD);
       break;
     case 2:
-      temp = bytes[cursor++] << 16; //Convert to big endian
+      temp = bytes[cursor++] << 16;  // convert to big endian
       temp += bytes[cursor++] << 8;
       ret.push(BASIS_64[(temp & 0x00FC0000) >> 18]);
       ret.push(BASIS_64[(temp & 0x0003F000) >> 12]);
       ret.push(BASIS_64[(temp & 0x00000FC0) >> 6]);
       ret.push(PADD);
+      break;
+
+    default:
       break;
   }
 

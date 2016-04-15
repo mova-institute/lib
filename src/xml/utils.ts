@@ -1,4 +1,4 @@
-import {INode, IElement, IDocument} from './api/interface'
+import {INode, IElement} from './api/interface';
 
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
@@ -39,7 +39,7 @@ export function namePrefixed(prefix: string, name: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function removeXmlns(xmlstr: string) {
-  return xmlstr.replace(/ xmlns(:\w+)?="[^"]+"/g, '')
+  return xmlstr.replace(/ xmlns(:\w+)?="[^"]+"/g, '');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,10 +107,10 @@ export function traverseDepthEl(node: INode, onEnter: (el: IElement) => any, onL
 
 ////////////////////////////////////////////////////////////////////////////////
 export type TraverseDirective = 'skip' | 'stop';
-export interface TraverseCallback {
+export interface ITraverseCallback {
   (el: INode): TraverseDirective;
 }
-export function traverseDepth(node: INode, onEnter: TraverseCallback, onLeave?: TraverseCallback) {
+export function traverseDepth(node: INode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
   let directive = onEnter(node);
   if (directive === 'stop') {
     return false;
@@ -119,7 +119,7 @@ export function traverseDepth(node: INode, onEnter: TraverseCallback, onLeave?: 
     for (let cur = node.firstChild, next = cur && cur.nextSibling;
       cur;
       cur = next, next = next && next.nextSibling) {
-        
+
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
       }
@@ -130,7 +130,7 @@ export function traverseDepth(node: INode, onEnter: TraverseCallback, onLeave?: 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrder(node: INode, onEnter: TraverseCallback, onLeave?: TraverseCallback) {
+export function traverseDocumentOrder(node: INode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
   for (var curNode = node; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return false;
@@ -211,7 +211,7 @@ function callbackIfElement(cb: (el: IElement) => TraverseDirective) {
     if (cb && node.isElement()) {
       return cb(node);
     }
-  }
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ export function pretty(xmlstr: string) {
     .replace(/xmlns\:/g, '~::~xmlns:')
     .replace(/xmlns\=/g, '~::~xmlns=')
     .split('~::~');
-    
+
   var inComment = false;
   var deep = 0;
   var str = '';
@@ -240,42 +240,44 @@ export function pretty(xmlstr: string) {
     // start comment or <![CDATA[...]]> or <!DOCTYPE //
     if (ar[i].search(/<!/) > -1) {
       str += shift[deep] + ar[i];
-      inComment = true; 
+      inComment = true;
       // end comment  or <![CDATA[...]]> //
       if (ar[i].search(/-->/) > -1 || ar[i].search(/\]>/) > -1 || ar[i].search(/!DOCTYPE/) > -1) {
         inComment = false;
       }
-    } else 
+    } else
       // end comment  or <![CDATA[...]]> //
       if (ar[i].search(/-->/) > -1 || ar[i].search(/\]>/) > -1) {
         str += ar[i];
         inComment = false;
-      } else 
+      } else
         // <elm></elm> //
         if (/^<\w/.exec(ar[i - 1]) && /^<\/\w/.exec(ar[i]) && /^<[\w:\-\.\,]+/.exec(ar[i - 1])[0] == /^<\/[\w:\-\.\,]+/.exec(ar[i])[0].replace('/', '')) {
           str += ar[i];
-          if (!inComment) deep--;
+          if (!inComment) {
+            --deep;
+          }
         } else
           // <elm> //
           if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) == -1 && ar[i].search(/\/>/) == -1) {
             str = !inComment ? str += shift[deep++] + ar[i] : str += ar[i];
-          } else 
+          } else
             // <elm>...</elm> //
             if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) > -1) {
               str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
-            } else 
+            } else
               // </elm> //
               if (ar[i].search(/<\//) > -1) {
                 str = !inComment ? str += shift[--deep] + ar[i] : str += ar[i];
-              } else 
+              } else
                 // <elm/> //
                 if (ar[i].search(/\/>/) > -1) {
                   str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
-                } else 
+                } else
                   // <? xml ... ?> //
                   if (ar[i].search(/<\?/) > -1) {
                     str += shift[deep] + ar[i];
-                  } else 
+                  } else
                     // xmlns //
                     if (ar[i].search(/xmlns\:/) > -1 || ar[i].search(/xmlns\=/) > -1) {
                       str += shift[deep] + ar[i];
@@ -289,7 +291,7 @@ export function pretty(xmlstr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function sortChildElements(el: IElement, compare: (a:IElement, b:IElement) => number) {
+export function sortChildElements(el: IElement, compare: (a: IElement, b: IElement) => number) {
   let childrenSorted = [...el.childElements()].sort(compare);
   for (let child of childrenSorted) {
     el.appendChild(child.remove());

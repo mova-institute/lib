@@ -1,7 +1,7 @@
-import {SaxEventObject} from './sax_event_object'
-import {nameNs} from '../xml/utils'
-import {Transform} from 'stream'
-import {SaxParserExtBase, SaxParserExt, SaxPushParserExt} from '../xml/sax_push_parser_ext'
+import {SaxEventObject} from './sax_event_object';
+import {nameNs} from '../xml/utils';
+import {Transform} from 'stream';
+import {SaxParserExtBase, SaxPushParserExt} from '../xml/sax_push_parser_ext';
 
 
 
@@ -10,12 +10,12 @@ export class SaxEventObjectifier extends Transform {
 
   constructor(/*sync = false*/) {
     super({
-      objectMode: true
+      objectMode: true,
     });
     this._parser = /*sync ? new SaxParserExt() :*/ new SaxPushParserExt();
     this._initParser();
   }
-  
+
   _transform(chunk: string, encoding, callback) {
     this._parser.push(chunk);
     callback();
@@ -30,9 +30,9 @@ export class SaxEventObjectifier extends Transform {
         text,
         attrs,
         prefix, elem, uri, ns));
-      
+
     }).on('endElementNS', (elem, prefix, uri) => {
-      
+
       this.push(new SaxEventObject(
         'end',
         nameNs(uri, elem),
