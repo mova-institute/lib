@@ -14,8 +14,8 @@ export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcod
 // select typname, oid, typarray from pg_type where typtype = 'b';
 export const PG_TYPES = {
   json: 114,
-  jsonb: 3802
-}
+  jsonb: 3802,
+};
 
 
 
@@ -197,7 +197,7 @@ function snakize(obj) {  // first-level only
 function nDollars(n: number) {
   let ret = '';
   if (n) {
-    for (var i = 1; i < n; ++i) {
+    for (let i = 1; i < n; ++i) {
       ret += '$' + i + ', ';
     }
     ret += '$' + n;

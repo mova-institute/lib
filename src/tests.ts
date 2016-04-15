@@ -3,7 +3,7 @@ import {MorphTag, mapVesumFlag} from './nlp/morph_tag';
 import {rysin2multext} from './nlp/rysin2mulext';
 
 
-const debug = require('debug')('testo');
+//const debug = require('debug')('testo');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ export function findDuplicateFeatures(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testMte2Vesum(fileStr: string) {
   let lines = fileStr.split('\n');
-  for (let {form, tag, lemma, lemmaTag, isLemma, lineNum} of iterateDictCorpVizLines(lines)) {
+  for (let {form, tag, lemma, lemmaTag, lineNum} of iterateDictCorpVizLines(lines)) {
     if (tag.includes('transl')
       || tag.includes('insert')
       || tag.includes('predic')

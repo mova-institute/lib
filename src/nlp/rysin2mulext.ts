@@ -12,7 +12,7 @@ const tagMap = {
   'v_oru': { feat: 'case', mte: 'i' },
   'v_mis': { feat: 'case', mte: 'l' },
   'v_kly': { feat: 'case', mte: 'v' },
-  'rv_naz': { feat: 'case', mte: 'n' }, 	// ?
+  'rv_naz': { feat: 'case', mte: 'n' },   // ?
   'rv_rod': { feat: 'case', mte: 'g' },
   'rv_dav': { feat: 'case', mte: 'd' },
   'rv_zna': { feat: 'case', mte: 'a' },
@@ -84,14 +84,14 @@ const tagMap = {
 
   'np': { feat: 'numberTantum', mte: null },
   'ns': { feat: 'numberTantum', mte: null },
-  
+
   'prop': { feat: 'nounType', mte: 'p' },
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 class RysinTag {
   pos: string;
-  shadowPos: string
+  shadowPos: string;
   altPoses: Array<string>;
   aspect: string;
   tense: string;
@@ -104,7 +104,7 @@ class RysinTag {
   gender: string;
   number: string;
   degree: string;
-  definiteness: string
+  definiteness: string;
   pronounType: Array<string>;
   сonjunctionType: string;
   numberTantum: string;
@@ -128,7 +128,7 @@ class RysinTag {
         }
       }
       else if (flag === '&adjp') {
-        this._pushToArrayFeature('altPoses', 'adjp');        
+        this._pushToArrayFeature('altPoses', 'adjp');
       }
       else if (flag.startsWith('&_')) {
         this._pushToArrayFeature('altPoses', flag.substr(2));
@@ -168,7 +168,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
       switch (formTag.pos) {
         case 'noun': {
           let type = tryMapTag(formTag.nounType) || 'c';
-	
+
           // todo: common, filter plu tantum
           let gender = lemmaTag.numberTantum === 'ns' ? '-' : mapTag(lemmaTag.gender);
           let number_ = formTag.number || 's';
@@ -181,13 +181,13 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         case 'verb': {
           let type = lemma === 'бути' ? 'a' : 'm';
           let aspect = mapTag(formTag.aspect);
-          let form = tryMapTag(formTag.verbForm) || 'i';
+          let verbForm = tryMapTag(formTag.verbForm) || 'i';
           let tense = tryMapTag(formTag.tense) || '-';
           let person = tryMapTag(formTag.person) || '-';
           let number_ = tryMapTag(formTag.number) || (formTag.gender ? 's' : '-');
           let gender = tryMapTag(formTag.gender) || '';
 
-          ret.push(trimTrailingDash('V' + type + aspect + form + tense + person + number_ + gender));
+          ret.push(trimTrailingDash('V' + type + aspect + verbForm + tense + person + number_ + gender));
           break;
         }
         case 'advp': {
@@ -198,7 +198,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
             throw new Error('');
           }
           let tense = (lemma.endsWith('чи') || lemma.endsWith('чись')) ? 'p' : 's';  // todo: test
-	
+
           ret.push('V' + type + aspect + 'g' + tense);
           break;
         }
@@ -225,7 +225,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
           let aspect = mapTag(formTag.aspect);
           let voice = mapTag(formTag.voice);
           let tense = tryMapTag(formTag.tense) || '';  // todo
-				
+
           ret.push('Ap-' + gender + number_ + case_ + definiteness + animacy + aspect + voice + tense);
           break;
         }

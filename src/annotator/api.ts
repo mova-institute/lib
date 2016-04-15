@@ -1,11 +1,10 @@
 import * as express from 'express';
 import {PgClient} from '../postrges';
 import {genAccessToken} from '../crypto';
-import {config, Req, sendError, debug, HttpError} from './server';
+import {IReq, debug, HttpError} from './server';
 import {mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask} from './business';
 import {markConflicts, markResolveConflicts} from './business.node';
 import {firstNWords} from '../nlp/utils';
-import {isUndefined} from '../lang';
 import * as assert from 'assert';
 
 
@@ -13,7 +12,7 @@ import * as assert from 'assert';
 
 const COOKIE_CONFIG = {
   maxAge: 1000 * 3600 * 24 * 100,
-  httpOnly: true
+  httpOnly: true,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,15 +45,16 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
   }
 
   let login = await client.select('login', 'auth_id=$1', req.user.sub);
+  let personId;
   if (login) {
     if (!login.accessToken) {
       login.accessToken = await genAccessToken();
       await client.update('login', 'access_token=$1', 'id=$2', login.accessToken, login.id);
     }
-    res.cookie('accessToken', login.accessToken, COOKIE_CONFIG)
+    res.cookie('accessToken', login.accessToken, COOKIE_CONFIG);
   }
   else {
-    var personId = await client.insert('person', {
+    personId = await client.insert('person', {
       nameFirst: req.body.profile.given_name,
       nameLast: req.body.profile.family_name,
     }, 'id');
@@ -64,20 +64,20 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
       id: personId,
       accessToken,
       authId: req.user.sub,
-      auth0Profile: req.body.profile
+      auth0Profile: req.body.profile,
     });
     res.cookie('accessToken', accessToken, COOKIE_CONFIG);
   }
   personId = personId || login.id;
   accessToken = accessToken || login.accessToken;
   await client.insertIfNotExists('appuser', {
-    id: personId
+    id: personId,
   });
 
   await client.insert('project_user', {
     projectId: invite.projectId,
     userId: personId,
-    role: invite.role
+    role: invite.role,
   });
 
   await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite);
@@ -104,22 +104,22 @@ export async function login(req, res: express.Response, client: PgClient) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function logout(req: Req, res: express.Response, client: PgClient) {
+export async function logout(req: IReq, res: express.Response, client: PgClient) {
   res.clearCookie('accessToken').json('ok');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function checkDocName(req: Req, res: express.Response, client: PgClient) {
+export async function checkDocName(req: IReq, res: express.Response, client: PgClient) {
   if (req.bag.user.roles[req.query.projectName] !== 'supervisor') {
     throw new HttpError(400);
   }
   let projectId = client.select1('project', 'id', 'name=$1', req.query.projectName);
-  let isFree = client.call('is_doc_name_free', 1, req.query.value, projectId)
+  let isFree = client.call('is_doc_name_free', 1, req.query.value, projectId);
   res.json({ isFree });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function addText(req: Req, res: express.Response, client: PgClient) {  // todo
+export async function addText(req: IReq, res: express.Response, client: PgClient) {  // todo
   let docId = await client.insert('document', {
     name: req.body.name,
     content: req.body.content,
@@ -131,7 +131,7 @@ export async function addText(req: Req, res: express.Response, client: PgClient)
     await client.insert('fragment_version', {
       docId,
       index: i,
-      content: fragment.xmlstr
+      content: fragment.xmlstr,
     });
   }
 
@@ -156,16 +156,16 @@ export async function addText(req: Req, res: express.Response, client: PgClient)
         docId,
         taskId,
         index: i,
-        content: req.body.fragments[i].xmlstr
+        content: req.body.fragments[i].xmlstr,
       });
     }
   }
-  
+
   res.json({ result: 'ok' });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function assignTask(req: Req, res: express.Response, client: PgClient) {  // todo: rename +forAnnotation?
+export async function assignTask(req: IReq, res: express.Response, client: PgClient) {  // todo: rename +forAnnotation?
   if (!req.bag.user.roles[req.query.projectName]) {
     throw new HttpError(400);
   }
@@ -177,17 +177,17 @@ export async function assignTask(req: Req, res: express.Response, client: PgClie
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function assignResolveTask(req: Req, res: express.Response, client: PgClient) {
+export async function assignResolveTask(req: IReq, res: express.Response, client: PgClient) {
   if (!(await client.call('assign_task_for_resolve', req.bag.user.id, req.query.id))) {
     throw new HttpError(400);
-  };
+  }
 
   let ret = await client.call('get_task', req.bag.user.id, req.query.id);
   res.json(wrapData(ret));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function disownTask(req: Req, res: express.Response, client: PgClient) {
+export async function disownTask(req: IReq, res: express.Response, client: PgClient) {
   let task = await client.call('get_task', req.bag.user.id, req.query.id);
   if (!canDisownTask(task)) {
     throw new HttpError(400);
@@ -198,25 +198,25 @@ export async function disownTask(req: Req, res: express.Response, client: PgClie
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function getResolvePool(req: Req, res: express.Response, client: PgClient) {
+export async function getResolvePool(req: IReq, res: express.Response, client: PgClient) {
   let ret = await client.call('get_resolve_pool', req.bag.user.id);
   res.json(wrapData(ret));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function getTaskList(req: Req, res: express.Response, client: PgClient) {
+export async function getTaskList(req: IReq, res: express.Response, client: PgClient) {
   let ret = await client.call('get_task_list', req.bag.user.id, req.query.step, null);
   res.json(wrapData(ret));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function getTaskCount(req: Req, res: express.Response, client: PgClient) {
+export async function getTaskCount(req: IReq, res: express.Response, client: PgClient) {
   let ret = await client.call('get_task_count', req.bag.user.id);
   res.json(wrapData(ret));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function getTask(req: Req, res: express.Response, client: PgClient) {
+export async function getTask(req: IReq, res: express.Response, client: PgClient) {
   let ret = await client.call('get_task', req.bag.user.id, req.query.id);
   if (ret) {
     ret.content = mergeXmlFragments(ret.fragments.map(x => x.content));
@@ -226,7 +226,7 @@ export async function getTask(req: Req, res: express.Response, client: PgClient)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function saveTask(req: Req, res: express.Response, client: PgClient) {
+export async function saveTask(req: IReq, res: express.Response, client: PgClient) {
   let ret: any = { msg: 'ok' };
 
   let taskInDb = await client.call('get_task', req.bag.user.id, req.body.id);
@@ -240,7 +240,7 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
       docId: taskInDb.docId,
       index: taskInDb.fragmentStart + i,
       status: 'in_progress',
-      content: fragment
+      content: fragment,
     });
   }
 
@@ -273,7 +273,7 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
             step: nextTaskStep(taskToReview.step),
             fragmentStart: taskToReview.fragmentStart,
             fragmentEnd: taskToReview.fragmentEnd,
-            name: taskToReview.name
+            name: taskToReview.name,
           }, 'id');
 
           for (let [i, fragment] of markedFragments.entries()) {
@@ -282,7 +282,7 @@ export async function saveTask(req: Req, res: express.Response, client: PgClient
               docId: task.docId,
               index: taskToReview.fragmentStart + i,
               status: 'pristine',
-              content: fragment
+              content: fragment,
             });
           }
         }
@@ -327,7 +327,7 @@ async function onReviewConflicts(task, client: PgClient) {
     if (numDiffs) {
       // console.error(marked);
       let alreadyTask = await client.select('task', "doc_id=$1 and fragment_start=$2 and step='resolve'",
-        task.docId, fragment.index)
+        task.docId, fragment.index);
       if (!alreadyTask) {
 
         let newTaskId = await client.insert('task', {
@@ -336,7 +336,7 @@ async function onReviewConflicts(task, client: PgClient) {
           step: 'resolve',
           fragmentStart: fragment.index,
           fragmentEnd: fragment.index,
-          name: firstNWords(4, markedDoc.documentElement).join(' ')
+          name: firstNWords(4, markedDoc.documentElement).join(' '),
         }, 'id');
 
         await client.insert('fragment_version', {
@@ -344,7 +344,7 @@ async function onReviewConflicts(task, client: PgClient) {
           docId: task.docId,
           index: fragment.index,
           status: 'pristine',
-          content: markedStr
+          content: markedStr,
         });
       }
       else {

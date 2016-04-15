@@ -98,13 +98,13 @@ export async function readToXmlDoc(file: File) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-export interface WebapiCollection<T> {
-  item(i: number): T;
+export interface IWebapiCollection<T> {
   length: number;
+  item(i: number): T;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-export function collection2array<T>(collection: WebapiCollection<T>) {
+export function collection2array<T>(collection: IWebapiCollection<T>) {
   let ret = new Array<T>();
   for (let i = 0; i < collection.length; ++i) {
     ret.push(collection.item(i));

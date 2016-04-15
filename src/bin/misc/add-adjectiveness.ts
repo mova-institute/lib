@@ -791,22 +791,22 @@ let dict = fs.readFileSync(DICT_PATH, 'utf-8').split('\n');
 
 for (let adj of adjs) {
   let done = false;
-	for (let i=0; i < dict.length; ++i) {
-		let line = dict[i];
-		if (line.startsWith(adj + '/')) {
+  for (let i=0; i < dict.length; ++i) {
+    let line = dict[i];
+    if (line.startsWith(adj + '/')) {
       if (done === true) {
         console.log('Already have:::::::: ', line);
       }
-			let lineArr = line.split(' ');
+      let lineArr = line.split(' ');
       lineArr[1] += ':&adj';
-			line = lineArr.join(' ');
-			dict[i] = line;
+      line = lineArr.join(' ');
+      dict[i] = line;
       done = true;
-		}
-	}
-	if (!done) {
-		throw new Error('No match for ' + adj);
-	}
+    }
+  }
+  if (!done) {
+    throw new Error('No match for ' + adj);
+  }
 }
 
 fs.writeFileSync(DICT_PATH, dict.join('\n'), 'utf8')

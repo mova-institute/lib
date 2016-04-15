@@ -3,7 +3,7 @@ import {Guide} from './guide';
 import {ObjectDawg} from './dawg';
 
 
-export function createObjectDawg<T>(buf: ArrayBuffer, deserializer: (ArrayBuffer) => T) {
+export function createObjectDawg<T>(buf: ArrayBuffer, deserializer: (buf: ArrayBuffer) => T) {
   let view = new DataView(buf);
   let dicSize = view.getUint32(0, true);
   let dicData = new Uint32Array(buf, 4, dicSize);

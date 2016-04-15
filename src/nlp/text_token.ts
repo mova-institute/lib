@@ -25,7 +25,7 @@ export class TextToken {
     return other && other.elem.equals(this.elem);
   }
 
-  text() {	// todo
+  text() {  // todo
     if (this.elem.nameNs() === W_) {
       return this.elem.childElement(0).textContent;
     }

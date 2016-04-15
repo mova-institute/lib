@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
-import {genAccessToken} from '../crypto';
 import {PgClient} from '../postrges';
 import {ClientConfig} from 'pg';
 import * as debugFactory from 'debug';
@@ -25,7 +24,7 @@ const jwtCheck = jwt({
   credentialsRequired: false
 });
 
-export interface Req extends express.Request {
+export interface IReq extends express.Request {
   bag: any;
 }
 
@@ -43,7 +42,7 @@ app.use('/api/login', jwtCheck);
 app.use('/api/join', jwtCheck);
 
 
-app.all('/api/*', async (req: Req, res: express.Response) => {
+app.all('/api/*', async (req: IReq, res: express.Response) => {
   let actionName = req.params[0];
   let action = actions[actionName];
   if (action) {
@@ -85,7 +84,7 @@ function errorHandler(err, req, res: express.Response, next) {
 };
 
 //------------------------------------------------------------------------------
-async function preauth(action: string, req: Req, client: PgClient) {
+async function preauth(action: string, req: IReq, client: PgClient) {
   if (action === 'login' || action === 'getInviteDetails' || action === 'join') {
     return true;
   }
@@ -109,8 +108,8 @@ export function makeErrObj(code: number, message?: string) {
   return {
     error: {
       code,
-      message
-    }
+      message,
+    },
   };
 }
 

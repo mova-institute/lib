@@ -22,7 +22,7 @@ export function num2Uint16BytesBE(num: number) {
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function encodeUtf8(str: string) {	// todo: more octets?
+export function encodeUtf8(str: string) {  // todo: more octets?
   let ret = new Array<number>();
   let p = 0;
   for (let i = 0; i < str.length; ++i) {
@@ -84,10 +84,10 @@ const PADD = '='.charCodeAt(0);
 
 function b64decode(code: number) {
   if (code === PLUS || code === PLUS_URL_SAFE) {
-    return 62;	// '+'
+    return 62;  // '+'
   }
   if (code === SLASH || code === SLASH_URL_SAFE) {
-    return 63;	 // '/'
+    return 63;   // '/'
   }
   if (code < NUMBER + 10) {
     return code - NUMBER + 26 + 26;

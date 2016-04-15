@@ -283,7 +283,7 @@ export function pretty(xmlstr: string) {
                     else {
                       str += ar[i];
                     }
-		}
+    }
 
   return (str[0] == '\n') ? str.slice(1) : str;
 }

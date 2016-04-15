@@ -53,11 +53,7 @@ function extract2() {
   
   let docCursor = $t(docRoot.xpath('//mi:w_', NS)[0]);
 
-  const AmbigGroupPos = {
-    outside: 0,
-    first: 1,
-    inside: 2,
-  };
+  const enum AmbigGroupPos { outside, first, inside };
 
   let ambigGroupPos = AmbigGroupPos.outside;
   for (let [lineN, line] of lines.entries()) {

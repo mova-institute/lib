@@ -185,7 +185,7 @@ export function elementFromToken(token: string, document: IDocument): IElement {
 //------------------------------------------------------------------------------
 function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
-  let w_ = el.ownerDocument.createElement('mi:w_'); // todo
+  let miw = el.ownerDocument.createElement('mi:w_'); // todo
 
   for (let morphTag of morphTags) {
     let w = el.ownerDocument.createElement('w');
@@ -193,11 +193,11 @@ function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
     let {lemma, tag} = morphTag;
     w.setAttribute('lemma', lemma);
     w.setAttribute('ana', tag);
-    w_.appendChild(w);
+    miw.appendChild(w);
   }
-  el.replace(w_);
+  el.replace(miw);
 
-  return w_;
+  return miw;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

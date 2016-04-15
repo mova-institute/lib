@@ -1,4 +1,4 @@
-import {encloseInRoot, encloseInRootNs, removeXmlns} from '../xml/utils';
+import {encloseInRoot, encloseInRootNs} from '../xml/utils';
 import {IElement} from '../xml/api/interface';
 import {NS} from '../xml/utils';
 import {TextToken} from '../nlp/text_token';

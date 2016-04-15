@@ -32,9 +32,7 @@ export interface IMap<K, V> {
 export class JsonCompareMap<K, V> implements IMap<K, V> {
   map = new Map<string, [K, V]>();
 
-  constructor() {
-    this[Symbol.iterator]
-  }
+  constructor() { }
 
   has(key: K) {
     return this.map.has(JSON.stringify(key));

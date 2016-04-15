@@ -1,7 +1,5 @@
-import {stream2lxmlRoot, nonemptyLinesSync, filename2lxmlRootSync} from './utils.node';
-import {IElement} from './xml/api/interface';
+import {stream2lxmlRoot, filename2lxmlRootSync} from './utils.node';
 import {readTillEnd} from './stream_utils.node';
-import {JsonCompareSet} from './data_structures';
 import {dictFormLemmaTag} from './nlp/utils';
 import {traverseDocumentOrderEl} from './xml/utils';
 import {readFileSync, createWriteStream, renameSync} from 'fs';
@@ -21,10 +19,6 @@ export function ugtag2mi(input, output) {
       console.error(e.stack);
     }
   })();
-}
-
-function _ugtag2mi(root: IElement) {
-
 }
 
 function isOpenClassTag(tag: string) {

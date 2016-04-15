@@ -7,12 +7,12 @@ let [input, output] = ioArgs();
 
 
 (async() => {
-	try {
-		let root = await stream2lxmlRoot(input);
-		enumerateWords(root);
-		output.write(root.ownerDocument.serialize());
-	}
-	catch (e) {
-		console.error(e.stack);
-	}
+  try {
+    let root = await stream2lxmlRoot(input);
+    enumerateWords(root);
+    output.write(root.ownerDocument.serialize());
+  }
+  catch (e) {
+    console.error(e.stack);
+  }
 })();
