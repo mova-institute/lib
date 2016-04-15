@@ -5,7 +5,7 @@ import * as elements from './common_elements';
 import {r} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interface'
 import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
-import {getUnambMorphTag} from './text_token';
+import {$t} from './text_token';
 import {MorphInterp} from './interfaces';
 import {MorphTag, compareTags} from './morph_tag';
 import {WCHAR_UK_RE, WCHAR, WCHAR_RE, WCHAR_NOT_UK_RE} from './static';
@@ -322,7 +322,7 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
 
   let numDiffs = 0;
   for (let [i, mine] of mineWords.entries()) {
-    if (getUnambMorphTag(mine) !== getUnambMorphTag(theirWords[i])) {
+    if ($t(mine).morphTag() !== $t(theirWords[i]).morphTag()) {
       ++numDiffs;
       mine.setAttribute('mark', 'to-review');
     }

@@ -41,7 +41,7 @@ export class Dictionary {
 
 
 //------------------------------------------------------------------------------
-module Unit {
+namespace Unit {
 	const OFFSET_MAX = 1 << 21;
 	const IS_LEAF_BIT = 1 << 31;
 	const HAS_LEAF_BIT = 1 << 8;

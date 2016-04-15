@@ -18,7 +18,7 @@ export class TextToken {
   private static TOKEN_ELEMS = new Set<string>([W_, PC]);
 
   constructor(public elem: IElement, public hasSpaceBefore = true) {
-
+    
   }
 
   equals(other: TextToken) {
@@ -33,14 +33,14 @@ export class TextToken {
     return this.elem.textContent;
   }
 
-  isWord() {
+  isWord() {  // todo: more name
     return this.elem.nameNs() === W_;
   }
 
   isAmbig() {
     return !!this.elem.childElement(1) && !this.elem.getAttribute('disamb');
   }
-  
+
   isDisambed() {
     return this.elem.getAttribute('disamb') !== null;
   }
@@ -57,27 +57,44 @@ export class TextToken {
   isReviewed() {
     return this.elem.getAttribute('mark') === 'reviewed';
   }
-  
+
   getInterpElem(tag: string, lemma: string) {
     return <IElement>(this.elem.xpath(`w[@ana='${tag}' and @lemma='${lemma}']`)[0]);
   }
-  
+
   getDisambedInterpElem() {
     let disamb = this.elem.getAttribute('disamb');
     if (disamb !== null) {
       return this.elem.childElement(Number(disamb));
     }
-    
+
     return null;
   }
 
   disambIndex() {
-    let ret = this.elem.getAttribute('disamb');
-    return ret ? parseInt(ret) : null;
+    let attr = this.elem.getAttribute('disamb');
+    if (attr) {
+      let ret = Number.parseInt(attr);
+      if (!Number.isNaN(ret)) {
+        return ret;
+      }
+    }
+
+    return null;
   }
 
   morphTag() {
-    return getUnambMorphTag(this.elem);
+    let index = this.disambIndex();
+    if (index !== null) {
+      let wElem = this.elem.childElement(index);
+      return wElem ? wElem.getAttribute('ana') : '*';  // todo: throw?
+    }
+
+    if (!this.elem.childElement(1)) {
+      return this.elem.childElement(0).getAttribute('ana');
+    }
+    
+    // todo: return null?
   }
 
   interps() {
@@ -88,7 +105,7 @@ export class TextToken {
         lemma: child.getAttribute('lemma')
       });
     }
-    
+
     return ret;
   }
 
@@ -110,16 +127,16 @@ export class TextToken {
     let elName = this.elem.nameNs();
     return elName === P || elName === L;
   }
-  
+
   getDisambAuthorName(i: number) {
     let author = this.elem.childElement(i).getAttribute('author');
     if (author) {
       return author.split(':')[1];
     }
   }
-  
+
   getDisambOptions() {
-    let ret = new Array<{lemma: string, tag: string}>();
+    let ret = new Array<{ lemma: string, tag: string }>();
     for (let child of this.elem.childElements()) {
       if (child.nameNs() === W) {
         ret.push({
@@ -128,7 +145,7 @@ export class TextToken {
         });
       }
     }
-    
+
     return ret;
   }
 
@@ -144,15 +161,15 @@ export class TextToken {
     this.elem.setAttribute('disamb', this.elem.childElementCount - 1);
     return this;
   }
-  
+
   resetDisamb() {
     this.elem.removeAttribute('disamb');
   }
-  
+
   markOnly(value: string) {
     this.elem.setAttribute('mark', value);
   }
-  
+
   setDisambedInterpAuthor(value: string) {
     this.getDisambedInterpElem().setAttribute('author', value);
   }
@@ -218,15 +235,6 @@ export class TextToken {
     return ret;
   }
 
-  nextAmbigWord() {
-    return this.next(token => token.isAmbig());
-  }
-
-  // nextMarked() {
-  //   let ret = this.next(token => token.isMarked());
-  //   return ret;
-  // }
-
   nextToken() {
     let next = nextElDocumentOrder(this.elem, TextToken.TOKEN_ELEMS);
     return wrappedOrNull(TextToken, next);
@@ -235,19 +243,6 @@ export class TextToken {
   wordNum() {  // todo: real, ordered num?
     let n = this.elem.getAttribute('n');
     return n ? parseInt(n) : null;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function getUnambMorphTag(w_: IElement) {
-  let disamb = w_.getAttribute('disamb');
-  if (disamb !== null) {
-    let wElem = w_.childElement(Number(disamb));
-    return wElem ? wElem.getAttribute('ana') : '*';  // todo: throw?
-  }
-
-  if (!w_.childElement(1)) {
-    return w_.childElement(0).getAttribute('ana');
   }
 }
 
