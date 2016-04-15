@@ -4,6 +4,7 @@ const fs = require('fs');
 
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
+const tslint = require('gulp-tslint');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
@@ -40,6 +41,13 @@ function tsTask(target) {
 ////////////////////////////////////////////////////////////////////////////////
 gulp.task('typescript', [], () => {
   return tsTask('es6');
+});
+
+////////////////////////////////////////////////////////////////////////////////
+gulp.task('lint', [], () => {
+  tsProject.src()
+    .pipe(tslint())
+    .pipe(tslint.report('verbose'));
 });
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -29,8 +29,10 @@
     "del": "^2.1.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.0",
+    "gulp-tslint": "^4.3.5",
     "gulp-typescript": "^2.9.2",
     "gulp-uglify": "^1.5.1",
+    "tslint": "^3.7.4",
     "typescript": "^1.8.7"
   },
   "dependencies": {

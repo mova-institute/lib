@@ -41,12 +41,12 @@ export class PgClient {
 
     for (let i = 1; ; ++i) {
       try {
-        await client.query("BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE");  // todo: remove await?
+        await client.query('BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE');  // todo: remove await?
         var ret = await f(client);
-        await client.query("COMMIT");
+        await client.query('COMMIT');
       }
       catch (e) {
-        await client.query("ROLLBACK");
+        await client.query('ROLLBACK');
 
         const MAX_TRANSACTION_RETRY = 100;
         if (i === MAX_TRANSACTION_RETRY) {

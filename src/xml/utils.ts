@@ -227,10 +227,10 @@ export function pretty(xmlstr: string) {
   }
 
   var ar = xmlstr
-    .replace(/>\s{0,}</g, "><")
-    .replace(/</g, "~::~<")
-    .replace(/xmlns\:/g, "~::~xmlns:")
-    .replace(/xmlns\=/g, "~::~xmlns=")
+    .replace(/>\s{0,}</g, '><')
+    .replace(/</g, '~::~<')
+    .replace(/xmlns\:/g, '~::~xmlns:')
+    .replace(/xmlns\=/g, '~::~xmlns=')
     .split('~::~');
     
   var inComment = false;
