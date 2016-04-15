@@ -33,7 +33,6 @@ ext install EditorConfig
 compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 
 ### tslint todo
-- var
 - param alingment
 - trailing-whitespace
 - no-empty, but how about constructors?
