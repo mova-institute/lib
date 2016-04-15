@@ -38,3 +38,4 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - unused variable when needs to export, like in business.node.ts
 - custom rules
 - share config among projects
+- typedef

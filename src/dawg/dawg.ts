@@ -35,7 +35,7 @@ export class CompletionDawg extends Dawg {
 ////////////////////////////////////////////////////////////////////////////////
 export class BytesDawg extends CompletionDawg {
 
-  constructor(dic: Dictionary, guide: Guide, private _payloadSeparator: number = 0b1) {
+  constructor(dic: Dictionary, guide: Guide, private _payloadSeparator = 0b1) {
     super(dic, guide);
   }
 
