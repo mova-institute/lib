@@ -10,6 +10,6 @@ export function createObjectDawg<T>(buf: ArrayBuffer, deserializer: (buf: ArrayB
   let offset = 4 + dicSize * 4;
   let guideSize = view.getUint32(offset, true) * 2;
   let guideData = new Uint8Array(buf, offset + 4, guideSize);
-  
+
   return new ObjectDawg<T>(new Dictionary(dicData), new Guide(guideData), 0b1, deserializer);
 }

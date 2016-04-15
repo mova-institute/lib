@@ -31,7 +31,7 @@ export function nextTaskStep(type: string) {
   if (type === 'annotate') {
     return 'review';
   }
-  
+
   throw new Error('Not implemented: nextTaskType');
 }
 
@@ -40,23 +40,23 @@ export function markResolveConflicts(hisName: string, his: IElement, herName: st
   const XPATH = `//mi:w_[@mark='reviewed']`;
   let hisWords = <IElement[]>his.xpath(XPATH, NS);
   let herWords = <IElement[]>her.xpath(XPATH, NS);
-  
+
   if (hisWords.length !== herWords.length) {
     throw new Error('markResolveConflicts for docs with uneven word count is not implemented');
   }
-  
+
   let numDiffs = 0;
   for (let [i, hisWordEl] of hisWords.entries()) {
     let hisWord = new TextToken(hisWordEl);
     let herWord = new TextToken(herWords[i]);
-    
+
     if (hisWord.morphTag() !== herWord.morphTag() || hisWord.lemma() !== herWord.lemma()) {
       ++numDiffs;
       hisWord.markOnly('to-resolve');
       hisWord.setDisambedInterpAuthor(hisName);
       herWord.setDisambedInterpAuthor(herName);
       hisWord.resetDisamb();
-      
+
       let herChoiseInHisInterps = hisWord.getInterpElem(herWord.morphTag(), herWord.lemma());
       if (!herChoiseInHisInterps) {
         herChoiseInHisInterps = <IElement>herWord.getDisambedInterpElem().clone();
@@ -65,6 +65,6 @@ export function markResolveConflicts(hisName: string, his: IElement, herName: st
       // herChoiseInHisInterps.setAttribute('author', herName);
     }
   }
-  
+
   return numDiffs;
 }

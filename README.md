@@ -34,7 +34,6 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 
 ### tslint todo
 - param alingment
-- trailing-whitespace
 - no-empty, but how about constructors?
 - unused variable when needs to export, like in business.node.ts
 - custom rules
