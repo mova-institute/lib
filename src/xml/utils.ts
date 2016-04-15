@@ -126,7 +126,9 @@ export function traverseDepth(node: INode, onEnter: ITraverseCallback, onLeave?:
     }
   }
 
-  onLeave && onLeave(node);
+  if (onLeave) {
+    onLeave(node);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -252,14 +254,14 @@ export function pretty(xmlstr: string) {
         inComment = false;
       } else
         // <elm></elm> //
-        if (/^<\w/.exec(ar[i - 1]) && /^<\/\w/.exec(ar[i]) && /^<[\w:\-\.\,]+/.exec(ar[i - 1])[0] == /^<\/[\w:\-\.\,]+/.exec(ar[i])[0].replace('/', '')) {
+        if (/^<\w/.exec(ar[i - 1]) && /^<\/\w/.exec(ar[i]) && /^<[\w:\-\.\,]+/.exec(ar[i - 1])[0] === /^<\/[\w:\-\.\,]+/.exec(ar[i])[0].replace('/', '')) {
           str += ar[i];
           if (!inComment) {
             --deep;
           }
         } else
           // <elm> //
-          if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) == -1 && ar[i].search(/\/>/) == -1) {
+          if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) === -1 && ar[i].search(/\/>/) === -1) {
             str = !inComment ? str += shift[deep++] + ar[i] : str += ar[i];
           } else
             // <elm>...</elm> //
@@ -287,7 +289,7 @@ export function pretty(xmlstr: string) {
                     }
     }
 
-  return (str[0] == '\n') ? str.slice(1) : str;
+  return (str[0] === '\n') ? str.slice(1) : str;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

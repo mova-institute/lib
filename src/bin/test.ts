@@ -1,12 +1,12 @@
-import {INode, IElement, IDocument} from '../xml/api/interface';
-import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/api/libxmljs_implementation';
-import {readFileSync} from 'fs'
-import {dirname} from 'path'
-import * as libxmljs from 'libxmljs'
-import {traverseDepth} from '../xml/utils'
-import {PgClient} from '../postrges';
+// import {INode, IElement, IDocument} from '../xml/api/interface';
+// import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/api/libxmljs_implementation';
+// import {readFileSync} from 'fs'
+// import {dirname} from 'path'
+// import * as libxmljs from 'libxmljs'
+// import {traverseDepth} from '../xml/utils'
+// import {PgClient} from '../postrges';
 import {ClientConfig} from 'pg';
-import {sleep} from '../lang';
+// import {sleep} from '../lang';
 
 export const config: ClientConfig = {
   host: 'localhost',

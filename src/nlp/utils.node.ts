@@ -9,5 +9,5 @@ export function markWordwiseDiffStr(mineStr: string, theirsStr: string) {
   return {
     marked: mine,
     numDiffs: markWordwiseDiff(mine, string2lxmlRoot(theirsStr)),
-  }
+  };
 }

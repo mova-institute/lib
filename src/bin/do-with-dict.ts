@@ -10,17 +10,17 @@ const collator = new Intl.Collator('uk-UA');
 
 type Pack = Array<{ form: string, tag: string }>;
 
-let pack: Pack = [];
+let thePack: Pack = [];
 createInterface({ input }).on('line', (line: string) => {
   let isLemma = !line.startsWith(' ');
   let [form, tag] = line.trim().replace('\'', '’').split(' ');
   if (isLemma) {
-    if (pack) {
-      f(pack);
+    if (thePack) {
+      f(thePack);
     }
-    pack = [];
+    thePack = [];
   }
-  pack.push({ form, tag });
+  thePack.push({ form, tag });
 
 }).on('close', () => {
   //f(null);
@@ -40,7 +40,7 @@ function f(pack: Pack) {
       tag2forms.get(tagNorm).push(form);
     }
     else {
-      tag2forms.set(tagNorm, [form])
+      tag2forms.set(tagNorm, [form]);
     }
   }
 
@@ -133,7 +133,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
         || forms[1] === replaceLast(forms[0], 'ну', '')
         || forms[0] === replaceLast(forms[0], 'нув', '')
       )) {
-      
+
       dupTags.delete(tagNorm);
     }
     // подзвени, подзвеніть (ввічлива)
@@ -249,6 +249,6 @@ function replaceLast(str: string, substr: string, replacement: string) {
   if (last >= 0) {
     return str.substring(0, last) + str.substr(last + substr.length);
   }
-  
+
   return str;
 }

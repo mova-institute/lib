@@ -27,7 +27,9 @@ ioArgs4(filename1, filename2, async (input, output) => {
     }
     else {
       let res = func(inputStr);
-      res && output.write(res);
+      if (res) {
+        output.write(res);
+      }
     }
   }
   catch (e) {

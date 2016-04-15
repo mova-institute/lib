@@ -15,34 +15,34 @@ enum Degree { positive, comparative, superlative }
 enum Definiteness { short, full }
 
 
-interface AspectInflectable {
+interface IAspectInflectable {
   aspect: Aspect;
 }
-interface CaseInflectable {
+interface ICaseInflectable {
   case: Case;
 }
-interface NumberInflectable {
+interface INumberInflectable {
   number: Numberr;
 }
-interface TenseInflectable {
+interface ITenseInflectable {
   tense: Tense;
 }
-interface MoodInflectable {
+interface IMoodInflectable {
   mood: Mood;
 }
-interface PersonInflectable {
+interface IPersonInflectable {
   person: Person;
 }
-interface GenderInflectable {
+interface IGenderInflectable {
   gender: Gender;
 }
-interface DegreeInflectable {
+interface IDegreeInflectable {
   degree: Degree;
 }
-interface DefinitenessInflectable {
+interface IDefinitenessInflectable {
   definiteness: Definiteness;
 }
-interface AnimacyInflectable {
+interface IAnimacyInflectable {
   animacy: Animacy;  //?
 }
 
@@ -53,7 +53,7 @@ class Token {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-class Noun extends Token implements CaseInflectable, NumberInflectable {
+class Noun extends Token implements ICaseInflectable, INumberInflectable {
   case: Case;
   number: Numberr;
 
@@ -63,27 +63,27 @@ class Noun extends Token implements CaseInflectable, NumberInflectable {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-class Verb extends Token implements AspectInflectable, MoodInflectable, TenseInflectable,
-                                    PersonInflectable, NumberInflectable, GenderInflectable {
+class Verb extends Token implements IAspectInflectable, IMoodInflectable, ITenseInflectable,
+                                    IPersonInflectable, INumberInflectable, IGenderInflectable {
   aspect: Aspect;
   mood: Mood;
   tense: Tense;
   person: Person;
   number: Numberr;
   gender: Gender;
-  
+
 
   type_: VerbType;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-class Adjective extends Token implements DegreeInflectable, GenderInflectable, NumberInflectable,
-                                         CaseInflectable, DefinitenessInflectable, AnimacyInflectable {
+class Adjective extends Token implements IDegreeInflectable, IGenderInflectable, INumberInflectable,
+                                         ICaseInflectable, IDefinitenessInflectable, IAnimacyInflectable {
   degree: Degree;
   gender: Gender;
   number: Numberr;
   case: Case;
   definiteness: Definiteness;
   animacy: Animacy;
-  
+
 }

@@ -1,5 +1,4 @@
-import {indexTableByColumns, arr2indexMap, overflowNegative} from '../algo';
-import {startsWithCapital} from '../string_utils';
+import {indexTableByColumns, overflowNegative} from '../algo';
 import {isOddball, compare, zipLongest} from '../lang';
 
 export enum Pos {
@@ -384,7 +383,7 @@ export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl'
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl',
   ]);
 
 
@@ -422,7 +421,7 @@ export class MorphTag {
 
     if (lemmaFlags) {
       let lemmaTag = MorphTag.fromVesum(lemmaFlags);
-      
+
       // gender for plural
       if (ret.features.pos === Pos.noun) {
         if (ret.features.number === Numberr.plural && !isOddball(lemmaTag.features.gender)) {
@@ -520,40 +519,17 @@ export class MorphTag {
     return ret;
   }
 
-  private _fromMte(mteFlags: string[]) {
-    let posFeatures = MTE_FEATURES[mteFlags[0]];
-
-    if (posFeatures[0] !== null) {
-      this.features.pos = posFeatures[0];
-    }
-    for (let i = 1; i < posFeatures.length && i < mteFlags.length; ++i) {
-      let feature = posFeatures[i];
-      let mteFlag = mteFlags[i];
-
-      if (feature && mteFlag !== '-') {
-        let row = MAP_MTE.get(feature).get(mteFlag);
-        if (row) {
-          if (!(row.featStr in this.features)) {
-            throw new Error(`${row.featStr} not in this`);
-          }
-          this.features[row.featStr] = ('vesum' in row) ? row.vesum : row.mi;
-          if (this.features[row.featStr] === undefined) {
-            throw new Error(`Cannot map ${mteFlags.join('')}`);
-          }
-        }
-      }
-    }
-  }
-
   toVesum() {
     let flags = [...this.otherFlags];
 
     for (let name in this.features) {
-      let value = this.features[name];
-      if (value !== null) {
-        let flag = mapVesumFeatureValue(name, value);
-        if (flag) {
-          flags.push(flag);
+      if (this.features.hasOwnProperty(name)) {
+        let value = this.features[name];
+        if (value !== null) {
+          let flag = mapVesumFeatureValue(name, value);
+          if (flag) {
+            flags.push(flag);
+          }
         }
       }
     }
@@ -581,7 +557,7 @@ export class MorphTag {
       return {
         featureName: row.featStr,
         feature: row.feat,
-        value: row.vesum || row.mi
+        value: row.vesum || row.mi,
       };
     });
 
@@ -590,12 +566,37 @@ export class MorphTag {
       .map(x => ({
         featureName: x,
         feature: STRING_MAP_FEAT.get(x),
-        value: this.features[x]
+        value: this.features[x],
       }));
     ret.push(...others);
     ret.sort(createVesumFlagComparator2(this.features.pos));
 
     return ret;
+  }
+
+  private _fromMte(mteFlags: string[]) {
+    let posFeatures = MTE_FEATURES[mteFlags[0]];
+
+    if (posFeatures[0] !== null) {
+      this.features.pos = posFeatures[0];
+    }
+    for (let i = 1; i < posFeatures.length && i < mteFlags.length; ++i) {
+      let feature = posFeatures[i];
+      let mteFlag = mteFlags[i];
+
+      if (feature && mteFlag !== '-') {
+        let row = MAP_MTE.get(feature).get(mteFlag);
+        if (row) {
+          if (!(row.featStr in this.features)) {
+            throw new Error(`${row.featStr} not in this`);
+          }
+          this.features[row.featStr] = ('vesum' in row) ? row.vesum : row.mi;
+          if (this.features[row.featStr] === undefined) {
+            throw new Error(`Cannot map ${mteFlags.join('')}`);
+          }
+        }
+      }
+    }
   }
 }
 
@@ -681,12 +682,8 @@ export const FEATURE_ORDER = {
     PronominalType,
     Person,
     Rarity,
-  ]
+  ],
 };
-
-const common = [  // todo
-  Rarity,
-];
 
 ////////////////////////////////////////////////////////////////////////////////
 export function createVesumFlagCompare(pos: Pos) {
@@ -703,7 +700,7 @@ export function createVesumFlagCompare(pos: Pos) {
 
     // return a.localeCompare(b);
     return Number.MAX_SAFE_INTEGER;
-  }
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -711,7 +708,7 @@ export function createVesumFlagComparator2(pos: Pos) {
   let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other;
   return (a, b) => {
     return overflowNegative(order.indexOf(a.feature)) - overflowNegative(order.indexOf(b.feature));
-  }
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -722,7 +719,7 @@ export function tryMapVesumFlag(value: string) {
       featStr: value.charAt(1) === 'p' ? 'paradigmOmohnym' : 'semanticOmohnym',
       feat: value.charAt(1) === 'p' ? ParadigmOmohnym : SemanticOmohnym,
       vesum: Number.parseInt(match[1]),
-      vesumStr: value
+      vesumStr: value,
     };
   }
 
@@ -734,7 +731,7 @@ export function tryMapVesumFlag(value: string) {
 export function mapVesumFlag(value: string) {
   let ret = tryMapVesumFlag(value);
   if (!ret) {
-    throw new Error(`Unknown flag: ${value}`)
+    throw new Error(`Unknown flag: ${value}`);
   }
 
   return ret;
