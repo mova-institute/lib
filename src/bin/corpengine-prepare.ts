@@ -1,8 +1,7 @@
-import {ManateeFormatter} from '../nlp/manatee_formatter'
-import {SaxEventObjectifier} from '../xml/sax_event_objectifier'
-import {SaxEventSerializer} from '../xml/sax_event_serializer'
-import {SentenceStartInjector} from '../nlp/sentence_start_injector'
-import {GlueInjector} from '../nlp/glue_injector'
+import {ManateeFormatter} from '../nlp/manatee_formatter';
+import {SaxEventObjectifier} from '../xml/sax_event_objectifier';
+import {SentenceStartInjector} from '../nlp/sentence_start_injector';
+import {GlueInjector} from '../nlp/glue_injector';
 
 const {createReadStream, createWriteStream} = require('fs');
 const {basename} = require('path');
@@ -15,8 +14,6 @@ if (argv._.length < 2) {
   process.exit(1);
 }
 
-
-let manateeFormatter = new ManateeFormatter();
 
 (async() => {
   let output = createWriteStream(argv._[argv._.length - 1]);

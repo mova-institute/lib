@@ -18,6 +18,6 @@ export function createMorphAnalyser(
     curByte += paradigmLen * 2;
   }
 
-  let ret = new MorphAnalyzer(dawg, paradigms, suffixes, tags);
+  let ret = new MorphAnalyzer(dawg, paradigms, suffixes, tags);  // todo
   return ret;
 }

@@ -26,26 +26,26 @@ const args = require('minimist')(process.argv.slice(2));
       output = outputFromIoargs;
       inputStr = await readTillEnd(input);
     }
-    
+
     inputStr = encloseInRootNsIf(inputStr);
-    
-    
+
+
     let dictName = args.d || args.dict || 'vesum';
     let dictDir = join(__dirname, '../../data/dict', dictName);
     let tagger = createMorphAnalyserSync(dictDir);
-    
+
     let root = string2lxmlRoot(inputStr);
     tokenizeTeiDom(root, tagger);
     tagTokenizedDom(root, tagger);
-    
+
     if (args.n || args.numerate) {
       enumerateWords(root);
     }
-    
+
     output.write(root.ownerDocument.serialize());
     output.write('\n');
   }
-  catch(e) {
+  catch (e) {
     console.error(e.stack);
   }
 })();

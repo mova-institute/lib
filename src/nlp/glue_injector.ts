@@ -1,8 +1,7 @@
 import {Transform} from 'stream';
 import {G, W, W_, PC} from './common_elements';
-import {NS} from '../xml/utils';
 import {SaxEventObject} from '../xml/sax_event_object';
-import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetween} from '../nlp/utils';
+import {haveSpaceBetween} from '../nlp/utils';
 
 
 export class GlueInjector extends Transform {
@@ -13,7 +12,7 @@ export class GlueInjector extends Transform {
 
   constructor() {
     super({
-      objectMode: true
+      objectMode: true,
     });
   }
 
@@ -22,7 +21,7 @@ export class GlueInjector extends Transform {
       if (event.type === 'start') {
         if (this._prevEvent && !haveSpaceBetween(
           this._prevEvent.el, this._prevEvent.text, event.el, event.text)) {
-        
+
           this._pushGlue();
         }
         this._prevEvent = event;
@@ -31,7 +30,7 @@ export class GlueInjector extends Transform {
     else if (event.el !== W) {
       this._prevEvent = null;
     }
-    
+
     this.push(event);
     callback();
   }

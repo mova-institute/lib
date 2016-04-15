@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import {nonemptyLinesSyncArray, linesSyncArray, filename2lxmlRootSync} from '../../utils.node';
 import * as glob from 'glob';
-import * as assert from 'assert';
-import {W, W_, PC, SE, P} from '../../nlp/common_elements';
-import {nextElDocumentOrder, NS} from '../../xml/utils';
-import {$t, TextToken} from '../../nlp/text_token';
+import {NS} from '../../xml/utils';
+import {$t} from '../../nlp/text_token';
 
 const args = require('minimist')(process.argv.slice(2));
 
@@ -39,7 +37,7 @@ function concat() {
 
 //------------------------------------------------------------------------------
 function compare(a: string, b: string) {
-  return parseInt(a.match(/(\d+)\.out/)[1]) - parseInt(b.match(/(\d+)\.out/)[1])
+  return Number.parseInt(a.match(/(\d+)\.out/)[1], 10) - Number.parseInt(b.match(/(\d+)\.out/)[1], 10);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +48,7 @@ function extract2() {
   // let first = nextElDocumentOrder(docRoot, elemsOfInterest);
   // let q = '//mi:w[0]';
   // console.log(q, docRoot.xpath(q, NS));
-  
+
   let docCursor = $t(docRoot.xpath('//mi:w_', NS)[0]);
 
   const enum AmbigGroupPos { outside, first, inside };
@@ -79,7 +77,7 @@ function extract2() {
 
       if (ambigGroupPos === AmbigGroupPos.first) {
         if (n.includes('-')) {
-          let [nStart, nEnd] = n.split('-').map(x => parseInt(x));
+          let [nStart, nEnd] = n.split('-').map(x => Number.parseInt(x, 10));
           for (let j = 0; j < nEnd - nStart; ++j) {
             docCursor = docCursor.nextToken();
           }
@@ -101,7 +99,7 @@ function extract2() {
         }
         console.log([n, form, lemma, synTag, mteTag]);
         console.log(disambOptions);
-        
+
         let disambOptionIndex = disambOptions.findIndex(x => x.tag === mteTag);
         if (disambOptionIndex < 0 && !docCursor.isUntagged()) {  // todo
           // console.error(disambOptions);
@@ -118,7 +116,7 @@ function extract2() {
     }
     catch (e) {
       console.error('ERROR LINE ' + (lineN + 1));
-      fs.writeFileSync('doc.syntdisambed.xml', docRoot.ownerDocument.serialize(), 'utf-8')
+      fs.writeFileSync('doc.syntdisambed.xml', docRoot.ownerDocument.serialize(), 'utf-8');
       throw e;
     }
   }

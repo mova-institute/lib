@@ -4,7 +4,7 @@ import {string2lxmlRoot} from '../utils.node';
 import {IElement} from '../xml/api/interface';
 
 const args = require('minimist')(process.argv.slice(2), {
-  boolean: ['xml', 'inplace']
+  boolean: ['xml', 'inplace'],
 });
 
 let [path, funcName, filename1, filename2] = args._;
@@ -31,6 +31,6 @@ ioArgs4(filename1, filename2, async (input, output) => {
     }
   }
   catch (e) {
-    console.error(e.stack)
+    console.error(e.stack);
   }
 });

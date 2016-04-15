@@ -1,9 +1,8 @@
 // todo: everything
-import {readFileSync, writeFileSync} from 'fs';
-import {lexemes, compileDict, CompiledDict} from '../nlp/morph_analyzer/dict_utils';
+import {readFileSync} from 'fs';
+import {lexemes, compileDict} from '../nlp/morph_analyzer/dict_utils';
 import {writeCompiledDict} from '../nlp/morph_analyzer/utils.node';
 import {join} from 'path';
-import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
 
 const mkdirp = require('mkdirp');
 

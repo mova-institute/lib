@@ -1,6 +1,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
-export interface MorphInterp {
+export interface IMorphInterp {
   lemma: string;
   tag: string;
 }

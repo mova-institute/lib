@@ -1,7 +1,7 @@
-import {NS, nameNs, tagStr, libxmlSaxAttrs} from '../xml/utils'
-import {W, W_, PC, SS, SE, G, P, S, SP, TEI} from './common_elements'
-import {Transform} from 'stream'
-import {SaxEventObject} from '../xml/sax_event_object'
+import {tagStr} from '../xml/utils';
+import {W, W_, PC, SS, SE, G, P, S, SP, TEI} from './common_elements';
+import {Transform} from 'stream';
+import {SaxEventObject} from '../xml/sax_event_object';
 
 const AMBIG_SEP = ';';
 const ELEMS_TO_REPUSH = new Set([P, S, SP]);
@@ -14,7 +14,7 @@ export class ManateeFormatter extends Transform {
 
   constructor() {
     super({
-      objectMode: true
+      objectMode: true,
     });
   }
 
@@ -29,7 +29,7 @@ export class ManateeFormatter extends Transform {
       }
       else if (event.el === W_) {
         let ana = event.attrs().get('ana');
-        this._curDisambIndex = ana ? parseInt(ana) : null;
+        this._curDisambIndex = ana ? Number.parseInt(ana, 10) : null;
       }
       else if (event.el === W) {
         if (this._curDisambIndex === null || !(this._curDisambIndex--)) {

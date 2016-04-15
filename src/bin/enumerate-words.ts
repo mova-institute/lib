@@ -1,6 +1,6 @@
-import {ioArgs} from '../cli_utils'
-import {stream2lxmlRoot} from '../utils.node'
-import {enumerateWords} from '../nlp/utils'
+import {ioArgs} from '../cli_utils';
+import {stream2lxmlRoot} from '../utils.node';
+import {enumerateWords} from '../nlp/utils';
 
 
 let [input, output] = ioArgs();

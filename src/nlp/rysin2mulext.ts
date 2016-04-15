@@ -325,8 +325,10 @@ function defaultDefiniteness(gender: string, number_: string, case_: string, ani
 
 //------------------------------------------------------------------------------
 function trimTrailingDash(str: string) {
-  for (var i = str.length;
-    i >= 0 && str.charAt(i - 1) === '-'; --i);
+  let i = str.length;
+  while (i >= 0 && str.charAt(i - 1) === '-') {
+    --i;
+  }
 
   return str.substring(0, i);
 }

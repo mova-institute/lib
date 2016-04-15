@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 export class Guide {
-  private _rootIndex = 0;
+  // private _rootIndex = 0;
 
   constructor(private _units: Uint8Array) { }
 

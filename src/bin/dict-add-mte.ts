@@ -1,6 +1,6 @@
-import {rysin2multext} from '../nlp/rysin2mulext'
-import {ioArgs} from '../cli_utils'
-import {createInterface} from 'readline'
+import {rysin2multext} from '../nlp/rysin2mulext';
+import {ioArgs} from '../cli_utils';
+import {createInterface} from 'readline';
 
 
 let [input, output] = ioArgs();
@@ -15,7 +15,7 @@ createInterface({input}).on('line', (line: string) => {
     lemma = word;
     lemmaTag = tag;
   }
-  
+
   //console.log(lemma, lemmaTag, word, tag);
   try {
     var multextTags = rysin2multext(lemma, lemmaTag, word, tag);
@@ -26,7 +26,7 @@ createInterface({input}).on('line', (line: string) => {
       output.write(word + ' ' + tag + '\n');
     }
   }
-  catch(e) {
+  catch (e) {
     if (!/\bbad\b/.test(lemmaTag)) {
       console.error('EERR!!    ', lemma, lemmaTag, word, tag);
     }

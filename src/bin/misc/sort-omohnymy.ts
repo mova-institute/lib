@@ -1,5 +1,4 @@
 import {filename2lxmlRootSync} from '../../utils.node';
-import * as fs from 'fs';
 import {NS} from '../../xml/utils';
 import {LibxmlElement} from '../../xml/api/libxmljs_implementation';
 

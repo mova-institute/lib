@@ -1,10 +1,9 @@
-import {INode, IElement} from '../xml/api/interface'
-import {W, W_, P, L, SE, PC} from './common_elements'
-import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils'
-import {traverseDocumentOrderEl, NS, nextElDocumentOrder} from '../xml/utils'
-import {markIndexwiseStringDiff} from '../html_utils'
+import {INode, IElement} from '../xml/api/interface';
+import {W, W_, P, L, SE, PC} from './common_elements';
+import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils';
+import {traverseDocumentOrderEl, nextElDocumentOrder} from '../xml/utils';
 import {wrappedOrNull} from '../lang';
-import {MorphInterp} from './interfaces';
+import {IMorphInterp} from './interfaces';
 
 
 
@@ -18,7 +17,7 @@ export class TextToken {
   private static TOKEN_ELEMS = new Set<string>([W_, PC]);
 
   constructor(public elem: IElement, public hasSpaceBefore = true) {
-    
+
   }
 
   equals(other: TextToken) {
@@ -93,16 +92,16 @@ export class TextToken {
     if (!this.elem.childElement(1)) {
       return this.elem.childElement(0).getAttribute('ana');
     }
-    
+
     // todo: return null?
   }
 
   interps() {
-    let ret = new Array<MorphInterp>();
+    let ret = new Array<IMorphInterp>();
     for (let child of this.elem.childElements()) {
       ret.push({
         tag: child.getAttribute('ana'),
-        lemma: child.getAttribute('lemma')
+        lemma: child.getAttribute('lemma'),
       });
     }
 
@@ -187,7 +186,7 @@ export class TextToken {
 
   review(index: number) {
     this.elem.setAttribute('disamb', index.toString());
-    this.markOnly('reviewed')
+    this.markOnly('reviewed');
 
     return this;
   }
@@ -242,15 +241,15 @@ export class TextToken {
 
   wordNum() {  // todo: real, ordered num?
     let n = this.elem.getAttribute('n');
-    return n ? parseInt(n) : null;
+    return n ? Number.parseInt(n, 10) : null;
   }
 }
 
 //------------------------------------------------------------------------------
-function addFeature(setStr: string, feature: string) {
-  let set = new Set(setStr.split(':'));
-  set.add(feature);
-  let ret = [...set].sort().join(':');
+// function addFeature(setStr: string, feature: string) {
+//   let set = new Set(setStr.split(':'));
+//   set.add(feature);
+//   let ret = [...set].sort().join(':');
 
-  return ret;
-}
+//   return ret;
+// }

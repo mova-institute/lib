@@ -41,12 +41,12 @@ let dict = fs.readFileSync(DICT_PATH, 'utf-8').split('\n');
 for (let regex of regexps) {
   let wasMatched = false;
   let re = new RegExp(regex);
-  for (let i=0; i < dict.length; ++i) {
+  for (let i = 0; i < dict.length; ++i) {
     let line = dict[i];
     if (re.test(line)) {
       console.log(line);
       wasMatched = true;
-      
+
       if (line.includes(':')) {
         line += '&^numr';
       } else {
@@ -60,4 +60,4 @@ for (let regex of regexps) {
   }
 }
 
-fs.writeFileSync(DICT_PATH, dict.join('\n'), 'utf8')
+fs.writeFileSync(DICT_PATH, dict.join('\n'), 'utf8');

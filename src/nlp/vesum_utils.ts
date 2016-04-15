@@ -1,7 +1,7 @@
-import {tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER, FEAT_MAP_STRING,
-  RequiredCase, PronominalType, Aspect, ConjunctionType, compareTags} from './morph_tag';
+import {tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER,
+  RequiredCase, PronominalType, ConjunctionType, compareTags, } from './morph_tag';
 import {groupTableBy, arr2indexMap, combinations, stableSort, unique} from '../algo';
-import {MorphInterp} from './interfaces';
+import {IMorphInterp} from './interfaces';
 
 
 const FORM_PADDING = '  ';
@@ -77,11 +77,11 @@ export function expandDictCorpViz(fileStr: string) {
     let main = [];
     let alt = [];
     let lemmaTag = expandAndSortVesumTag(lexeme[0].tag.replace('&_', '&'))[0];
-    for (let {form, tag, isLemma} of lexeme) {
+    for (let {form, tag} of lexeme) {
       let [mainFlagsStr, altFlagsStr] = splitMainAltFlags(tag);
       main.push(...expandAndSortVesumTag(mainFlagsStr, lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')));
       if (altFlagsStr) {
-        alt.push(...expandAndSortVesumTag(tag.replace('&_', '&'), lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')))
+        alt.push(...expandAndSortVesumTag(tag.replace('&_', '&'), lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')));
       }
     }
     main = unique(main);
@@ -123,18 +123,18 @@ function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {
-  for (let {lemmaTag, tag, isLemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+  for (let {lemmaTag, tag} of iterateDictCorpVizLines(fileStr.split('\n'))) {
     MorphTag.fromVesumStr(tag, lemmaTag);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function presentTagsForDisamb(interps: MorphInterp[]) {
+export function presentTagsForDisamb(interps: IMorphInterp[]) {
   let splitted = interps.map((x, index) => ({ index, lemma: x.lemma, flags: x.tag.split(':') }));
   let sorted = stableSort(splitted, (a, b) => compareTags(MorphTag.fromVesum(a.flags), MorphTag.fromVesum(b.flags)));
 
   let aligned = alignTagList(sorted.map(x => x.flags));
-  let flags = aligned.map(x => x.map(x => []));
+  let flags = aligned.map(x => x.map(xx => []));
 
   for (let [i, posAgg] of aligned.entries()) {
     let maxNumFlags = Math.max(...posAgg.map(x => x.length));
@@ -143,7 +143,7 @@ export function presentTagsForDisamb(interps: MorphInterp[]) {
       for (let j = 0; j < posAgg.length; ++j) {
         flags[i][j].push({
           content: posAgg[j][k] || '',
-          isMarked: !areAllEqual
+          isMarked: !areAllEqual,
         });
       }
     }
@@ -155,10 +155,10 @@ export function presentTagsForDisamb(interps: MorphInterp[]) {
     ret.push(posAgg.map((x, i) => ({
       flags: x,
       lemma: sorted[shift + i].lemma,
-      index: sorted[shift + i].index
+      index: sorted[shift + i].index,
     })));
     shift += posAgg.length;
-  };
+  }
   return ret;
 }
 
@@ -169,8 +169,8 @@ function alignTagList(flags: string[][]) {
   let poses = groupTableBy(flags, 0);
   for (let posAgg of poses.values()) {
     let features = new Set();
-    for (let flags of posAgg) {
-      for (let flag of flags) {
+    for (let flagss of posAgg) {
+      for (let flag of flagss) {
         let feature = tryMapVesumFlagToFeature(flag);
         if (feature) {
           features.add(feature);
@@ -182,11 +182,11 @@ function alignTagList(flags: string[][]) {
 
     let posAligned = new Array<Array<string>>();
     ret.push(posAligned);
-    for (let flags of posAgg) {
+    for (let flagss of posAgg) {
       let tagAligned = new Array<string>();
       posAligned.push(tagAligned);
       let flagsOfUnknownFeature = new Array<string>();
-      for (let flag of flags) {
+      for (let flag of flagss) {
         let feature = tryMapVesumFlagToFeature(flag);
         if (feature) {
           let featureIndex = featureOrderMap.get(feature);
@@ -206,7 +206,7 @@ function alignTagList(flags: string[][]) {
 ////////////////////////////////////////////////////////////////////////////////
 export function findUnidentifiableRows(fileStr: string) {
   let set = new Set<string>();
-  for (let {form, tag, lemma, lemmaTag} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+  for (let {form, tag, lemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
     let key = `${form} ${tag} ${lemma}`;
     if (set.has(key)) {
       console.log(key);

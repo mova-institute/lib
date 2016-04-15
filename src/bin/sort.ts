@@ -11,7 +11,7 @@ let collator = new Intl.Collator('uk-dict-UA', {
     //ignorePunctuation: true,
     //localeMatcher: 'lookup',
     //numeric: true,
-    caseFirst: 'upper'
+    caseFirst: 'upper',
   });
 
 async function main() {

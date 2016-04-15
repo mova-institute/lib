@@ -21,7 +21,7 @@ export const config: ClientConfig = {
 const jwtCheck = jwt({
   secret: new Buffer('2P1lL3Sm1CavW2VPoZF9b-lzBDV1VQvdf_9tIaJeQ5EcLKLsd0UXCCYNA5DYKVOC', 'base64'),
   audience: '043jypMQ2KNdgkfi8FbwHjSxYNXaISWg',
-  credentialsRequired: false
+  credentialsRequired: false,
 });
 
 export interface IReq extends express.Request {
@@ -57,7 +57,7 @@ app.all('/api/*', async (req: IReq, res: express.Response) => {
     catch (e) {
       console.error(e.stack);
       if (e instanceof HttpError) {
-        sendError(res, e.code, e.message)
+        sendError(res, e.code, e.message);
       }
       else {
         sendError(res, 500);

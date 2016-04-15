@@ -11,7 +11,7 @@ export function markConflicts(taskType: string, mine: string, theirs: string) {
     res.marked = removeXmlns(removeRoot(res.marked.ownerDocument.serialize()));
     return res;
   }
-  
+
   throw new Error('Not implemented: markConflicts');
 }
 
@@ -19,11 +19,11 @@ export function markConflicts(taskType: string, mine: string, theirs: string) {
 export function markResolveConflicts(hisName: string, hisStr: string, herName: string, herStr: string) {
   let his = string2lxmlRoot(encloseInRootNs(hisStr));
   let her = string2lxmlRoot(encloseInRootNs(herStr));
-  
+
   let numDiffs = business.markResolveConflicts(hisName, his, herName, her);
   return {
     numDiffs,
     markedStr: removeXmlns(removeRoot(his.ownerDocument.serialize())),
-    markedDoc: his.ownerDocument
+    markedDoc: his.ownerDocument,
   };
 }

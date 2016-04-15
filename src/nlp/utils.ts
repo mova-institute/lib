@@ -1,23 +1,19 @@
-import {NS, nameNs, traverseDepth, traverseDepthEl, traverseDocumentOrder, cantBeXml,
-  sortChildElements} from '../xml/utils';
+import {NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements} from '../xml/utils';
 import {W, W_, PC, SE, P} from './common_elements';
 import * as elements from './common_elements';
 import {r} from '../lang';
-import {INode, IElement, IDocument} from '../xml/api/interface'
+import {INode, IElement, IDocument} from '../xml/api/interface';
 import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
 import {$t} from './text_token';
-import {MorphInterp} from './interfaces';
+import {IMorphInterp} from './interfaces';
 import {MorphTag, compareTags} from './morph_tag';
-import {WCHAR_UK_RE, WCHAR, WCHAR_RE, WCHAR_NOT_UK_RE} from './static';
+import {WCHAR_UK_RE, WCHAR, WCHAR_RE} from './static';
 
 //export const NOSPACE_ABLE_ELEMS
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'p'),
   nameNs(NS.tei, 'body'),
-  nameNs(NS.tei, 'text')
-]);
-const ELEMS_BREAKING_SENTENCE = new Set([
-  'p', 'text'
+  nameNs(NS.tei, 'text'),
 ]);
 
 const PUNC_REGS = [
@@ -69,8 +65,7 @@ let PUNC_SPACING = {
 const WORD_TAGS = new Set([W, W_]);
 
 ////////////////////////////////////////////////////////////////////////////////
-export function haveSpaceBetween(tagA: string, textA: string,
-  tagB: string, textB: string) {
+export function haveSpaceBetween(tagA: string, textA: string, tagB: string, textB: string) {
   if (!tagA || !tagB) {
     return null;
   }
@@ -183,7 +178,7 @@ export function elementFromToken(token: string, document: IDocument): IElement {
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: IElement, morphTags: Set<MorphInterp>) {
+function tagWord(el: IElement, morphTags: Set<IMorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let miw = el.ownerDocument.createElement('mi:w_'); // todo
 
@@ -244,13 +239,12 @@ export function enumerateWords(root: IElement, attributeName = 'n') {
 
 //------------------------------------------------------------------------------
 function normalizeForm(str: string) {
-  return cantBeLowerCase(str) ? str : str.toLowerCase()
+  return cantBeLowerCase(str) ? str : str.toLowerCase();
 }
 ////////////////////////////////////////////////////////////////////////////////
 export function getStats(root: IElement) {
   let wordCount = 0;
   let dictUnknownCount = 0;
-  let words = new Set<string>();
   let dictUnknowns = new Set<string>();
   traverseDepthEl(root, elem => {
     let name = elem.nameNs();
@@ -268,8 +262,8 @@ export function getStats(root: IElement) {
   return {
     wordCount,
     dictUnknownCount,
-    dictUnknowns: [...dictUnknowns]
-  }
+    dictUnknowns: [...dictUnknowns],
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -321,7 +315,7 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
   }
 
   let numDiffs = 0;
-  for (let [i, mine] of mineWords.entries()) {
+  for (let [i] of mineWords.entries()) {
     if ($t(mine).morphTag() !== $t(theirWords[i]).morphTag()) {
       ++numDiffs;
       mine.setAttribute('mark', 'to-review');
@@ -428,7 +422,7 @@ export function normalizeCorpusText(root: IElement) {
   for (let textNode of root.xpathIt('//text()', NS)) {
     textNode.textContent = textNode.textContent
       .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
-      .replace(new RegExp(` [-–] `, 'g'), ' — ')
+      .replace(new RegExp(` [-–] `, 'g'), ' — ');
   }
 
   // todo:

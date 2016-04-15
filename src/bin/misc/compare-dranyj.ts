@@ -26,7 +26,7 @@ for (let [lemma, tags] of lemmataSheva) {
   for (let tag of tags) {
     if (tag && /^A[fo]/.test(tag) && !/^.........a/.test(tag)) {
       if (tag.startsWith('Ao')) {
-        console.error('ordinal: '+ lemma);
+        console.error('ordinal: ' + lemma);
       }
       let rysins = [...lemmataRysin.get(lemma)];
       if (rysins.length

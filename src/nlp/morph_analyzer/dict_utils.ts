@@ -1,4 +1,4 @@
-import {JsonCompareMap, NumeratedSet} from '../../data_structures'
+import {JsonCompareMap, NumeratedSet} from '../../data_structures';
 import {longestCommonSubstring} from '../../algo';
 
 export const PARADIGM_PREFIXES = NumeratedSet.fromUniqueArray([''].sort());  // todo
@@ -22,21 +22,22 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
   let suffixBag = new Set<string>();
 
   for (let lexeme of lexemes) {
-    let {stem, forms, paradigm} = extractParadigm(lexeme, PARADIGM_PREFIXES.ids);
+    let {forms, paradigm} = extractParadigm(lexeme, PARADIGM_PREFIXES.ids);
     let {prefixes, suffixes, tags} = paradigm;
-    
+
     allTags.add(...tags);
     suffixes.forEach(x => suffixBag.add(x));
-    
+
     if (!paradigmIds.has(paradigm)) {
       paradigmIds.set(paradigm, paradigms.push({
         prefixes: prefixes.map(x => PARADIGM_PREFIXES.id(x)),
         suffixes,
-        tags: paradigm.tags.map(x => allTags.id(x)) }) - 1);
+        tags: paradigm.tags.map(x => allTags.id(x)),
+      }) - 1);
     }
     let paradigmId = paradigmIds.get(paradigm);
     paradigmPopularity[paradigmId] = paradigmPopularity[paradigmId] + 1 || 1;
-    
+
     for (let i = 0; i < forms.length; ++i) {
       allWords.push([forms[i], paradigmId, i]);
       /*let topush = [...miEncode(forms[i]), 1,
@@ -45,13 +46,13 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
       //console.log(topush);*/
     }
   }
-  
+
   let allSuffixes = NumeratedSet.fromUniqueArray([...suffixBag].sort(COMPARATOR));
-  
+
   for (let par of paradigms) {
     par.suffixes = par.suffixes.map(x => allSuffixes.id(x));
   }
-  
+
   let linearizedParadigms = paradigms.map(x => linearizeParadigm(x));
 
   return {
@@ -114,6 +115,6 @@ function linearizeParadigm(paradigm: Paradigm) {
       wiew.setUint16(Uint16Array.BYTES_PER_ELEMENT * i++, n, true);
     }
   }
-  
+
   return ret;
 }

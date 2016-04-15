@@ -1,5 +1,5 @@
-import {INode, IElement, IDocument} from '../xml/api/interface'
-import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/api/libxmljs_implementation'
+import {INode, IElement, IDocument} from '../xml/api/interface';
+import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/api/libxmljs_implementation';
 import {readFileSync} from 'fs'
 import {dirname} from 'path'
 import * as libxmljs from 'libxmljs'
@@ -28,7 +28,7 @@ async function main () {
   //     let res = await client.call('get_task', 24, 847);
   //     console.log('call done', res.docName);
   //   });
-    
+
   //   console.log('done');
   // }
   // catch (e) {
@@ -36,8 +36,8 @@ async function main () {
   //   console.error(e);
   // }
   // let doc = new LibxmlDocument(libxmljs.parseXml('<root></root>'));
-  // let smo = 
+  // let smo =
   // doc.documentElement.appendChild(doc.createElement('shmo'));
   // console.log(doc.serialize());
-  
+
 }
