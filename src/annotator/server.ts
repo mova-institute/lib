@@ -81,7 +81,7 @@ function errorHandler(err, req, res: express.Response, next) {
   console.error(err);
   console.error(err.stack);
   sendError(res, 500);
-};
+}
 
 //------------------------------------------------------------------------------
 async function preauth(action: string, req: IReq, client: PgClient) {

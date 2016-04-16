@@ -39,3 +39,6 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - custom rules
 - share config among projects
 - typedef
+- no-function-expression
+- recheck new falses
+- expected a 'break' before 'case' bug

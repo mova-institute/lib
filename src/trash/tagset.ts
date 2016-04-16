@@ -1,4 +1,4 @@
-
+/*
 
 
 enum NounType { common, proper }
@@ -87,3 +87,4 @@ class Adjective extends Token implements IDegreeInflectable, IGenderInflectable,
   animacy: Animacy;
 
 }
+*/

@@ -1,4 +1,5 @@
 {
+  "rulesDirectory": "node_modules/tslint-microsoft-contrib",
   "rules": {
     "align": [true, "statements", "parameters"],
     "ban": [true],
@@ -88,6 +89,56 @@
       "check-operator",
       "check-separator",
       "check-type"
-    ]
+    ],
+
+    "no-switch-case-fall-through": false,
+    "no-unreachable": true,
+
+
+    "chai-vague-errors": true,
+    "export-name": false,
+    "use-isnan": true,
+    "missing-optional-annotation": true,
+    "no-banned-terms": true,
+    "no-constant-condition": false,
+    "no-control-regex": true,
+    "no-cookies": true,
+    "no-document-write": false,
+    "no-disable-auto-sanitization": true,
+    "no-duplicate-case": true,
+    "no-duplicate-parameter-names": true,
+    "no-empty-interfaces": true,
+    "no-exec-script": true,
+    "no-function-constructor-with-string-args": true,
+    "no-function-expression": false,
+    "no-http-string": [
+      true,
+      "http://www.w3.org/XML/1998/namespace",
+      "http://www.w3.org/1999/xhtml",
+      "http://www.tei-c.org/ns/1.0",
+      "http://mova.institute/ns/corpora/0.1"
+    ],
+    "no-increment-decrement": false,
+    "no-invalid-regexp": true,
+    "no-for-in": true,
+    "no-missing-visibility-modifiers": false,
+    "no-multiline-string": false,
+    "no-multiple-var-decl": true,
+    "no-unnecessary-bind": true,
+    "no-unnecessary-semicolons": true,
+    "no-octal-literal": true,
+    "no-regex-spaces": true,
+    "no-reserved-keywords": false,
+    "no-sparse-arrays": true,
+    "no-string-based-set-immediate": true,
+    "no-string-based-set-interval": true,
+    "no-string-based-set-timeout": true,
+    "no-unused-imports": true,
+    "no-with-statement": true,
+    "prefer-array-literal": false,
+    "promise-must-complete": true,
+    "react-no-dangerous-html": true,
+    "use-named-parameter": true,
+    "valid-typeof": true
   }
 }

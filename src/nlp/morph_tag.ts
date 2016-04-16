@@ -16,43 +16,43 @@ export enum Pos {
   transl,  // todo
   numeral,
   foreign,
-  x
-};
+  x,
+}
 export enum Pos2 {
   pronoun,
   participle,
-  numeral
-};
+  numeral,
+}
 
 
 ///// Nominal /////
 
 export enum NounType {
   common,
-  proper
-};
+  proper,
+}
 export enum Gender {
   masculine,
   feminine,
   neuter,
   // common,
-};
+}
 export enum Animacy {
   animate,
   inanimate,
   bacteria,  // ?
-};
+}
 export enum RequiredAnimacy {
   animate,
-  inanimate
-};
+  inanimate,
+}
 export enum Numberr {
   singular,
   plural,
   dual,
   pluraleTantum,
   // singulareTantum  // людств
-};
+}
 export enum Case {
   nominative,
   genitive,
@@ -62,7 +62,7 @@ export enum Case {
   locative,
   vocative,
   // other non-ukr
-};
+}
 export enum RequiredCase {
   // nominative,
   genitive,
@@ -70,53 +70,53 @@ export enum RequiredCase {
   accusative,
   instrumental,
   locative,
-};
+}
 export enum Degree {
   positive,
   comparative,
   superlative,
   // absoluteSuperlative  // non-ukr?
-};
+}
 
 ///// Verbal /////
 export enum VerbForm {
   participle,  // дієприкм
   transgressive,  // дієприсл
-};
+}
 export enum Mood {
   indicative,
   imperative,
   infinitive,
   impersonal,
-};
+}
 export enum Tense {
   past,
   present,
-  future
-};
+  future,
+}
 export enum Aspect {
   imperfect,
-  perfect
-};
+  perfect,
+}
 export enum Voice {
   active,
-  passive
-};
+  passive,
+}
 export enum Person {
   first,
   second,
-  third
-};
+  third,
+}
 export enum VerbNegative {
   positive,
-  negative
-};  // todo
+  negative,
+}  // todo
 export enum VerbType {
   main,
-  auxilary
-};
+  auxilary,
+}
 export enum Reflexive {
-  yes
+  yes,
 }
 
 ///// Lexical /////
@@ -132,63 +132,63 @@ export enum PronominalType {
   general,
   emphatic,
   definitive,  // todo
-};
+}
 export enum NumeralForm {
   digit,
   roman,
-  letter
-};
+  letter,
+}
 export enum Variant {
   short,
-  full
-};
+  full,
+}
 export enum Rarity {
   archaic,
-  rare
-};
+  rare,
+}
 export enum Slang {
-  yes
-};
+  yes,
+}
 export enum Colloquial {
-  yes
-};
+  yes,
+}
 export enum Bad {
-  yes
-};
+  yes,
+}
 export enum ConjunctionType {
   coordinating,
-  subordinating
-};
+  subordinating,
+}
 export enum NumberTantum {
   noPlural,
-  noSingular
-};
+  noSingular,
+}
 export enum NameType {
   first,
   last,
-  patronym
-};
+  patronym,
+}
 
 export enum CaseInflectability {
   no,
-};
+}
 export enum Alternative {
   yes,
-};
+}
 export enum VuAlternative {
-  yes
-};
+  yes,
+}
 export enum Abbreviation {
-  yes
-};
+  yes,
+}
 export enum Dimin {
-  yes
-};
+  yes,
+}
 export enum Possesive {
-  yes
-};
-export enum ParadigmOmohnym { };
-export enum SemanticOmohnym { };
+  yes,
+}
+export enum ParadigmOmohnym { }
+export enum SemanticOmohnym { }
 
 
 export const FEATURE_TABLE = [
@@ -522,14 +522,12 @@ export class MorphTag {
   toVesum() {
     let flags = [...this.otherFlags];
 
-    for (let name in this.features) {
-      if (this.features.hasOwnProperty(name)) {
-        let value = this.features[name];
-        if (value !== null) {
-          let flag = mapVesumFeatureValue(name, value);
-          if (flag) {
-            flags.push(flag);
-          }
+    for (let name of Object.keys(this.features)) {
+      let value = this.features[name];
+      if (value !== null) {
+        let flag = mapVesumFeatureValue(name, value);
+        if (flag) {
+          flags.push(flag);
         }
       }
     }
