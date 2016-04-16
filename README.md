@@ -40,5 +40,7 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - share config among projects
 - typedef
 - no-function-expression
+- no-conditional-assignment?
 - recheck new falses
 - expected a 'break' before 'case' bug
+- wait for better https://github.com/buzinas/tslint-eslint-rules
