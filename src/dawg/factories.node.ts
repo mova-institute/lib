@@ -42,5 +42,5 @@ export function createCompletionDawgSync(filename: string) {
 export function createObjectDawgSync<T>(filename: string, deserializer: (buf: ArrayBuffer) => T) {
   let fd = openSync(filename, 'r');
 
-  return new ObjectDawg<T>(createDictionarySync(fd), createGuideSync(fd), 0b1, deserializer);
+  return new ObjectDawg<T>(createDictionarySync(fd), createGuideSync(fd), deserializer, 0b1, true);
 }

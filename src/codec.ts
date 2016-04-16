@@ -104,15 +104,16 @@ function b64decode(code: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function b64decodeFromArray(b64: Array<number>) {
+export function b64decodeFromArray(b64: ArrayLike<number>) {
   let len = b64.length;
 
   if (len % 4 > 0) {
     throw new Error('Invalid string. Length must be a multiple of 4');
   }
 
+  let padding;
   if (b64[len - 2] === PADD) {
-    var padding = 2;
+    padding = 2;
   }
   else if (b64[len - 1] === PADD) {
     padding = 1;
@@ -126,7 +127,8 @@ export function b64decodeFromArray(b64: Array<number>) {
 
   let p = 0;
   let iBound = padding > 0 ? len - 4 : len;
-  for (var i = 0, j = 0; i < iBound; i += 4, j += 3) {
+  let i = 0;
+  for (let j = 0; i < iBound; i += 4, j += 3) {
     let tmp = (b64decode(b64[i]) << 18) | (b64decode(b64[i + 1]) << 12) | (b64decode(b64[i + 2]) << 6) | b64decode(b64[i + 3]);
     view[p++] = (tmp & 0xFF0000) >> 16;
     view[p++] = (tmp & 0xFF00) >> 8;
@@ -149,8 +151,9 @@ export function b64decodeFromArray(b64: Array<number>) {
 export function b64encode(bytes: Array<number>) {
   let ret = new Array<number>();
   let cursor = 0;
+  let temp;
   for (let i = 0; i < bytes.length / 3; ++i) {
-    var temp = bytes[cursor++] << 16;  // convert to big endian
+    temp = bytes[cursor++] << 16;  // convert to big endian
     temp += bytes[cursor++] << 8;
     temp += bytes[cursor++];
     ret.push(BASIS_64[(temp & 0x00FC0000) >> 18]);

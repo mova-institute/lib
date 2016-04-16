@@ -35,7 +35,12 @@ export class CompletionDawg extends Dawg {
 ////////////////////////////////////////////////////////////////////////////////
 export class BytesDawg extends CompletionDawg {
 
-  constructor(dic: Dictionary, guide: Guide, private _payloadSeparator = 0b1) {
+  constructor(
+    dic: Dictionary,
+    guide: Guide,
+    private _payloadSeparator = 0b1,
+    private _binasciiWorkaround = false)  // see https://github.com/kmike/DAWG/issues/21
+  {
     super(dic, guide);
   }
 
@@ -44,9 +49,11 @@ export class BytesDawg extends CompletionDawg {
   }
 
   *payloadBytes(key: Array<number>) {
-    key.push(this._payloadSeparator);
-    for (let completed of super.completionBytes(key)) {
-      yield b64decodeFromArray(completed.slice(0, -1));  // todo: why \n is there?
+    for (let completed of super.completionBytes([...key, this._payloadSeparator])) {
+      if (this._binasciiWorkaround) {
+        completed = completed.slice(0, -1);
+      }
+      yield b64decodeFromArray(completed);
     }
   }
 }
@@ -58,10 +65,10 @@ export class ObjectDawg<T> extends BytesDawg {
   constructor(
     dic: Dictionary,
     guide: Guide,
+    private _deserializer: (bytes: ArrayBuffer) => T,
     payloadSeparator: number,
-    private _deserializer: (bytes: ArrayBuffer) => T) {
-
-    super(dic, guide, payloadSeparator);
+    _binasciiWorkaround = false) {
+    super(dic, guide, payloadSeparator, _binasciiWorkaround);
   }
 
   get(key: string) {
