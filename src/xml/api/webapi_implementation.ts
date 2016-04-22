@@ -23,7 +23,7 @@ export class WebapiDocument extends IDocument {
   }
 
   createElement(name: string) {
-    let [localName, prefix] = name.split(':').reverse();
+    let [, prefix] = name.split(':').reverse();
     let uri = this.underlying.lookupNamespaceURI(prefix || null);
     let elem = this.underlying.createElementNS(uri, name);
 

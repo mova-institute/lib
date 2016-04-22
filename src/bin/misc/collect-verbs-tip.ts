@@ -30,7 +30,8 @@ async function worker() {
   try {
     if (index < verbs.length) {
       let verb = verbs[index++];
-      let res = await translate(verb);
+      /*let res = */
+      await translate(verb);
       ret[verb] = [];
       worker();
     }
@@ -58,10 +59,10 @@ function translate(word: string) {
   return new Promise((resolve, reject) => {
     request({
       uri: URI + encodeURIComponent(word),
-      json: true
+      json: true,
     }, (error, response, body) => {
       if (error) {
-        console.error(error)
+        console.error(error);
         reject(error);
       }
       else {

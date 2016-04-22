@@ -15,17 +15,19 @@ export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
     };
 
     waitUntilNBytes();
+    reject();  // todo
+    throw new Error('should never happen');
   });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function readTillEnd(istream: Readable): Promise<string> {
   let ret = '';
-  
+
   return new Promise((resolve, reject) => {
-    
+
     istream.on('data', chunk => ret += chunk)
       .on('end', () => resolve(ret));
-    
+
   });
 }

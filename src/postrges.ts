@@ -7,7 +7,7 @@ const decamelize = require('decamelize');
 ////////////////////////////////////////////////////////////////////////////////
 export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcodes-appendix.html
   serialization_failure: '40001',
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // see https://github.com/brianc/node-pg-types
@@ -27,22 +27,14 @@ export class PgClient {
   private _client: Client;
   private _done: Function;
 
-  private static async create(config: ClientConfig) {
-    let { client, done } = await getClient(config);
-    let ret = new PgClient();
-    ret._client = client;
-    ret._done = done;
-
-    return ret;
-  }
-
   static async transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
     let client = await PgClient.create(config);
 
+    let ret;
     for (let i = 1; ; ++i) {
       try {
         await client.query('BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE');  // todo: remove await?
-        var ret = await f(client);
+        ret = await f(client);
         await client.query('COMMIT');
       }
       catch (e) {
@@ -69,11 +61,22 @@ export class PgClient {
     return ret;
   }
 
+  private static async create(config: ClientConfig) {
+    let { client, done } = await getClient(config);
+    let ret = new PgClient();
+    ret._client = client;
+    ret._done = done;
+
+    return ret;
+  }
+
   constructor() { }
 
   release() {
     this._client = null;
-    this._done && this._done();
+    if (this._done) {
+      this._done();
+    }
   }
 
   query(queryStr: string, ...params) {
@@ -163,10 +166,11 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function query1Client(client: Client, queryStr: string, params: Array<any> = []) {
+  let ret = null;
   let res = await query(client, queryStr, params);
   if (res && res.rows.length) {
     let row = res.rows[0];
-    var ret = row[Object.keys(row)[0]] || null;
+    ret = row[Object.keys(row)[0]] || null;
   }
 
   return ret;

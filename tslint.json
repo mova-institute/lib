@@ -4,6 +4,10 @@
     "node_modules/tslint-eslint-rules/dist/rules"
   ],
   "rules": {
+    "no-invalid-this": true,
+    "use-isnan": true,
+
+
     "align": [true, "statements", "parameters"],
     "ban": [true],
     "class-name": true,
@@ -101,7 +105,6 @@
 
     "chai-vague-errors": true,
     "export-name": false,
-    "use-isnan": true,
     "missing-optional-annotation": true,
     "no-banned-terms": true,
     "no-constant-condition": false,
@@ -120,7 +123,8 @@
       "http://www.w3.org/XML/1998/namespace",
       "http://www.w3.org/1999/xhtml",
       "http://www.tei-c.org/ns/1.0",
-      "http://mova.institute/ns/corpora/0.1"
+      "http://mova.institute/ns/corpora/0.1",
+      "http://dict-api.tip.net.pl"
     ],
     "no-increment-decrement": false,
     "no-invalid-regexp": true,

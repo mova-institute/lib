@@ -69,7 +69,7 @@ export function ugtag2tt(args) {
     });
   }
   catch (e) {
-    
+
   }
   renameSync(tmpName, join(args.ret, 'tt-train.txt'));
 

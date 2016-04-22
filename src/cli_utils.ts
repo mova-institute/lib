@@ -47,11 +47,14 @@ export function ioArgs3(filename1: string, filename2: string): [any, any] {
 ////////////////////////////////////////////////////////////////////////////////
 // todo: input, output types
 export async function ioArgs4(filename1: string, filename2: string, f: (input, output) => Promise<void>) {
+  let input;
+  let output;
+  let tmpFile;
 
   if (filename2) {
-    var input: any = createReadStream(filename1, 'utf8');  // todo
-    var tmpFile = tmp.fileSync();
-    var output: any = createWriteStream(null, { fd: tmpFile.fd });
+    input = createReadStream(filename1, 'utf8');  // todo
+    tmpFile = tmp.fileSync();
+    output = createWriteStream(null, { fd: tmpFile.fd });
   }
   else if (filename1) {
     if (process.stdin.isTTY) {
@@ -73,42 +76,6 @@ export async function ioArgs4(filename1: string, filename2: string, f: (input, o
     f(input, output).then(() => {
       if (tmpFile) {
         renameSync(tmpFile.name, filename2 || filename1);
-      }
-    });
-  }
-  catch (e) {
-    console.error(e.stack);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export async function ioArgs2(fileArgs: Array<string>, f: (input, output) => Promise<void>) {
-
-  if (fileArgs[1]) {
-    var input: any = createReadStream(fileArgs[0], 'utf8');  // todo
-    var tmpFile = tmp.fileSync();
-    var output: any = createWriteStream(null, { fd: tmpFile.fd });
-  }
-  else if (fileArgs[0]) {
-    if (process.stdin.isTTY) {
-      input = createReadStream(fileArgs[0], 'utf8');
-      output = process.stdout;
-    }
-    else {
-      input = process.stdin;
-      tmpFile = tmp.fileSync();
-      output = createWriteStream(null, { fd: tmpFile.fd });
-    }
-  }
-  else {
-    input = process.stdin;
-    output = process.stdout;
-  }
-  try {
-    f(input, output).then(() => {
-      if (tmpFile) {
-        console.log('writing file...');
-        renameSync(tmpFile.name, fileArgs[1] || fileArgs[0]);
       }
     });
   }

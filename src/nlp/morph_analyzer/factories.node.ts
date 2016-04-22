@@ -7,7 +7,7 @@ import {buffer2typedArray} from '../../utils.node';
 export function createMorphAnalyserSync(dictFolder: string) {
   let tags = JSON.parse(readFileSync(dictFolder + '/tags.json', 'utf8'));
   let suffixes = JSON.parse(readFileSync(dictFolder + '/suffixes.json', 'utf8'));
-  
+
   let paradigms = new Array<Uint16Array>();
   let buf = readFileSync(dictFolder + '/paradigms.bin');
   let curByte = 0;
@@ -17,11 +17,11 @@ export function createMorphAnalyserSync(dictFolder: string) {
     paradigms.push(buffer2typedArray(buf, Uint16Array, curByte, paradigmByteLen));
     curByte += paradigmByteLen;
   }
-  
+
   let words = createObjectDawgSync<WordDawgPayload>(dictFolder + '/words.dawg', WordDawgPayload.create);
-  
+
   let numberTag = dictFolder.includes('vesum') ? 'numr:digit' : 'Md';  // todo
   let ret = new MorphAnalyzer(words, paradigms, suffixes, tags, numberTag, 'x');
-  
+
   return ret;
 }

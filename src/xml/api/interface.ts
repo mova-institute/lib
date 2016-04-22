@@ -7,13 +7,13 @@ export abstract class IDocument {
 
 ////////////////////////////////////////////////////////////////////////////////
 export abstract class INode {
-  abstract equals(other: INode): boolean;
   ownerDocument: IDocument;
   firstChild: INode;
   nextSibling: INode;
   parentNode: INode;
   nodeName: string;
   textContent: string;
+  abstract equals(other: INode): boolean;
   abstract isElement(): boolean;
   abstract isText(): boolean;
   abstract isRoot(): boolean;
@@ -29,6 +29,9 @@ export abstract class INode {
 ////////////////////////////////////////////////////////////////////////////////
 export abstract class IElement extends INode {
   localName: string;
+  nextElementSibling: IElement;
+  lastChild: INode;
+  childElementCount: number;
   abstract getAttribute(name: string): string;
   abstract setAttribute(name: string, value: any);
   abstract renameAttributeIfExists(nameOld: string, nameNew: string);
@@ -36,15 +39,12 @@ export abstract class IElement extends INode {
   abstract appendChild(child: INode): INode;
   abstract nameNs(): string;
   //isNs(otherName: string): boolean;
-  nextElementSibling: IElement;
-  lastChild: INode;
   abstract childElements(): Iterable<IElement>;
   abstract childElement(index: number): IElement;
-  childElementCount: number;
   abstract xpath(query: string, nsMap?): INode[];
   abstract xpathIt(query: string, nsMap?): IterableIterator<INode>;
   abstract clone(): IElement;  // always deep(?)
-  
+
   xpathEl(query: string, nsMap?) {
     return <IElement[]>this.xpath(query, nsMap).filter(x => x.isElement());
   }

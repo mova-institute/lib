@@ -53,27 +53,9 @@ export class JsonCompareMap<K, V> implements IMap<K, V> {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class NumeratedSet<T> {  // todo move somewhere 
+export class NumeratedSet<T> {  // todo move somewhere
   values = new Array<T>();
   ids: IMap<T, number>;
-
-  constructor(mapConstructor: { new (): IMap<T, number> } = Map) {
-    this.ids = new mapConstructor();
-  }
-
-  add(...vals: Array<T>) {
-    for (let val of vals) {
-      if (!this.ids.has(val)) {
-        this.ids.set(val, this.values.push(val) - 1);
-      }
-    }
-
-    return this;
-  }
-
-  id(val: T) {
-    return this.ids.get(val);
-  }
 
   static fromUniqueArray(array: Array<any>) {
     let ret = new NumeratedSet();
@@ -92,6 +74,24 @@ export class NumeratedSet<T> {  // todo move somewhere
     }
 
     return ret;
+  }
+
+  constructor(mapConstructor: { new (): IMap<T, number> } = Map) {
+    this.ids = new mapConstructor();
+  }
+
+  add(...vals: Array<T>) {
+    for (let val of vals) {
+      if (!this.ids.has(val)) {
+        this.ids.set(val, this.values.push(val) - 1);
+      }
+    }
+
+    return this;
+  }
+
+  id(val: T) {
+    return this.ids.get(val);
   }
 }
 
@@ -129,7 +129,7 @@ export class CachedValue<T> {
 //   constructor(
 //     private _v: { new (): V; },
 //     iterable?: Iterable<[K, V]>) {
-      
+
 //     super(iterable);
 //   }
 
@@ -147,7 +147,7 @@ export class CachedValue<T> {
 ////////////////////////////////////////////////////////////////////////////////
 export class DefaultMap<K, V> {
   private _map: Map<K, V>;
-  
+
   constructor(private _v: { new (): V; }, iterable?: Iterable<[K, V]>) {
     this._map = new Map<K, V>(iterable);
   }
@@ -161,7 +161,7 @@ export class DefaultMap<K, V> {
 
     return ret;
   }
-  
+
   [Symbol.iterator]() {
     return this._map[Symbol.iterator]();
   }

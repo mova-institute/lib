@@ -16,7 +16,7 @@ export function countGenerated<T>(generator: Iterator<T>) {
   while (!generator.next().done) {
     ++i;
   }
-  
+
   return i;
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ export function complement<T>(a: Set<T>, b: Set<T>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sleep(ms = 0) {
-  return new Promise(() => setTimeout(null, ms));
+  return new Promise(resolve => setTimeout(() => resolve(), ms));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

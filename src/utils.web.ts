@@ -48,8 +48,8 @@ function dataDownloadOrOpen(data, mime: string, filename?: string) {
   let a = document.createElement('a');
   a.href = window.URL.createObjectURL(blob);
   if (filename) {
-    a['download'] = filename;
-    a.dataset['downloadurl'] = `${mime}:${filename}:${a.href}`;
+    a.download = filename;
+    a.dataset.downloadurl = `${mime}:${filename}:${a.href}`;
   }
   else {
     a.target = '_blank';
@@ -109,7 +109,7 @@ export function collection2array<T>(collection: IWebapiCollection<T>) {
   for (let i = 0; i < collection.length; ++i) {
     ret.push(collection.item(i));
   }
-  
+
   return ret;
 }
 

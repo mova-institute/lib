@@ -18,7 +18,9 @@ export class LibxmlDocument extends IDocument {
   createElement(name: string) {
     let [localName, prefix] = name.split(':').reverse();
     let ret = new libxmljs.Element(this._underlying, localName);
-    prefix && ret.namespace(this._getNsByPrefix(prefix));
+    if (prefix) {
+      ret.namespace(this._getNsByPrefix(prefix));
+    }
 
     return new LibxmlElement(ret);
   }
@@ -190,7 +192,9 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 
   removeAttribute(name: string) {
     let attr = this.underlying.attr(name);
-    attr && attr.remove();
+    if (attr) {
+      attr.remove();
+    }
   }
 
   appendChild(child: LibxmlNode) {
