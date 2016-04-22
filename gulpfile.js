@@ -47,7 +47,9 @@ gulp.task('typescript', [], () => {
 gulp.task('lint', [], () => {
   return tsProject.src()
     .pipe(tslint())
-    .pipe(tslint.report('verbose'));
+    .pipe(tslint.report('verbose', {
+      emitError: false,
+    }));
 });
 
 ////////////////////////////////////////////////////////////////////////////////

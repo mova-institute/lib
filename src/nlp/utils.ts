@@ -9,7 +9,6 @@ import {IMorphInterp} from './interfaces';
 import {MorphTag, compareTags} from './morph_tag';
 import {WCHAR_UK_RE, WCHAR, WCHAR_RE} from './static';
 
-//export const NOSPACE_ABLE_ELEMS
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'p'),
   nameNs(NS.tei, 'body'),

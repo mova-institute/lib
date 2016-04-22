@@ -44,3 +44,9 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - recheck new falses
 - expected a 'break' before 'case' bug
 - wait for better https://github.com/buzinas/tslint-eslint-rules
+- Wrap conditional assignments
+
+### http://standardjs.com/rules.html
+- function name (arg) { ... }
+- Keep else statements on the same line as their curly braces.
+- Multiple blank lines not allowed.

@@ -74,7 +74,7 @@ function buffer2arrayBuffer(val: Buffer, start = 0, length = val.length) {  // t
   for (let i = 0; i < length; ++i) {
     view[i] = val[start + i];
   }
-  
+
   return ret;
 }
 
