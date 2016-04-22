@@ -35,7 +35,7 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 ### tslint todo
 - param alingment
 - no-empty, but how about constructors?
-- unused variable when needs to export, like in business.node.ts
+- unused variable when needs to export, like in business.node.ts https://github.com/palantir/tslint/issues/1157
 - custom rules
 - share config among projects
 - typedef
@@ -44,9 +44,9 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - recheck new falses
 - expected a 'break' before 'case' bug
 - wait for better https://github.com/buzinas/tslint-eslint-rules
-- Wrap conditional assignments
+- wrap conditional assignments
 
 ### http://standardjs.com/rules.html
 - function name (arg) { ... }
-- Keep else statements on the same line as their curly braces.
-- Multiple blank lines not allowed.
+- keep else statements on the same line as their curly braces.
+- multiple blank lines not allowed.
