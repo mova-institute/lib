@@ -48,7 +48,8 @@ export function encodeUtf8(str: string) {  // todo: more octets?
 export function decodeUtf8(bytes: Array<number>) {
 
   let ret = '';
-  for (let i = 0; i < bytes.length; ) {
+  let i = 0;
+  while (i < bytes.length) {
     let c = bytes[i];
 
     if (c < 128) {
@@ -72,7 +73,8 @@ export function decodeUtf8(bytes: Array<number>) {
 }
 
 
-const BASIS_64 = ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/').split('').map(x => x.codePointAt(0));
+const BASIS_64 = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/']
+  .map(x => x.codePointAt(0));
 const PLUS = '+'.charCodeAt(0);
 const SLASH = '/'.charCodeAt(0);
 const NUMBER = '0'.charCodeAt(0);
