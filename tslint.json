@@ -111,6 +111,7 @@
     "no-control-regex": true,
     "no-cookies": true,
     "no-document-write": false,
+    "no-document-domain": true,
     "no-disable-auto-sanitization": true,
     "no-duplicate-case": true,
     "no-duplicate-parameter-names": true,
