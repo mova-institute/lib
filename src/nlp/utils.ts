@@ -195,6 +195,13 @@ function tagWord(el: IElement, morphTags: Set<IMorphInterp>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function regularizedFlowElement(el: IElement) {
+  let ret = !(el.nameNs() === elements.teiOrig && el.parent() && el.parent().nameNs() === elements.teiChoice);
+
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
   let subroots = [...root.xpath('//tei:title', NS), ...root.xpath('//tei:text', NS)];
   if (!subroots.length) {
@@ -204,8 +211,7 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
   for (let subroot of subroots) {
     traverseDepthEl(subroot, el => {
       let name = el.nameNs();
-      if (name === W_
-        || name === elements.teiOrig && el.parent() && el.parent().nameNs() === elements.teiChoice) {
+      if (name === W_ || !regularizedFlowElement(el)) {
         return 'skip';
       }
 

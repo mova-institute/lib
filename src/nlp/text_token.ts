@@ -199,7 +199,7 @@ export class TextToken {
       }
       else if (!el.nextElementSibling || haveSpaceBetweenEl(el, el.nextElementSibling)) {
         where = el;
-        return false;
+        return 'stop';
       }
       if (el.nameNs() === W_) {
         return 'skip';
@@ -207,7 +207,7 @@ export class TextToken {
     }, el => {
       if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
         where = el.lastChild;
-        return false;
+        return 'stop';
       }
     });
 
@@ -226,7 +226,7 @@ export class TextToken {
         let token = new TextToken(el);
         if (f(token)) {
           ret = token;
-          return false;
+          return 'stop';
         }
       }
     });

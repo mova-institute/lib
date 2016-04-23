@@ -106,7 +106,7 @@ export function traverseDepthEl(node: INode, onEnter: (el: IElement) => any, onL
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export type TraverseDirective = 'skip' | 'stop';
+export type TraverseDirective = 'skip' | 'stop' | void;
 export interface ITraverseCallback {
   (el: INode): TraverseDirective;
 }
@@ -150,7 +150,7 @@ export function traverseDocumentOrder(node: INode, onEnter: ITraverseCallback, o
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrderEl(node: INode, onEnter: (el: IElement) => any, onLeave?: (el: IElement) => any) {
+export function traverseDocumentOrderEl(node: INode, onEnter: (el: IElement) => TraverseDirective, onLeave?: (el: IElement) => TraverseDirective) {
   traverseDocumentOrder(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
 }
 

@@ -608,8 +608,8 @@
               <w lemma="то" ana="conj:subord">то</w>
             </mi:w_>
             <mi:w_>
-              <w lemma="твій" ana="adj:n:v_naz:pos:&amp;pron:pers">твоє</w>
-              <w lemma="твій" ana="adj:n:v_zna:pos:&amp;pron:pers">твоє</w>
+              <w lemma="твій" ana="adj:n:v_naz:pos:&amp;pron">твоє</w>
+              <w lemma="твій" ana="adj:n:v_zna:pos:&amp;pron">твоє</w>
             </mi:w_>
             <mi:w_>
               <w lemma="небо" ana="noun:inanim:n:v_naz:np">небо</w>
@@ -859,8 +859,8 @@
               <w lemma="залишитися" ana="verb:rev:perf:inf">залишитись</w>
             </mi:w_>
             <mi:w_>
-              <w lemma="чи" ana="conj:coord">чи</w>
               <w lemma="чи" ana="part">чи</w>
+              <w lemma="чи" ana="conj:coord">чи</w>
               <w lemma="чи" ana="conj:subord">чи</w>
             </mi:w_>
             <mi:w_>
@@ -917,7 +917,7 @@
             <mi:w_>
               <w lemma="питати" ana="verb:imperf:pres:s:1">питаю</w>
             </mi:w_>
-            <pc>!</pc>
+            <pc>.</pc>
           </l>
           <l>
             <choice>
@@ -1292,23 +1292,13 @@
               <w lemma="то" ana="conj:subord">то</w>
             </mi:w_>
             <mi:w_>
-              <w lemma="твій" ana="adj:n:v_naz:pos:&amp;pron:pers">твоє</w>
-              <w lemma="твій" ana="adj:n:v_zna:pos:&amp;pron:pers">твоє</w>
+              <w lemma="твій" ana="adj:n:v_naz:pos:&amp;pron">твоє</w>
+              <w lemma="твій" ana="adj:n:v_zna:pos:&amp;pron">твоє</w>
             </mi:w_>
             <mi:w_>
               <w lemma="небо" ana="noun:inanim:n:v_naz:np">небо</w>
               <w lemma="небо" ana="noun:inanim:n:v_zna:np">небо</w>
               <w lemma="небо" ana="noun:inanim:n:v_kly:np">небо</w>
-            </mi:w_>
-            <pc>-</pc>
-            <mi:w_>
-              <w lemma="бо" ana="part">бо</w>
-              <w lemma="бо" ana="conj:subord">бо</w>
-            </mi:w_>
-            <pc>-</pc>
-            <mi:w_>
-              <w lemma="бо" ana="part">бо</w>
-              <w lemma="бо" ana="conj:subord">бо</w>
             </mi:w_>
             <pc>!</pc>
           </l>
