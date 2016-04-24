@@ -1,5 +1,7 @@
 import {INode, IElement} from './api/interface';
+import {AllHtmlEntities} from 'html-entities';
 
+// todo: move out
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
   xhtml: 'http://www.w3.org/1999/xhtml',
@@ -7,6 +9,33 @@ export const NS = {
   mi: 'http://mova.institute/ns/corpora/0.1',
 };
 
+const entities = new AllHtmlEntities();
+const mustEscapeInText = new Set(['lt', 'amp']);
+
+
+////////////////////////////////////////////////////////////////////////////////
+export function entityInvisible(text: string) {
+  // todo
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function normalizeEntities(text: string) {  // todo: wait for libxmljs issues resolved
+  // text = text.replace(/&(\w+);/g, (match, p1) => {
+  //   // console.log('ooohohoh');
+  //   // console.error(match);
+
+  //   if (mustEscapeInText.has(p1)) {
+  //     return match;
+  //   }
+  //   // let decoded = entities.decode(match);
+  //   // if (/^\s$/.test(decoded)) {  // todo: wait for unicode
+  //   //   return match;
+  //   // }
+  //   // return decoded;
+  // });
+
+  return text;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function cantBeXml(str: string) {
@@ -288,7 +317,7 @@ export function pretty(xmlstr: string) {
                     else {
                       str += ar[i];
                     }
-    }
+  }
 
   return (str[0] === '\n') ? str.slice(1) : str;
 }

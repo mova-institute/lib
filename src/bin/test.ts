@@ -5,6 +5,7 @@
 // import * as libxmljs from 'libxmljs'
 // import {traverseDepth} from '../xml/utils'
 // import {PgClient} from '../postrges';
+import {parseXmlString} from 'libxmljs';
 import {ClientConfig} from 'pg';
 // import {sleep} from '../lang';
 
@@ -21,7 +22,10 @@ main();
 
 
 
-async function main () {
+async function main() {
+  let root = parseXmlString('<x> a>b </x>');
+  console.log(root.toString(true));
+
   // try {
   //   PgClient.transaction(config, async (client) => {
   //     client.call('popo');

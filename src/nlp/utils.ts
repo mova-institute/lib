@@ -1,4 +1,4 @@
-import {NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements} from '../xml/utils';
+import {NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements, normalizeEntities} from '../xml/utils';
 import {W, W_, PC, SE, P} from './common_elements';
 import * as elements from './common_elements';
 import {r} from '../lang';
@@ -426,11 +426,19 @@ export function getTeiDocName(doc: IDocument) {  // todo
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusText(root: IElement) {
   for (let textNode of root.xpathIt('//text()', NS)) {
-    textNode.textContent = textNode.textContent
+    let res = /*normalizeEntities*/(textNode.textContent);
+    res = res
       .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
-      .replace(new RegExp(` [-–] `, 'g'), ' — ');
+      .replace(/ [-–] /g, ' — ');
+
+
+    textNode.textContent = res;
   }
+
+  let ret = root.ownerDocument.serialize();
 
   // todo:
   // if orig has >2 words
+  // invisible spaces, libxmljs set entities
+  return ret;
 }

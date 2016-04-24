@@ -22,8 +22,13 @@ ioArgs4(filename1, filename2, async (input, output) => {
 
     if (args.xml) {
       let root = string2lxmlRoot(inputStr);
-      let res: IElement = func(root) || root;
-      output.write(res.ownerDocument.serialize());
+      let res = func(root);
+      if (typeof res === 'string') {
+        output.write(res);
+      }
+      else {
+        output.write((res || root).ownerDocument.serialize());
+      }
     }
     else {
       let res = func(inputStr);
