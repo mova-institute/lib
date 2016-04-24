@@ -38,7 +38,6 @@ export abstract class IElement extends INode {
   abstract removeAttribute(name: string);
   abstract appendChild(child: INode): INode;
   abstract nameNs(): string;
-  //isNs(otherName: string): boolean;
   abstract childElements(): Iterable<IElement>;
   abstract childElement(index: number): IElement;
   abstract xpath(query: string, nsMap?): INode[];
@@ -47,6 +46,14 @@ export abstract class IElement extends INode {
 
   xpathEl(query: string, nsMap?) {
     return <IElement[]>this.xpath(query, nsMap).filter(x => x.isElement());
+  }
+
+  unbox() {
+    while (this.firstChild) {
+      this.insertBefore(this.firstChild.remove());
+    }
+
+    return this.remove();
   }
 }
 

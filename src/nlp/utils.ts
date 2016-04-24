@@ -424,7 +424,14 @@ export function getTeiDocName(doc: IDocument) {  // todo
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+const unboxElems = new Set(['nobr']);
 export function normalizeCorpusText(root: IElement) {
+  traverseDepthEl(root, el => {
+    if (unboxElems.has(el.nodeName)) {
+      el.unbox();
+    }
+  });
+
   for (let textNode of root.xpathIt('//text()', NS)) {
     let res = /*normalizeEntities*/(textNode.textContent);
     res = res

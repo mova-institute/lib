@@ -1,6 +1,11 @@
 export const r = String.raw;
 
 ////////////////////////////////////////////////////////////////////////////////
+export function arrayed(value: any | any[]) {
+  return Array.isArray(value) ? value : [value];
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function last<T>(array: Array<T>) {
   return array[array.length - 1];
 }
@@ -119,10 +124,12 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 /** see http://www.typescriptlang.org/docs/handbook/mixins.html */
-export function applyMixins(derivedCtor: any, baseCtors: any[]) {
-  baseCtors.forEach(baseCtor => {
-    Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-      derivedCtor.prototype[name] = baseCtor.prototype[name];
+export function mixin(...baseCtors: any[]) {
+  return derivedCtor => {
+    baseCtors.forEach(baseCtor => {
+      Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
+        derivedCtor.prototype[name] = baseCtor.prototype[name];
+      });
     });
-  });
+  };
 }

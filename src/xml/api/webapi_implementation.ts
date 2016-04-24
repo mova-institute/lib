@@ -1,7 +1,7 @@
 import {IDocument, INode, IElement} from './interface';
 import {lang, nameNs} from '../utils';
 import {xpath} from '../utils.web';
-import {wrappedOrNull, applyMixins} from '../../lang';
+import {wrappedOrNull, mixin} from '../../lang';
 import {serializeXml} from '../../utils.web';
 
 
@@ -120,6 +120,7 @@ export class WebapiNode extends INode {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+@mixin(IElement)
 export class WebapiElement extends WebapiNode implements IElement {
   constructor(underlying: Element) {
     super(underlying);
@@ -200,8 +201,9 @@ export class WebapiElement extends WebapiNode implements IElement {
 
   // mixins
   xpathEl: (query: string, nsMap?) => Array<IElement>;
+  unbox: () => IElement;
 }
-applyMixins(WebapiElement, [IElement]);
+// applyMixins(WebapiElement, [IElement]);
 
 
 

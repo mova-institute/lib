@@ -1,7 +1,7 @@
 import {IDocument, INode, IElement} from './interface';
 import * as libxmljs from 'libxmljs';
 import {lang} from '../utils';
-import {wrappedOrNull, ithGenerated, countGenerated, applyMixins} from '../../lang';
+import {wrappedOrNull, ithGenerated, countGenerated, mixin} from '../../lang';
 
 
 
@@ -119,6 +119,7 @@ export class LibxmlNode extends INode {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+@mixin(IElement)
 export class LibxmlElement extends LibxmlNode implements IElement {
   constructor(underlying: libxmljs.Element) {
     super(underlying);
@@ -219,9 +220,8 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 
   // mixins
   xpathEl: (query: string, nsMap?) => Array<IElement>;
+  unbox: () => IElement;
 }
-applyMixins(LibxmlElement, [IElement]);
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
