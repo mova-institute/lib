@@ -1,7 +1,6 @@
-import {ioArgs4} from '../cli_utils';
+import {ioArgs} from '../cli_utils';
 import {readTillEnd} from '../stream_utils.node';
 import {string2lxmlRoot} from '../utils.node';
-import {IElement} from '../xml/api/interface';
 
 const args = require('minimist')(process.argv.slice(2), {
   boolean: ['xml', 'inplace'],
@@ -16,7 +15,7 @@ let moduleObj = require('../' + path);
 let func = moduleObj[funcName];
 
 
-ioArgs4(filename1, filename2, async (input, output) => {
+ioArgs(filename1, filename2, async (input, output) => {
   try {
     let inputStr = await readTillEnd(input);
 
