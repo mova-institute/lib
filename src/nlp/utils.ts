@@ -424,7 +424,7 @@ export function getTeiDocName(doc: IDocument) {  // todo
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const unboxElems = new Set(['nobr']);
+const unboxElems = new Set(['nobr', 'img']);
 export function normalizeCorpusText(root: IElement) {
   traverseDepthEl(root, el => {
     if (unboxElems.has(el.nodeName)) {
