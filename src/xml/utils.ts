@@ -1,5 +1,4 @@
 import {INode, IElement} from './api/interface';
-import {AllHtmlEntities} from 'html-entities';
 
 // todo: move out
 export const NS = {
@@ -9,25 +8,7 @@ export const NS = {
   mi: 'http://mova.institute/ns/corpora/0.1',
 };
 
-const entities = new AllHtmlEntities();
-const mustEscapeInText = new Set(['lt', 'amp']);
 
-
-////////////////////////////////////////////////////////////////////////////////
-export function normalizeEntities(text: string) {  // todo: wait for libxmljs issues resolved
-  text = text.replace(/&(\w+);/g, (match, p1) => {
-    if (mustEscapeInText.has(p1)) {
-      return match;
-    }
-    let decoded = entities.decode(match);
-    if (/^\s$/.test(decoded)) {  // todo: wait for unicode
-      return match;
-    }
-    return decoded;
-  });
-
-  return text;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function cantBeXml(str: string) {

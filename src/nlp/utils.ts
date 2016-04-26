@@ -1,4 +1,4 @@
-import {NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements, normalizeEntities} from '../xml/utils';
+import {NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements} from '../xml/utils';
 import {W, W_, PC, SE, P} from './common_elements';
 import * as elements from './common_elements';
 import {r} from '../lang';
@@ -437,11 +437,9 @@ export function normalizeCorpusText(root: IElement) {
   });
 
   for (let textNode of root.xpathIt('//text()', NS)) {
-    let res = /*normalizeEntities*/(textNode.textContent);
-    res = res
+    let res = textNode.textContent
       .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
       .replace(/ [-–] /g, ' — ');
-
 
     textNode.textContent = res;
   }
