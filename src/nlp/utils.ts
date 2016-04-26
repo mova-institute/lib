@@ -430,6 +430,10 @@ export function normalizeCorpusText(root: IElement) {
     if (unboxElems.has(el.nodeName)) {
       el.unbox();
     }
+    if (el.localName === 'em') {
+      let box = el.ownerDocument.createElement('emph').setAttribute('rend', 'italic');
+      el.rebox(box);
+    }
   });
 
   for (let textNode of root.xpathIt('//text()', NS)) {

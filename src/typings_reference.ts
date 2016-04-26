@@ -1,1 +1,1 @@
-/// <reference path="../typings/main.d.ts" />
+import '../typings/main.d.ts';

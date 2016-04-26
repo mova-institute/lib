@@ -1,5 +1,7 @@
 import {findIndexwiseDiff} from './algo';
 
+
+////////////////////////////////////////////////////////////////////////////////
 export function markIndexwiseStringDiff(arr: Array<string>, spanClass: string) {
   let ret = new Array<string>(arr.length).fill('');
   let curIndex = 0;

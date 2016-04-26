@@ -33,7 +33,7 @@ export abstract class IElement extends INode {
   lastChild: INode;
   childElementCount: number;
   abstract getAttribute(name: string): string;
-  abstract setAttribute(name: string, value: any);
+  abstract setAttribute(name: string, value: any): IElement;
   abstract renameAttributeIfExists(nameOld: string, nameNew: string);
   abstract removeAttribute(name: string);
   abstract appendChild(child: INode): INode;
@@ -50,10 +50,19 @@ export abstract class IElement extends INode {
 
   unbox() {
     while (this.firstChild) {
-      this.insertBefore(this.firstChild.remove());
+      this.insertBefore(this.firstChild);  // todo: test webapi without remove()
     }
 
     return this.remove();
+  }
+
+  rebox(replacement: IElement) {
+    while (this.firstChild) {
+      replacement.appendChild(this.firstChild);
+    }
+    this.replace(replacement);
+
+    return replacement;
   }
 }
 

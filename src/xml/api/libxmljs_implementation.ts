@@ -180,7 +180,8 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   }
 
   setAttribute(name: string, value: any) {
-    this.underlying.attr({[name]: value.toString()});
+    this.underlying.attr({ [name]: value.toString() });
+    return this;
   }
 
   renameAttributeIfExists(nameOld: string, nameNew: string) {
@@ -221,6 +222,7 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   // mixins
   xpathEl: (query: string, nsMap?) => Array<IElement>;
   unbox: () => IElement;
+  rebox: (replacement: IElement) => IElement;
 }
 
 

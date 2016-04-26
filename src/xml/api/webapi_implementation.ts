@@ -167,6 +167,7 @@ export class WebapiElement extends WebapiNode implements IElement {
 
   setAttribute(name: string, value: any) {
     (<Element>this.underlying).setAttribute(name, value);
+    return this;
   }
 
   renameAttributeIfExists(nameOld: string, nameNew: string) {
@@ -202,6 +203,7 @@ export class WebapiElement extends WebapiNode implements IElement {
   // mixins
   xpathEl: (query: string, nsMap?) => Array<IElement>;
   unbox: () => IElement;
+  rebox: (replacement: IElement) => IElement;
 }
 // applyMixins(WebapiElement, [IElement]);
 
