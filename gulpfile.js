@@ -5,7 +5,6 @@ const fs = require('fs');
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const tslint = require('gulp-tslint');
-const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const del = require('del');
@@ -22,25 +21,12 @@ function swallowError(error) {
   this.emit('end');
 }
 
-
-//------------------------------------------------------------------------------
-function tsTask(target) {
-  let dest = target === 'es6' ? 'lib' : 'lib5';
-  let babelOpts = target === 'es6' ? undefined : { presets: ['es2015'] };
-
-  let tsResult = tsProject.src()
-    .pipe(ts(tsProject));
-
-  tsResult.dts.pipe(gulp.dest(dest));
-
-  return tsResult.js
-    .pipe(babel(babelOpts).on('error', swallowError))
-    .pipe(gulp.dest(dest));
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 gulp.task('typescript', [], () => {
-  return tsTask('es6');
+  const dest = 'lib';
+  let tsResult = tsProject.src().pipe(ts(tsProject));
+  tsResult.dts.pipe(gulp.dest(dest));
+  return tsResult.js.pipe(gulp.dest(dest));
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +40,14 @@ gulp.task('lint', [], () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 gulp.task('es5', [], () => {
-  return tsTask('es5');
+  let tsResult = tsProject.src()
+    .pipe(ts(tsProject));
+
+  tsResult.dts.pipe(gulp.dest('lib5'));
+
+  return tsResult.js
+    .pipe(babel({ presets: ['es2015'] }).on('error', swallowError))
+    .pipe(gulp.dest('lib5'));
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +77,7 @@ gulp.task('mi-web', ['typescript'], () => {
   let packageJson = {
     name: 'mi-lib',
     private: true,
-    dependencies: JSON.parse(fs.readFileSync('package.json', 'utf8')).dependencies
+    dependencies: JSON.parse(fs.readFileSync('package.json', 'utf8')).dependencies,
   };
   mkdirp.sync('dist/mi-web');
   fs.writeFileSync('dist/mi-web/package.json', JSON.stringify(packageJson, null, 2));
@@ -95,8 +88,3 @@ gulp.task('mi-web', ['typescript'], () => {
 
 
 gulp.task('dist', ['typescript:dist', 'copy:dist']);
-gulp.task('default', ['typescript']);
-
-gulp.task('develop', ['default'], () => {
-  gulp.watch(['src/**/*.ts', TS_PROJ_FILE], ['default']);
-});

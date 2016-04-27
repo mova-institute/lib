@@ -1,13 +1,13 @@
 {
   "version": "0.1.0",
-  "command": "gulp",
+  "command": "node_modules/typescript/bin/tsc",
   "isShellCommand": true,
-  "args": [
-    "--no-color"
-  ],
+  "args": ["-p", "src", "-w"],
+  "suppressTaskName": true,
   "tasks": [
     {
       "taskName": "develop",
+      "suppressTaskName": true,
       "isBuildCommand": true,
       "showOutput": "silent",
       "isWatching": true
