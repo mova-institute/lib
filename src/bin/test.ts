@@ -24,7 +24,7 @@ main();
 
 async function main() {
   let root = parseXmlString('<x> a>b </x>');
-  console.log(root.toString(true));
+  console.log(root.toString());
 
   // try {
   //   PgClient.transaction(config, async (client) => {
