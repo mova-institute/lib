@@ -45,6 +45,7 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - expected a 'break' before 'case' bug
 - wait for better https://github.com/buzinas/tslint-eslint-rules
 - wrap conditional assignments
+- one-variable-per-declaration
 
 ### http://standardjs.com/rules.html
 - function name (arg) { ... }
