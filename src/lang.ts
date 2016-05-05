@@ -123,7 +123,7 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** see http://www.typescriptlang.org/docs/handbook/mixins.html */
+/** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
 export function mixin(...baseCtors: any[]) {
   return derivedCtor => {
     baseCtors.forEach(baseCtor => {
@@ -132,4 +132,9 @@ export function mixin(...baseCtors: any[]) {
       });
     });
   };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function strlen(str: string) {
+  return countGenerated(str[Symbol.iterator]());
 }

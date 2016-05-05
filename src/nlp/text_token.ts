@@ -174,12 +174,11 @@ export class TextToken {
   }
 
   addInterp(tag: string, lemma: string) {
-    let newInterp = this.elem.ownerDocument.createElement('w');
-    newInterp.textContent = this.text();
-    newInterp.setAttribute('lemma', lemma);
-    newInterp.setAttribute('ana', tag);
-    newInterp.setAttribute('type', 'manual');
-    this.elem.appendChild(newInterp);
+    this._addInterp({
+      lemma,
+      ana: tag,
+      type: 'manual',
+    });
 
     return this;
   }
@@ -242,6 +241,26 @@ export class TextToken {
   wordNum() {  // todo: real, ordered num?
     let n = this.elem.getAttribute('n');
     return n ? Number.parseInt(n, 10) : null;
+  }
+
+  hashtag(value: string) {
+    let hashtag = '#' + value;
+    let interpElemIndex = this.interps().findIndex(x => x.tag === hashtag);
+    if (interpElemIndex === -1) {
+      this._addInterp({ ana: hashtag });
+      return this.interps().length - 1;
+    }
+
+    return interpElemIndex;
+  }
+
+  private _addInterp(attributes: Object) {
+    let newInterp = this.elem.ownerDocument.createElement('w');
+    newInterp.textContent = this.text();
+    newInterp.setAttributes(attributes);
+    this.elem.appendChild(newInterp);
+
+    return newInterp;
   }
 }
 

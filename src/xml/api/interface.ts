@@ -44,6 +44,12 @@ export abstract class IElement extends INode {
   abstract xpathIt(query: string, nsMap?): IterableIterator<INode>;
   abstract clone(): IElement;  // always deep(?)
 
+  setAttributes(keyvalue: Object) {
+    for (let key of Object.keys(keyvalue)) {
+      this.setAttribute(key, keyvalue[key]);
+    }
+  }
+
   xpathEl(query: string, nsMap?) {
     return <IElement[]>this.xpath(query, nsMap).filter(x => x.isElement());
   }
