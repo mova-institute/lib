@@ -1,14 +1,14 @@
 import {ioArgsPlain} from '../cli_utils';
 import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
 import {readTillEnd} from '../stream_utils.node';
-import {tokenizeTeiDom, tagTokenizedDom, enumerateWords} from '../nlp/utils';
+import {tokenizeTei, tagTokenizedDom, enumerateWords} from '../nlp/utils';
 import {string2lxmlRoot} from '../utils.node';
 import {encloseInRootNsIf} from '../xml/utils';
-import {createReadStream} from 'fs';
+import {createReadStream, readFileSync} from 'fs';
 import {join} from 'path';
 
 const args = require('minimist')(process.argv.slice(2), {
-  boolean: ['n', 'numerate'],
+  boolean: ['n', 'numerate', 'tokenize'],
 });
 
 
@@ -21,6 +21,7 @@ ioArgsPlain(async (input, outputFromIoargs) => {
   else {
     output = outputFromIoargs;
     inputStr = await readTillEnd(input);
+    // inputStr = readFileSync(args._[0], 'utf8');
   }
 
   inputStr = encloseInRootNsIf(inputStr);
@@ -31,8 +32,10 @@ ioArgsPlain(async (input, outputFromIoargs) => {
   let tagger = createMorphAnalyserSync(dictDir);
 
   let root = string2lxmlRoot(inputStr);
-  tokenizeTeiDom(root, tagger);
-  tagTokenizedDom(root, tagger);
+  tokenizeTei(root, tagger);
+  if (!args.tokenize) {
+    tagTokenizedDom(root, tagger);
+  }
 
   if (args.n || args.numerate) {
     enumerateWords(root);

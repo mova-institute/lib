@@ -30,6 +30,10 @@ export class WebapiDocument extends IDocument {
     return new WebapiElement(elem);
   }
 
+  createTextNode(value: string) {
+    return new WebapiNode(this.underlying.createTextNode(value));
+  }
+
   serialize() {
     return serializeXml(this.underlying);
   }
@@ -99,6 +103,7 @@ export class WebapiNode extends INode {
 
   replace(replacement: WebapiNode) {
     this.underlying.parentNode.replaceChild(replacement.underlying, this.underlying);
+    return replacement;
   }
 
   insertBefore(newNode: WebapiNode) {

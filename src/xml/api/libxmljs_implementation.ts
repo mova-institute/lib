@@ -17,16 +17,25 @@ export class LibxmlDocument extends IDocument {
 
   createElement(name: string) {
     let [localName, prefix] = name.split(':').reverse();
-    let ret = new libxmljs.Element(this._underlying, localName);
+    let el = new libxmljs.Element(this._underlying, localName);
     if (prefix) {
-      ret.namespace(this._getNsByPrefix(prefix));
+      el.namespace(this._getNsByPrefix(prefix));
     }
 
-    return new LibxmlElement(ret);
+    return new LibxmlElement(el);
+  }
+
+  createTextNode(value: string) {
+    return new LibxmlNode(new libxmljs.Text(this._underlying, value));
   }
 
   serialize() {
-    return this._underlying.toString();
+    return this._underlying.root().toString(/*{
+      // declaration: false,
+      //format: true,
+      // whitespace: true,
+      // type: 'xml',
+    }*/);
   }
 
   private _getNsByPrefix(prefix: string) {
@@ -80,7 +89,7 @@ export class LibxmlNode extends INode {
     this.underlying.text(val);
   }
 
-  get ownerDocument()  {
+  get ownerDocument() {
     return wrappedOrNull(LibxmlDocument, this.underlying.doc());
   }
 
@@ -102,6 +111,7 @@ export class LibxmlNode extends INode {
 
   replace(replacement: LibxmlNode) {
     this.underlying.replace(replacement.underlying);
+    return replacement;
   }
 
   insertBefore(newNode: LibxmlNode) {

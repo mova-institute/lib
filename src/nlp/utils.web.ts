@@ -3,7 +3,7 @@ import {WebapiDocument, WebapiElement} from '../xml/api/webapi_implementation';
 import {xpath} from '../xml/utils.web';
 import {serializeXml, serializeXmlNoNs, parseXml} from '../utils.web';
 import {MorphAnalyzer} from '../nlp/morph_analyzer/morph_analyzer';
-import {tokenizeTeiDom, tagTokenizedDom, enumerateWords, firstNWords} from './utils';
+import {tokenizeTei, tagTokenizedDom, enumerateWords, firstNWords} from './utils';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boo
     doc = parseXml(encloseInRootNs(value, 'text'));
   }
   let root = new WebapiDocument(doc).documentElement;
-  tokenizeTeiDom(root, tagger);
+  tokenizeTei(root, tagger);
   tagTokenizedDom(root, tagger);
   if (numerate) {
     enumerateWords(root);

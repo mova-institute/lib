@@ -1,7 +1,7 @@
 import {NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements} from '../xml/utils';
 import {W, W_, PC, SE, P} from './common_elements';
 import * as elements from './common_elements';
-import {r} from '../lang';
+import {r, last} from '../lang';
 import {INode, IElement, IDocument} from '../xml/api/interface';
 import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
 import {$t} from './text_token';
@@ -35,6 +35,7 @@ const PUNC_REGS = [
   r`!\.{2,}`,
   r`\?\.{2,}`,
   r`—`,
+  r`/`,
 ];
 const ANY_PUNC = PUNC_REGS.join('|');
 const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`);
@@ -117,13 +118,16 @@ const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
 export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
   let ret: Array<string> = [];
   for (let tok0 of val.trim().split(SPLIT_REGEX)) {
-    for (let tok1 of tok0.split(/\s+/)) {
-      if (tok1) {
+    for (let tok1 of tok0.split(/(\s+)/u)) {
+      if (tok1.length) {
         if (tok1.includes('-')) {
           if (!(analyzer.dictHas(tok1))) {
             ret.push(...tok1.split(/(-)/).filter(x => !!x));
             continue;
           }
+        }
+        else if (ret.length && /\s+/.test(last(ret)) && /\s+/.test(tok1)) {
+          continue;
         }
         ret.push(tok1);
       }
@@ -135,20 +139,20 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
-////////////////////////////////////////////////////////////////////////////////
-export function tokenizeTeiDom(root: IElement, tagger: MorphAnalyzer) {
+
+export function tokenizeTei(root: IElement, tagger: MorphAnalyzer) {
   traverseDepth(root, (node: INode) => {
     if (TOSKIP.has(node.nodeName)) {
       return 'skip';
     }
     if (node.isText()) {
+      let cursor = node.replace(node.ownerDocument.createElement('cursor'));
       // let lang = node.lang();
       // if (lang === 'uk' || lang === '') {
       for (let tok of tokenizeUk(node.textContent, tagger)) {
-        node.insertBefore(elementFromToken(tok, root.ownerDocument));
+        cursor.insertBefore(elementFromToken(tok, root.ownerDocument));
       }
-      node.remove();
-      // }
+      cursor.remove();
     }
   });
 
@@ -156,9 +160,14 @@ export function tokenizeTeiDom(root: IElement, tagger: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function elementFromToken(token: string, document: IDocument): IElement {
-  let ret;
-  if (ANY_PUNC_OR_DASH_RE.test(token)) {
+export function elementFromToken(token: string, document: IDocument) {
+  let ret: INode;
+  if (/\s/u.test(token)) {
+    // console.error('poo');
+
+    ret = document.createTextNode(' ');
+  }
+  else if (ANY_PUNC_OR_DASH_RE.test(token)) {
     ret = document.createElement('pc');
     ret.textContent = token;
   }

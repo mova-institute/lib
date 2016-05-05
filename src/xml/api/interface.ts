@@ -2,6 +2,7 @@
 export abstract class IDocument {
   documentElement: IElement;
   abstract createElement(name: string): IElement;
+  abstract createTextNode(value: string): INode;
   abstract serialize(): string;
 }
 
@@ -17,7 +18,7 @@ export abstract class INode {
   abstract isElement(): boolean;
   abstract isText(): boolean;
   abstract isRoot(): boolean;
-  abstract replace(replacement: INode);
+  abstract replace(replacement: INode): INode;
   abstract insertBefore(newNode: INode): INode;  // todo
   abstract insertAfter(newNode: INode);
   abstract remove(): INode;
