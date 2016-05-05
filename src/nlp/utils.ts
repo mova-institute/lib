@@ -437,11 +437,11 @@ const unboxElems = new Set(['nobr', 'img']);
 export function normalizeCorpusText(root: IElement) {
   traverseDepthEl(root, el => {
     if (unboxElems.has(el.nodeName)) {
-      el.unbox();
+      el.unwrap();
     }
     if (el.localName === 'em') {
       let box = el.ownerDocument.createElement('emph').setAttribute('rend', 'italic');
-      el.rebox(box);
+      el.rewrap(box);
     }
   });
 

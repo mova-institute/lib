@@ -1,13 +1,12 @@
 import {IDocument, INode, IElement} from './interface';
-import * as libxmljs from 'libxmljs';
 import {lang} from '../utils';
 import {wrappedOrNull, ithGenerated, countGenerated, mixin} from '../../lang';
-
+const libxmljs = require('libxmljs');  // typings are wrong, use none
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class LibxmlDocument extends IDocument {
-  constructor(private _underlying: libxmljs.XMLDocument) {
+  constructor(private _underlying) {
     super();
   }
 
@@ -131,7 +130,7 @@ export class LibxmlNode extends INode {
 ////////////////////////////////////////////////////////////////////////////////
 @mixin(IElement)
 export class LibxmlElement extends LibxmlNode implements IElement {
-  constructor(underlying: libxmljs.Element) {
+  constructor(underlying) {
     super(underlying);
   }
 
@@ -231,8 +230,9 @@ export class LibxmlElement extends LibxmlNode implements IElement {
 
   // mixins
   xpathEl: (query: string, nsMap?) => Array<IElement>;
-  unbox: () => IElement;
-  rebox: (replacement: IElement) => IElement;
+  setAttributes: (keyvalue: Object) => LibxmlElement;
+  unwrap: () => LibxmlElement;
+  rewrap: (replacement: IElement) => LibxmlElement;
 }
 
 

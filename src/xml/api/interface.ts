@@ -45,17 +45,19 @@ export abstract class IElement extends INode {
   abstract xpathIt(query: string, nsMap?): IterableIterator<INode>;
   abstract clone(): IElement;  // always deep(?)
 
-  setAttributes(keyvalue: Object) {
+  setAttributes(keyvalue: Object): IElement {  // todo: remove return typing when ts 2.0 comes out, see https://github.com/Microsoft/TypeScript/issues/3694
     for (let key of Object.keys(keyvalue)) {
       this.setAttribute(key, keyvalue[key]);
     }
+
+    return this;
   }
 
   xpathEl(query: string, nsMap?) {
     return <IElement[]>this.xpath(query, nsMap).filter(x => x.isElement());
   }
 
-  unbox() {
+  unwrap() {
     while (this.firstChild) {
       this.insertBefore(this.firstChild);  // todo: test webapi without remove()
     }
@@ -63,7 +65,7 @@ export abstract class IElement extends INode {
     return this.remove();
   }
 
-  rebox(replacement: IElement) {
+  rewrap(replacement: IElement) {
     while (this.firstChild) {
       replacement.appendChild(this.firstChild);
     }

@@ -206,9 +206,10 @@ export class WebapiElement extends WebapiNode implements IElement {
   }
 
   // mixins
-  xpathEl: (query: string, nsMap?) => Array<IElement>;
-  unbox: () => IElement;
-  rebox: (replacement: IElement) => IElement;
+  xpathEl: (query: string, nsMap?) => Array<WebapiElement>;
+  setAttributes: (keyvalue: Object) => WebapiElement;
+  unwrap: () => WebapiElement;
+  rewrap: (replacement: IElement) => WebapiElement;
 }
 // applyMixins(WebapiElement, [IElement]);
 

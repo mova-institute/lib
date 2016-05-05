@@ -15,7 +15,6 @@
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
     "express-unless": "registry:dt/express-unless#0.0.0+20160317120654",
     "html-entities": "registry:dt/html-entities#1.2.0+20160412134357",
-    "libxmljs": "registry:dt/libxmljs#0.14.2+20160316155526",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
     "node": "registry:dt/node#4.0.0+20160412142033",
     "pg": "registry:dt/pg#0.0.0+20160323211726",
