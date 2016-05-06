@@ -225,7 +225,7 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
       }
 
       if (name === W) {
-        let lang = el.getLang();
+        let lang = el.lang;
         if (lang && lang !== 'uk') {
           tagWord(el, new Set([{ lemma: el.text, tag: 'foreign' }])).setAttribute('disamb', 0);
         }

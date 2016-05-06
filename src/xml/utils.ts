@@ -188,29 +188,6 @@ export function nLevelsDeep(node, n: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function lang(node: INode): string {
-  if (!node.isElement()) {
-    return lang(node.parent);
-  }
-  let el = <IElement>node;
-  let ret = el.getAttribute('lang') || el.getAttribute('xml:lang'); // todo
-  if (!ret) {
-    if (el.isRoot()) {
-      return '';
-    }
-
-    return lang(el.parent);
-  }
-
-  return ret;
-}
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 function callbackIfElement(cb: (el: IElement) => TraverseDirective) {
   return node => {
     if (cb && node.isElement()) {

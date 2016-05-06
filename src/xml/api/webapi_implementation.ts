@@ -1,5 +1,5 @@
 import {IDocument, INode, IElement} from './interface';
-import {lang, nameNs} from '../utils';
+import {nameNs} from '../utils';
 import {xpath} from '../utils.web';
 import {wrappedOrNull, mixin} from '../../lang';
 import {serializeXml} from '../../utils.web';
@@ -37,6 +37,10 @@ export class WebapiDocument extends IDocument {
   serialize() {
     return serializeXml(this._underlying);
   }
+
+  equals(other: WebapiDocument) {
+    return this._underlying === other._underlying;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,10 +51,6 @@ export class WebapiNode extends INode {
 
   equals(other: WebapiNode) {
     return other && this._underlying === other._underlying;
-  }
-
-  getLang() {
-    return lang(this);
   }
 
   isElement() {

@@ -21,6 +21,7 @@
 - when variable clashes with keyword how to name it?
 - ask to bump minor version when https://github.com/kmike/DAWG/issues/21 gets fixed
 - parentNode to parentElement
+- lang setter
 
 - скорочення
 - <supplied>

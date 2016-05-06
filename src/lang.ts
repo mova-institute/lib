@@ -124,11 +124,12 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 /** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
-export function mixin(...baseCtors: any[]) {
+export function mixin(...baseCtors: any[]) {  // todo: why not Object[]?
   return derivedCtor => {
     baseCtors.forEach(baseCtor => {
       Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-        derivedCtor.prototype[name] = baseCtor.prototype[name];
+        Object.defineProperty(derivedCtor.prototype, name,
+          Object.getOwnPropertyDescriptor(baseCtor.prototype, name));
       });
     });
   };

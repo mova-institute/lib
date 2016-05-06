@@ -4,6 +4,8 @@ export abstract class IDocument {
   abstract createElement(name: string): IElement;
   abstract createTextNode(value: string): INode;
   abstract serialize(): string;
+
+  abstract equals(other: IDocument): boolean;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +17,6 @@ export abstract class INode {
   parent: IElement;
   name: string;
   text: string;
-  abstract equals(other: INode): boolean;
   abstract isElement(): boolean;
   abstract isText(): boolean;
   abstract isRoot(): boolean;
@@ -23,7 +24,12 @@ export abstract class INode {
   abstract insertBefore(newNode: INode): INode;  // todo
   abstract insertAfter(newNode: INode);
   abstract remove(): INode;
-  abstract getLang(): string;  // todo: property?
+
+  abstract equals(other: INode): boolean;
+
+  get lang(): string {
+    return this.parent.lang;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +49,19 @@ export abstract class IElement extends INode {
   abstract xpath(query: string, nsMap?): INode[];
   abstract xpathIt(query: string, nsMap?): IterableIterator<INode>;
   abstract clone(): IElement;  // always deep(?)
+
+  get lang(): string {
+    let ret = this.getAttribute('xml:lang');  // todo: no ns?
+    if (!ret) {
+      if (this.isRoot()) {
+        return null;
+      }
+
+      return this.parent.lang;
+    }
+
+    return ret;
+  }
 
   setAttributes(keyvalue: Object): IElement {  // todo: remove return typing when ts 2.0 comes out, see https://github.com/Microsoft/TypeScript/issues/3694
     for (let key of Object.keys(keyvalue)) {

@@ -1,5 +1,4 @@
 import {IDocument, INode, IElement} from './interface';
-import {lang} from '../utils';
 import {wrappedOrNull, ithGenerated, countGenerated, mixin} from '../../lang';
 const libxmljs = require('libxmljs');  // typings are wrong, use none
 
@@ -7,7 +6,7 @@ const libxmljs = require('libxmljs');  // typings are wrong, use none
 ////////////////////////////////////////////////////////////////////////////////
 export class LibxmlDocument extends IDocument {
 
- constructor(private _underlying) {
+  constructor(private _underlying) {
     super();
   }
 
@@ -38,6 +37,10 @@ export class LibxmlDocument extends IDocument {
     }*/);
   }
 
+  equals(other: LibxmlDocument) {
+    return this._underlying === other._underlying;
+  }
+
   private _getNsByPrefix(prefix: string) {
     return this._underlying.root().namespaces().find(x => x.prefix() === prefix);
   }
@@ -51,10 +54,6 @@ export class LibxmlNode extends INode {
 
   equals(other: LibxmlNode) {
     return other && this._underlying === other._underlying;
-  }
-
-  getLang() {
-    return lang(this);
   }
 
   isElement() {
