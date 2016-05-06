@@ -10,7 +10,7 @@ export class LibxmlDocument extends IDocument {
     super();
   }
 
-  get documentElement() {
+  get root() {
     return new LibxmlElement(this._underlying.root());
   }
 
@@ -52,7 +52,7 @@ export class LibxmlNode extends INode {
     return other && this.underlying === other.underlying;
   }
 
-  lang() {
+  getLang() {
     return lang(this);
   }
 
@@ -68,7 +68,7 @@ export class LibxmlNode extends INode {
     return this.underlying === this.underlying.doc().root();
   }
 
-  get nodeName() {
+  get name() {
     let type = this.underlying.type();
     if (type === 'element') {
       return this.underlying.name();
@@ -76,19 +76,15 @@ export class LibxmlNode extends INode {
     return '#' + this.underlying.type();
   }
 
-  is(name: string) {
-    return this.nodeName === name;
-  }
-
-  get textContent() {
+  get text() {
     return this.underlying.text();
   }
 
-  set textContent(val: string) {
+  set text(val: string) {
     this.underlying.text(val);
   }
 
-  get ownerDocument() {
+  get document() {
     return wrappedOrNull(LibxmlDocument, this.underlying.doc());
   }
 
@@ -96,12 +92,16 @@ export class LibxmlNode extends INode {
     return switchReturnNodeType(this.underlying.child(0));
   }
 
-  get parentNode() {
-    return wrappedOrNull(LibxmlElement, this.underlying.parent());
-  }
-
   get nextSibling() {
     return switchReturnNodeType(this.underlying.nextSibling());
+  }
+
+  get parent() {
+    if (this.isRoot()) {
+      return null;
+    }
+
+    return new LibxmlElement(this.underlying.parent());
   }
 
   remove() {
@@ -120,10 +120,6 @@ export class LibxmlNode extends INode {
 
   insertAfter(newNode: LibxmlNode) {
     this.underlying.addNextSibling(newNode.underlying);
-  }
-
-  parent() {
-    return wrappedOrNull(LibxmlElement, this.underlying.parent());  // todo: check it's always Element
   }
 }
 

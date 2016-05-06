@@ -26,10 +26,10 @@ export class TextToken {
 
   text() {  // todo
     if (this.elem.nameNs() === W_) {
-      return this.elem.childElement(0).textContent;
+      return this.elem.childElement(0).text;
     }
 
-    return this.elem.textContent;
+    return this.elem.text;
   }
 
   isWord() {  // todo: more name
@@ -211,7 +211,7 @@ export class TextToken {
     });
 
     if (where.isElement() && (<IElement>where).nameNs() !== SE) {
-      let se = where.ownerDocument.createElement('mi:se');
+      let se = where.document.createElement('mi:se');
       where.insertAfter(se);
     }
 
@@ -255,8 +255,8 @@ export class TextToken {
   }
 
   private _addInterp(attributes: Object) {
-    let newInterp = this.elem.ownerDocument.createElement('w');
-    newInterp.textContent = this.text();
+    let newInterp = this.elem.document.createElement('w');
+    newInterp.text = this.text();
     newInterp.setAttributes(attributes);
     this.elem.appendChild(newInterp);
 

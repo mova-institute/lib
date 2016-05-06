@@ -116,7 +116,7 @@ function extract2() {
     }
     catch (e) {
       console.error('ERROR LINE ' + (lineN + 1));
-      fs.writeFileSync('doc.syntdisambed.xml', docRoot.ownerDocument.serialize(), 'utf-8');
+      fs.writeFileSync('doc.syntdisambed.xml', docRoot.document.serialize(), 'utf-8');
       throw e;
     }
   }

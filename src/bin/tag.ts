@@ -41,6 +41,6 @@ ioArgsPlain(async (input, outputFromIoargs) => {
     enumerateWords(root);
   }
 
-  output.write(root.ownerDocument.serialize());
+  output.write(root.document.serialize());
   output.write('\n');
 });

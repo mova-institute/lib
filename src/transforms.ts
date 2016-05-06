@@ -13,7 +13,7 @@ export function ugtag2mi(input, output) {
   (async () => {
     try {
       let root = await stream2lxmlRoot(input);
-      output.write(root.ownerDocument.serialize());
+      output.write(root.document.serialize());
     }
     catch (e) {
       console.error(e.stack);
@@ -52,7 +52,7 @@ export function ugtag2tt(args) {
     traverseDocumentOrderEl(root, el => {
       if (el.localName === 'w') {
         let tag = el.getAttribute('ana');
-        let form = el.textContent;
+        let form = el.text;
         let lemma = el.getAttribute('lemma');
         if (isOpenClassTag(tag)) {
           openClassTags.add(tag);
@@ -64,7 +64,7 @@ export function ugtag2tt(args) {
         ret.write(form + '\t' + tag + '\n');
       }
       else if (el.localName === 'c') {
-        ret.write(el.textContent + '\tPUN\n');
+        ret.write(el.text + '\tPUN\n');
       }
     });
   }
@@ -181,10 +181,10 @@ export async function kotsybaDisambed2ttTraining(input, output) {
     let root = await stream2lxmlRoot(input);
     traverseDocumentOrderEl(root, el => {
       if (el.localName === 'w') {
-        output.write(el.textContent + '\t' + el.getAttribute('ana') + '\n');
+        output.write(el.text + '\t' + el.getAttribute('ana') + '\n');
       }
       else if (el.localName === 'c') {
-        output.write(el.textContent + '\tPUN\n');
+        output.write(el.text + '\tPUN\n');
       }
     });
   }

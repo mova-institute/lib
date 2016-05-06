@@ -18,7 +18,7 @@ export class WebapiDocument extends IDocument {
     super();
   }
 
-  get documentElement() {
+  get root() {
     return wrappedOrNull(WebapiElement, this.underlying.documentElement);
   }
 
@@ -49,7 +49,7 @@ export class WebapiNode extends INode {
     return other && this.underlying === other.underlying;
   }
 
-  lang() {
+  getLang() {
     return lang(this);
   }
 
@@ -65,23 +65,19 @@ export class WebapiNode extends INode {
     return this.underlying === this.underlying.ownerDocument.documentElement;
   }
 
-  get nodeName() {
+  get name() {
     return this.underlying.nodeName;
   }
 
-  is(name: string) {
-    return this.nodeName === name;
-  }
-
-  get textContent() {
+  get text() {
     return this.underlying.textContent;
   }
 
-  set textContent(val: string) {
+  set text(val: string) {
     this.underlying.textContent = val;
   }
 
-  get ownerDocument() {
+  get document() {
     return wrappedOrNull(WebapiDocument, this.underlying.ownerDocument);
   }
 
@@ -89,12 +85,12 @@ export class WebapiNode extends INode {
     return switchReturnNodeType(this.underlying.firstChild);
   }
 
-  get parentNode() {
-    return wrappedOrNull(WebapiElement, this.underlying.parentElement);
-  }
-
   get nextSibling() {
     return switchReturnNodeType(this.underlying.nextSibling);
+  }
+
+  get parent() {
+    return wrappedOrNull(WebapiElement, this.underlying.parentElement);
   }
 
   remove() {
@@ -113,14 +109,6 @@ export class WebapiNode extends INode {
 
   insertAfter(newNode: WebapiNode) {
     this.underlying.parentNode.insertBefore(newNode.underlying, this.underlying.nextSibling);
-  }
-
-  parent() {
-    if (this.underlying.parentNode && this.underlying.parentNode.nodeType === Node.ELEMENT_NODE) {
-      return new WebapiElement(<Element>this.underlying.parentNode);
-    }
-
-    return null;
   }
 }
 

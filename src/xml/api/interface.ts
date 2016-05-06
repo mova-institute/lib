@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 export abstract class IDocument {
-  documentElement: IElement;
+  root: IElement;
   abstract createElement(name: string): IElement;
   abstract createTextNode(value: string): INode;
   abstract serialize(): string;
@@ -8,12 +8,13 @@ export abstract class IDocument {
 
 ////////////////////////////////////////////////////////////////////////////////
 export abstract class INode {
-  ownerDocument: IDocument;
+  document: IDocument;
   firstChild: INode;
   nextSibling: INode;
-  parentNode: INode;
-  nodeName: string;
-  textContent: string;
+  /** Returns null if parent is not an element, see http://stackoverflow.com/a/8685780/5271870 */
+  parent: IElement;
+  name: string;
+  text: string;
   abstract equals(other: INode): boolean;
   abstract isElement(): boolean;
   abstract isText(): boolean;
@@ -22,9 +23,7 @@ export abstract class INode {
   abstract insertBefore(newNode: INode): INode;  // todo
   abstract insertAfter(newNode: INode);
   abstract remove(): INode;
-  abstract lang(): string;
-  abstract is(name: string): boolean;
-  abstract parent(): IElement;
+  abstract getLang(): string;  // todo: property?
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,5 +73,3 @@ export abstract class IElement extends INode {
     return replacement;
   }
 }
-
-// todo: when get, when ()?

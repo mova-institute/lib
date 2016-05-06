@@ -11,7 +11,7 @@ export async function stream2lxmlRoot(stream) {
 ////////////////////////////////////////////////////////////////////////////////
 export function string2lxmlRoot(xmlstr: string) {
   let lxmlXml = parseXmlString(xmlstr);
-  return new LibxmlDocument(lxmlXml).documentElement;
+  return new LibxmlDocument(lxmlXml).root;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ export function filename2lxmlRootSync(filename: string) {
   let xmlstr = readFileSync(filename, 'utf8');
   let lxmlXml = parseXmlString(xmlstr);
 
-  return new LibxmlDocument(lxmlXml).documentElement;
+  return new LibxmlDocument(lxmlXml).root;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
