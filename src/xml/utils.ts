@@ -141,7 +141,7 @@ export function traverseDocumentOrder(node: INode, onEnter: ITraverseCallback, o
       return false;
     }
   }
-  for (curNode = node && node.parentNode; curNode; curNode = curNode.parentNode) {
+  for (curNode = node && node.parent; curNode; curNode = curNode.parent) {
     if (curNode.nextSibling) {
       if (traverseDocumentOrder(curNode.nextSibling, onEnter, onLeave) === false) {
         return false;
@@ -170,9 +170,9 @@ export function nextElDocumentOrder(context: IElement, elsOfInterest?: Set<strin
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function walkUpUntil(node, predicate: (node) => boolean) {
-  while (node && predicate(node.parentNode)) {
-    node = node.parentNode;
+export function walkUpUntil(node: INode, predicate: (node: INode) => boolean) {
+  while (node && predicate(node.parent)) {
+    node = node.parent;
   }
 
   return node;
@@ -190,7 +190,7 @@ export function nLevelsDeep(node, n: number) {
 ////////////////////////////////////////////////////////////////////////////////
 export function lang(node: INode): string {
   if (!node.isElement()) {
-    return lang(node.parentNode);
+    return lang(node.parent);
   }
   let el = <IElement>node;
   let ret = el.getAttribute('lang') || el.getAttribute('xml:lang'); // todo
@@ -199,7 +199,7 @@ export function lang(node: INode): string {
       return '';
     }
 
-    return lang(el.parentNode);
+    return lang(el.parent);
   }
 
   return ret;

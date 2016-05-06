@@ -20,7 +20,7 @@
 - etag
 - when variable clashes with keyword how to name it?
 - ask to bump minor version when https://github.com/kmike/DAWG/issues/21 gets fixed
-- make underlying private
+- parentNode to parentElement
 
 - скорочення
 - <supplied>

@@ -1,7 +1,7 @@
 import {LibxmlDocument, LibxmlElement} from './xml/api/libxmljs_implementation';
 import {readFileSync, readSync, Stats, statSync} from 'fs';
-import {parseXmlString} from 'libxmljs';
 import {readTillEnd} from './stream_utils.node';
+const libxmljs = require('libxmljs');
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function stream2lxmlRoot(stream) {
@@ -10,14 +10,14 @@ export async function stream2lxmlRoot(stream) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function string2lxmlRoot(xmlstr: string) {
-  let lxmlXml = parseXmlString(xmlstr);
+  let lxmlXml = libxmljs.parseXmlString(xmlstr);
   return new LibxmlDocument(lxmlXml).root;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function filename2lxmlRootSync(filename: string) {
   let xmlstr = readFileSync(filename, 'utf8');
-  let lxmlXml = parseXmlString(xmlstr);
+  let lxmlXml = libxmljs.parseXmlString(xmlstr);
 
   return new LibxmlDocument(lxmlXml).root;
 }

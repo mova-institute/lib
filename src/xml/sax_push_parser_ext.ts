@@ -1,4 +1,4 @@
-import {SaxParser, SaxPushParser} from 'libxmljs';
+const libxmljs = require('libxmljs');
 import {EventEmitter} from 'events';
 
 
@@ -46,7 +46,7 @@ export class SaxParserExtBase {
 }
 
 export class SaxPushParserExt extends SaxParserExtBase {
-  protected parser = new SaxPushParser();
+  protected parser = new libxmljs.SaxPushParser();
 
   constructor() {
     super();
@@ -59,7 +59,7 @@ export class SaxPushParserExt extends SaxParserExtBase {
 }
 
 export class SaxParserExt extends SaxParserExtBase {
-  protected parser = new SaxParser();
+  protected parser = new libxmljs.SaxParser();
 
   constructor() {
     super();

@@ -2,7 +2,7 @@
 import {walkUpUntil, nLevelsDeep, xmlNsResolver} from './utils';
 import {parseXml, serializeXml} from '../utils.web';
 
-////////////////////////////////////////////////////////////////////////////////
+/*////////////////////////////////////////////////////////////////////////////////
 export function replaceRangeWithStr(range: Range, rangeStr: string) {
   let holeStart = range.startContainer.previousSibling || range.startContainer.parentNode;
   let holeEnd = range.endContainer.nextSibling || range.endContainer.parentNode.nextSibling;
@@ -21,15 +21,15 @@ export function insertRangeStr(hole: Range, rangeStr: string) {
   let fragment = parseXml(rootStr + rangeStr + `</${rootName}>`);  // contextual?
 
   let destDepth = -1;
-  walkUpUntil(hole.startContainer, x => {
+  walkUpUntil(new WebapiNode(hole.startContainer), x => {
     ++destDepth;
-    return x.parentNode === hole.commonAncestorContainer;
+    return x.parent === hole.commonAncestorContainer;
   });
 
   let source = nLevelsDeep(fragment.documentElement.firstChild, destDepth);
 
   mergeTrees(source, hole.startContainer, hole.endContainer);
-}
+}*/
 
 
 ////////////////////////////////////////////////////////////////////////////////

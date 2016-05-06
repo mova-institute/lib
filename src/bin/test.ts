@@ -3,9 +3,10 @@
 // import {readFileSync} from 'fs'
 // import {dirname} from 'path'
 // import * as libxmljs from 'libxmljs'
+const libxmljs = require('libxmljs');
 // import {traverseDepth} from '../xml/utils'
 // import {PgClient} from '../postrges';
-import {parseXmlString} from 'libxmljs';
+// import {parseXmlString} from 'libxmljs';
 import {ClientConfig} from 'pg';
 // import {sleep} from '../lang';
 
@@ -23,7 +24,7 @@ main();
 
 
 async function main() {
-  let root = parseXmlString('<x> a>b </x>');
+  let root = libxmljs.parseXmlString('<x> a>b </x>');
   console.log(root.toString());
 
   // try {

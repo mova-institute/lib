@@ -51,7 +51,7 @@ export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boo
   if (numerate) {
     enumerateWords(root);
   }
-  let ret = serializeXml(root.underlying);
+  let ret = root.document.serialize();
 
   return ret;
 }
