@@ -10,6 +10,10 @@ export class LibxmlDocument extends IDocument {
     super();
   }
 
+  get underlying() {
+    return this._underlying;
+  }
+
   get root() {
     return new LibxmlElement(this._underlying.root());
   }
@@ -50,6 +54,10 @@ export class LibxmlDocument extends IDocument {
 export class LibxmlNode extends INode {
   constructor(protected _underlying) {
     super();
+  }
+
+  get underlying() {
+    return this._underlying;
   }
 
   equals(other: LibxmlNode) {

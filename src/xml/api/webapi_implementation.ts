@@ -18,6 +18,10 @@ export class WebapiDocument extends IDocument {
     super();
   }
 
+  get underlying() {
+    return this._underlying;
+  }
+
   get root() {
     return wrappedOrNull(WebapiElement, this._underlying.documentElement);
   }
@@ -48,6 +52,10 @@ export class WebapiNode extends INode {
   constructor(protected _underlying: Node) {
     super();
   } // todo: protected
+
+  get underlying() {
+    return this._underlying;
+  }
 
   equals(other: WebapiNode) {
     return other && this._underlying === other._underlying;
