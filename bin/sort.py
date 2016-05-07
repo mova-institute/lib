@@ -6,20 +6,20 @@ import ctypes
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('file', type=argparse.FileType('r+'), default=sys.stdin)
-    # parser.add_argument('output', type=argparse.FileType('+'), default=sys.stdout)
-    args = parser.parse_args()
+  parser = argparse.ArgumentParser()
+  parser.add_argument('file', type=argparse.FileType('r+'), default=sys.stdin)
+  # parser.add_argument('output', type=argparse.FileType('+'), default=sys.stdout)
+  args = parser.parse_args()
 
-    lines = []
-    for l in args.file:
-        lines.append(l[:-1])
+  lines = []
+  for l in args.file:
+    lines.append(l[:-1])
 
-    #locale = Locale('uk_UA')
-    # lines = sorted(lines, key=locale.strxfrm)
-    lines = sorted(lines, key=functools.cmp_to_key(mimic_strxfrm_cmp))
-    args.file.seek(0)
-    args.file.write('\n'.join(lines))
+  # locale = Locale('uk_UA')
+  # lines = sorted(lines, key=locale.strxfrm)
+  lines = sorted(lines, key=functools.cmp_to_key(mimic_strxfrm_cmp))
+  args.file.seek(0)
+  args.file.write('\n'.join(lines))
 
 
 # LC_ALL_MASK = 8127
@@ -47,34 +47,32 @@ def main():
 
 
 def mimic_strxfrm_cmp(a, b):
-    if a == b:
-        return 0
-    a_norm = re.sub('\W', '', a).lower()
-    b_norm = re.sub('\W', '', b).lower()
-    if a_norm == b_norm:
-        return mimic_strxfrm_sort_key(a) > mimic_strxfrm_sort_key(b) and 1 or -1
+  if a == b:
+    return 0
+  a_norm = re.sub('\W', '', a).lower()
+  b_norm = re.sub('\W', '', b).lower()
+  if a_norm == b_norm:
+    return mimic_strxfrm_sort_key(a) > mimic_strxfrm_sort_key(b) and 1 or -1
 
-    return mimic_strxfrm_sort_key(a_norm) > mimic_strxfrm_sort_key(b_norm) and 1 or -1
+  return mimic_strxfrm_sort_key(a_norm) > mimic_strxfrm_sort_key(b_norm) and 1 or -1
 
 
 UK_ALPHABET_MAP = {key: value for value, key in enumerate(
-    "<>-'0123456789АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя")}
+  "<>-'0123456789АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя")}
 
 
 def mimic_strxfrm_sort_key(word):
-    ret = []
-    for c in word:
-        if c in UK_ALPHABET_MAP:
-            ret.append(UK_ALPHABET_MAP[c])
-        elif re.match("[a-zA-Z_]", c):
-            ret.append(len(UK_ALPHABET_MAP) + ord(c))
-        else:
-            ret.append(len(UK_ALPHABET_MAP) + ord(c) + ord("z"))
+  ret = []
+  for c in word:
+    if c in UK_ALPHABET_MAP:
+      ret.append(UK_ALPHABET_MAP[c])
+    elif re.match("[a-zA-Z_]", c):
+      ret.append(len(UK_ALPHABET_MAP) + ord(c))
+    else:
+      ret.append(len(UK_ALPHABET_MAP) + ord(c) + ord("z"))
 
-    return ret
-
-
+  return ret
 
 
 if __name__ == "__main__":
-    main()
+  main()

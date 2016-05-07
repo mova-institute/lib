@@ -1,14 +1,14 @@
 {
-	"compilerOptions": {
+  "compilerOptions": {
     "target": "es6",
     "sourceMap": true,
     "outDir": "../lib",
-		"declaration": true,
+    "declaration": true,
     "module": "commonjs",
-		"emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true,
     "pretty": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true
-	}
+  }
 }
