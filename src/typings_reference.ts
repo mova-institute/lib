@@ -1,1 +1,1 @@
-import '../typings/main.d.ts';
+import '../typings/index.d.ts';
