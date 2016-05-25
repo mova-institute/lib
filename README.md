@@ -53,3 +53,8 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - function name (arg) { ... }
 - keep else statements on the same line as their curly braces.
 - multiple blank lines not allowed.
+
+
+- Style 02-07
+- Do use uppercase with underscores when naming constants.
+- Consider naming an interface without an I prefix.
