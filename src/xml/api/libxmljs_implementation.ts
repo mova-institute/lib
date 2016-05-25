@@ -89,6 +89,10 @@ export class LibxmlNode extends INode {
   }
 
   get firstChild() {
+    if (!this.isElement()) {
+      return null;
+    }
+
     return switchReturnNodeType(this.underlying.child(0));
   }
 

@@ -63,7 +63,7 @@ export function encloseInRootNs(value: string, rootName = 'mi:fragment', ns = ['
   for (let i = 1; i < ns.length; ++i) {
     ret += ' xmlns:' + ns[i] + '="' + NS[ns[i]] + '"';
   }
-  ret += '>\n' + value + '\n</' + rootName + '>';
+  ret += '>\n  ' + value + '\n</' + rootName + '>';
 
   return ret;
 }
