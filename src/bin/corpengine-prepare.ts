@@ -7,17 +7,17 @@ const {createReadStream, createWriteStream} = require('fs');
 const {basename} = require('path');
 const globSync = require('glob').sync;
 
-const argv = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2));
 
-if (argv._.length < 2) {
+if (args._.length < 2) {
   console.error(`Usage: ${basename(process.argv[1]) } <input file> [others...] <out file>`);
   process.exit(1);
 }
 
 
 (async() => {
-  let output = createWriteStream(argv._[argv._.length - 1]);
-  for (let glob of argv._.slice(0, -1)) {
+  let output = createWriteStream(args._[args._.length - 1]);
+  for (let glob of args._.slice(0, -1)) {
     for (let filename of globSync(glob)) {
       createReadStream(filename, {encoding: 'utf8'})
         .pipe(new SaxEventObjectifier())

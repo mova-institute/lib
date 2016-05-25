@@ -44,8 +44,8 @@ app.use('/api/join', jwtCheck);
 
 app.all('/api/*', async (req: IReq, res: express.Response) => {
   let actionName = req.params[0];
-  let action = actions[actionName];
-  if (action) {
+  if (actionName in actions) {
+    let action = actions[actionName];
     try {
       await PgClient.transaction(config, async (client) => {
         if (!(await preauth(actionName, req, client))) {
