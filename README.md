@@ -58,3 +58,5 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - Style 02-07
 - Do use uppercase with underscores when naming constants.
 - Consider naming an interface without an I prefix.
+- tslint rules for the Styleguide?
+- Import Line Spacing, Style 03-06
