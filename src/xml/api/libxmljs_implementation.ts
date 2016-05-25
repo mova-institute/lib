@@ -1,5 +1,5 @@
-import {IDocument, INode, IElement} from './interface';
-import {wrappedOrNull, ithGenerated, countGenerated, mixin} from '../../lang';
+import { IDocument, INode, IElement } from './interface';
+import { wrappedOrNull, ithGenerated, countGenerated, mixin } from '../../lang';
 const libxmljs = require('libxmljs');  // typings are wrong, use none
 
 
@@ -34,11 +34,11 @@ export class LibxmlDocument extends IDocument {
 
   serialize() {
     return this._underlying.root().toString(/*{
-      // declaration: false,
-      //format: true,
-      // whitespace: true,
-      // type: 'xml',
-    }*/);
+     // declaration: false,
+     //format: true,
+     // whitespace: true,
+     // type: 'xml',
+     }*/);
   }
 
   equals(other: LibxmlDocument) {

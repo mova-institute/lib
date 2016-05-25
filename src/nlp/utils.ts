@@ -1,13 +1,13 @@
-import {NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements} from '../xml/utils';
-import {W, W_, PC, SE, P} from './common_elements';
+import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements } from '../xml/utils';
+import { W, W_, PC, SE, P } from './common_elements';
 import * as elements from './common_elements';
-import {r, last} from '../lang';
-import {INode, IElement, IDocument} from '../xml/api/interface';
-import {MorphAnalyzer} from './morph_analyzer/morph_analyzer';
-import {$t} from './text_token';
-import {IMorphInterp} from './interfaces';
-import {MorphTag, compareTags} from './morph_tag';
-import {WCHAR_UK_RE, WCHAR, WCHAR_RE} from './static';
+import { r, last } from '../lang';
+import { INode, IElement, IDocument } from '../xml/api/interface';
+import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
+import { $t } from './text_token';
+import { IMorphInterp } from './interfaces';
+import { MorphTag, compareTags } from './morph_tag';
+import { WCHAR_UK_RE, WCHAR, WCHAR_RE } from './static';
 
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'p'),
@@ -193,7 +193,7 @@ function tagWord(el: IElement, morphTags: Set<IMorphInterp>) {
   for (let morphTag of morphTags) {
     let w = el.document.createElement('w');
     w.text = el.text;
-    let {lemma, tag} = morphTag;
+    let { lemma, tag } = morphTag;
     w.setAttribute('lemma', lemma);
     w.setAttribute('ana', tag);
     miw.appendChild(w);

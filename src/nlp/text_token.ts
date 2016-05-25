@@ -1,9 +1,9 @@
-import {INode, IElement} from '../xml/api/interface';
-import {W, W_, P, L, SE, PC} from './common_elements';
-import {ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl} from './utils';
-import {traverseDocumentOrderEl, nextElDocumentOrder} from '../xml/utils';
-import {wrappedOrNull} from '../lang';
-import {IMorphInterp} from './interfaces';
+import { INode, IElement } from '../xml/api/interface';
+import { W, W_, P, L, SE, PC } from './common_elements';
+import { ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl } from './utils';
+import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils';
+import { wrappedOrNull } from '../lang';
+import { IMorphInterp } from './interfaces';
 
 
 

@@ -1,4 +1,4 @@
-import {numericCompare} from './lang';
+import { numericCompare } from './lang';
 
 const TABLE =
   ' !\'()*+,-./0123456789:;<=>?@' +

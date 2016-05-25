@@ -1,6 +1,6 @@
-import {Dictionary} from './dictionary';
-import {Guide} from './guide';
-import {encodeUtf8, b64decodeFromArray} from '../codec';
+import { Dictionary } from './dictionary';
+import { Guide } from './guide';
+import { encodeUtf8, b64decodeFromArray } from '../codec';
 
 
 
@@ -35,11 +35,10 @@ export class CompletionDawg extends Dawg {
 ////////////////////////////////////////////////////////////////////////////////
 export class BytesDawg extends CompletionDawg {
 
-  constructor(
-    dic: Dictionary,
-    guide: Guide,
-    private _payloadSeparator = 0b1,
-    private _binasciiWorkaround = false)  // see https://github.com/kmike/DAWG/issues/21
+  constructor(dic: Dictionary,
+              guide: Guide,
+              private _payloadSeparator = 0b1,
+              private _binasciiWorkaround = false)  // see https://github.com/kmike/DAWG/issues/21
   {
     super(dic, guide);
   }
@@ -62,12 +61,11 @@ export class BytesDawg extends CompletionDawg {
 ////////////////////////////////////////////////////////////////////////////////
 export class ObjectDawg<T> extends BytesDawg {
 
-  constructor(
-    dic: Dictionary,
-    guide: Guide,
-    private _deserializer: (bytes: ArrayBuffer) => T,
-    payloadSeparator: number,
-    _binasciiWorkaround = false) {
+  constructor(dic: Dictionary,
+              guide: Guide,
+              private _deserializer: (bytes: ArrayBuffer) => T,
+              payloadSeparator: number,
+              _binasciiWorkaround = false) {
     super(dic, guide, payloadSeparator, _binasciiWorkaround);
   }
 

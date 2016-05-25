@@ -1,4 +1,4 @@
-import {Readable} from 'stream';
+import { Readable } from 'stream';
 
 ////////////////////////////////////////////////////////////////////////////////
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {

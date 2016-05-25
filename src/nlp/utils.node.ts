@@ -1,7 +1,7 @@
-import {markWordwiseDiff, normalizeCorpusText} from './utils';
-import {string2lxmlRoot} from '../utils.node';
-import {LibxmlElement} from '../xml/api/libxmljs_implementation';
-import {AllHtmlEntities} from 'html-entities';
+import { markWordwiseDiff, normalizeCorpusText } from './utils';
+import { string2lxmlRoot } from '../utils.node';
+import { LibxmlElement } from '../xml/api/libxmljs_implementation';
+import { AllHtmlEntities } from 'html-entities';
 
 
 ////////////////////////////////////////////////////////////////////////////////

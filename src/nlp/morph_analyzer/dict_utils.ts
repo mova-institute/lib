@@ -1,5 +1,5 @@
-import {JsonCompareMap, NumeratedSet} from '../../data_structures';
-import {longestCommonSubstring} from '../../algo';
+import { JsonCompareMap, NumeratedSet } from '../../data_structures';
+import { longestCommonSubstring } from '../../algo';
 
 export const PARADIGM_PREFIXES = NumeratedSet.fromUniqueArray([''].sort());  // todo
 export const COMPARATOR = new Intl.Collator('uk-UA').compare;
@@ -22,18 +22,18 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
   let suffixBag = new Set<string>();
 
   for (let lexeme of lexemes) {
-    let {forms, paradigm} = extractParadigm(lexeme, PARADIGM_PREFIXES.ids);
-    let {prefixes, suffixes, tags} = paradigm;
+    let { forms, paradigm } = extractParadigm(lexeme, PARADIGM_PREFIXES.ids);
+    let { prefixes, suffixes, tags } = paradigm;
 
     allTags.add(...tags);
     suffixes.forEach(x => suffixBag.add(x));
 
     if (!paradigmIds.has(paradigm)) {
       paradigmIds.set(paradigm, paradigms.push({
-        prefixes: prefixes.map(x => PARADIGM_PREFIXES.id(x)),
-        suffixes,
-        tags: paradigm.tags.map(x => allTags.id(x)),
-      }) - 1);
+          prefixes: prefixes.map(x => PARADIGM_PREFIXES.id(x)),
+          suffixes,
+          tags: paradigm.tags.map(x => allTags.id(x)),
+        }) - 1);
     }
     let paradigmId = paradigmIds.get(paradigm);
     paradigmPopularity[paradigmId] = paradigmPopularity[paradigmId] + 1 || 1;
@@ -41,9 +41,9 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
     for (let i = 0; i < forms.length; ++i) {
       allWords.push([forms[i], paradigmId, i]);
       /*let topush = [...miEncode(forms[i]), 1,
-        ...b64encode([...num2Uint16BytesBE(paradigmId), ...num2Uint16BytesBE(i)])];
-      allWords.push(topush);
-      //console.log(topush);*/
+       ...b64encode([...num2Uint16BytesBE(paradigmId), ...num2Uint16BytesBE(i)])];
+       allWords.push(topush);
+       //console.log(topush);*/
     }
   }
 

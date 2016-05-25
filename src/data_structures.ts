@@ -1,7 +1,7 @@
-
 ////////////////////////////////////////////////////////////////////////////////
 export class JsonCompareSet<T> {
   private _map = new Map<string, T>();
+
   constructor(iterable?: Iterable<T>) {
     //super(iterable);  // todo
   }

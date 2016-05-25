@@ -1,5 +1,5 @@
-import {SaxEventObject} from './sax_event_object';
-import {Transform} from 'stream';
+import { SaxEventObject } from './sax_event_object';
+import { Transform } from 'stream';
 
 
 

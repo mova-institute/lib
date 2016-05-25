@@ -1,11 +1,11 @@
-import {Dictionary} from './dictionary';
-import {Guide} from './guide';
-import {Dawg, CompletionDawg, ObjectDawg} from './dawg';
+import { Dictionary } from './dictionary';
+import { Guide } from './guide';
+import { Dawg, CompletionDawg, ObjectDawg } from './dawg';
 
-import {buffer2typedArray} from '../utils.node';
-import {readNBytesSync} from '../utils.node';
+import { buffer2typedArray } from '../utils.node';
+import { readNBytesSync } from '../utils.node';
 
-import {openSync} from 'fs';
+import { openSync } from 'fs';
 
 
 ////////////////////////////////////////////////////////////////////////////////

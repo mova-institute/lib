@@ -1,11 +1,11 @@
-import {ioArgsPlain} from '../cli_utils';
-import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
-import {readTillEnd} from '../stream_utils.node';
-import {tokenizeTei, tagTokenizedDom, enumerateWords} from '../nlp/utils';
-import {string2lxmlRoot} from '../utils.node';
-import {encloseInRootNsIf} from '../xml/utils';
-import {createReadStream, readFileSync} from 'fs';
-import {getLibRootRelative} from '../path.node';
+import { ioArgsPlain } from '../cli_utils';
+import { createMorphAnalyserSync } from '../nlp/morph_analyzer/factories.node';
+import { readTillEnd } from '../stream_utils.node';
+import { tokenizeTei, tagTokenizedDom, enumerateWords } from '../nlp/utils';
+import { string2lxmlRoot } from '../utils.node';
+import { encloseInRootNsIf } from '../xml/utils';
+import { createReadStream, readFileSync } from 'fs';
+import { getLibRootRelative } from '../path.node';
 
 const args = require('minimist')(process.argv.slice(2), {
   boolean: ['n', 'numerate', 'tokenize'],

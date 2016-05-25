@@ -1,7 +1,7 @@
-import {CompiledDict} from './dict_utils';
-import {writeFileSync, writeSync, closeSync, openSync, unlinkSync} from 'fs';
-import {execSync} from 'child_process';
-import {join} from 'path';
+import { CompiledDict } from './dict_utils';
+import { writeFileSync, writeSync, closeSync, openSync, unlinkSync } from 'fs';
+import { execSync } from 'child_process';
+import { join } from 'path';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -11,10 +11,10 @@ export function writeCompiledDict(path: string, compiledDict: CompiledDict) {
   writeFileSync(path + '/words.dawg.json', JSON.stringify(compiledDict.words), 'utf8');
 
   /*let wordsStream = createWriteStream(path + '/words.dawg.lst', 'utf8');
-  for (let bytes of compiledDict.words) {
-    wordsStream.write(bytes.join(' ') + '\n');
-  }
-  compiledDict.words = null;*/
+   for (let bytes of compiledDict.words) {
+   wordsStream.write(bytes.join(' ') + '\n');
+   }
+   compiledDict.words = null;*/
 
   let f = openSync(path + '/paradigms.bin', 'w');
   for (let paradigm of compiledDict.paradigms) {

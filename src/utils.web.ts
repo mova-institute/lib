@@ -1,4 +1,4 @@
-import {xmlNsResolver, removeXmlns} from './xml/utils';
+import { xmlNsResolver, removeXmlns } from './xml/utils';
 
 //------------------------------------------------------------------------------
 let xmlSerializer: XMLSerializer;

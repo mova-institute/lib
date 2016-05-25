@@ -1,6 +1,6 @@
-import {LibxmlDocument, LibxmlElement} from './xml/api/libxmljs_implementation';
-import {readFileSync, readSync, Stats, statSync} from 'fs';
-import {readTillEnd} from './stream_utils.node';
+import { LibxmlDocument, LibxmlElement } from './xml/api/libxmljs_implementation';
+import { readFileSync, readSync, Stats, statSync } from 'fs';
+import { readTillEnd } from './stream_utils.node';
 const libxmljs = require('libxmljs');
 
 ////////////////////////////////////////////////////////////////////////////////

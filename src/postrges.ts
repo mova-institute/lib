@@ -1,4 +1,4 @@
-import {connect, Client, ClientConfig, QueryResult} from 'pg';
+import { connect, Client, ClientConfig, QueryResult } from 'pg';
 const types = require('pg').types;
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');

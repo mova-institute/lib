@@ -1,17 +1,16 @@
-import {ObjectDawg} from '../../dawg/dawg';
-import {IMorphInterp} from '../interfaces';
+import { ObjectDawg } from '../../dawg/dawg';
+import { IMorphInterp } from '../interfaces';
 // import {WCHAR_NOT_UK_RE} from '../static';
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
-  constructor(
-    private _words: ObjectDawg<WordDawgPayload>,
-    private _paradigms: Array<Uint16Array>,
-    private _suffixes: Array<string>,
-    private _tags: Array<string>,
-    private _numberTag: string,
-    private _xTag: string) {
-    }
+  constructor(private _words: ObjectDawg<WordDawgPayload>,
+              private _paradigms: Array<Uint16Array>,
+              private _suffixes: Array<string>,
+              private _tags: Array<string>,
+              private _numberTag: string,
+              private _xTag: string) {
+  }
 
   dictHas(token: string) {
     return this._words.has(token) || this._words.has(token.toLowerCase());
@@ -19,7 +18,7 @@ export class MorphAnalyzer {
 
   tag(token: string) {
     if (/^\d+$/.test(token)) {
-      return new Set<IMorphInterp>([{lemma: token, tag: this._numberTag}]);
+      return new Set<IMorphInterp>([{ lemma: token, tag: this._numberTag }]);
     }
 
     // if (WCHAR_NOT_UK_RE.test(token)) {

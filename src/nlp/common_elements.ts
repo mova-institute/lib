@@ -1,4 +1,4 @@
-import {NS, nameNs} from '../xml/utils';
+import { NS, nameNs } from '../xml/utils';
 
 
 export const W = nameNs(NS.tei, 'w');

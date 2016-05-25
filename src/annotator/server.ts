@@ -2,8 +2,8 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as actions from './api';
 import * as cookieParser from 'cookie-parser';
-import {PgClient} from '../postrges';
-import {ClientConfig} from 'pg';
+import { PgClient } from '../postrges';
+import { ClientConfig } from 'pg';
 import * as debugFactory from 'debug';
 const jwt = require('express-jwt');
 
@@ -70,8 +70,6 @@ app.all('/api/*', async (req: IReq, res: express.Response) => {
 });
 
 app.listen(8888);
-
-
 
 
 

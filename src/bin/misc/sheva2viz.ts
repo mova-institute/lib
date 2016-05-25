@@ -1,6 +1,6 @@
-import {nonemptyLinesSync} from '../../utils.node';
-import {createWriteStream} from 'fs';
-import {DefaultMap} from '../../data_structures';
+import { nonemptyLinesSync } from '../../utils.node';
+import { createWriteStream } from 'fs';
+import { DefaultMap } from '../../data_structures';
 
 const args = require('minimist')(process.argv.slice(2));
 

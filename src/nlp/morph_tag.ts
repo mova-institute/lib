@@ -1,5 +1,5 @@
-import {indexTableByColumns, overflowNegative} from '../algo';
-import {isOddball, compare, zipLongest} from '../lang';
+import { indexTableByColumns, overflowNegative } from '../algo';
+import { isOddball, compare, zipLongest } from '../lang';
 
 export enum Pos {
   noun,

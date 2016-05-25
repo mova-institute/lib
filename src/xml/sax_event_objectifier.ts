@@ -1,7 +1,7 @@
-import {SaxEventObject} from './sax_event_object';
-import {nameNs} from '../xml/utils';
-import {Transform} from 'stream';
-import {SaxParserExtBase, SaxPushParserExt} from '../xml/sax_push_parser_ext';
+import { SaxEventObject } from './sax_event_object';
+import { nameNs } from '../xml/utils';
+import { Transform } from 'stream';
+import { SaxParserExtBase, SaxPushParserExt } from '../xml/sax_push_parser_ext';
 
 
 

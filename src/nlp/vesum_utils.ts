@@ -1,7 +1,6 @@
-import {tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER,
-  RequiredCase, PronominalType, ConjunctionType, compareTags} from './morph_tag';
-import {groupTableBy, arr2indexMap, combinations, stableSort, unique} from '../algo';
-import {IMorphInterp} from './interfaces';
+import { tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER, RequiredCase, PronominalType, ConjunctionType, compareTags } from './morph_tag';
+import { groupTableBy, arr2indexMap, combinations, stableSort, unique } from '../algo';
+import { IMorphInterp } from './interfaces';
 
 
 const FORM_PADDING = '  ';
@@ -79,7 +78,7 @@ export function expandDictCorpViz(fileStr: string) {
     let main = [];
     let alt = [];
     let lemmaTag = expandAndSortVesumTag(lexeme[0].tag.replace('&_', '&'))[0];
-    for (let {form, tag} of lexeme) {
+    for (let { form, tag } of lexeme) {
       let [mainFlagsStr, altFlagsStr] = splitMainAltFlags(tag);
       main.push(...expandAndSortVesumTag(mainFlagsStr, lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')));
       if (altFlagsStr) {
@@ -125,7 +124,7 @@ function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {
-  for (let {lemmaTag, tag} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+  for (let { lemmaTag, tag } of iterateDictCorpVizLines(fileStr.split('\n'))) {
     MorphTag.fromVesumStr(tag, lemmaTag);
   }
 }
@@ -208,7 +207,7 @@ function alignTagList(flags: string[][]) {
 ////////////////////////////////////////////////////////////////////////////////
 export function findUnidentifiableRows(fileStr: string) {
   let set = new Set<string>();
-  for (let {form, tag, lemma} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+  for (let { form, tag, lemma } of iterateDictCorpVizLines(fileStr.split('\n'))) {
     let key = `${form} ${tag} ${lemma}`;
     if (set.has(key)) {
       console.log(key);

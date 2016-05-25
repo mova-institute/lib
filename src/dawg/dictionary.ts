@@ -2,7 +2,7 @@
 export class Dictionary {
   private _rootIndex = 0;
 
-  constructor(private _units: Uint32Array) {}
+  constructor(private _units: Uint32Array) { }
 
   has(bytes: Iterable<number>): boolean {
     let index = this.followBytes(bytes);

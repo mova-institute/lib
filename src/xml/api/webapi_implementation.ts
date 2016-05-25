@@ -1,8 +1,8 @@
-import {IDocument, INode, IElement} from './interface';
-import {nameNs} from '../utils';
-import {xpath} from '../utils.web';
-import {wrappedOrNull, mixin} from '../../lang';
-import {serializeXml} from '../../utils.web';
+import { IDocument, INode, IElement } from './interface';
+import { nameNs } from '../utils';
+import { xpath } from '../utils.web';
+import { wrappedOrNull, mixin } from '../../lang';
+import { serializeXml } from '../../utils.web';
 
 
 // todo: get rid of (<Element>this.underlying)

@@ -1,5 +1,5 @@
 const libxmljs = require('libxmljs');
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 
 
 export class SaxParserExtBase {
@@ -19,7 +19,7 @@ export class SaxParserExtBase {
     return this;
   }
 
-  push(chunk: string) {};
+  push(chunk: string) { }
 
   protected initParser(parser: EventEmitter) {
     parser.on('startElementNS', (elem, attrs, prefix, uri, ns) => {
@@ -37,8 +37,8 @@ export class SaxParserExtBase {
   private _emitStartIfBuffered() {
     if (this.curElem.length) {
       //for (let listener of this.listeners) {
-        this.listeners[0](this.curElem[0], this.curElem[1], this.curElem[2],
-                 this.curElem[3], this.curElem[4], this.textBuf);
+      this.listeners[0](this.curElem[0], this.curElem[1], this.curElem[2],
+        this.curElem[3], this.curElem[4], this.textBuf);
       ///}
     }
     this.textBuf = '';

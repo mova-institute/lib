@@ -1,4 +1,4 @@
-import {INode, IElement} from './api/interface';
+import { INode, IElement } from './api/interface';
 
 // todo: move out
 export const NS = {
@@ -119,8 +119,8 @@ export function traverseDepth(node: INode, onEnter: ITraverseCallback, onLeave?:
   }
   if (directive !== 'skip') {
     for (let cur = node.firstChild, next = cur && cur.nextSibling;
-      cur;
-      cur = next, next = next && next.nextSibling) {
+         cur;
+         cur = next, next = next && next.nextSibling) {
 
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
@@ -228,45 +228,45 @@ export function pretty(xmlstr: string) {
         inComment = false;
       }
     } else
-      // end comment  or <![CDATA[...]]> //
-      if (ar[i].search(/-->/) > -1 || ar[i].search(/\]>/) > -1) {
-        str += ar[i];
-        inComment = false;
-      } else
-        // <elm></elm> //
-        if (/^<\w/.exec(ar[i - 1]) && /^<\/\w/.exec(ar[i]) && /^<[\w:\-\.\,]+/.exec(ar[i - 1])[0] === /^<\/[\w:\-\.\,]+/.exec(ar[i])[0].replace('/', '')) {
-          str += ar[i];
-          if (!inComment) {
-            --deep;
-          }
-        } else
-          // <elm> //
-          if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) === -1 && ar[i].search(/\/>/) === -1) {
-            str = !inComment ? str += shift[deep++] + ar[i] : str += ar[i];
-          } else
-            // <elm>...</elm> //
-            if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) > -1) {
-              str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
-            } else
-              // </elm> //
-              if (ar[i].search(/<\//) > -1) {
-                str = !inComment ? str += shift[--deep] + ar[i] : str += ar[i];
-              } else
-                // <elm/> //
-                if (ar[i].search(/\/>/) > -1) {
-                  str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
-                } else
-                  // <? xml ... ?> //
-                  if (ar[i].search(/<\?/) > -1) {
-                    str += shift[deep] + ar[i];
-                  } else
-                    // xmlns //
-                    if (ar[i].search(/xmlns\:/) > -1 || ar[i].search(/xmlns\=/) > -1) {
-                      str += shift[deep] + ar[i];
-                    }
-                    else {
-                      str += ar[i];
-                    }
+    // end comment  or <![CDATA[...]]> //
+    if (ar[i].search(/-->/) > -1 || ar[i].search(/\]>/) > -1) {
+      str += ar[i];
+      inComment = false;
+    } else
+    // <elm></elm> //
+    if (/^<\w/.exec(ar[i - 1]) && /^<\/\w/.exec(ar[i]) && /^<[\w:\-\.\,]+/.exec(ar[i - 1])[0] === /^<\/[\w:\-\.\,]+/.exec(ar[i])[0].replace('/', '')) {
+      str += ar[i];
+      if (!inComment) {
+        --deep;
+      }
+    } else
+    // <elm> //
+    if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) === -1 && ar[i].search(/\/>/) === -1) {
+      str = !inComment ? str += shift[deep++] + ar[i] : str += ar[i];
+    } else
+    // <elm>...</elm> //
+    if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) > -1) {
+      str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
+    } else
+    // </elm> //
+    if (ar[i].search(/<\//) > -1) {
+      str = !inComment ? str += shift[--deep] + ar[i] : str += ar[i];
+    } else
+    // <elm/> //
+    if (ar[i].search(/\/>/) > -1) {
+      str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
+    } else
+    // <? xml ... ?> //
+    if (ar[i].search(/<\?/) > -1) {
+      str += shift[deep] + ar[i];
+    } else
+    // xmlns //
+    if (ar[i].search(/xmlns\:/) > -1 || ar[i].search(/xmlns\=/) > -1) {
+      str += shift[deep] + ar[i];
+    }
+    else {
+      str += ar[i];
+    }
   }
 
   return (str[0] === '\n') ? str.slice(1) : str;

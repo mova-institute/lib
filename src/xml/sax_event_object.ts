@@ -1,17 +1,17 @@
-import {namePrefixed, libxmlSaxAttrs, escape} from '../xml/utils';
+import { namePrefixed, libxmlSaxAttrs, escape } from '../xml/utils';
 
 export class SaxEventObject {
   private _attrsMapCache: Map<string, string> = null;
 
-  constructor(
-    public type: string,
-    public el: string,
-    public text?: string,
-    public attrsNs?: Array<[string, string, string, string]>,
-    public prefix?: string,
-    public elem?: string,
-    public uri?: string,
-    public ns?: Array<any>) { }
+  constructor(public type: string,
+              public el: string,
+              public text?: string,
+              public attrsNs?: Array<[string, string, string, string]>,
+              public prefix?: string,
+              public elem?: string,
+              public uri?: string,
+              public ns?: Array<any>) {
+  }
 
   toString() {
     return `${this.type}-${this.el}-${this.text || ''}`;

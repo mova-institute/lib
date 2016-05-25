@@ -1,6 +1,6 @@
-import {linesSync} from '../utils.node';
-import {complement} from '../lang';
-import {writeFileSync} from 'fs';
+import { linesSync } from '../utils.node';
+import { complement } from '../lang';
+import { writeFileSync } from 'fs';
 
 const args = require('minimist')(process.argv.slice(2));
 

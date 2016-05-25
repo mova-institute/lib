@@ -1,7 +1,7 @@
-import {tagStr} from '../xml/utils';
-import {W, W_, PC, SS, SE, G, P, S, SP, TEI} from './common_elements';
-import {Transform} from 'stream';
-import {SaxEventObject} from '../xml/sax_event_object';
+import { tagStr } from '../xml/utils';
+import { W, W_, PC, SS, SE, G, P, S, SP, TEI } from './common_elements';
+import { Transform } from 'stream';
+import { SaxEventObject } from '../xml/sax_event_object';
 
 const AMBIG_SEP = ';';
 const ELEMS_TO_REPUSH = new Set([P, S, SP]);

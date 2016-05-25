@@ -1,6 +1,6 @@
-import {ioArgsPlain} from '../cli_utils';
-import {stream2lxmlRoot} from '../utils.node';
-import {getStats} from '../nlp/utils';
+import { ioArgsPlain } from '../cli_utils';
+import { stream2lxmlRoot } from '../utils.node';
+import { getStats } from '../nlp/utils';
 
 
 ioArgsPlain(async (input, output) => {

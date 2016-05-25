@@ -7,7 +7,7 @@ const libxmljs = require('libxmljs');
 // import {traverseDepth} from '../xml/utils'
 // import {PgClient} from '../postrges';
 // import {parseXmlString} from 'libxmljs';
-import {ClientConfig} from 'pg';
+import { ClientConfig } from 'pg';
 // import {sleep} from '../lang';
 
 export const config: ClientConfig = {

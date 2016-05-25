@@ -1,5 +1,5 @@
-import {createReadStream} from 'fs';
-import {createInterface} from 'readline';
+import { createReadStream } from 'fs';
+import { createInterface } from 'readline';
 
 const args = require('minimist')(process.argv.slice(2));
 
@@ -31,7 +31,7 @@ function f(pack: Pack) {
   let tag2forms = new Map<string, Array<string>>();
   let dupTags = new Map<string, string>();
   for (let i = 0; i < pack.length; ++i) {
-    let {form, tag} = pack[i];
+    let { form, tag } = pack[i];
 
     // todo: delete :rare and stuff
     let tagNorm = tag.split(':').sort().join(':');
@@ -65,7 +65,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       dupTags.delete(tagNorm);
     }
     else if ((tagSet.has('adj') || tagSet.has('adjp')
-        || tagSet.has('noun') /*&& tagSet.has('anim')*/)
+      || tagSet.has('noun') /*&& tagSet.has('anim')*/)
       && tagSet.has('v_mis') && forms.length === 2
       && forms[0].endsWith('ім') && forms[1].endsWith('ому')) {
       dupTags.delete(tagNorm);
@@ -93,7 +93,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
         || forms[0].endsWith('ем') && forms[1].endsWith('емо')
         || forms[0].endsWith('им') && forms[1].endsWith('имо')
         || forms[0].endsWith('їм') && forms[1].endsWith('їмо')
-        )) {
+      )) {
       dupTags.delete(tagNorm);
     }
     // переселім, переселімо
@@ -103,7 +103,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       && tagSet.has('1')
       && forms.length === 2
       && (forms[0].endsWith('ім') && forms[1].endsWith('імо')
-        )) {
+      )) {
       dupTags.delete(tagNorm);
     }
     else if (tagSet.has('verb')
@@ -112,7 +112,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       && tagSet.has('1')
       && forms.length === 3
       && (forms[0].endsWith('мось') && forms[1].endsWith('мося') && forms[2].endsWith('мся')
-        )) {
+      )) {
       dupTags.delete(tagNorm);
     }
     // відгорнено, відгорнуто
@@ -122,7 +122,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       && forms.length === 2
       && (forms[0].endsWith('ено') && forms[1].endsWith('уто')
         || forms[0].endsWith('ено') && forms[1].endsWith('ото')
-        )) {
+      )) {
       dupTags.delete(tagNorm);
     }
     // натягла, натягнула
@@ -143,18 +143,18 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       && tagSet.has('2')
       && forms.length === 2
       && (forms[0].endsWith('и') && forms[1].endsWith('іть')
-        )) {
+      )) {
       dupTags.delete(tagNorm);
     }
     else if (tagSet.has('noun')
       && tagSet.has('v_dav')
       && forms.length === 2
       && (forms[0].endsWith('ові') && forms[1].endsWith('у')
-        || forms[0].endsWith('ові') && forms[1].endsWith('ю')
-        || forms[0].endsWith('еві') && forms[1].endsWith('у')
-        || forms[0].endsWith('еві') && forms[1].endsWith('ю')
-        || forms[0].endsWith('єві') && forms[1].endsWith('ю'))
-        ) {
+      || forms[0].endsWith('ові') && forms[1].endsWith('ю')
+      || forms[0].endsWith('еві') && forms[1].endsWith('у')
+      || forms[0].endsWith('еві') && forms[1].endsWith('ю')
+      || forms[0].endsWith('єві') && forms[1].endsWith('ю'))
+    ) {
       dupTags.delete(tagNorm);
     }
     else if (tagSet.has('noun')
@@ -162,7 +162,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       && forms.length === 2
       && (forms[0].endsWith('ові') && forms[1].endsWith('у')
         /*|| forms[0].endsWith('єві') && forms[1].endsWith('ю')*/)
-      ) {
+    ) {
       dupTags.delete(tagNorm);
     }
     // Краснопільне, Краснопільного
@@ -173,7 +173,7 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       && forms.length === 2
       && (forms[0].endsWith('е') && forms[1].endsWith('ого')
         /*|| forms[0].endsWith('єві') && forms[1].endsWith('ю')*/)
-      ) {
+    ) {
       dupTags.delete(tagNorm);
     }
     // підприємстві, підприємству
@@ -182,21 +182,21 @@ function filter(dupTags: Map<string, string>, tag2forms: Map<string, Array<strin
       && tagSet.has('v_mis')
       && forms.length === 2
       && (forms[0].endsWith('і') && forms[1].endsWith('у')
-        || forms[0].endsWith('ї') && forms[1].endsWith('ю'))
-      ) {
+      || forms[0].endsWith('ї') && forms[1].endsWith('ю'))
+    ) {
       dupTags.delete(tagNorm);
     }
     else if (tagSet.has('noun')
       && tagSet.has('v_mis')
       && tagSet.has('m')
-      /*&& forms.length === 3
-			&& (forms[0].endsWith('і') && forms[1].endsWith('ові') && forms[2].endsWith('у')
-				|| forms[0].endsWith('еві') && forms[1].endsWith('і') && forms[2].endsWith('у')
-				|| forms[0].endsWith('еві') && forms[1].endsWith('і') && forms[2].endsWith('ю')
-				|| forms[0].endsWith('єві') && forms[1].endsWith('ї') && forms[2].endsWith('ю')
-				|| forms[0].endsWith('є') && forms[1].endsWith('ї') && forms[2].endsWith('ю')
-				|| forms[0].endsWith('ові') && forms[1].endsWith('у') && forms[2].endsWith('і')
-			)*/) {
+    /*&& forms.length === 3
+     && (forms[0].endsWith('і') && forms[1].endsWith('ові') && forms[2].endsWith('у')
+     || forms[0].endsWith('еві') && forms[1].endsWith('і') && forms[2].endsWith('у')
+     || forms[0].endsWith('еві') && forms[1].endsWith('і') && forms[2].endsWith('ю')
+     || forms[0].endsWith('єві') && forms[1].endsWith('ї') && forms[2].endsWith('ю')
+     || forms[0].endsWith('є') && forms[1].endsWith('ї') && forms[2].endsWith('ю')
+     || forms[0].endsWith('ові') && forms[1].endsWith('у') && forms[2].endsWith('і')
+     )*/) {
       dupTags.delete(tagNorm);
     }
     // шулік, шуліки

@@ -1,4 +1,4 @@
-import {lexCompare} from './lang';
+import { lexCompare } from './lang';
 
 ////////////////////////////////////////////////////////////////////////////////
 export function uniqValuedMap2array(map) {

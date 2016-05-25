@@ -1,6 +1,6 @@
-import {rysin2multext} from '../nlp/rysin2mulext';
-import {ioArgsPlain} from '../cli_utils';
-import {createInterface} from 'readline';
+import { rysin2multext } from '../nlp/rysin2mulext';
+import { ioArgsPlain } from '../cli_utils';
+import { createInterface } from 'readline';
 
 
 ioArgsPlain((input, output) => {

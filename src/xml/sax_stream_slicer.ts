@@ -1,5 +1,5 @@
-import {Transform} from 'stream';
-import {SaxEventObject} from '../xml/sax_event_object';
+import { Transform } from 'stream';
+import { SaxEventObject } from '../xml/sax_event_object';
 
 enum State { PRISTINE, STARTED, STOPPED }
 

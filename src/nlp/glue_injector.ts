@@ -1,7 +1,7 @@
-import {Transform} from 'stream';
-import {G, W, W_, PC} from './common_elements';
-import {SaxEventObject} from '../xml/sax_event_object';
-import {haveSpaceBetween} from '../nlp/utils';
+import { Transform } from 'stream';
+import { G, W, W_, PC } from './common_elements';
+import { SaxEventObject } from '../xml/sax_event_object';
+import { haveSpaceBetween } from '../nlp/utils';
 
 
 export class GlueInjector extends Transform {
@@ -20,7 +20,7 @@ export class GlueInjector extends Transform {
     if (event.el === W_ || event.el === PC) {
       if (event.type === 'start') {
         if (this._prevEvent && !haveSpaceBetween(
-          this._prevEvent.el, this._prevEvent.text, event.el, event.text)) {
+            this._prevEvent.el, this._prevEvent.text, event.el, event.text)) {
 
           this._pushGlue();
         }

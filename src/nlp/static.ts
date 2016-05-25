@@ -1,4 +1,4 @@
-import {r} from '../lang';
+import { r } from '../lang';
 
 
 // todo: wait for unicode in node's V8

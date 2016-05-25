@@ -1,7 +1,7 @@
-import {createMorphAnalyserSync} from '../nlp/morph_analyzer/factories.node';
-import {string2lxmlRoot} from '../utils.node';
-import {tokenizeTei} from '../nlp/utils';
-import {getLibRootRelative} from '../path.node';
+import { createMorphAnalyserSync } from '../nlp/morph_analyzer/factories.node';
+import { string2lxmlRoot } from '../utils.node';
+import { tokenizeTei } from '../nlp/utils';
+import { getLibRootRelative } from '../path.node';
 
 let morphAnalyzer = createMorphAnalyserSync(getLibRootRelative('..', 'data', 'dict', 'vesum'));
 

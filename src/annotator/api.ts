@@ -1,10 +1,10 @@
 import * as express from 'express';
-import {PgClient} from '../postrges';
-import {genAccessToken} from '../crypto';
-import {IReq, debug, HttpError} from './server';
-import {mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask} from './business';
-import {markConflicts, markResolveConflicts} from './business.node';
-import {firstNWords} from '../nlp/utils';
+import { PgClient } from '../postrges';
+import { genAccessToken } from '../crypto';
+import { IReq, debug, HttpError } from './server';
+import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business';
+import { markConflicts, markResolveConflicts } from './business.node';
+import { firstNWords } from '../nlp/utils';
 import * as assert from 'assert';
 
 
@@ -18,9 +18,9 @@ const COOKIE_CONFIG = {
 ////////////////////////////////////////////////////////////////////////////////
 export async function callDb(req, res: express.Response, client: PgClient) {
   /*if (dbProceduresAllowedToBeCalledDirectly.has(req.query.name)) {
-    let result = await client.call(req.query.name, req.user.id, ...req.query.params);
-    res.json(result);
-  }*/
+   let result = await client.call(req.query.name, req.user.id, ...req.query.params);
+   res.json(result);
+   }*/
 
   // todo
 }
@@ -260,7 +260,7 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
         for (let fragment of task.fragments) {
           assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts');
           let [mine, theirs] = fragment.annotations;
-          let {marked, numDiffs} = markConflicts(taskInDb.step, mine.content, theirs.content);
+          let { marked, numDiffs } = markConflicts(taskInDb.step, mine.content, theirs.content);
           markedFragments.push(marked);
           diffsTotal += numDiffs;
         }
@@ -324,7 +324,7 @@ async function onReviewConflicts(task, client: PgClient) {
     let [his, her] = fragment.annotations;
     let hisName = his.userId + ':' + (await client.call('get_user_details', his.userId)).nameLast;
     let herName = her.userId + ':' + (await client.call('get_user_details', her.userId)).nameLast;
-    let {markedStr, markedDoc, numDiffs} = markResolveConflicts(hisName, his.content, herName, her.content);
+    let { markedStr, markedDoc, numDiffs } = markResolveConflicts(hisName, his.content, herName, her.content);
 
     if (numDiffs) {
       // console.error(marked);

@@ -1,6 +1,6 @@
-import {iterateDictCorpVizLines} from './nlp/vesum_utils';
-import {MorphTag, mapVesumFlag} from './nlp/morph_tag';
-import {rysin2multext} from './nlp/rysin2mulext';
+import { iterateDictCorpVizLines } from './nlp/vesum_utils';
+import { MorphTag, mapVesumFlag } from './nlp/morph_tag';
+import { rysin2multext } from './nlp/rysin2mulext';
 
 
 //const debug = require('debug')('testo');
@@ -11,7 +11,7 @@ export function findDuplicateFeatures(fileStr: string) {
   let ret = new Set<string>();
 
   let skip = new Set(['&_adjp', '&_numr', 'v-u', 'dimin']);
-  for (let {tag} of iterateDictCorpVizLines(fileStr.split('\n'))) {
+  for (let { tag } of iterateDictCorpVizLines(fileStr.split('\n'))) {
     let features = new Set<string>();
     for (let flag of tag.split(':')) {
       if (skip.has(flag)) {
@@ -32,7 +32,7 @@ export function findDuplicateFeatures(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testMte2Vesum(fileStr: string) {
   let lines = fileStr.split('\n');
-  for (let {form, tag, lemma, lemmaTag, lineNum} of iterateDictCorpVizLines(lines)) {
+  for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
     if (tag.includes('transl')
       || tag.includes('insert')
       || tag.includes('predic')
@@ -71,7 +71,7 @@ export function testMte2Vesum(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testConverter(fileStr: string) {
   let lines = fileStr.split('\n');
-  for (let {form, tag, lemma, lemmaTag, isLemma, lineNum} of iterateDictCorpVizLines(lines)) {
+  for (let { form, tag, lemma, lemmaTag, isLemma, lineNum } of iterateDictCorpVizLines(lines)) {
     let mte;
     let fromMte;
     let vesumBack;
@@ -107,7 +107,7 @@ export function testConverter(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testFlagSorter(fileStr: string) {
   let lines = fileStr.split('\n');
-  for (let {form, tag, lemma, lemmaTag, isLemma, lineNum} of iterateDictCorpVizLines(lines)) {
+  for (let { form, tag, lemma, lemmaTag, isLemma, lineNum } of iterateDictCorpVizLines(lines)) {
     try {
       let internal = MorphTag.fromVesumStr(tag);
       let backVesum = internal.toVesumStr();

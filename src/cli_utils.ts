@@ -1,4 +1,4 @@
-import {createReadStream, createWriteStream, rename} from 'fs';
+import { createReadStream, createWriteStream, rename } from 'fs';
 import * as tmp from 'tmp';
 
 const minimist = require('minimist');

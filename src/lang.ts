@@ -102,8 +102,8 @@ export function* zip<T>(...iterables: Iterable<T>[]) {
   let iterators = iterables.map(x => x[Symbol.iterator]());
 
   for (let state = iterators.map(x => x.next());
-    state.every(x => !x.done);
-    state = iterators.map(x => x.next())) {
+       state.every(x => !x.done);
+       state = iterators.map(x => x.next())) {
 
     yield state.map(x => x.value);
   }
@@ -115,8 +115,8 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
   let iterators = iterables.map(x => x[Symbol.iterator]());
 
   for (let state = iterators.map(x => x.next());
-    state.some(x => !x.done);
-    state = iterators.map(x => x.next())) {
+       state.some(x => !x.done);
+       state = iterators.map(x => x.next())) {
 
     yield state.map(x => x.done ? undefined : x.value);
   }

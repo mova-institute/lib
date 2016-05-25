@@ -1,4 +1,4 @@
-import {linesSync} from '../../utils.node';
+import { linesSync } from '../../utils.node';
 
 const args = require('minimist')(process.argv.slice(2));
 
@@ -30,8 +30,8 @@ for (let [lemma, tags] of lemmataSheva) {
       }
       let rysins = [...lemmataRysin.get(lemma)];
       if (rysins.length
-          && rysins.some(x => x.startsWith('Ap'))
-          && !rysins.some(x => /^A[fo]/.test(x))) {
+        && rysins.some(x => x.startsWith('Ap'))
+        && !rysins.some(x => /^A[fo]/.test(x))) {
         console.log(lemma);
         break;
       }

@@ -1,7 +1,7 @@
-import {Transform} from 'stream';
-import {ELEMS_BREAKING_SENTENCE_NS} from '../nlp/utils';
-import {W_, S, SS, SE} from './common_elements';
-import {SaxEventObject} from '../xml/sax_event_object';
+import { Transform } from 'stream';
+import { ELEMS_BREAKING_SENTENCE_NS } from '../nlp/utils';
+import { W_, S, SS, SE } from './common_elements';
+import { SaxEventObject } from '../xml/sax_event_object';
 
 
 export class SentenceStartInjector extends Transform {

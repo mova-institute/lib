@@ -1,9 +1,9 @@
-import {stream2lxmlRoot, filename2lxmlRootSync} from './utils.node';
-import {readTillEnd} from './stream_utils.node';
-import {dictFormLemmaTag} from './nlp/utils';
-import {traverseDocumentOrderEl} from './xml/utils';
-import {readFileSync, createWriteStream, renameSync} from 'fs';
-import {join} from 'path';
+import { stream2lxmlRoot, filename2lxmlRootSync } from './utils.node';
+import { readTillEnd } from './stream_utils.node';
+import { dictFormLemmaTag } from './nlp/utils';
+import { traverseDocumentOrderEl } from './xml/utils';
+import { readFileSync, createWriteStream, renameSync } from 'fs';
+import { join } from 'path';
 import * as tmp from 'tmp';
 
 
@@ -136,7 +136,7 @@ export async function shevaCsv2ttOpenTags(input, output) {
 export async function dict2ttLexicon(input, output) {
   let lines = (await readTillEnd(input)).split('\n');
   let map = new Map<string, Set<string>>();
-  for (let {form, lemma, tag} of dictFormLemmaTag(lines)) {
+  for (let { form, lemma, tag } of dictFormLemmaTag(lines)) {
     let set = map.has(form) ? map.get(form) : map.set(form, new Set()).get(form);
     if (![...set].some(x => x.startsWith(tag + ' '))) {
       set.add(tag + ' ' + lemma);
@@ -171,7 +171,7 @@ function ttWriteOther(output) {
 export async function tagsJson2ttOpenClass(input, output) {
   let tags: Array<string> = JSON.parse(await readTillEnd(input));
   let openClassTags = tags.filter(tag => tag.startsWith('N')
-    || tag.startsWith('V') || tag.startsWith('A') || tag.startsWith('R'));
+  || tag.startsWith('V') || tag.startsWith('A') || tag.startsWith('R'));
   output.write(openClassTags.join(' '));
 }
 

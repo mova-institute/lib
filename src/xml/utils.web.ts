@@ -1,6 +1,6 @@
 // import {$el} from './api/webapi_adapters';
-import {walkUpUntil, nLevelsDeep, xmlNsResolver} from './utils';
-import {parseXml, serializeXml} from '../utils.web';
+import { walkUpUntil, nLevelsDeep, xmlNsResolver } from './utils';
+import { parseXml, serializeXml } from '../utils.web';
 
 // ////////////////////////////////////////////////////////////////////////////////
 // export function replaceRangeWithStr(range: Range, rangeStr: string) {
