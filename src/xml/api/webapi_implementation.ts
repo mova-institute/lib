@@ -14,109 +14,101 @@ export function $el(element: Element) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class WebapiDocument extends IDocument {
-  constructor(private _underlying: Document) {
+  constructor(private underlying: Document) {
     super();
   }
 
-  get underlying() {
-    return this._underlying;
-  }
-
   get root() {
-    return wrappedOrNull(WebapiElement, this._underlying.documentElement);
+    return wrappedOrNull(WebapiElement, this.underlying.documentElement);
   }
 
   createElement(name: string) {
     let [, prefix] = name.split(':').reverse();
-    let uri = this._underlying.lookupNamespaceURI(prefix || null);
-    let elem = this._underlying.createElementNS(uri, name);
+    let uri = this.underlying.lookupNamespaceURI(prefix || null);
+    let elem = this.underlying.createElementNS(uri, name);
 
     return new WebapiElement(elem);
   }
 
   createTextNode(value: string) {
-    return new WebapiNode(this._underlying.createTextNode(value));
+    return new WebapiNode(this.underlying.createTextNode(value));
   }
 
   serialize() {
-    return serializeXml(this._underlying);
+    return serializeXml(this.underlying);
   }
 
   equals(other: WebapiDocument) {
-    return this._underlying === other._underlying;
+    return this.underlying === other.underlying;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export class WebapiNode extends INode {
-  constructor(protected _underlying: Node) {
+  constructor(protected underlying: Node) {
     super();
   } // todo: protected
 
-  get underlying() {
-    return this._underlying;
-  }
-
   equals(other: WebapiNode) {
-    return other && this._underlying === other._underlying;
+    return other && this.underlying === other.underlying;
   }
 
   isElement() {
-    return this._underlying.nodeType === Node.ELEMENT_NODE;
+    return this.underlying.nodeType === Node.ELEMENT_NODE;
   }
 
   isText() {
-    return this._underlying.nodeType === Node.TEXT_NODE;
+    return this.underlying.nodeType === Node.TEXT_NODE;
   }
 
   isRoot() {
-    return this._underlying === this._underlying.ownerDocument.documentElement;
+    return this.underlying === this.underlying.ownerDocument.documentElement;
   }
 
   get name() {
-    return this._underlying.nodeName;
+    return this.underlying.nodeName;
   }
 
   get text() {
-    return this._underlying.textContent;
+    return this.underlying.textContent;
   }
 
   set text(val: string) {
-    this._underlying.textContent = val;
+    this.underlying.textContent = val;
   }
 
   get document() {
-    return wrappedOrNull(WebapiDocument, this._underlying.ownerDocument);
+    return wrappedOrNull(WebapiDocument, this.underlying.ownerDocument);
   }
 
   get firstChild() {
-    return switchReturnNodeType(this._underlying.firstChild);
+    return switchReturnNodeType(this.underlying.firstChild);
   }
 
   get nextSibling() {
-    return switchReturnNodeType(this._underlying.nextSibling);
+    return switchReturnNodeType(this.underlying.nextSibling);
   }
 
   get parent() {
-    return wrappedOrNull(WebapiElement, this._underlying.parentElement);
+    return wrappedOrNull(WebapiElement, this.underlying.parentElement);
   }
 
   remove() {
-    return wrappedOrNull(WebapiNode, this._underlying.parentNode.removeChild(this._underlying));
+    return wrappedOrNull(WebapiNode, this.underlying.parentNode.removeChild(this.underlying));
   }
 
   replace(replacement: WebapiNode) {
-    this._underlying.parentNode.replaceChild(replacement._underlying, this._underlying);
+    this.underlying.parentNode.replaceChild(replacement.underlying, this.underlying);
     return replacement;
   }
 
   insertBefore(newNode: WebapiNode) {
-    this._underlying.parentNode.insertBefore(newNode._underlying, this._underlying);
+    this.underlying.parentNode.insertBefore(newNode.underlying, this.underlying);
     return newNode;
   }
 
   insertAfter(newNode: WebapiNode) {
-    this._underlying.parentNode.insertBefore(newNode._underlying, this._underlying.nextSibling);
+    this.underlying.parentNode.insertBefore(newNode.underlying, this.underlying.nextSibling);
   }
 }
 
@@ -128,46 +120,46 @@ export class WebapiElement extends WebapiNode implements IElement {
   }
 
   get localName() {
-    return this._underlying.localName;
+    return this.underlying.localName;
   }
 
   get firstElementChild() {
-    return wrappedOrNull(WebapiElement, (<Element>this._underlying).firstElementChild);
+    return wrappedOrNull(WebapiElement, (<Element>this.underlying).firstElementChild);
   }
 
   get nextElementSibling() {
-    return wrappedOrNull(WebapiElement, (<Element>this._underlying).nextElementSibling);
+    return wrappedOrNull(WebapiElement, (<Element>this.underlying).nextElementSibling);
   }
 
   get lastChild() {
-    return wrappedOrNull(WebapiNode, this._underlying.lastChild);
+    return wrappedOrNull(WebapiNode, this.underlying.lastChild);
   }
 
   *childElements() {
-    let children = (<HTMLElement>this._underlying).children;
+    let children = (<HTMLElement>this.underlying).children;
     for (let i = 0; i < children.length; ++i) {
       yield new WebapiElement(children.item(i));
     }
   }
 
   childElement(index: number) {
-    return wrappedOrNull(WebapiElement, (<HTMLElement>this._underlying).children[index]);
+    return wrappedOrNull(WebapiElement, (<HTMLElement>this.underlying).children[index]);
   }
 
   get childElementCount() {
-    return (<HTMLElement>this._underlying).childElementCount;
+    return (<HTMLElement>this.underlying).childElementCount;
   }
 
   nameNs() {
-    return nameNs(this._underlying.namespaceURI || 'nons', this._underlying.localName);
+    return nameNs(this.underlying.namespaceURI || 'nons', this.underlying.localName);
   }
 
   getAttribute(name: string) {
-    return (<Element>this._underlying).getAttribute(name);
+    return (<Element>this.underlying).getAttribute(name);
   }
 
   setAttribute(name: string, value: any) {
-    (<Element>this._underlying).setAttribute(name, value);
+    (<Element>this.underlying).setAttribute(name, value);
     return this;
   }
 
@@ -176,25 +168,25 @@ export class WebapiElement extends WebapiNode implements IElement {
   }
 
   removeAttribute(name: string) {
-    (<Element>this._underlying).removeAttribute(name);
+    (<Element>this.underlying).removeAttribute(name);
   }
 
   appendChild(child: WebapiNode) {
-    this._underlying.appendChild((<WebapiElement>child)._underlying);  // see http://stackoverflow.com/a/13723325/5271870
+    this.underlying.appendChild((<WebapiElement>child).underlying);  // see http://stackoverflow.com/a/13723325/5271870
     return child;
   }
 
   clone() {
-    return new WebapiElement(<Element>this._underlying.cloneNode(true));
+    return new WebapiElement(<Element>this.underlying.cloneNode(true));
   }
 
   xpath(query: string, nsMap?) {
-    return xpath(this._underlying, query, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+    return xpath(this.underlying, query, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
       .map(x => x.nodeType === Node.ELEMENT_NODE ? new WebapiElement(x) : new WebapiNode(x));
   }
 
   *xpathIt(query: string, nsMap?) {
-    let result = xpath(this._underlying, query, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
+    let result = xpath(this.underlying, query, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
     let node;
     while (node = result.iterateNext()) {
       yield new WebapiNode(node);

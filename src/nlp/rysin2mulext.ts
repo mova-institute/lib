@@ -115,10 +115,10 @@ class RysinTag {
       if (flag in tagMap) {
         let feature = tagMap[flag].feat;
         if (this.pos === 'prep' && feature === 'case') {
-          this._pushToArrayFeature('prepositionCases', flag);
+          this.pushToArrayFeature('prepositionCases', flag);
         }
         else if (feature === 'pronounType') {
-          this._pushToArrayFeature('pronounType', flag);
+          this.pushToArrayFeature('pronounType', flag);
         }
         else if (feature === 'pos' && this.pos) {
           this.shadowPos = flag;
@@ -128,10 +128,10 @@ class RysinTag {
         }
       }
       else if (flag === '&adjp') {
-        this._pushToArrayFeature('altPoses', 'adjp');
+        this.pushToArrayFeature('altPoses', 'adjp');
       }
       else if (flag.startsWith('&_')) {
-        this._pushToArrayFeature('altPoses', flag.substr(2));
+        this.pushToArrayFeature('altPoses', flag.substr(2));
       }
       else if (flag.startsWith('&')) {
         this.shadowPos = this.pos;
@@ -149,7 +149,7 @@ class RysinTag {
     }
   }
 
-  private _pushToArrayFeature(feature: string, flag: string) {
+  private pushToArrayFeature(feature: string, flag: string) {
     this[feature] = this[feature] || new Array<string>();
     this[feature].push(flag);
   }

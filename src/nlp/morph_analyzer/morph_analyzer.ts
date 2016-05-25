@@ -4,21 +4,21 @@ import { IMorphInterp } from '../interfaces';
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
-  constructor(private _words: ObjectDawg<WordDawgPayload>,
-              private _paradigms: Array<Uint16Array>,
-              private _suffixes: Array<string>,
-              private _tags: Array<string>,
-              private _numberTag: string,
-              private _xTag: string) {
+  constructor(private words: ObjectDawg<WordDawgPayload>,
+              private paradigms: Array<Uint16Array>,
+              private suffixes: Array<string>,
+              private tags: Array<string>,
+              private numberTag: string,
+              private xTag: string) {
   }
 
   dictHas(token: string) {
-    return this._words.has(token) || this._words.has(token.toLowerCase());
+    return this.words.has(token) || this.words.has(token.toLowerCase());
   }
 
   tag(token: string) {
     if (/^\d+$/.test(token)) {
-      return new Set<IMorphInterp>([{ lemma: token, tag: this._numberTag }]);
+      return new Set<IMorphInterp>([{ lemma: token, tag: this.numberTag }]);
     }
 
     // if (WCHAR_NOT_UK_RE.test(token)) {
@@ -33,30 +33,30 @@ export class MorphAnalyzer {
       toLookup.push(lowercase);
     }
     for (let word of toLookup) {
-      for (let paraIndex of this._words.get(word)) {
-        ret.add(this._getTag(word, paraIndex));
+      for (let paraIndex of this.words.get(word)) {
+        ret.add(this.getTag(word, paraIndex));
       }
     }
 
     if (!ret.size) {
       ret.add({
         lemma: token,
-        tag: this._xTag,
+        tag: this.xTag,
       });
     }
 
     return ret;
   }
 
-  private _getTag(word: string, paraIndex: WordDawgPayload): IMorphInterp {
-    let paradigm = this._paradigms[paraIndex.paradigmId];
+  private getTag(word: string, paraIndex: WordDawgPayload): IMorphInterp {
+    let paradigm = this.paradigms[paraIndex.paradigmId];
 
-    let formSuffix = this._suffixes[paradigm[paraIndex.indexInPradigm]];
-    let lemmaSuffix = this._suffixes[paradigm[0]];
+    let formSuffix = this.suffixes[paradigm[paraIndex.indexInPradigm]];
+    let lemmaSuffix = this.suffixes[paradigm[0]];
     let lemma = word.slice(0, -formSuffix.length || word.length) + lemmaSuffix;
     // todo: prefixed
 
-    let tag = this._tags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
+    let tag = this.tags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
 
     return { lemma, tag };
   }

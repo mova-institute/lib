@@ -24,8 +24,8 @@ types.setTypeParser(PG_TYPES.jsonb, camelizeParseJson);
 
 ////////////////////////////////////////////////////////////////////////////////
 export class PgClient {
-  private _client: Client;
-  private _done: Function;
+  private client: Client;
+  private done: Function;
 
   static async transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
     let client = await PgClient.create(config);
@@ -64,8 +64,8 @@ export class PgClient {
   private static async create(config: ClientConfig) {
     let { client, done } = await getClient(config);
     let ret = new PgClient();
-    ret._client = client;
-    ret._done = done;
+    ret.client = client;
+    ret.done = done;
 
     return ret;
   }
@@ -73,42 +73,42 @@ export class PgClient {
   constructor() { }
 
   release() {
-    this._client = null;
-    if (this._done) {
-      this._done();
+    this.client = null;
+    if (this.done) {
+      this.done();
     }
   }
 
   query(queryStr: string, ...params) {
-    return query(this._client, queryStr, params);
+    return query(this.client, queryStr, params);
   }
 
   call(func: string, ...params) {
     let queryStr = `SELECT ${func}(${nDollars(params.length)})`;
-    return query1Client(this._client, queryStr, params);
+    return query1Client(this.client, queryStr, params);
   }
 
   select(table: string, where: string, ...params) {
     let queryStr = `SELECT row_to_json(${table}) FROM ${table} WHERE ${where}`;
-    return query1Client(this._client, queryStr, params);
+    return query1Client(this.client, queryStr, params);
   }
 
   select1(table: string, column: string, where: string, ...params) {
     let queryStr = `SELECT ${column} FROM ${table} WHERE ${where}`;
-    return query1Client(this._client, queryStr, params);
+    return query1Client(this.client, queryStr, params);
   }
 
   update(table: string, set: string, where: string, ...params) {
     let queryStr = `UPDATE ${table} SET ${set} WHERE ${where} RETURNING to_json(${table})`;
-    return query1Client(this._client, queryStr, params);
+    return query1Client(this.client, queryStr, params);
   }
 
   insert(table: string, dict: Object, returning?: string) {
-    return this._insert(table, dict, null, returning);
+    return this.doInsert(table, dict, null, returning);
   }
 
   insertIfNotExists(table: string, dict: Object, returning?: string) {
-    return this._insert(table, dict, 'NOTHING', returning);
+    return this.doInsert(table, dict, 'NOTHING', returning);
   }
 
   delete(table: string, where: string, returning: string, ...params) {
@@ -117,10 +117,10 @@ export class PgClient {
       queryStr += ' RETURNING ' + returning;
     }
 
-    return query1Client(this._client, queryStr, params);
+    return query1Client(this.client, queryStr, params);
   }
 
-  private _insert(table: string, dict: Object, onConflict: string, returning: string) {
+  private doInsert(table: string, dict: Object, onConflict: string, returning: string) {
     dict = snakize(dict);
 
     let keys = Object.keys(dict);
@@ -132,7 +132,7 @@ export class PgClient {
       queryStr += ' RETURNING ' + returning;
     }
 
-    return query1Client(this._client, queryStr, keys.map(x => dict[x]));
+    return query1Client(this.client, queryStr, keys.map(x => dict[x]));
   }
 }
 

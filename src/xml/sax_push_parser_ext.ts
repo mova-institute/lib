@@ -23,18 +23,18 @@ export class SaxParserExtBase {
 
   protected initParser(parser: EventEmitter) {
     parser.on('startElementNS', (elem, attrs, prefix, uri, ns) => {
-      this._emitStartIfBuffered();
+      this.emitStartIfBuffered();
       this.curElem = [elem, attrs, prefix, uri, ns];
 
     }).on('characters', chars => {
       this.textBuf += chars;
     }).on('endElementNS', (elem, prefix, uri) => {
-      this._emitStartIfBuffered();
+      this.emitStartIfBuffered();
       this.curElem = [];
     });
   }
 
-  private _emitStartIfBuffered() {
+  private emitStartIfBuffered() {
     if (this.curElem.length) {
       //for (let listener of this.listeners) {
       this.listeners[0](this.curElem[0], this.curElem[1], this.curElem[2],

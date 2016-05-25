@@ -1,7 +1,7 @@
 import { namePrefixed, libxmlSaxAttrs, escape } from '../xml/utils';
 
 export class SaxEventObject {
-  private _attrsMapCache: Map<string, string> = null;
+  private attrsMapCache: Map<string, string> = null;
 
   constructor(public type: string,
               public el: string,
@@ -18,11 +18,11 @@ export class SaxEventObject {
   }
 
   attrs() {
-    if (!this._attrsMapCache) {
-      this._attrsMapCache = libxmlSaxAttrs(this.attrsNs);
+    if (!this.attrsMapCache) {
+      this.attrsMapCache = libxmlSaxAttrs(this.attrsNs);
     }
 
-    return this._attrsMapCache;
+    return this.attrsMapCache;
   }
 
   serialize() {

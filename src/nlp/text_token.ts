@@ -174,7 +174,7 @@ export class TextToken {
   }
 
   addInterp(tag: string, lemma: string) {
-    this._addInterp({
+    this.doAddInterp({
       lemma,
       ana: tag,
       type: 'manual',
@@ -247,14 +247,14 @@ export class TextToken {
     let hashtag = '#' + value;
     let interpElemIndex = this.interps().findIndex(x => x.tag === hashtag);
     if (interpElemIndex === -1) {
-      this._addInterp({ ana: hashtag });
+      this.doAddInterp({ ana: hashtag });
       return this.interps().length - 1;
     }
 
     return interpElemIndex;
   }
 
-  private _addInterp(attributes: Object) {
+  private doAddInterp(attributes: Object) {
     let newInterp = this.elem.document.createElement('w');
     newInterp.text = this.text();
     newInterp.setAttributes(attributes);

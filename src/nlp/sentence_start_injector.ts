@@ -8,7 +8,7 @@ export class SentenceStartInjector extends Transform {
   private static objectStart = new SaxEventObject('start', SS);
   private static objectEnd = new SaxEventObject('end', SS);
 
-  private _openSentenceOnNextWord = false;
+  private openSentenceOnNextWord = false;
 
   constructor() {
     super({
@@ -20,18 +20,18 @@ export class SentenceStartInjector extends Transform {
     let el = event.el;
     if (event.type === 'start') {
       if (el === SE || ELEMS_BREAKING_SENTENCE_NS.has(el)) {
-        this._openSentenceOnNextWord = true;
+        this.openSentenceOnNextWord = true;
       }
       else if (el === S || el === SS) {
-        this._openSentenceOnNextWord = false;
+        this.openSentenceOnNextWord = false;
       }
-      else if (el === W_ && this._openSentenceOnNextWord) {
-        this._pushSentenceStart();
+      else if (el === W_ && this.openSentenceOnNextWord) {
+        this.pushSentenceStart();
       }
     }
     else if (event.type === 'end') {
       if (el === S) {
-        this._openSentenceOnNextWord = true;
+        this.openSentenceOnNextWord = true;
       }
     }
 
@@ -39,9 +39,9 @@ export class SentenceStartInjector extends Transform {
     callback();
   }
 
-  private _pushSentenceStart() {
+  private pushSentenceStart() {
     this.push(SentenceStartInjector.objectStart);
     this.push(SentenceStartInjector.objectEnd);
-    this._openSentenceOnNextWord = false;
+    this.openSentenceOnNextWord = false;
   }
 }

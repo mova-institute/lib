@@ -1,22 +1,22 @@
 ////////////////////////////////////////////////////////////////////////////////
 export class JsonCompareSet<T> {
-  private _map = new Map<string, T>();
+  private map = new Map<string, T>();
 
   constructor(iterable?: Iterable<T>) {
     //super(iterable);  // todo
   }
 
   add(value: T) {
-    this._map.set(JSON.stringify(value), value);
+    this.map.set(JSON.stringify(value), value);
     return this;
   }
 
   keys() {
-    return this._map.values();
+    return this.map.values();
   }
 
   values() {
-    return this._map.values();
+    return this.map.values();
   }
 }
 
@@ -97,29 +97,29 @@ export class NumeratedSet<T> {  // todo move somewhere
 
 ////////////////////////////////////////////////////////////////////////////////
 export class CachedValue<T> {
-  private _value: T;
-  private _argsHash: string = null;
+  private value: T;
+  private argsHash: string = null;
 
-  constructor(private _calculator: (...args) => T) {
+  constructor(private calculator: (...args) => T) {
 
   }
 
   get(...args) {
     let hash = JSON.stringify(args);
-    if (this._isInvalid() || (args && args.length && hash !== this._argsHash)) {
-      this._value = this._calculator(...args);
+    if (this.isInvalid() || (args && args.length && hash !== this.argsHash)) {
+      this.value = this.calculator(...args);
     }
-    this._argsHash = hash;
+    this.argsHash = hash;
 
-    return this._value;
+    return this.value;
   }
 
   invalidate() {
-    this._argsHash = null;
+    this.argsHash = null;
   }
 
-  private _isInvalid() {
-    return this._argsHash === null;
+  private isInvalid() {
+    return this.argsHash === null;
   }
 }
 
@@ -127,7 +127,7 @@ export class CachedValue<T> {
 // ////////////////////////////////////////////////////////////////////////////////
 // export class DefaultMap<K, V> extends Map<K, V> {
 //   constructor(
-//     private _v: { new (): V; },
+//     private v: { new (): V; },
 //     iterable?: Iterable<[K, V]>) {
 
 //     super(iterable);
@@ -136,7 +136,7 @@ export class CachedValue<T> {
 //   get(key: K) {
 //     let ret = super.get(key);
 //     if (!ret) {
-//       ret = new this._v();
+//       ret = new this.v();
 //       super.set(key, ret);
 //     }
 
@@ -146,23 +146,23 @@ export class CachedValue<T> {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class DefaultMap<K, V> {
-  private _map: Map<K, V>;
+  private map: Map<K, V>;
 
-  constructor(private _v: { new (): V; }, iterable?: Iterable<[K, V]>) {
-    this._map = new Map<K, V>(iterable);
+  constructor(private v: { new (): V; }, iterable?: Iterable<[K, V]>) {
+    this.map = new Map<K, V>(iterable);
   }
 
   get(key: K) {
-    let ret = this._map.get(key);
+    let ret = this.map.get(key);
     if (!ret) {
-      ret = new this._v();
-      this._map.set(key, ret);
+      ret = new this.v();
+      this.map.set(key, ret);
     }
 
     return ret;
   }
 
   [Symbol.iterator]() {
-    return this._map[Symbol.iterator]();
+    return this.map[Symbol.iterator]();
   }
 }

@@ -7,27 +7,27 @@ import { encodeUtf8, b64decodeFromArray } from '../codec';
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Dawg {
-  constructor(protected _dictionary: Dictionary) { }
+  constructor(protected dictionary: Dictionary) { }
 
   has(key: string): boolean {
-    return this._dictionary.has(encodeUtf8(key));
+    return this.dictionary.has(encodeUtf8(key));
   }
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class CompletionDawg extends Dawg {
-  constructor(dictionary: Dictionary, protected _guide: Guide) {
+  constructor(dictionary: Dictionary, protected guide: Guide) {
     super(dictionary);
   }
 
   *completionBytes(key: Array<number>) {
-    let index = this._dictionary.followBytes(key);
+    let index = this.dictionary.followBytes(key);
     if (index === null) {
       return;
     }
 
-    yield* completer(this._dictionary, this._guide, index);
+    yield* completer(this.dictionary, this.guide, index);
   }
 }
 
@@ -37,19 +37,19 @@ export class BytesDawg extends CompletionDawg {
 
   constructor(dic: Dictionary,
               guide: Guide,
-              private _payloadSeparator = 0b1,
-              private _binasciiWorkaround = false)  // see https://github.com/kmike/DAWG/issues/21
+              private payloadSeparator = 0b1,
+              private binasciiWorkaround = false)  // see https://github.com/kmike/DAWG/issues/21
   {
     super(dic, guide);
   }
 
   has(key: string): boolean {
-    return !super.completionBytes([...encodeUtf8(key), this._payloadSeparator]).next().done;
+    return !super.completionBytes([...encodeUtf8(key), this.payloadSeparator]).next().done;
   }
 
   *payloadBytes(key: Array<number>) {
-    for (let completed of super.completionBytes([...key, this._payloadSeparator])) {
-      if (this._binasciiWorkaround) {
+    for (let completed of super.completionBytes([...key, this.payloadSeparator])) {
+      if (this.binasciiWorkaround) {
         completed = completed.slice(0, -1);
       }
       yield b64decodeFromArray(completed);
@@ -63,7 +63,7 @@ export class ObjectDawg<T> extends BytesDawg {
 
   constructor(dic: Dictionary,
               guide: Guide,
-              private _deserializer: (bytes: ArrayBuffer) => T,
+              private deserializer: (bytes: ArrayBuffer) => T,
               payloadSeparator: number,
               _binasciiWorkaround = false) {
     super(dic, guide, payloadSeparator, _binasciiWorkaround);
@@ -73,7 +73,7 @@ export class ObjectDawg<T> extends BytesDawg {
     let ret = new Array<T>();
 
     for (let payload of super.payloadBytes(encodeUtf8(key))) {
-      ret.push(this._deserializer(payload));
+      ret.push(this.deserializer(payload));
     }
 
     return ret;

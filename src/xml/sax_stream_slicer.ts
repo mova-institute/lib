@@ -4,7 +4,7 @@ import { SaxEventObject } from '../xml/sax_event_object';
 enum State { PRISTINE, STARTED, STOPPED }
 
 export class SaxStreamSlicer extends Transform {
-  private _state = State.PRISTINE;
+  private state = State.PRISTINE;
 
   constructor(protected predicate: (eventObject: SaxEventObject) => boolean) {
     super({
@@ -15,14 +15,14 @@ export class SaxStreamSlicer extends Transform {
   _transform(eventStack: Array<SaxEventObject>, encoding, callback) {
     let event = eventStack[eventStack.length - 1];
     if (event.type === 'start') {
-      if (this._state === State.PRISTINE && this.predicate(event) === true) {
-        this._state = State.STARTED;
+      if (this.state === State.PRISTINE && this.predicate(event) === true) {
+        this.state = State.STARTED;
         this._openParents(eventStack);
       }
-      else if (this._state === State.STARTED) {
+      else if (this.state === State.STARTED) {
         if (this.predicate(event) === false) {
           this._close(eventStack);
-          this._state = State.STOPPED;
+          this.state = State.STOPPED;
           //this.end(); console.log('end called');
         }
         else {
@@ -30,7 +30,7 @@ export class SaxStreamSlicer extends Transform {
         }
       }
     }
-    else if (event.type === 'end' && this._state === State.STARTED) {
+    else if (event.type === 'end' && this.state === State.STARTED) {
       this.push(event);
     }
 

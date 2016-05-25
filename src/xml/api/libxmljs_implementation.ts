@@ -6,34 +6,30 @@ const libxmljs = require('libxmljs');  // typings are wrong, use none
 ////////////////////////////////////////////////////////////////////////////////
 export class LibxmlDocument extends IDocument {
 
-  constructor(private _underlying) {
+  constructor(private underlying) {
     super();
   }
 
-  get underlying() {
-    return this._underlying;
-  }
-
   get root() {
-    return new LibxmlElement(this._underlying.root());
+    return new LibxmlElement(this.underlying.root());
   }
 
   createElement(name: string) {
     let [localName, prefix] = name.split(':').reverse();
-    let el = new libxmljs.Element(this._underlying, localName);
+    let el = new libxmljs.Element(this.underlying, localName);
     if (prefix) {
-      el.namespace(this._getNsByPrefix(prefix));
+      el.namespace(this.getNsByPrefix(prefix));
     }
 
     return new LibxmlElement(el);
   }
 
   createTextNode(value: string) {
-    return new LibxmlNode(new libxmljs.Text(this._underlying, value));
+    return new LibxmlNode(new libxmljs.Text(this.underlying, value));
   }
 
   serialize() {
-    return this._underlying.root().toString(/*{
+    return this.underlying.root().toString(/*{
      // declaration: false,
      //format: true,
      // whitespace: true,
@@ -42,66 +38,62 @@ export class LibxmlDocument extends IDocument {
   }
 
   equals(other: LibxmlDocument) {
-    return this._underlying === other._underlying;
+    return this.underlying === other.underlying;
   }
 
-  private _getNsByPrefix(prefix: string) {
-    return this._underlying.root().namespaces().find(x => x.prefix() === prefix);
+  private getNsByPrefix(prefix: string) {
+    return this.underlying.root().namespaces().find(x => x.prefix() === prefix);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export class LibxmlNode extends INode {
-  constructor(protected _underlying) {
+  constructor(protected underlying) {
     super();
   }
 
-  get underlying() {
-    return this._underlying;
-  }
-
   equals(other: LibxmlNode) {
-    return other && this._underlying === other._underlying;
+    return other && this.underlying === other.underlying;
   }
 
   isElement() {
-    return this._underlying.type() === 'element';
+    return this.underlying.type() === 'element';
   }
 
   isText() {
-    return this._underlying.type() === 'text';
+    return this.underlying.type() === 'text';
   }
 
   isRoot() {
-    return this._underlying === this._underlying.doc().root();
+    return this.underlying === this.underlying.doc().root();
   }
 
   get name() {
-    let type = this._underlying.type();
+    let type = this.underlying.type();
     if (type === 'element') {
-      return this._underlying.name();
+      return this.underlying.name();
     }
-    return '#' + this._underlying.type();
+    return '#' + this.underlying.type();
   }
 
   get text() {
-    return this._underlying.text();
+    return this.underlying.text();
   }
 
   set text(val: string) {
-    this._underlying.text(val);
+    this.underlying.text(val);
   }
 
   get document() {
-    return wrappedOrNull(LibxmlDocument, this._underlying.doc());
+    return wrappedOrNull(LibxmlDocument, this.underlying.doc());
   }
 
   get firstChild() {
-    return switchReturnNodeType(this._underlying.child(0));
+    return switchReturnNodeType(this.underlying.child(0));
   }
 
   get nextSibling() {
-    return switchReturnNodeType(this._underlying.nextSibling());
+    return switchReturnNodeType(this.underlying.nextSibling());
   }
 
   get parent() {
@@ -109,25 +101,25 @@ export class LibxmlNode extends INode {
       return null;
     }
 
-    return new LibxmlElement(this._underlying.parent());
+    return new LibxmlElement(this.underlying.parent());
   }
 
   remove() {
-    return wrappedOrNull(LibxmlNode, this._underlying.remove());
+    return wrappedOrNull(LibxmlNode, this.underlying.remove());
   }
 
   replace(replacement: LibxmlNode) {
-    this._underlying.replace(replacement._underlying);
+    this.underlying.replace(replacement.underlying);
     return replacement;
   }
 
   insertBefore(newNode: LibxmlNode) {
-    this._underlying.addPrevSibling(newNode._underlying);
+    this.underlying.addPrevSibling(newNode.underlying);
     return newNode;
   }
 
   insertAfter(newNode: LibxmlNode) {
-    this._underlying.addNextSibling(newNode._underlying);
+    this.underlying.addNextSibling(newNode.underlying);
   }
 }
 
@@ -139,11 +131,11 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   }
 
   get localName() {
-    return this._underlying.name();
+    return this.underlying.name();
   }
 
   get firstElementChild() {
-    let firstChild = this._underlying.child(0);
+    let firstChild = this.underlying.child(0);
     while (firstChild && firstChild.type() !== 'element') {
       firstChild = firstChild.nextSibling();
     }
@@ -152,12 +144,12 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   }
 
   get lastChild() {
-    let children = this._underlying.childNodes;
+    let children = this.underlying.childNodes;
     return wrappedOrNull(LibxmlNode, children[children.length - 1]);
   }
 
   *childElements() {
-    for (let child of this._underlying.childNodes()) {
+    for (let child of this.underlying.childNodes()) {
       if (child.type() === 'element') {
         yield new LibxmlElement(child);
       }
@@ -173,14 +165,14 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   }
 
   get nextElementSibling() {
-    return wrappedOrNull(LibxmlElement, this._underlying.nextElement());
+    return wrappedOrNull(LibxmlElement, this.underlying.nextElement());
   }
 
   nameNs() {
-    let ns = this._underlying.namespace();
+    let ns = this.underlying.namespace();
     let uri = ns ? ns.href() : 'http://www.tei-c.org/ns/1.0';    // todo: how to handle default properly?
 
-    return '{' + uri + '}' + this._underlying.name();
+    return '{' + uri + '}' + this.underlying.name();
   }
 
   // isNs(otherName: string) {
@@ -188,41 +180,41 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   // }
 
   getAttribute(name: string) {
-    let attr = this._underlying.attr(name);
+    let attr = this.underlying.attr(name);
     return attr === null ? null : attr.value();
   }
 
   setAttribute(name: string, value: any) {
-    this._underlying.attr({ [name]: value.toString() });
+    this.underlying.attr({ [name]: value.toString() });
     return this;
   }
 
   renameAttributeIfExists(nameOld: string, nameNew: string) {
-    let attr = this._underlying.attr(nameOld);
+    let attr = this.underlying.attr(nameOld);
     if (attr) {
-      this._underlying.attr({ [nameNew]: attr.value() });
+      this.underlying.attr({ [nameNew]: attr.value() });
       attr.remove();
     }
   }
 
   removeAttribute(name: string) {
-    let attr = this._underlying.attr(name);
+    let attr = this.underlying.attr(name);
     if (attr) {
       attr.remove();
     }
   }
 
   appendChild(child: LibxmlNode) {
-    this._underlying.addChild((<LibxmlElement>child)._underlying);  // see http://stackoverflow.com/a/13723325/5271870
+    this.underlying.addChild((<LibxmlElement>child).underlying);  // see http://stackoverflow.com/a/13723325/5271870
     return child;
   }
 
   clone() {
-    return new LibxmlElement(this._underlying.clone());
+    return new LibxmlElement(this.underlying.clone());
   }
 
   xpath(query: string, nsMap?) {
-    let result = this._underlying.find(query, nsMap);
+    let result = this.underlying.find(query, nsMap);
 
     return (result || [])
       .map(x => x.type() === 'element' ? new LibxmlElement(x) : new LibxmlNode(x));

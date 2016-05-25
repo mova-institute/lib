@@ -441,7 +441,7 @@ export class MorphTag {
     let ret = new MorphTag();
 
     let flags = [...tag];
-    ret._fromMte(flags);  // read all injections
+    ret.fromMte(flags);  // read all injections
 
     switch (flags[0]) {  // then tweak what's left
       case 'V': {
@@ -572,7 +572,7 @@ export class MorphTag {
     return ret;
   }
 
-  private _fromMte(mteFlags: string[]) {
+  private fromMte(mteFlags: string[]) {
     let posFeatures = MTE_FEATURES[mteFlags[0]];
 
     if (posFeatures[0] !== null) {

@@ -88,7 +88,7 @@
       }
     ],
     "use-strict": [false],
-    "variable-name": [true, "check-format", "allow-leading-underscore", "allow-trailing-underscore", "ban-keywords"],
+    "variable-name": [true, "check-format", "ban-keywords"],
     "whitespace": [
       true,
       "check-branch",

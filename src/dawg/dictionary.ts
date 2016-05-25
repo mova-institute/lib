@@ -1,24 +1,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 export class Dictionary {
-  private _rootIndex = 0;
+  private rootIndex = 0;
 
-  constructor(private _units: Uint32Array) { }
+  constructor(private units: Uint32Array) { }
 
   has(bytes: Iterable<number>): boolean {
     let index = this.followBytes(bytes);
 
-    return index !== null && Unit.hasLeaf(this._units[index]);
+    return index !== null && Unit.hasLeaf(this.units[index]);
   }
 
   hasValue(index: number) {
-    return Unit.hasLeaf(this._units[index]);
+    return Unit.hasLeaf(this.units[index]);
   }
 
   value(index: number) {
-    return Unit.value(this._units[index ^ Unit.offset(this._units[index])]);
+    return Unit.value(this.units[index ^ Unit.offset(this.units[index])]);
   }
 
-  followBytes(bytes: Iterable<number>, index = this._rootIndex) {
+  followBytes(bytes: Iterable<number>, index = this.rootIndex) {
     for (let byte of bytes) {
       if ((index = this.followByte(byte, index)) === null) {
         return null;
@@ -29,9 +29,9 @@ export class Dictionary {
   }
 
   followByte(label: number, index: number) {
-    let offset = Unit.offset(this._units[index]);
+    let offset = Unit.offset(this.units[index]);
     let nextIndex = index ^ offset ^ label;
-    if (Unit.label(this._units[nextIndex]) !== label) {
+    if (Unit.label(this.units[nextIndex]) !== label) {
       return null;
     }
 
