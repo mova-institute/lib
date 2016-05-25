@@ -5,7 +5,7 @@ import {tokenizeTei, tagTokenizedDom, enumerateWords} from '../nlp/utils';
 import {string2lxmlRoot} from '../utils.node';
 import {encloseInRootNsIf} from '../xml/utils';
 import {createReadStream, readFileSync} from 'fs';
-import {join} from 'path';
+import {getLibRootRelative} from '../path.node';
 
 const args = require('minimist')(process.argv.slice(2), {
   boolean: ['n', 'numerate', 'tokenize'],
@@ -28,7 +28,7 @@ ioArgsPlain(async (input, outputFromIoargs) => {
 
 
   let dictName = args.d || args.dict || 'vesum';
-  let dictDir = join(__dirname, '../../data/dict', dictName);
+  let dictDir = getLibRootRelative('../data/dict', dictName);
   let tagger = createMorphAnalyserSync(dictDir);
 
   let root = string2lxmlRoot(inputStr);
