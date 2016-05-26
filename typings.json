@@ -16,10 +16,10 @@
     "express-unless": "registry:dt/express-unless#0.0.0+20160317120654",
     "html-entities": "registry:dt/html-entities#1.2.0+20160412134357",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
-    "node": "registry:dt/node#4.0.0+20160412142033",
-    "pg": "registry:dt/pg#0.0.0+20160323211726",
-    "request": "registry:dt/request#0.0.0+20160316155526",
-    "serve-static": "registry:dt/serve-static#1.7.1+20160104095738",
-    "tmp": "registry:dt/tmp#0.0.28+20160215162030"
+    "node": "registry:dt/node#6.0.0+20160524002506",
+    "pg": "registry:dt/pg#0.0.0+20160514172051",
+    "request": "registry:dt/request#0.0.0+20160524135346",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543",
+    "tmp": "registry:dt/tmp#0.0.0+20160514170650"
   }
 }

@@ -15,7 +15,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "typings install"
+    "postinstall": "typings install",
+    "update-typings": "typings install dt~body-parser dt~cookie-parser dt~express dt~express-jwt dt~html-entities dt~mime dt~node dt~pg dt~request dt~serve-static dt~tmp --global --save"
   },
   "repository": {
     "type": "git",
