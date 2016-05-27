@@ -22,6 +22,8 @@
 - ask to bump minor version when https://github.com/kmike/DAWG/issues/21 gets fixed
 - parentNode to parentElement
 - lang setter
+- ana attr change to meaningful
+
 
 - скорочення
 - <supplied>
