@@ -68,7 +68,7 @@ const tagMap = {
   'transl': { feat: 'pos', mte: null },  // ?
   'conj': { feat: 'pos', mte: 'C' },
   'part': { feat: 'pos', mte: 'Q' },
-  'excl': { feat: 'pos', mte: 'I' },
+  'intj': { feat: 'pos', mte: 'I' },
   'numr': { feat: 'pos', mte: 'M' },
 
   'm': { feat: 'gender', mte: 'm' },
@@ -261,7 +261,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
         case 'part':
           ret.push('Q');
           break;
-        case 'excl':
+        case 'intj':
           ret.push('I');
           break;
         case 'pron': {

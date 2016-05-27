@@ -283,7 +283,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.transl, vesumStr: 'transl' },  // ?
   { featStr: 'pos', feat: Pos, vesum: Pos.conjunction, vesumStr: 'conj', mte: 'C' },
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'excl', mte: 'I' },
+  { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'intj', mte: 'I' },
   { featStr: 'pos', feat: Pos, vesum: Pos.numeral, vesumStr: 'numr', mte: 'M' },
   { featStr: 'pos', feat: Pos, vesum: Pos.foreign, vesumStr: 'foreign' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
