@@ -1,4 +1,4 @@
-import { ObjectDawg } from '../../dawg/dawg';
+import { ObjectDawg } from '../../dawg/object_dawg';
 import { IMorphInterp } from '../interfaces';
 // import {WCHAR_NOT_UK_RE} from '../static';
 

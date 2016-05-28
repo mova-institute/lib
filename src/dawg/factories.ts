@@ -1,6 +1,6 @@
 import { Dictionary } from './dictionary';
 import { Guide } from './guide';
-import { ObjectDawg } from './dawg';
+import { ObjectDawg } from './object_dawg';
 
 
 export function createObjectDawg<T>(buf: ArrayBuffer, deserializer: (buf: ArrayBuffer) => T) {

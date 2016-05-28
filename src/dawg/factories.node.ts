@@ -1,6 +1,8 @@
 import { Dictionary } from './dictionary';
 import { Guide } from './guide';
-import { Dawg, CompletionDawg, ObjectDawg } from './dawg';
+import { Dawg } from './dawg';
+import { CompletionDawg } from './completion_dawg';
+import { ObjectDawg } from './object_dawg';
 
 import { buffer2typedArray } from '../utils.node';
 import { readNBytesSync } from '../utils.node';
