@@ -1,7 +1,6 @@
 import { MorphAnalyzer, WordDawgPayload } from './morph_analyzer';
 import { readFileSync } from 'fs';
 import { createStringMapDawgSync } from '../../dawg/factories.node';
-import { buffer2typedArray } from '../../utils.node';
 
 
 export function createMorphAnalyserSync(dictFolder: string) {
@@ -14,7 +13,7 @@ export function createMorphAnalyserSync(dictFolder: string) {
   while (curByte < buf.length) {
     let paradigmByteLen = buf.readUInt16LE(curByte) * 3 * Uint16Array.BYTES_PER_ELEMENT;
     curByte += Uint16Array.BYTES_PER_ELEMENT;
-    paradigms.push(buffer2typedArray(buf, Uint16Array, curByte, paradigmByteLen));
+    paradigms.push(new Uint16Array(buf.buffer, curByte, paradigmByteLen / Uint16Array.BYTES_PER_ELEMENT));
     curByte += paradigmByteLen;
   }
 

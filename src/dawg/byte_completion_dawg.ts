@@ -3,6 +3,7 @@ import { Guide } from './guide';
 import { ByteDawg } from './byte_dawg';
 
 
+
 export class ByteCompletionDawg extends ByteDawg {
   constructor(
       dictionary: Dictionary,

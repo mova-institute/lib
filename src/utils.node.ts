@@ -66,19 +66,3 @@ export function linesSyncArray(filename: string) {
 export function nonemptyLinesSyncArray(filename: string) {
   return readFileSync(filename, 'utf8').split('\n').map(x => x.trim()).filter(x => !!x);
 }
-
-////////////////////////////////////////////////////////////////////////////////
-function buffer2arrayBuffer(val: Buffer, start = 0, length = val.length) {  // todo: copy 64?
-  let ret = new ArrayBuffer(length);
-  let view = new Uint8Array(ret);
-  for (let i = 0; i < length; ++i) {
-    view[i] = val[start + i];
-  }
-
-  return ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function buffer2typedArray(buffer: Buffer, arrayType, startByte = 0, byteLength = buffer.length) {
-  return new arrayType(buffer2arrayBuffer(buffer, startByte, byteLength));
-}
