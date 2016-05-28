@@ -3,8 +3,10 @@ import { createObjectDawg } from '../../dawg/factories';
 
 
 export function createMorphAnalyser(
-  wordsBuf: ArrayBuffer, paradigmsBuf: ArrayBuffer,
-  suffixes: string[], tags: string[]) {
+  wordsBuf: ArrayBuffer,
+  paradigmsBuf: ArrayBuffer,
+  suffixes: string[],
+  tags: string[]) {
 
   let dawg = createObjectDawg(wordsBuf, WordDawgPayload.create);
 

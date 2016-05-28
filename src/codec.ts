@@ -1,43 +1,19 @@
 ////////////////////////////////////////////////////////////////////////////////
-export function num2Uint16BytesBE(num: number) {
-  let ret = new Uint8Array(2);
-  new DataView(ret.buffer).setUint16(0, num);
-
-  return ret;
-}
-
-// ////////////////////////////////////////////////////////////////////////////////
-// export function nonzeroBytesEncode(bytes: Array<number>) {
-//   let overflow = 0;
-//   for (let i = 0; i < bytes.length; ++i) {
-//     overflow = bytes[i] += 1 + overflow;
-//     overflow = ~~(overflow / 255) * (overflow % 255);
-//     bytes[i] -= overflow;
-//   }
-//   if (overflow) {
-//     bytes.push(overflow);  // todo
-//   }
-
-//   return bytes;
-// }
-
-////////////////////////////////////////////////////////////////////////////////
-export function encodeUtf8(str: string) {  // todo: more octets?
+export function encodeUtf8(str: string) {
   let ret = new Array<number>();
-  let p = 0;
-  for (let i = 0; i < str.length; ++i) {
+  for (let i = 0; i < str.length; ++i) {  // not for-of!
     let c = str.charCodeAt(i);
     if (c < 128) {
-      ret[p++] = c;
+      ret.push(c);
     }
     else if (c < 2048) {
-      ret[p++] = (c >>> 6) | 192;
-      ret[p++] = (c & 63) | 128;
+      ret.push((c >>> 6) | 192);
+      ret.push((c & 63) | 128);
     }
     else {
-      ret[p++] = (c >>> 12) | 224;
-      ret[p++] = ((c >>> 6) & 63) | 128;
-      ret[p++] = (c & 63) | 128;
+      ret.push((c >>> 12) | 224);
+      ret.push(((c >>> 6) & 63) | 128);
+      ret.push((c & 63) | 128);
     }
   }
 
@@ -45,27 +21,22 @@ export function encodeUtf8(str: string) {  // todo: more octets?
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function decodeUtf8(bytes: Array<number>) {
-
+export function decodeUtf8(bytes: ArrayLike<number>) {
   let ret = '';
-  let i = 0;
-  while (i < bytes.length) {
-    let c = bytes[i];
+  for (let i = 0; i < bytes.length; ++i) {
+    let b = bytes[i];
 
-    if (c < 128) {
-      ret += String.fromCharCode(c);
-      ++i;
+    if (b < 128) {
+      ret += String.fromCharCode(b);
     }
-    else if ((c > 191) && (c < 224)) {
-      let c2 = bytes[i + 1];
-      ret += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-      i += 2;
+    else if ((b > 191) && (b < 224)) {
+      let b2 = bytes[++i];
+      ret += String.fromCharCode(((b & 31) << 6) | (b2 & 63));
     }
     else {
-      let c2 = bytes[i + 1];
-      let c3 = bytes[i + 2];
-      ret += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-      i += 3;
+      let b2 = bytes[++i];
+      let b3 = bytes[++i];
+      ret += String.fromCharCode(((b & 15) << 12) | ((b2 & 63) << 6) | (b3 & 63));
     }
   }
 
@@ -73,8 +44,7 @@ export function decodeUtf8(bytes: Array<number>) {
 }
 
 
-const BASIS_64 = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/']
-  .map(x => x.codePointAt(0));
+const BASIS_64 = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'].map(x => x.codePointAt(0));
 const PLUS = '+'.charCodeAt(0);
 const SLASH = '/'.charCodeAt(0);
 const NUMBER = '0'.charCodeAt(0);

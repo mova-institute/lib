@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
 export class Dictionary {
   private rootIndex = 0;
 
-  constructor(private units: Uint32Array) { }
+  constructor(private units: Uint32Array) {
+  }
 
   has(bytes: Iterable<number>): boolean {
     let index = this.followBytes(bytes);
@@ -39,14 +39,10 @@ export class Dictionary {
   }
 }
 
-
-//------------------------------------------------------------------------------
 namespace Unit {
-  // const OFFSET_MAX = 1 << 21;
   const IS_LEAF_BIT = 1 << 31;
   const HAS_LEAF_BIT = 1 << 8;
   const EXTENSION_BIT = 1 << 9;
-
 
   export function hasLeaf(unit: number) {
     return (unit & HAS_LEAF_BIT) ? true : false;

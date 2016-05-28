@@ -23,6 +23,7 @@
 - parentNode to parentElement
 - lang setter
 - ana attr change to meaningful
+- test codec like https://github.com/mathiasbynens/utf8.js/blob/master/tests/tests.js
 
 
 - скорочення

@@ -4,7 +4,6 @@ import { encodeUtf8, b64decodeFromArray } from '../codec';
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 export class Dawg {
   constructor(protected dictionary: Dictionary) { }
@@ -65,8 +64,8 @@ export class ObjectDawg<T> extends BytesDawg {
               guide: Guide,
               private deserializer: (bytes: ArrayBuffer) => T,
               payloadSeparator: number,
-              _binasciiWorkaround = false) {
-    super(dic, guide, payloadSeparator, _binasciiWorkaround);
+              binasciiWorkaround = false) {
+    super(dic, guide, payloadSeparator, binasciiWorkaround);
   }
 
   get(key: string) {
