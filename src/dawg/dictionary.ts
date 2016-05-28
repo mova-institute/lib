@@ -1,6 +1,4 @@
 export class Dictionary {
-  private rootIndex = 0;
-
   constructor(private units: Uint32Array) {
   }
 
@@ -18,7 +16,7 @@ export class Dictionary {
     return Unit.value(this.units[index ^ Unit.offset(this.units[index])]);
   }
 
-  followBytes(bytes: Iterable<number>, index = this.rootIndex) {
+  followBytes(bytes: Iterable<number>, index = 0) {
     for (let byte of bytes) {
       if ((index = this.followByte(byte, index)) === null) {
         return null;

@@ -16,7 +16,7 @@
     "eofline": true,
     "forin": true,
     "indent": [true, "spaces"],
-    "interface-name": [true, "always-prefix"],
+    "interface-name": [false, "never-prefix"],
     "jsdoc-format": true,
     "label-position": true,
     "label-undefined": true,

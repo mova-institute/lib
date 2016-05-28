@@ -1,10 +1,10 @@
-import { ObjectDawg } from '../../dawg/object_dawg';
+import { MapDawg } from '../../dawg/map_dawg';
 import { IMorphInterp } from '../interfaces';
 // import {WCHAR_NOT_UK_RE} from '../static';
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
-  constructor(private words: ObjectDawg<WordDawgPayload>,
+  constructor(private words: MapDawg<string, WordDawgPayload>,
               private paradigms: Array<Uint16Array>,
               private suffixes: Array<string>,
               private tags: Array<string>,
@@ -69,12 +69,12 @@ export class WordDawgPayload {
   paradigmId: number;
   indexInPradigm: number;
 
-  static create(buf: ArrayBuffer) {  // todo: reference constructor directly
-    return new WordDawgPayload(buf);
+  static create(bytes: Uint8Array) {  // todo: reference constructor directly
+    return new WordDawgPayload(bytes);
   }
 
-  constructor(buf: ArrayBuffer) {
-    let view = new DataView(buf);
+  constructor(bytes: Uint8Array) {
+    let view = new DataView(bytes.buffer);
     this.paradigmId = view.getUint16(0, false);
     this.indexInPradigm = view.getUint16(2, false);
   }

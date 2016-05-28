@@ -1,8 +1,10 @@
 import { Dictionary } from './dictionary';
 import { Guide } from './guide';
-import { Dawg } from './dawg';
-import { CompletionDawg } from './completion_dawg';
-import { ObjectDawg } from './object_dawg';
+import { ByteDawg } from './byte_dawg';
+import { ByteMapDawg } from './byte_map_dawg';
+import { ByteCompletionDawg } from './byte_completion_dawg';
+import { MapDawg, ValueDeserializer } from './map_dawg';
+import { encodeUtf8 } from './codec';
 
 import { buffer2typedArray } from '../utils.node';
 import { readNBytesSync } from '../utils.node';
@@ -19,10 +21,10 @@ export function createDictionarySync(fd: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function createDawgSync(filename: string) {
+export function createByteDawgSync(filename: string) {
   let fd = openSync(filename, 'r');
 
-  return new Dawg(createDictionarySync(fd));
+  return new ByteDawg(createDictionarySync(fd));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,15 +36,18 @@ function createGuideSync(fd: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function createCompletionDawgSync(filename: string) {
+export function createByteCompletionDawgSync(filename: string) {
   let fd = openSync(filename, 'r');
 
-  return new CompletionDawg(createDictionarySync(fd), createGuideSync(fd));
+  return new ByteCompletionDawg(createDictionarySync(fd), createGuideSync(fd));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function createObjectDawgSync<T>(filename: string, deserializer: (buf: ArrayBuffer) => T) {
-  let fd = openSync(filename, 'r');
+export function createStringMapDawgSync<T>(
+  filename: string,
+  deserializer: ValueDeserializer<T>) {
 
-  return new ObjectDawg<T>(createDictionarySync(fd), createGuideSync(fd), deserializer, 0b1, true);
+  let byteMapDawg = new ByteMapDawg(createByteCompletionDawgSync(filename), 0b1, true);
+
+  return new MapDawg<string, T>(byteMapDawg, encodeUtf8, deserializer);
 }

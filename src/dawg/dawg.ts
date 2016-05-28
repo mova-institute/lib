@@ -1,12 +1,14 @@
-import { Dictionary } from './dictionary';
-import { encodeUtf8 } from './codec';
+import { ByteDawg } from './byte_dawg';
 
 
 
-export class Dawg {
-  constructor(protected dictionary: Dictionary) { }
+export class Dawg<K> {
+  constructor(
+      protected dawg: ByteDawg,
+      protected keyEncoder: (key: K) => Iterable<number>) {
+  }
 
-  has(key: string): boolean {
-    return this.dictionary.has(encodeUtf8(key));
+  has(value: K): boolean {
+    return this.dawg.hasBytes(this.keyEncoder(value));
   }
 }

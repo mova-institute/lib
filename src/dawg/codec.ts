@@ -94,26 +94,25 @@ export function b64decodeFromArray(b64: ArrayLike<number>) {
     padding = 0;
   }
 
-  let ret = new ArrayBuffer(len * 3 / 4 - padding);
-  let view = new Uint8Array(ret);
+  let ret = new Uint8Array(len * 3 / 4 - padding);
 
   let p = 0;
   let iBound = padding > 0 ? len - 4 : len;
   let i = 0;
   for (let j = 0; i < iBound; i += 4, j += 3) {
     let tmp = (b64decode(b64[i]) << 18) | (b64decode(b64[i + 1]) << 12) | (b64decode(b64[i + 2]) << 6) | b64decode(b64[i + 3]);
-    view[p++] = (tmp & 0xFF0000) >> 16;
-    view[p++] = (tmp & 0xFF00) >> 8;
-    view[p++] = tmp & 0xFF;
+    ret[p++] = (tmp & 0xFF0000) >> 16;
+    ret[p++] = (tmp & 0xFF00) >> 8;
+    ret[p++] = tmp & 0xFF;
   }
   if (padding === 2) {
     let tmp = (b64decode(b64[i]) << 2) | (b64decode(b64[i + 1]) >> 4);
-    view[p++] = (tmp & 0xFF);
+    ret[p++] = (tmp & 0xFF);
   }
   else if (padding === 1) {
     let tmp = (b64decode(b64[i]) << 10) | (b64decode(b64[i + 1]) << 4) | (b64decode(b64[i + 2]) >> 2);
-    view[p++] = ((tmp >> 8) & 0xFF);
-    view[p++] = tmp & 0xFF;
+    ret[p++] = ((tmp >> 8) & 0xFF);
+    ret[p++] = tmp & 0xFF;
   }
 
   return ret;

@@ -1,5 +1,5 @@
 import { MorphAnalyzer, WordDawgPayload } from '../morph_analyzer/morph_analyzer';
-import { createObjectDawg } from '../../dawg/factories';
+import { createStringMapDawg } from '../../dawg/factories';
 
 
 export function createMorphAnalyser(
@@ -8,7 +8,7 @@ export function createMorphAnalyser(
   suffixes: string[],
   tags: string[]) {
 
-  let dawg = createObjectDawg(wordsBuf, WordDawgPayload.create);
+  let dawg = createStringMapDawg(wordsBuf, WordDawgPayload.create);
 
   let paradigms = new Array<Uint16Array>();
   let paradigmsView = new DataView(paradigmsBuf);
@@ -20,6 +20,6 @@ export function createMorphAnalyser(
     curByte += paradigmLen * 2;
   }
 
-  let ret = new MorphAnalyzer(dawg, paradigms, suffixes, tags);  // todo
+  let ret = new MorphAnalyzer(dawg, paradigms, suffixes, tags, 'num', 'x');  // todo
   return ret;
 }

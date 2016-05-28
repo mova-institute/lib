@@ -122,3 +122,27 @@ export function testFlagSorter(fileStr: string) {
     }
   }
 }
+
+
+
+class Base {
+
+}
+class Derived extends Base {
+  do() { }
+}
+
+class A {
+  constructor(protected a: Base) {
+  }
+}
+
+class B extends A {
+  constructor(protected a: Derived) {
+    super(a);
+    a.do();
+  }
+}
+
+
+let b = new B(new Derived());

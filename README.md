@@ -24,6 +24,9 @@
 - lang setter
 - ana attr change to meaningful
 - test codec like https://github.com/mathiasbynens/utf8.js/blob/master/tests/tests.js
+- wstorm code review
+- continuation indent
+- key encoder: no zero bytes
 
 
 - скорочення
