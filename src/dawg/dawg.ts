@@ -1,6 +1,6 @@
 import { Dictionary } from './dictionary';
 import { Guide } from './guide';
-import { encodeUtf8, b64decodeFromArray } from '../codec';
+import { encodeUtf8, b64decodeFromArray } from './codec';
 
 
 
