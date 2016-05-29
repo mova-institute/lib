@@ -1,10 +1,10 @@
-import { IDocument, INode, IElement } from './interface';
+import { AbstractDocument, AbstractNode, AbstractElement } from './interface';
 import { wrappedOrNull, ithGenerated, countGenerated, mixin } from '../../lang';
-const libxmljs = require('libxmljs');  // typings are wrong, use none
+const libxmljs = require('libxmljs');  // May 2016: current typings are wrong, use none
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export class LibxmlDocument extends IDocument {
+export class LibxmlDocument extends AbstractDocument {
 
   constructor(private wrapee) {
     super();
@@ -51,7 +51,7 @@ export class LibxmlDocument extends IDocument {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class LibxmlNode extends INode {
+export class LibxmlNode extends AbstractNode {
   constructor(protected wrapee) {
     super();
   }
@@ -136,8 +136,8 @@ export class LibxmlNode extends INode {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-@mixin(IElement)
-export class LibxmlElement extends LibxmlNode implements IElement {
+@mixin(AbstractElement)
+export class LibxmlElement extends LibxmlNode implements AbstractElement {
   constructor(wrapee) {
     super(wrapee);
   }
@@ -241,15 +241,14 @@ export class LibxmlElement extends LibxmlNode implements IElement {
   }
 
   // mixins
-  xpathEl: (query: string, nsMap?) => Array<IElement>;
+  xpathEl: (query: string, nsMap?) => Array<AbstractElement>;
   setAttributes: (keyvalue: Object) => LibxmlElement;
   unwrap: () => LibxmlElement;
-  rewrap: (replacement: IElement) => LibxmlElement;
+  rewrap: (replacement: AbstractElement) => LibxmlElement;
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 function switchReturnNodeType(node) {
   return wrappedOrNull(node && node.type() === 'element' ? LibxmlElement : LibxmlNode, node);
 }

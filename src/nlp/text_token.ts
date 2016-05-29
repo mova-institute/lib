@@ -1,4 +1,4 @@
-import { INode, IElement } from '../xml/api/interface';
+import { AbstractNode, AbstractElement } from '../xml/api/interface';
 import { W, W_, P, L, SE, PC } from './common_elements';
 import { ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl } from './utils';
 import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils';
@@ -8,7 +8,7 @@ import { IMorphInterp } from './interfaces';
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function $t(elem: IElement) {
+export function $t(elem: AbstractElement) {
   return elem ? new TextToken(elem) : null;
 }
 
@@ -16,7 +16,7 @@ export function $t(elem: IElement) {
 export class TextToken {
   private static TOKEN_ELEMS = new Set<string>([W_, PC]);
 
-  constructor(public elem: IElement, public hasSpaceBefore = true) {
+  constructor(public elem: AbstractElement, public hasSpaceBefore = true) {
 
   }
 
@@ -58,7 +58,7 @@ export class TextToken {
   }
 
   getInterpElem(tag: string, lemma: string) {
-    return <IElement>(this.elem.xpath(`w[@ana='${tag}' and @lemma='${lemma}']`)[0]);
+    return <AbstractElement>(this.elem.xpath(`w[@ana='${tag}' and @lemma='${lemma}']`)[0]);
   }
 
   getDisambedInterpElem() {
@@ -191,7 +191,7 @@ export class TextToken {
   }
 
   insertSentenceEnd() {
-    let where: INode = this.elem;
+    let where: AbstractNode = this.elem;
     traverseDocumentOrderEl(where, el => {
       if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
 
@@ -210,7 +210,7 @@ export class TextToken {
       }
     });
 
-    if (where.isElement() && (<IElement>where).nameNs() !== SE) {
+    if (where.isElement() && (<AbstractElement>where).nameNs() !== SE) {
       let se = where.document.createElement('mi:se');
       where.insertAfter(se);
     }

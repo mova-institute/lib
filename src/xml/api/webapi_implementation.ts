@@ -1,4 +1,4 @@
-import { IDocument, INode, IElement } from './interface';
+import { AbstractDocument, AbstractNode, AbstractElement } from './interface';
 import { nameNs } from '../utils';
 import { xpath } from '../utils.web';
 import { wrappedOrNull, mixin } from '../../lang';
@@ -13,7 +13,7 @@ export function $el(element: Element) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export class WebapiDocument extends IDocument {
+export class WebapiDocument extends AbstractDocument {
   constructor(private wrapee: XMLDocument) {
     super();
   }
@@ -48,7 +48,7 @@ export class WebapiDocument extends IDocument {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class WebapiNode extends INode {
+export class WebapiNode extends AbstractNode {
   constructor(protected wrapee: Node) {
     super();
   } // todo: protected
@@ -121,8 +121,8 @@ export class WebapiNode extends INode {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-@mixin(IElement)
-export class WebapiElement extends WebapiNode implements IElement {
+@mixin(AbstractElement)
+export class WebapiElement extends WebapiNode implements AbstractElement {
   constructor(wrapee: Element) {
     super(wrapee);
   }
@@ -209,15 +209,14 @@ export class WebapiElement extends WebapiNode implements IElement {
   xpathEl: (query: string, nsMap?) => Array<WebapiElement>;
   setAttributes: (keyvalue: Object) => WebapiElement;
   unwrap: () => WebapiElement;
-  rewrap: (replacement: IElement) => WebapiElement;
+  rewrap: (replacement: AbstractElement) => WebapiElement;
 }
 // applyMixins(WebapiElement, [IElement]);
 
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 function switchReturnNodeType(node: Node) {
   return wrappedOrNull(node && node.nodeType === Node.ELEMENT_NODE ? WebapiElement : WebapiNode, node);
 }

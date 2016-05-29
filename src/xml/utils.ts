@@ -1,4 +1,4 @@
-import { INode, IElement } from './api/interface';
+import { AbstractNode, AbstractElement } from './api/interface';
 
 // todo: move out
 export const NS = {
@@ -103,16 +103,16 @@ export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDepthEl(node: INode, onEnter: (el: IElement) => any, onLeave?: (el: IElement) => any) {
+export function traverseDepthEl(node: AbstractNode, onEnter: (el: AbstractElement) => any, onLeave?: (el: AbstractElement) => any) {
   traverseDepth(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export type TraverseDirective = 'skip' | 'stop' | void;
 export interface ITraverseCallback {
-  (el: INode): TraverseDirective;
+  (el: AbstractNode): TraverseDirective;
 }
-export function traverseDepth(node: INode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
+export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
   let directive = onEnter(node);
   if (directive === 'stop') {
     return false;
@@ -134,7 +134,7 @@ export function traverseDepth(node: INode, onEnter: ITraverseCallback, onLeave?:
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrder(node: INode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
+export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
   let curNode = node;
   for (; curNode; curNode = curNode.nextSibling) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
@@ -152,13 +152,13 @@ export function traverseDocumentOrder(node: INode, onEnter: ITraverseCallback, o
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function traverseDocumentOrderEl(node: INode, onEnter: (el: IElement) => TraverseDirective, onLeave?: (el: IElement) => TraverseDirective) {
+export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: AbstractElement) => TraverseDirective, onLeave?: (el: AbstractElement) => TraverseDirective) {
   traverseDocumentOrder(node, callbackIfElement(onEnter), callbackIfElement(onLeave));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function nextElDocumentOrder(context: IElement, elsOfInterest?: Set<string>) {
-  let ret: IElement = null;
+export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
+  let ret: AbstractElement = null;
   traverseDocumentOrder(context, callbackIfElement(el => {
     if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs()))) {
       ret = el;
@@ -170,7 +170,7 @@ export function nextElDocumentOrder(context: IElement, elsOfInterest?: Set<strin
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function walkUpUntil(node: INode, predicate: (node: INode) => boolean) {
+export function walkUpUntil(node: AbstractNode, predicate: (node: AbstractNode) => boolean) {
   while (node && predicate(node.parent)) {
     node = node.parent;
   }
@@ -188,7 +188,7 @@ export function nLevelsDeep(node, n: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function callbackIfElement(cb: (el: IElement) => TraverseDirective) {
+function callbackIfElement(cb: (el: AbstractElement) => TraverseDirective) {
   return node => {
     if (cb && node.isElement()) {
       return cb(node);
@@ -273,7 +273,7 @@ export function pretty(xmlstr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function sortChildElements(el: IElement, compare: (a: IElement, b: IElement) => number) {
+export function sortChildElements(el: AbstractElement, compare: (a: AbstractElement, b: AbstractElement) => number) {
   let childrenSorted = [...el.childElements()].sort(compare);
   for (let child of childrenSorted) {
     el.appendChild(child.remove());

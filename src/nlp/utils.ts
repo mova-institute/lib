@@ -2,7 +2,7 @@ import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements } from '.
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elements from './common_elements';
 import { r, last } from '../lang';
-import { INode, IElement, IDocument } from '../xml/api/interface';
+import { AbstractNode, AbstractElement, AbstractDocument } from '../xml/api/interface';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
@@ -105,7 +105,7 @@ export function haveSpaceBetween(tagA: string, textA: string, tagB: string, text
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function haveSpaceBetweenEl(a: IElement, b: IElement): boolean {
+export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): boolean {
   let tagA = a ? a.nameNs() : null;
   let textA = a ? a.text : null;
   let tagB = b ? b.nameNs() : null;
@@ -140,8 +140,8 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
 ////////////////////////////////////////////////////////////////////////////////
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 
-export function tokenizeTei(root: IElement, tagger: MorphAnalyzer) {
-  traverseDepth(root, (node: INode) => {
+export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
+  traverseDepth(root, (node: AbstractNode) => {
     if (TOSKIP.has(node.name)) {
       return 'skip';
     }
@@ -160,8 +160,8 @@ export function tokenizeTei(root: IElement, tagger: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function elementFromToken(token: string, document: IDocument) {
-  let ret: INode;
+export function elementFromToken(token: string, document: AbstractDocument) {
+  let ret: AbstractNode;
   if (/\s/u.test(token)) {
     // console.error('poo');
 
@@ -186,7 +186,7 @@ export function elementFromToken(token: string, document: IDocument) {
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: IElement, morphTags: Set<IMorphInterp>) {
+function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let miw = el.document.createElement('mi:w_'); // todo
 
@@ -204,14 +204,14 @@ function tagWord(el: IElement, morphTags: Set<IMorphInterp>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function regularizedFlowElement(el: IElement) {
+export function regularizedFlowElement(el: AbstractElement) {
   let ret = !(el.nameNs() === elements.teiOrig && el.parent && el.parent.nameNs() === elements.teiChoice);
 
   return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
+export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) {
   let subroots = [...root.xpath('//tei:title', NS), ...root.xpath('//tei:text', NS)];
   if (!subroots.length) {
     subroots = [root];
@@ -240,7 +240,7 @@ export function tagTokenizedDom(root: IElement, analyzer: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function enumerateWords(root: IElement, attributeName = 'n') {
+export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0;
   traverseDepthEl(root, el => {
     if (el.nameNs() === W_) {
@@ -256,7 +256,7 @@ function normalizeForm(str: string) {
   return cantBeLowerCase(str) ? str : str.toLowerCase();
 }
 ////////////////////////////////////////////////////////////////////////////////
-export function getStats(root: IElement) {
+export function getStats(root: AbstractElement) {
   let wordCount = 0;
   let dictUnknownCount = 0;
   let dictUnknowns = new Set<string>();
@@ -316,9 +316,9 @@ export function* dictFormLemmaTag(lines: Array<string>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function markWordwiseDiff(mine: IElement, theirs: IElement) {
-  let mineWords = <IElement[]>mine.xpath('//mi:w_', NS);
-  let theirWords = <IElement[]>theirs.xpath('//mi:w_', NS);
+export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement) {
+  let mineWords = <AbstractElement[]>mine.xpath('//mi:w_', NS);
+  let theirWords = <AbstractElement[]>theirs.xpath('//mi:w_', NS);
 
   if (mineWords.length !== theirWords.length) {
     // console.error(wordsMine.length);
@@ -340,14 +340,14 @@ export function markWordwiseDiff(mine: IElement, theirs: IElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function firstNWords(n: number, from: IElement) {
+export function firstNWords(n: number, from: AbstractElement) {
   let words = from.xpath(`(//mi:w_)[position() <= ${n}]`, NS);
-  return (<IElement[]>words).map(x => x.childElement(0).text);
+  return (<AbstractElement[]>words).map(x => x.childElement(0).text);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function oldZhyto2newerFormat(root: IElement) {  // todo: rename xmlns
-  let miwords = <IElement[]>root.xpath('//mi:w_', NS);
+export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename xmlns
+  let miwords = <AbstractElement[]>root.xpath('//mi:w_', NS);
   for (let miw of miwords) {
     // rename attributes
     miw.renameAttributeIfExists('ana', 'disamb');
@@ -382,8 +382,8 @@ export function oldZhyto2newerFormat(root: IElement) {  // todo: rename xmlns
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function sortInterps(root: IElement) {
-  for (let miw of <IElement[]>root.xpath('//mi:w_', NS)) {
+export function sortInterps(root: AbstractElement) {
+  for (let miw of <AbstractElement[]>root.xpath('//mi:w_', NS)) {
 
     let disambIndex = Number.parseInt(miw.getAttribute('disamb'));
     let disambElem;
@@ -410,9 +410,9 @@ export function sortInterps(root: IElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function untag(root: IElement) {
+export function untag(root: AbstractElement) {
   let doc = root.document;
-  for (let miw of <IElement[]>root.xpath('//mi:w_', NS)) {
+  for (let miw of <AbstractElement[]>root.xpath('//mi:w_', NS)) {
     let replacer = doc.createElement('w');
     replacer.text = miw.childElement(0).text;
     miw.replace(replacer);
@@ -422,8 +422,8 @@ export function untag(root: IElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function getTeiDocName(doc: IDocument) {  // todo
-  let title = <IElement>doc.root.xpath('//tei:title', NS)[0];
+export function getTeiDocName(doc: AbstractDocument) {  // todo
+  let title = <AbstractElement>doc.root.xpath('//tei:title', NS)[0];
   if (title) {
     title = untag(title.clone());
     return title.text.trim().replace(/\s+/g, ' ') || null;
@@ -434,7 +434,7 @@ export function getTeiDocName(doc: IDocument) {  // todo
 
 ////////////////////////////////////////////////////////////////////////////////
 const unboxElems = new Set(['nobr', 'img']);
-export function normalizeCorpusText(root: IElement) {
+export function normalizeCorpusText(root: AbstractElement) {
   traverseDepthEl(root, el => {
     if (unboxElems.has(el.name)) {
       el.unwrap();
