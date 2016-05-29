@@ -1,5 +1,5 @@
 import { MorphAnalyzer, WordDawgPayload } from '../morph_analyzer/morph_analyzer';
-import { createStringMapDawg } from '../../dawg/factories';
+import { createStringMapDawg } from 'dawgjs/factories';
 
 
 export function createMorphAnalyser(

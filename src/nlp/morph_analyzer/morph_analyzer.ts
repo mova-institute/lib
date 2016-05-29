@@ -1,4 +1,4 @@
-import { MapDawg } from '../../dawg/map_dawg';
+import { MapDawg } from 'dawgjs/map_dawg';
 import { IMorphInterp } from '../interfaces';
 // import {WCHAR_NOT_UK_RE} from '../static';
 

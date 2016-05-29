@@ -1,6 +1,6 @@
 import { MorphAnalyzer, WordDawgPayload } from './morph_analyzer';
 import { readFileSync } from 'fs';
-import { createStringMapDawgSync } from '../../dawg/factories.node';
+import { createStringMapDawgSync } from 'dawgjs';
 
 
 export function createMorphAnalyserSync(dictFolder: string) {
