@@ -16,23 +16,24 @@ export function wrappedOrNull<T>(construct: { new (val): T; }, val) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function countGenerated<T>(generator: Iterator<T>) {
+/*export function countGenerated<T>(generator: Iterator<T>) {
   let i = 0;
   while (!generator.next().done) {
     ++i;
   }
 
   return i;
-}
+}*/
+
 ////////////////////////////////////////////////////////////////////////////////
-export function ithGenerated<T>(generator: Iterator<T>, index: number) {
+/*export function ithGenerated<T>(generator: Iterator<T>, index: number) {
   let cur = generator.next();
   while (index-- && !cur.done) {
     cur = generator.next();
   }
 
   return cur.value;
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////
 export function complement<T>(a: Set<T>, b: Set<T>) {
@@ -124,7 +125,7 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 /** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
-export function mixin(...baseCtors: any[]) {  // todo: why not Object[]?
+export function mixin(...baseCtors: any[]) {
   return derivedCtor => {
     baseCtors.forEach(baseCtor => {
       Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
@@ -136,6 +137,6 @@ export function mixin(...baseCtors: any[]) {  // todo: why not Object[]?
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function strlen(str: string) {
+/*export function strlen(str: string) {
   return countGenerated(str[Symbol.iterator]());
-}
+}*/

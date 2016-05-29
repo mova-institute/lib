@@ -66,3 +66,10 @@ compilecorp --recompile-corpus --no-sketches --no-biterms corpik
 - Consider naming an interface without an I prefix.
 - tslint rules for the Styleguide?
 - Import Line Spacing, Style 03-06
+
+### not reused among projects
+- utf8 encode/decode
+- wrappedOrNull
+- mixin
+- countGenerated
+- ithGenerated
