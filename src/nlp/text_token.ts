@@ -1,4 +1,4 @@
-import { AbstractNode, AbstractElement } from '../xml/api/interface';
+import { AbstractNode, AbstractElement } from 'unixml';
 import { W, W_, P, L, SE, PC } from './common_elements';
 import { ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl } from './utils';
 import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils';

@@ -1,5 +1,5 @@
-// import {INode, IElement, IDocument} from '../xml/api/interface';
-// import {LibxmlDocument, LibxmlElement, LibxmlNode} from '../xml/api/libxmljs_implementation';
+// import {INode, IElement, IDocument} from 'unixml';
+// import {LibxmlDocument, LibxmlElement, LibxmlNode} from 'unixml-libxmljs';
 // import {readFileSync} from 'fs'
 // import {dirname} from 'path'
 // import * as libxmljs from 'libxmljs'

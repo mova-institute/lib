@@ -1,7 +1,6 @@
-import { LibxmlDocument, LibxmlElement } from './xml/api/libxmljs_implementation';
+import { LibxmlDocument, LibxmlElement } from 'unixml-libxmljs';
 import { readFileSync, readSync, Stats, statSync } from 'fs';
 import { readTillEnd } from './stream_utils.node';
-const libxmljs = require('libxmljs');
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function stream2lxmlRoot(stream) {
@@ -9,17 +8,14 @@ export async function stream2lxmlRoot(stream) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function string2lxmlRoot(xmlstr: string) {
-  let lxmlXml = libxmljs.parseXmlString(xmlstr);
-  return new LibxmlDocument(lxmlXml).root;
+export function string2lxmlRoot(xmlstr: string) {  // todo: kill
+  return LibxmlDocument.parse(xmlstr).root;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function filename2lxmlRootSync(filename: string) {
   let xmlstr = readFileSync(filename, 'utf8');
-  let lxmlXml = libxmljs.parseXmlString(xmlstr);
-
-  return new LibxmlDocument(lxmlXml).root;
+  return string2lxmlRoot(xmlstr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

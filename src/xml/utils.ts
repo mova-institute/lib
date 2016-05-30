@@ -1,4 +1,4 @@
-import { AbstractNode, AbstractElement } from './api/interface';
+import { AbstractNode, AbstractElement } from 'unixml';
 
 // todo: move out
 export const NS = {

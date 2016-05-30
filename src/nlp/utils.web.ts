@@ -1,5 +1,5 @@
 import { xmlNsResolver, encloseInRootNs } from '../xml/utils';
-import { WebapiDocument, WebapiElement } from '../xml/api/webapi_implementation';
+import { WebapiDocument, WebapiElement } from 'unixml-webapi';
 import { xpath } from '../xml/utils.web';
 import { serializeXml, serializeXmlNoNs, parseXml } from '../utils.web';
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer';

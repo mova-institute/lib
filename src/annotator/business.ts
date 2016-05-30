@@ -1,5 +1,5 @@
 import { encloseInRoot, encloseInRootNs } from '../xml/utils';
-import { AbstractElement } from '../xml/api/interface';
+import { AbstractElement } from 'unixml';
 import { NS } from '../xml/utils';
 import { TextToken } from '../nlp/text_token';
 

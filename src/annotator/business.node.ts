@@ -1,6 +1,6 @@
 import { markWordwiseDiffStr } from '../nlp/utils.node';
 import { encloseInRootNs, removeRoot, removeXmlns } from '../xml/utils';
-import { LibxmlDocument } from '../xml/api/libxmljs_implementation';
+import { LibxmlDocument } from 'unixml-libxmljs';
 import { string2lxmlRoot } from '../utils.node';
 import * as business from './business';
 

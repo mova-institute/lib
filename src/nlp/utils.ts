@@ -2,7 +2,7 @@ import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements } from '.
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elements from './common_elements';
 import { r, last } from '../lang';
-import { AbstractNode, AbstractElement, AbstractDocument } from '../xml/api/interface';
+import { AbstractNode, AbstractElement, AbstractDocument } from 'unixml';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
