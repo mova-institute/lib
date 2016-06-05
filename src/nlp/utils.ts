@@ -141,7 +141,7 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
-  traverseDepth(root, (node: AbstractNode) => {
+  traverseDepth(root, node => {
     if (node.isElement() && TOSKIP.has(node.asElement().nameLocal)) {
       return 'skip';
     }
