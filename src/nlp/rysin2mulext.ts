@@ -52,8 +52,8 @@ const tagMap = {
   'def': { feat: 'pronounType', mte: '?' },  // todo
   'emph': { feat: 'pronounType', mte: 'h' },
 
-  'coord': { feat: 'сonjunctionType', mte: 'c' },
-  'subord': { feat: 'сonjunctionType', mte: 's' },
+  'coord': { feat: 'conjunctionType', mte: 'c' },
+  'subord': { feat: 'conjunctionType', mte: 's' },
 
   'noun': { feat: 'pos', mte: 'N' },
   'pron': { feat: 'pos', mte: null },
@@ -106,7 +106,7 @@ class RysinTag {
   degree: string;
   definiteness: string;
   pronounType: Array<string>;
-  сonjunctionType: string;
+  conjunctionType: string;
   numberTantum: string;
   nounType: string;
 
@@ -252,7 +252,7 @@ export function rysin2multext(lemma: string, lemmaTagStr: string, form: string, 
           break;
         }
         case 'conj': {
-          let type = mapTag(formTag.сonjunctionType);
+          let type = mapTag(formTag.conjunctionType);
           let formation = form.includes('-') ? 'c' : 's';
 
           ret.push('C' + type + formation);

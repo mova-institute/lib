@@ -268,8 +268,8 @@ export const FEATURE_TABLE = [
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.emphatic, vesumStr: 'emph', mte: 'h' },
   { featStr: 'pronominalType', feat: null, mte: 's' },
 
-  { featStr: 'сonjunctionType', feat: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
-  { featStr: 'сonjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
+  { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
+  { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
 
   { featStr: 'pos', feat: Pos, vesum: Pos.noun, vesumStr: 'noun', mte: 'N' },
   { featStr: 'pos', feat: null, mte: 'P' },
@@ -373,7 +373,7 @@ export class Features {
   reflexive: Reflexive = null;
   verbType: VerbType = null;
   numeralForm: NumeralForm = null;
-  сonjunctionType: ConjunctionType = null;
+  conjunctionType: ConjunctionType = null;
   nounType: NounType = null;
 }
 
