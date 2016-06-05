@@ -27,8 +27,6 @@
 - wstorm code review
 - continuation indent
 - key encoder: no zero bytes
-- add licence
-- keywords
 
 - скорочення
 - <supplied>
