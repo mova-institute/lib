@@ -20,6 +20,7 @@
     "pg": "registry:dt/pg#0.0.0+20160514172051",
     "request": "registry:dt/request#0.0.0+20160524135346",
     "serve-static": "registry:dt/serve-static#0.0.0+20160501131543",
-    "tmp": "registry:dt/tmp#0.0.0+20160514170650"
+    "tmp": "registry:dt/tmp#0.0.0+20160514170650",
+    "wu": "registry:dt/wu#2.1.0+20160317120654"
   }
 }

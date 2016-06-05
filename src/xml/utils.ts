@@ -1,4 +1,4 @@
-import { AbstractNode, AbstractElement } from 'unixml';
+import { AbstractNode, AbstractElement } from 'xmlapi';
 
 // todo: move out
 export const NS = {
@@ -117,8 +117,8 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
   if (directive === 'stop') {
     return false;
   }
-  if (directive !== 'skip') {
-    for (let cur = node.firstChild, next = cur && cur.nextSibling;
+  if (directive !== 'skip' && node.isElement()) {
+    for (let cur = node.asElement().firstChild, next = cur && cur.nextSibling;
          cur;
          cur = next, next = next && next.nextSibling) {
 
@@ -160,7 +160,7 @@ export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: Abstra
 export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
   let ret: AbstractElement = null;
   traverseDocumentOrder(context, callbackIfElement(el => {
-    if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs()))) {
+    if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs))) {
       ret = el;
       return 'stop';
     }

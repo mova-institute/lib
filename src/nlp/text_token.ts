@@ -1,4 +1,4 @@
-import { AbstractNode, AbstractElement } from 'unixml';
+import { AbstractNode, AbstractElement } from 'xmlapi';
 import { W, W_, P, L, SE, PC } from './common_elements';
 import { ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl } from './utils';
 import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils';
@@ -25,15 +25,15 @@ export class TextToken {
   }
 
   text() {  // todo
-    if (this.elem.nameNs() === W_) {
-      return this.elem.childElement(0).text;
+    if (this.elem.nameNs === W_) {
+      return this.elem.firstElementChild().text;
     }
 
     return this.elem.text;
   }
 
   isWord() {  // todo: more name
-    return this.elem.nameNs() === W_;
+    return this.elem.nameNs === W_;
   }
 
   isAmbig() {
@@ -58,7 +58,7 @@ export class TextToken {
   }
 
   getInterpElem(tag: string, lemma: string) {
-    return <AbstractElement>(this.elem.xpath(`w[@ana='${tag}' and @lemma='${lemma}']`)[0]);
+    return this.elem.evaluateElement(`w[@ana='${tag}' and @lemma='${lemma}']`);
   }
 
   getDisambedInterpElem() {
@@ -123,7 +123,7 @@ export class TextToken {
   }
 
   breaksLine() {
-    let elName = this.elem.nameNs();
+    let elName = this.elem.nameNs;
     return elName === P || elName === L;
   }
 
@@ -137,7 +137,7 @@ export class TextToken {
   getDisambOptions() {
     let ret = new Array<{ lemma: string, tag: string }>();
     for (let child of this.elem.childElements()) {
-      if (child.nameNs() === W) {
+      if (child.nameNs === W) {
         ret.push({
           lemma: child.getAttribute('lemma'),
           tag: child.getAttribute('ana'),
@@ -157,7 +157,7 @@ export class TextToken {
   }
 
   disambLast() {
-    this.elem.setAttribute('disamb', this.elem.childElementCount - 1);
+    this.elem.setAttribute('disamb', this.elem.countElementChildren() - 1);
     return this;
   }
 
@@ -193,24 +193,24 @@ export class TextToken {
   insertSentenceEnd() {
     let where: AbstractNode = this.elem;
     traverseDocumentOrderEl(where, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
+      if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs)) {
 
       }
-      else if (!el.nextElementSibling || haveSpaceBetweenEl(el, el.nextElementSibling)) {
+      else if (!el.nextElementSibling || haveSpaceBetweenEl(el, el.nextElementSibling())) {
         where = el;
         return 'stop';
       }
-      if (el.nameNs() === W_) {
+      if (el.nameNs === W_) {
         return 'skip';
       }
     }, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
+      if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs)) {
         where = el.lastChild;
         return 'stop';
       }
     });
 
-    if (where.isElement() && (<AbstractElement>where).nameNs() !== SE) {
+    if (where.isElement() && (<AbstractElement>where).nameNs !== SE) {
       let se = where.document.createElement('mi:se');
       where.insertAfter(se);
     }
@@ -221,7 +221,7 @@ export class TextToken {
   next(f: (token: TextToken) => boolean) {
     let ret = null;
     traverseDocumentOrderEl(this.elem, el => {
-      if (el !== this.elem && el.nameNs() === W_) {
+      if (el !== this.elem && el.nameNs === W_) {
         let token = new TextToken(el);
         if (f(token)) {
           ret = token;

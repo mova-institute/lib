@@ -2,7 +2,7 @@ import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements } from '.
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elements from './common_elements';
 import { r, last } from '../lang';
-import { AbstractNode, AbstractElement, AbstractDocument } from 'unixml';
+import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
@@ -106,9 +106,9 @@ export function haveSpaceBetween(tagA: string, textA: string, tagB: string, text
 
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): boolean {
-  let tagA = a ? a.nameNs() : null;
+  let tagA = a ? a.nameNs : null;
   let textA = a ? a.text : null;
-  let tagB = b ? b.nameNs() : null;
+  let tagB = b ? b.nameNs : null;
   let textB = b ? b.text : null;
   return haveSpaceBetween(tagA, textA, tagB, textB);
 }
@@ -142,7 +142,7 @@ const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
   traverseDepth(root, (node: AbstractNode) => {
-    if (TOSKIP.has(node.name)) {
+    if (node.isElement() && TOSKIP.has(node.asElement().nameLocal)) {
       return 'skip';
     }
     if (node.isText()) {
@@ -205,27 +205,27 @@ function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function regularizedFlowElement(el: AbstractElement) {
-  let ret = !(el.nameNs() === elements.teiOrig && el.parent && el.parent.nameNs() === elements.teiChoice);
+  let ret = !(el.nameNs === elements.teiOrig && el.parent && el.parent.nameNs === elements.teiChoice);
 
   return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) {
-  let subroots = [...root.xpath('//tei:title', NS), ...root.xpath('//tei:text', NS)];
+  let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)];
   if (!subroots.length) {
     subroots = [root];
   }
 
   for (let subroot of subroots) {
     traverseDepthEl(subroot, el => {
-      let name = el.nameNs();
+      let name = el.nameNs;
       if (name === W_ || !regularizedFlowElement(el)) {
         return 'skip';
       }
 
       if (name === W) {
-        let lang = el.lang;
+        let lang = el.lang();
         if (lang && lang !== 'uk') {
           tagWord(el, new Set([{ lemma: el.text, tag: 'foreign' }])).setAttribute('disamb', 0);
         }
@@ -243,7 +243,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0;
   traverseDepthEl(root, el => {
-    if (el.nameNs() === W_) {
+    if (el.nameNs === W_) {
       el.setAttribute(attributeName, (idGen++).toString());
     }
   });
@@ -261,7 +261,7 @@ export function getStats(root: AbstractElement) {
   let dictUnknownCount = 0;
   let dictUnknowns = new Set<string>();
   traverseDepthEl(root, elem => {
-    let name = elem.nameNs();
+    let name = elem.nameNs;
     if (name === W_) {
       ++wordCount;
       // todo: use TextToken
@@ -317,8 +317,8 @@ export function* dictFormLemmaTag(lines: Array<string>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement) {
-  let mineWords = <AbstractElement[]>mine.xpath('//mi:w_', NS);
-  let theirWords = <AbstractElement[]>theirs.xpath('//mi:w_', NS);
+  let mineWords = [...mine.evaluateElements('//mi:w_', NS)];
+  let theirWords = [...theirs.evaluateElements('//mi:w_', NS)];
 
   if (mineWords.length !== theirWords.length) {
     // console.error(wordsMine.length);
@@ -341,13 +341,13 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
 
 ////////////////////////////////////////////////////////////////////////////////
 export function firstNWords(n: number, from: AbstractElement) {
-  let words = from.xpath(`(//mi:w_)[position() <= ${n}]`, NS);
-  return (<AbstractElement[]>words).map(x => x.childElement(0).text);
+  let words = from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS);
+  return words.map(x => x.firstElementChild().text);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename xmlns
-  let miwords = <AbstractElement[]>root.xpath('//mi:w_', NS);
+  let miwords = root.evaluateElements('//mi:w_', NS);
   for (let miw of miwords) {
     // rename attributes
     miw.renameAttributeIfExists('ana', 'disamb');
@@ -357,7 +357,7 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 
 
     // select unambig dict interps
-    if (miw.childElementCount === 1 && !miw.getAttribute('disamb')) {
+    if ([...miw.childElements()].length === 1 && !miw.getAttribute('disamb')) {
       miw.setAttribute('disamb', 0);
     }
 
@@ -383,7 +383,7 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sortInterps(root: AbstractElement) {
-  for (let miw of <AbstractElement[]>root.xpath('//mi:w_', NS)) {
+  for (let miw of root.evaluateElements('//mi:w_', NS)) {
 
     let disambIndex = Number.parseInt(miw.getAttribute('disamb'));
     let disambElem;
@@ -412,9 +412,9 @@ export function sortInterps(root: AbstractElement) {
 ////////////////////////////////////////////////////////////////////////////////
 export function untag(root: AbstractElement) {
   let doc = root.document;
-  for (let miw of <AbstractElement[]>root.xpath('//mi:w_', NS)) {
+  for (let miw of root.evaluateElements('//mi:w_', NS)) {
     let replacer = doc.createElement('w');
-    replacer.text = miw.childElement(0).text;
+    replacer.text = miw.firstElementChild().text;
     miw.replace(replacer);
   }
 
@@ -423,7 +423,7 @@ export function untag(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getTeiDocName(doc: AbstractDocument) {  // todo
-  let title = <AbstractElement>doc.root.xpath('//tei:title', NS)[0];
+  let title = doc.root.evaluateElement('//tei:title[1]', NS);
   if (title) {
     title = untag(title.clone());
     return title.text.trim().replace(/\s+/g, ' ') || null;
@@ -436,16 +436,16 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
 const unboxElems = new Set(['nobr', 'img']);
 export function normalizeCorpusText(root: AbstractElement) {
   traverseDepthEl(root, el => {
-    if (unboxElems.has(el.name)) {
+    if (unboxElems.has(el.nameLocal)) {
       el.unwrap();
     }
-    if (el.localName === 'em') {
+    if (el.nameLocal === 'em') {
       let box = el.document.createElement('emph').setAttribute('rend', 'italic');
       el.rewrap(box);
     }
   });
 
-  for (let textNode of root.xpathIt('//text()', NS)) {
+  for (let textNode of root.evaluateNodes('//text()', NS)) {
     let res = textNode.text
       .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
       .replace(/ [-–] /g, ' — ');

@@ -49,7 +49,7 @@ function extract2() {
   // let q = '//mi:w[0]';
   // console.log(q, docRoot.xpath(q, NS));
 
-  let docCursor = $t(docRoot.xpath('//mi:w_', NS)[0]);
+  let docCursor = $t(docRoot.evaluateElement('//mi:w_', NS));
 
   const enum AmbigGroupPos { outside, first, inside }
 
@@ -95,7 +95,7 @@ function extract2() {
         let disambOptions = docCursor.getDisambOptions();
         if (!disambOptions.length) {
           console.log('aaa');
-          console.log(docCursor.elem.nameNs());
+          console.log(docCursor.elem.nameNs);
         }
         console.log([n, form, lemma, synTag, mteTag]);
         console.log(disambOptions);

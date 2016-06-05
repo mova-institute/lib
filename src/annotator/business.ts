@@ -1,5 +1,5 @@
 import { encloseInRoot, encloseInRootNs } from '../xml/utils';
-import { AbstractElement } from 'unixml';
+import { AbstractElement } from 'xmlapi';
 import { NS } from '../xml/utils';
 import { TextToken } from '../nlp/text_token';
 
@@ -38,8 +38,8 @@ export function nextTaskStep(type: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function markResolveConflicts(hisName: string, his: AbstractElement, herName: string, her: AbstractElement) {
   const XPATH = `//mi:w_[@mark='reviewed']`;
-  let hisWords = <AbstractElement[]>his.xpath(XPATH, NS);
-  let herWords = <AbstractElement[]>her.xpath(XPATH, NS);
+  let hisWords = [...his.evaluateElements(XPATH, NS)];
+  let herWords = [...her.evaluateElements(XPATH, NS)];
 
   if (hisWords.length !== herWords.length) {
     throw new Error('markResolveConflicts for docs with uneven word count is not implemented');

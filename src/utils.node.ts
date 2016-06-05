@@ -1,4 +1,4 @@
-import { LibxmlDocument, LibxmlElement } from 'unixml-libxmljs';
+import { LibxmljsDocument, LibxmljsElement } from 'xmlapi-libxmljs';
 import { readFileSync, readSync, Stats, statSync } from 'fs';
 import { readTillEnd } from './stream_utils.node';
 
@@ -9,7 +9,7 @@ export async function stream2lxmlRoot(stream) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function string2lxmlRoot(xmlstr: string) {  // todo: kill
-  return LibxmlDocument.parse(xmlstr).root;
+  return LibxmljsDocument.parse(xmlstr).root;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 import { markWordwiseDiff, normalizeCorpusText } from './utils';
 import { string2lxmlRoot } from '../utils.node';
-import { LibxmlElement } from 'unixml-libxmljs';
+import { LibxmljsElement } from 'xmlapi-libxmljs';
 import { AllHtmlEntities } from 'html-entities';
 
 
