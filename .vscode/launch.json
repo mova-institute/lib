@@ -30,8 +30,8 @@
 			"program": "${workspaceRoot}/src/bin/tag.ts",
 			"stopOnEntry": false,
 			"args": [
-        "../corpus-text/text/zaboo.xml",
-        "--tokenize"
+        "-t",
+        "А ти гарна?"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
