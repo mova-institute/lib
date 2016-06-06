@@ -146,7 +146,8 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
       return 'skip';
     }
     if (node.isText()) {
-      let cursor = node.replace(node.document.createElement('cursor'));
+      let cursor = node.document.createElement('cursor');
+      node.replace(cursor);
       // let lang = node.lang();
       // if (lang === 'uk' || lang === '') {
       for (let tok of tokenizeUk(node.text, tagger)) {
@@ -168,16 +169,16 @@ export function elementFromToken(token: string, document: AbstractDocument) {
     ret = document.createTextNode(' ');
   }
   else if (ANY_PUNC_OR_DASH_RE.test(token)) {
-    ret = document.createElement('pc');
+    ret = document.createElement('pc', NS.tei);
     ret.text = token;
   }
   else if (/^\d+$/.test(token) || WCHAR_RE.test(token)) {
-    ret = document.createElement('w');
+    ret = document.createElement('w', NS.tei);
     ret.text = token;
   }
   else {
     //console.error(`Unknown token: "${token}"`); // todo
-    ret = document.createElement('w');
+    ret = document.createElement('w', NS.tei);
     ret.text = token;
     //throw 'kuku' + token.length;
   }
