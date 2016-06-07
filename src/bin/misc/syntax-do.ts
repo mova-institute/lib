@@ -95,7 +95,7 @@ function extract2() {
         let disambOptions = docCursor.getDisambOptions();
         if (!disambOptions.length) {
           console.log('aaa');
-          console.log(docCursor.elem.nameNs());
+          console.log(docCursor.elem.name());
         }
         console.log([n, form, lemma, synTag, mteTag]);
         console.log(disambOptions);
@@ -112,7 +112,7 @@ function extract2() {
       }
 
       docCursor = docCursor.nextToken();
-      // console.log('after next' + docCursor.elem.nameNs());
+      // console.log('after next' + docCursor.elem.name());
     }
     catch (e) {
       console.error('ERROR LINE ' + (lineN + 1));

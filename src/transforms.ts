@@ -50,10 +50,10 @@ export function ugtag2tt(args) {
   let ret = createWriteStream(tmpName = tmp.tmpNameSync());
   try {
     traverseDocumentOrderEl(root, el => {
-      if (el.nameLocal() === 'w') {
-        let tag = el.getAttribute('ana');
+      if (el.localName() === 'w') {
+        let tag = el.attribute('ana');
         let form = el.text();
-        let lemma = el.getAttribute('lemma');
+        let lemma = el.attribute('lemma');
         if (isOpenClassTag(tag)) {
           openClassTags.add(tag);
         }
@@ -63,7 +63,7 @@ export function ugtag2tt(args) {
         }
         ret.write(form + '\t' + tag + '\n');
       }
-      else if (el.nameLocal() === 'c') {
+      else if (el.localName() === 'c') {
         ret.write(el.text() + '\tPUN\n');
       }
     });
@@ -180,10 +180,10 @@ export async function kotsybaDisambed2ttTraining(input, output) {
   try {
     let root = await stream2lxmlRoot(input);
     traverseDocumentOrderEl(root, el => {
-      if (el.nameLocal() === 'w') {
-        output.write(el.text() + '\t' + el.getAttribute('ana') + '\n');
+      if (el.localName() === 'w') {
+        output.write(el.text() + '\t' + el.attribute('ana') + '\n');
       }
-      else if (el.nameLocal() === 'c') {
+      else if (el.localName() === 'c') {
         output.write(el.text() + '\tPUN\n');
       }
     });

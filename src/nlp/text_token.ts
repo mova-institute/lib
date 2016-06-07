@@ -21,11 +21,11 @@ export class TextToken {
   }
 
   equals(other: TextToken) {
-    return other && other.elem.equals(this.elem);
+    return other && other.elem.isSame(this.elem);
   }
 
   text() {  // todo
-    if (this.elem.nameNs() === W_) {
+    if (this.elem.name() === W_) {
       return this.elem.firstElementChild().text();
     }
 
@@ -33,15 +33,15 @@ export class TextToken {
   }
 
   isWord() {  // todo: more name
-    return this.elem.nameNs() === W_;
+    return this.elem.name() === W_;
   }
 
   isAmbig() {
-    return !!this.elem.childElement(1) && !this.elem.getAttribute('disamb');
+    return !!this.elem.elementChild(1) && !this.elem.attribute('disamb');
   }
 
   isDisambed() {
-    return this.elem.getAttribute('disamb') !== null;
+    return this.elem.attribute('disamb') !== null;
   }
 
   isUntagged() {
@@ -50,11 +50,11 @@ export class TextToken {
   }
 
   isMarked() {
-    return !!this.elem.getAttribute('mark');
+    return !!this.elem.attribute('mark');
   }
 
   isReviewed() {
-    return this.elem.getAttribute('mark') === 'reviewed';
+    return this.elem.attribute('mark') === 'reviewed';
   }
 
   getInterpElem(tag: string, lemma: string) {
@@ -62,16 +62,16 @@ export class TextToken {
   }
 
   getDisambedInterpElem() {
-    let disamb = this.elem.getAttribute('disamb');
+    let disamb = this.elem.attribute('disamb');
     if (disamb !== null) {
-      return this.elem.childElement(Number(disamb));
+      return this.elem.elementChild(Number(disamb));
     }
 
     return null;
   }
 
   disambIndex() {
-    let attr = this.elem.getAttribute('disamb');
+    let attr = this.elem.attribute('disamb');
     if (attr) {
       let ret = Number.parseInt(attr);
       if (!Number.isNaN(ret)) {
@@ -85,12 +85,12 @@ export class TextToken {
   morphTag() {
     let index = this.disambIndex();
     if (index !== null) {
-      let wElem = this.elem.childElement(index);
-      return wElem ? wElem.getAttribute('ana') : '*';  // todo: throw?
+      let wElem = this.elem.elementChild(index);
+      return wElem ? wElem.attribute('ana') : '*';  // todo: throw?
     }
 
-    if (!this.elem.childElement(1)) {
-      return this.elem.childElement(0).getAttribute('ana');
+    if (!this.elem.elementChild(1)) {
+      return this.elem.elementChild(0).attribute('ana');
     }
 
     // todo: return null?
@@ -98,10 +98,10 @@ export class TextToken {
 
   interps() {
     let ret = new Array<IMorphInterp>();
-    for (let child of this.elem.childElements()) {
+    for (let child of this.elem.elementChildren()) {
       ret.push({
-        tag: child.getAttribute('ana'),
-        lemma: child.getAttribute('lemma'),
+        tag: child.attribute('ana'),
+        lemma: child.attribute('lemma'),
       });
     }
 
@@ -111,7 +111,7 @@ export class TextToken {
   lemma() {
     let disamb = this.getDisambedInterpElem();
     if (disamb) {
-      return disamb.getAttribute('lemma');
+      return disamb.attribute('lemma');
     }
   }
 
@@ -123,12 +123,12 @@ export class TextToken {
   }
 
   breaksLine() {
-    let elName = this.elem.nameNs();
+    let elName = this.elem.name();
     return elName === P || elName === L;
   }
 
   getDisambAuthorName(i: number) {
-    let author = this.elem.childElement(i).getAttribute('author');
+    let author = this.elem.elementChild(i).attribute('author');
     if (author) {
       return author.split(':')[1];
     }
@@ -136,11 +136,11 @@ export class TextToken {
 
   getDisambOptions() {
     let ret = new Array<{ lemma: string, tag: string }>();
-    for (let child of this.elem.childElements()) {
-      if (child.nameNs() === W) {
+    for (let child of this.elem.elementChildren()) {
+      if (child.name() === W) {
         ret.push({
-          lemma: child.getAttribute('lemma'),
-          tag: child.getAttribute('ana'),
+          lemma: child.attribute('lemma'),
+          tag: child.attribute('ana'),
         });
       }
     }
@@ -193,24 +193,24 @@ export class TextToken {
   insertSentenceEnd() {
     let where: AbstractNode = this.elem;
     traverseDocumentOrderEl(where, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
+      if (ELEMS_BREAKING_SENTENCE_NS.has(el.name())) {
 
       }
       else if (!el.nextElementSibling() || haveSpaceBetweenEl(el, el.nextElementSibling())) {
         where = el;
         return 'stop';
       }
-      if (el.nameNs() === W_) {
+      if (el.name() === W_) {
         return 'skip';
       }
     }, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.nameNs())) {
+      if (ELEMS_BREAKING_SENTENCE_NS.has(el.name())) {
         where = el.lastChild();
         return 'stop';
       }
     });
 
-    if (where.isElement() && (where as AbstractElement).nameNs() !== SE) {
+    if (where.isElement() && (where as AbstractElement).name() !== SE) {
       let se = where.document().createElement('mi:se');
       where.insertAfter(se);
     }
@@ -221,7 +221,7 @@ export class TextToken {
   next(f: (token: TextToken) => boolean) {
     let ret = null;
     traverseDocumentOrderEl(this.elem, el => {
-      if (el !== this.elem && el.nameNs() === W_) {
+      if (el !== this.elem && el.name() === W_) {
         let token = new TextToken(el);
         if (f(token)) {
           ret = token;
@@ -239,7 +239,7 @@ export class TextToken {
   }
 
   wordNum() {  // todo: real, ordered num?
-    let n = this.elem.getAttribute('n');
+    let n = this.elem.attribute('n');
     return n ? Number.parseInt(n, 10) : null;
   }
 

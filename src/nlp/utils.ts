@@ -106,9 +106,9 @@ export function haveSpaceBetween(tagA: string, textA: string, tagB: string, text
 
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): boolean {
-  let tagA = a ? a.nameNs() : null;
+  let tagA = a ? a.name() : null;
   let textA = a ? a.text() : null;
-  let tagB = b ? b.nameNs() : null;
+  let tagB = b ? b.name() : null;
   let textB = b ? b.text() : null;
   return haveSpaceBetween(tagA, textA, tagB, textB);
 }
@@ -142,7 +142,7 @@ const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
   traverseDepth(root, node => {
-    if (node.isElement() && TOSKIP.has(node.asElement().nameLocal())) {
+    if (node.isElement() && TOSKIP.has(node.asElement().localName())) {
       return 'skip';
     }
     if (node.isText()) {
@@ -206,7 +206,7 @@ function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function regularizedFlowElement(el: AbstractElement) {
-  let ret = !(el.nameNs() === elements.teiOrig && el.parent() && el.parent().nameNs() === elements.teiChoice);
+  let ret = !(el.name() === elements.teiOrig && el.parent() && el.parent().name() === elements.teiChoice);
 
   return ret;
 }
@@ -220,7 +220,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
 
   for (let subroot of subroots) {
     traverseDepthEl(subroot, el => {
-      let name = el.nameNs();
+      let name = el.name();
       if (name === W_ || !regularizedFlowElement(el)) {
         return 'skip';
       }
@@ -244,7 +244,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0;
   traverseDepthEl(root, el => {
-    if (el.nameNs() === W_) {
+    if (el.name() === W_) {
       el.setAttribute(attributeName, (idGen++).toString());
     }
   });
@@ -262,13 +262,13 @@ export function getStats(root: AbstractElement) {
   let dictUnknownCount = 0;
   let dictUnknowns = new Set<string>();
   traverseDepthEl(root, elem => {
-    let name = elem.nameNs();
+    let name = elem.name();
     if (name === W_) {
       ++wordCount;
       // todo: use TextToken
       //...
     }
-    else if (name === W && elem.getAttribute('ana') === 'X') {
+    else if (name === W && elem.attribute('ana') === 'X') {
       dictUnknowns.add(normalizeForm(elem.text()));
       ++dictUnknownCount;
     }
@@ -358,12 +358,12 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 
 
     // select unambig dict interps
-    if ([...miw.childElements()].length === 1 && !miw.getAttribute('disamb')) {
+    if ([...miw.elementChildren()].length === 1 && !miw.attribute('disamb')) {
       miw.setAttribute('disamb', 0);
     }
 
-    for (let w of miw.childElements()) {
-      let mte = w.getAttribute('ana');
+    for (let w of miw.elementChildren()) {
+      let mte = w.attribute('ana');
       // console.log(`mte: ${mte}`);
       let vesum = MorphTag.fromMte(mte, w.text()).toVesumStr();
       // console.log(`vesum: ${vesum}`);
@@ -386,10 +386,10 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 export function sortInterps(root: AbstractElement) {
   for (let miw of root.evaluateElements('//mi:w_', NS)) {
 
-    let disambIndex = Number.parseInt(miw.getAttribute('disamb'));
+    let disambIndex = Number.parseInt(miw.attribute('disamb'));
     let disambElem;
     if (!Number.isNaN(disambIndex)) {
-      disambElem = miw.childElement(disambIndex);
+      disambElem = miw.elementChild(disambIndex);
     }
 
     sortChildElements(miw, (a, b) => {
@@ -398,12 +398,12 @@ export function sortInterps(root: AbstractElement) {
         return ret;
       }
 
-      return compareTags(MorphTag.fromVesumStr(a.getAttribute('ana')), MorphTag.fromVesumStr(b.getAttribute('ana')));
-      // return a.getAttribute('ana').localeCompare(b.getAttribute('ana'));
+      return compareTags(MorphTag.fromVesumStr(a.attribute('ana')), MorphTag.fromVesumStr(b.attribute('ana')));
+      // return a.attribute('ana').localeCompare(b.attribute('ana'));
     });
 
     if (disambElem) {
-      miw.setAttribute('disamb', [...miw.childElements()].indexOf(disambElem));
+      miw.setAttribute('disamb', [...miw.elementChildren()].indexOf(disambElem));
     }
   }
 
@@ -437,10 +437,10 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
 const unboxElems = new Set(['nobr', 'img']);
 export function normalizeCorpusText(root: AbstractElement) {
   traverseDepthEl(root, el => {
-    if (unboxElems.has(el.nameLocal())) {
+    if (unboxElems.has(el.localName())) {
       el.unwrap();
     }
-    if (el.nameLocal() === 'em') {
+    if (el.localName() === 'em') {
       let box = el.document().createElement('emph').setAttribute('rend', 'italic');
       el.rewrap(box);
     }

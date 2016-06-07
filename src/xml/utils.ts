@@ -160,7 +160,7 @@ export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: Abstra
 export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
   let ret: AbstractElement = null;
   traverseDocumentOrder(context, callbackIfElement(el => {
-    if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs()))) {
+    if (!context.isSame(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.name()))) {
       ret = el;
       return 'stop';
     }
@@ -274,7 +274,7 @@ export function pretty(xmlstr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sortChildElements(el: AbstractElement, compare: (a: AbstractElement, b: AbstractElement) => number) {
-  let childrenSorted = [...el.childElements()].sort(compare);
+  let childrenSorted = [...el.elementChildren()].sort(compare);
   for (let child of childrenSorted) {
     el.appendChild(child.remove());
   }
