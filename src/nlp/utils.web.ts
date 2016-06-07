@@ -45,13 +45,13 @@ export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boo
   if (!doc || !doc.lookupNamespaceURI('mi')) {
     doc = parseXml(encloseInRootNs(value, 'text'));
   }
-  let root = new WebapiDocument(doc).root;
+  let root = new WebapiDocument(doc).root();
   tokenizeTei(root, tagger);
   tagTokenizedDom(root, tagger);
   if (numerate) {
     enumerateWords(root);
   }
-  let ret = root.document.serialize();
+  let ret = root.document().serialize();
 
   return ret;
 }

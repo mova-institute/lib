@@ -17,4 +17,4 @@ for (let word of words) {
   }
 }
 
-process.stdout.write(doc.document.serialize(), 'utf-8');
+process.stdout.write(doc.document().serialize(), 'utf-8');

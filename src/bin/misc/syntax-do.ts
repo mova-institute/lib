@@ -95,7 +95,7 @@ function extract2() {
         let disambOptions = docCursor.getDisambOptions();
         if (!disambOptions.length) {
           console.log('aaa');
-          console.log(docCursor.elem.nameNs);
+          console.log(docCursor.elem.nameNs());
         }
         console.log([n, form, lemma, synTag, mteTag]);
         console.log(disambOptions);
@@ -116,7 +116,7 @@ function extract2() {
     }
     catch (e) {
       console.error('ERROR LINE ' + (lineN + 1));
-      fs.writeFileSync('doc.syntdisambed.xml', docRoot.document.serialize(), 'utf-8');
+      fs.writeFileSync('doc.syntdisambed.xml', docRoot.document().serialize(), 'utf-8');
       throw e;
     }
   }

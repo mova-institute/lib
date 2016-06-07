@@ -5,5 +5,5 @@ import { enumerateWords } from '../nlp/utils';
 ioArgsPlain(async (input, output) => {
   let root = await stream2lxmlRoot(input);
   enumerateWords(root);
-  output.write(root.document.serialize());
+  output.write(root.document().serialize());
 });

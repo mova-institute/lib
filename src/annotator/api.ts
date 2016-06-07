@@ -338,7 +338,7 @@ async function onReviewConflicts(task, client: PgClient) {
           step: 'resolve',
           fragmentStart: fragment.index,
           fragmentEnd: fragment.index,
-          name: firstNWords(4, markedDoc.root).join(' '),
+          name: [...firstNWords(4, markedDoc.root())].join(' '),  // todo
         }, 'id');
 
         await client.insert('fragment_version', {

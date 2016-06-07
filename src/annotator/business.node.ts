@@ -23,7 +23,7 @@ export function markResolveConflicts(hisName: string, hisStr: string, herName: s
   let numDiffs = business.markResolveConflicts(hisName, his, herName, her);
   return {
     numDiffs,
-    markedStr: removeXmlns(removeRoot(his.document.serialize())),
-    markedDoc: his.document,
+    markedStr: removeXmlns(removeRoot(his.document().serialize())),
+    markedDoc: his.document(),
   };
 }

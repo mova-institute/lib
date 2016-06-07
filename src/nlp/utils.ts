@@ -106,10 +106,10 @@ export function haveSpaceBetween(tagA: string, textA: string, tagB: string, text
 
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): boolean {
-  let tagA = a ? a.nameNs : null;
-  let textA = a ? a.text : null;
-  let tagB = b ? b.nameNs : null;
-  let textB = b ? b.text : null;
+  let tagA = a ? a.nameNs() : null;
+  let textA = a ? a.text() : null;
+  let tagB = b ? b.nameNs() : null;
+  let textB = b ? b.text() : null;
   return haveSpaceBetween(tagA, textA, tagB, textB);
 }
 
@@ -142,16 +142,16 @@ const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
   traverseDepth(root, node => {
-    if (node.isElement() && TOSKIP.has(node.asElement().nameLocal)) {
+    if (node.isElement() && TOSKIP.has(node.asElement().nameLocal())) {
       return 'skip';
     }
     if (node.isText()) {
-      let cursor = node.document.createElement('cursor');
+      let cursor = node.document().createElement('cursor');
       node.replace(cursor);
       // let lang = node.lang();
       // if (lang === 'uk' || lang === '') {
-      for (let tok of tokenizeUk(node.text, tagger)) {
-        cursor.insertBefore(elementFromToken(tok, root.document));
+      for (let tok of tokenizeUk(node.text(), tagger)) {
+        cursor.insertBefore(elementFromToken(tok, root.document()));
       }
       cursor.remove();
     }
@@ -170,16 +170,16 @@ export function elementFromToken(token: string, document: AbstractDocument) {
   }
   else if (ANY_PUNC_OR_DASH_RE.test(token)) {
     ret = document.createElement('pc', NS.tei);
-    ret.text = token;
+    ret.text(token);
   }
   else if (/^\d+$/.test(token) || WCHAR_RE.test(token)) {
     ret = document.createElement('w', NS.tei);
-    ret.text = token;
+    ret.text(token);
   }
   else {
     //console.error(`Unknown token: "${token}"`); // todo
     ret = document.createElement('w', NS.tei);
-    ret.text = token;
+    ret.text(token);
     //throw 'kuku' + token.length;
   }
 
@@ -189,11 +189,11 @@ export function elementFromToken(token: string, document: AbstractDocument) {
 //------------------------------------------------------------------------------
 function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
-  let miw = el.document.createElement('mi:w_'); // todo
+  let miw = el.document().createElement('mi:w_'); // todo
 
   for (let morphTag of morphTags) {
-    let w = el.document.createElement('w');
-    w.text = el.text;
+    let w = el.document().createElement('w');
+    w.text(el.text());
     let { lemma, tag } = morphTag;
     w.setAttribute('lemma', lemma);
     w.setAttribute('ana', tag);
@@ -206,7 +206,7 @@ function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function regularizedFlowElement(el: AbstractElement) {
-  let ret = !(el.nameNs === elements.teiOrig && el.parent && el.parent.nameNs === elements.teiChoice);
+  let ret = !(el.nameNs() === elements.teiOrig && el.parent() && el.parent().nameNs() === elements.teiChoice);
 
   return ret;
 }
@@ -220,7 +220,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
 
   for (let subroot of subroots) {
     traverseDepthEl(subroot, el => {
-      let name = el.nameNs;
+      let name = el.nameNs();
       if (name === W_ || !regularizedFlowElement(el)) {
         return 'skip';
       }
@@ -228,10 +228,10 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
       if (name === W) {
         let lang = el.lang();
         if (lang && lang !== 'uk') {
-          tagWord(el, new Set([{ lemma: el.text, tag: 'foreign' }])).setAttribute('disamb', 0);
+          tagWord(el, new Set([{ lemma: el.text(), tag: 'foreign' }])).setAttribute('disamb', 0);
         }
         else {
-          tagWord(el, analyzer.tag(el.text));
+          tagWord(el, analyzer.tag(el.text()));
         }
       }
     });
@@ -244,7 +244,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0;
   traverseDepthEl(root, el => {
-    if (el.nameNs === W_) {
+    if (el.nameNs() === W_) {
       el.setAttribute(attributeName, (idGen++).toString());
     }
   });
@@ -262,14 +262,14 @@ export function getStats(root: AbstractElement) {
   let dictUnknownCount = 0;
   let dictUnknowns = new Set<string>();
   traverseDepthEl(root, elem => {
-    let name = elem.nameNs;
+    let name = elem.nameNs();
     if (name === W_) {
       ++wordCount;
       // todo: use TextToken
       //...
     }
     else if (name === W && elem.getAttribute('ana') === 'X') {
-      dictUnknowns.add(normalizeForm(elem.text));
+      dictUnknowns.add(normalizeForm(elem.text()));
       ++dictUnknownCount;
     }
   });
@@ -343,7 +343,7 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
 ////////////////////////////////////////////////////////////////////////////////
 export function firstNWords(n: number, from: AbstractElement) {
   let words = from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS);
-  return words.map(x => x.firstElementChild().text);
+  return words.map(x => x.firstElementChild().text());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -365,7 +365,7 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
     for (let w of miw.childElements()) {
       let mte = w.getAttribute('ana');
       // console.log(`mte: ${mte}`);
-      let vesum = MorphTag.fromMte(mte, w.text).toVesumStr();
+      let vesum = MorphTag.fromMte(mte, w.text()).toVesumStr();
       // console.log(`vesum: ${vesum}`);
 
       w.setAttribute('ana', vesum);
@@ -393,7 +393,7 @@ export function sortInterps(root: AbstractElement) {
     }
 
     sortChildElements(miw, (a, b) => {
-      let ret = a.text.localeCompare(b.text);
+      let ret = a.text().localeCompare(b.text());
       if (ret) {
         return ret;
       }
@@ -412,10 +412,10 @@ export function sortInterps(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function untag(root: AbstractElement) {
-  let doc = root.document;
+  let doc = root.document();
   for (let miw of root.evaluateElements('//mi:w_', NS)) {
     let replacer = doc.createElement('w');
-    replacer.text = miw.firstElementChild().text;
+    replacer.text(miw.firstElementChild().text());
     miw.replace(replacer);
   }
 
@@ -424,10 +424,10 @@ export function untag(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getTeiDocName(doc: AbstractDocument) {  // todo
-  let title = doc.root.evaluateElement('//tei:title[1]', NS);
+  let title = doc.root().evaluateElement('//tei:title[1]', NS);
   if (title) {
     title = untag(title.clone());
-    return title.text.trim().replace(/\s+/g, ' ') || null;
+    return title.text().trim().replace(/\s+/g, ' ') || null;
   }
 
   return null;
@@ -437,24 +437,24 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
 const unboxElems = new Set(['nobr', 'img']);
 export function normalizeCorpusText(root: AbstractElement) {
   traverseDepthEl(root, el => {
-    if (unboxElems.has(el.nameLocal)) {
+    if (unboxElems.has(el.nameLocal())) {
       el.unwrap();
     }
-    if (el.nameLocal === 'em') {
-      let box = el.document.createElement('emph').setAttribute('rend', 'italic');
+    if (el.nameLocal() === 'em') {
+      let box = el.document().createElement('emph').setAttribute('rend', 'italic');
       el.rewrap(box);
     }
   });
 
   for (let textNode of root.evaluateNodes('//text()', NS)) {
-    let res = textNode.text
+    let res = textNode.text()
       .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
       .replace(/ [-–] /g, ' — ');
 
-    textNode.text = res;
+    textNode.text(res);
   }
 
-  let ret = root.document.serialize();
+  let ret = root.document().serialize();
 
   // todo:
   // if orig has >2 words

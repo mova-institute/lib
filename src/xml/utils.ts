@@ -118,9 +118,9 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
     return false;
   }
   if (directive !== 'skip' && node.isElement()) {
-    for (let cur = node.asElement().firstChild, next = cur && cur.nextSibling;
+    for (let cur = node.asElement().firstChild(), next = cur && cur.nextSibling();
          cur;
-         cur = next, next = next && next.nextSibling) {
+         cur = next, next = next && next.nextSibling()) {
 
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
@@ -136,14 +136,14 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
 ////////////////////////////////////////////////////////////////////////////////
 export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
   let curNode = node;
-  for (; curNode; curNode = curNode.nextSibling) {
+  for (; curNode; curNode = curNode.nextSibling()) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
       return false;
     }
   }
-  for (curNode = node && node.parent; curNode; curNode = curNode.parent) {
-    if (curNode.nextSibling) {
-      if (traverseDocumentOrder(curNode.nextSibling, onEnter, onLeave) === false) {
+  for (curNode = node && node.parent(); curNode; curNode = curNode.parent()) {
+    if (curNode.nextSibling()) {
+      if (traverseDocumentOrder(curNode.nextSibling(), onEnter, onLeave) === false) {
         return false;
       }
       break;
@@ -160,7 +160,7 @@ export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: Abstra
 export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
   let ret: AbstractElement = null;
   traverseDocumentOrder(context, callbackIfElement(el => {
-    if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs))) {
+    if (!context.equals(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.nameNs()))) {
       ret = el;
       return 'stop';
     }
@@ -171,8 +171,8 @@ export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Se
 
 ////////////////////////////////////////////////////////////////////////////////
 export function walkUpUntil(node: AbstractNode, predicate: (node: AbstractNode) => boolean) {
-  while (node && predicate(node.parent)) {
-    node = node.parent;
+  while (node && predicate(node.parent())) {
+    node = node.parent();
   }
 
   return node;

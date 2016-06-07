@@ -10,7 +10,7 @@ export function tokenize(input: {xmlstr: string}) {
   let root = string2lxmlRoot(input.xmlstr);
   let ret = tokenizeTei(root, morphAnalyzer);
 
-  return ret.document.serialize();
+  return ret.document().serialize();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
