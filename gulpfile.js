@@ -71,20 +71,3 @@ gulp.task('copy:dist', ['cleanup:dist'], () => {
   return gulp.src(['bin/**', 'data/dict/**', 'package.json'], { base: '.' })
     .pipe(gulp.dest('../mi-lib-dist/'));
 });
-
-////////////////////////////////////////////////////////////////////////////////
-gulp.task('mi-web', ['typescript'], () => {
-  let packageJson = {
-    name: 'mi-lib',
-    private: true,
-    dependencies: JSON.parse(fs.readFileSync('package.json', 'utf8')).dependencies,
-  };
-  mkdirp.sync('dist/mi-web');
-  fs.writeFileSync('dist/mi-web/package.json', JSON.stringify(packageJson, null, 2));
-
-  return gulp.src(['lib/**/*.js'], { base: '.' })
-    .pipe(gulp.dest('dist/mi-web/'));
-});
-
-
-gulp.task('dist', ['typescript:dist', 'copy:dist']);

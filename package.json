@@ -7,15 +7,12 @@
   "engines": {
     "node": ">=6.0.0"
   },
+  "files": [
+    "lib/**/*.js"
+  ],
   "bin": {
-    "mi-update": "bin/update",
-    "mi-tag": "bin/tag",
-    "mi-info": "bin/info",
-    "mi-enumerate-words": "bin/enumerate-words"
   },
   "scripts": {
-    "postinstall": "typings install",
-    "link": "npm ln ../dawgjs",
     "update-typings": "typings install dt~body-parser dt~cookie-parser dt~express dt~express-jwt dt~html-entities dt~mime dt~node dt~pg dt~request dt~serve-static dt~tmp --global --save"
   },
   "repository": {
