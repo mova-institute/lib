@@ -8,12 +8,8 @@
   "files.exclude": {
 		"node_modules": true,
     "dist/": true,
-		"lib/**/*.js": true,
-		"lib/**/*.map": true,
-		"lib/**/*.d.ts": true,
-    "lib5/**/*.js": true,
-		"lib5/**/*.map": true,
-		"lib5/**/*.d.ts": true,
+		"lib/**/*.{js,map,d.ts}": true,
+		"lib5/**/*.{js,map,d.ts}": true,
 		"typings": true,
 		"**/__pycache__": true,
 		".idea": true
