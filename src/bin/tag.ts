@@ -2,8 +2,9 @@ import { ioArgsPlain } from '../cli_utils';
 import { createMorphAnalyserSync } from '../nlp/morph_analyzer/factories.node';
 import { readTillEnd } from '../stream_utils.node';
 import { tokenizeTei, tagTokenizedDom, enumerateWords } from '../nlp/utils';
+import { $t } from '../nlp/text_token';
 import { string2lxmlRoot } from '../utils.node';
-import { encloseInRootNsIf } from '../xml/utils';
+import { encloseInRootNsIf, NS } from '../xml/utils';
 import { createReadStream, readFileSync } from 'fs';
 import { getLibRootRelative } from '../path.node';
 
@@ -36,11 +37,22 @@ ioArgsPlain(async (input, outputFromIoargs) => {
   if (!args.tokenize) {
     tagTokenizedDom(root, tagger);
   }
-
-  if (args.n || args.numerate) {
-    enumerateWords(root);
+  if (args.unknown) {
+    let unknowns = new Set(root.evaluateElements('//mi:w_[w[@ana="x"]]', NS).map(x => $t(x).text()));
+    const collator = new Intl.Collator('uk-UA');
+    for (let unknown of [...unknowns].sort(collator.compare)) {
+      output.write(unknown + '\n');
+    }
+  }
+  else if (args.count) {
+    output.write([...root.evaluateElements('//mi:w_', NS)].length + '\n');
+  }
+  else {
+    if (args.n || args.numerate) {
+      enumerateWords(root);
+    }
+    output.write(root.document().serialize(true));
   }
 
-  output.write(root.document().serialize());
   output.write('\n');
 });

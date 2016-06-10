@@ -15,13 +15,95 @@ export function $t(elem: AbstractElement) {
 ////////////////////////////////////////////////////////////////////////////////
 export class TextToken {
   private static TOKEN_ELEMS = new Set<string>([W_, PC]);
+  private static TAG_X = 'x';
+  private static DISAMB_ATTR = 'disamb';
+  private static TAG_ATTR = 'ana';
+  private static LEMMA_ATTR = 'lemma';
 
   constructor(public elem: AbstractElement, public hasSpaceBefore = true) {
+  }
 
+  isWord() {  // todo: more name
+    return this.elem.name() === W_;
   }
 
   equals(other: TextToken) {
     return other && other.elem.isSame(this.elem);
+  }
+
+  disambIndex() {
+    let attr = this.elem.attribute(TextToken.DISAMB_ATTR);
+    if (attr) {
+      let ret = Number.parseInt(attr);
+      if (!Number.isNaN(ret)) {
+        return ret;
+      }
+    }
+  }
+
+  isDisambed() {
+    return this.disambIndex() !== undefined;
+  }
+
+  disamb(index: number) {
+    if (this.disambIndex() === index) {
+      this.elem.removeAttribute(TextToken.DISAMB_ATTR);
+    } else {
+      this.elem.setAttribute(TextToken.DISAMB_ATTR, index);  // todo: throw?
+    }
+  }
+
+  resetDisamb() {
+    this.elem.removeAttribute(TextToken.DISAMB_ATTR);
+  }
+
+  interps() {
+    let ret = new Array<IMorphInterp>();
+    for (let child of this.elem.elementChildren().filter(x => x.attribute(TextToken.TAG_ATTR) !== TextToken.TAG_X)) {
+      ret.push({
+        tag: child.attribute(TextToken.TAG_ATTR),
+        lemma: child.attribute(TextToken.LEMMA_ATTR),
+      });
+    }
+
+    return ret;
+  }
+
+  hasNoInterps() {
+    return this.interps().length;  // todo: optimize
+  }
+
+  getDisambedInterpElem() {
+    let disambIndex = this.elem.attribute(TextToken.DISAMB_ATTR);
+    if (disambIndex !== null) {
+      return this.elem.elementChild(Number(disambIndex));
+    }
+  }
+
+  morphTag() {
+    let disamb = this.getDisambedInterpElem();
+    if (disamb) {
+      return disamb.attribute(TextToken.TAG_ATTR);
+    }
+  }
+
+  lemma() {
+    let disamb = this.getDisambedInterpElem();
+    if (disamb) {
+      return disamb.attribute(TextToken.LEMMA_ATTR);
+    }
+  }
+
+  interpAs(tag: string, lemma?: string) {
+    lemma = lemma || this.text();
+    let index = this.interps().findIndex(x => x.lemma === lemma && x.tag === tag);
+    if (index === -1) {
+      this.doAddMorphInterp(tag, lemma);
+      index = this.elem.countElementChildren() - 1;
+    }
+    this.disamb(index);
+    alert(index);
+    return index;
   }
 
   text() {  // todo
@@ -30,23 +112,6 @@ export class TextToken {
     }
 
     return this.elem.text();
-  }
-
-  isWord() {  // todo: more name
-    return this.elem.name() === W_;
-  }
-
-  isAmbig() {
-    return !!this.elem.elementChild(1) && !this.elem.attribute('disamb');
-  }
-
-  isDisambed() {
-    return this.elem.attribute('disamb') !== null;
-  }
-
-  isUntagged() {
-    let tag = this.morphTag();
-    return tag && tag.toLowerCase() === 'x';
   }
 
   isMarked() {
@@ -61,70 +126,11 @@ export class TextToken {
     return this.elem.evaluateElement(`w[@ana='${tag}' and @lemma='${lemma}']`);
   }
 
-  getDisambedInterpElem() {
-    let disamb = this.elem.attribute('disamb');
-    if (disamb !== null) {
-      return this.elem.elementChild(Number(disamb));
-    }
-
-    return null;
-  }
-
-  disambIndex() {
-    let attr = this.elem.attribute('disamb');
-    if (attr) {
-      let ret = Number.parseInt(attr);
-      if (!Number.isNaN(ret)) {
-        return ret;
-      }
-    }
-
-    return null;
-  }
-
-  morphTag() {
-    let index = this.disambIndex();
-    if (index !== null) {
-      let wElem = this.elem.elementChild(index);
-      return wElem ? wElem.attribute('ana') : '*';  // todo: throw?
-    }
-
-    if (!this.elem.elementChild(1)) {
-      return this.elem.elementChild(0).attribute('ana');
-    }
-
-    // todo: return null?
-  }
-
-  interps() {
-    let ret = new Array<IMorphInterp>();
-    for (let child of this.elem.elementChildren()) {
-      ret.push({
-        tag: child.attribute('ana'),
-        lemma: child.attribute('lemma'),
-      });
-    }
-
-    return ret;
-  }
-
-  lemma() {
-    let disamb = this.getDisambedInterpElem();
-    if (disamb) {
-      return disamb.attribute('lemma');
-    }
-  }
-
   lemmaIfUnamb() {
     let tags = this.interps();
     if (tags.every(x => x.lemma === tags[0].lemma)) {
       return tags[0].lemma;
     }
-  }
-
-  breaksLine() {
-    let elName = this.elem.name();
-    return elName === P || elName === L;
   }
 
   getDisambAuthorName(i: number) {
@@ -134,35 +140,9 @@ export class TextToken {
     }
   }
 
-  getDisambOptions() {
-    let ret = new Array<{ lemma: string, tag: string }>();
-    for (let child of this.elem.elementChildren()) {
-      if (child.name() === W) {
-        ret.push({
-          lemma: child.attribute('lemma'),
-          tag: child.attribute('ana'),
-        });
-      }
-    }
-
-    return ret;
-  }
-
-  disamb(index: number) {
-    if (this.disambIndex() === index) {
-      this.elem.removeAttribute('disamb');
-    } else {
-      this.elem.setAttribute('disamb', index);
-    }
-  }
-
   disambLast() {
-    this.elem.setAttribute('disamb', this.elem.countElementChildren() - 1);
+    this.elem.setAttribute(TextToken.DISAMB_ATTR, this.elem.countElementChildren() - 1);
     return this;
-  }
-
-  resetDisamb() {
-    this.elem.removeAttribute('disamb');
   }
 
   markOnly(value: string) {
@@ -184,7 +164,7 @@ export class TextToken {
   }
 
   review(index: number) {
-    this.elem.setAttribute('disamb', index.toString());
+    this.elem.setAttribute(TextToken.DISAMB_ATTR, index.toString());
     this.markOnly('reviewed');
 
     return this;
@@ -254,6 +234,11 @@ export class TextToken {
     return interpElemIndex;
   }
 
+  breaksLine() {
+    let elName = this.elem.name();
+    return elName === P || elName === L;
+  }
+
   private doAddInterp(attributes: Object) {
     let newInterp = this.elem.document().createElement('w');
     newInterp.text(this.text());
@@ -262,13 +247,11 @@ export class TextToken {
 
     return newInterp;
   }
+
+  private doAddMorphInterp(tag: string, lemma: string) {
+    this.doAddInterp({
+      [TextToken.TAG_ATTR]: tag,
+      [TextToken.LEMMA_ATTR]: lemma,
+    });
+  }
 }
-
-//------------------------------------------------------------------------------
-// function addFeature(setStr: string, feature: string) {
-//   let set = new Set(setStr.split(':'));
-//   set.add(feature);
-//   let ret = [...set].sort().join(':');
-
-//   return ret;
-// }

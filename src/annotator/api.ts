@@ -114,18 +114,22 @@ export async function checkDocName(req: IReq, res: express.Response, client: PgC
   if (req.bag.user.roles[req.query.projectName] !== 'supervisor') {
     throw new HttpError(400);
   }
-  let projectId = client.select1('project', 'id', 'name=$1', req.query.projectName);
-  let isFree = client.call('is_doc_name_free', 1, req.query.value, projectId);
-  res.json({ isFree });
+  // let projectId = await client.select1('project', 'id', 'name=$1', req.query.projectName);
+  // let isFree = await client.call('is_doc_name_free', 1, req.query.value, projectId);
+  res.json({ isFree: false });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function addText(req: IReq, res: express.Response, client: PgClient) {  // todo
+  let projectId = await client.select1('project', 'id', 'name=$1', req.body.projectName);
+  if (projectId === null) {
+    throw new HttpError(400);
+  }
   let docId = await client.insert('document', {
     name: req.body.name,
     content: req.body.content,
     createdBy: req.bag.user.id,
-    projectId: 1,  // todo
+    projectId,
   }, 'id');
 
   for (let [i, fragment] of req.body.fragments.entries()) {

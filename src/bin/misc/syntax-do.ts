@@ -92,7 +92,7 @@ function extract2() {
       }
 
       if (synTag !== 'PUNCT' && synTag !== '_' /*todo*/) {
-        let disambOptions = docCursor.getDisambOptions();
+        let disambOptions = docCursor.interps();
         if (!disambOptions.length) {
           console.log('aaa');
           console.log(docCursor.elem.name());
@@ -101,7 +101,7 @@ function extract2() {
         console.log(disambOptions);
 
         let disambOptionIndex = disambOptions.findIndex(x => x.tag === mteTag);
-        if (disambOptionIndex < 0 && !docCursor.isUntagged()) {  // todo
+        if (disambOptionIndex < 0 && !docCursor.hasNoInterps()) {  // todo
           // console.error(disambOptions);
           // console.error([n, form, lemma, synTag, mteTag]);
           throw new Error('haha hahaha');

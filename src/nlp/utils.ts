@@ -141,21 +141,34 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
-  traverseDepth(root, node => {
-    if (node.isElement() && TOSKIP.has(node.asElement().localName())) {
-      return 'skip';
-    }
-    if (node.isText()) {
-      let cursor = node.document().createElement('cursor');
-      node.replace(cursor);
-      // let lang = node.lang();
-      // if (lang === 'uk' || lang === '') {
-      for (let tok of tokenizeUk(node.text(), tagger)) {
-        cursor.insertBefore(elementFromToken(tok, root.document()));
+  let doc = root.document();
+  for (let subroot of [...root.evaluateNodes('//tei:title|//tei:text', NS)]) {
+    traverseDepth(subroot, node => {
+      if (node.isElement() && TOSKIP.has(node.asElement().localName())) {
+        return 'skip';
       }
-      cursor.remove();
-    }
-  });
+      if (node.isText()) {
+        let text = node.text();
+        let cursor = node.document().createElement('cursor');
+        node.replace(cursor);
+
+        let spaceBefore = text.match(/^\s+/);
+        if (spaceBefore) {
+          cursor.insertBefore(doc.createTextNode(spaceBefore[0]));
+        }
+        for (let tok of tokenizeUk(text, tagger)) {
+          cursor.insertBefore(elementFromToken(tok, doc));
+        }
+        if (!/^\s+$/.test(text)) {
+          let spaceAfter = text.match(/\s+$/);
+          if (spaceAfter) {
+            cursor.insertBefore(doc.createTextNode(spaceAfter[0]));
+          }
+        }
+        cursor.remove();
+      }
+    });
+  }
 
   return root;
 }
@@ -169,16 +182,16 @@ export function elementFromToken(token: string, document: AbstractDocument) {
     ret = document.createTextNode(' ');
   }
   else if (ANY_PUNC_OR_DASH_RE.test(token)) {
-    ret = document.createElement('pc', NS.tei);
+    ret = document.createElement('pc'/*, NS.tei*/);
     ret.text(token);
   }
   else if (/^\d+$/.test(token) || WCHAR_RE.test(token)) {
-    ret = document.createElement('w', NS.tei);
+    ret = document.createElement('w'/*, NS.tei*/);
     ret.text(token);
   }
   else {
     //console.error(`Unknown token: "${token}"`); // todo
-    ret = document.createElement('w', NS.tei);
+    ret = document.createElement('w'/*, NS.tei*/);
     ret.text(token);
     //throw 'kuku' + token.length;
   }
@@ -189,15 +202,17 @@ export function elementFromToken(token: string, document: AbstractDocument) {
 //------------------------------------------------------------------------------
 function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
-  let miw = el.document().createElement('mi:w_'); // todo
+  let doc = el.document();
+  let miw = doc.createElement('mi:w_'); // todo
 
   for (let morphTag of morphTags) {
-    let w = el.document().createElement('w');
+    let w = doc.createElement('w');
     w.text(el.text());
     let { lemma, tag } = morphTag;
     w.setAttribute('lemma', lemma);
     w.setAttribute('ana', tag);
     miw.appendChild(w);
+    miw.appendChild(doc.createTextNode(' '));
   }
   el.replace(miw);
 
@@ -225,7 +240,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
         return 'skip';
       }
 
-      if (name === W) {
+      if (name === W || name === 'w') {  // hack, todo
         let lang = el.lang();
         if (lang && lang !== 'uk') {
           tagWord(el, new Set([{ lemma: el.text(), tag: 'foreign' }])).setAttribute('disamb', 0);
@@ -342,8 +357,9 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
 
 ////////////////////////////////////////////////////////////////////////////////
 export function firstNWords(n: number, from: AbstractElement) {
-  let words = from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS);
-  return words.map(x => x.firstElementChild().text());
+  let words = from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS)
+    .map(x => x.firstElementChild().text()).toArray();
+  return words;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -384,7 +400,7 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sortInterps(root: AbstractElement) {
-  for (let miw of root.evaluateElements('//mi:w_', NS)) {
+  for (let miw of [...root.evaluateElements('//mi:w_', NS)]) {
 
     let disambIndex = Number.parseInt(miw.attribute('disamb'));
     let disambElem;
@@ -413,7 +429,7 @@ export function sortInterps(root: AbstractElement) {
 ////////////////////////////////////////////////////////////////////////////////
 export function untag(root: AbstractElement) {
   let doc = root.document();
-  for (let miw of root.evaluateElements('//mi:w_', NS)) {
+  for (let miw of [...root.evaluateElements('//mi:w_', NS)]) {
     let replacer = doc.createElement('w');
     replacer.text(miw.firstElementChild().text());
     miw.replace(replacer);

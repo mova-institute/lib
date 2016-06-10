@@ -119,8 +119,8 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
   }
   if (directive !== 'skip' && node.isElement()) {
     for (let cur = node.asElement().firstChild(), next = cur && cur.nextSibling();
-         cur;
-         cur = next, next = next && next.nextSibling()) {
+      cur;
+      cur = next, next = next && next.nextSibling()) {
 
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false;
@@ -194,82 +194,6 @@ function callbackIfElement(cb: (el: AbstractElement) => TraverseDirective) {
       return cb(node);
     }
   };
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// taken from https://github.com/vkiryukhin/pretty-data
-export function pretty(xmlstr: string) {
-  let shift = ['\n']; // array of shifts
-  // var step = '  ';
-  // var maxdeep = 100;  // nesting level
-
-  // initialize array with shifts //
-  for (let i = 0; i < 100; ++i) {
-    shift.push(shift[i] + '  ');
-  }
-
-  let ar = xmlstr
-    .replace(/>\s{0,}</g, '><')
-    .replace(/</g, '~::~<')
-    .replace(/xmlns\:/g, '~::~xmlns:')
-    .replace(/xmlns\=/g, '~::~xmlns=')
-    .split('~::~');
-
-  let inComment = false;
-  let deep = 0;
-  let str = '';
-  for (let i = 0; i < ar.length; i++) {
-    // start comment or <![CDATA[...]]> or <!DOCTYPE //
-    if (ar[i].search(/<!/) > -1) {
-      str += shift[deep] + ar[i];
-      inComment = true;
-      // end comment  or <![CDATA[...]]> //
-      if (ar[i].search(/-->/) > -1 || ar[i].search(/\]>/) > -1 || ar[i].search(/!DOCTYPE/) > -1) {
-        inComment = false;
-      }
-    } else
-    // end comment  or <![CDATA[...]]> //
-    if (ar[i].search(/-->/) > -1 || ar[i].search(/\]>/) > -1) {
-      str += ar[i];
-      inComment = false;
-    } else
-    // <elm></elm> //
-    if (/^<\w/.exec(ar[i - 1]) && /^<\/\w/.exec(ar[i]) && /^<[\w:\-\.\,]+/.exec(ar[i - 1])[0] === /^<\/[\w:\-\.\,]+/.exec(ar[i])[0].replace('/', '')) {
-      str += ar[i];
-      if (!inComment) {
-        --deep;
-      }
-    } else
-    // <elm> //
-    if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) === -1 && ar[i].search(/\/>/) === -1) {
-      str = !inComment ? str += shift[deep++] + ar[i] : str += ar[i];
-    } else
-    // <elm>...</elm> //
-    if (ar[i].search(/<\w/) > -1 && ar[i].search(/<\//) > -1) {
-      str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
-    } else
-    // </elm> //
-    if (ar[i].search(/<\//) > -1) {
-      str = !inComment ? str += shift[--deep] + ar[i] : str += ar[i];
-    } else
-    // <elm/> //
-    if (ar[i].search(/\/>/) > -1) {
-      str = !inComment ? str += shift[deep] + ar[i] : str += ar[i];
-    } else
-    // <? xml ... ?> //
-    if (ar[i].search(/<\?/) > -1) {
-      str += shift[deep] + ar[i];
-    } else
-    // xmlns //
-    if (ar[i].search(/xmlns\:/) > -1 || ar[i].search(/xmlns\=/) > -1) {
-      str += shift[deep] + ar[i];
-    }
-    else {
-      str += ar[i];
-    }
-  }
-
-  return (str[0] === '\n') ? str.slice(1) : str;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

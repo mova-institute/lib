@@ -12,7 +12,7 @@ let name = args.name || 'rysin-mte';
 let destDir = join(args.d || args.dest || join(__dirname, '../../data/dict'), name);
 
 
-let lines = readFileSync(input, 'utf8').trim().replace('\'', '’').split('\n');
+let lines = readFileSync(input, 'utf8').trim().replace(`'`, '’').split('\n');
 let theLexemes = [...lexemes(lines)];
 let compiledDict = compileDict(<[string, string][][]>theLexemes);
 
