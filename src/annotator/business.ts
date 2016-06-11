@@ -50,14 +50,14 @@ export function markResolveConflicts(hisName: string, his: AbstractElement, herN
     let hisWord = new TextToken(hisWordEl);
     let herWord = new TextToken(herWords[i]);
 
-    if (hisWord.morphTag() !== herWord.morphTag() || hisWord.lemma() !== herWord.lemma()) {
+    if (hisWord.flags() !== herWord.flags() || hisWord.lemma() !== herWord.lemma()) {
       ++numDiffs;
       hisWord.markOnly('to-resolve');
       hisWord.setDisambedInterpAuthor(hisName);
       herWord.setDisambedInterpAuthor(herName);
       hisWord.resetDisamb();
 
-      let herChoiseInHisInterps = hisWord.getInterpElem(herWord.morphTag(), herWord.lemma());
+      let herChoiseInHisInterps = hisWord.getInterpElem(herWord.flags(), herWord.lemma());
       if (!herChoiseInHisInterps) {
         herChoiseInHisInterps = <AbstractElement>herWord.getDisambedInterpElem().clone();
         hisWord.elem.appendChild(herChoiseInHisInterps);

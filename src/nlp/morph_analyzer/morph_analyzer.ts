@@ -19,7 +19,7 @@ export class MorphAnalyzer {
 
   tag(token: string) {
     if (/^\d+$/.test(token)) {
-      return new Set<IMorphInterp>([{ lemma: token, tag: this.numberTag }]);
+      return new Set<IMorphInterp>([{ lemma: token, flags: this.numberTag }]);
     }
 
     // if (WCHAR_NOT_UK_RE.test(token)) {
@@ -42,7 +42,7 @@ export class MorphAnalyzer {
     if (!ret.size && lowercase.endsWith('сти')) {
       lowercase = lowercase.slice(0, -1) + 'і';
       ret = new Set([...this.lookup([lowercase])].filter(x => {
-        let tag = MorphTag.fromVesumStr(x.tag);  // todo: lemmaTag?
+        let tag = MorphTag.fromVesumStr(x.flags);  // todo: lemmaTag?
         return tag.features.pos === Pos.noun && tag.features.gender === Gender.feminine
           && (tag.features.number === Numberr.singular || !tag.features.number);  // todo
       }));  // todo that new set()
@@ -51,7 +51,7 @@ export class MorphAnalyzer {
     if (!ret.size) {
       ret.add({
         lemma: token,
-        tag: this.xTag,
+        flags: this.xTag,
       });
     }
 
@@ -76,9 +76,9 @@ export class MorphAnalyzer {
     let lemma = word.slice(0, -formSuffix.length || word.length) + lemmaSuffix;
     // todo: prefixed
 
-    let tag = this.tags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
+    let flags = this.tags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
 
-    return { lemma, tag };
+    return { lemma, flags };
   }
 }
 

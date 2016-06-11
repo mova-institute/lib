@@ -100,14 +100,14 @@ function extract2() {
         console.log([n, form, lemma, synTag, mteTag]);
         console.log(disambOptions);
 
-        let disambOptionIndex = disambOptions.findIndex(x => x.tag === mteTag);
-        if (disambOptionIndex < 0 && !docCursor.hasNoInterps()) {  // todo
+        let disambOptionIndex = disambOptions.findIndex(x => x.flags === mteTag);
+        if (disambOptionIndex < 0 && docCursor.hasInterps()) {  // todo
           // console.error(disambOptions);
           // console.error([n, form, lemma, synTag, mteTag]);
           throw new Error('haha hahaha');
         }
         if (disambOptions.length > 1) {
-          docCursor.disamb(disambOptionIndex);
+          docCursor.toggleDisamb(disambOptionIndex);
         }
       }
 

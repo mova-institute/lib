@@ -200,7 +200,7 @@ export function elementFromToken(token: string, document: AbstractDocument) {
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
+function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
   //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
   let doc = el.document();
   let miw = doc.createElement('mi:w_'); // todo
@@ -208,9 +208,9 @@ function tagWord(el: AbstractElement, morphTags: Set<IMorphInterp>) {
   for (let morphTag of morphTags) {
     let w = doc.createElement('w');
     w.text(el.text());
-    let { lemma, tag } = morphTag;
+    let { lemma, flags } = morphTag;
     w.setAttribute('lemma', lemma);
-    w.setAttribute('ana', tag);
+    w.setAttribute('ana', flags);
     miw.appendChild(w);
     miw.appendChild(doc.createTextNode(' '));
   }
@@ -243,7 +243,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
       if (name === W || name === 'w') {  // hack, todo
         let lang = el.lang();
         if (lang && lang !== 'uk') {
-          tagWord(el, new Set([{ lemma: el.text(), tag: 'foreign' }])).setAttribute('disamb', 0);
+          tagWord(el, [{ lemma: el.text(), flags: 'foreign' }]).setAttribute('disamb', 0);
         }
         else {
           tagWord(el, analyzer.tag(el.text()));
@@ -346,7 +346,7 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
 
   let numDiffs = 0;
   for (let [i] of mineWords.entries()) {
-    if ($t(mine).morphTag() !== $t(theirWords[i]).morphTag()) {
+    if ($t(mine).flags() !== $t(theirWords[i]).flags()) {
       ++numDiffs;
       mine.setAttribute('mark', 'to-review');
     }
@@ -357,8 +357,8 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
 
 ////////////////////////////////////////////////////////////////////////////////
 export function firstNWords(n: number, from: AbstractElement) {
-  let words = from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS)
-    .map(x => x.firstElementChild().text()).toArray();
+  let words = [...from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS)
+    .map(x => x.firstElementChild().text())];  //todo
   return words;
 }
 

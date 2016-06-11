@@ -11,7 +11,7 @@ let words = doc.evaluateElements('//mi:w_', NS);
 
 for (let word of words) {
   let interps = [...word.evaluateElements('./tei:w', NS)].sort((a, b) =>
-    a.getAttribute('ana').localeCompare(b.getAttribute('ana')));
+    a.attribute('ana').localeCompare(b.attribute('ana')));
   for (let w of interps) {
     word.appendChild(w);
   }

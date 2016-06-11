@@ -16,6 +16,7 @@ export enum Pos {
   transl,  // todo
   numeral,
   foreign,
+  error,
   x,
 }
 export enum Pos2 {
@@ -286,6 +287,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'intj', mte: 'I' },
   { featStr: 'pos', feat: Pos, vesum: Pos.numeral, vesumStr: 'numr', mte: 'M' },
   { featStr: 'pos', feat: Pos, vesum: Pos.foreign, vesumStr: 'foreign' },
+  { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 
   { featStr: 'pos2', feat: Pos2, vesum: Pos2.numeral, vesumStr: '&numr' },

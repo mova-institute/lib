@@ -131,11 +131,11 @@ export function test(fileStr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function presentTagsForDisamb(interps: IMorphInterp[]) {
-  let splitted = interps.filter(x => !x.tag.startsWith('#')).map((x, index) => ({ index, lemma: x.lemma, flags: x.tag.split(':') }));
+  let splitted = interps.map((x, index) => ({ index, lemma: x.lemma, flags: x.flags.split(':') }));
   let sorted = stableSort(splitted, (a, b) => compareTags(MorphTag.fromVesum(a.flags), MorphTag.fromVesum(b.flags)));
 
   let aligned = alignTagList(sorted.map(x => x.flags));
-  let flags = aligned.map(x => x.map(xx => []));
+  let flags = aligned.map(x => x.map(xx => new Array<{content: string, isMarked: boolean }>()));
 
   for (let [i, posAgg] of aligned.entries()) {
     let maxNumFlags = Math.max(...posAgg.map(x => x.length));
