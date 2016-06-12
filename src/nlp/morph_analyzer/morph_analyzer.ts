@@ -60,13 +60,17 @@ export class MorphAnalyzer {
       ret = new Set(interpretations);
     }
 
+    return ret;
+  }
+
+  tagOrX(token: string) {
+    let ret = this.tag(token);
     if (!ret.size) {
       ret.add({
         lemma: token,
         flags: this.xTag,
       });
     }
-
     return ret;
   }
 }

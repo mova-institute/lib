@@ -255,7 +255,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
           tagWord(el, [{ lemma: el.text(), flags: 'foreign' }]).setAttribute('disamb', 0);
         }
         else {
-          tagWord(el, analyzer.tag(el.text()));
+          tagWord(el, analyzer.tagOrX(el.text()));
         }
       }
     });
