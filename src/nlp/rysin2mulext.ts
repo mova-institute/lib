@@ -64,7 +64,7 @@ const tagMap = {
   'advp': { feat: 'pos', mte: null },
   'prep': { feat: 'pos', mte: 'S' },
   'predic': { feat: 'pos', mte: null },  // ?
-  'insert': { feat: 'pos', mte: null },  // ?
+  // 'insert': { feat: 'pos', mte: null },  // ?
   'transl': { feat: 'pos', mte: null },  // ?
   'conj': { feat: 'pos', mte: 'C' },
   'part': { feat: 'pos', mte: 'Q' },

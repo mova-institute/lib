@@ -9,7 +9,7 @@ export enum Pos {
   transgressive,
   preposition,
   predicative,  // todo
-  insert,  // todo
+  // insert,  // todo
   conjunction,
   particle,
   interjection,
@@ -280,7 +280,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.transgressive, vesumStr: 'advp' },
   { featStr: 'pos', feat: Pos, vesum: Pos.preposition, vesumStr: 'prep', mte: 'S' },
   { featStr: 'pos', feat: Pos, vesum: Pos.predicative, vesumStr: 'predic' },  // ?
-  { featStr: 'pos', feat: Pos, vesum: Pos.insert, vesumStr: 'insert' },  // ?
+  // { featStr: 'pos', feat: Pos, vesum: Pos.insert, vesumStr: 'insert' },  // ?
   { featStr: 'pos', feat: Pos, vesum: Pos.transl, vesumStr: 'transl' },  // ?
   { featStr: 'pos', feat: Pos, vesum: Pos.conjunction, vesumStr: 'conj', mte: 'C' },
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
