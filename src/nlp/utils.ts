@@ -125,7 +125,7 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
     for (let tok1 of tok0.split(/(\s+)/u)) {
       if (tok1.length) {
         if (tok1.includes('-')) {
-          if (!(analyzer.hasAnyCase(tok1))) {
+          if (!(analyzer.canBeToken(tok1))) {
             ret.push(...tok1.split(/(-)/).filter(x => !!x));
             continue;
           }

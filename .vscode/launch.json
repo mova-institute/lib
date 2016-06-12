@@ -31,7 +31,7 @@
 			"stopOnEntry": false,
 			"args": [
         "-t",
-        "А ти гарна?"
+        "екс-бідон"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,

@@ -18,9 +18,13 @@ export class MorphAnalyzer {
     return this.dictionary.hasAnyCase(token);
   }
 
-  tag(token: string): Iterable<IMorphInterp> {
+  canBeToken(token: string) {
+    return !!this.tag(token).size;
+  }
+
+  tag(token: string) {
     if (/^\d+$/.test(token)) {
-      return [{ lemma: token, flags: this.numberTag }];
+      return new Set([{ lemma: token, flags: this.numberTag }]);
     }
 
     let lookupee = [token];
@@ -37,11 +41,23 @@ export class MorphAnalyzer {
 
     if (!ret.size && lowercase.endsWith('сти')) {
       lowercase = lowercase.slice(0, -1) + 'і';
-      ret = new Set([...this.dictionary.lookup(lowercase)].filter(x => {
+      ret = new Set(this.dictionary.lookup(lowercase).filter(x => {
         let tag = MorphTag.fromVesumStr(x.flags);  // todo: lemmaTag?
         return tag.features.pos === Pos.noun && tag.features.gender === Gender.feminine
           && (tag.features.number === Numberr.singular || !tag.features.number);  // todo
       }));  // todo that new set()
+    }
+
+    let prefix = 'екс-';
+    if (!ret.size && lowercase.startsWith(prefix)) {
+      let interpretations = this.dictionary.lookup(lowercase.substr(prefix.length)).filter(x => {
+        let tag = MorphTag.fromVesumStr(x.flags);
+        return tag.features.pos === Pos.noun || tag.features.pos === Pos.adjective;
+      }).map(x => {
+        x.lemma = prefix + x.lemma;
+        return x;
+      });
+      ret = new Set(interpretations);
     }
 
     if (!ret.size) {
