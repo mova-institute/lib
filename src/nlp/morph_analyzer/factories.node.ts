@@ -1,4 +1,6 @@
-import { MorphAnalyzer, WordDawgPayload } from './morph_analyzer';
+import { Dictionary } from '../dictionary/dictionary';
+import { WordDawgPayload } from '../dictionary/word_dawg_payload';
+import { MorphAnalyzer } from './morph_analyzer';
 import { readFileSync } from 'fs';
 import { createStringMapDawgSync } from 'dawgjs';
 
@@ -20,7 +22,8 @@ export function createMorphAnalyserSync(dictFolder: string) {
   let words = createStringMapDawgSync<WordDawgPayload>(dictFolder + '/words.dawg', WordDawgPayload.create);
 
   let numberTag = dictFolder.includes('vesum') ? 'numr:digit' : 'Md';  // todo
-  let ret = new MorphAnalyzer(words, paradigms, suffixes, tags, numberTag, 'x');
+  let dictionary = new Dictionary(words, paradigms, suffixes, tags);
+  let ret = new MorphAnalyzer(dictionary, numberTag, 'x');
 
   return ret;
 }

@@ -16,5 +16,5 @@ export function tokenize(input: {xmlstr: string}) {
 ////////////////////////////////////////////////////////////////////////////////
 export function findUnknownWords(input: { words: string[] }) {
   // console.error(words);
-  return input.words.map(x => morphAnalyzer.dictHas(x));
+  return input.words.map(x => morphAnalyzer.hasAnyCase(x));
 }
