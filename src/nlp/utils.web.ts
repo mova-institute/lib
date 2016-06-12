@@ -11,7 +11,7 @@ export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 150;
   let ret = new Array<DocumentFragment>();
 
-  let paragraphs: any[] = xpath(doc, '//tei:title|//tei:text//tei:p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  let paragraphs: any[] = xpath(doc, '//tei:title|//tei:text//tei:p|//tei:lg', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
   let curNumWords = 0;
   let range = doc.createRange();
   let rangeStart = paragraphs[0];
@@ -23,7 +23,6 @@ export function fragmentCorpusText(doc: Document) {
       range.setEndAfter(p);
       ret.push(range.cloneContents());
       rangeStart = paragraphs[i + 1];
-
       curNumWords = 0;
     }
   }

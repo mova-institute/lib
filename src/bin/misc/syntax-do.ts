@@ -101,7 +101,7 @@ function extract2() {
         console.log(disambOptions);
 
         let disambOptionIndex = disambOptions.findIndex(x => x.flags === mteTag);
-        if (disambOptionIndex < 0 && docCursor.hasInterps()) {  // todo
+        if (disambOptionIndex < 0 && docCursor.hasDefiniteInterps()) {  // todo
           // console.error(disambOptions);
           // console.error([n, form, lemma, synTag, mteTag]);
           throw new Error('haha hahaha');

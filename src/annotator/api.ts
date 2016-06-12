@@ -3,9 +3,10 @@ import { PgClient } from '../postrges';
 import { genAccessToken } from '../crypto';
 import { IReq, debug, HttpError } from './server';
 import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business';
-import { markConflicts, markResolveConflicts } from './business.node';
+import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node';
 import { firstNWords } from '../nlp/utils';
 import * as assert from 'assert';
+import { string2lxmlRoot } from '../utils.node';
 
 
 // const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve']);
@@ -142,8 +143,9 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
 
   let numFragments = req.body.fragments.length;
   let segments = [[0, 0]];
+  let shift = req.body.overlap ? 1 : 0;
   for (let i = 0; i < numFragments - 1; ++i) {
-    segments.push([i, i + 1]);
+    segments.push([i, i + shift]);
   }
   segments.push([numFragments - 1, numFragments - 1]);
 
@@ -258,6 +260,8 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
       if (taskInDb.step === 'review') {
         await onReviewConflicts(task, client);
       }
+      else if (taskInDb.step === 'resolve') {
+      }
       else {
         let markedFragments = [];
         let diffsTotal = 0;
@@ -314,6 +318,32 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
   res.json(ret);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export async function getAnnotatedDoc(req: IReq, res: express.Response, client: PgClient) {
+  // todo: credentials
+  let originalXml = await client.select1('document', 'content', 'id=$1', req.query.id);
+  if (!originalXml) {
+    throw new HttpError(404);
+  }
+  let docRoot = string2lxmlRoot(originalXml);
+  let docs = await client.call('get_document_latest_state', req.query.id);
+  for (let doc of docs) {
+    for (let task of doc.taskTypes) {
+      if (task.type[0] === 'disambiguate_morphologically') {
+        for (let fragment of task.fragments) {
+          let latestAnnotation = fragment.latestAnnotations.find(x => x.step === 'resolve')
+            || fragment.latestAnnotations.find(x => x.step === 'review')
+            || fragment.latestAnnotations.find(x => x.step === 'annotate');
+          if (fragment.isDone) {
+            adoptMorphDisambsStr(docRoot, latestAnnotation.content);
+          }
+        }
+      }
+    }
+  }
+
+  return res.end(docRoot.document().serialize(true));
+}
 
 
 

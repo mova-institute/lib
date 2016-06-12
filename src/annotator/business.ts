@@ -1,7 +1,7 @@
 import { encloseInRoot, encloseInRootNs } from '../xml/utils';
 import { AbstractElement } from 'xmlapi';
 import { NS } from '../xml/utils';
-import { TextToken } from '../nlp/text_token';
+import { $t, TextToken } from '../nlp/text_token';
 
 export const MAX_CONCUR_ANNOT = 3;
 
@@ -47,22 +47,17 @@ export function markResolveConflicts(hisName: string, his: AbstractElement, herN
 
   let numDiffs = 0;
   for (let [i, hisWordEl] of hisWords.entries()) {
-    let hisWord = new TextToken(hisWordEl);
-    let herWord = new TextToken(herWords[i]);
+    let hisWord = $t(hisWordEl);
+    let herWord = $t(herWords[i]);
+    let herInterp = herWord.interp();
 
-    if (hisWord.flags() !== herWord.flags() || hisWord.lemma() !== herWord.lemma()) {
+    if (!hisWord.isInterpreted(herInterp.flags, herInterp.lemma)) {
       ++numDiffs;
-      hisWord.markOnly('to-resolve');
+      hisWord.mark('to-resolve');
       hisWord.setDisambedInterpAuthor(hisName);
-      herWord.setDisambedInterpAuthor(herName);
       hisWord.resetDisamb();
-
-      let herChoiseInHisInterps = hisWord.getInterpElem(herWord.flags(), herWord.lemma());
-      if (!herChoiseInHisInterps) {
-        herChoiseInHisInterps = <AbstractElement>herWord.getDisambedInterpElem().clone();
-        hisWord.elem.appendChild(herChoiseInHisInterps);
-      }
-      // herChoiseInHisInterps.setAttribute('author', herName);
+      hisWord.assureHasInterp(herInterp.flags, herInterp.lemma);
+      hisWord.setInterpAuthor(herInterp.flags, herInterp.lemma, herName);
     }
   }
 

@@ -5,7 +5,8 @@ import { MorphTag, Pos, Gender, Numberr } from '../morph_tag';
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
-  constructor(private words: MapDawg<string, WordDawgPayload>,
+  constructor(
+    private words: MapDawg<string, WordDawgPayload>,
     private paradigms: Array<Uint16Array>,
     private suffixes: Array<string>,
     private tags: Array<string>,

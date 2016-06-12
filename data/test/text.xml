@@ -29,78 +29,11 @@
           <w lemma="розімлілий" ana="adj:m:v_zna:ranim">розімлілого</w>
           <w lemma="розімлілий" ana="adj:n:v_rod">розімлілого</w>
         </mi:w_>
-        <mi:w_ n="3"><w lemma="на" ana="intj">на</w>
-          <w lemma="на" ana="part">на</w>
-          <w lemma="на" ana="prep:rv_zna">на</w>
-          <w lemma="на" ana="prep:rv_mis">на</w>
-        </mi:w_>
-        <mi:w_ n="4"><w lemma="сонце" ana="noun:inanim:n:v_mis">сонці</w>
-        </mi:w_>
-        <foreign xml:lang="no"><mi:w_ disamb="0" n="5"><w lemma="fuckenn" ana="foreign">fuckenn</w>
-          </mi:w_>
-          <mi:w_ disamb="0" n="6"><w lemma="fuck" ana="foreign">fuck</w>
-          </mi:w_>
-        </foreign>
         <mi:w_ n="7"><w lemma="чеширського" ana="x">чеширського</w>
         </mi:w_>
         <mi:w_ n="8"><w lemma="кіт" ana="noun:anim:m:v_rod">кота</w>
           <w lemma="кіт" ana="noun:anim:m:v_zna">кота</w>
         </mi:w_><pc>.</pc>
-        <mi:w_ n="9"><w lemma="він" ana="noun:m:v_naz:&amp;pron:pers:3">Він</w>
-        </mi:w_>
-        <mi:w_ n="10"><w lemma="підставляти" ana="verb:imperf:pres:s:3">підставляє</w>
-        </mi:w_>
-        <mi:w_ n="11"><w lemma="обличчя" ana="noun:inanim:n:v_naz">обличчя</w>
-          <w lemma="обличчя" ana="noun:inanim:n:v_rod">обличчя</w>
-          <w lemma="обличчя" ana="noun:inanim:n:v_zna">обличчя</w>
-          <w lemma="обличчя" ana="noun:inanim:n:v_kly">обличчя</w>
-          <w lemma="обличчя" ana="noun:inanim:p:n:v_naz">обличчя</w>
-          <w lemma="обличчя" ana="noun:inanim:p:n:v_zna">обличчя</w>
-          <w lemma="обличчя" ana="noun:inanim:p:n:v_kly">обличчя</w>
-        </mi:w_>
-        <mi:w_ n="12"><w lemma="світ" ana="noun:inanim:m:v_rod">світу</w>
-          <w lemma="світ" ana="noun:inanim:m:v_dav">світу</w>
-          <w lemma="світ" ana="noun:inanim:m:v_mis">світу</w>
-          <w lemma="світа" ana="noun:inanim:f:v_zna:np">світу</w>
-        </mi:w_><pc>,</pc>
-        <mi:w_ n="13"><w lemma="крадькома" ana="adv">крадькома</w>
-        </mi:w_><pc>,</pc>
-        <mi:w_ n="14"><w lemma="з-під" ana="prep:rv_rod">з-під</w>
-        </mi:w_>
-        <mi:w_ n="15"><w lemma="окуляр" ana="noun:inanim:p:m:v_rod">окулярів</w>
-          <w lemma="окуляри" ana="noun:inanim:p:v_rod:ns">окулярів</w>
-        </mi:w_>
-        <mi:w_ n="16"><w lemma="поглядати" ana="verb:imperf:pres:s:3">поглядає</w>
-        </mi:w_>
-        <mi:w_ n="17"><w lemma="за" ana="adv">за</w>
-          <w lemma="за" ana="prep:rv_rod">за</w>
-          <w lemma="за" ana="prep:rv_zna">за</w>
-          <w lemma="за" ana="prep:rv_oru">за</w>
-        </mi:w_>
-        <mi:w_ n="18"><w lemma="наш" ana="adj:f:v_oru:pos:&amp;pron">нашою</w>
-        </mi:w_>
-        <mi:w_ n="19"><w lemma="реакція" ana="noun:inanim:f:v_oru">реакцією</w>
-        </mi:w_>
-        <mi:w_ n="20"><w lemma="–" ana="x">–</w>
-        </mi:w_>
-        <mi:w_ n="21"><w lemma="чи" ana="part">чи</w>
-          <w lemma="чи" ana="conj:coord">чи</w>
-          <w lemma="чи" ana="conj:subord">чи</w>
-        </mi:w_>
-        <mi:w_ n="22"><w lemma="не" ana="part">не</w>
-        </mi:w_>
-        <mi:w_ n="23"><w lemma="страшно" ana="adv:compb">страшно</w>
-        </mi:w_>
-        <mi:w_ n="24"><w lemma="ми" ana="noun:anim:p:v_dav:&amp;pron:pers:1">нам</w>
-        </mi:w_>
-        <mi:w_ n="25"><w lemma="на" ana="intj">на</w>
-          <w lemma="на" ana="part">на</w>
-          <w lemma="на" ana="prep:rv_zna">на</w>
-          <w lemma="на" ana="prep:rv_mis">на</w>
-        </mi:w_>
-        <mi:w_ n="26"><w lemma="висота" ana="noun:inanim:f:v_dav">висоті</w>
-          <w lemma="висота" ana="noun:inanim:f:v_mis">висоті</w>
-        </mi:w_><pc>?</pc>
       </p>
     </body>
   </text>

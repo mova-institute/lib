@@ -9,6 +9,10 @@ import { IMorphInterp } from './interfaces';
 import { MorphTag, compareTags } from './morph_tag';
 import { WCHAR_UK_RE, WCHAR, WCHAR_RE } from './static';
 
+const wu: Wu.WuStatic = require('wu');
+
+
+
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'p'),
   nameNs(NS.tei, 'body'),
@@ -141,8 +145,12 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se']);
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
+  let subroots = [...root.evaluateNodes('//tei:title|//tei:text', NS)];
+  if (!subroots.length) {
+    subroots = [root];
+  }
   let doc = root.document();
-  for (let subroot of [...root.evaluateNodes('//tei:title|//tei:text', NS)]) {
+  for (let subroot of subroots) {
     traverseDepth(subroot, node => {
       if (node.isElement() && TOSKIP.has(node.asElement().localName())) {
         return 'skip';
@@ -235,6 +243,7 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
 
   for (let subroot of subroots) {
     traverseDepthEl(subroot, el => {
+
       let name = el.name();
       if (name === W_ || !regularizedFlowElement(el)) {
         return 'skip';
@@ -333,23 +342,16 @@ export function* dictFormLemmaTag(lines: Array<string>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement) {
-  let mineWords = [...mine.evaluateElements('//mi:w_', NS)];
-  let theirWords = [...theirs.evaluateElements('//mi:w_', NS)];
-
-  if (mineWords.length !== theirWords.length) {
-    // console.error(wordsMine.length);
-    // console.error(wordsTheirs.length);
-    // console.error(mine.ownerDocument.serialize());
-    // console.error(theirs.ownerDocument.serialize());
-    throw new Error('Diff for docs with uneven word count not implemented');
-  }
-
+  let wordPairs = wu.zip(mine.evaluateElements('//mi:w_', NS), theirs.evaluateElements('//mi:w_', NS));
   let numDiffs = 0;
-  for (let [i] of mineWords.entries()) {
-    if ($t(mine).flags() !== $t(theirWords[i]).flags()) {
+  for (let [mineW, theirW] of wordPairs) {
+    if (!$t(mineW).isEquallyInterpreted($t(theirW))) {
       ++numDiffs;
-      mine.setAttribute('mark', 'to-review');
+      $t(mineW).mark('to-review');
     }
+  }
+  if (!wordPairs.next().done) {  // todo: check wat's up with wu's zipLongest
+    throw new Error('Diff for docs with uneven word count not implemented');
   }
 
   return numDiffs;
@@ -447,6 +449,21 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
   }
 
   return null;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
+  for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
+    let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${miwSource.attribute('n')}"]`, NS);
+    let tokenSource = $t(miwSource);
+    let { flags, lemma } = tokenSource.interp();
+    let w = miwSource.document().createElement('w').setAttributes({
+      ana: flags,
+      lemma,
+    });
+    w.text(tokenSource.text());
+    miwDest.replace(w);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

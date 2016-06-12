@@ -10,8 +10,7 @@
   "files": [
     "lib/**/*.js"
   ],
-  "bin": {
-  },
+  "bin": {},
   "scripts": {
     "update-typings": "typings install dt~body-parser dt~cookie-parser dt~express dt~express-jwt dt~html-entities dt~mime dt~node dt~pg dt~request dt~serve-static dt~tmp --global --save"
   },
@@ -33,7 +32,8 @@
     "tslint": "3.9.0",
     "tslint-eslint-rules": "^1.3.0",
     "tslint-microsoft-contrib": "2.0.6",
-    "typescript": "1.8.10"
+    "typescript": "1.8.10",
+    "wu": "^2.1.0"
   },
   "dependencies": {
     "body-parser": "1.15.1",

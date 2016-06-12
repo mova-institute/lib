@@ -63,7 +63,7 @@ export class TextToken {
 
   interps() {
     let ret = new Array<IMorphInterp>();
-    for (let child of this.elem.elementChildren().filter(x => x.attribute(TextToken.FLAGS_ATTR) !== TextToken.FLAGS_X)) {
+    for (let child of this.elem.elementChildren()) {
       ret.push({
         flags: child.attribute(TextToken.FLAGS_ATTR),
         lemma: child.attribute(TextToken.LEMMA_ATTR),
@@ -73,8 +73,12 @@ export class TextToken {
     return ret;
   }
 
-  hasInterps() {
-    return !!this.interps().length;  // todo: optimize
+  definiteInterps() {
+    return this.interps().filter(x => x.flags !== TextToken.FLAGS_X);
+  }
+
+  hasDefiniteInterps() {
+    return !!this.definiteInterps().length;  // todo: optimize
   }
 
   hasInterp(flags: string, lemma?: string) {
@@ -88,29 +92,34 @@ export class TextToken {
     }
   }
 
+  interp() {
+    let interpElem = this.getDisambedInterpElem();
+    return {
+      flags: interpElem.attribute(TextToken.FLAGS_ATTR),
+      lemma: interpElem.attribute(TextToken.LEMMA_ATTR),
+    };
+  }
+
   flags() {
-    let disamb = this.getDisambedInterpElem();
-    if (disamb) {
-      return disamb.attribute(TextToken.FLAGS_ATTR);
+    let interpElem = this.getDisambedInterpElem();
+    if (interpElem) {
+      return interpElem.attribute(TextToken.FLAGS_ATTR);
     }
   }
 
   lemma() {
-    let disamb = this.getDisambedInterpElem();
-    if (disamb) {
-      return disamb.attribute(TextToken.LEMMA_ATTR);
+    let interpElem = this.getDisambedInterpElem();
+    if (interpElem) {
+      return interpElem.attribute(TextToken.LEMMA_ATTR);
     }
   }
 
+  setInterp(flags: string, lemma?: string) {
+    this.disamb(this.assureHasInterp(flags, lemma));
+  }
+
   toggleInterp(flags: string, lemma?: string) {
-    lemma = lemma || this.text();
-    let index = this.interps().findIndex(x => x.lemma === lemma && x.flags === flags);
-    if (index === -1) {
-      this.doAddMorphInterp(flags, lemma);
-      index = this.elem.countElementChildren() - 1;
-    }
-    this.toggleDisamb(index);
-    return index;
+    this.toggleDisamb(this.assureHasInterp(flags, lemma));
   }
 
   isInterpreted(flags: string, lemma?: string) {
@@ -129,8 +138,8 @@ export class TextToken {
     return !!this.elem.attribute('mark');
   }
 
-  isReviewed() {
-    return this.elem.attribute('mark') === 'reviewed';
+  isToResolve() {
+    return this.elem.attribute('mark') === 'to-resolve';
   }
 
   getInterpElem(flags: string, lemma: string) {
@@ -144,10 +153,13 @@ export class TextToken {
     }
   }
 
-  getDisambAuthorName(i: number) {
-    let author = this.elem.elementChild(i).attribute('author');
-    if (author) {
-      return author.split(':')[1];
+  getDisambAuthorName(flags: string, lemma?: string) {
+    let elem = this.findInterpElem(flags, lemma);
+    if (elem) {
+      let author = elem.attribute('author');
+      if (author) {
+        return author.split(':')[1];
+      }
     }
   }
 
@@ -156,12 +168,23 @@ export class TextToken {
     return this;
   }
 
-  markOnly(value: string) {
+  mark(value?: string) {
+    if (value === undefined) {
+      return this.elem.attribute('mark');
+    }
     this.elem.setAttribute('mark', value);
   }
 
   setDisambedInterpAuthor(value: string) {
     this.getDisambedInterpElem().setAttribute('author', value);
+  }
+
+  setInterpAuthor(flags: string, lemma: string, value: string) {
+    let elem = this.findInterpElem(flags, lemma);
+    if (!elem) {
+      throw new Error('No such interpretation');
+    }
+    elem.setAttribute('author', value);
   }
 
   addInterp(flags: string, lemma: string) {
@@ -174,11 +197,18 @@ export class TextToken {
     return this;
   }
 
-  review(index: number) {
-    this.elem.setAttribute(TextToken.DISAMB_ATTR, index.toString());
-    this.markOnly('reviewed');
+  review(flags: string, lemma?: string) {
+    this.setInterp(flags, lemma);
+    this.mark('reviewed');
+  }
 
-    return this;
+  isReviewed() {
+    return this.elem.attribute('mark') === 'reviewed';
+  }
+
+  resolve(flags: string, lemma?: string) {
+    this.setInterp(flags, lemma);
+    this.mark('resolved');
   }
 
   insertSentenceEnd() {
@@ -234,20 +264,29 @@ export class TextToken {
     return n ? Number.parseInt(n, 10) : null;
   }
 
-  hashtag(value: string) {
-    let hashtag = '#' + value;
-    let interpElemIndex = this.interps().findIndex(x => x.flags === hashtag);
-    if (interpElemIndex === -1) {
-      this.doAddInterp({ ana: hashtag });
-      return this.interps().length - 1;
-    }
-
-    return interpElemIndex;
-  }
-
   breaksLine() {
     let elName = this.elem.name();
     return elName === P || elName === L;
+  }
+
+  isEquallyInterpreted(other: TextToken) {
+    if (this.equals(other)) {
+      return true;
+    }
+    let thisInterp = this.interp();
+    let otherInterp = other.interp();
+    return thisInterp === otherInterp
+      || (thisInterp.flags === otherInterp.flags && thisInterp.lemma === otherInterp.lemma);
+  }
+
+  assureHasInterp(flags: string, lemma?: string) {
+    lemma = lemma || this.text();
+    let index = this.interps().findIndex(x => x.lemma === lemma && x.flags === flags);
+    if (index === -1) {
+      this.doAddMorphInterp(flags, lemma);
+      index = this.elem.countElementChildren() - 1;
+    }
+    return index;
   }
 
   private doAddInterp(attributes: Object) {
@@ -264,5 +303,10 @@ export class TextToken {
       [TextToken.FLAGS_ATTR]: flags,
       [TextToken.LEMMA_ATTR]: lemma,
     });
+  }
+
+  private findInterpElem(flags: string, lemma?: string) {
+    return this.elem.elementChildren().find(x => x.attribute(TextToken.FLAGS_ATTR) === flags
+      && (!lemma || x.attribute(TextToken.LEMMA_ATTR) === lemma));
   }
 }
