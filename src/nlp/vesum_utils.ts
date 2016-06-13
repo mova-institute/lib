@@ -135,7 +135,7 @@ export function presentTagsForDisamb(interps: IMorphInterp[]) {
   let sorted = stableSort(splitted, (a, b) => compareTags(MorphTag.fromVesum(a.flags), MorphTag.fromVesum(b.flags)));
 
   let aligned = alignTagList(sorted.map(x => x.flags));
-  let flags = aligned.map(x => x.map(xx => new Array<{content: string, isMarked: boolean }>()));
+  let flags = aligned.map(x => x.map(xx => new Array<{ content: string, isMarked: boolean }>()));
 
   for (let [i, posAgg] of aligned.entries()) {
     let maxNumFlags = Math.max(...posAgg.map(x => x.length));
@@ -215,3 +215,22 @@ export function findUnidentifiableRows(fileStr: string) {
     set.add(key);
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// export async function findOmoLemmas(fileStr: string) {
+//   let set = new Set<string>();
+//   for (let { tag, form, isLemma } of iterateDictCorpVizLines(fileStr.split('\n'))) {
+//     if (isLemma) {
+//       let xv = tag.match(/:x[pv]\d/);
+
+//       let key = form;
+//       if (xv) {
+//         key += ' ' + xv[0];
+//       }
+//       if (set.has(key)) {
+//         console.log(key);
+//       }
+//       set.add(key);
+//     }
+//   }
+// }
