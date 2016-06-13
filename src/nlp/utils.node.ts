@@ -14,7 +14,7 @@ export function markWordwiseDiffStr(mineStr: string, theirsStr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function normalizeCorpusTextNode(xmlstr: string) {
+export function normalizeCorpusTextTxt(xmlstr: string) {
   xmlstr = normalizeEntities(xmlstr)
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2');
   let root = string2lxmlRoot(xmlstr);
