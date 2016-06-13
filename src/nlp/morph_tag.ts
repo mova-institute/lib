@@ -385,7 +385,7 @@ export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl',
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl', 'mock', 'odd',
   ]);
 
 
