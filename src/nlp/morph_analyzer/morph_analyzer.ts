@@ -1,6 +1,7 @@
 import { Dictionary } from '../dictionary/dictionary';
 import { IMorphInterp } from '../interfaces';
 import { MorphTag, Pos, Gender, Numberr } from '../morph_tag';
+import { FOREIGN_CHAR_RE } from '../static';
 
 const wu: Wu.WuStatic = require('wu');
 
@@ -11,6 +12,7 @@ export class MorphAnalyzer {
   constructor(
     private dictionary: Dictionary,
     private numberTag: string,
+    private foreignTag: string,
     private xTag: string) {
   }
 
@@ -25,6 +27,10 @@ export class MorphAnalyzer {
   tag(token: string) {
     if (/^\d+$/.test(token)) {
       return new Set([{ lemma: token, flags: this.numberTag }]);
+    }
+
+    if (FOREIGN_CHAR_RE.test(token)) {
+      return new Set([{ lemma: token, flags: this.foreignTag }]);
     }
 
     let lookupee = [token];
@@ -48,16 +54,17 @@ export class MorphAnalyzer {
       }));  // todo that new set()
     }
 
-    let prefix = 'екс-';
-    if (!ret.size && lowercase.startsWith(prefix)) {
-      let interpretations = this.dictionary.lookup(lowercase.substr(prefix.length)).filter(x => {
-        let tag = MorphTag.fromVesumStr(x.flags);
-        return tag.features.pos === Pos.noun || tag.features.pos === Pos.adjective;
-      }).map(x => {
-        x.lemma = prefix + x.lemma;
-        return x;
-      });
-      ret = new Set(interpretations);
+    for (let prefix of ['екс-', 'віце-']) {
+      if (!ret.size && lowercase.startsWith(prefix)) {
+        let interpretations = this.dictionary.lookup(lowercase.substr(prefix.length)).filter(x => {
+          let tag = MorphTag.fromVesumStr(x.flags);
+          return tag.features.pos === Pos.noun || tag.features.pos === Pos.adjective;
+        }).map(x => {
+          x.lemma = prefix + x.lemma;
+          return x;
+        });
+        ret = new Set(interpretations);
+      }
     }
 
     return ret;
