@@ -7,7 +7,7 @@ import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
 import { MorphTag, compareTags } from './morph_tag';
-import { WCHAR_UK_RE, WCHAR, WCHAR_RE } from './static';
+import { WORDCHAR_UK_RE, WORDCHAR, WORDCHAR_RE } from './static';
 
 const wu: Wu.WuStatic = require('wu');
 
@@ -118,11 +118,11 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WCHAR}])`);
+const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WORDCHAR}])`);
 export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
   let ret: Array<string> = [];
   for (let tok0 of val.trim().split(SPLIT_REGEX)) {
-    for (let tok1 of tok0.split(/(\s+)/u)) {
+    for (let tok1 of tok0.split(/(\s+)/)) {
       if (tok1.length) {
         if (tok1.includes('-')) {
           if (!(analyzer.canBeToken(tok1))) {
@@ -193,7 +193,7 @@ export function elementFromToken(token: string, document: AbstractDocument) {
     ret = document.createElement('pc'/*, NS.tei*/);
     ret.text(token);
   }
-  else if (/^\d+$/.test(token) || WCHAR_RE.test(token)) {
+  else if (/^\d+$/.test(token) || WORDCHAR_RE.test(token)) {
     ret = document.createElement('w'/*, NS.tei*/);
     ret.text(token);
   }
@@ -316,7 +316,7 @@ export function cantBeLowerCase(word: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isSaneLemma(value: string) {
-  return WCHAR_UK_RE.test(value) || /^\d+$/.test(value);
+  return WORDCHAR_UK_RE.test(value) || /^\d+$/.test(value);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -481,7 +481,7 @@ export function normalizeCorpusText(root: AbstractElement) {
 
   for (let textNode of root.evaluateNodes('//text()', NS)) {
     let res = textNode.text()
-      .replace(new RegExp(r`([${WCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
+      .replace(new RegExp(r`([${WORDCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
       .replace(/ [-–] /g, ' — ');
 
     textNode.text(res);

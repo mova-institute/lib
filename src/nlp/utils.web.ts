@@ -12,6 +12,9 @@ export function fragmentCorpusText(doc: Document) {
   let ret = new Array<DocumentFragment>();
 
   let paragraphs: any[] = xpath(doc, '//tei:title|//tei:text//tei:p|//tei:lg', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  if (!paragraphs.length) {
+    paragraphs = [doc.documentElement]; // todo //xpath(doc, '//div//p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+  }
   let curNumWords = 0;
   let range = doc.createRange();
   let rangeStart = paragraphs[0];

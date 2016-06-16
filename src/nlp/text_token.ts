@@ -107,6 +107,13 @@ export class TextToken {
     }
   }
 
+  flagsOfUnambig() {
+    let interps = this.definiteInterps();
+    if (interps.length === 1) {
+      return interps[0].flags;
+    }
+  }
+
   lemma() {
     let interpElem = this.getDisambedInterpElem();
     if (interpElem) {

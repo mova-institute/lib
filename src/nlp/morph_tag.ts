@@ -526,11 +526,12 @@ export class MorphTag {
 
     for (let name of Object.keys(this.features)) {
       let value = this.features[name];
-      if (value !== null) {
-        let flag = mapVesumFeatureValue(name, value);
-        if (flag) {
-          flags.push(flag);
-        }
+      if (value === null || this.features.number === Numberr.plural && name === 'gender') {
+        continue;
+      }
+      let flag = mapVesumFeatureValue(name, value);
+      if (flag) {
+        flags.push(flag);
       }
     }
 

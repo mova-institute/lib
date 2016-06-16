@@ -341,7 +341,7 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
       }
     }
   }
-
+  res.setHeader('Content-Type', 'application/xml');
   return res.end(docRoot.document().serialize(true));
 }
 
