@@ -25,6 +25,8 @@ export class MorphAnalyzer {
   }
 
   tag(token: string) {
+    token = token.replace(/́/g, '');  // kill emphasis
+
     if (/^\d+$/.test(token)) {
       return new Set([{ lemma: token, flags: this.numberTag }]);
     }
