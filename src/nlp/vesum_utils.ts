@@ -68,6 +68,16 @@ export function* iterateDictCorpVizLexemes(lines: string[]) {
     }
     accum.push(line);
   }
+  if (accum.length) {
+    yield accum;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* expandDictCorpViz2(fileStr: string) {
+  for (let lexeme of iterateDictCorpVizLexemes(fileStr.split('\n'))) {
+    // todo
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
