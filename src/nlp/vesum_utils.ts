@@ -1,50 +1,52 @@
-import { tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER, RequiredCase, PronominalType, ConjunctionType, compareTags } from './morph_tag';
+import { tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER,
+  RequiredCase, PronominalType, ConjunctionType, compareTags, Voice, Aspect } from './morph_tag';
 import { groupTableBy, arr2indexMap, combinations, stableSort, unique } from '../algo';
 import { IMorphInterp } from './interfaces';
 
+const wu: Wu.WuStatic = require('wu');
 
-const FORM_PADDING = '  ';
 
 
-const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionType]);
+const NONLEMMA_PADDING = '  ';
+// const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionType]);
 
 
 //------------------------------------------------------------------------------
-function groupExpandableFlags(flags: string[]) {
-  if (!flags.length) {
-    return [];
-  }
+// function groupExpandableFlags(flags: string[]) {
+//   if (!flags.length) {
+//     return [];
+//   }
 
-  let ret = [[flags[0]]];
-  for (let i = 1; i < flags.length; ++i) {
-    let feature = tryMapVesumFlagToFeature(flags[i]);
-    if (expandableFeatures.has(feature)) {
-      let prev = ret[ret.length - 1];
-      if (tryMapVesumFlagToFeature(prev[0]) === feature) {
-        prev.push(flags[i]);
-      }
-      else {
-        ret.push([flags[i]]);
-      }
-    }
-    else {
-      ret.push([flags[i]]);
-    }
-  }
+//   let ret = [[flags[0]]];
+//   for (let i = 1; i < flags.length; ++i) {
+//     let feature = tryMapVesumFlagToFeature(flags[i]);
+//     if (expandableFeatures.has(feature)) {
+//       let prev = ret[ret.length - 1];
+//       if (tryMapVesumFlagToFeature(prev[0]) === feature) {
+//         prev.push(flags[i]);
+//       }
+//       else {
+//         ret.push([flags[i]]);
+//       }
+//     }
+//     else {
+//       ret.push([flags[i]]);
+//     }
+//   }
 
-  return ret;
-}
+//   return ret;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* iterateDictCorpVizLines(lines: string[]) {
+export function* iterateDictCorpVizLines(lines: Iterable<string>) {
   let lineNum = -1;
   for (let line of lines) {
     ++lineNum;
     let isLemma = !line.startsWith(' ');
-    line = line.trim();
-    if (line) {
-      line = line.replace(/'/g, '’');  // fix apostrophe
-      let [form, tag] = line.split(' ');
+    let l = line.trim();
+    if (l) {
+      l = l.replace(/'/g, '’');  // fix apostrophe
+      let [form, tag] = l.split(' ');
       let lemma;
       let lemmaTag;
       if (isLemma) {
@@ -57,12 +59,41 @@ export function* iterateDictCorpVizLines(lines: string[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export let dummyReturnVal = null && iterateDictCorpVizLines([]).next().value;  // todo: wait for https://github.com/Microsoft/TypeScript/issues/6606
-export type DictCorpVizLine = typeof dummyReturnVal;
-export function* iterateDictCorpVizLexemes(lines: string[]) {
-  let accum = new Array<DictCorpVizLine>();
-  for (let line of iterateDictCorpVizLines(lines)) {
-    if (accum.length && line.isLemma) {
+// export function* iterateDictCorpVizLexemeLines(lines: Iterable<DictCorpVizLine>) {
+//   let accum = new Array<DictCorpVizLine>();
+//   for (let line of lines) {
+//     if (line.isLemma && accum.length) {
+//       yield accum;
+//       accum = [];
+//     }
+//     accum.push(line);
+//   }
+//   if (accum.length) {
+//     yield accum;
+//   }
+// }
+
+////////////////////////////////////////////////////////////////////////////////
+// export let dummyReturnVal = null && iterateDictCorpVizLines([]).next().value;  // todo: wait for https://github.com/Microsoft/TypeScript/issues/6606
+// export type DictCorpVizForm = typeof dummyReturnVal;
+// export function* iterateDictCorpVizLexemes(lines: Iterable<string>) {
+//   let accum = new Array<DictCorpVizLine>();
+//   for (let line of iterateDictCorpVizLines(lines)) {
+//     if (accum.length && line.isLemma) {
+//       yield accum;
+//       accum = [];
+//     }
+//     accum.push(line);
+//   }
+//   if (accum.length) {
+//     yield accum;
+//   }
+// }
+
+function* chunkLexemes(lines: Iterable<string>) {
+  let accum = new Array<string>();
+  for (let line of lines) {
+    if (!line.startsWith(NONLEMMA_PADDING) && accum.length) {
       yield accum;
       accum = [];
     }
@@ -74,63 +105,101 @@ export function* iterateDictCorpVizLexemes(lines: string[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* expandDictCorpViz2(fileStr: string) {
-  for (let lexeme of iterateDictCorpVizLexemes(fileStr.split('\n'))) {
-    // todo
+let expandableFlags = [
+  /:pers|:refl|:dem|:int|:rel|:neg|:ind|:gen|:emph/g,
+  /:rv_rod|:rv_dav|:rv_zna|:rv_oru|:rv_mis/g,
+  /:subord|:coord/g,
+];
+export function* expandDictCorpViz(lines: Iterable<string>) {
+  lines = wu(lines).map(x => x.replace('&_adjp', '&adjp'));
+  lexemeLoop:
+  for (let lexeme of chunkLexemes(lines)) {
+    if (lexeme[0].includes('&adjp')) {  // omohnym for both &adjp and &_adjp
+      yield* wu(lexeme).map(x => x.replace(/:&adjp|:actv|:pasv|:imperf|:perf/g, ''));
+      yield* lexeme;
+    }
+    else if (lexeme[0].includes('&_numr')) {
+      yield* wu(lexeme).map(x => x.replace(':&_numr', ''));
+      yield* wu(lexeme).map(x => x.replace('&_numr', '&numr'));
+    }
+    else {
+      for (let regexp of expandableFlags) {
+        let match = lexeme[0].match(regexp);
+        if (match && match.length > 1) {
+          for (let flag of match) {
+            yield* wu(lexeme).map(x => x.replace(regexp, '') + flag);
+          }
+          continue lexemeLoop;
+        }
+      }
+      yield* lexeme;
+    }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function expandDictCorpViz(fileStr: string) {
-  let ret = new Array<string>();
+export function domesticateDictCorpViz(fileStr: string) {
+  let lines = wu(fileStr.split('\n'))
+    .filter(x => !/^\s*$/.test(x))
+    .map(x => x.replace(/'/g, '’'));
 
-  for (let lexeme of iterateDictCorpVizLexemes(fileStr.split('\n'))) {
-    let main = [];
-    let alt = [];
-    let lemmaTag = expandAndSortVesumTag(lexeme[0].tag.replace('&_', '&'))[0];
-    for (let { form, tag } of lexeme) {
-      let [mainFlagsStr, altFlagsStr] = splitMainAltFlags(tag);
-      main.push(...expandAndSortVesumTag(mainFlagsStr, lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')));
-      if (altFlagsStr) {
-        alt.push(...expandAndSortVesumTag(tag.replace('&_', '&'), lemmaTag).map(x => FORM_PADDING + form + ' ' + x.join(':')));
-      }
-    }
-    main = unique(main);
-    alt = unique(alt);
-    main[0] = main[0].substr(FORM_PADDING.length);
-    if (alt.length) {
-      alt[0] = alt[0].substr(FORM_PADDING.length);
-    }
-
-    ret.push(...main, ...alt);
-  }
-
-  return ret.join('\n');
+  return wu(iterateDictCorpVizLines(expandDictCorpViz(lines))).map(x => {
+    let tag = MorphTag.fromVesumStr(x.tag, x.lemmaTag).toVesumStr();
+    return (x.isLemma ? '' : NONLEMMA_PADDING) + x.form + ' ' + tag;
+  });
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// export function expandDictCorpViz(lines: Iterable<string>) {
+//   let ret = new Array<string>();
+
+//   for (let lexeme of iterateDictCorpVizLexemes(lines)) {
+//     let main = [];
+//     let alt = [];
+//     let lemmaTag = expandAndSortVesumTag(lexeme[0].tag.replace('&_', '&'))[0];
+//     for (let { form, tag } of lexeme) {
+//       let [mainFlagsStr, altFlagsStr] = splitMainAltFlags(tag);
+//       main.push(...expandAndSortVesumTag(mainFlagsStr, lemmaTag).map(x => NONLEMMA_PADDING + form + ' ' + x.join(':')));
+//       if (altFlagsStr) {
+//         alt.push(...expandAndSortVesumTag(tag.replace('&_', '&'), lemmaTag).map(x => NONLEMMA_PADDING + form + ' ' + x.join(':')));
+//       }
+//     }
+//     main = unique(main);
+//     alt = unique(alt);
+//     main[0] = main[0].substr(NONLEMMA_PADDING.length);
+//     if (alt.length) {
+//       alt[0] = alt[0].substr(NONLEMMA_PADDING.length);
+//     }
+
+//     ret.push(...main, ...alt);
+//   }
+
+//   return ret.join('\n');
+// }
 
 //------------------------------------------------------------------------------
-function splitMainAltFlags(tag: string) {
-  let [main, alt] = tag.split(/:&_|:&(?=adjp)/);
-  if (alt) {
-    let altArr = alt.split(':');
-    let xp1Index = altArr.findIndex(x => /^x[pv]\d+$/.test(x));  // todo: one place
-    if (xp1Index >= 0) {
-      main += ':' + altArr[xp1Index];
-      altArr.splice(xp1Index, 1);
-    }
-    alt = altArr.join(':');
-  }
+// function splitMainAltFlags(tag: string) {
+//   let [main, alt] = tag.split(/:&_|:&(?=adjp)/);
+//   if (alt) {
+//     let altArr = alt.split(':');
+//     let xp1Index = altArr.findIndex(x => /^x[pv]\d+$/.test(x));  // todo: one place
+//     if (xp1Index >= 0) {
+//       main += ':' + altArr[xp1Index];
+//       altArr.splice(xp1Index, 1);
+//     }
+//     alt = altArr.join(':');
+//   }
 
-  return [main, alt];
-}
+//   return [main, alt];
+// }
 
 //------------------------------------------------------------------------------
-function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
-  let ret = combinations(groupExpandableFlags(tag.split(':')));
-  ret = ret.map(x => MorphTag.fromVesum(x, lemmaFlags).toVesum());
+// function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
+//   let ret = combinations(groupExpandableFlags(tag.split(':')));
+//   ret = ret.map(x => MorphTag.fromVesum(x, lemmaFlags).toVesum());
 
-  return ret;
-}
+//   return ret;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {

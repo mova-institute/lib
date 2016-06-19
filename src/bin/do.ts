@@ -18,21 +18,31 @@ let func = moduleObj[funcName];
 ioArgs(filename1, filename2, async (input, output) => {
   try {
     let inputStr = await readTillEnd(input);
-
-    if (args.xml) {
-      let root = string2lxmlRoot(inputStr);
-      let res = func(root);
-      if (typeof res === 'string') {
-        output.write(res);
-      }
-      else {
-        output.write((res || root).ownerDocument.serialize());
+    if (args.v) {
+      console.log('doing');
+    }
+    let res = func(inputStr);
+    if (Symbol.iterator in res) {
+      for (let line of res) {
+        output.write(line + '\n');
       }
     }
     else {
-      let res = func(inputStr);
-      if (res) {
-        output.write(res);
+      if (args.xml) {
+        let root = string2lxmlRoot(inputStr);
+        let res = func(root);
+        if (typeof res === 'string') {
+          output.write(res);
+        }
+        else {
+          output.write((res || root).ownerDocument.serialize());
+        }
+      }
+      else {
+        let res = func(inputStr);
+        if (res) {
+          output.write(res);
+        }
       }
     }
   }
