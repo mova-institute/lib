@@ -1,13 +1,13 @@
 import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements } from '../xml/utils';
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elements from './common_elements';
-import { r, last } from '../lang';
+import { r } from '../lang';
 import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
 import { MorphTag, compareTags } from './morph_tag';
-import { WORDCHAR_UK_RE, WORDCHAR, WORDCHAR_RE } from './static';
+import { WORDCHAR_UK_RE, WORDCHAR } from './static';
 
 const wu: Wu.WuStatic = require('wu');
 
