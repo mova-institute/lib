@@ -20,6 +20,11 @@ export const ELEMS_BREAKING_SENTENCE_NS = new Set([
 ]);
 
 const PUNC_REGS = [
+  r`\.{4,}`,
+  r`!\.{2,}`,
+  r`\?\.{2,}`,
+  r`[!?]+`,
+  r`,`,
   r`„`,
   r`“`,
   r`”`,
@@ -30,14 +35,9 @@ const PUNC_REGS = [
   r`\[`,
   r`\]`,
   r`\.`,
-  r`\.{4,}`,
   r`…`,
   r`:`,
   r`;`,
-  r`,`,
-  r`[!?]+`,
-  r`!\.{2,}`,
-  r`\?\.{2,}`,
   r`—`,
   r`/`,
 ];
@@ -119,26 +119,24 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
 
 ////////////////////////////////////////////////////////////////////////////////
 const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WORDCHAR}])`);
-export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
-  let ret: Array<string> = [];
-  for (let tok0 of val.trim().split(SPLIT_REGEX)) {
-    for (let tok1 of tok0.split(/(\s+)/)) {
-      if (tok1.length) {
-        if (tok1.includes('-')) {
-          if (!(analyzer.canBeToken(tok1))) {
-            ret.push(...tok1.split(/(-)/).filter(x => !!x));
-            continue;
-          }
-        }
-        else if (ret.length && /\s+/.test(last(ret)) && /\s+/.test(tok1)) {
-          continue;
-        }
-        ret.push(tok1);
+export function* tokenizeUk(val: string, analyzer: MorphAnalyzer) {
+  let toks = val.trim().split(SPLIT_REGEX);
+  let glue = false;
+  for (let i = 0; i < toks.length; ++i) {
+    let token = toks[i];
+    if (!/^\s*$/.test(token)) {
+      if (token.includes('-') && !analyzer.canBeToken(token)) {
+        yield* token.split(/(-)/).filter(x => !!x).map(token => ({ token, glue }));
       }
+      else {
+        yield { token, glue };
+      }
+      glue = true;
+    }
+    else if (/^\s+$/.test(token)) {
+      glue = false;
     }
   }
-
-  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +163,10 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
           cursor.insertBefore(doc.createTextNode(spaceBefore[0]));
         }
         for (let tok of tokenizeUk(text, tagger)) {
-          cursor.insertBefore(elementFromToken(tok, doc));
+          if (tok.glue) {
+            cursor.insertBefore(doc.createElement('mi:g'));
+          }
+          cursor.insertBefore(elementFromToken(tok.token, doc));
         }
         if (!/^\s+$/.test(text)) {
           let spaceAfter = text.match(/\s+$/);
@@ -184,19 +185,14 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
 ////////////////////////////////////////////////////////////////////////////////
 export function elementFromToken(token: string, document: AbstractDocument) {
   let ret: AbstractNode;
-  if (/\s/u.test(token)) {
-    // console.error('poo');
-
-    ret = document.createTextNode(' ');
-  }
-  else if (ANY_PUNC_OR_DASH_RE.test(token)) {
+  if (ANY_PUNC_OR_DASH_RE.test(token)) {
     ret = document.createElement('pc'/*, NS.tei*/);
     ret.text(token);
   }
-  else if (/^\d+$/.test(token) || WORDCHAR_RE.test(token)) {
-    ret = document.createElement('w'/*, NS.tei*/);
-    ret.text(token);
-  }
+  // else if (/^\d+$/.test(token) || WORDCHAR_RE.test(token)) {
+  //   ret = document.createElement('w'/*, NS.tei*/);
+  //   ret.text(token);
+  // }
   else {
     //console.error(`Unknown token: "${token}"`); // todo
     ret = document.createElement('w'/*, NS.tei*/);
