@@ -4,12 +4,16 @@ import { genAccessToken } from '../crypto';
 import { IReq, debug, HttpError } from './server';
 import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business';
 import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node';
-import { firstNWords } from '../nlp/utils';
+import { firstNWords, morphReinterpret } from '../nlp/utils';
+import { NS } from '../xml/utils';
 import * as assert from 'assert';
 import { string2lxmlRoot } from '../utils.node';
+import { createMorphAnalyserSync } from '../nlp/morph_analyzer/factories.node';
+import { getLibRootRelative } from '../path.node';
 
 
 // const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve']);
+let morph = createMorphAnalyserSync(getLibRootRelative('../data/dict/vesum'));
 
 const COOKIE_CONFIG = {
   maxAge: 1000 * 3600 * 24 * 100,
@@ -224,12 +228,21 @@ export async function getTaskCount(req: IReq, res: express.Response, client: PgC
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function getTask(req: IReq, res: express.Response, client: PgClient) {
-  let ret = await client.call('get_task', req.bag.user.id, req.query.id);
-  if (ret) {
-    ret.content = mergeXmlFragments(ret.fragments.map(x => x.content));
-    delete ret.fragments;
+  let task = await client.call('get_task', req.bag.user.id, req.query.id);
+  if (task) {
+    task.content = mergeXmlFragments(task.fragments.map(x => x.content));
+    delete task.fragments;
+
+    if (isReinterpNeeded(task)) {
+      let root = string2lxmlRoot(task.content);
+      if (task.step === 'annotate') {
+        morphReinterpret([...root.evaluateElements('//mi:w_', NS)], morph);
+      }
+      task.content = root.serialize();
+    }
+
   }
-  res.json(wrapData(ret));
+  res.json(wrapData(task));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -393,4 +406,10 @@ async function onReviewConflicts(task, client: PgClient) {
 //------------------------------------------------------------------------------
 function wrapData(data) {
   return { data };
+}
+
+//------------------------------------------------------------------------------
+function isReinterpNeeded(task) {
+  return (task.step === 'annotate' || task.step === 'review')
+    && task.type.find(x => x === 'disambiguate_morphologically');
 }

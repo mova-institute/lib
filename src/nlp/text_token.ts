@@ -94,7 +94,7 @@ export class TextToken {
 
   interp() {
     let interpElem = this.getDisambedInterpElem();
-    return {
+    return interpElem && {
       flags: interpElem.attribute(TextToken.FLAGS_ATTR),
       lemma: interpElem.attribute(TextToken.LEMMA_ATTR),
     };
@@ -294,6 +294,12 @@ export class TextToken {
       index = this.elem.countElementChildren() - 1;
     }
     return index;
+  }
+
+  appendInterps(value: Iterable<IMorphInterp>) {
+    for (let interp of value) {
+      this.doAddMorphInterp(interp.flags, interp.lemma);
+    }
   }
 
   private doAddInterp(attributes: Object) {

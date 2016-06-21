@@ -1,7 +1,7 @@
 import { ioArgsPlain } from '../cli_utils';
 import { createMorphAnalyserSync } from '../nlp/morph_analyzer/factories.node';
 import { readTillEnd } from '../stream_utils.node';
-import { tokenizeTei, tagTokenizedDom, enumerateWords } from '../nlp/utils';
+import { tokenizeTei, morphInterpret, enumerateWords } from '../nlp/utils';
 import { $t } from '../nlp/text_token';
 import { string2lxmlRoot } from '../utils.node';
 import { encloseInRootNsIf, NS } from '../xml/utils';
@@ -35,7 +35,7 @@ ioArgsPlain(async (input, outputFromIoargs) => {
   let root = string2lxmlRoot(inputStr);
   tokenizeTei(root, tagger);
   if (!args.tokenize) {
-    tagTokenizedDom(root, tagger);
+    morphInterpret(root, tagger);
   }
   if (args.unknown) {
     let unknowns = new Set(root.evaluateElements('//mi:w_[w[@ana="x"]]', NS).map(x => $t(x).text()));

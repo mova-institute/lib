@@ -158,22 +158,13 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
         let cursor = node.document().createElement('cursor');
         node.replace(cursor);
 
-        let spaceBefore = text.match(/^\s+/);
-        if (spaceBefore) {
-          cursor.insertBefore(doc.createTextNode(spaceBefore[0]));
-        }
         for (let tok of tokenizeUk(text, tagger)) {
           if (tok.glue) {
             cursor.insertBefore(doc.createElement('mi:g'));
           }
           cursor.insertBefore(elementFromToken(tok.token, doc));
         }
-        if (!/^\s+$/.test(text)) {
-          let spaceAfter = text.match(/\s+$/);
-          if (spaceAfter) {
-            cursor.insertBefore(doc.createTextNode(spaceAfter[0]));
-          }
-        }
+
         cursor.remove();
       }
     });
@@ -204,34 +195,35 @@ export function elementFromToken(token: string, document: AbstractDocument) {
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
-  //let w_ = el.ownerDocument.createElementNS(NS.mi, 'w_');
-  let doc = el.document();
-  let miw = doc.createElement('mi:w_'); // todo
-
+function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterable<IMorphInterp>) {
+  let doc = miw.document();
   for (let morphTag of morphTags) {
     let w = doc.createElement('w');
-    w.text(el.text());
+    w.text(form);
     let { lemma, flags } = morphTag;
     w.setAttribute('lemma', lemma);
     w.setAttribute('ana', flags);
     miw.appendChild(w);
-    miw.appendChild(doc.createTextNode(' '));
   }
-  el.replace(miw);
+  return miw;
+}
 
+//------------------------------------------------------------------------------
+function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
+  let miw = fillInterpElement(el.document().createElement('mi:w_'), el.text(), morphTags);
+  el.replace(miw);
   return miw;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function regularizedFlowElement(el: AbstractElement) {
+export function isRegularizedFlowElement(el: AbstractElement) {
   let ret = !(el.name() === elements.teiOrig && el.parent() && el.parent().name() === elements.teiChoice);
 
   return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) {
+export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer) {
   let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)];
   if (!subroots.length) {
     subroots = [root];
@@ -241,14 +233,14 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
     traverseDepthEl(subroot, el => {
 
       let name = el.name();
-      if (name === W_ || !regularizedFlowElement(el)) {
+      if (name === W_ || !isRegularizedFlowElement(el)) {
         return 'skip';
       }
 
       if (name === W || name === 'w') {  // hack, todo
         let lang = el.lang();
         if (lang && lang !== 'uk') {
-          tagWord(el, [{ lemma: el.text(), flags: 'foreign' }]).setAttribute('disamb', 0);
+          tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0);
         }
         else {
           tagWord(el, analyzer.tagOrX(el.text()));
@@ -258,6 +250,19 @@ export function tagTokenizedDom(root: AbstractElement, analyzer: MorphAnalyzer) 
   }
 
   return root;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyzer) {
+  for (let token of words.map(x => $t(x))) {
+    let form = token.text();
+    let interp = token.interp();
+    token.elem.clear();
+    fillInterpElement(token.elem, form, analyzer.tagOrX(form));
+    if (interp) {
+      token.setInterp(interp.flags, interp.lemma);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
