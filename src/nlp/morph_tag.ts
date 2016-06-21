@@ -15,7 +15,6 @@ export enum Pos {
   interjection,
   transl,  // todo
   numeral,
-  foreign,
   error,
   x,
 }
@@ -286,7 +285,6 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
   { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'intj', mte: 'I' },
   { featStr: 'pos', feat: Pos, vesum: Pos.numeral, vesumStr: 'numr', mte: 'M' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.foreign, vesumStr: 'foreign' },
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 
@@ -403,7 +401,7 @@ export class MorphTag {
     }
   }
 
-  static fromVesum(flags: string[], lemmaFlags?: string[]) {
+  static fromVesum(flags: string[], lemmaFlags?: string[], form?: string) {
     let ret = new MorphTag();
 
     for (let flag of flags) {
@@ -432,11 +430,23 @@ export class MorphTag {
       }
     }
 
+    if (form && ret.features.pos === Pos.transgressive) {
+      if (/ши(сь)?/.test(form)) {
+        ret.features.tense = Tense.past;
+      }
+      else if (/чи(сь)?/.test(form)) {
+        ret.features.tense = Tense.present;
+      }
+      else {
+        throw new Error(`Unexpected adverb "${form}" flection`);
+      }
+    }
+
     return ret;
   }
 
-  static fromVesumStr(tag: string, lemmaTag?: string) {
-    return MorphTag.fromVesum(tag.split(':'), lemmaTag && lemmaTag.split(':'));
+  static fromVesumStr(tag: string, lemmaTag?: string, form?: string) {
+    return MorphTag.fromVesum(tag.split(':'), lemmaTag && lemmaTag.split(':'), form);
   }
 
   static fromMte(tag: string, form?: string) {
@@ -526,7 +536,9 @@ export class MorphTag {
 
     for (let name of Object.keys(this.features)) {
       let value = this.features[name];
-      if (value === null || this.features.number === Numberr.plural && name === 'gender') {
+      if (value === null
+        || this.features.number === Numberr.plural && name === 'gender'
+        || this.isTransgressive() && this.isPerfect() && name === 'tense') {
         continue;
       }
       let flag = mapVesumFeatureValue(name, value);
@@ -574,6 +586,9 @@ export class MorphTag {
 
     return ret;
   }
+
+  isTransgressive() { return this.features.pos === Pos.transgressive; }
+  isPerfect() { return this.features.aspect === Aspect.perfect; }
 
   private fromMte(mteFlags: string[]) {
     let posFeatures = MTE_FEATURES[mteFlags[0]];
