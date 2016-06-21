@@ -21,6 +21,64 @@ export class JsonCompareSet<T> {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export class HashSet<T> /*implements Set<T>*/{
+  protected map = new Map<string, T>();
+
+  constructor(protected hasher: (value: T) => string, source?: Iterable<T>) {
+    if (source) {
+      for (let value of source) {
+        this.add(value);
+      }
+    }
+  }
+
+  get size() {
+    return this.map.size;
+  }
+
+  add(value: T) {
+    this.map.set(this.hasher(value), value);
+    return this;
+  }
+
+  clear() {
+    this.map.clear();
+  }
+
+  delete(value: T) {
+    return this.map.delete(this.hasher(value));
+  }
+
+  *entries() {
+    for (let entry of this.map.entries()) {
+      yield [entry[1], entry[1]] as [T, T];
+    }
+  }
+
+  keys() {
+    return this.values();
+  }
+
+  forEach(callback: (value: T, key: T, set: HashSet<T>) => any, thisArg?) {
+    for (let value of this) {
+      callback.call(thisArg, value, value, this);
+    }
+  }
+
+  has(value: T) {
+    return this.map.has(this.hasher(value));
+  }
+
+  values() {
+    return this.map.values();
+  }
+
+  [Symbol.iterator]() {
+    return this.values();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export interface IMap<K, V> {
   has(key: K): boolean;
   get(key: K): V;

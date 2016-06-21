@@ -3,6 +3,8 @@ import { IMorphInterp } from '../interfaces';
 import { MorphTag, Pos, Gender, Numberr } from '../morph_tag';
 import { FOREIGN_CHAR_RE } from '../static';
 
+import { HashSet } from '../../data_structures';
+
 const wu: Wu.WuStatic = require('wu');
 
 
@@ -21,18 +23,18 @@ export class MorphAnalyzer {
   }
 
   canBeToken(token: string) {
-    return !!this.tag(token).size;
+    return !this.tag(token)[Symbol.iterator]().next().done;
   }
 
-  tag(token: string) {
+  tag(token: string): Iterable<IMorphInterp> {
     token = token.replace(/́/g, '');  // kill emphasis
 
     if (/^\d+$/.test(token)) {
-      return new Set([{ lemma: token, flags: this.numberTag }]);
+      return [{ lemma: token, flags: this.numberTag }];
     }
 
     if (FOREIGN_CHAR_RE.test(token)) {
-      return new Set([{ lemma: token, flags: this.foreignTag }]);
+      return [{ lemma: token, flags: this.foreignTag }];
     }
 
     let lookupee = [token];
@@ -49,7 +51,7 @@ export class MorphAnalyzer {
 
     if (!ret.size && lowercase.endsWith('сти')) {
       lowercase = lowercase.slice(0, -1) + 'і';
-      ret = new Set(this.dictionary.lookup(lowercase).filter(x => {
+      ret = new HashSet(IMorphInterp.hash, this.dictionary.lookup(lowercase).filter(x => {
         let tag = MorphTag.fromVesumStr(x.flags);  // todo: lemmaTag?
         return tag.features.pos === Pos.noun && tag.features.gender === Gender.feminine
           && (tag.features.number === Numberr.singular || !tag.features.number);  // todo
@@ -65,7 +67,7 @@ export class MorphAnalyzer {
           x.lemma = prefix + x.lemma;
           return x;
         });
-        ret = new Set(interpretations);
+        ret = new HashSet(IMorphInterp.hash, interpretations);
       }
     }
 
@@ -73,13 +75,6 @@ export class MorphAnalyzer {
   }
 
   tagOrX(token: string) {
-    let ret = this.tag(token);
-    if (!ret.size) {
-      ret.add({
-        lemma: token,
-        flags: this.xTag,
-      });
-    }
-    return ret;
+    return this.tag(token) || [{lemma: token, flags: this.xTag}];
   }
 }

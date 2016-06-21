@@ -23,7 +23,7 @@ export function createMorphAnalyserSync(dictFolder: string) {
 
   let numberTag = dictFolder.includes('vesum') ? 'numr:digit' : 'Md';  // todo
   let dictionary = new Dictionary(words, paradigms, suffixes, tags);
-  let ret = new MorphAnalyzer(dictionary, numberTag, 'foreign', 'x');
+  let ret = new MorphAnalyzer(dictionary, numberTag, 'x:foreign', 'x');
 
   return ret;
 }

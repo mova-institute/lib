@@ -1,5 +1,6 @@
 import { WordDawgPayload } from './word_dawg_payload';
 import { IMorphInterp } from '../interfaces';
+import { HashSet } from '../../data_structures';
 
 import { MapDawg } from 'dawgjs/map_dawg';
 const wu: Wu.WuStatic = require('wu');
@@ -23,7 +24,7 @@ export class Dictionary {
   }
 
   lookupVariants(words: Iterable<string>) {
-    return new Set(wu.chain(...wu(words).map(x => this.lookup(x))));
+    return new HashSet(IMorphInterp.hash, wu.chain(...wu(words).map(x => this.lookup(x))));
   }
 
   private getTag(word: string, paraIndex: WordDawgPayload): IMorphInterp {

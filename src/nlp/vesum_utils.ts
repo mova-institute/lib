@@ -144,7 +144,7 @@ export function domesticateDictCorpViz(fileStr: string) {
     .map(x => x.replace(/'/g, '’'));
 
   return wu(iterateDictCorpVizLines(expandDictCorpViz(lines))).map(x => {
-    let tag = MorphTag.fromVesumStr(x.tag, x.lemmaTag).toVesumStr();
+    let tag = MorphTag.fromVesumStr(x.tag, x.lemmaTag, x.form).toVesumStr();
     return (x.isLemma ? '' : NONLEMMA_PADDING) + x.form + ' ' + tag;
   });
 }
