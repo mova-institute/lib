@@ -31,7 +31,7 @@
 			"stopOnEntry": false,
 			"args": [
         "-t",
-        "екс-бідон"
+        "Сирецько-Печерський"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,

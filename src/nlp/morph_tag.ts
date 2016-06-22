@@ -324,6 +324,8 @@ export const FEATURE_TABLE = [
   { featStr: 'poss', feat: Possesive, vesum: Possesive.yes, vesumStr: 'pos' },
 
   { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
+
+  { featStr: 'beforedash', feat: Beforedash, vesum: Beforedash.yes, vesumStr: 'beforedash' },
 ];
 
 export const MTE_FEATURES = {
@@ -383,6 +385,7 @@ export class Features {
   conjunctionType: ConjunctionType = null;
   nounType: NounType = null;
   auto: Auto = null;
+  beforedash: Beforedash = null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -571,7 +574,7 @@ export class MorphTag {
     return {
       lemma: this.lemma,
       flags: this.toVesumStr(),
-    }
+    };
   }
 
   equals(other: MorphTag) {
@@ -607,13 +610,14 @@ export class MorphTag {
 
   isNoun() { return this.features.pos === Pos.noun; }
   isVerb() { return this.features.pos === Pos.verb; }
-  isAdjective() { return this.features.pos === Pos.adjective; }
+  isAdjective() { return this.features.pos === Pos.adjective && this.features.beforedash !== Beforedash.yes; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
 
   isPerfect() { return this.features.aspect === Aspect.perfect; }
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isFeminine() { return this.features.gender === Gender.feminine; }
   isSingular() { return this.features.number === Numberr.singular; }  // todo: tantum?
+  isBeforedash() { return this.features.beforedash === Beforedash.yes; }  // todo: tantum?
 
   hasNumber() { return this.features.number !== null; }
 

@@ -19,6 +19,9 @@ export class MorphAnalyzer {
   }
 
   canBeToken(token: string) {
+    if (this.isCompoundAdjective(token)) {
+      return false;
+    }
     return !this.tag(token)[Symbol.iterator]().next().done;
   }
 
@@ -34,8 +37,8 @@ export class MorphAnalyzer {
       return [{ lemma: token, flags: this.foreignTag }];
     }
 
-    let lookupee = [token];
-    let lowercase = token.toLowerCase();
+    let lookupee = originalAndLowercase(token);
+    let lowercase = lookupee[0];
 
     // for (let tok of [token, lowercase]) {
     //   if (tok.includes('-')) {
@@ -44,17 +47,13 @@ export class MorphAnalyzer {
     //   }
     // }
 
-    if (lowercase !== token) {
-      lookupee.push(lowercase);
-    }
-
     let ret = this.dictionary.lookupVariants(lookupee);
 
     if (!ret.size) {
       ret.addMany(this.dictionary.lookupVariants(lookupee.map(x => x.replace(/ґ/g, 'г'))));
     }
 
-    // // спробуймо по-харківськи
+    // // try Kharkiv-style
     // if (!ret.size && lowercase.endsWith('сти')) {
     //   let kharkivLowercase = lowercase.slice(0, -1) + 'і';
     //   ret.addMany(this.lookupParsed(kharkivLowercase)
@@ -62,6 +61,7 @@ export class MorphAnalyzer {
     //     .map(x => x.toVesumStrMorphInterp()));
     // }
 
+    // try префікс-щось is the same as щось
     for (let prefix of ['екс-', 'віце-']) {  // todo: віце not with adj (but with nounish adj)
       if (!ret.size && lowercase.startsWith(prefix)) {
         ret.addMany(this.lookupParsed(lowercase.substr(prefix.length))
@@ -105,11 +105,35 @@ export class MorphAnalyzer {
 
   tagOrX(token: string) {
     let ret = [...this.tag(token)];
-    return ret.length ? ret : [{lemma: token, flags: this.xTag}];
+    return ret.length ? ret : [{ lemma: token, flags: this.xTag }];
   }
 
   private lookupParsed(token: string) {
     return this.dictionary.lookup(token).map(
       x => MorphTag.fromVesumStr(x.flags, undefined, token, x.lemma));
   }
+
+  private isCompoundAdjective(token: string) {
+    if (token.includes('-')) {
+      for (let tok of originalAndLowercase(token)) {
+        let [last, ...prevs] = tok.split('-').reverse();
+        return this.lookupParsed(last).some(x => x.isAdjective())
+          && prevs.every(x => this.lookupParsed(x).some(xx => xx.isBeforedash()));
+      }
+    }
+    return false;
+  }
+}
+
+
+
+//------------------------------------------------------------------------------
+function originalAndLowercase(value: string) {
+  let lowercase = value.toLowerCase();
+  let ret = [lowercase];
+  if (lowercase !== value) {
+    ret.push(value);
+  }
+
+  return ret;
 }
