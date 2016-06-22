@@ -49,8 +49,8 @@ export enum RequiredAnimacy {
 export enum Numberr {
   singular,
   plural,
-  dual,
-  pluraleTantum,
+  // dual,
+  // pluraleTantum,
   // singulareTantum  // людств
 }
 export enum Case {
@@ -189,7 +189,12 @@ export enum Possesive {
 }
 export enum ParadigmOmohnym { }
 export enum SemanticOmohnym { }
-
+export enum Predash {
+  yes,
+}
+export enum Auto {
+  yes,
+}
 
 export const FEATURE_TABLE = [
 
@@ -317,6 +322,8 @@ export const FEATURE_TABLE = [
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
 
   { featStr: 'poss', feat: Possesive, vesum: Possesive.yes, vesumStr: 'pos' },
+
+  { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
 ];
 
 export const MTE_FEATURES = {
@@ -375,6 +382,7 @@ export class Features {
   numeralForm: NumeralForm = null;
   conjunctionType: ConjunctionType = null;
   nounType: NounType = null;
+  auto: Auto = null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -383,10 +391,11 @@ export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl', 'mock', 'odd',
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl', 'mock', 'odd', 'predash',
   ]);
 
 
+  lemma: string;
   features = new Features();
   otherFlags = new Set<string>();
 
@@ -401,7 +410,7 @@ export class MorphTag {
     }
   }
 
-  static fromVesum(flags: string[], lemmaFlags?: string[], form?: string) {
+  static fromVesum(flags: string[], lemmaFlags?: string[], form?: string, lemma?: string) {
     let ret = new MorphTag();
 
     for (let flag of flags) {
@@ -442,11 +451,13 @@ export class MorphTag {
       }
     }
 
+    ret.lemma = lemma;
+
     return ret;
   }
 
-  static fromVesumStr(tag: string, lemmaTag?: string, form?: string) {
-    return MorphTag.fromVesum(tag.split(':'), lemmaTag && lemmaTag.split(':'), form);
+  static fromVesumStr(flags: string, lemmaTag?: string, form?: string, lemma?: string) {
+    return MorphTag.fromVesum(flags.split(':'), lemmaTag && lemmaTag.split(':'), form, lemma);
   }
 
   static fromMte(tag: string, form?: string) {
@@ -556,6 +567,13 @@ export class MorphTag {
     return this.toVesum().join(':');
   }
 
+  toVesumStrMorphInterp() {
+    return {
+      lemma: this.lemma,
+      flags: this.toVesumStr(),
+    }
+  }
+
   equals(other: MorphTag) {
     return this.toVesumStr() === other.toVesumStr();
   }
@@ -587,8 +605,24 @@ export class MorphTag {
     return ret;
   }
 
+  isNoun() { return this.features.pos === Pos.noun; }
+  isVerb() { return this.features.pos === Pos.verb; }
+  isAdjective() { return this.features.pos === Pos.adjective; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
+
   isPerfect() { return this.features.aspect === Aspect.perfect; }
+  isImperfect() { return this.features.aspect === Aspect.imperfect; }
+  isFeminine() { return this.features.gender === Gender.feminine; }
+  isSingular() { return this.features.number === Numberr.singular; }  // todo: tantum?
+
+  hasNumber() { return this.features.number !== null; }
+
+  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : null; return this; }
+  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : null; return this; }
+
+  canBeKharkivSty() {
+    return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber());
+  }
 
   private fromMte(mteFlags: string[]) {
     let posFeatures = MTE_FEATURES[mteFlags[0]];
