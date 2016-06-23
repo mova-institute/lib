@@ -4,7 +4,7 @@ import { genAccessToken } from '../crypto';
 import { IReq, debug, HttpError } from './server';
 import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business';
 import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node';
-import { firstNWords, morphReinterpret } from '../nlp/utils';
+import { firstNWords, morphInterpret, morphReinterpret, enumerateWords } from '../nlp/utils';
 import { NS } from '../xml/utils';
 import * as assert from 'assert';
 import { string2lxmlRoot } from '../utils.node';
@@ -130,9 +130,23 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   if (projectId === null) {
     throw new HttpError(400);
   }
+  let root = string2lxmlRoot(req.body.content);
+  if (root.evaluateBoolean('boolean(//mi:w[not(@n)])')) {
+    throw new HttpError(400, 'Not all words are numerated');
+  }
+  // let root = string2lxmlRoot(req.body.content);
+  // morphInterpret(root, morph);
+  // if (root.evaluateBoolean('boolean(//mi:w[@n])', NS)) {
+  //   if (root.evaluateBoolean('boolean(//mi:w[not(@n)])', NS)) {
+  //     throw new HttpError(400);
+  //   }
+  // } else {
+  //   enumerateWords(root, 'n');
+  // }
+
   let docId = await client.insert('document', {
     name: req.body.name,
-    content: req.body.content,
+    content: req.body.content/*root.serialize()*/,
     createdBy: req.bag.user.id,
     projectId,
   }, 'id');
