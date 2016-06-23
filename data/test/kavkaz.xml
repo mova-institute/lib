@@ -1,0 +1,4598 @@
+<TEI
+  xmlns="http://www.tei-c.org/ns/1.0"
+  xmlns:mi="http://mova.institute/ns/corpora/0.1" xml:lang="uk">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>
+          <mi:w_>
+            <w lemma="Кавказ" ana="noun:inanim:m:v_naz:prop">Кавказ</w>
+            <w lemma="Кавказ" ana="noun:inanim:m:v_zna:prop">Кавказ</w>
+          </mi:w_>
+        </title>
+        <author>Тарас Шевченко</author>
+      </titleStmt>
+      <publicationStmt>
+        <p/>
+      </publicationStmt>
+      <sourceDesc>
+        <p/>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <head>
+        <mi:w_>
+          <w lemma="Кавказ" ana="noun:inanim:m:v_naz:prop">Кавказ</w>
+          <w lemma="Кавказ" ana="noun:inanim:m:v_zna:prop">Кавказ</w>
+        </mi:w_>
+      </head>
+      <div type="dedication">
+        <p xml:lang="ru">
+          <mi:w_ disamb="0">
+            <w lemma="Искреннему" ana="x:foreign">Искреннему</w>
+          </mi:w_>
+          <mi:w_ disamb="0">
+            <w lemma="моему" ana="x:foreign">моему</w>
+          </mi:w_>
+          <mi:w_ disamb="0">
+            <w lemma="Якову" ana="x:foreign">Якову</w>
+          </mi:w_>
+          <mi:w_ disamb="0">
+            <w lemma="де" ana="x:foreign">де</w>
+          </mi:w_>
+          <mi:w_ disamb="0">
+            <w lemma="Бальмену" ana="x:foreign">Бальмену</w>
+          </mi:w_>
+        </p>
+      </div>
+      <epigraph>
+        <cit>
+          <quote xml:lang="cu">
+            <lg type="stanza">
+              <l>
+                <mi:w_ disamb="0">
+                  <w lemma="Кто" ana="x:foreign">Кто</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="даст" ana="x:foreign">даст</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="главе" ana="x:foreign">главе</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="моей" ana="x:foreign">моей</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="воду" ana="x:foreign">воду</w>
+                </mi:w_>
+                <mi:g/>
+                <pc>,</pc>
+              </l>
+              <l>
+                <mi:w_ disamb="0">
+                  <w lemma="И" ana="x:foreign">И</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="очесем" ana="x:foreign">очесем</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="моим" ana="x:foreign">моим</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="источник" ana="x:foreign">источник</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="слез" ana="x:foreign">слез</w>
+                </mi:w_>
+                <mi:g/>
+                <pc>,</pc>
+              </l>
+              <l>
+                <mi:w_ disamb="0">
+                  <w lemma="И" ana="x:foreign">И</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="плачуся" ana="x:foreign">плачуся</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="и" ana="x:foreign">и</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="день" ana="x:foreign">день</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="и" ana="x:foreign">и</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="нощь" ana="x:foreign">нощь</w>
+                </mi:w_>
+              </l>
+            </lg>
+            <lg type="stanza">
+              <l>
+                <mi:w_ disamb="0">
+                  <w lemma="о" ana="x:foreign">о</w>
+                </mi:w_>
+                <mi:w_ disamb="0">
+                  <w lemma="побиенных" ana="x:foreign">побиенных</w>
+                </mi:w_>
+                <mi:g/>
+                <pc>…</pc>
+              </l>
+            </lg>
+          </quote>
+          <bibl xml:lang="ru">
+            <mi:w_ disamb="0">
+              <w lemma="Иеремии" ana="x:foreign">Иеремии</w>
+            </mi:w_>
+            <mi:g/>
+            <pc>.</pc>
+            <mi:w_ disamb="0">
+              <w lemma="Глава" ana="x:foreign">Глава</w>
+            </mi:w_>
+            <mi:w_ disamb="0">
+              <w lemma="9" ana="x:foreign">9</w>
+            </mi:w_>
+            <mi:g/>
+            <pc>,</pc>
+            <mi:w_ disamb="0">
+              <w lemma="стих" ana="x:foreign">стих</w>
+            </mi:w_>
+            <mi:w_ disamb="0">
+              <w lemma="1" ana="x:foreign">1</w>
+            </mi:w_>
+          </bibl>
+        </cit>
+      </epigraph>
+    </front>
+    <body>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="за" ana="adv">За</w>
+            <w lemma="за" ana="prep:rv_rod">За</w>
+            <w lemma="за" ana="prep:rv_zna">За</w>
+            <w lemma="за" ana="prep:rv_oru">За</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="гора" ana="noun:inanim:p:v_oru">горами</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="горіти" ana="verb:imperf:impr:s:2">гори</w>
+            <w lemma="гора" ana="noun:inanim:f:v_rod">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_naz">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_zna">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_kly">гори</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="хмара" ana="noun:inanim:f:v_oru">хмарою</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="повитий" ana="adj:p:v_naz">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_zna:rinanim">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_kly">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">повиті</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="засіяний" ana="adj:p:v_naz">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_zna:rinanim">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_kly">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_naz:&amp;adjp:perf:pasv">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_kly:&amp;adjp:perf:pasv">Засіяні</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="горе" ana="noun:inanim:n:v_oru">горем</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="кров" ana="noun:inanim:f:v_oru:odd">кровію</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="политий" ana="adj:p:v_naz">политі</w>
+            <w lemma="политий" ana="adj:p:v_zna:rinanim">политі</w>
+            <w lemma="политий" ana="adj:p:v_kly">политі</w>
+            <w lemma="политий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">политі</w>
+            <w lemma="политий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">политі</w>
+            <w lemma="политий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">политі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="споконвіку" ana="adv">Споконвіку</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="Прометей" ana="noun:anim:m:v_rod:prop:fname">Прометея</w>
+            <w lemma="Прометей" ana="noun:anim:m:v_zna:prop:fname">Прометея</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="там" ana="part">Там</w>
+            <w lemma="там" ana="adv:&amp;pron:dem">Там</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="орел" ana="noun:anim:m:v_naz">орел</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="карати" ana="verb:imperf:pres:s:3">карає</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="що" ana="conj:subord">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:int">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:int">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:rel">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:rel">Що</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="день" ana="noun:inanim:m:v_naz">день</w>
+            <w lemma="день" ana="noun:inanim:m:v_zna">день</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="божий" ana="adj:m:v_naz">божий</w>
+            <w lemma="божий" ana="adj:m:v_zna:rinanim">божий</w>
+            <w lemma="божий" ana="adj:m:v_kly">божий</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="добрий" ana="adj:p:v_naz:compb">добрі</w>
+            <w lemma="добрий" ana="adj:p:v_zna:rinanim:compb">добрі</w>
+            <w lemma="добрий" ana="adj:p:v_kly:compb">добрі</w>
+            <w lemma="добро" ana="noun:inanim:n:v_mis">добрі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ребро" ana="noun:inanim:n:v_rod">ребра</w>
+            <w lemma="ребро" ana="noun:inanim:p:v_naz">ребра</w>
+            <w lemma="ребро" ana="noun:inanim:p:v_zna">ребра</w>
+            <w lemma="ребро" ana="noun:inanim:p:v_kly">ребра</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">Й</w>
+            <w lemma="й" ana="part">Й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="серце" ana="noun:inanim:n:v_naz">серце</w>
+            <w lemma="серце" ana="noun:inanim:n:v_zna">серце</w>
+            <w lemma="серце" ana="noun:inanim:n:v_kly">серце</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="розбивати" ana="verb:imperf:pres:s:3">розбиває</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="розбивати" ana="verb:imperf:pres:s:3">Розбиває</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">та</w>
+            <w lemma="та" ana="part">та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="випити" ana="verb:perf:futr:s:3">вип’є</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="живущий" ana="adj:f:v_rod:rare">Живущої</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кров" ana="noun:inanim:f:v_rod">крові</w>
+            <w lemma="кров" ana="noun:inanim:f:v_dav">крові</w>
+            <w lemma="кров" ana="noun:inanim:f:v_mis">крові</w>
+          </mi:w_>
+          <pc>—</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="воно" ana="noun:n:v_naz:&amp;pron:pers:3">Воно</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="знову" ana="adv">знову</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="оживати" ana="verb:imperf:pres:s:3">оживає</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сміятися" ana="verb:rev:imperf:pres:s:3">сміється</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="знову" ana="adv">знову</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вмирати" ana="verb:imperf:pres:s:3:v-u">вмирає</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="душа" ana="noun:inanim:f:v_naz">душа</w>
+            <w lemma="душ" ana="noun:inanim:m:v_rod:odd">душа</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="наш" ana="adj:f:v_naz:pos:&amp;pron:pers:1">наша</w>
+            <w lemma="наш" ana="adj:f:v_kly:pos:&amp;pron:pers:1">наша</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вмирати" ana="verb:imperf:pres:s:3:v-u">вмирає</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="воля" ana="noun:inanim:f:v_naz">воля</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="неситий" ana="adj:m:v_naz">неситий</w>
+            <w lemma="неситий" ana="adj:m:v_zna:rinanim">неситий</w>
+            <w lemma="неситий" ana="adj:m:v_kly">неситий</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="виорати" ana="verb:perf:futr:s:3">виоре</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="на" ana="intj">На</w>
+            <w lemma="на" ana="part">На</w>
+            <w lemma="на" ana="prep:rv_zna">На</w>
+            <w lemma="на" ana="prep:rv_mis">На</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дно" ana="noun:inanim:n:v_mis">дні</w>
+            <w lemma="день" ana="noun:inanim:m:v_mis">дні</w>
+            <w lemma="день" ana="noun:inanim:p:v_naz">дні</w>
+            <w lemma="день" ana="noun:inanim:p:v_zna">дні</w>
+            <w lemma="день" ana="noun:inanim:p:v_kly">дні</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="море" ana="noun:inanim:n:v_rod">моря</w>
+            <w lemma="море" ana="noun:inanim:p:v_naz">моря</w>
+            <w lemma="море" ana="noun:inanim:p:v_zna">моря</w>
+            <w lemma="море" ana="noun:inanim:p:v_kly">моря</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="поле" ana="noun:inanim:n:v_naz">поле</w>
+            <w lemma="поле" ana="noun:inanim:n:v_zna">поле</w>
+            <w lemma="поле" ana="noun:inanim:n:v_kly">поле</w>
+            <w lemma="полоти" ana="verb:imperf:pres:s:3">поле</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="скувати" ana="verb:perf:futr:s:3">скує</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="душа" ana="noun:inanim:f:v_rod">душі</w>
+            <w lemma="душа" ana="noun:inanim:f:v_dav">душі</w>
+            <w lemma="душа" ana="noun:inanim:f:v_mis">душі</w>
+            <w lemma="душа" ana="noun:inanim:p:v_naz">душі</w>
+            <w lemma="душа" ana="noun:inanim:p:v_zna">душі</w>
+            <w lemma="душа" ana="noun:inanim:p:v_kly">душі</w>
+            <w lemma="душ" ana="noun:inanim:m:v_mis">душі</w>
+            <w lemma="душ" ana="noun:inanim:p:v_naz">душі</w>
+            <w lemma="душ" ana="noun:inanim:p:v_zna">душі</w>
+            <w lemma="душ" ana="noun:inanim:p:v_kly">душі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="живий" ana="adj:f:v_rod:compb">живої</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="слово" ana="noun:inanim:n:v_rod">слова</w>
+            <w lemma="слово" ana="noun:inanim:p:v_naz">слова</w>
+            <w lemma="слово" ana="noun:inanim:p:v_zna">слова</w>
+            <w lemma="слово" ana="noun:inanim:p:v_kly">слова</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="живий" ana="adj:m:v_rod:compb">живого</w>
+            <w lemma="живий" ana="adj:m:v_zna:ranim:compb">живого</w>
+            <w lemma="живий" ana="adj:n:v_rod:compb">живого</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="понести" ana="verb:perf:futr:s:3">понесе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="слава" ana="noun:inanim:f:v_rod">слави</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="бог" ana="noun:anim:m:v_rod">Бога</w>
+            <w lemma="бог" ana="noun:anim:m:v_zna">Бога</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="великий" ana="adj:m:v_rod:compb">Великого</w>
+            <w lemma="великий" ana="adj:m:v_zna:ranim:compb">Великого</w>
+            <w lemma="великий" ana="adj:n:v_rod:compb">Великого</w>
+            <w lemma="Великий" ana="noun:anim:m:v_rod:prop:lname">Великого</w>
+            <w lemma="Великий" ana="noun:anim:m:v_zna:prop:lname">Великого</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="бог" ana="noun:anim:m:v_rod">Бога</w>
+            <w lemma="бог" ana="noun:anim:m:v_zna">Бога</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_dav:&amp;pron:pers:1">нам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="пря" ana="noun:inanim:f:v_zna">прю</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_oru:&amp;pron:pers:2">Тобою</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="стати" ana="verb:perf:inf">стати</w>
+            <w lemma="стать" ana="noun:inanim:f:v_rod:alt">стати</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_dav:&amp;pron:pers:1">нам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="діти" ana="verb:perf:past:f">діла</w>
+            <w lemma="діл" ana="noun:inanim:m:v_rod:odd">діла</w>
+            <w lemma="діло" ana="noun:inanim:n:v_rod">діла</w>
+            <w lemma="діло" ana="noun:inanim:p:v_naz">діла</w>
+            <w lemma="діло" ana="noun:inanim:p:v_zna">діла</w>
+            <w lemma="діло" ana="noun:inanim:p:v_kly">діла</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="твій" ana="adj:p:v_naz:pos:&amp;pron:pers:2">Твої</w>
+            <w lemma="твій" ana="adj:p:v_zna:rinanim:pos:&amp;pron:pers:2">Твої</w>
+            <w lemma="твій" ana="adj:p:v_kly:pos:&amp;pron:pers:2">Твої</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="судити" ana="verb:perf:inf:coll">судить</w>
+            <w lemma="судити" ana="verb:perf:futr:s:3">судить</w>
+            <w lemma="судити" ana="verb:imperf:inf:coll">судить</w>
+            <w lemma="судити" ana="verb:imperf:pres:s:3">судить</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_dav:&amp;pron:pers:1">Нам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тілько" ana="adv:odd">тілько</w>
+            <w lemma="тілько" ana="conj:subord:odd">тілько</w>
+            <w lemma="тілько" ana="part:odd">тілько</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="плакати" ana="verb:imperf:inf:coll">плакать</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="плакати" ana="verb:imperf:inf:coll">плакать</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="плакати" ana="verb:imperf:inf:coll">плакать</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="хліб" ana="noun:inanim:m:v_naz">хліб</w>
+            <w lemma="хліб" ana="noun:inanim:m:v_zna">хліб</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="насущний" ana="adj:m:v_naz">насущний</w>
+            <w lemma="насущний" ana="adj:m:v_zna:rinanim">насущний</w>
+            <w lemma="насущний" ana="adj:m:v_kly">насущний</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="замісити" ana="verb:perf:inf:coll">замісить</w>
+            <w lemma="замісити" ana="verb:perf:futr:s:3">замісить</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="кровавий" ana="adj:m:v_oru">Кровавим</w>
+            <w lemma="кровавий" ana="adj:n:v_oru">Кровавим</w>
+            <w lemma="кровавий" ana="adj:p:v_dav">Кровавим</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="піт" ana="noun:inanim:m:v_oru">потом</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сльоза" ana="noun:inanim:p:v_oru">сльозами</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="кат" ana="noun:anim:p:v_naz">Кати</w>
+            <w lemma="кат" ana="noun:anim:p:v_kly">Кати</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="згнущатися" ana="verb:rev:imperf:pres:p:3">згнущаються</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="над" ana="prep:rv_zna">над</w>
+            <w lemma="над" ana="prep:rv_oru">над</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_oru:&amp;pron:pers:1">нами</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="правда" ana="adv">правда</w>
+            <w lemma="правда" ana="noun:inanim:f:v_naz">правда</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="наш" ana="adj:f:v_naz:pos:&amp;pron:pers:1">наша</w>
+            <w lemma="наш" ana="adj:f:v_kly:pos:&amp;pron:pers:1">наша</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="п’яний" ana="adj:f:v_naz:compb">п’яна</w>
+            <w lemma="п’яний" ana="adj:f:v_kly:compb">п’яна</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="спати" ana="verb:imperf:pres:s:3">спить</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="коли" ana="part">Коли</w>
+            <w lemma="кола" ana="noun:inanim:f:v_rod">Коли</w>
+            <w lemma="кола" ana="noun:inanim:p:v_naz">Коли</w>
+            <w lemma="кола" ana="noun:inanim:p:v_zna">Коли</w>
+            <w lemma="кола" ana="noun:inanim:p:v_kly">Коли</w>
+            <w lemma="коли" ana="conj:subord">Коли</w>
+            <w lemma="коли" ana="adv:&amp;pron:int">Коли</w>
+            <w lemma="коли" ana="adv:&amp;pron:rel">Коли</w>
+            <w lemma="кіл" ana="noun:inanim:p:v_naz">Коли</w>
+            <w lemma="кіл" ana="noun:inanim:p:v_zna">Коли</w>
+            <w lemma="кіл" ana="noun:inanim:p:v_kly">Коли</w>
+            <w lemma="колоти" ana="verb:imperf:impr:s:2">Коли</w>
+            <w lemma="Кола" ana="noun:inanim:f:v_rod:prop">Коли</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вона" ana="noun:f:v_naz:&amp;pron:pers:3">вона</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="прокинутися" ana="verb:rev:perf:futr:s:3">прокинеться</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>?</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="коли" ana="part">Коли</w>
+            <w lemma="кола" ana="noun:inanim:f:v_rod">Коли</w>
+            <w lemma="кола" ana="noun:inanim:p:v_naz">Коли</w>
+            <w lemma="кола" ana="noun:inanim:p:v_zna">Коли</w>
+            <w lemma="кола" ana="noun:inanim:p:v_kly">Коли</w>
+            <w lemma="коли" ana="conj:subord">Коли</w>
+            <w lemma="коли" ana="adv:&amp;pron:int">Коли</w>
+            <w lemma="коли" ana="adv:&amp;pron:rel">Коли</w>
+            <w lemma="кіл" ana="noun:inanim:p:v_naz">Коли</w>
+            <w lemma="кіл" ana="noun:inanim:p:v_zna">Коли</w>
+            <w lemma="кіл" ana="noun:inanim:p:v_kly">Коли</w>
+            <w lemma="колоти" ana="verb:imperf:impr:s:2">Коли</w>
+            <w lemma="Кола" ana="noun:inanim:f:v_rod:prop">Коли</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="одпочити" ana="verb:perf:inf">одпочити</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="лягти" ana="verb:perf:futr:s:2">Ляжеш</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="боже" ana="intj">Боже</w>
+            <w lemma="божий" ana="adj:n:v_naz">Боже</w>
+            <w lemma="божий" ana="adj:n:v_zna">Боже</w>
+            <w lemma="божий" ana="adj:n:v_kly">Боже</w>
+            <w lemma="бог" ana="noun:anim:m:v_kly">Боже</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="утомлений" ana="adj:m:v_naz:v-u">утомлений</w>
+            <w lemma="утомлений" ana="adj:m:v_zna:rinanim:v-u">утомлений</w>
+            <w lemma="утомлений" ana="adj:m:v_kly:v-u">утомлений</w>
+            <w lemma="утомлений" ana="adj:m:v_naz:&amp;adjp:perf:pasv:v-u">утомлений</w>
+            <w lemma="утомлений" ana="adj:m:v_zna:rinanim:&amp;adjp:perf:pasv:v-u">утомлений</w>
+            <w lemma="утомлений" ana="adj:m:v_kly:&amp;adjp:perf:pasv:v-u">утомлений</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>?</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_dav:&amp;pron:pers:1">нам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дати" ana="verb:perf:futr:s:2">даси</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="жити" ana="verb:imperf:inf">жити</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">Ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вірувати" ana="verb:imperf:pres:p:1">віруєм</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="твій" ana="adj:f:v_dav:pos:&amp;pron:pers:2">Твоїй</w>
+            <w lemma="твій" ana="adj:f:v_mis:pos:&amp;pron:pers:2">Твоїй</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сила" ana="noun:inanim:f:v_dav">силі</w>
+            <w lemma="сила" ana="noun:inanim:f:v_mis">силі</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дух" ana="noun:anim:m:v_dav:xp1">духу</w>
+            <w lemma="дух" ana="noun:anim:m:v_mis:xp1">духу</w>
+            <w lemma="дух" ana="noun:anim:m:v_kly:xp1">духу</w>
+            <w lemma="дух" ana="noun:inanim:m:v_rod:xp2">духу</w>
+            <w lemma="дух" ana="noun:inanim:m:v_dav:xp2">духу</w>
+            <w lemma="дух" ana="noun:inanim:m:v_mis:xp2">духу</w>
+            <w lemma="дух" ana="noun:inanim:m:v_kly:xp2">духу</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="живий" ana="adj:m:v_dav:compb">живому</w>
+            <w lemma="живий" ana="adj:m:v_mis:compb">живому</w>
+            <w lemma="живий" ana="adj:n:v_dav:compb">живому</w>
+            <w lemma="живий" ana="adj:n:v_mis:compb">живому</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="встати" ana="verb:perf:futr:s:3:v-u">Встане</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="правда" ana="adv">правда</w>
+            <w lemma="правда" ana="noun:inanim:f:v_naz">правда</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:w_>
+            <w lemma="встати" ana="verb:perf:futr:s:3:v-u">встане</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="воля" ana="noun:inanim:f:v_naz">воля</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_dav:&amp;pron:pers:2">Тобі</w>
+            <w lemma="ти" ana="noun:anim:s:v_mis:&amp;pron:pers:2">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_naz:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_rod:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_dav:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_zna:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_oru:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_mis:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_kly:nv:np:prop:fname">Тобі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="один" ana="adj:m:v_dav:&amp;pron:dem">одному</w>
+            <w lemma="один" ana="adj:m:v_mis:&amp;pron:dem">одному</w>
+            <w lemma="один" ana="adj:n:v_dav:&amp;pron:dem">одному</w>
+            <w lemma="один" ana="adj:n:v_mis:&amp;pron:dem">одному</w>
+            <w lemma="один" ana="adj:m:v_dav:&amp;pron:ind">одному</w>
+            <w lemma="один" ana="adj:m:v_mis:&amp;pron:ind">одному</w>
+            <w lemma="один" ana="adj:n:v_dav:&amp;pron:ind">одному</w>
+            <w lemma="один" ana="adj:n:v_mis:&amp;pron:ind">одному</w>
+            <w lemma="один" ana="numr:m:v_dav">одному</w>
+            <w lemma="один" ana="numr:m:v_mis">одному</w>
+            <w lemma="один" ana="numr:n:v_dav">одному</w>
+            <w lemma="один" ana="numr:n:v_mis">одному</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="помолитися" ana="verb:rev:perf:futr:p:3">Помоляться</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ввесь" ana="adj:p:v_naz:&amp;pron:gen">всі</w>
+            <w lemma="ввесь" ana="adj:p:v_zna:rinanim:&amp;pron:gen">всі</w>
+            <w lemma="весь" ana="adj:p:v_naz:&amp;pron:gen">всі</w>
+            <w lemma="весь" ana="adj:p:v_zna:rinanim:&amp;pron:gen">всі</w>
+            <w lemma="всі" ana="noun:anim:p:v_naz:&amp;pron:gen:v-u">всі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="язик" ana="noun:inanim:p:v_naz">язики</w>
+            <w lemma="язик" ana="noun:inanim:p:v_zna">язики</w>
+            <w lemma="язик" ana="noun:inanim:p:v_kly">язики</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="вовіки" ana="adv">Вовіки</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вік" ana="noun:inanim:p:v_naz">віки</w>
+            <w lemma="вік" ana="noun:inanim:p:v_zna">віки</w>
+            <w lemma="вік" ana="noun:inanim:p:v_kly">віки</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="поки" ana="conj:subord">поки</w>
+            <w lemma="поки" ana="adv:&amp;pron:int">поки</w>
+            <w lemma="поки" ana="adv:&amp;pron:rel">поки</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="що" ana="conj:subord">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:int">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:int">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:rel">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:rel">що</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="текти" ana="verb:imperf:pres:p:3">течуть</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ріка" ana="noun:inanim:f:v_rod">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_naz">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_zna">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_kly">ріки</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="кровавий" ana="adj:p:v_naz:uncontr">Кровавії</w>
+            <w lemma="кровавий" ana="adj:p:v_zna:rinanim:uncontr">Кровавії</w>
+            <w lemma="кровавий" ana="adj:p:v_kly:uncontr">Кровавії</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ріка" ana="noun:inanim:f:v_rod">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_naz">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_zna">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_kly">ріки</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="за" ana="adv">За</w>
+            <w lemma="за" ana="prep:rv_rod">За</w>
+            <w lemma="за" ana="prep:rv_zna">За</w>
+            <w lemma="за" ana="prep:rv_oru">За</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="гора" ana="noun:inanim:p:v_oru">горами</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="горіти" ana="verb:imperf:impr:s:2">гори</w>
+            <w lemma="гора" ana="noun:inanim:f:v_rod">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_naz">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_zna">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_kly">гори</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="хмара" ana="noun:inanim:f:v_oru">хмарою</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="повитий" ana="adj:p:v_naz">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_zna:rinanim">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_kly">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">повиті</w>
+            <w lemma="повитий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">повиті</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="засіяний" ana="adj:p:v_naz">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_zna:rinanim">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_kly">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_naz:&amp;adjp:perf:pasv">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">Засіяні</w>
+            <w lemma="засіяний" ana="adj:p:v_kly:&amp;adjp:perf:pasv">Засіяні</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="горе" ana="noun:inanim:n:v_oru">горем</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="кров" ana="noun:inanim:f:v_oru:odd">кровію</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="политий" ana="adj:p:v_naz">политі</w>
+            <w lemma="политий" ana="adj:p:v_zna:rinanim">политі</w>
+            <w lemma="политий" ana="adj:p:v_kly">политі</w>
+            <w lemma="политий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">политі</w>
+            <w lemma="политий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">политі</w>
+            <w lemma="политий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">политі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="отам" ana="adv:&amp;pron:dem">Отам</w>
+          </mi:w_>
+          <pc>-</pc>
+          <mi:w_>
+            <w lemma="то" ana="part">то</w>
+            <w lemma="то" ana="conj:subord">то</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="милостивий" ana="adj:p:v_naz:uncontr">милостивії</w>
+            <w lemma="милостивий" ana="adj:p:v_zna:rinanim:uncontr">милостивії</w>
+            <w lemma="милостивий" ana="adj:p:v_kly:uncontr">милостивії</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">ми</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ненагодований" ana="adj:f:v_zna">Ненагодовану</w>
+            <w lemma="ненагодований" ana="adj:f:v_zna:&amp;adjp:perf:pasv">Ненагодовану</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="голий" ana="adj:f:v_zna">голу</w>
+            <w lemma="гол" ana="noun:inanim:m:v_dav">голу</w>
+            <w lemma="гол" ana="noun:inanim:m:v_mis">голу</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="застукати" ana="verb:perf:past:p">Застукали</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сердешний" ana="adj:f:v_zna">сердешну</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="воля" ana="noun:inanim:f:v_zna">волю</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">Та</w>
+            <w lemma="та" ana="part">Та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">Та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">й</w>
+            <w lemma="й" ana="part">й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="цькувати" ana="verb:imperf:pres:p:1">цькуємо</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="лягти" ana="verb:perf:past:n">Лягло</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кість" ana="noun:inanim:p:v_oru:odd">костьми</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="люде" ana="noun:anim:p:v_rod:ns">Людей</w>
+            <w lemma="люде" ana="noun:anim:p:v_zna:ns">Людей</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="муштрований" ana="adj:p:v_rod">муштрованих</w>
+            <w lemma="муштрований" ana="adj:p:v_zna:ranim">муштрованих</w>
+            <w lemma="муштрований" ana="adj:p:v_mis">муштрованих</w>
+            <w lemma="муштрований" ana="adj:p:v_rod:&amp;adjp:imperf:pasv">муштрованих</w>
+            <w lemma="муштрований" ana="adj:p:v_zna:ranim:&amp;adjp:imperf:pasv">муштрованих</w>
+            <w lemma="муштрований" ana="adj:p:v_mis:&amp;adjp:imperf:pasv">муштрованих</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="чималий" ana="adj:beforedash">чимало</w>
+            <w lemma="чимало" ana="adv">чимало</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сльоза" ana="noun:inanim:p:v_rod:odd">сльоз</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">а</w>
+            <w lemma="а" ana="intj">а</w>
+            <w lemma="а" ana="part">а</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кров" ana="noun:inanim:f:v_rod">крові</w>
+            <w lemma="кров" ana="noun:inanim:f:v_dav">крові</w>
+            <w lemma="кров" ana="noun:inanim:f:v_mis">крові</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>?</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="напоїти" ana="verb:perf:inf:coll">Напоїть</w>
+            <w lemma="напоїти" ana="verb:perf:impr:p:2">Напоїть</w>
+            <w lemma="напоїти" ana="verb:perf:futr:s:3">Напоїть</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ввесь" ana="adj:p:v_rod:&amp;pron:gen">Всіх</w>
+            <w lemma="ввесь" ana="adj:p:v_zna:ranim:&amp;pron:gen">Всіх</w>
+            <w lemma="ввесь" ana="adj:p:v_mis:&amp;pron:gen">Всіх</w>
+            <w lemma="весь" ana="adj:p:v_rod:&amp;pron:gen">Всіх</w>
+            <w lemma="весь" ana="adj:p:v_zna:ranim:&amp;pron:gen">Всіх</w>
+            <w lemma="весь" ana="adj:p:v_mis:&amp;pron:gen">Всіх</w>
+            <w lemma="всі" ana="noun:anim:p:v_rod:&amp;pron:gen:v-u">Всіх</w>
+            <w lemma="всі" ana="noun:anim:p:v_zna:&amp;pron:gen:v-u">Всіх</w>
+            <w lemma="всі" ana="noun:anim:p:v_mis:&amp;pron:gen:v-u">Всіх</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="імператор" ana="noun:anim:p:v_rod">імператорів</w>
+            <w lemma="імператор" ana="noun:anim:p:v_zna">імператорів</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="би" ana="part">би</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="стати" ana="verb:perf:past:n">стало</w>
+            <w lemma="сталий" ana="adj:beforedash">стало</w>
+            <w lemma="стало" ana="adv">стало</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">З</w>
+            <w lemma="з" ana="prep:rv_zna">З</w>
+            <w lemma="з" ana="prep:rv_oru">З</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="діти" ana="noun:anim:p:v_oru:ns">дітьми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="внук" ana="noun:anim:p:v_oru:v-u">внуками</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="втопити" ana="verb:perf:inf:v-u:coll">втопить</w>
+            <w lemma="втопити" ana="verb:perf:futr:s:3:v-u">втопить</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">В</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">В</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">В</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сльоза" ana="noun:inanim:p:v_mis">сльозах</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="удовий" ana="adj:p:v_rod:v-u:odd">удов’їх</w>
+            <w lemma="удовий" ana="adj:p:v_mis:v-u:odd">удов’їх</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дівочий" ana="adj:p:v_rod">дівочих</w>
+            <w lemma="дівочий" ana="adj:p:v_zna:ranim">дівочих</w>
+            <w lemma="дівочий" ana="adj:p:v_mis">дівочих</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="пролитий" ana="adj:p:v_rod">Пролитих</w>
+            <w lemma="пролитий" ana="adj:p:v_zna:ranim">Пролитих</w>
+            <w lemma="пролитий" ana="adj:p:v_mis">Пролитих</w>
+            <w lemma="пролитий" ana="adj:p:v_rod:&amp;adjp:perf:pasv">Пролитих</w>
+            <w lemma="пролитий" ana="adj:p:v_zna:ranim:&amp;adjp:perf:pasv">Пролитих</w>
+            <w lemma="пролитий" ana="adj:p:v_mis:&amp;adjp:perf:pasv">Пролитих</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тайна" ana="noun:inanim:f:v_kly">тайно</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="середа" ana="noun:inanim:p:v_rod">серед</w>
+            <w lemma="серед" ana="prep:rv_rod">серед</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ніч" ana="noun:inanim:f:v_rod">ночі</w>
+            <w lemma="ніч" ana="noun:inanim:f:v_dav">ночі</w>
+            <w lemma="ніч" ana="noun:inanim:f:v_mis">ночі</w>
+            <w lemma="ніч" ana="noun:inanim:p:v_naz">ночі</w>
+            <w lemma="ніч" ana="noun:inanim:p:v_zna">ночі</w>
+            <w lemma="ніч" ana="noun:inanim:p:v_kly">ночі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="матерний" ana="adj:p:v_rod:odd">матерних</w>
+            <w lemma="матерний" ana="adj:p:v_zna:ranim:odd">матерних</w>
+            <w lemma="матерний" ana="adj:p:v_mis:odd">матерних</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="гарячий" ana="adj:p:v_rod:compb">гарячих</w>
+            <w lemma="гарячий" ana="adj:p:v_zna:ranim:compb">гарячих</w>
+            <w lemma="гарячий" ana="adj:p:v_mis:compb">гарячих</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сльоза" ana="noun:inanim:p:v_rod:odd">сльоз</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="батьковий" ana="adj:p:v_rod">батькових</w>
+            <w lemma="батьковий" ana="adj:p:v_zna:ranim">батькових</w>
+            <w lemma="батьковий" ana="adj:p:v_mis">батькових</w>
+            <w lemma="батьків" ana="adj:p:v_rod">батькових</w>
+            <w lemma="батьків" ana="adj:p:v_zna:ranim">батькових</w>
+            <w lemma="батьків" ana="adj:p:v_mis">батькових</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="старий" ana="adj:p:v_rod:compb">старих</w>
+            <w lemma="старий" ana="adj:p:v_zna:ranim:compb">старих</w>
+            <w lemma="старий" ana="adj:p:v_mis:compb">старих</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="кровавий" ana="adj:p:v_rod">кровавих</w>
+            <w lemma="кровавий" ana="adj:p:v_zna:ranim">кровавих</w>
+            <w lemma="кровавий" ana="adj:p:v_mis">кровавих</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ріка" ana="noun:inanim:f:v_rod">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_naz">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_zna">ріки</w>
+            <w lemma="ріка" ana="noun:inanim:p:v_kly">ріки</w>
+          </mi:w_>
+          <pc>—</pc>
+          <mi:w_>
+            <w lemma="мор" ana="noun:inanim:m:v_kly">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_naz">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_zna">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_kly">море</w>
+            <w lemma="морити" ana="verb:imperf:pres:s:3:odd">море</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="розлитися" ana="verb:rev:perf:past:n">розлилось</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="огненний" ana="adj:n:v_naz">Огненне</w>
+            <w lemma="огненний" ana="adj:n:v_zna">Огненне</w>
+            <w lemma="огненний" ana="adj:n:v_kly">Огненне</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="мор" ana="noun:inanim:m:v_kly">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_naz">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_zna">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_kly">море</w>
+            <w lemma="морити" ana="verb:imperf:pres:s:3:odd">море</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="слава" ana="noun:inanim:f:v_naz">Слава</w>
+            <w lemma="Слава" ana="noun:inanim:f:v_naz:prop">Слава</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="слава" ana="noun:inanim:f:v_naz">Слава</w>
+            <w lemma="Слава" ana="noun:inanim:f:v_naz:prop">Слава</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="хорт" ana="noun:anim:p:v_dav">Хортам</w>
+            <w lemma="хірт" ana="noun:anim:p:v_dav">Хортам</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="гончий" ana="adj:m:v_oru">гончим</w>
+            <w lemma="гончий" ana="adj:n:v_oru">гончим</w>
+            <w lemma="гончий" ana="adj:p:v_dav">гончим</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="псар" ana="noun:anim:p:v_dav">псарям</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="наш" ana="adj:m:v_oru:pos:&amp;pron:pers:1">нашим</w>
+            <w lemma="наш" ana="adj:n:v_oru:pos:&amp;pron:pers:1">нашим</w>
+            <w lemma="наш" ana="adj:p:v_dav:pos:&amp;pron:pers:1">нашим</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="батюшка" ana="noun:anim:p:v_dav">батюшкам</w>
+          </mi:w_>
+          <pc>-</pc>
+          <mi:w_>
+            <w lemma="цар" ana="noun:anim:p:v_dav">царям</w>
+          </mi:w_>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="слава" ana="noun:inanim:f:v_naz">Слава</w>
+            <w lemma="Слава" ana="noun:inanim:f:v_naz:prop">Слава</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_dav:&amp;pron:pers:2">вам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="слава" ana="noun:inanim:f:v_naz">слава</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="синій" ana="adj:p:v_naz">сині</w>
+            <w lemma="синій" ana="adj:p:v_zna:rinanim">сині</w>
+            <w lemma="синій" ana="adj:p:v_kly">сині</w>
+            <w lemma="синь" ana="noun:inanim:f:v_rod">сині</w>
+            <w lemma="синь" ana="noun:inanim:f:v_dav">сині</w>
+            <w lemma="синь" ana="noun:inanim:f:v_mis">сині</w>
+            <w lemma="син" ana="noun:anim:m:v_mis">сині</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="горіти" ana="verb:imperf:impr:s:2">гори</w>
+            <w lemma="гора" ana="noun:inanim:f:v_rod">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_naz">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_zna">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_kly">гори</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="крига" ana="noun:inanim:f:v_oru">Кригою</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="окутий" ana="adj:p:v_naz">окуті</w>
+            <w lemma="окутий" ana="adj:p:v_zna:rinanim">окуті</w>
+            <w lemma="окутий" ana="adj:p:v_kly">окуті</w>
+            <w lemma="окутий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">окуті</w>
+            <w lemma="окутий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">окуті</w>
+            <w lemma="окутий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">окуті</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_dav:&amp;pron:pers:2">вам</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="лицар" ana="noun:anim:m:v_mis">лицарі</w>
+            <w lemma="лицар" ana="noun:anim:p:v_naz">лицарі</w>
+            <w lemma="лицар" ana="noun:anim:p:v_kly">лицарі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="великий" ana="adj:p:v_naz:compb">великі</w>
+            <w lemma="великий" ana="adj:p:v_zna:rinanim:compb">великі</w>
+            <w lemma="великий" ana="adj:p:v_kly:compb">великі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="бог" ana="noun:anim:m:v_oru">Богом</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="забутий" ana="adj:p:v_naz">забуті</w>
+            <w lemma="забутий" ana="adj:p:v_zna:rinanim">забуті</w>
+            <w lemma="забутий" ana="adj:p:v_kly">забуті</w>
+            <w lemma="забутий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">забуті</w>
+            <w lemma="забутий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">забуті</w>
+            <w lemma="забутий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">забуті</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="боротися" ana="verb:rev:imperf:impr:p:2:odd">Борітеся</w>
+          </mi:w_>
+          <pc>—</pc>
+          <mi:w_>
+            <w lemma="побороти" ana="verb:perf:futr:p:2">поборете</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_dav:&amp;pron:pers:2">Вам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="бог" ana="noun:anim:m:v_naz">Бог</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="помагати" ana="verb:imperf:pres:s:3">помагає</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="за" ana="adv">За</w>
+            <w lemma="за" ana="prep:rv_rod">За</w>
+            <w lemma="за" ana="prep:rv_zna">За</w>
+            <w lemma="за" ana="prep:rv_oru">За</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_rod:&amp;pron:pers:2">вас</w>
+            <w lemma="ви" ana="noun:anim:p:v_zna:&amp;pron:pers:2">вас</w>
+            <w lemma="ви" ana="noun:anim:p:v_mis:&amp;pron:pers:2">вас</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="правда" ana="adv">правда</w>
+            <w lemma="правда" ana="noun:inanim:f:v_naz">правда</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_rod:&amp;pron:pers:2">вас</w>
+            <w lemma="ви" ana="noun:anim:p:v_zna:&amp;pron:pers:2">вас</w>
+            <w lemma="ви" ana="noun:anim:p:v_mis:&amp;pron:pers:2">вас</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="слава" ana="noun:inanim:f:v_naz">слава</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="воля" ana="noun:inanim:f:v_naz">воля</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="святий" ana="adj:f:v_naz:uncontr:compb">святая</w>
+            <w lemma="святий" ana="adj:f:v_kly:uncontr:compb">святая</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="чурек" ana="noun:inanim:m:v_naz">Чурек</w>
+            <w lemma="чурек" ana="noun:inanim:m:v_zna">Чурек</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сакля" ana="noun:inanim:f:v_naz">сакля</w>
+          </mi:w_>
+          <pc>—</pc>
+          <mi:w_>
+            <w lemma="все" ana="adv:v-u">все</w>
+            <w lemma="ввесь" ana="adj:n:v_naz:&amp;pron:gen">все</w>
+            <w lemma="ввесь" ana="adj:n:v_zna:&amp;pron:gen">все</w>
+            <w lemma="весь" ana="adj:n:v_naz:&amp;pron:gen">все</w>
+            <w lemma="весь" ana="adj:n:v_zna:&amp;pron:gen">все</w>
+            <w lemma="все" ana="conj:coord:v-u">все</w>
+            <w lemma="все" ana="noun:inanim:n:v_naz:&amp;pron:gen:v-u">все</w>
+            <w lemma="все" ana="noun:inanim:n:v_zna:&amp;pron:gen:v-u">все</w>
+            <w lemma="все" ana="part:v-u">все</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="твій" ana="adj:n:v_naz:pos:&amp;pron:pers:2">твоє</w>
+            <w lemma="твій" ana="adj:n:v_zna:pos:&amp;pron:pers:2">твоє</w>
+            <w lemma="твій" ana="adj:n:v_kly:pos:&amp;pron:pers:2">твоє</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="воно" ana="noun:n:v_naz:&amp;pron:pers:3">Воно</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="прошений" ana="adj:n:v_naz">прошене</w>
+            <w lemma="прошений" ana="adj:n:v_zna">прошене</w>
+            <w lemma="прошений" ana="adj:n:v_kly">прошене</w>
+            <w lemma="прошений" ana="adj:n:v_naz:&amp;adjp:imperf:pasv">прошене</w>
+            <w lemma="прошений" ana="adj:n:v_zna:&amp;adjp:imperf:pasv">прошене</w>
+            <w lemma="прошений" ana="adj:n:v_kly:&amp;adjp:imperf:pasv">прошене</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="даний" ana="adj:n:v_naz">дане</w>
+            <w lemma="даний" ana="adj:n:v_zna">дане</w>
+            <w lemma="даний" ana="adj:n:v_kly">дане</w>
+            <w lemma="даний" ana="adj:n:v_naz:&amp;adjp:perf:pasv">дане</w>
+            <w lemma="даний" ana="adj:n:v_zna:&amp;adjp:perf:pasv">дане</w>
+            <w lemma="даний" ana="adj:n:v_kly:&amp;adjp:perf:pasv">дане</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ніхто" ana="noun:anim:v_naz:&amp;pron:neg">Ніхто</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">й</w>
+            <w lemma="й" ana="part">й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="взяти" ana="verb:perf:futr:s:3:odd">возьме</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="свій" ana="adj:n:v_naz:pos:&amp;pron:refl">своє</w>
+            <w lemma="свій" ana="adj:n:v_zna:pos:&amp;pron:refl">своє</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="повести" ana="verb:perf:futr:s:3">поведе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_rod:&amp;pron:pers:2">тебе</w>
+            <w lemma="ти" ana="noun:anim:s:v_zna:&amp;pron:pers:2">тебе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кайдани" ana="noun:inanim:p:v_mis:ns">кайданах</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="на" ana="intj">На</w>
+            <w lemma="на" ana="part">На</w>
+            <w lemma="на" ana="prep:rv_zna">На</w>
+            <w lemma="на" ana="prep:rv_mis">На</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="той" ana="adj:n:v_naz:&amp;pron:dem">те</w>
+            <w lemma="той" ana="adj:n:v_zna:&amp;pron:dem">те</w>
+            <w lemma="те" ana="noun:inanim:n:v_naz:&amp;pron:dem">те</w>
+            <w lemma="те" ana="noun:inanim:n:v_zna:&amp;pron:dem">те</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="письменний" ana="adj:p:v_naz">письменні</w>
+            <w lemma="письменний" ana="adj:p:v_zna:rinanim">письменні</w>
+            <w lemma="письменний" ana="adj:p:v_kly">письменні</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">ми</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="читати" ana="verb:imperf:pres:p:1">Читаєм</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="божий" ana="adj:p:v_naz:uncontr">Божії</w>
+            <w lemma="божий" ana="adj:p:v_zna:rinanim:uncontr">Божії</w>
+            <w lemma="божий" ana="adj:p:v_kly:uncontr">Божії</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="глагол" ana="noun:inanim:p:v_naz:odd">глаголи</w>
+            <w lemma="глагол" ana="noun:inanim:p:v_zna:odd">глаголи</w>
+            <w lemma="глагол" ana="noun:inanim:p:v_kly:odd">глаголи</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ода" ana="noun:inanim:p:v_rod">од</w>
+            <w lemma="од" ana="prep:rv_rod">од</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="глибокий" ana="adj:f:v_rod:compb">глибокої</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тюрма" ana="noun:inanim:f:v_rod">тюрми</w>
+            <w lemma="тюрма" ana="noun:inanim:p:v_naz">тюрми</w>
+            <w lemma="тюрма" ana="noun:inanim:p:v_zna">тюрми</w>
+            <w lemma="тюрма" ana="noun:inanim:p:v_kly">тюрми</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">Та</w>
+            <w lemma="та" ana="part">Та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">Та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="до" ana="noun:inanim:n:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_kly:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_kly:nv">до</w>
+            <w lemma="до" ana="prep:rv_rod">до</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="високий" ana="adj:m:v_rod:compb">високого</w>
+            <w lemma="високий" ana="adj:m:v_zna:ranim:compb">високого</w>
+            <w lemma="високий" ana="adj:n:v_rod:compb">високого</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="престол" ana="noun:inanim:m:v_rod:xp1">престола</w>
+            <w lemma="престол" ana="noun:inanim:m:v_rod:xp2:odd">престола</w>
+          </mi:w_>
+          <pc>—</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="увесь" ana="adj:p:v_naz:&amp;pron:gen">Усі</w>
+            <w lemma="увесь" ana="adj:p:v_zna:rinanim:&amp;pron:gen">Усі</w>
+            <w lemma="усі" ana="noun:anim:p:v_naz:&amp;pron:gen:v-u">Усі</w>
+            <w lemma="Ус" ana="noun:anim:m:v_mis:prop:lname">Усі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="золотий" ana="adj:p:v_naz">золоті</w>
+            <w lemma="золотий" ana="adj:p:v_zna:rinanim">золоті</w>
+            <w lemma="золотий" ana="adj:p:v_kly">золоті</w>
+            <w lemma="золото" ana="noun:inanim:n:v_mis">золоті</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="голий" ana="adj:p:v_naz">голі</w>
+            <w lemma="голий" ana="adj:p:v_zna:rinanim">голі</w>
+            <w lemma="голий" ana="adj:p:v_kly">голі</w>
+            <w lemma="гол" ana="noun:inanim:m:v_mis">голі</w>
+            <w lemma="голь" ana="noun:inanim:f:v_rod:np:rare">голі</w>
+            <w lemma="голь" ana="noun:inanim:f:v_dav:np:rare">голі</w>
+            <w lemma="голь" ana="noun:inanim:f:v_mis:np:rare">голі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="до" ana="noun:inanim:n:v_naz:nv">До</w>
+            <w lemma="до" ana="noun:inanim:n:v_rod:nv">До</w>
+            <w lemma="до" ana="noun:inanim:n:v_dav:nv">До</w>
+            <w lemma="до" ana="noun:inanim:n:v_zna:nv">До</w>
+            <w lemma="до" ana="noun:inanim:n:v_oru:nv">До</w>
+            <w lemma="до" ana="noun:inanim:n:v_mis:nv">До</w>
+            <w lemma="до" ana="noun:inanim:n:v_kly:nv">До</w>
+            <w lemma="до" ana="noun:inanim:p:v_naz:nv">До</w>
+            <w lemma="до" ana="noun:inanim:p:v_rod:nv">До</w>
+            <w lemma="до" ana="noun:inanim:p:v_dav:nv">До</w>
+            <w lemma="до" ana="noun:inanim:p:v_zna:nv">До</w>
+            <w lemma="до" ana="noun:inanim:p:v_oru:nv">До</w>
+            <w lemma="до" ana="noun:inanim:p:v_mis:nv">До</w>
+            <w lemma="до" ana="noun:inanim:p:v_kly:nv">До</w>
+            <w lemma="до" ana="prep:rv_rod">До</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="наука" ana="noun:inanim:f:v_zna">науку</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="навчити" ana="verb:perf:futr:p:1">навчим</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="почому" ana="adv">Почому</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="хліб" ana="noun:inanim:m:v_naz">хліб</w>
+            <w lemma="хліб" ana="noun:inanim:m:v_zna">хліб</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сіль" ana="noun:inanim:f:v_naz">сіль</w>
+            <w lemma="сіль" ana="noun:inanim:f:v_zna">сіль</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="почім" ana="adv">почім</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">Ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="християнин" ana="noun:anim:p:v_naz:odd">християне</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>;</pc>
+          <mi:w_>
+            <w lemma="храм" ana="noun:inanim:p:v_naz">храми</w>
+            <w lemma="храм" ana="noun:inanim:p:v_zna">храми</w>
+            <w lemma="храм" ana="noun:inanim:p:v_kly">храми</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="школа" ana="noun:inanim:f:v_rod">школи</w>
+            <w lemma="школа" ana="noun:inanim:p:v_naz">школи</w>
+            <w lemma="школа" ana="noun:inanim:p:v_zna">школи</w>
+            <w lemma="школа" ana="noun:inanim:p:v_kly">школи</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="усе" ana="adv:v-u">Усе</w>
+            <w lemma="увесь" ana="adj:n:v_naz:&amp;pron:gen">Усе</w>
+            <w lemma="увесь" ana="adj:n:v_zna:&amp;pron:gen">Усе</w>
+            <w lemma="усе" ana="conj:coord:v-u">Усе</w>
+            <w lemma="усе" ana="noun:inanim:n:v_naz:&amp;pron:gen:v-u">Усе</w>
+            <w lemma="усе" ana="noun:inanim:n:v_zna:&amp;pron:gen:v-u">Усе</w>
+            <w lemma="усе" ana="part:v-u">Усе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="добрий" ana="adj:compb:beforedash">добро</w>
+            <w lemma="добро" ana="noun:inanim:n:v_naz">добро</w>
+            <w lemma="добро" ana="noun:inanim:n:v_zna">добро</w>
+            <w lemma="добро" ana="noun:inanim:n:v_kly">добро</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="сам" ana="adj:m:v_naz:&amp;pron:refl">сам</w>
+            <w lemma="сам" ana="adj:m:v_zna:rinanim:&amp;pron:refl">сам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="бог" ana="noun:anim:m:v_naz">Бог</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="у" ana="intj">у</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">у</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">у</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">у</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_dav:&amp;pron:pers:1">Нам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тілько" ana="adv:odd">тілько</w>
+            <w lemma="тілько" ana="conj:subord:odd">тілько</w>
+            <w lemma="тілько" ana="part:odd">тілько</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сакля" ana="noun:inanim:f:v_naz">сакля</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="око" ana="noun:inanim:p:v_naz">очі</w>
+            <w lemma="око" ana="noun:inanim:p:v_zna">очі</w>
+            <w lemma="око" ana="noun:inanim:p:v_kly">очі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кіл" ana="noun:inanim:m:v_kly">коле</w>
+            <w lemma="колоти" ana="verb:imperf:pres:s:3">коле</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>:</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="що" ana="noun:inanim:n:v_rod:&amp;pron:int">Чого</w>
+            <w lemma="що" ana="noun:inanim:n:v_rod:&amp;pron:rel">Чого</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вона" ana="noun:f:v_naz:&amp;pron:pers:3">вона</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="стояти" ana="verb:imperf:pres:s:3">стоїть</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="у" ana="intj">у</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">у</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">у</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">у</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_rod:&amp;pron:pers:2">вас</w>
+            <w lemma="ви" ana="noun:anim:p:v_zna:&amp;pron:pers:2">вас</w>
+            <w lemma="ви" ana="noun:anim:p:v_mis:&amp;pron:pers:2">вас</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_oru:&amp;pron:pers:1">нами</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="даний" ana="adj:f:v_naz">дана</w>
+            <w lemma="даний" ana="adj:f:v_kly">дана</w>
+            <w lemma="даний" ana="adj:f:v_naz:&amp;adjp:perf:pasv">дана</w>
+            <w lemma="даний" ana="adj:f:v_kly:&amp;adjp:perf:pasv">дана</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>;</pc>
+          <mi:w_>
+            <w lemma="чом" ana="adv:&amp;pron:int">чом</w>
+            <w lemma="чом" ana="adv:&amp;pron:rel">чом</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_dav:&amp;pron:pers:2">вам</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="чурек" ana="noun:inanim:m:v_naz">Чурек</w>
+            <w lemma="чурек" ana="noun:inanim:m:v_zna">Чурек</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="же" ana="conj:coord">же</w>
+            <w lemma="же" ana="part">же</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ваш" ana="adj:m:v_naz:pos:&amp;pron:pers:2">ваш</w>
+            <w lemma="ваш" ana="adj:m:v_zna:rinanim:pos:&amp;pron:pers:2">ваш</w>
+            <w lemma="ваш" ana="adj:m:v_kly:pos:&amp;pron:pers:2">ваш</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">та</w>
+            <w lemma="та" ana="part">та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_dav:&amp;pron:pers:2">вам</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кинути" ana="verb:perf:futr:p:1">кинем</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="як" ana="part">Як</w>
+            <w lemma="як" ana="conj:subord">Як</w>
+            <w lemma="як" ana="noun:anim:m:v_naz">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:int">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:rel">Як</w>
+            <w lemma="Як" ana="noun:anim:m:v_naz:prop:lname">Як</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="той" ana="adj:f:v_dav:&amp;pron:dem">тій</w>
+            <w lemma="той" ana="adj:f:v_mis:&amp;pron:dem">тій</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="собака" ana="noun:anim:m:v_dav:xp1">собаці</w>
+            <w lemma="собака" ana="noun:anim:m:v_mis:xp1">собаці</w>
+            <w lemma="собака" ana="noun:anim:f:v_dav:xp1">собаці</w>
+            <w lemma="собака" ana="noun:anim:f:v_mis:xp1">собаці</w>
+            <w lemma="собака" ana="noun:anim:m:v_dav:xp2">собаці</w>
+            <w lemma="собака" ana="noun:anim:m:v_mis:xp2">собаці</w>
+            <w lemma="собака" ana="noun:anim:f:v_dav:xp2">собаці</w>
+            <w lemma="собака" ana="noun:anim:f:v_mis:xp2">собаці</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="чом" ana="adv:&amp;pron:int">Чом</w>
+            <w lemma="чом" ana="adv:&amp;pron:rel">Чом</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_naz:&amp;pron:pers:2">ви</w>
+            <w lemma="ви" ana="noun:anim:p:v_kly:&amp;pron:pers:2">ви</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_dav:&amp;pron:pers:1">нам</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="платити" ana="verb:imperf:inf:coll">Платить</w>
+            <w lemma="платити" ana="verb:imperf:pres:s:3">Платить</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сонце" ana="noun:inanim:n:v_naz">сонце</w>
+            <w lemma="сонце" ana="noun:inanim:n:v_zna">сонце</w>
+            <w lemma="сонце" ana="noun:inanim:n:v_kly">сонце</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="повинний" ana="adj:p:v_naz">повинні</w>
+            <w lemma="повинний" ana="adj:p:v_zna:rinanim">повинні</w>
+            <w lemma="повинний" ana="adj:p:v_kly">повинні</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">Та</w>
+            <w lemma="та" ana="part">Та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">Та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">й</w>
+            <w lemma="й" ana="part">й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тілько" ana="adv:odd">тілько</w>
+            <w lemma="тілько" ana="conj:subord:odd">тілько</w>
+            <w lemma="тілько" ana="part:odd">тілько</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ж" ana="conj:coord">ж</w>
+            <w lemma="ж" ana="part">ж</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="то" ana="part">то</w>
+            <w lemma="то" ana="conj:subord">то</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">Ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="поганий" ana="adj:n:v_naz:compb">погане</w>
+            <w lemma="поганий" ana="adj:n:v_zna:compb">погане</w>
+            <w lemma="поганий" ana="adj:n:v_kly:compb">погане</w>
+            <w lemma="поганити" ana="verb:imperf:pres:s:3:xp1:odd">погане</w>
+            <w lemma="погань" ana="noun:inanim:f:v_kly">погане</w>
+            <w lemma="поганити" ana="verb:perf:futr:s:3:xp2:odd">погане</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">Ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="настоящий" ana="adj:p:v_naz:odd">настоящі</w>
+            <w lemma="настоящий" ana="adj:p:v_zna:rinanim:odd">настоящі</w>
+            <w lemma="настоящий" ana="adj:p:v_kly:odd">настоящі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="християнин" ana="noun:anim:p:v_naz:odd">християне</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">Ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="малий" ana="adj:m:v_oru:compb">малим</w>
+            <w lemma="малий" ana="adj:n:v_oru:compb">малим</w>
+            <w lemma="малий" ana="adj:p:v_dav:compb">малим</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ситий" ana="adj:p:v_naz">ситі</w>
+            <w lemma="ситий" ana="adj:p:v_zna:rinanim">ситі</w>
+            <w lemma="ситий" ana="adj:p:v_kly">ситі</w>
+            <w lemma="сито" ana="noun:inanim:n:v_mis">ситі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="зате" ana="conj:coord">зате</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="якби" ana="conj:subord">Якби</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_naz:&amp;pron:pers:2">ви</w>
+            <w lemma="ви" ana="noun:anim:p:v_kly:&amp;pron:pers:2">ви</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_oru:&amp;pron:pers:1">нами</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="подружити" ana="verb:perf:past:p">подружили</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="багатий" ana="adj:compb:beforedash">Багато</w>
+            <w lemma="багато" ana="adv:compb">Багато</w>
+            <w lemma="багато" ana="numr:p:v_naz:&amp;pron:ind">Багато</w>
+            <w lemma="багато" ana="numr:p:v_zna:&amp;pron:ind">Багато</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="б" ana="part">б</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дещо" ana="noun:inanim:v_dav:&amp;pron:ind">дечому</w>
+            <w lemma="дещо" ana="noun:inanim:v_mis:&amp;pron:ind">дечому</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="навчитися" ana="verb:rev:perf:past:p">навчились</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="у" ana="intj">У</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">У</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">У</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">У</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="же" ana="conj:coord">же</w>
+            <w lemma="же" ana="part">же</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">й</w>
+            <w lemma="й" ana="part">й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="світ" ana="noun:inanim:m:v_rod:odd">світа</w>
+            <w lemma="світати" ana="verb:imperf:pres:s:3:odd">світа</w>
+            <w lemma="світа" ana="noun:inanim:f:v_naz:np">світа</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="як" ana="part">як</w>
+            <w lemma="як" ana="conj:subord">як</w>
+            <w lemma="як" ana="noun:anim:m:v_naz">як</w>
+            <w lemma="як" ana="adv:&amp;pron:int">як</w>
+            <w lemma="як" ana="adv:&amp;pron:rel">як</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="той" ana="adj:n:v_naz:&amp;pron:dem">те</w>
+            <w lemma="той" ana="adj:n:v_zna:&amp;pron:dem">те</w>
+            <w lemma="те" ana="noun:inanim:n:v_naz:&amp;pron:dem">те</w>
+            <w lemma="те" ana="noun:inanim:n:v_zna:&amp;pron:dem">те</w>
+          </mi:w_>
+          <pc>—</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="один" ana="adj:f:v_naz:&amp;pron:dem">Одна</w>
+            <w lemma="один" ana="adj:f:v_naz:&amp;pron:ind">Одна</w>
+            <w lemma="один" ana="numr:f:v_naz">Одна</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="Сибір" ana="noun:inanim:m:v_naz:prop">Сибір</w>
+            <w lemma="Сибір" ana="noun:inanim:m:v_zna:prop">Сибір</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="неісходимий" ana="adj:f:v_naz:odd">неісходима</w>
+            <w lemma="неісходимий" ana="adj:f:v_kly:odd">неісходима</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тюрма" ana="noun:inanim:p:v_rod:odd">тюрм</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">а</w>
+            <w lemma="а" ana="intj">а</w>
+            <w lemma="а" ana="part">а</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="люд" ana="noun:inanim:m:v_rod">люду</w>
+            <w lemma="люд" ana="noun:inanim:m:v_dav">люду</w>
+            <w lemma="люд" ana="noun:inanim:m:v_mis">люду</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="що" ana="conj:subord">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:int">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:int">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:rel">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:rel">Що</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">й</w>
+            <w lemma="й" ana="part">й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="лічити" ana="verb:imperf:inf:coll">лічить</w>
+            <w lemma="лічити" ana="verb:imperf:pres:s:3">лічить</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ода" ana="noun:inanim:p:v_rod">Од</w>
+            <w lemma="од" ana="prep:rv_rod">Од</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="молдованин" ana="noun:anim:m:v_rod">молдованина</w>
+            <w lemma="молдованин" ana="noun:anim:m:v_zna">молдованина</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="до" ana="noun:inanim:n:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_kly:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_kly:nv">до</w>
+            <w lemma="до" ana="prep:rv_rod">до</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="фін" ana="noun:anim:m:v_rod">фіна</w>
+            <w lemma="фін" ana="noun:anim:m:v_zna">фіна</w>
+            <w lemma="фіна" ana="noun:unanim:f:v_naz">фіна</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="на" ana="intj">На</w>
+            <w lemma="на" ana="part">На</w>
+            <w lemma="на" ana="prep:rv_zna">На</w>
+            <w lemma="на" ana="prep:rv_mis">На</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ввесь" ana="adj:p:v_rod:&amp;pron:gen">всіх</w>
+            <w lemma="ввесь" ana="adj:p:v_zna:ranim:&amp;pron:gen">всіх</w>
+            <w lemma="ввесь" ana="adj:p:v_mis:&amp;pron:gen">всіх</w>
+            <w lemma="весь" ana="adj:p:v_rod:&amp;pron:gen">всіх</w>
+            <w lemma="весь" ana="adj:p:v_zna:ranim:&amp;pron:gen">всіх</w>
+            <w lemma="весь" ana="adj:p:v_mis:&amp;pron:gen">всіх</w>
+            <w lemma="всі" ana="noun:anim:p:v_rod:&amp;pron:gen:v-u">всіх</w>
+            <w lemma="всі" ana="noun:anim:p:v_zna:&amp;pron:gen:v-u">всіх</w>
+            <w lemma="всі" ana="noun:anim:p:v_mis:&amp;pron:gen:v-u">всіх</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="язик" ana="noun:inanim:p:v_mis">язиках</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="все" ana="adv:v-u">все</w>
+            <w lemma="ввесь" ana="adj:n:v_naz:&amp;pron:gen">все</w>
+            <w lemma="ввесь" ana="adj:n:v_zna:&amp;pron:gen">все</w>
+            <w lemma="весь" ana="adj:n:v_naz:&amp;pron:gen">все</w>
+            <w lemma="весь" ana="adj:n:v_zna:&amp;pron:gen">все</w>
+            <w lemma="все" ana="conj:coord:v-u">все</w>
+            <w lemma="все" ana="noun:inanim:n:v_naz:&amp;pron:gen:v-u">все</w>
+            <w lemma="все" ana="noun:inanim:n:v_zna:&amp;pron:gen:v-u">все</w>
+            <w lemma="все" ana="part:v-u">все</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="мовчати" ana="verb:imperf:pres:s:3">мовчить</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="бо" ana="part">Бо</w>
+            <w lemma="бо" ana="conj:subord">Бо</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="благоденствувати" ana="verb:imperf:pres:s:3">благоденствує</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="у" ana="intj">У</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">У</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">У</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">У</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="святий" ana="adj:f:v_zna:uncontr:compb">Святую</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="біблія" ana="noun:inanim:f:v_zna">Біблію</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="читати" ana="verb:imperf:pres:s:3">читає</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="святий" ana="adj:m:v_naz:compb">Святий</w>
+            <w lemma="святий" ana="adj:m:v_zna:rinanim:compb">Святий</w>
+            <w lemma="святий" ana="adj:m:v_kly:compb">Святий</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="чернець" ana="noun:anim:m:v_naz">чернець</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="научати" ana="verb:imperf:pres:s:3">научає</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="що" ana="conj:subord">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:int">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:int">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:rel">Що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:rel">Що</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="цар" ana="noun:anim:m:v_naz">цар</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="якийсь" ana="adj:m:v_naz:&amp;pron:ind">якийсь</w>
+            <w lemma="якийсь" ana="adj:m:v_zna:rinanim:&amp;pron:ind">якийсь</w>
+          </mi:w_>
+          <pc>-</pc>
+          <mi:w_>
+            <w lemma="то" ana="part">то</w>
+            <w lemma="то" ana="conj:subord">то</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="свиний" ana="adj:p:v_naz">свині</w>
+            <w lemma="свиний" ana="adj:p:v_zna:rinanim">свині</w>
+            <w lemma="свиний" ana="adj:p:v_kly">свині</w>
+            <w lemma="свиня" ana="noun:anim:f:v_rod">свині</w>
+            <w lemma="свиня" ana="noun:anim:f:v_dav">свині</w>
+            <w lemma="свиня" ana="noun:anim:f:v_mis">свині</w>
+            <w lemma="свиня" ana="noun:anim:p:v_naz">свині</w>
+            <w lemma="свиня" ana="noun:anim:p:v_zna">свині</w>
+            <w lemma="свиня" ana="noun:anim:p:v_kly">свині</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="пас" ana="intj">пас</w>
+            <w lemma="пас" ana="noun:inanim:m:v_naz">пас</w>
+            <w lemma="пас" ana="noun:inanim:m:v_zna">пас</w>
+            <w lemma="пасти" ana="verb:imperf:past:m:xp1">пас</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">Та</w>
+            <w lemma="та" ana="part">Та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">Та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дружній" ana="adj:f:v_zna:compb">дружню</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="жінка" ana="noun:anim:f:v_zna">жінку</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="взяти" ana="verb:perf:past:m">взяв</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="до" ana="noun:inanim:n:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_kly:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_kly:nv">до</w>
+            <w lemma="до" ana="prep:rv_rod">до</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="себе" ana="noun:v_rod:&amp;pron:refl">себе</w>
+            <w lemma="себе" ana="noun:v_zna:&amp;pron:refl">себе</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="другий" ana="adj:f:v_naz">друга</w>
+            <w lemma="другий" ana="adj:f:v_kly">друга</w>
+            <w lemma="другий" ana="adj:f:v_naz:&amp;numr">друга</w>
+            <w lemma="другий" ana="adj:f:v_kly:&amp;numr">друга</w>
+            <w lemma="друг" ana="noun:anim:m:v_rod">друга</w>
+            <w lemma="друг" ana="noun:anim:m:v_zna">друга</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вбити" ana="verb:perf:past:m:v-u">вбив</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="тепер" ana="adv:&amp;pron:dem">Тепер</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="небо" ana="noun:inanim:n:v_mis:np">небі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="от" ana="part">От</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="бачити" ana="verb:imperf:pres:p:2">бачите</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="який" ana="adj:p:v_naz:&amp;pron:ind">які</w>
+            <w lemma="який" ana="adj:p:v_zna:rinanim:&amp;pron:ind">які</w>
+            <w lemma="який" ana="adj:p:v_naz:&amp;pron:int">які</w>
+            <w lemma="який" ana="adj:p:v_zna:rinanim:&amp;pron:int">які</w>
+            <w lemma="який" ana="adj:p:v_naz:&amp;pron:rel">які</w>
+            <w lemma="який" ana="adj:p:v_zna:rinanim:&amp;pron:rel">які</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="у" ana="intj">у</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">у</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">у</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">у</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="сидіти" ana="verb:imperf:pres:p:3">Сидять</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="небо" ana="noun:inanim:n:v_mis:np">небі</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_naz:&amp;pron:pers:2">Ви</w>
+            <w lemma="ви" ana="noun:anim:p:v_kly:&amp;pron:pers:2">Ви</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ще" ana="part">ще</w>
+            <w lemma="ще" ana="adv">ще</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="темний" ana="adj:p:v_naz:compb">темні</w>
+            <w lemma="темний" ana="adj:p:v_zna:rinanim:compb">темні</w>
+            <w lemma="темний" ana="adj:p:v_kly:compb">темні</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="святити" ana="verb:imperf:pres:p:1">Святим</w>
+            <w lemma="святий" ana="adj:m:v_oru:compb">Святим</w>
+            <w lemma="святий" ana="adj:n:v_oru:compb">Святим</w>
+            <w lemma="святий" ana="adj:p:v_dav:compb">Святим</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="хрест" ana="noun:inanim:m:v_oru">хрестом</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="просвіщенний" ana="adj:p:v_naz:rare">просвіщенні</w>
+            <w lemma="просвіщенний" ana="adj:p:v_zna:rinanim:rare">просвіщенні</w>
+            <w lemma="просвіщенний" ana="adj:p:v_kly:rare">просвіщенні</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="у" ana="intj">У</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">У</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">У</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">У</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="навчитися" ana="verb:rev:perf:impr:p:2">навчіться</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">В</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">В</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">В</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="драти" ana="verb:imperf:impr:s:2">дери</w>
+            <w lemma="дерти" ana="verb:imperf:impr:s:2">дери</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="драти" ana="verb:imperf:impr:s:2">Дери</w>
+            <w lemma="дерти" ana="verb:imperf:impr:s:2">Дери</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">та</w>
+            <w lemma="та" ana="part">та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дати" ana="verb:perf:impr:s:2">дай</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="просто" ana="part">просто</w>
+            <w lemma="простий" ana="adj:compb:beforedash">просто</w>
+            <w lemma="просто" ana="adv:compb">просто</w>
+            <w lemma="просто" ana="prep:rv_rod">просто</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="рай" ana="noun:inanim:m:v_naz">Рай</w>
+            <w lemma="рай" ana="noun:inanim:m:v_zna">Рай</w>
+            <w lemma="Рай" ana="noun:inanim:m:v_naz:prop">Рай</w>
+            <w lemma="Рай" ana="noun:inanim:m:v_zna:prop">Рай</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="хоч" ana="part">Хоч</w>
+            <w lemma="хоч" ana="conj:subord">Хоч</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="рідня" ana="noun:inanim:f:v_zna">рідню</w>
+            <w lemma="ріднити" ana="verb:imperf:pres:s:1">рідню</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ввесь" ana="adj:f:v_zna:&amp;pron:gen">всю</w>
+            <w lemma="весь" ana="adj:f:v_zna:&amp;pron:gen">всю</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="забрати" ana="verb:perf:impr:s:2">забери</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="у" ana="intj">У</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">У</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">У</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">У</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:w_>
+            <w lemma="що" ana="noun:inanim:n:v_rod:&amp;pron:int">чого</w>
+            <w lemma="що" ana="noun:inanim:n:v_rod:&amp;pron:rel">чого</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="то" ana="part">то</w>
+            <w lemma="то" ana="conj:subord">то</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вміти" ana="verb:imperf:pres:p:1:v-u">вмієм</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>?</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="зір" ana="noun:inanim:m:v_mis">зорі</w>
+            <w lemma="зоря" ana="noun:inanim:f:v_rod">зорі</w>
+            <w lemma="зоря" ana="noun:inanim:f:v_dav">зорі</w>
+            <w lemma="зоря" ana="noun:inanim:f:v_mis">зорі</w>
+            <w lemma="зоря" ana="noun:inanim:p:v_naz">зорі</w>
+            <w lemma="зоря" ana="noun:inanim:p:v_zna">зорі</w>
+            <w lemma="зоря" ana="noun:inanim:p:v_kly">зорі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="лічити" ana="verb:imperf:pres:p:1">лічим</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="гречка" ana="noun:inanim:f:v_zna">гречку</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сіяти" ana="verb:imperf:pres:p:1">сієм</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="француз" ana="noun:anim:p:v_rod">Французів</w>
+            <w lemma="француз" ana="noun:anim:p:v_zna">Французів</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="лаяти" ana="verb:imperf:pres:p:1">лаєм</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="продавати" ana="verb:imperf:pres:p:1">Продаєм</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="або" ana="conj:coord">Або</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="у" ana="intj">у</w>
+            <w lemma="у" ana="prep:rv_zna:v-u">у</w>
+            <w lemma="у" ana="prep:rv_mis:v-u">у</w>
+            <w lemma="у" ana="prep:rv_rod:v-u">у</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="карта" ana="noun:inanim:f:v_rod">карти</w>
+            <w lemma="карта" ana="noun:inanim:p:v_naz">карти</w>
+            <w lemma="карта" ana="noun:inanim:p:v_zna">карти</w>
+            <w lemma="карта" ana="noun:inanim:p:v_kly">карти</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="програти" ana="verb:perf:futr:p:1">програєм</w>
+            <w lemma="програвати" ana="verb:imperf:pres:p:1">програєм</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="люде" ana="noun:anim:p:v_rod:ns">Людей</w>
+            <w lemma="люде" ana="noun:anim:p:v_zna:ns">Людей</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>…</pc>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="негр" ana="noun:anim:p:v_rod">негрів</w>
+            <w lemma="негр" ana="noun:anim:p:v_zna">негрів</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>…</pc>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">а</w>
+            <w lemma="а" ana="intj">а</w>
+            <w lemma="а" ana="part">а</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="такий" ana="adj:p:v_rod:&amp;pron:dem">таких</w>
+            <w lemma="такий" ana="adj:p:v_zna:ranim:&amp;pron:dem">таких</w>
+            <w lemma="такий" ana="adj:p:v_mis:&amp;pron:dem">таких</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="таки" ana="part">Таки</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="хрещений" ana="adj:p:v_rod">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_zna:ranim">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_mis">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_rod:&amp;adjp:imperf:pasv">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_rod:&amp;adjp:perf:pasv">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_zna:ranim:&amp;adjp:imperf:pasv">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_zna:ranim:&amp;adjp:perf:pasv">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_mis:&amp;adjp:imperf:pasv">хрещених</w>
+            <w lemma="хрещений" ana="adj:p:v_mis:&amp;adjp:perf:pasv">хрещених</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>…</pc>
+          <mi:w_>
+            <w lemma="но" ana="intj">но</w>
+            <w lemma="но" ana="part">но</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="простий" ana="adj:p:v_rod:compb">простих</w>
+            <w lemma="простий" ana="adj:p:v_zna:ranim:compb">простих</w>
+            <w lemma="простий" ana="adj:p:v_mis:compb">простих</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">Ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="гішпан" ana="noun:anim:p:v_naz">гішпани</w>
+            <w lemma="гішпан" ana="noun:anim:p:v_kly">гішпани</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>;</pc>
+          <mi:w_>
+            <w lemma="крити" ana="verb:imperf:impr:s:2">крий</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="боже" ana="intj">Боже</w>
+            <w lemma="божий" ana="adj:n:v_naz">Боже</w>
+            <w lemma="божий" ana="adj:n:v_zna">Боже</w>
+            <w lemma="божий" ana="adj:n:v_kly">Боже</w>
+            <w lemma="бог" ana="noun:anim:m:v_kly">Боже</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="щоб" ana="part">Щоб</w>
+            <w lemma="щоб" ana="conj:subord">Щоб</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="крадений" ana="adj:n:v_naz">крадене</w>
+            <w lemma="крадений" ana="adj:n:v_zna">крадене</w>
+            <w lemma="крадений" ana="adj:n:v_kly">крадене</w>
+            <w lemma="крадений" ana="adj:n:v_naz:&amp;adjp:imperf:pasv">крадене</w>
+            <w lemma="крадений" ana="adj:n:v_zna:&amp;adjp:imperf:pasv">крадене</w>
+            <w lemma="крадений" ana="adj:n:v_kly:&amp;adjp:imperf:pasv">крадене</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="перекупати" ana="verb:imperf:inf:coll:xp1">перекупать</w>
+            <w lemma="перекупати" ana="verb:perf:inf:coll:xp2">перекупать</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="як" ana="part">Як</w>
+            <w lemma="як" ana="conj:subord">Як</w>
+            <w lemma="як" ana="noun:anim:m:v_naz">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:int">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:rel">Як</w>
+            <w lemma="Як" ana="noun:anim:m:v_naz:prop:lname">Як</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="той" ana="adj:p:v_naz:&amp;pron:dem">ті</w>
+            <w lemma="той" ana="adj:p:v_zna:rinanim:&amp;pron:dem">ті</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="жид" ana="noun:anim:p:v_naz">жиди</w>
+            <w lemma="жид" ana="noun:anim:p:v_kly">жиди</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">Ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="по" ana="prep:rv_zna">по</w>
+            <w lemma="по" ana="prep:rv_mis">по</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="закон" ana="noun:inanim:m:v_rod">закону</w>
+            <w lemma="закон" ana="noun:inanim:m:v_dav">закону</w>
+            <w lemma="закон" ana="noun:inanim:m:v_mis">закону</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="по" ana="prep:rv_zna">По</w>
+            <w lemma="по" ana="prep:rv_mis">По</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="закон" ana="noun:inanim:m:v_rod">закону</w>
+            <w lemma="закон" ana="noun:inanim:m:v_dav">закону</w>
+            <w lemma="закон" ana="noun:inanim:m:v_mis">закону</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="апостол" ana="noun:anim:m:v_rod">апостола</w>
+            <w lemma="апостол" ana="noun:anim:m:v_zna">апостола</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_naz:&amp;pron:pers:2">Ви</w>
+            <w lemma="ви" ana="noun:anim:p:v_kly:&amp;pron:pers:2">Ви</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="любити" ana="verb:imperf:pres:p:2">любите</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="брат" ana="noun:anim:m:v_rod">брата</w>
+            <w lemma="брат" ana="noun:anim:m:v_zna">брата</w>
+            <w lemma="братати" ana="verb:imperf:pres:s:3:odd">брата</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="суєслов" ana="noun:anim:p:v_naz:odd">Суєслови</w>
+            <w lemma="суєслов" ana="noun:anim:p:v_kly:odd">Суєслови</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="лицемір" ana="noun:anim:p:v_naz">лицеміри</w>
+            <w lemma="лицемір" ana="noun:anim:p:v_kly">лицеміри</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="Господь" ana="noun:anim:m:v_oru:prop">Господом</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="проклятий" ana="adj:p:v_naz">прокляті</w>
+            <w lemma="проклятий" ana="adj:p:v_zna:rinanim">прокляті</w>
+            <w lemma="проклятий" ana="adj:p:v_kly">прокляті</w>
+            <w lemma="проклятий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">прокляті</w>
+            <w lemma="проклятий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">прокляті</w>
+            <w lemma="проклятий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">прокляті</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ви" ana="noun:anim:p:v_naz:&amp;pron:pers:2">Ви</w>
+            <w lemma="ви" ana="noun:anim:p:v_kly:&amp;pron:pers:2">Ви</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="любити" ana="verb:imperf:pres:p:2">любите</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="братів" ana="adj:p:v_naz">братові</w>
+            <w lemma="братів" ana="adj:p:v_zna:rinanim">братові</w>
+            <w lemma="братів" ana="adj:p:v_kly">братові</w>
+            <w lemma="брат" ana="noun:anim:m:v_dav">братові</w>
+            <w lemma="брат" ana="noun:anim:m:v_mis">братові</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="шкура" ana="noun:inanim:f:v_zna">Шкуру</w>
+            <w lemma="Шкуро" ana="noun:anim:m:v_dav:prop:lname">Шкуру</w>
+            <w lemma="Шкуро" ana="noun:anim:m:v_mis:prop:lname">Шкуру</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">а</w>
+            <w lemma="а" ana="intj">а</w>
+            <w lemma="а" ana="part">а</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="душа" ana="noun:inanim:f:v_zna">душу</w>
+            <w lemma="душ" ana="noun:inanim:m:v_rod">душу</w>
+            <w lemma="душ" ana="noun:inanim:m:v_dav">душу</w>
+            <w lemma="душ" ana="noun:inanim:m:v_mis">душу</w>
+            <w lemma="душ" ana="noun:inanim:m:v_kly">душу</w>
+            <w lemma="душити" ana="verb:imperf:pres:s:1">душу</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">Та</w>
+            <w lemma="та" ana="part">Та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">Та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">й</w>
+            <w lemma="й" ana="part">й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="лупити" ana="verb:imperf:pres:p:2">лупите</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="по" ana="prep:rv_zna">по</w>
+            <w lemma="по" ana="prep:rv_mis">по</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="закон" ana="noun:inanim:m:v_rod">закону</w>
+            <w lemma="закон" ana="noun:inanim:m:v_dav">закону</w>
+            <w lemma="закон" ana="noun:inanim:m:v_mis">закону</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="дочка" ana="noun:anim:f:v_dav">Дочці</w>
+            <w lemma="дочка" ana="noun:anim:f:v_mis">Дочці</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кожушок" ana="noun:inanim:m:v_naz">кожушок</w>
+            <w lemma="кожушок" ana="noun:inanim:m:v_zna">кожушок</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="байстрюк" ana="noun:anim:m:v_dav">Байстрюкові</w>
+            <w lemma="байстрюк" ana="noun:anim:m:v_mis">Байстрюкові</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="приданий" ana="adj:n:v_naz">придане</w>
+            <w lemma="приданий" ana="adj:n:v_zna">придане</w>
+            <w lemma="приданий" ana="adj:n:v_kly">придане</w>
+            <w lemma="приданий" ana="adj:n:v_naz:&amp;adjp:perf:pasv">придане</w>
+            <w lemma="приданий" ana="adj:n:v_zna:&amp;adjp:perf:pasv">придане</w>
+            <w lemma="приданий" ana="adj:n:v_kly:&amp;adjp:perf:pasv">придане</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="жінка" ana="noun:anim:f:v_dav">Жінці</w>
+            <w lemma="жінка" ana="noun:anim:f:v_mis">Жінці</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="патинок" ana="noun:inanim:p:v_naz">патинки</w>
+            <w lemma="патинок" ana="noun:inanim:p:v_zna">патинки</w>
+            <w lemma="патинок" ana="noun:inanim:p:v_kly">патинки</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="себе" ana="noun:v_dav:&amp;pron:refl">Собі</w>
+            <w lemma="себе" ana="noun:v_mis:&amp;pron:refl">Собі</w>
+            <w lemma="Соб" ana="noun:inanim:m:v_mis:prop">Собі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ж" ana="conj:coord">ж</w>
+            <w lemma="ж" ana="part">ж</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="на" ana="intj">на</w>
+            <w lemma="на" ana="part">на</w>
+            <w lemma="на" ana="prep:rv_zna">на</w>
+            <w lemma="на" ana="prep:rv_mis">на</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="той" ana="adj:n:v_naz:&amp;pron:dem">те</w>
+            <w lemma="той" ana="adj:n:v_zna:&amp;pron:dem">те</w>
+            <w lemma="те" ana="noun:inanim:n:v_naz:&amp;pron:dem">те</w>
+            <w lemma="те" ana="noun:inanim:n:v_zna:&amp;pron:dem">те</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="що" ana="conj:subord">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:int">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:int">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:rel">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:rel">що</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="знати" ana="verb:imperf:pres:p:3">знають</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ні" ana="part">Ні</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="діти" ana="verb:perf:inf">діти</w>
+            <w lemma="діти" ana="noun:anim:p:v_naz:ns">діти</w>
+            <w lemma="діти" ana="noun:anim:p:v_kly:ns">діти</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="ні" ana="part">ні</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="жінка" ana="noun:anim:f:v_naz">жінка</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="за" ana="adv">За</w>
+            <w lemma="за" ana="prep:rv_rod">За</w>
+            <w lemma="за" ana="prep:rv_zna">За</w>
+            <w lemma="за" ana="prep:rv_oru">За</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="хто" ana="noun:anim:m:v_rod:&amp;pron:int">кого</w>
+            <w lemma="хто" ana="noun:anim:m:v_zna:&amp;pron:int">кого</w>
+            <w lemma="хто" ana="noun:anim:m:v_rod:&amp;pron:rel">кого</w>
+            <w lemma="хто" ana="noun:anim:m:v_zna:&amp;pron:rel">кого</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ж" ana="conj:coord">ж</w>
+            <w lemma="ж" ana="part">ж</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_naz:&amp;pron:pers:2">Ти</w>
+            <w lemma="ти" ana="noun:anim:s:v_kly:&amp;pron:pers:2">Ти</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="розіп’ястися" ana="verb:rev:perf:past:m">розіп’явся</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="Христя" ana="noun:anim:f:v_kly:prop:fname:xp1">Христе</w>
+            <w lemma="Христя" ana="noun:inanim:f:v_kly:prop:xp2">Христе</w>
+            <w lemma="Христос" ana="noun:anim:m:v_kly:prop:fname">Христе</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="синь" ana="noun:inanim:f:v_kly">Сине</w>
+            <w lemma="синити" ana="verb:imperf:pres:s:3:odd">Сине</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="божий" ana="adj:m:v_naz">Божий</w>
+            <w lemma="божий" ana="adj:m:v_zna:rinanim">Божий</w>
+            <w lemma="божий" ana="adj:m:v_kly">Божий</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>?</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="за" ana="adv">За</w>
+            <w lemma="за" ana="prep:rv_rod">За</w>
+            <w lemma="за" ana="prep:rv_zna">За</w>
+            <w lemma="за" ana="prep:rv_oru">За</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_rod:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_zna:&amp;pron:pers:1">нас</w>
+            <w lemma="ми" ana="noun:anim:p:v_mis:&amp;pron:pers:1">нас</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="добрий" ana="adj:p:v_rod:compb">добрих</w>
+            <w lemma="добрий" ana="adj:p:v_zna:ranim:compb">добрих</w>
+            <w lemma="добрий" ana="adj:p:v_mis:compb">добрих</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="чи" ana="conj:coord">чи</w>
+            <w lemma="чи" ana="part">чи</w>
+            <w lemma="чи" ana="conj:subord">чи</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="слово" ana="noun:inanim:n:v_naz">слово</w>
+            <w lemma="слово" ana="noun:inanim:n:v_zna">слово</w>
+            <w lemma="слово" ana="noun:inanim:n:v_kly">слово</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="істина" ana="noun:inanim:f:v_rod">Істини</w>
+            <w lemma="істина" ana="noun:inanim:p:v_naz">Істини</w>
+            <w lemma="істина" ana="noun:inanim:p:v_zna">Істини</w>
+            <w lemma="істина" ana="noun:inanim:p:v_kly">Істини</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>…</pc>
+          <mi:w_>
+            <w lemma="чи" ana="conj:coord">чи</w>
+            <w lemma="чи" ana="part">чи</w>
+            <w lemma="чи" ana="conj:subord">чи</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="може" ana="adv">може</w>
+            <w lemma="могти" ana="verb:imperf:pres:s:3">може</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="щоб" ana="part">Щоб</w>
+            <w lemma="щоб" ana="conj:subord">Щоб</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ми" ana="noun:anim:p:v_naz:&amp;pron:pers:1">ми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_rod:&amp;pron:pers:2">Тебе</w>
+            <w lemma="ти" ana="noun:anim:s:v_zna:&amp;pron:pers:2">Тебе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="насміятися" ana="verb:rev:perf:past:p">насміялись</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>?</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="воно" ana="noun:n:v_naz:&amp;pron:pers:3">Воно</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ж" ana="conj:coord">ж</w>
+            <w lemma="ж" ana="part">ж</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="так" ana="conj:coord">так</w>
+            <w lemma="так" ana="part">так</w>
+            <w lemma="так" ana="conj:subord">так</w>
+            <w lemma="так" ana="adv:&amp;pron:dem">так</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="статися" ana="verb:rev:perf:past:n">сталось</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="храм" ana="noun:inanim:p:v_naz">Храми</w>
+            <w lemma="храм" ana="noun:inanim:p:v_zna">Храми</w>
+            <w lemma="храм" ana="noun:inanim:p:v_kly">Храми</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="каплиця" ana="noun:inanim:f:v_rod">каплиці</w>
+            <w lemma="каплиця" ana="noun:inanim:f:v_dav">каплиці</w>
+            <w lemma="каплиця" ana="noun:inanim:f:v_mis">каплиці</w>
+            <w lemma="каплиця" ana="noun:inanim:p:v_naz">каплиці</w>
+            <w lemma="каплиця" ana="noun:inanim:p:v_zna">каплиці</w>
+            <w lemma="каплиця" ana="noun:inanim:p:v_kly">каплиці</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ікона" ana="noun:inanim:f:v_rod">ікони</w>
+            <w lemma="ікона" ana="noun:inanim:p:v_naz">ікони</w>
+            <w lemma="ікона" ana="noun:inanim:p:v_zna">ікони</w>
+            <w lemma="ікона" ana="noun:inanim:p:v_kly">ікони</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ставник" ana="noun:inanim:p:v_naz">ставники</w>
+            <w lemma="ставник" ana="noun:inanim:p:v_zna">ставники</w>
+            <w lemma="ставник" ana="noun:inanim:p:v_kly">ставники</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="мирра" ana="noun:inanim:f:v_rod">мирри</w>
+            <w lemma="мирра" ana="noun:inanim:p:v_naz">мирри</w>
+            <w lemma="мирра" ana="noun:inanim:p:v_zna">мирри</w>
+            <w lemma="мирра" ana="noun:inanim:p:v_kly">мирри</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дим" ana="noun:inanim:m:v_naz">дим</w>
+            <w lemma="дим" ana="noun:inanim:m:v_zna">дим</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="перед" ana="noun:inanim:m:v_naz">перед</w>
+            <w lemma="перед" ana="noun:inanim:m:v_zna">перед</w>
+            <w lemma="перед" ana="prep:rv_zna">перед</w>
+            <w lemma="перед" ana="prep:rv_oru">перед</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="образ" ana="noun:inanim:m:v_oru:xp1">образом</w>
+            <w lemma="образ" ana="noun:inanim:m:v_oru:xp2">образом</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="твій" ana="adj:m:v_oru:pos:&amp;pron:pers:2">Твоїм</w>
+            <w lemma="твій" ana="adj:m:v_mis:pos:&amp;pron:pers:2">Твоїм</w>
+            <w lemma="твій" ana="adj:n:v_oru:pos:&amp;pron:pers:2">Твоїм</w>
+            <w lemma="твій" ana="adj:n:v_mis:pos:&amp;pron:pers:2">Твоїм</w>
+            <w lemma="твій" ana="adj:p:v_dav:pos:&amp;pron:pers:2">Твоїм</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="неутомленний" ana="adj:p:v_naz:odd">Неутомленниє</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="поклін" ana="noun:inanim:p:v_naz">поклони</w>
+            <w lemma="поклін" ana="noun:inanim:p:v_zna">поклони</w>
+            <w lemma="поклін" ana="noun:inanim:p:v_kly">поклони</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="за" ana="adv">За</w>
+            <w lemma="за" ana="prep:rv_rod">За</w>
+            <w lemma="за" ana="prep:rv_zna">За</w>
+            <w lemma="за" ana="prep:rv_oru">За</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кража" ana="noun:inanim:f:v_zna:bad:rare">кражу</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="война" ana="noun:inanim:f:v_zna:odd">войну</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кров" ana="noun:inanim:f:v_naz">кров</w>
+            <w lemma="кров" ana="noun:inanim:f:v_zna">кров</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="щоб" ana="part">Щоб</w>
+            <w lemma="щоб" ana="conj:subord">Щоб</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="братній" ana="adj:f:v_zna">братню</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кров" ana="noun:inanim:f:v_naz">кров</w>
+            <w lemma="кров" ana="noun:inanim:f:v_zna">кров</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="пролити" ana="verb:perf:inf">пролити</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="просити" ana="verb:imperf:pres:p:3">просять</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="потім" ana="adv:&amp;pron:dem">потім</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дар" ana="noun:inanim:m:v_naz">дар</w>
+            <w lemma="дар" ana="noun:inanim:m:v_zna">дар</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_dav:&amp;pron:pers:2">Тобі</w>
+            <w lemma="ти" ana="noun:anim:s:v_mis:&amp;pron:pers:2">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_naz:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_rod:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_dav:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_zna:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_oru:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_mis:nv:np:prop:fname">Тобі</w>
+            <w lemma="Тобі" ana="noun:anim:m:v_kly:nv:np:prop:fname">Тобі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="приносити" ana="verb:imperf:pres:p:3">приносять</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">З</w>
+            <w lemma="з" ana="prep:rv_zna">З</w>
+            <w lemma="з" ana="prep:rv_oru">З</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="пожар" ana="noun:inanim:m:v_rod:odd">пожару</w>
+            <w lemma="пожар" ana="noun:inanim:m:v_dav:odd">пожару</w>
+            <w lemma="пожар" ana="noun:inanim:m:v_mis:odd">пожару</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вкрадений" ana="adj:m:v_naz">вкрадений</w>
+            <w lemma="вкрадений" ana="adj:m:v_zna:rinanim">вкрадений</w>
+            <w lemma="вкрадений" ana="adj:m:v_kly">вкрадений</w>
+            <w lemma="вкрадений" ana="adj:m:v_naz:&amp;adjp:perf:pasv">вкрадений</w>
+            <w lemma="вкрадений" ana="adj:m:v_zna:rinanim:&amp;adjp:perf:pasv">вкрадений</w>
+            <w lemma="вкрадений" ana="adj:m:v_kly:&amp;adjp:perf:pasv">вкрадений</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="покров" ana="noun:inanim:m:v_naz">покров</w>
+            <w lemma="покров" ana="noun:inanim:m:v_zna">покров</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!!</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="просвітитися" ana="verb:rev:perf:past:p">Просвітились</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">та</w>
+            <w lemma="та" ana="part">та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ще" ana="part">ще</w>
+            <w lemma="ще" ana="adv">ще</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="й" ana="conj:coord">й</w>
+            <w lemma="й" ana="part">й</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="хотіти" ana="verb:imperf:pres:p:1">хочем</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="другий" ana="adj:p:v_rod">Других</w>
+            <w lemma="другий" ana="adj:p:v_zna:ranim">Других</w>
+            <w lemma="другий" ana="adj:p:v_mis">Других</w>
+            <w lemma="другий" ana="adj:p:v_rod:&amp;numr">Других</w>
+            <w lemma="другий" ana="adj:p:v_zna:ranim:&amp;numr">Других</w>
+            <w lemma="другий" ana="adj:p:v_mis:&amp;numr">Других</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="просвітити" ana="verb:perf:inf">просвітити</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="сонце" ana="noun:inanim:n:v_naz">Сонце</w>
+            <w lemma="сонце" ana="noun:inanim:n:v_zna">Сонце</w>
+            <w lemma="сонце" ana="noun:inanim:n:v_kly">Сонце</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="правда" ana="noun:inanim:f:v_rod">правди</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="показати" ana="verb:perf:inf">показати</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="сліпий" ana="adj:m:v_oru">Сліпим</w>
+            <w lemma="сліпий" ana="adj:n:v_oru">Сліпим</w>
+            <w lemma="сліпий" ana="adj:p:v_dav">Сліпим</w>
+            <w lemma="сліпити" ana="verb:imperf:pres:p:1">Сліпим</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="бачити" ana="verb:imperf:pres:s:2">бачиш</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="діти" ana="noun:anim:p:v_dav:ns">дітям</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="все" ana="adv:v-u">Все</w>
+            <w lemma="ввесь" ana="adj:n:v_naz:&amp;pron:gen">Все</w>
+            <w lemma="ввесь" ana="adj:n:v_zna:&amp;pron:gen">Все</w>
+            <w lemma="весь" ana="adj:n:v_naz:&amp;pron:gen">Все</w>
+            <w lemma="весь" ana="adj:n:v_zna:&amp;pron:gen">Все</w>
+            <w lemma="все" ana="conj:coord:v-u">Все</w>
+            <w lemma="все" ana="noun:inanim:n:v_naz:&amp;pron:gen:v-u">Все</w>
+            <w lemma="все" ana="noun:inanim:n:v_zna:&amp;pron:gen:v-u">Все</w>
+            <w lemma="все" ana="part:v-u">Все</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="показати" ana="verb:perf:futr:p:1">покажем</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:w_>
+            <w lemma="тілько" ana="adv:odd">тілько</w>
+            <w lemma="тілько" ana="conj:subord:odd">тілько</w>
+            <w lemma="тілько" ana="part:odd">тілько</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дати" ana="verb:perf:impr:p:2">дайте</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="себе" ana="noun:v_rod:&amp;pron:refl">Себе</w>
+            <w lemma="себе" ana="noun:v_zna:&amp;pron:refl">Себе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="рука" ana="noun:inanim:f:v_rod">руки</w>
+            <w lemma="рука" ana="noun:inanim:p:v_naz">руки</w>
+            <w lemma="рука" ana="noun:inanim:p:v_zna">руки</w>
+            <w lemma="рука" ana="noun:inanim:p:v_kly">руки</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="взяти" ana="verb:perf:inf">взяти</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="як" ana="part">Як</w>
+            <w lemma="як" ana="conj:subord">Як</w>
+            <w lemma="як" ana="noun:anim:m:v_naz">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:int">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:rel">Як</w>
+            <w lemma="Як" ana="noun:anim:m:v_naz:prop:lname">Як</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тюрма" ana="noun:inanim:f:v_rod">тюрми</w>
+            <w lemma="тюрма" ana="noun:inanim:p:v_naz">тюрми</w>
+            <w lemma="тюрма" ana="noun:inanim:p:v_zna">тюрми</w>
+            <w lemma="тюрма" ana="noun:inanim:p:v_kly">тюрми</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="муровати" ana="verb:imperf:inf:odd">муровати</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="кайдани" ana="noun:inanim:p:v_naz:ns">Кайдани</w>
+            <w lemma="кайдани" ana="noun:inanim:p:v_zna:ns">Кайдани</w>
+            <w lemma="кайдани" ana="noun:inanim:p:v_kly:ns">Кайдани</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кувати" ana="verb:imperf:inf">кувати</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="як" ana="part">Як</w>
+            <w lemma="як" ana="conj:subord">Як</w>
+            <w lemma="як" ana="noun:anim:m:v_naz">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:int">Як</w>
+            <w lemma="як" ana="adv:&amp;pron:rel">Як</w>
+            <w lemma="Як" ana="noun:anim:m:v_naz:prop:lname">Як</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="носити" ana="verb:imperf:inf:coll">носить</w>
+            <w lemma="носити" ana="verb:imperf:pres:s:3">носить</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="як" ana="part">як</w>
+            <w lemma="як" ana="conj:subord">як</w>
+            <w lemma="як" ana="noun:anim:m:v_naz">як</w>
+            <w lemma="як" ana="adv:&amp;pron:int">як</w>
+            <w lemma="як" ana="adv:&amp;pron:rel">як</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="плести" ana="verb:imperf:inf">плести</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="Кнути" ana="noun:inanim:p:v_naz:ns:prop">Кнути</w>
+            <w lemma="Кнути" ana="noun:inanim:p:v_zna:ns:prop">Кнути</w>
+            <w lemma="Кнути" ana="noun:inanim:p:v_kly:ns:prop">Кнути</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="узловатий" ana="adj:p:v_naz:odd">узловаті</w>
+            <w lemma="узловатий" ana="adj:p:v_zna:rinanim:odd">узловаті</w>
+            <w lemma="узловатий" ana="adj:p:v_kly:odd">узловаті</w>
+          </mi:w_>
+          <pc>—</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ввесь" ana="adj:m:v_dav:&amp;pron:gen">Всьому</w>
+            <w lemma="ввесь" ana="adj:m:v_mis:&amp;pron:gen">Всьому</w>
+            <w lemma="ввесь" ana="adj:n:v_dav:&amp;pron:gen">Всьому</w>
+            <w lemma="ввесь" ana="adj:n:v_mis:&amp;pron:gen">Всьому</w>
+            <w lemma="весь" ana="adj:m:v_dav:&amp;pron:gen">Всьому</w>
+            <w lemma="весь" ana="adj:m:v_mis:&amp;pron:gen">Всьому</w>
+            <w lemma="весь" ana="adj:n:v_dav:&amp;pron:gen">Всьому</w>
+            <w lemma="весь" ana="adj:n:v_mis:&amp;pron:gen">Всьому</w>
+            <w lemma="все" ana="noun:inanim:n:v_dav:&amp;pron:gen:v-u">Всьому</w>
+            <w lemma="все" ana="noun:inanim:n:v_mis:&amp;pron:gen:v-u">Всьому</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="навчити" ana="verb:perf:futr:p:1">навчим</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>;</pc>
+          <mi:w_>
+            <w lemma="тілько" ana="adv:odd">тілько</w>
+            <w lemma="тілько" ana="conj:subord:odd">тілько</w>
+            <w lemma="тілько" ana="part:odd">тілько</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дати" ana="verb:perf:impr:p:2">дайте</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="свій" ana="adj:p:v_naz:pos:&amp;pron:refl">Свої</w>
+            <w lemma="свій" ana="adj:p:v_zna:rinanim:pos:&amp;pron:refl">Свої</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="синій" ana="adj:p:v_naz">сині</w>
+            <w lemma="синій" ana="adj:p:v_zna:rinanim">сині</w>
+            <w lemma="синій" ana="adj:p:v_kly">сині</w>
+            <w lemma="синь" ana="noun:inanim:f:v_rod">сині</w>
+            <w lemma="синь" ana="noun:inanim:f:v_dav">сині</w>
+            <w lemma="синь" ana="noun:inanim:f:v_mis">сині</w>
+            <w lemma="син" ana="noun:anim:m:v_mis">сині</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="горіти" ana="verb:imperf:impr:s:2">гори</w>
+            <w lemma="гора" ana="noun:inanim:f:v_rod">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_naz">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_zna">гори</w>
+            <w lemma="гора" ana="noun:inanim:p:v_kly">гори</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="остатній" ana="adj:p:v_naz:uncontr:rare">Остатнії</w>
+            <w lemma="остатній" ana="adj:p:v_zna:rinanim:uncontr:rare">Остатнії</w>
+            <w lemma="остатній" ana="adj:p:v_kly:uncontr:rare">Остатнії</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>…</pc>
+          <mi:w_>
+            <w lemma="бо" ana="part">бо</w>
+            <w lemma="бо" ana="conj:subord">бо</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вже" ana="adv:v-u">вже</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="взяти" ana="verb:perf:past:p">взяли</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="поле" ana="noun:inanim:n:v_naz">поле</w>
+            <w lemma="поле" ana="noun:inanim:n:v_zna">поле</w>
+            <w lemma="поле" ana="noun:inanim:n:v_kly">поле</w>
+            <w lemma="полоти" ana="verb:imperf:pres:s:3">поле</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">і</w>
+            <w lemma="і" ana="intj">і</w>
+            <w lemma="і" ana="part">і</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="мор" ana="noun:inanim:m:v_kly">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_naz">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_zna">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_kly">море</w>
+            <w lemma="морити" ana="verb:imperf:pres:s:3:odd">море</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_rod:&amp;pron:pers:2">тебе</w>
+            <w lemma="ти" ana="noun:anim:s:v_zna:&amp;pron:pers:2">тебе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="загнати" ana="verb:perf:past:p">загнали</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="мій" ana="adj:m:v_naz:pos:&amp;pron:pers:1">мій</w>
+            <w lemma="мій" ana="adj:m:v_zna:rinanim:pos:&amp;pron:pers:1">мій</w>
+            <w lemma="мій" ana="adj:m:v_kly:pos:&amp;pron:pers:1">мій</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дружити" ana="verb:imperf:pres:s:3:odd">друже</w>
+            <w lemma="друг" ana="noun:anim:m:v_kly">друже</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="єдиний" ana="adj:m:v_naz">єдиний</w>
+            <w lemma="єдиний" ana="adj:m:v_zna:rinanim">єдиний</w>
+            <w lemma="єдиний" ana="adj:m:v_kly">єдиний</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="мій" ana="adj:m:v_naz:pos:&amp;pron:pers:1">Мій</w>
+            <w lemma="мій" ana="adj:m:v_zna:rinanim:pos:&amp;pron:pers:1">Мій</w>
+            <w lemma="мій" ana="adj:m:v_kly:pos:&amp;pron:pers:1">Мій</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="яковий" ana="adj:n:v_naz">Якове</w>
+            <w lemma="яковий" ana="adj:n:v_zna">Якове</w>
+            <w lemma="яковий" ana="adj:n:v_kly">Якове</w>
+            <w lemma="Яків" ana="noun:anim:m:v_kly:prop:fname">Якове</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="добрий" ana="adj:m:v_naz:compb">добрий</w>
+            <w lemma="добрий" ana="adj:m:v_zna:rinanim:compb">добрий</w>
+            <w lemma="добрий" ana="adj:m:v_kly:compb">добрий</w>
+            <w lemma="добрити" ana="verb:imperf:impr:s:2:xp1">добрий</w>
+            <w lemma="добрити" ana="verb:perf:impr:s:2:xp2">добрий</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="не" ana="part">Не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="Україна" ana="noun:inanim:f:v_zna:prop">Україну</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="за" ana="adv">за</w>
+            <w lemma="за" ana="prep:rv_rod">за</w>
+            <w lemma="за" ana="prep:rv_zna">за</w>
+            <w lemma="за" ana="prep:rv_oru">за</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вона" ana="noun:f:v_rod:&amp;pron:pers:3">її</w>
+            <w lemma="вона" ana="noun:f:v_zna:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:m:v_naz:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:m:v_rod:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:m:v_dav:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:m:v_zna:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:m:v_oru:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:m:v_mis:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:f:v_naz:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:f:v_rod:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:f:v_dav:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:f:v_zna:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:f:v_oru:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:f:v_mis:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:n:v_naz:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:n:v_rod:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:n:v_dav:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:n:v_zna:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:n:v_oru:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:n:v_mis:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:p:v_naz:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:p:v_rod:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:p:v_dav:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:p:v_zna:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:p:v_oru:pos:nv:&amp;pron:pers:3">її</w>
+            <w lemma="її" ana="adj:p:v_mis:pos:nv:&amp;pron:pers:3">її</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="кат" ana="noun:anim:m:v_rod">ката</w>
+            <w lemma="кат" ana="noun:anim:m:v_zna">ката</w>
+            <w lemma="катати" ana="verb:imperf:pres:s:3:odd">ката</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="довестися" ana="verb:rev:perf:past:n">довелось</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="пролиття" ana="noun:inanim:p:v_rod">пролить</w>
+            <w lemma="пролити" ana="verb:perf:inf:coll">пролить</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="кров" ana="noun:inanim:f:v_naz">Кров</w>
+            <w lemma="кров" ana="noun:inanim:f:v_zna">Кров</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="добрий" ana="adj:f:v_zna:compb">добру</w>
+            <w lemma="добро" ana="noun:inanim:n:v_dav">добру</w>
+            <w lemma="добро" ana="noun:inanim:n:v_mis">добру</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="не" ana="part">не</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="чорний" ana="adj:f:v_zna:compb">чорну</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+          <mi:w_>
+            <w lemma="довестися" ana="verb:rev:perf:past:n">Довелось</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="запити" ana="verb:perf:inf:coll">запить</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">З</w>
+            <w lemma="з" ana="prep:rv_zna">З</w>
+            <w lemma="з" ana="prep:rv_oru">З</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="московський" ana="adj:f:v_rod">московської</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="чаша" ana="noun:inanim:f:v_rod">чаші</w>
+            <w lemma="чаша" ana="noun:inanim:f:v_dav">чаші</w>
+            <w lemma="чаша" ana="noun:inanim:f:v_mis">чаші</w>
+            <w lemma="чаша" ana="noun:inanim:p:v_naz">чаші</w>
+            <w lemma="чаша" ana="noun:inanim:p:v_zna">чаші</w>
+            <w lemma="чаша" ana="noun:inanim:p:v_kly">чаші</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="московський" ana="adj:f:v_zna">московську</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="отрута" ana="noun:inanim:f:v_zna">отруту</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="о" ana="intj">О</w>
+            <w lemma="о" ana="prep:rv_zna">О</w>
+            <w lemma="о" ana="prep:rv_mis">О</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дружити" ana="verb:imperf:pres:s:3:odd">друже</w>
+            <w lemma="друг" ana="noun:anim:m:v_kly">друже</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="мій" ana="adj:m:v_naz:pos:&amp;pron:pers:1">мій</w>
+            <w lemma="мій" ana="adj:m:v_zna:rinanim:pos:&amp;pron:pers:1">мій</w>
+            <w lemma="мій" ana="adj:m:v_kly:pos:&amp;pron:pers:1">мій</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="добрий" ana="adj:m:v_naz:compb">добрий</w>
+            <w lemma="добрий" ana="adj:m:v_zna:rinanim:compb">добрий</w>
+            <w lemma="добрий" ana="adj:m:v_kly:compb">добрий</w>
+            <w lemma="добрити" ana="verb:imperf:impr:s:2:xp1">добрий</w>
+            <w lemma="добрити" ana="verb:perf:impr:s:2:xp2">добрий</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <mi:w_>
+            <w lemma="дружити" ana="verb:imperf:pres:s:3:odd">друже</w>
+            <w lemma="друг" ana="noun:anim:m:v_kly">друже</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="незабутий" ana="adj:m:v_naz">незабутий</w>
+            <w lemma="незабутий" ana="adj:m:v_zna:rinanim">незабутий</w>
+            <w lemma="незабутий" ana="adj:m:v_kly">незабутий</w>
+            <w lemma="незабутий" ana="adj:m:v_naz:&amp;adjp:perf:pasv">незабутий</w>
+            <w lemma="незабутий" ana="adj:m:v_zna:rinanim:&amp;adjp:perf:pasv">незабутий</w>
+            <w lemma="незабутий" ana="adj:m:v_kly:&amp;adjp:perf:pasv">незабутий</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!</pc>
+          <!--todo: ss?-->
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="живий" ana="adj:f:v_oru:compb">Живою</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="душа" ana="noun:inanim:f:v_oru">душею</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="Украйна" ana="noun:inanim:f:v_dav:prop">Украйні</w>
+            <w lemma="Украйна" ana="noun:inanim:f:v_mis:prop">Украйні</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="витати" ana="verb:imperf:impr:s:2">витай</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="літати" ana="verb:imperf:impr:s:2">Літай</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="козак" ana="noun:anim:p:v_oru">козаками</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="понад" ana="prep:rv_zna">понад</w>
+            <w lemma="понад" ana="prep:rv_oru">понад</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="берег" ana="noun:inanim:p:v_oru">берегами</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="розкритий" ana="adj:p:v_naz">Розкриті</w>
+            <w lemma="розкритий" ana="adj:p:v_zna:rinanim">Розкриті</w>
+            <w lemma="розкритий" ana="adj:p:v_kly">Розкриті</w>
+            <w lemma="розкритий" ana="adj:p:v_naz:&amp;adjp:perf:pasv">Розкриті</w>
+            <w lemma="розкритий" ana="adj:p:v_zna:rinanim:&amp;adjp:perf:pasv">Розкриті</w>
+            <w lemma="розкритий" ana="adj:p:v_kly:&amp;adjp:perf:pasv">Розкриті</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="могила" ana="noun:inanim:f:v_rod">могили</w>
+            <w lemma="могила" ana="noun:inanim:p:v_naz">могили</w>
+            <w lemma="могила" ana="noun:inanim:p:v_zna">могили</w>
+            <w lemma="могила" ana="noun:inanim:p:v_kly">могили</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="степ" ana="noun:inanim:m:v_rod">степу</w>
+            <w lemma="степ" ana="noun:inanim:m:v_dav">степу</w>
+            <w lemma="степ" ana="noun:inanim:m:v_mis">степу</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="назирати" ana="verb:imperf:impr:s:2">назирай</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="заплакати" ana="verb:perf:impr:s:2">Заплач</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="козак" ana="noun:anim:p:v_oru">козаками</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дрібний" ana="adj:p:v_oru:compb">дрібними</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сльоза" ana="noun:inanim:p:v_oru">сльозами</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="я" ana="noun:anim:s:v_rod:&amp;pron:pers:1">мене</w>
+            <w lemma="я" ana="noun:anim:s:v_zna:&amp;pron:pers:1">мене</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="неволя" ana="noun:inanim:f:v_rod">неволі</w>
+            <w lemma="неволя" ana="noun:inanim:f:v_dav">неволі</w>
+            <w lemma="неволя" ana="noun:inanim:f:v_mis">неволі</w>
+            <w lemma="неволя" ana="noun:inanim:p:v_naz">неволі</w>
+            <w lemma="неволя" ana="noun:inanim:p:v_zna">неволі</w>
+            <w lemma="неволя" ana="noun:inanim:p:v_kly">неволі</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="в" ana="prep:rv_zna:v-u">в</w>
+            <w lemma="в" ana="prep:rv_mis:v-u">в</w>
+            <w lemma="в" ana="prep:rv_rod:v-u">в</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="степ" ana="noun:inanim:m:v_rod">степу</w>
+            <w lemma="степ" ana="noun:inanim:m:v_dav">степу</w>
+            <w lemma="степ" ana="noun:inanim:m:v_mis">степу</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="виглядати" ana="verb:imperf:impr:s:2">виглядай</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+      </lg>
+      <lg type="stanza">
+        <l>
+          <mi:w_>
+            <w lemma="а" ana="conj:coord">А</w>
+            <w lemma="а" ana="intj">А</w>
+            <w lemma="а" ana="part">А</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="поки" ana="conj:subord">поки</w>
+            <w lemma="поки" ana="adv:&amp;pron:int">поки</w>
+            <w lemma="поки" ana="adv:&amp;pron:rel">поки</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="що" ana="conj:subord">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:int">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:int">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_naz:&amp;pron:rel">що</w>
+            <w lemma="що" ana="noun:inanim:n:v_zna:&amp;pron:rel">що</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="мій" ana="adj:p:v_naz:pos:&amp;pron:pers:1">мої</w>
+            <w lemma="мій" ana="adj:p:v_zna:rinanim:pos:&amp;pron:pers:1">мої</w>
+            <w lemma="мій" ana="adj:p:v_kly:pos:&amp;pron:pers:1">мої</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дума" ana="noun:inanim:f:v_rod">думи</w>
+            <w lemma="дума" ana="noun:inanim:p:v_naz">думи</w>
+            <w lemma="дума" ana="noun:inanim:p:v_zna">думи</w>
+            <w lemma="дума" ana="noun:inanim:p:v_kly">думи</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="мій" ana="adj:n:v_naz:pos:&amp;pron:pers:1">Моє</w>
+            <w lemma="мій" ana="adj:n:v_zna:pos:&amp;pron:pers:1">Моє</w>
+            <w lemma="мій" ana="adj:n:v_kly:pos:&amp;pron:pers:1">Моє</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="лют" ana="noun:inanim:m:v_kly">люте</w>
+            <w lemma="лютий" ana="adj:n:v_naz:compb">люте</w>
+            <w lemma="лютий" ana="adj:n:v_zna:compb">люте</w>
+            <w lemma="лютий" ana="adj:n:v_kly:compb">люте</w>
+            <w lemma="лютити" ana="verb:imperf:pres:s:3:odd">люте</w>
+            <w lemma="лють" ana="noun:inanim:f:v_kly">люте</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="горе" ana="noun:inanim:n:v_naz">горе</w>
+            <w lemma="горе" ana="noun:inanim:n:v_zna">горе</w>
+            <w lemma="горе" ana="noun:inanim:n:v_kly">горе</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="сіяти" ana="verb:imperf:futr:s:1">Сіятиму</w>
+          </mi:w_>
+          <pc>—</pc>
+          <mi:w_>
+            <w lemma="нехай" ana="part">нехай</w>
+            <w lemma="нехай" ana="conj:subord">нехай</w>
+            <w lemma="нехаяти" ana="verb:imperf:impr:s:2">нехай</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="рости" ana="verb:imperf:pres:p:3">ростуть</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="та" ana="conj:coord">Та</w>
+            <w lemma="та" ana="part">Та</w>
+            <w lemma="той" ana="adj:f:v_naz:&amp;pron:dem">Та</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вітер" ana="noun:inanim:m:v_oru">вітром</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="говорити" ana="verb:imperf:pres:p:3">говорять</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="вітер" ana="noun:inanim:m:v_naz">Вітер</w>
+            <w lemma="вітер" ana="noun:inanim:m:v_zna">Вітер</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="тихий" ana="adj:m:v_naz:compb">тихий</w>
+            <w lemma="тихий" ana="adj:m:v_zna:rinanim:compb">тихий</w>
+            <w lemma="тихий" ana="adj:m:v_kly:compb">тихий</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="Україна" ana="noun:inanim:f:v_rod:prop">України</w>
+            <w lemma="Україна" ana="noun:inanim:p:v_naz:prop">України</w>
+            <w lemma="Україна" ana="noun:inanim:p:v_zna:prop">України</w>
+            <w lemma="Україна" ana="noun:inanim:p:v_kly:prop">України</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="понести" ana="verb:perf:futr:s:3">Понесе</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="з" ana="prep:rv_rod">з</w>
+            <w lemma="з" ana="prep:rv_zna">з</w>
+            <w lemma="з" ana="prep:rv_oru">з</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="роса" ana="noun:inanim:f:v_oru">росою</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="мій" ana="adj:p:v_naz:pos:&amp;pron:pers:1">Мої</w>
+            <w lemma="мій" ana="adj:p:v_zna:rinanim:pos:&amp;pron:pers:1">Мої</w>
+            <w lemma="мій" ana="adj:p:v_kly:pos:&amp;pron:pers:1">Мої</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="дума" ana="noun:inanim:f:v_rod">думи</w>
+            <w lemma="дума" ana="noun:inanim:p:v_naz">думи</w>
+            <w lemma="дума" ana="noun:inanim:p:v_zna">думи</w>
+            <w lemma="дума" ana="noun:inanim:p:v_kly">думи</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="аж" ana="part">аж</w>
+            <w lemma="аж" ana="conj:subord">аж</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="до" ana="noun:inanim:n:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:n:v_kly:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_naz:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_rod:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_dav:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_zna:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_oru:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_mis:nv">до</w>
+            <w lemma="до" ana="noun:inanim:p:v_kly:nv">до</w>
+            <w lemma="до" ana="prep:rv_rod">до</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_rod:&amp;pron:pers:2">тебе</w>
+            <w lemma="ти" ana="noun:anim:s:v_zna:&amp;pron:pers:2">тебе</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>!..</pc>
+          <mi:se/>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="братній" ana="adj:f:v_oru">Братньою</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="сльоза" ana="noun:inanim:f:v_oru">сльозою</w>
+          </mi:w_>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="ти" ana="noun:anim:s:v_naz:&amp;pron:pers:2">Ти</w>
+            <w lemma="ти" ana="noun:anim:s:v_kly:&amp;pron:pers:2">Ти</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="вони" ana="noun:p:v_rod:&amp;pron:pers:3">їх</w>
+            <w lemma="вони" ana="noun:p:v_zna:&amp;pron:pers:3">їх</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="дружити" ana="verb:imperf:pres:s:3:odd">друже</w>
+            <w lemma="друг" ana="noun:anim:m:v_kly">друже</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="привітати" ana="verb:perf:futr:s:2">привітаєш</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="тихий" ana="adj:compb:beforedash">Тихо</w>
+            <w lemma="тихо" ana="adv:compb">Тихо</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="прочитати" ana="verb:perf:futr:s:2">прочитаєш</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>…</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="могила" ana="noun:inanim:f:v_rod">могили</w>
+            <w lemma="могила" ana="noun:inanim:p:v_naz">могили</w>
+            <w lemma="могила" ana="noun:inanim:p:v_zna">могили</w>
+            <w lemma="могила" ana="noun:inanim:p:v_kly">могили</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="степ" ana="noun:inanim:p:v_naz">степи</w>
+            <w lemma="степ" ana="noun:inanim:p:v_zna">степи</w>
+            <w lemma="степ" ana="noun:inanim:p:v_kly">степи</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+          <mi:w_>
+            <w lemma="мор" ana="noun:inanim:m:v_kly">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_naz">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_zna">море</w>
+            <w lemma="море" ana="noun:inanim:n:v_kly">море</w>
+            <w lemma="морити" ana="verb:imperf:pres:s:3:odd">море</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>,</pc>
+        </l>
+        <l>
+          <mi:w_>
+            <w lemma="і" ana="conj:coord">І</w>
+            <w lemma="і" ana="intj">І</w>
+            <w lemma="і" ana="part">І</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="я" ana="noun:anim:s:v_rod:&amp;pron:pers:1">мене</w>
+            <w lemma="я" ana="noun:anim:s:v_zna:&amp;pron:pers:1">мене</w>
+          </mi:w_>
+          <mi:w_>
+            <w lemma="згадати" ana="verb:perf:futr:s:2">згадаєш</w>
+          </mi:w_>
+          <mi:g/>
+          <pc>.</pc>
+          <mi:se/>
+        </l>
+      </lg>
+    </body>
+  </text>
+</TEI>
