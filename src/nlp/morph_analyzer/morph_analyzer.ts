@@ -3,6 +3,10 @@ import { IMorphInterp } from '../interfaces';
 import { MorphTag } from '../morph_tag';
 import { FOREIGN_CHAR_RE } from '../static';
 
+import { HashSet } from '../../data_structures';
+
+const wu: Wu.WuStatic = require('wu');
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,18 +44,11 @@ export class MorphAnalyzer {
     let lookupee = originalAndLowercase(token);
     let lowercase = lookupee[0];
 
-    // for (let tok of [token, lowercase]) {
-    //   if (tok.includes('-')) {
-    //     let [last, ...prevs] = tok.split('-').reverse();
-    //     this.dictionary.lookup(last).every(x => x.flags.includes('adj:'))
-    //   }
+    let ret = new HashSet(IMorphInterp.hash, wu(lookupee).map(x => this.lookup(x)).flatten());
+
+    // if (!ret.size) {
+    //   ret.addMany(this.dictionary.lookupVariants(lookupee.map(x => x.replace(/ґ/g, 'г'))));
     // }
-
-    let ret = this.dictionary.lookupVariants(lookupee);
-
-    if (!ret.size) {
-      ret.addMany(this.dictionary.lookupVariants(lookupee.map(x => x.replace(/ґ/g, 'г'))));
-    }
 
     // // try Kharkiv-style
     // if (!ret.size && lowercase.endsWith('сти')) {
@@ -74,7 +71,7 @@ export class MorphAnalyzer {
 
     // try одробив is the same as відробив
     if (!ret.size && lowercase.startsWith('од') && lowercase.length > 4) {
-      ret.addMany(this.dictionary.lookup('від' + lowercase.substr(2))
+      ret.addMany(this.lookup('від' + lowercase.substr(2))
         .filter(x => x.flags.includes('verb'))
         .map(x => {
           x.lemma = 'од' + x.lemma.substr(3);
@@ -88,7 +85,7 @@ export class MorphAnalyzer {
 
     // try обробити is :perf for робити
     if (!ret.size && lowercase.length > 4) {
-      for (let prefix of ['обі', 'об']) {
+      for (let prefix of ['обі', 'об', 'по']) {
         if (lowercase.startsWith(prefix)) {
           ret.addMany(this.lookupParsed(lowercase.substr(prefix.length))
             .filter(x => x.isVerb() && x.isImperfect()).map(x => {
@@ -108,8 +105,12 @@ export class MorphAnalyzer {
     return ret.length ? ret : [{ lemma: token, flags: this.xTag }];
   }
 
+  private lookup(token: string) {
+    return this.dictionary.lookup(token).map(x => expandInterp(x)).flatten();
+  }
+
   private lookupParsed(token: string) {
-    return this.dictionary.lookup(token).map(
+    return this.lookup(token).map(
       x => MorphTag.fromVesumStr(x.flags, undefined, token, x.lemma));
   }
 
@@ -136,4 +137,18 @@ function originalAndLowercase(value: string) {
   }
 
   return ret;
+}
+
+//------------------------------------------------------------------------------
+function* expandInterp(interp: IMorphInterp) {
+  yield interp;
+  if (interp.flags.includes('adj:')) {
+    let suffixes = interp.flags.includes(':p:')
+      ? ['anim:m', 'anim:f', 'anim:n', 'inanim:m', 'inanim:f', 'inanim:n']
+      : ['anim', 'inanim'];
+    yield* suffixes.map(x => ({
+      lemma: interp.lemma,
+      flags: interp.flags + ':&noun:' + x,
+    }));
+  }
 }

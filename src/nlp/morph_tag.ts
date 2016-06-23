@@ -18,10 +18,24 @@ export enum Pos {
   error,
   x,
 }
-export enum Pos2 {
-  pronoun,
-  participle,
-  numeral,
+// export enum Pos2 {
+//   pronoun,
+//   participle,
+//   numeral,
+//   noun,
+// }
+
+export enum Pronoun {
+  yes,
+}
+export enum Participle {
+  yes,
+}
+export enum OrdinalNumeral {
+  yes,
+}
+export enum AdjectiveNoun {
+  yes,
 }
 
 
@@ -196,6 +210,10 @@ export enum Auto {
   yes,
 }
 
+export enum Oddness {
+  yes,
+}
+
 export const FEATURE_TABLE = [
 
   { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.digit, vesumStr: 'digit', mte: 'd' },  // todo: not vesum?
@@ -293,9 +311,10 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 
-  { featStr: 'pos2', feat: Pos2, vesum: Pos2.numeral, vesumStr: '&numr' },
-  { featStr: 'pos2', feat: Pos2, vesum: Pos2.participle, vesumStr: '&adjp' },
-  { featStr: 'pos2', feat: Pos2, vesum: Pos2.pronoun, vesumStr: '&pron' },
+  { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&numr' },
+  { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
+  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&pron' },
+  { featStr: 'adjectiveNoun', feat: AdjectiveNoun, vesum: AdjectiveNoun.yes, vesumStr: '&noun' },
 
   { featStr: 'gender', feat: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
   { featStr: 'gender', feat: Gender, vesum: Gender.feminine, vesumStr: 'f', mte: 'f' },
@@ -326,6 +345,8 @@ export const FEATURE_TABLE = [
   { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
 
   { featStr: 'beforedash', feat: Beforedash, vesum: Beforedash.yes, vesumStr: 'beforedash' },
+
+  { featStr: 'oddness', feat: Oddness, vesum: Oddness.yes, vesumStr: 'odd' },
 ];
 
 export const MTE_FEATURES = {
@@ -363,7 +384,10 @@ for (let row of FEATURE_TABLE) {
 
 export class Features {
   pos: Pos = null;
-  pos2: Pos2 = null;
+  pronoun: Pronoun = null;
+  participle: Participle = null;
+  ordinalNumeral: OrdinalNumeral = null;
+  adjectiveNoun: AdjectiveNoun = null;
   case: Case = null;
   requiredCase: RequiredCase = null;
   number: Numberr = null;
@@ -386,6 +410,7 @@ export class Features {
   nounType: NounType = null;
   auto: Auto = null;
   beforedash: Beforedash = null;
+  oddness: Oddness = null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -394,7 +419,7 @@ export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl', 'mock', 'odd', 'beforedash',
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl', 'mock', 'beforedash',
   ]);
 
 
@@ -480,7 +505,7 @@ export class MorphTag {
 
       case 'A':
         if (flags[1] === 'p') {
-          ret.features.pos2 = Pos2.participle;
+          ret.features.participle = Participle.yes;
         }
 
         if (ret.features.gender === Gender.masculine) {
@@ -494,7 +519,7 @@ export class MorphTag {
         break;
 
       case 'P': // todo: Referent_Type
-        ret.features.pos2 = Pos2.pronoun;
+        ret.features.pronoun = Pronoun.yes;
         switch (flags[8]) {
           case 'n':
             ret.features.pos = Pos.noun;
@@ -516,7 +541,7 @@ export class MorphTag {
       case 'M':
         if (flags[2] === 'o') {
           ret.features.pos = Pos.adjective;
-          ret.features.pos2 = Pos2.numeral;
+          ret.features.ordinalNumeral = OrdinalNumeral.yes;
         }
         else if (flags[2] === 'c') {
           ret.features.pos = Pos.numeral;
@@ -538,7 +563,7 @@ export class MorphTag {
 
     // kill redundant info
     if (!isOddball(ret.features.gender) && ret.features.number === Numberr.singular
-      && ret.features.pos !== Pos.numeral && ret.features.pos2 !== Pos2.numeral) {
+      && ret.features.pos !== Pos.numeral && ret.features.ordinalNumeral === null) {
       ret.features.number = null;
     }
 
@@ -617,7 +642,8 @@ export class MorphTag {
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isFeminine() { return this.features.gender === Gender.feminine; }
   isSingular() { return this.features.number === Numberr.singular; }  // todo: tantum?
-  isBeforedash() { return this.features.beforedash === Beforedash.yes; }  // todo: tantum?
+  isBeforedash() { return this.features.beforedash === Beforedash.yes; }
+  isOdd() { return this.features.oddness === Oddness.yes; }
 
   hasNumber() { return this.features.number !== null; }
 
@@ -669,13 +695,15 @@ export const FEATURE_ORDER = {
     NounType,
     NameType,
     Possesive,
-    Pos2,
+    Pronoun,
     PronominalType,
     Colloquial,
     Bad,
+    Oddness,
   ],
   [Pos.adjective]: [
     Pos,
+    Animacy,
     Gender,
     Numberr,
     Case,
@@ -685,8 +713,11 @@ export const FEATURE_ORDER = {
     Possesive,
     CaseInflectability,
     NumberTantum,
-    Pos2,
+    Pronoun,
+    Participle,
+    AdjectiveNoun,
     PronominalType,
+    Oddness,
   ],
   [Pos.verb]: [
     Pos,
@@ -709,7 +740,7 @@ export const FEATURE_ORDER = {
     Numberr,
     Case,
     CaseInflectability,
-    Pos2,
+    Pronoun,
     PronominalType,
   ],
   [Pos.transgressive]: [
@@ -732,10 +763,14 @@ export const FEATURE_ORDER = {
     SemanticOmohnym,
     NameType,
     Possesive,
-    Pos2,
+    Pronoun,
+    Participle,
+    OrdinalNumeral,
+    AdjectiveNoun,
     PronominalType,
     Person,
     Rarity,
+    Oddness,
   ],
 };
 
@@ -825,8 +860,21 @@ export function mapVesumFeatureValue(featureName: string, value) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const featureCompareOrder = new Set([Pos, Pos2, Animacy/*, Case*/]);
+const featureCompareOrder = new Set([
+  Pos,
+  Pronoun,
+  Participle,
+  OrdinalNumeral,
+  AdjectiveNoun,
+  Animacy,
+]);
 export function compareTags(a: MorphTag, b: MorphTag) {
+  if (a.lemma && b.lemma) {
+    let res = a.lemma.localeCompare(b.lemma);
+    if (res) {
+      return res;
+    }
+  }
   for (let feature of featureCompareOrder) {
     let prop = FEAT_MAP_STRING.get(feature);
     let res = compare(a.features[prop], b.features[prop]);

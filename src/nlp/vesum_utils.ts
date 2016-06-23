@@ -114,7 +114,7 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
   lines = wu(lines).map(x => x.replace('&_adjp', '&adjp'));
   lexemeLoop:
   for (let lexeme of chunkLexemes(lines)) {
-    if (lexeme[0].includes('&adjp')) {  // omohnym for both &adjp and &_adjp
+    if (lexeme[0].includes('&adjp')) {  // we omohnymize both &adjp and &_adjp
       yield* wu(lexeme).map(x => x.replace(/:&adjp|:actv|:pasv|:imperf|:perf/g, ''));
       yield* lexeme;
     }
@@ -136,6 +136,32 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
     }
   }
 }
+
+//------------------------------------------------------------------------------
+// function* expandLexeme(lexeme: Wu.WuIterable<string>) {
+//   let lemmaLine = lexeme.next();
+//   if (!lemmaLine.done) {
+//     yield lemmaLine.value;
+//     if (lemmaLine.value.includes(' adj:')) {
+//       let first = true;
+//       for (let line of wu.chain([NONLEMMA_PADDING + lemmaLine.value], lexeme)) {
+//         if (!first) {
+//           yield line;
+//         }
+//         if (line.includes(':p')) {
+//           yield* [':&noun:anim:m', ':&noun:anim:f', ':&noun:inanim:m', ':&noun:inanim:f'].map(x => line + x);
+//         }
+//         else {
+//           yield* [':&noun:anim', ':&noun:inanim'].map(x => line + x);
+//         }
+//         first = false;
+//       }
+//     }
+//     else {
+//       yield* lexeme;
+//     }
+//   }
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function domesticateDictCorpViz(fileStr: string) {
