@@ -153,9 +153,10 @@ function originalAndLowercase(value: string) {
 }
 
 //------------------------------------------------------------------------------
+const ignoreLemmas = new Set(['ввесь', 'весь', 'той', 'цей']);
 function* expandInterp(interp: IMorphInterp) {
   yield interp;
-  if (interp.flags.includes('adj:')) {
+  if (interp.flags.includes('adj:') && !ignoreLemmas.has(interp.lemma)) {
     let suffixes = interp.flags.includes(':p:')
       ? ['anim:m', 'anim:f', 'anim:n', 'inanim:m', 'inanim:f', 'inanim:n']
       : ['anim', 'inanim'];
