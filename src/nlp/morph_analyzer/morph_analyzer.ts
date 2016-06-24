@@ -85,7 +85,7 @@ export class MorphAnalyzer {
 
     // try обробити is :perf for робити
     if (!ret.size && lowercase.length > 4) {
-      for (let prefix of ['обі', 'об', 'по']) {
+      for (let prefix of ['обі', 'об', 'по', 'роз']) {
         if (lowercase.startsWith(prefix)) {
           ret.addMany(this.lookupParsed(lowercase.substr(prefix.length))
             .filter(x => x.isVerb() && x.isImperfect()).map(x => {
@@ -94,6 +94,19 @@ export class MorphAnalyzer {
               return x.toVesumStrMorphInterp();
             }));
         }
+      }
+    }
+
+    let oIndex = lowercase.indexOf('о');
+    if (oIndex > 2) {
+      let left = lowercase.substring(0, oIndex + 1);
+      if (this.lookupParsed(left).some(x => x.isBeforedash())) {
+        let right = lowercase.substr(oIndex + 1);
+        ret.addMany(this.lookupParsed(right).filter(x => x.isAdjective()).map(x => {
+          x.lemma = left + x.lemma;
+          x.setIsAuto();
+          return x.toVesumStrMorphInterp();
+        }));
       }
     }
 
