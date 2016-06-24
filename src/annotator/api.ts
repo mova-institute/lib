@@ -131,7 +131,7 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
     throw new HttpError(400);
   }
   let root = string2lxmlRoot(req.body.content);
-  if (root.evaluateBoolean('boolean(//mi:w[not(@n)])')) {
+  if (root.evaluateBoolean('boolean(//mi:w[not(@n)])', NS)) {
     throw new HttpError(400, 'Not all words are numerated');
   }
   // let root = string2lxmlRoot(req.body.content);

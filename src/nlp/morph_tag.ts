@@ -311,9 +311,9 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 
-  { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&numr' },
+  { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
   { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
-  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&pron' },
+  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
   { featStr: 'adjectiveNoun', feat: AdjectiveNoun, vesum: AdjectiveNoun.yes, vesumStr: '&noun' },
 
   { featStr: 'gender', feat: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
@@ -419,7 +419,7 @@ export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'transl', 'mock', 'beforedash',
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'mock', 'beforedash', 'foreign',
   ]);
 
 
@@ -862,10 +862,10 @@ export function mapVesumFeatureValue(featureName: string, value) {
 ////////////////////////////////////////////////////////////////////////////////
 const featureCompareOrder = new Set([
   Pos,
-  Pronoun,
-  Participle,
-  OrdinalNumeral,
   AdjectiveNoun,
+  Participle,
+  Pronoun,
+  OrdinalNumeral,
   Animacy,
 ]);
 export function compareTags(a: MorphTag, b: MorphTag) {

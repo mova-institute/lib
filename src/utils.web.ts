@@ -72,7 +72,7 @@ export function dataOpen(data, mime = 'text/plain') {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function scrolledToBottom(endIsTop: boolean) {
+export function scrolledToEnd(endIsTop: boolean) {
   if (endIsTop) {
     return !window.scrollY;
   }
