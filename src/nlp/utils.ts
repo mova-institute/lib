@@ -469,12 +469,16 @@ export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: Abstrac
 
 ////////////////////////////////////////////////////////////////////////////////
 const unboxElems = new Set(['nobr', 'img']);
+const removeElems = new Set(['br']);
 export function normalizeCorpusText(root: AbstractElement) {
   traverseDepthEl(root, el => {
     if (unboxElems.has(el.localName())) {
       el.unwrap();
     }
-    if (el.localName() === 'em') {
+    else if (removeElems.has(el.localName())) {
+      el.remove();
+    }
+    else if (el.localName() === 'em') {
       let box = el.document().createElement('emph').setAttribute('rend', 'italic');
       el.rewrap(box);
     }

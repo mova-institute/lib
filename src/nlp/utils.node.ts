@@ -16,17 +16,16 @@ export function markWordwiseDiffStr(mineStr: string, theirsStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextTxt(xmlstr: string) {
   xmlstr = normalizeEntities(xmlstr)
-    .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2');
+    .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
+    .replace(/&nbsp;/g, ' ');
   let root = string2lxmlRoot(xmlstr);
 
   return normalizeCorpusText(root);
 }
 
+////////////////////////////////////////////////////////////////////////////////
 const entities = new AllHtmlEntities();
 const mustEscapeInText = new Set(['lt', 'amp']);
-
-
-////////////////////////////////////////////////////////////////////////////////
 export function normalizeEntities(text: string) {  // todo: wait for libxmljs issues resolved
   text = text.replace(/&(\w+);/g, (match, p1) => {
     if (mustEscapeInText.has(p1)) {
@@ -34,7 +33,7 @@ export function normalizeEntities(text: string) {  // todo: wait for libxmljs is
     }
     let decoded = entities.decode(match);
     if (/^\s$/.test(decoded)) {  // todo: wait for unicode
-      return match;
+      return '';
     }
     return decoded;
   });
