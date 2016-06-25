@@ -7,6 +7,8 @@ const wu: Wu.WuStatic = require('wu');
 
 
 
+
+const collator = new Intl.Collator('uk-UA');
 const NONLEMMA_PADDING = '  ';
 // const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionType]);
 
@@ -339,3 +341,46 @@ export function findUnidentifiableRows(fileStr: string) {
 //     }
 //   }
 // }
+
+////////////////////////////////////////////////////////////////////////////////
+const paradigmExplanations = new Map([
+  [/</, 'істота'],
+  [/\+/, 'прізвище'],
+  [/\.a\b/, 'родовий на -а'],
+]);
+
+function xpNumber(line: string) {
+  return Number.parseInt(line.match(/:xp([1-9])/)[1]);
+}
+export function* gatherXps(fileStrs: Iterable<string>) {
+  let lines = wu(fileStrs)
+    .map(x => x.split('\n'))
+    .flatten()
+    .filter((x: string) => /:xp[1-9]/.test(x))
+    .toArray()
+    .sort((a: string, b: string) =>
+      collator.compare(a.match(/^\S+/)[0], b.match(/^\S+/)[0]) || (xpNumber(a) - xpNumber(b))
+    );
+
+  let currentWord;
+  for (let line of lines) {
+    let word = line.match(/^\S+/)[0];
+    let paradigm = (line.match(/\/\S+/) || [])[0] || '';
+    let flags = line.match(/:\S+/)[0];
+    let comment = (line.match(/#\s*(.*)/) || [])[1] || '';
+    if (currentWord && currentWord !== word) {
+      yield '';
+    }
+    currentWord = word;
+
+    comment = comment.trim();
+    let comments = comment.length ? [comment] : [];
+    for (let [regex, explanation] of paradigmExplanations) {
+      if (regex.test(paradigm)) {
+        comments.push(explanation);
+      }
+    }
+
+    yield `${word} ${flags}    ${comments.join(', ')}`;
+  }
+}

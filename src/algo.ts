@@ -47,8 +47,8 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function groupTableBy(table: any[], groupProp: string | number | symbol) {
-  let ret = new Map<string | number, any[]>();
+export function groupTableBy<T>(table: T[], groupProp: string | number | symbol) {
+  let ret = new Map<string | number | symbol, T[]>();
 
   for (let row of table) {
     let cell = row[groupProp];
