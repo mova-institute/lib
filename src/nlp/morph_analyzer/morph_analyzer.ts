@@ -100,7 +100,7 @@ export class MorphAnalyzer {
     let oIndex = lowercase.indexOf('о');
     if (oIndex > 2) {
       let left = lowercase.substring(0, oIndex + 1);
-      if (this.lookupParsed(left).some(x => x.isBeforedash())) {
+      if (this.lookupParsed(left).some(x => x.isBeforeadj())) {
         let right = lowercase.substr(oIndex + 1);
         ret.addAll(this.lookupParsed(right).filter(x => x.isAdjective()).map(x => {
           x.lemma = left + x.lemma;
@@ -132,7 +132,7 @@ export class MorphAnalyzer {
       for (let tok of originalAndLowercase(token)) {
         let [last, ...prevs] = tok.split('-').reverse();
         return this.lookupParsed(last).some(x => x.isAdjective())
-          && prevs.every(x => this.lookupParsed(x).some(xx => xx.isBeforedash()));
+          && prevs.every(x => this.lookupParsed(x).some(xx => xx.isBeforeadj()));
       }
     }
     return false;

@@ -203,7 +203,7 @@ export enum Possessiveness {
 }
 export enum ParadigmOmohnym { }
 export enum SemanticOmohnym { }
-export enum Beforedash {
+export enum Beforeadj {
   yes,
 }
 export enum Auto {
@@ -356,7 +356,7 @@ export const FEATURE_TABLE = [
 
   { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
 
-  { featStr: 'beforedash', feat: Beforedash, vesum: Beforedash.yes, vesumStr: 'beforedash' },
+  { featStr: 'beforeadj', feat: Beforeadj, vesum: Beforeadj.yes, vesumStr: 'beforeadj' },
 
   { featStr: 'oddness', feat: Oddness, vesum: Oddness.yes, vesumStr: 'odd' },
 
@@ -431,7 +431,7 @@ export class Features {
   conjunctionType: ConjunctionType = null;
   nounType: NounType = null;
   auto: Auto = null;
-  beforedash: Beforedash = null;
+  beforeadj: Beforeadj = null;
   oddness: Oddness = null;
   omonymParadigm: OmonymParadigm = null;
 }
@@ -441,7 +441,7 @@ export class Features {
 export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'mock', 'beforedash', 'foreign',
+    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'mock', 'foreign',
   ]);
 
 
@@ -657,14 +657,14 @@ export class MorphTag {
 
   isNoun() { return this.features.pos === Pos.noun; }
   isVerb() { return this.features.pos === Pos.verb; }
-  isAdjective() { return this.features.pos === Pos.adjective && this.features.beforedash !== Beforedash.yes; }
+  isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
 
   isPerfect() { return this.features.aspect === Aspect.perfect; }
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isFeminine() { return this.features.gender === Gender.feminine; }
   isSingular() { return this.features.number === Numberr.singular; }  // todo: tantum?
-  isBeforedash() { return this.features.beforedash === Beforedash.yes; }
+  isBeforeadj() { return this.features.beforeadj === Beforeadj.yes; }
   isOdd() { return this.features.oddness === Oddness.yes; }
 
   hasNumber() { return this.features.number !== null; }
@@ -722,7 +722,7 @@ export const FEATURE_ORDER = {
   ],
   [Pos.adjective]: [
     Pos,
-    Beforedash,
+    Beforeadj,
     Gender,
     Numberr,
     Case,
