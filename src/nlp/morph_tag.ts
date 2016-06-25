@@ -129,7 +129,7 @@ export enum VerbType {
   main,
   auxilary,
 }
-export enum Reflexive {
+export enum Reflexivity {
   yes,
 }
 
@@ -186,10 +186,10 @@ export enum NameType {
 export enum CaseInflectability {
   no,
 }
-export enum Alternative {
+export enum Alternativity {
   yes,
 }
-export enum VuAlternative {
+export enum VuAlternativity {
   yes,
 }
 export enum Abbreviation {
@@ -198,7 +198,7 @@ export enum Abbreviation {
 export enum Dimin {
   yes,
 }
-export enum Possesive {
+export enum Possessiveness {
   yes,
 }
 export enum ParadigmOmohnym { }
@@ -212,6 +212,18 @@ export enum Auto {
 
 export enum Oddness {
   yes,
+}
+
+export enum OmonymParadigm {
+  xp1,
+  xp2,
+  xp3,
+  xp4,
+  xp5,
+  xp6,
+  xp7,
+  xp8,
+  xp9,
 }
 
 export const FEATURE_TABLE = [
@@ -242,7 +254,7 @@ export const FEATURE_TABLE = [
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
 
-  { featStr: 'reflexive', feat: Reflexive, vesum: Reflexive.yes, vesumStr: 'rev' },  // ?
+  { featStr: 'reflexive', feat: Reflexivity, vesum: Reflexivity.yes, vesumStr: 'rev' },  // ?
 
   { featStr: 'case', feat: Case, vesum: Case.nominative, vesumStr: 'v_naz', mte: 'n' },
   { featStr: 'case', feat: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
@@ -332,21 +344,31 @@ export const FEATURE_TABLE = [
 
   { featStr: 'caseInflectability', feat: CaseInflectability, vesum: CaseInflectability.no, vesumStr: 'nv' },
 
-  { featStr: 'alternative', feat: Alternative, vesum: Alternative.yes, vesumStr: 'alt' },
+  { featStr: 'alternative', feat: Alternativity, vesum: Alternativity.yes, vesumStr: 'alt' },
 
   { featStr: 'abbreviation', feat: Abbreviation, vesum: Abbreviation.yes, vesumStr: 'abbr' },
 
-  { featStr: 'vuAlternatibe', feat: VuAlternative, vesum: VuAlternative.yes, vesumStr: 'v-u' },
+  { featStr: 'vuAlternatibe', feat: VuAlternativity, vesum: VuAlternativity.yes, vesumStr: 'v-u' },
 
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
 
-  { featStr: 'poss', feat: Possesive, vesum: Possesive.yes, vesumStr: 'pos' },
+  { featStr: 'poss', feat: Possessiveness, vesum: Possessiveness.yes, vesumStr: 'pos' },
 
   { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
 
   { featStr: 'beforedash', feat: Beforedash, vesum: Beforedash.yes, vesumStr: 'beforedash' },
 
   { featStr: 'oddness', feat: Oddness, vesum: Oddness.yes, vesumStr: 'odd' },
+
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp1, vesumStr: 'xp1' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp2, vesumStr: 'xp2' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp3, vesumStr: 'xp3' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp4, vesumStr: 'xp4' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp5, vesumStr: 'xp5' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp6, vesumStr: 'xp6' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp7, vesumStr: 'xp7' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp8, vesumStr: 'xp8' },
+  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp9, vesumStr: 'xp9' },
 ];
 
 export const MTE_FEATURES = {
@@ -403,7 +425,7 @@ export class Features {
   variant: Variant = null;
   pronominalType: PronominalType = null;
   numberTantum: NumberTantum = null;
-  reflexive: Reflexive = null;
+  reflexive: Reflexivity = null;
   verbType: VerbType = null;
   numeralForm: NumeralForm = null;
   conjunctionType: ConjunctionType = null;
@@ -411,13 +433,13 @@ export class Features {
   auto: Auto = null;
   beforedash: Beforedash = null;
   oddness: Oddness = null;
+  omonymParadigm: OmonymParadigm = null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // represents a single unambiguous morphological interpretation
 export class MorphTag {
   private static otherFlagsAllowed = new Set([
-    'xp1', 'xp2', 'xp3', 'xp4', 'xp5', 'xp6', 'xp7',
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
     'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'mock', 'beforedash', 'foreign',
   ]);
@@ -497,7 +519,7 @@ export class MorphTag {
     switch (flags[0]) {  // then tweak what's left
       case 'V': {
         if (form && (form.endsWith('ся') || form.endsWith('сь'))) {
-          ret.features.reflexive = Reflexive.yes;
+          ret.features.reflexive = Reflexivity.yes;
         }
         ret.features.pos = flags[3] === 'g' ? Pos.transgressive : Pos.verb;
         break;
@@ -691,37 +713,36 @@ export const FEATURE_ORDER = {
     Case,
     CaseInflectability,
     NumberTantum,
-    Alternative,
+    Alternativity,
     NounType,
     NameType,
-    Possesive,
+    Possessiveness,
     Pronoun,
     PronominalType,
-    Colloquial,
-    Bad,
-    Oddness,
   ],
   [Pos.adjective]: [
     Pos,
-    Animacy,
+    Beforedash,
     Gender,
     Numberr,
     Case,
     RequiredAnimacy,
     Variant,
     Degree,
-    Possesive,
+    Possessiveness,
     CaseInflectability,
     NumberTantum,
     Pronoun,
     Participle,
     AdjectiveNoun,
+    Animacy,
     PronominalType,
-    Oddness,
+    Aspect,
+    Voice,
   ],
   [Pos.verb]: [
     Pos,
-    Reflexive,
+    Reflexivity,
     Voice,
     Aspect,
     Tense,
@@ -730,9 +751,7 @@ export const FEATURE_ORDER = {
     Person,
     Gender,
     Dimin,
-    VuAlternative,
-    Rarity,
-    Colloquial,
+    VuAlternativity,
   ],
   [Pos.numeral]: [
     Pos,
@@ -745,10 +764,10 @@ export const FEATURE_ORDER = {
   ],
   [Pos.transgressive]: [
     Pos,
-    Reflexive,
+    Reflexivity,
     Voice,
     Aspect,
-    Alternative,
+    Alternativity,
   ],
   other: [  // todo check
     Pos,
@@ -757,22 +776,24 @@ export const FEATURE_ORDER = {
     Case, RequiredCase,
     RequiredAnimacy,
     CaseInflectability,
-    Alternative,
+    Alternativity,
     NumberTantum,
     ParadigmOmohnym,
     SemanticOmohnym,
     NameType,
-    Possesive,
+    Possessiveness,
     Pronoun,
     Participle,
     OrdinalNumeral,
     AdjectiveNoun,
     PronominalType,
     Person,
-    Rarity,
-    Oddness,
   ],
 };
+
+for (let pos of Object.keys(FEATURE_ORDER)) {
+  FEATURE_ORDER[pos].push(OmonymParadigm, Colloquial, Rarity, Bad, Oddness);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function createVesumFlagCompare(pos: Pos) {
