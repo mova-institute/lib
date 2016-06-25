@@ -59,9 +59,9 @@ export class MorphAnalyzer {
     // }
 
     // try префікс-щось is the same as щось
-    for (let prefix of ['екс-', 'віце-']) {  // todo: віце not with adj (but with nounish adj)
+    for (let prefix of ['екс-', 'віце-', 'телерадіо', 'теле', 'радіо']) {  // todo: віце not with adj (but with nounish adj)
       if (!ret.size && lowercase.startsWith(prefix)) {
-        ret.addMany(this.lookupParsed(lowercase.substr(prefix.length))
+        ret.addAll(this.lookupParsed(lowercase.substr(prefix.length))
           .filter(x => x.isNoun() || x.isAdjective()).map(x => {
             x.lemma = prefix + x.lemma;
             return x.toVesumStrMorphInterp();
@@ -71,7 +71,7 @@ export class MorphAnalyzer {
 
     // try одробив is the same as відробив
     if (!ret.size && lowercase.startsWith('од') && lowercase.length > 4) {
-      ret.addMany(this.lookup('від' + lowercase.substr(2))
+      ret.addAll(this.lookup('від' + lowercase.substr(2))
         .filter(x => x.flags.includes('verb'))
         .map(x => {
           x.lemma = 'од' + x.lemma.substr(3);
@@ -87,7 +87,7 @@ export class MorphAnalyzer {
     if (!ret.size && lowercase.length > 4) {
       for (let prefix of ['обі', 'об', 'по', 'роз']) {
         if (lowercase.startsWith(prefix)) {
-          ret.addMany(this.lookupParsed(lowercase.substr(prefix.length))
+          ret.addAll(this.lookupParsed(lowercase.substr(prefix.length))
             .filter(x => x.isVerb() && x.isImperfect()).map(x => {
               x.setIsPerfect().setIsAuto();
               x.lemma = prefix + x.lemma;
@@ -102,7 +102,7 @@ export class MorphAnalyzer {
       let left = lowercase.substring(0, oIndex + 1);
       if (this.lookupParsed(left).some(x => x.isBeforedash())) {
         let right = lowercase.substr(oIndex + 1);
-        ret.addMany(this.lookupParsed(right).filter(x => x.isAdjective()).map(x => {
+        ret.addAll(this.lookupParsed(right).filter(x => x.isAdjective()).map(x => {
           x.lemma = left + x.lemma;
           x.setIsAuto();
           return x.toVesumStrMorphInterp();
@@ -153,7 +153,7 @@ function originalAndLowercase(value: string) {
 }
 
 //------------------------------------------------------------------------------
-const ignoreLemmas = new Set(['ввесь', 'весь', 'той', 'цей']);
+const ignoreLemmas = new Set(['ввесь', 'весь', 'увесь', 'той', 'цей']);
 function* expandInterp(interp: IMorphInterp) {
   yield interp;
   if (interp.flags.includes('adj:') && !ignoreLemmas.has(interp.lemma)) {

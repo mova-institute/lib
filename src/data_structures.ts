@@ -41,7 +41,7 @@ export class HashSet<T> /*implements Set<T>*/{
     return this;
   }
 
-  addMany(values: Iterable<T>) {
+  addAll(values: Iterable<T>) {
     for (let value of values) {
       this.add(value);
     }
