@@ -22,7 +22,7 @@ ioArgs(filename1, filename2, async (input, output) => {
       console.log('doing');
     }
     let res = func(inputStr);
-    if (Symbol.iterator in res) {
+    if (typeof res === 'object' && Symbol.iterator in res) {
       for (let line of res) {
         output.write(line + '\n');
       }
