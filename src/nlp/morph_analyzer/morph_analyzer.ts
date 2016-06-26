@@ -48,7 +48,7 @@ export class MorphAnalyzer {
   }
 
   /** @token is atomic */
-  tag(token: string): Iterable<IMorphInterp> {
+  tag(token: string, nextToken?: string): Iterable<IMorphInterp> {
     token = token.replace(/́/g, '');  // kill emphasis
 
     if (/^\d+$/.test(token)) {
@@ -61,6 +61,10 @@ export class MorphAnalyzer {
 
     let lookupee = originalAndLowercase(token);
     let lowercase = lookupee[0];
+
+    if (nextToken === '.') {
+      lookupee.push(...lookupee.map(x => x + '.'));
+    }
 
     let ret = new HashSet(MorphTag.hash,
       wu(lookupee).map(x => this.lookupParsed(x)).flatten() as Iterable<MorphTag>);
@@ -98,8 +102,8 @@ export class MorphAnalyzer {
     return wu(ret).map(x => x.toVesumStrMorphInterp());
   }
 
-  tagOrX(token: string) {
-    let ret = [...this.tag(token)];
+  tagOrX(token: string, nextToken?: string) {
+    let ret = [...this.tag(token, nextToken)];
     return ret.length ? ret : [{ lemma: token, flags: this.xTag }];
   }
 

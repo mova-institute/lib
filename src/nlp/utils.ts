@@ -243,7 +243,9 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer) {
           tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0);
         }
         else {
-          tagWord(el, analyzer.tagOrX(el.text()));
+          let next = el.nextElementSiblings()
+            .find(x => x.localName() === 'pc' || x.localName === 'w');
+          tagWord(el, analyzer.tagOrX(el.text(), next && next.text()));
         }
       }
     });
