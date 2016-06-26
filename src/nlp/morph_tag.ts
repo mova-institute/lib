@@ -292,13 +292,13 @@ export const FEATURE_TABLE = [
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.indefinite, vesumStr: 'ind', mte: 'i' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.general, vesumStr: 'gen', mte: 'g' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.emphatic, vesumStr: 'emph', mte: 'h' },
-  { featStr: 'pronominalType', feat: null, mte: 's' },
+  { featStr: 'pronominalType', feat: undefined, mte: 's' },
 
   { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
   { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
 
   { featStr: 'pos', feat: Pos, vesum: Pos.noun, vesumStr: 'noun', mte: 'N' },
-  { featStr: 'pos', feat: null, mte: 'P' },
+  { featStr: 'pos', feat: undefined, mte: 'P' },
   { featStr: 'pos', feat: Pos, vesum: Pos.verb, vesumStr: 'verb', mte: 'V' },
   { featStr: 'pos', feat: Pos, vesum: Pos.adjective, vesumStr: 'adj', mte: 'A' },
   { featStr: 'pos', feat: Pos, vesum: Pos.adverb, vesumStr: 'adv', mte: 'R' },
@@ -363,13 +363,13 @@ export const FEATURE_TABLE = [
 
 export const MTE_FEATURES = {
   'N': [Pos.noun, NounType, Gender, Numberr, Case, Animacy],  // todo: common gender
-  'V': [null, VerbType, Aspect, Mood, Tense, Person, Numberr, Gender],
-  'A': [Pos.adjective, null, Degree, Gender, Numberr, Case, null, RequiredAnimacy, Aspect, Voice, Tense],
-  'P': [null, PronominalType, null, Person, Gender, RequiredAnimacy, Numberr, Case, null],
+  'V': [undefined, VerbType, Aspect, Mood, Tense, Person, Numberr, Gender],
+  'A': [Pos.adjective, undefined, Degree, Gender, Numberr, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
+  'P': [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, Numberr, Case, undefined],
   'R': [Pos.adverb, Degree],
-  'S': [Pos.preposition, null, null, RequiredCase],
-  'C': [Pos.conjunction, ConjunctionType, null],
-  'M': [Pos.numeral, NumeralForm, null, Gender, Numberr, Case, RequiredAnimacy],
+  'S': [Pos.preposition, undefined, undefined, RequiredCase],
+  'C': [Pos.conjunction, ConjunctionType, undefined],
+  'M': [Pos.numeral, NumeralForm, undefined, Gender, Numberr, Case, RequiredAnimacy],
   'Q': [Pos.particle],
   'I': [Pos.interjection],
   'X': [Pos.x],
@@ -395,35 +395,35 @@ for (let row of FEATURE_TABLE) {
 }
 
 export class Features {
-  pos: Pos = null;
-  pronoun: Pronoun = null;
-  participle: Participle = null;
-  ordinalNumeral: OrdinalNumeral = null;
-  adjectiveNoun: AdjectiveNoun = null;
-  case: Case = null;
-  requiredCase: RequiredCase = null;
-  number: Numberr = null;
-  aspect: Aspect = null;
-  tense: Tense = null;
-  mood: Mood = null;
-  person: Person = null;
-  voice: Voice = null;
-  animacy: Animacy = null;
-  requiredAnimacy: RequiredAnimacy = null;
-  gender: Gender = null;
-  degree: Degree = null;
-  variant: Variant = null;
-  pronominalType: PronominalType = null;
-  numberTantum: NumberTantum = null;
-  reflexive: Reflexivity = null;
-  verbType: VerbType = null;
-  numeralForm: NumeralForm = null;
-  conjunctionType: ConjunctionType = null;
-  nounType: NounType = null;
-  auto: Auto = null;
-  beforeadj: Beforeadj = null;
-  oddness: Oddness = null;
-  paradigmOmonym: ParadigmOmonym = null;
+  pos: Pos;
+  pronoun: Pronoun;
+  participle: Participle;
+  ordinalNumeral: OrdinalNumeral;
+  adjectiveNoun: AdjectiveNoun;
+  case: Case;
+  requiredCase: RequiredCase;
+  number: Numberr;
+  aspect: Aspect;
+  tense: Tense;
+  mood: Mood;
+  person: Person;
+  voice: Voice;
+  animacy: Animacy;
+  requiredAnimacy: RequiredAnimacy;
+  gender: Gender;
+  degree: Degree;
+  variant: Variant;
+  pronominalType: PronominalType;
+  numberTantum: NumberTantum;
+  reflexive: Reflexivity;
+  verbType: VerbType;
+  numeralForm: NumeralForm;
+  conjunctionType: ConjunctionType;
+  nounType: NounType;
+  auto: Auto;
+  beforeadj: Beforeadj;
+  oddness: Oddness;
+  paradigmOmonym: ParadigmOmonym;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -437,7 +437,7 @@ export class MorphTag {
 
   lemma: string;
   features = new Features();
-  otherFlags = new Set<string>();
+  private otherFlags = new Set<string>();
 
   static hash(value: MorphTag) {
     return value.toVesumStr() + (value.lemma ? ` ${value.lemma}` : '');
@@ -578,8 +578,8 @@ export class MorphTag {
 
     // kill redundant info
     if (!isOddball(ret.features.gender) && ret.features.number === Numberr.singular
-      && ret.features.pos !== Pos.numeral && ret.features.ordinalNumeral === null) {
-      ret.features.number = null;
+      && ret.features.pos !== Pos.numeral && ret.features.ordinalNumeral === undefined) {
+      ret.features.number = undefined;
     }
 
     return ret;
@@ -590,7 +590,7 @@ export class MorphTag {
 
     for (let name of Object.keys(this.features)) {
       let value = this.features[name];
-      if (value === null
+      if (value === undefined
         || this.features.number === Numberr.plural && name === 'gender'
         || this.isTransgressive() && this.isPerfect() && name === 'tense') {
         continue;
@@ -653,7 +653,7 @@ export class MorphTag {
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
 
-  isComparable() { return this.features.degree !== null; }
+  isComparable() { return this.features.degree !== undefined; }
   isPerfect() { return this.features.aspect === Aspect.perfect; }
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isFeminine() { return this.features.gender === Gender.feminine; }
@@ -661,11 +661,11 @@ export class MorphTag {
   isBeforeadj() { return this.features.beforeadj === Beforeadj.yes; }
   isOdd() { return this.features.oddness === Oddness.yes; }
 
-  hasNumber() { return this.features.number !== null; }
+  hasNumber() { return this.features.number !== undefined; }
 
-  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : null; return this; }
-  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : null; return this; }
-  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : null; return this; }
+  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this; }
+  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this; }
+  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this; }
 
   canBeKharkivSty() {
     return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber());
@@ -674,7 +674,7 @@ export class MorphTag {
   private fromMte(mteFlags: string[]) {
     let posFeatures = MTE_FEATURES[mteFlags[0]];
 
-    if (posFeatures[0] !== null) {
+    if (posFeatures[0] !== undefined) {
       this.features.pos = posFeatures[0];
     }
     for (let i = 1; i < posFeatures.length && i < mteFlags.length; ++i) {
@@ -849,8 +849,6 @@ export function tryMapVesumFlagToFeature(value: string) {
   if (row && row.feat) {
     return row.feat;
   }
-
-  return null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -872,8 +870,6 @@ export function mapVesumFeatureValue(featureName: string, value) {
       }
     }
   }
-
-  return null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
