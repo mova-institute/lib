@@ -31,7 +31,7 @@
 			"stopOnEntry": false,
 			"args": [
         "-t",
-        "випускний"
+        "кінець 20-х рр. століття"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,

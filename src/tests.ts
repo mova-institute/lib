@@ -33,8 +33,8 @@ export function findDuplicateFeatures(fileStr: string) {
 export function testMte2Vesum(fileStr: string) {
   let lines = fileStr.split('\n');
   for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
-    if (tag.includes('transl')
-      || tag.includes('insert')
+    if (
+      tag.includes('insert')
       || tag.includes('predic')
       || tag.includes('bad')) {
       continue;

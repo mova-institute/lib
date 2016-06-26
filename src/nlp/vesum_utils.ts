@@ -113,7 +113,7 @@ let expandableFlags = [
   /:subord|:coord/g,
 ];
 export function* expandDictCorpViz(lines: Iterable<string>) {
-  lines = wu(lines).map(x => x.replace('&_adjp', '&adjp'));
+  lines = wu(lines).map(x => x.includes(':beforeadj') ? 'adj:beforeadj' : x.replace('&_adjp', '&adjp'));
   lexemeLoop:
   for (let lexeme of chunkLexemes(lines)) {
     if (lexeme[0].includes('&adjp')) {  // we omohnymize both &adjp and &_adjp

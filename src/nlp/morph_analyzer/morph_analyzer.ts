@@ -9,6 +9,24 @@ const wu: Wu.WuStatic = require('wu');
 
 
 
+//------------------------------------------------------------------------------
+const superpref = [
+  {
+    prefixes: ['екс-', 'віце-', 'телерадіо', 'теле', 'радіо'],
+    test: (x: MorphTag) => x.isNoun() || x.isAdjective(),
+  },
+  {
+    prefixes: ['пре'],
+    test: (x: MorphTag) => x.isAdjective() && x.isComparable(),
+  },
+  {
+    prefixes: ['обі', 'об', 'по', 'роз'],
+    pretest: (x: string) => x.length > 4,
+    test: (x: MorphTag) => x.isVerb() && x.isImperfect(),
+    postprocess: (x: MorphTag) => x.setIsPerfect(),
+  },
+];
+
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
   constructor(
@@ -44,57 +62,24 @@ export class MorphAnalyzer {
     let lookupee = originalAndLowercase(token);
     let lowercase = lookupee[0];
 
-    let ret = new HashSet(IMorphInterp.hash, wu(lookupee).map(x => this.lookup(x)).flatten());
+    let ret = new HashSet(MorphTag.hash,
+      wu(lookupee).map(x => this.lookupParsed(x)).flatten() as Iterable<MorphTag>);
 
     // if (!ret.size) {
     //   ret.addMany(this.dictionary.lookupVariants(lookupee.map(x => x.replace(/ґ/g, 'г'))));
     // }
 
-    // // try Kharkiv-style
-    // if (!ret.size && lowercase.endsWith('сти')) {
-    //   let kharkivLowercase = lowercase.slice(0, -1) + 'і';
-    //   ret.addMany(this.lookupParsed(kharkivLowercase)
-    //     .filter(x => x.canBeKharkivSty())
-    //     .map(x => x.toVesumStrMorphInterp()));
-    // }
-
-    // try префікс-щось is the same as щось
-    for (let prefix of ['екс-', 'віце-', 'телерадіо', 'теле', 'радіо']) {  // todo: віце not with adj (but with nounish adj)
-      if (!ret.size && lowercase.startsWith(prefix)) {
-        ret.addAll(this.lookupParsed(lowercase.substr(prefix.length))
-          .filter(x => x.isNoun() || x.isAdjective()).map(x => {
-            x.lemma = prefix + x.lemma;
-            return x.toVesumStrMorphInterp();
-          }));
-      }
-    }
+    ret.addAll(this.fromPrefixes(lowercase, ret));
 
     // try одробив is the same as відробив
     if (!ret.size && lowercase.startsWith('од') && lowercase.length > 4) {
-      ret.addAll(this.lookup('від' + lowercase.substr(2))
-        .filter(x => x.flags.includes('verb'))
+      ret.addAll(this.lookupParsed('від' + lowercase.substr(2))
+        .filter(x => x.isVerb())
         .map(x => {
           x.lemma = 'од' + x.lemma.substr(3);
-          if (!x.flags.includes(':odd')) {
-            x.flags += ':odd';
-          }
-          x.flags += ':auto';
+          x.setIsAuto().setIsOdd();
           return x;
         }));
-    }
-
-    // try обробити is :perf for робити
-    if (!ret.size && lowercase.length > 4) {
-      for (let prefix of ['обі', 'об', 'по', 'роз']) {
-        if (lowercase.startsWith(prefix)) {
-          ret.addAll(this.lookupParsed(lowercase.substr(prefix.length))
-            .filter(x => x.isVerb() && x.isImperfect()).map(x => {
-              x.setIsPerfect().setIsAuto();
-              x.lemma = prefix + x.lemma;
-              return x.toVesumStrMorphInterp();
-            }));
-        }
-      }
     }
 
     let oIndex = lowercase.indexOf('о');
@@ -105,12 +90,12 @@ export class MorphAnalyzer {
         ret.addAll(this.lookupParsed(right).filter(x => x.isAdjective()).map(x => {
           x.lemma = left + x.lemma;
           x.setIsAuto();
-          return x.toVesumStrMorphInterp();
+          return x;
         }));
       }
     }
 
-    return ret;
+    return wu(ret).map(x => x.toVesumStrMorphInterp());
   }
 
   tagOrX(token: string) {
@@ -118,12 +103,12 @@ export class MorphAnalyzer {
     return ret.length ? ret : [{ lemma: token, flags: this.xTag }];
   }
 
-  private lookup(token: string) {
+  private lookupRaw(token: string) {
     return this.dictionary.lookup(token).map(x => expandInterp(x)).flatten();
   }
 
   private lookupParsed(token: string) {
-    return this.lookup(token).map(
+    return this.lookupRaw(token).map(
       x => MorphTag.fromVesumStr(x.flags, undefined, token, x.lemma));
   }
 
@@ -136,6 +121,25 @@ export class MorphAnalyzer {
       }
     }
     return false;
+  }
+
+  private *fromPrefixes(lowercase: string, fromDict: HashSet<any>) {
+    for (let { prefixes, pretest, test, postprocess } of superpref as any) {
+      for (let prefix of prefixes) {
+        if (lowercase.startsWith(prefix) && (!pretest || pretest(lowercase))) {
+          yield* this.lookupParsed(lowercase.substr(prefix.length))
+            .filter(x => (!test || test(x)) && !fromDict.has(x))
+            .map(x => {
+              x.lemma = prefix + x.lemma;
+              if (postprocess) {
+                postprocess(x);
+              }
+              x.setIsAuto();
+              return x;
+            });
+        }
+      }
+    }
   }
 }
 
@@ -156,7 +160,9 @@ function originalAndLowercase(value: string) {
 const ignoreLemmas = new Set(['ввесь', 'весь', 'увесь', 'той', 'цей']);
 function* expandInterp(interp: IMorphInterp) {
   yield interp;
-  if (interp.flags.includes('adj:') && !ignoreLemmas.has(interp.lemma)) {
+  if (interp.flags.includes('adj:')
+      && !ignoreLemmas.has(interp.lemma)
+      && !interp.flags.includes('beforeadj')) {
     let suffixes = interp.flags.includes(':p:')
       ? ['anim:m', 'anim:f', 'anim:n', 'inanim:m', 'inanim:f', 'inanim:n']
       : ['anim', 'inanim'];

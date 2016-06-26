@@ -2,28 +2,20 @@ import { indexTableByColumns, overflowNegative } from '../algo';
 import { isOddball, compare, zipLongest } from '../lang';
 
 export enum Pos {
-  noun,
-  verb,
-  adjective,
   adverb,
-  transgressive,
-  preposition,
-  predicative,  // todo
-  // insert,  // todo
   conjunction,
   particle,
+  preposition,
+  predicative,  // todo
   interjection,
-  transl,  // todo
+  transgressive,
   numeral,
+  verb,
+  noun,
+  adjective,
   error,
   x,
 }
-// export enum Pos2 {
-//   pronoun,
-//   participle,
-//   numeral,
-//   noun,
-// }
 
 export enum Pronoun {
   yes,
@@ -201,7 +193,6 @@ export enum Dimin {
 export enum Possessiveness {
   yes,
 }
-export enum ParadigmOmohnym { }
 export enum SemanticOmohnym { }
 export enum Beforeadj {
   yes,
@@ -214,7 +205,7 @@ export enum Oddness {
   yes,
 }
 
-export enum OmonymParadigm {
+export enum ParadigmOmonym {
   xp1,
   xp2,
   xp3,
@@ -315,7 +306,6 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.preposition, vesumStr: 'prep', mte: 'S' },
   { featStr: 'pos', feat: Pos, vesum: Pos.predicative, vesumStr: 'predic' },  // ?
   // { featStr: 'pos', feat: Pos, vesum: Pos.insert, vesumStr: 'insert' },  // ?
-  { featStr: 'pos', feat: Pos, vesum: Pos.transl, vesumStr: 'transl' },  // ?
   { featStr: 'pos', feat: Pos, vesum: Pos.conjunction, vesumStr: 'conj', mte: 'C' },
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
   { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'intj', mte: 'I' },
@@ -360,15 +350,15 @@ export const FEATURE_TABLE = [
 
   { featStr: 'oddness', feat: Oddness, vesum: Oddness.yes, vesumStr: 'odd' },
 
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp1, vesumStr: 'xp1' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp2, vesumStr: 'xp2' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp3, vesumStr: 'xp3' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp4, vesumStr: 'xp4' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp5, vesumStr: 'xp5' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp6, vesumStr: 'xp6' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp7, vesumStr: 'xp7' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp8, vesumStr: 'xp8' },
-  { featStr: 'omonymParadigm', feat: OmonymParadigm, vesum: OmonymParadigm.xp9, vesumStr: 'xp9' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp3, vesumStr: 'xp3' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp4, vesumStr: 'xp4' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp5, vesumStr: 'xp5' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp6, vesumStr: 'xp6' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp7, vesumStr: 'xp7' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp8, vesumStr: 'xp8' },
+  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp9, vesumStr: 'xp9' },
 ];
 
 export const MTE_FEATURES = {
@@ -433,7 +423,7 @@ export class Features {
   auto: Auto = null;
   beforeadj: Beforeadj = null;
   oddness: Oddness = null;
-  omonymParadigm: OmonymParadigm = null;
+  paradigmOmonym: ParadigmOmonym = null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -449,6 +439,9 @@ export class MorphTag {
   features = new Features();
   otherFlags = new Set<string>();
 
+  static hash(value: MorphTag) {
+    return value.toVesumStr() + (value.lemma ? ` ${value.lemma}` : '');
+  }
 
   static isValidVesumStr(value: string) {  // todo
     try {
@@ -660,6 +653,7 @@ export class MorphTag {
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
 
+  isComparable() { return this.features.degree !== null; }
   isPerfect() { return this.features.aspect === Aspect.perfect; }
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isFeminine() { return this.features.gender === Gender.feminine; }
@@ -671,6 +665,7 @@ export class MorphTag {
 
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : null; return this; }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : null; return this; }
+  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : null; return this; }
 
   canBeKharkivSty() {
     return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber());
@@ -739,6 +734,7 @@ export const FEATURE_ORDER = {
     PronominalType,
     Aspect,
     Voice,
+    OrdinalNumeral,
   ],
   [Pos.verb]: [
     Pos,
@@ -778,7 +774,7 @@ export const FEATURE_ORDER = {
     CaseInflectability,
     Alternativity,
     NumberTantum,
-    ParadigmOmohnym,
+    ParadigmOmonym,
     SemanticOmohnym,
     NameType,
     Possessiveness,
@@ -792,7 +788,7 @@ export const FEATURE_ORDER = {
 };
 
 for (let pos of Object.keys(FEATURE_ORDER)) {
-  FEATURE_ORDER[pos].push(OmonymParadigm, Colloquial, Rarity, Bad, Oddness);
+  FEATURE_ORDER[pos].push(ParadigmOmonym, Colloquial, Rarity, Bad, Oddness);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -827,7 +823,7 @@ export function tryMapVesumFlag(value: string) {
   if (match) {
     return {
       featStr: value.charAt(1) === 'p' ? 'paradigmOmohnym' : 'semanticOmohnym',
-      feat: value.charAt(1) === 'p' ? ParadigmOmohnym : SemanticOmohnym,
+      feat: value.charAt(1) === 'p' ? ParadigmOmonym : SemanticOmohnym,
       vesum: Number.parseInt(match[1]),
       vesumStr: value,
     };

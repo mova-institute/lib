@@ -492,7 +492,7 @@ export function normalizeCorpusText(root: AbstractElement) {
     textNode.text(res);
   }
 
-  let ret = root.document().serialize();
+  let ret = root.document().serialize(true);
 
   // todo:
   // if orig has >2 words
