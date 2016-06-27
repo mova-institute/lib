@@ -26,7 +26,7 @@ export enum Participle {
 export enum OrdinalNumeral {
   yes,
 }
-export enum AdjectiveNoun {
+export enum AdjectiveAsNoun {
   yes,
 }
 
@@ -316,7 +316,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
   { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
-  { featStr: 'adjectiveNoun', feat: AdjectiveNoun, vesum: AdjectiveNoun.yes, vesumStr: '&noun' },
+  { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
 
   { featStr: 'gender', feat: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
   { featStr: 'gender', feat: Gender, vesum: Gender.feminine, vesumStr: 'f', mte: 'f' },
@@ -399,7 +399,7 @@ export class Features {
   pronoun: Pronoun;
   participle: Participle;
   ordinalNumeral: OrdinalNumeral;
-  adjectiveNoun: AdjectiveNoun;
+  adjectiveAsNoun: AdjectiveAsNoun;
   case: Case;
   requiredCase: RequiredCase;
   number: Numberr;
@@ -499,8 +499,8 @@ export class MorphTag {
     return ret;
   }
 
-  static fromVesumStr(flags: string, lemmaTag?: string, form?: string, lemma?: string) {
-    return MorphTag.fromVesum(flags.split(':'), lemmaTag && lemmaTag.split(':'), form, lemma);
+  static fromVesumStr(flags: string, lemmaFlags?: string, form?: string, lemma?: string) {
+    return MorphTag.fromVesum(flags.split(':'), lemmaFlags && lemmaFlags.split(':'), form, lemma);
   }
 
   static fromMte(tag: string, form?: string) {
@@ -591,7 +591,7 @@ export class MorphTag {
     for (let name of Object.keys(this.features)) {
       let value = this.features[name];
       if (value === undefined
-        || this.features.number === Numberr.plural && name === 'gender'
+        || this.features.number === Numberr.plural && name === 'gender' && !this.isAdjectiveAsNoun()
         || this.isTransgressive() && this.isPerfect() && name === 'tense') {
         continue;
       }
@@ -653,11 +653,15 @@ export class MorphTag {
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
 
+  isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
+
+  isInanimate() { return this.features.animacy === Animacy.inanimate; }
   isComparable() { return this.features.degree !== undefined; }
   isPerfect() { return this.features.aspect === Aspect.perfect; }
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isFeminine() { return this.features.gender === Gender.feminine; }
   isSingular() { return this.features.number === Numberr.singular; }  // todo: tantum?
+  isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular; }  // todo: tantum?
   isBeforeadj() { return this.features.beforeadj === Beforeadj.yes; }
   isOdd() { return this.features.oddness === Oddness.yes; }
 
@@ -729,7 +733,7 @@ export const FEATURE_ORDER = {
     NumberTantum,
     Pronoun,
     Participle,
-    AdjectiveNoun,
+    AdjectiveAsNoun,
     Animacy,
     PronominalType,
     Aspect,
@@ -781,7 +785,7 @@ export const FEATURE_ORDER = {
     Pronoun,
     Participle,
     OrdinalNumeral,
-    AdjectiveNoun,
+    AdjectiveAsNoun,
     PronominalType,
     Person,
   ],
@@ -819,7 +823,7 @@ export function createVesumFlagComparator2(pos: Pos) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tryMapVesumFlag(value: string) {
-  let match = /^x[vp](\d+)$/.exec(value);
+  let match = /^x[v](\d+)$/.exec(value);
   if (match) {
     return {
       featStr: value.charAt(1) === 'p' ? 'paradigmOmohnym' : 'semanticOmohnym',
@@ -875,7 +879,7 @@ export function mapVesumFeatureValue(featureName: string, value) {
 ////////////////////////////////////////////////////////////////////////////////
 const featureCompareOrder = new Set([
   Pos,
-  AdjectiveNoun,
+  AdjectiveAsNoun,
   Participle,
   Pronoun,
   OrdinalNumeral,

@@ -31,7 +31,7 @@
 			"stopOnEntry": false,
 			"args": [
         "-t",
-        "кінець 20-х рр. століття"
+        "20-ті"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
@@ -68,7 +68,31 @@
 			"sourceMaps": true,
 			"outDir": "${workspaceRoot}/lib"
 		},
-
+    {
+			"name": "do",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/src/bin/do.ts",
+			"stopOnEntry": false,
+			"args": [
+        "nlp/vesum_utils",
+        "domesticateDictCorpViz",
+        "../dict/out/dict_corp_vis.txt",
+        "../dict/out/expanded.txt"
+      ],
+			"cwd": "${workspaceRoot}",
+			"preLaunchTask": null,
+			"runtimeExecutable": null,
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"externalConsole": false,
+			"sourceMaps": true,
+			"outDir": "${workspaceRoot}/lib"
+		},
 
 		{
 			"name": "Attach",

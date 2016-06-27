@@ -20,23 +20,50 @@ export class Dictionary {
   }
 
   lookup(word: string) {
-    return wu(this.words.get(word)).map(x => this.getTag(word, x));
+    return wu(this.words.get(word)).map(x => this.buildInterp(word, x));
   }
 
   lookupVariants(words: Iterable<string>) {
     return new HashSet(IMorphInterp.hash, wu.chain(...wu(words).map(x => this.lookup(x))));
   }
 
-  private getTag(word: string, paraIndex: WordDawgPayload): IMorphInterp {
-    let paradigm = this.paradigms[paraIndex.paradigmId];
+  lookupLexemesByLemma(lemma: string) {
+    return wu(this.words.get(lemma))
+      .filter(x => x.indexInPradigm === 0)
+      .map(x => this.buildLexeme(x.paradigmId, lemma));
+  }
 
-    let formSuffix = this.suffixes[paradigm[paraIndex.indexInPradigm]];
+  private nthInParadigm(paradigm: Uint16Array, n: number) {
+    let suffix = this.suffixes[paradigm[n]];
+    let flags = this.flags[paradigm[paradigm.length / 3 + n]];
+    let prefix = this.flags[paradigm[paradigm.length / 3 * 2 + n]];
+
+    return { suffix, flags, prefix };
+  }
+
+  private buildInterp(word: string, paraIndex: WordDawgPayload): IMorphInterp {
+    let paradigm = this.paradigms[paraIndex.paradigmId];
+    let { suffix, flags, prefix } = this.nthInParadigm(paradigm, paraIndex.indexInPradigm);
+
     let lemmaSuffix = this.suffixes[paradigm[0]];
-    let lemma = word.slice(0, -formSuffix.length || word.length) + lemmaSuffix;
+    let lemma = word.slice(0, -suffix.length || word.length) + lemmaSuffix;
     // todo: prefixed
 
-    let flags = this.flags[paradigm[paradigm.length / 3 + paraIndex.indexInPradigm]];
-
     return { lemma, flags };
+  }
+
+  private *buildLexeme(paradigmIndex: number, lemma: string) {
+    let paradigm = this.paradigms[paradigmIndex];
+    let lemmaInterp = this.nthInParadigm(paradigm, 0);
+    let stem = lemma.substr(0, lemma.length - lemmaInterp.suffix.length);
+    for (let i = 0; i < paradigm.length / 3; ++i) {
+      let { suffix, flags } = this.nthInParadigm(paradigm, i);
+      yield {
+        form: stem + suffix,
+        flags,
+        lemma,
+        lemmaFlags: lemmaInterp.flags,
+      };
+    }
   }
 }

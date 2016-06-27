@@ -7,7 +7,7 @@ import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
 import { MorphTag, compareTags } from './morph_tag';
-import { WORDCHAR_UK_RE, WORDCHAR } from './static';
+import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static';
 
 const wu: Wu.WuStatic = require('wu');
 
@@ -489,7 +489,8 @@ export function normalizeCorpusText(root: AbstractElement) {
   for (let textNode of root.evaluateNodes('//text()', NS)) {
     let res = textNode.text()
       .replace(new RegExp(r`([${WORDCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
-      .replace(/ [-–] /g, ' — ');
+      .replace(/ [-–] /g, ' — ')
+      .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’');
 
     textNode.text(res);
   }
