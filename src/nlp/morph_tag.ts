@@ -342,7 +342,7 @@ export const FEATURE_TABLE = [
 
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
 
-  { featStr: 'poss', feat: Possessiveness, vesum: Possessiveness.yes, vesumStr: 'pos' },
+  { featStr: 'poss', feat: Possessiveness, vesum: Possessiveness.yes, vesumStr: 'poss' },
 
   { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
 

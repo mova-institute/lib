@@ -42,7 +42,7 @@ const tagMap = {
 
   'pers': { feat: 'pronounType', mte: 'p' },
   'refl': { feat: 'pronounType', mte: 'x' },
-  'pos': { feat: 'pronounType', mte: 's' },
+  'poss': { feat: 'pronounType', mte: 's' },
   'dem': { feat: 'pronounType', mte: 'd' },
   'int': { feat: 'pronounType', mte: 'q' },
   'rel': { feat: 'pronounType', mte: 'r' },
