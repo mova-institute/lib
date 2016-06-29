@@ -118,15 +118,11 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
     if (beforeadj) {
       return beforeadj[0];
     }
-    return x.replace('&_adjp', '&adjp');
+    return x.replace('&adjp', '&_adjp');
   });
   lexemeLoop:
   for (let lexeme of chunkLexemes(lines)) {
-    if (lexeme[0].includes('&adjp')) {  // we omohnymize both &adjp and &_adjp
-      yield* wu(lexeme).map(x => x.replace(/:&adjp|:actv|:pasv|:imperf|:perf/g, ''));
-      yield* lexeme;
-    }
-    else if (lexeme[0].includes('&_numr')) {
+    if (lexeme[0].includes('&_numr')) {
       yield* wu(lexeme).map(x => x.replace(':&_numr', ''));
       yield* wu(lexeme).map(x => x.replace('&_numr', '&numr'));
     }

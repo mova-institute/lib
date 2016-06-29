@@ -314,7 +314,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
-  { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
+  { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&_adjp' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
   { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
 
