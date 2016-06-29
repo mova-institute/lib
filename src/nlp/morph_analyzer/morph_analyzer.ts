@@ -1,3 +1,4 @@
+import { findAllIndexes } from '../../algo';
 import { Dictionary } from '../dictionary/dictionary';
 import { IMorphInterp } from '../interfaces';
 import { MorphTag } from '../morph_tag';
@@ -73,20 +74,16 @@ export class MorphAnalyzer {
       return [{ lemma: token, flags: this.foreignTag }];
     }
 
-    let lookupee = originalAndLowercase(token);
-    let lowercase = lookupee[0];
-
+    let lookupees = originalAndLowercase(token);
+    let lowercase = lookupees[0];
     if (nextToken === '.') {
-      lookupee.push(...lookupee.map(x => x + '.'));
+      lookupees.push(...lookupees.map(x => x + '.'));
     }
 
     let ret = new HashSet(MorphTag.hash,
-      wu(lookupee).map(x => this.lookup(x)).flatten() as Iterable<MorphTag>);
+      wu(lookupees).map(x => this.lookup(x)).flatten() as Iterable<MorphTag>);
 
-    // if (!ret.size) {
-    //   ret.addMany(this.dictionary.lookupVariants(lookupee.map(x => x.replace(/ґ/g, 'г'))));
-    // }
-
+    // ret.addAll(this.fromMisspelledG(lookupees));
     ret.addAll(this.fromPrefixes(lowercase, ret));
 
     // try одробив is the same as відробив
@@ -163,20 +160,38 @@ export class MorphAnalyzer {
     return false;
   }
 
+  // private *fromMisspelledG(lookupees: string[]) {
+  //   for (let lookupee of lookupees) {
+  //     let indexes = [...findAllIndexes(lookupee, x => x.toLocaleLowerCase() === 'ґ')];
+  //     if (indexes.length) {
+  //       for (let interp of this.lookup(replaceG(lookupee))) {
+  //         let lemmaConvertable = wu.zip(indexes, findAllIndexes(interp.lemma, x => x.toLocaleLowerCase() === 'ґ'))
+  //           .every(([a, b]) => a === b);
+  //         if (lemmaConvertable) {
+  //           interp.lemma = replaceG(interp.lemma);
+  //           yield interp;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
   private *fromPrefixes(lowercase: string, fromDict: HashSet<any>) {
     for (let { prefixes, pretest, test, postprocess } of PREFIX_SPECS as any) {
       for (let prefix of prefixes) {
         if (lowercase.startsWith(prefix) && (!pretest || pretest(lowercase))) {
-          yield* this.lookup(lowercase.substr(prefix.length))
-            .filter(x => (!test || test(x)) && !fromDict.has(x))
-            .map(x => {
-              x.lemma = prefix + x.lemma;
+          for (let interp of this.lookup(lowercase.substr(prefix.length))) {
+            if (!test || test(interp)) {
+              interp.lemma = prefix + interp.lemma;
               if (postprocess) {
-                postprocess(x);
+                postprocess(interp);
               }
-              x.setIsAuto();
-              return x;
-            });
+              if (!fromDict.has(interp)) {
+                interp.setIsAuto();
+                yield interp;
+              }
+            }
+          }
         }
       }
     }
@@ -220,6 +235,10 @@ function* expandInterp(flags: string, lemma?: string) {
   }
 }
 
+//------------------------------------------------------------------------------
+// function replaceG(value: string) {
+//   return value.replace(/ґ/g, 'г').replace(/Ґ/g, 'Г');
+// }
 
 /*
 
