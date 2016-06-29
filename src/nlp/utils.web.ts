@@ -8,7 +8,7 @@ import { tokenizeTei, morphInterpret, enumerateWords, firstNWords } from './util
 
 ////////////////////////////////////////////////////////////////////////////////
 export function fragmentCorpusText(doc: Document) {
-  const NUM_WORDS = 100;
+  const NUM_WORDS = 80;
   let ret = new Array<DocumentFragment>();
 
   let paragraphs: any[] = xpath(doc, '//tei:title|//tei:text//tei:p|//tei:lg', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
