@@ -260,8 +260,9 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     let form = token.text();
     let interp = token.interp();
     token.elem.clear();
+    token.resetDisamb();
     fillInterpElement(token.elem, form, analyzer.tagOrX(form));
-    if (interp) {
+    if (interp && token.hasInterp(interp.flags, interp.lemma)) {
       token.setInterp(interp.flags, interp.lemma);
     }
   }
