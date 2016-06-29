@@ -25,6 +25,7 @@ export enum Participle {
 }
 export enum OrdinalNumeral {
   yes,
+  maybe,
 }
 export enum AdjectiveAsNoun {
   yes,
@@ -316,6 +317,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
   { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&_adjp' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
+  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.maybe, vesumStr: '&_numr' },
   { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
 
   { featStr: 'gender', feat: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
