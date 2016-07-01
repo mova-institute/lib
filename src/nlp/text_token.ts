@@ -77,6 +77,13 @@ export class TextToken {
     return this.interps().filter(x => x.flags !== TextToken.FLAGS_X);
   }
 
+  possibleInterps() {
+    if (this.isDisambed()) {
+      return [this.interp()];
+    }
+    return this.definiteInterps();
+  }
+
   hasDefiniteInterps() {
     return !!this.definiteInterps().length;  // todo: optimize
   }

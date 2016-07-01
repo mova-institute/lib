@@ -503,3 +503,39 @@ export function normalizeCorpusText(root: AbstractElement) {
   // invisible spaces, libxmljs set entities
   return ret;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function* tei2nosketch(root: AbstractElement) {
+  let docName = getTeiDocName(root.document());
+  if (!docName) {
+    throw new Error(`Document has no TEI title`);
+  }
+  yield `<doc>`;
+  for (let e of root.evaluateElements('//mi:w|//mi:g|//tei:pc|//tei:p', NS)) {
+    switch (e.name()) {
+      case W_: {
+        for (let {flags, lemma} of $t(e).possibleInterps()) {
+          yield nosketchLine(e.text(), lemma, flags);
+        }
+        break;
+      }
+
+      case PC:
+        yield nosketchLine(e.text(), e.text(), 'punct');
+        break;
+
+      case elements.G:
+        yield '<g/>';
+        break;
+
+      default:
+        throw new Error(`Unexpected element name "${e.name()}"`);
+    }
+  }
+  yield `</doc>`;
+}
+
+//------------------------------------------------------------------------------
+function nosketchLine(token: string, lemma: string, tag: string) {
+  return `${token}\t${lemma}\t${tag}`;
+}

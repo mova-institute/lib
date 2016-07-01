@@ -16,12 +16,17 @@ export function cantBeXml(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function escape(val: string) {   // todo
-  return val.replace(/&/g, '&amp;')
+export function escape(value: string) {   // todo
+  return value.replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function removeTags(value: string) {
+  return value.replace(/<[^>]+>/g, '');
 }
 
 ////////////////////////////////////////////////////////////////////////////////

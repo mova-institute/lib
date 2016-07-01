@@ -20,7 +20,7 @@ export class Dictionary {
   }
 
   lookup(word: string) {
-    return wu(this.words.get(word)).map(x => this.buildInterp(word, x));
+    return wu(this.words.getArray(word)).map(x => this.buildInterp(word, x));
   }
 
   lookupVariants(words: Iterable<string>) {
@@ -28,7 +28,7 @@ export class Dictionary {
   }
 
   lookupLexemesByLemma(lemma: string) {
-    return wu(this.words.get(lemma))
+    return wu(this.words.getArray(lemma))
       .filter(x => x.indexInPradigm === 0)
       .map(x => this.buildLexeme(x.paradigmId, lemma));
   }

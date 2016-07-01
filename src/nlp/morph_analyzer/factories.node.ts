@@ -2,10 +2,11 @@ import { Dictionary } from '../dictionary/dictionary';
 import { WordDawgPayload } from '../dictionary/word_dawg_payload';
 import { MorphAnalyzer } from './morph_analyzer';
 import { readFileSync } from 'fs';
-import { createStringMapDawgSync } from 'dawgjs';
+import { readStringMapDawgSync } from 'dawgjs';
+import { getLibRootRelative } from '../../path.node';
 
 
-export function createMorphAnalyserSync(dictFolder: string) {
+export function createMorphAnalyserSync(dictFolder = getLibRootRelative('../data/dict/vesum')) {
   let tags = JSON.parse(readFileSync(dictFolder + '/tags.json', 'utf8'));
   let suffixes = JSON.parse(readFileSync(dictFolder + '/suffixes.json', 'utf8'));
 
@@ -19,7 +20,7 @@ export function createMorphAnalyserSync(dictFolder: string) {
     curByte += paradigmByteLen;
   }
 
-  let words = createStringMapDawgSync<WordDawgPayload>(dictFolder + '/words.dawg', WordDawgPayload.create);
+  let words = readStringMapDawgSync<WordDawgPayload>(dictFolder + '/words.dawg', WordDawgPayload.create);
 
   let numberTag = dictFolder.includes('vesum') ? 'numr:digit' : 'Md';  // todo
   let dictionary = new Dictionary(words, paradigms, suffixes, tags);
