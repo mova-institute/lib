@@ -129,7 +129,9 @@ export class MorphAnalyzer {
       // }
     }
 
-    return wu(ret).map(x => x.toVesumStrMorphInterp());
+    return wu(ret)
+      .filter(x => nextToken === '-' || !x.isBeforeadj())
+      .map(x => x.toVesumStrMorphInterp());
   }
 
   tagOrX(token: string, nextToken?: string) {

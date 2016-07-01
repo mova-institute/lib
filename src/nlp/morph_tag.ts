@@ -163,8 +163,8 @@ export enum Bad {
   yes,
 }
 export enum ConjunctionType {
-  coordinating,
   subordinating,
+  coordinating,
 }
 export enum NumberTantum {
   noPlural,
@@ -315,7 +315,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
-  { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&_adjp' },
+  { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.maybe, vesumStr: '&_numr' },
   { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
@@ -735,12 +735,12 @@ export const FEATURE_ORDER = {
     NumberTantum,
     Pronoun,
     Participle,
-    AdjectiveAsNoun,
-    Animacy,
     PronominalType,
     Aspect,
     Voice,
     OrdinalNumeral,
+    AdjectiveAsNoun,
+    Animacy,
   ],
   [Pos.verb]: [
     Pos,

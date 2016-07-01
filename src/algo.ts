@@ -138,3 +138,13 @@ export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = l
 export function unique<T>(array: T[]) {
   return [...new Set(array)];
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function* findAllIndexes<T>(iterable: Iterable<T>, predicate: (value: T) => boolean) {
+  let i = 0;
+  for (let value of iterable) {
+    if (predicate(value)) {
+      yield i++;
+    }
+  }
+}
