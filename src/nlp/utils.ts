@@ -469,6 +469,16 @@ export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: Abstrac
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function normalizeCorpusTextString(value: string) {
+  return value
+    .replace(new RegExp(r`([${WORDCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
+    .replace(/ [-–] /g, ' — ')
+    .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
+    .replace(new RegExp(r`(\s)"([${LETTER_UK}\w])`, 'g'), '$1“$2')
+    .replace(new RegExp(r`([${LETTER_UK}\w])"(\s)`, 'g'), '$1”$2')
+}
+
+////////////////////////////////////////////////////////////////////////////////
 const unboxElems = new Set(['nobr', 'img']);
 const removeElems = new Set(['br']);
 export function normalizeCorpusText(root: AbstractElement) {
@@ -486,11 +496,7 @@ export function normalizeCorpusText(root: AbstractElement) {
   });
 
   for (let textNode of root.evaluateNodes('//text()', NS)) {
-    let res = textNode.text()
-      .replace(new RegExp(r`([${WORDCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
-      .replace(/ [-–] /g, ' — ')
-      .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’');
-
+    let res = normalizeCorpusTextString(textNode.text());
     textNode.text(res);
   }
 
@@ -503,14 +509,13 @@ export function normalizeCorpusText(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+const MULTISEP = '|';
 export function* tei2nosketch(root: AbstractElement) {
-
-  // let docName = getTeiDocName(root.document());
-  // console.log(root.serialize());
-  // if (!docName) {
-  //   throw new Error(`Document has no TEI title`);
-  // }
-  yield `<doc>`;
+  let docName = getTeiDocName(root.document());
+  if (!docName) {
+    throw new Error(`Document has no TEI title`);
+  }
+  yield `<doc id="${docName.substr(0, 20)}">`;
 
   let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
   for (let {node, entering} of elements) {
@@ -522,7 +527,7 @@ export function* tei2nosketch(root: AbstractElement) {
     switch (e.name()) {
       case elementNames.W_: {
         let [flagss, lemmas] = $t(e).possibleInterpsUnzipped();
-        yield nosketchLine($t(e).text(), lemmas.join(';'), flagss.join(';'));
+        yield nosketchLine($t(e).text(), lemmas.join(MULTISEP), flagss.join(MULTISEP));
         break;
       }
 

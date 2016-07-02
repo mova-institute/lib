@@ -21,7 +21,7 @@ export class JsonCompareSet<T> {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class HashSet<T> /*implements Set<T>*/{
+export class HashSet<T> /*implements Set<T>*/ {
   protected map = new Map<string, T>();
 
   constructor(protected hasher: (value: T) => string, source?: Iterable<T>) {
@@ -60,6 +60,10 @@ export class HashSet<T> /*implements Set<T>*/{
     for (let entry of this.map.entries()) {
       yield [entry[1], entry[1]] as [T, T];
     }
+  }
+
+  *hashEntries() {
+    yield* this.map.entries()
   }
 
   keys() {

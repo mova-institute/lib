@@ -1,6 +1,6 @@
 import * as xmlUtils from '../../xml/utils';
 import { string2lxmlRoot } from '../../utils.node';
-import { tokenizeTei, morphInterpret, tei2nosketch } from '../utils';
+import { tokenizeTei, morphInterpret, tei2nosketch, normalizeCorpusTextString } from '../utils';
 import { createMorphAnalyserSync } from '../morph_analyzer/factories.node';
 
 // import { AllHtmlEntities } from 'html-entities';
@@ -21,51 +21,43 @@ const morphAnalyzer = createMorphAnalyserSync();
 main();
 
 //------------------------------------------------------------------------------
-function kotsybaUltif2DirtyTei(filename: string, destDir: string, corpusStream?: fs.WriteStream) {
+function kotsybaUltif2DirtyTei(filename: string, destDir: string, corpusFile?: number) {
   let buffer = fs.readFileSync(filename);
   let charset = charsetDetector.detectCharset(buffer);
-  let basename = path.basename(filename);
+  let basename = path.basename(filename).replace(/\.txt$/, '.xml');
 
   let destPath = `${destDir}/${basename}`;
   try {
-    let content = buffer.toString(charset);
-    content = content.replace(/[\r\x00-\0x1F]/g, '');
-    let bibliographyTry = content.match(/<bibliography>(.*)<\/bibliography>/);
-    let title;
+    let body = buffer.toString(charset);
+    body = body.replace(/[\r\x00-\0x1F]/g, '');
+    let bibliographyTry = body.match(/<bibliography>(.*)<\/bibliography>/);
+    let title: string;
     if (bibliographyTry && bibliographyTry.length > 1) {
-      title = xmlUtils.removeTags(bibliographyTry[1]).trim().replace(/\s+/g, ' ');
+      title = xmlUtils
+        .removeTags(bibliographyTry[1])
+        .trim().replace(/\s+/g, ' ');
     } else {
-      title = basename;
+      title = basename.replace(/\.xml$/, '').split(/[\s_]+/).map(x => capitalizeFirst(x)).join(' ');
     }
-    content = xmlUtils.removeTags(content);
-    // fileString = entities.encode(fileString);
-    content = xmlUtils.escape(content);
-    content = `<p>${content}</p>`;
-    // fileString = '<p>' + fileString
-    //   // .replace(/<\/p>/g, '\n')
-    //   .replace(/<[^>]+>/g, '')
-    //   .trim()
-    //   // .replace(/(\n+\s*)+/g, '</p>\n<p>')
-    //   + '</p>';
-    content = teiString({
-      title,
-      body: content,
-    });
+    body = xmlUtils.removeElements(body, ['bibliography', 'comment', 'annotation']);
+    body = xmlUtils.removeTags(body);
+    body = normalizeCorpusTextString(body);
+    body = xmlUtils.escape(body);
+    body = `<p>${body}</p>`;
+    body = teiString({ title, body });
     // fs.writeFileSync('problem.xml', fileString, 'utf8')
-    let root = string2lxmlRoot(content);
+    let root = string2lxmlRoot(body);
     tokenizeTei(root, morphAnalyzer);
     // console.profile('morphInterpret');
     morphInterpret(root, morphAnalyzer);
     // console.profileEnd('morphInterpret');
-    content = root.serialize();
+    body = root.serialize();
 
-    // todo: treat duplicate filenmes
-    mkdirp.sync(destDir);
-    fs.writeFileSync(destPath, content, 'utf8');
+    fs.writeFileSync(destPath, body, 'utf8');
 
-    if (corpusStream) {
+    if (corpusFile !== undefined) {
       for (let line of tei2nosketch(root)) {
-        corpusStream.write(line);
+        fs.appendFileSync(corpusFile as any, line + '\n', 'utf8');
       }
     }
   }
@@ -118,12 +110,15 @@ function teiString(params) {
 }
 
 //------------------------------------------------------------------------------
+function capitalizeFirst(value: string) {
+  return value.charAt(0).toLocaleUpperCase() + value.slice(1);
+}
+
+//------------------------------------------------------------------------------
 function main() {
   let filenames = buildFilenames(args.in);
-  let corpusStream;
-  if (args.tee) {
-    corpusStream = fs.createWriteStream(args.out + 'corpus.vertical.txt', 'utf8');
-  }
+  mkdirp.sync(args.out);
+  let corpusFile = args.tee ? fs.openSync(args.out + 'corpus.vertical.txt', 'a') : undefined;
   console.log(`processing ${filenames.size} files...`);
   let i = 0;
   for (let filePath of filenames.values()) {
@@ -135,7 +130,7 @@ function main() {
     }
     else {
       console.log(`processing "${basename}" (${i} of ${filenames.size})`);
-      kotsybaUltif2DirtyTei(filePath, args.out, corpusStream);
+      kotsybaUltif2DirtyTei(filePath, args.out, corpusFile);
     }
   }
 }

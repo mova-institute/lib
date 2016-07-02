@@ -30,6 +30,13 @@ export function removeTags(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function removeElements(xmlString: string, names: string[]) {
+  let namesRe = names.join('|');
+  let re = new RegExp(String.raw`<\s*(${namesRe})[^>]*>[^<]*</\s*(${namesRe})\s*>`, 'g');
+  return xmlString.replace(re, '');
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function xmlNsResolver(prefix: string) {
   return NS[prefix] || null;
 }
