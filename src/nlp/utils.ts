@@ -469,13 +469,48 @@ export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: Abstrac
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+const LATIN_CYR_GLYPH_MISSPELL = {
+  'e': 'е',
+  'y': 'у',
+  'i': 'і',
+  'o': 'о',
+  'p': 'р',
+  'a': 'а',
+  'x': 'х',
+  'c': 'с',
+  'E': 'Е',
+  'T': 'Т',
+  'I': 'І',
+  'O': 'О',
+  'P': 'Р',
+  'A': 'А',
+  'H': 'Н',
+  'K': 'К',
+  'X': 'Х',
+  'C': 'С',
+  'B': 'В',
+  'M': 'М',
+}
+const latinMisspells = Object.keys(LATIN_CYR_GLYPH_MISSPELL).join('');
+const latinMisspellsRe1 = new RegExp(r`([${LETTER_UK}])([${latinMisspells}])`, 'g');
+const latinMisspellsRe2 = new RegExp(r`([${latinMisspells}])([${LETTER_UK}])`, 'g');
+export function fixLatinGlyphMisspell(value: string) {
+  value = value.replace(latinMisspellsRe1, (match, cyr, latin) => cyr + LATIN_CYR_GLYPH_MISSPELL[latin])
+  value = value.replace(latinMisspellsRe2, (match, latin, cyr) => LATIN_CYR_GLYPH_MISSPELL[latin] + cyr)
+  return value;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextString(value: string) {
-  return value
+  let ret = value
     .replace(new RegExp(r`([${WORDCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
     .replace(/ [-–] /g, ' — ')
     .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
     .replace(new RegExp(r`(\s)"([${LETTER_UK}\w])`, 'g'), '$1“$2')
     .replace(new RegExp(r`([${LETTER_UK}\w])"(\s)`, 'g'), '$1”$2')
+  ret = fixLatinGlyphMisspell(ret)
+
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -531,7 +566,7 @@ export function* tei2nosketch(root: AbstractElement) {
         break;
       }
 
-      case PC:
+      case 'pc':  // todo
         yield nosketchLine(e.text(), e.text(), 'punct');
         break;
 

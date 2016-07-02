@@ -91,7 +91,11 @@ export class TextToken {
     }
     let flagss = new Set<string>();
     let lemmas = new Set<string>();
-    for (let {flags, lemma} of this.definiteInterps()) {
+    let interps = this.definiteInterps();
+    if (!interps.length) {
+      interps = this.interps();
+    }
+    for (let {flags, lemma} of interps) {
       flagss.add(flags);
       lemmas.add(lemma);
     }

@@ -5,13 +5,12 @@
 			"name": "test",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/src/nlp/grabbers/kotsyba_ulif.node.ts",
+			"program": "${workspaceRoot}/src/nlp/tei2nosketch.ts",
 			"stopOnEntry": false,
 			"args": [
-        "--in",
-        "/Users/msklvsk/Downloads/BM/**/dl000004.txt",
+        "~/Downloads/corpik/**/*",
         "--out",
-        "~/Downloads/corpik/"
+        "/Users/msklvsk/Downloads/corp.vertical.txt"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
