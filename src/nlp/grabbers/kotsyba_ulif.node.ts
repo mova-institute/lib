@@ -1,6 +1,6 @@
 import * as xmlUtils from '../../xml/utils';
 import { string2lxmlRoot } from '../../utils.node';
-import { tokenizeTei, morphInterpret } from '../utils';
+import { tokenizeTei, morphInterpret, tei2nosketch } from '../utils';
 import { createMorphAnalyserSync } from '../morph_analyzer/factories.node';
 
 // import { AllHtmlEntities } from 'html-entities';
@@ -13,78 +13,81 @@ const globSync = require('glob').sync;
 
 
 // const entities = new AllHtmlEntities();
-const args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2), {
+  boolean: ['tee'],
+});
 const morphAnalyzer = createMorphAnalyserSync();
 
 main();
 
 //------------------------------------------------------------------------------
-function kotsybaUltif2DirtyTei(filename: string, destDir: string) {
+function kotsybaUltif2DirtyTei(filename: string, destDir: string, corpusStream?: fs.WriteStream) {
   let buffer = fs.readFileSync(filename);
   let charset = charsetDetector.detectCharset(buffer);
   let basename = path.basename(filename);
 
-  console.log(`processing "${basename}" charset ${charset} confidence ${charset.confidence}`);
-
-  let fileString;
+  let destPath = `${destDir}/${basename}`;
   try {
-     fileString = buffer.toString(charset);
+    let content = buffer.toString(charset);
+    content = content.replace(/[\r\x00-\0x1F]/g, '');
+    let bibliographyTry = content.match(/<bibliography>(.*)<\/bibliography>/);
+    let title;
+    if (bibliographyTry && bibliographyTry.length > 1) {
+      title = xmlUtils.removeTags(bibliographyTry[1]).trim().replace(/\s+/g, ' ');
+    } else {
+      title = basename;
+    }
+    content = xmlUtils.removeTags(content);
+    // fileString = entities.encode(fileString);
+    content = xmlUtils.escape(content);
+    content = `<p>${content}</p>`;
+    // fileString = '<p>' + fileString
+    //   // .replace(/<\/p>/g, '\n')
+    //   .replace(/<[^>]+>/g, '')
+    //   .trim()
+    //   // .replace(/(\n+\s*)+/g, '</p>\n<p>')
+    //   + '</p>';
+    content = teiString({
+      title,
+      body: content,
+    });
+    // fs.writeFileSync('problem.xml', fileString, 'utf8')
+    let root = string2lxmlRoot(content);
+    tokenizeTei(root, morphAnalyzer);
+    // console.profile('morphInterpret');
+    morphInterpret(root, morphAnalyzer);
+    // console.profileEnd('morphInterpret');
+    content = root.serialize();
+
+    // todo: treat duplicate filenmes
+    mkdirp.sync(destDir);
+    fs.writeFileSync(destPath, content, 'utf8');
+
+    if (corpusStream) {
+      for (let line of tei2nosketch(root)) {
+        corpusStream.write(line);
+      }
+    }
   }
   catch (e) {
-    console.log(`ERROR: ${e.message}. Ignoring file ${basename}`);
-    return;
+    console.log(`ERROR: ${e.message} Ignoring file ${basename}`);
   }
-  fileString = fileString.replace(/[\r\0]/g, '');
-  let bibliographyTry = fileString.match(/<bibliography>(.*)<\/bibliography>/);
-  let title;
-  if (bibliographyTry && bibliographyTry.length > 1) {
-    title = xmlUtils.removeTags(bibliographyTry[1]).trim().replace(/\s+/g, ' ');
-  } else {
-    title = basename;
-  }
-  fileString = xmlUtils.removeTags(fileString);
-  // fileString = entities.encode(fileString);
-  fileString = xmlUtils.escape(fileString);
-  fileString = `<p>${fileString}</p>`;
-  // fileString = '<p>' + fileString
-  //   // .replace(/<\/p>/g, '\n')
-  //   .replace(/<[^>]+>/g, '')
-  //   .trim()
-  //   // .replace(/(\n+\s*)+/g, '</p>\n<p>')
-  //   + '</p>';
-  fileString = teiString({
-    title,
-    body: fileString,
-  });
-  // fs.writeFileSync('problem.xml', fileString, 'utf8')
-  let root = string2lxmlRoot(fileString);
-  tokenizeTei(root, morphAnalyzer);
-  // console.profile('morphInterpret');
-  morphInterpret(root, morphAnalyzer);
-  // console.profileEnd('morphInterpret');
-  fileString = root.serialize();
-
-  // todo: treat duplicate filenmes
-  mkdirp.sync(destDir);
-  fs.writeFileSync(`${destDir}/${basename}`, fileString, 'utf8');
 }
 
 //------------------------------------------------------------------------------
-function main() {
-  let filenames = new Map<string, string>();
-  for (let filePath of globSync(args.in) as string[]) {
+function buildFilenames(glob: string) {
+  let ret = new Map<string, string>();
+  for (let filePath of globSync(glob) as string[]) {
     let basename = path.basename(filePath);
     if (basename.startsWith('_') && basename.endsWith('.txt')) {
       continue;
     }
-    if (!filenames.has(basename) || filePath.includes('_ulif_allbooks')) {
-      filenames.set(basename, filePath);
+    if (!ret.has(basename) || filePath.includes('_ulif_allbooks')) {
+      ret.set(basename, filePath);
     }
   }
-  console.log(`processing ${filenames.size} files...`);
-  for (let filename of filenames.values()) {
-    kotsybaUltif2DirtyTei(filename, args.out);
-  }
+
+  return ret;
 }
 
 //------------------------------------------------------------------------------
@@ -112,4 +115,27 @@ function teiString(params) {
   </text>
 </TEI>
 `;
+}
+
+//------------------------------------------------------------------------------
+function main() {
+  let filenames = buildFilenames(args.in);
+  let corpusStream;
+  if (args.tee) {
+    corpusStream = fs.createWriteStream(args.out + 'corpus.vertical.txt', 'utf8');
+  }
+  console.log(`processing ${filenames.size} files...`);
+  let i = 0;
+  for (let filePath of filenames.values()) {
+    ++i;
+    let basename = path.basename(filePath);
+    let destPath = `${args.out}/${basename}`;
+    if (fs.existsSync(destPath)) {
+      console.log(`skipping "${basename}" (exists)`);
+    }
+    else {
+      console.log(`processing "${basename}" (${i} of ${filenames.size})`);
+      kotsybaUltif2DirtyTei(filePath, args.out, corpusStream);
+    }
+  }
 }

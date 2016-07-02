@@ -82,7 +82,6 @@ export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = 
   return value;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 export function tagStr(open: boolean, prefix: string, elem: string, attrs = new Map()) {
   if (!open) {
@@ -135,6 +134,36 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
 
   if (onLeave) {
     onLeave(node);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* traverseDepthGen(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
+  yield { node, entering: true }
+
+  if (node.isElement()) {
+    for (let curNode = node.asElement().firstChild(), next = curNode && curNode.nextSibling();
+      curNode;
+      curNode = next, next = next && next.nextSibling()) {
+
+      yield* traverseDepthGen(curNode);
+    }
+  }
+
+  yield { node, entering: false }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* traverseDocumentOrderGen(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
+  let curNode = node;
+  for (; curNode; curNode = curNode.nextSibling()) {
+    yield* traverseDepthGen(curNode);
+  }
+  for (curNode = node && node.parent(); curNode; curNode = curNode.parent()) {
+    if (curNode.nextSibling()) {
+      yield* traverseDocumentOrderGen(curNode.nextSibling());
+      break;
+    }
   }
 }
 

@@ -1,6 +1,7 @@
-import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements } from '../xml/utils';
+import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements
+  , traverseDepthGen } from '../xml/utils';
 import { W, W_, PC, SE, P } from './common_elements';
-import * as elements from './common_elements';
+import * as elementNames from './common_elements';
 import { r } from '../lang';
 import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
@@ -217,7 +218,7 @@ function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isRegularizedFlowElement(el: AbstractElement) {
-  let ret = !(el.name() === elements.teiOrig && el.parent() && el.parent().name() === elements.teiChoice);
+  let ret = !(el.name() === elementNames.teiOrig && el.parent() && el.parent().name() === elementNames.teiChoice);
 
   return ret;
 }
@@ -448,11 +449,8 @@ export function untag(root: AbstractElement) {
 export function getTeiDocName(doc: AbstractDocument) {  // todo
   let title = doc.root().evaluateElement('//tei:title[1]', NS);
   if (title) {
-    title = untag(title.clone());
-    return title.text().trim().replace(/\s+/g, ' ') || null;
+    return title.evaluateElements('//mi:w_', NS).map(x => $t(x).text()).toArray().join(' ').trim();
   }
-
-  return null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -506,17 +504,25 @@ export function normalizeCorpusText(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tei2nosketch(root: AbstractElement) {
-  let docName = getTeiDocName(root.document());
-  if (!docName) {
-    throw new Error(`Document has no TEI title`);
-  }
+
+  // let docName = getTeiDocName(root.document());
+  // console.log(root.serialize());
+  // if (!docName) {
+  //   throw new Error(`Document has no TEI title`);
+  // }
   yield `<doc>`;
-  for (let e of root.evaluateElements('//mi:w|//mi:g|//tei:pc|//tei:p', NS)) {
+
+  let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
+  for (let {node, entering} of elements) {
+    if (!entering) {
+      continue;
+    }
+    let e = node.asElement();
+
     switch (e.name()) {
-      case W_: {
-        for (let {flags, lemma} of $t(e).possibleInterps()) {
-          yield nosketchLine(e.text(), lemma, flags);
-        }
+      case elementNames.W_: {
+        let [flagss, lemmas] = $t(e).possibleInterpsUnzipped();
+        yield nosketchLine($t(e).text(), lemmas.join(';'), flagss.join(';'));
         break;
       }
 
@@ -524,12 +530,13 @@ export function* tei2nosketch(root: AbstractElement) {
         yield nosketchLine(e.text(), e.text(), 'punct');
         break;
 
-      case elements.G:
+      case elementNames.G:
         yield '<g/>';
         break;
 
       default:
-        throw new Error(`Unexpected element name "${e.name()}"`);
+        break;
+      // throw new Error(`Unexpected element name "${e.name()}"`);
     }
   }
   yield `</doc>`;

@@ -84,6 +84,20 @@ export class TextToken {
     return this.definiteInterps();
   }
 
+  possibleInterpsUnzipped() {
+    if (this.isDisambed()) {
+      let {flags, lemma} = this.interp();
+      return [[flags], [lemma]];
+    }
+    let flagss = new Array<string>();
+    let lemmas = new Array<string>();
+    for (let {flags, lemma} of this.definiteInterps()) {
+      flagss.push(flags);
+      lemmas.push(lemma);
+    }
+    return [flagss, lemmas];
+  }
+
   hasDefiniteInterps() {
     return !!this.definiteInterps().length;  // todo: optimize
   }
