@@ -9,10 +9,11 @@ export enum Pos {
   predicative,  // todo
   interjection,
   transgressive,
-  numeral,
+  cardinalNumeral,
   verb,
   noun,
   adjective,
+  // sym,
   error,
   x,
 }
@@ -166,57 +167,21 @@ export enum ConjunctionType {
   subordinating,
   coordinating,
 }
-export enum NumberTantum {
-  noPlural,
-  noSingular,
-}
-export enum NameType {
-  first,
-  last,
-  patronym,
-}
+export enum NumberTantum { noPlural, noSingular }
+export enum NameType { first, last, patronym }
 
-export enum CaseInflectability {
-  no,
-}
-export enum Alternativity {
-  yes,
-}
-export enum VuAlternativity {
-  yes,
-}
-export enum Abbreviation {
-  yes,
-}
-export enum Dimin {
-  yes,
-}
-export enum Possessiveness {
-  yes,
-}
+export enum CaseInflectability { no }
+export enum Alternativity { yes }
+export enum VuAlternativity { yes }
+export enum Abbreviation { yes }
+export enum Dimin { yes }
+export enum Beforeadj { yes }
+export enum Possessiveness { yes }
+export enum ParadigmOmonym { xp1, xp2, xp3, xp4, xp5, xp6, xp7, xp8, xp9 }
 export enum SemanticOmohnym { }
-export enum Beforeadj {
-  yes,
-}
-export enum Auto {
-  yes,
-}
+export enum Auto { yes }
+export enum Oddness { yes }
 
-export enum Oddness {
-  yes,
-}
-
-export enum ParadigmOmonym {
-  xp1,
-  xp2,
-  xp3,
-  xp4,
-  xp5,
-  xp6,
-  xp7,
-  xp8,
-  xp9,
-}
 
 export const FEATURE_TABLE = [
 
@@ -310,7 +275,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.conjunction, vesumStr: 'conj', mte: 'C' },
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
   { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'intj', mte: 'I' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.numeral, vesumStr: 'numr', mte: 'M' },
+  { featStr: 'pos', feat: Pos, vesum: Pos.cardinalNumeral, vesumStr: 'numr', mte: 'M' },
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 
@@ -344,7 +309,7 @@ export const FEATURE_TABLE = [
 
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
 
-  { featStr: 'poss', feat: Possessiveness, vesum: Possessiveness.yes, vesumStr: 'poss' },
+  { featStr: 'possessiveness', feat: Possessiveness, vesum: Possessiveness.yes, vesumStr: 'poss' },
 
   { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
 
@@ -371,14 +336,15 @@ export const MTE_FEATURES = {
   'R': [Pos.adverb, Degree],
   'S': [Pos.preposition, undefined, undefined, RequiredCase],
   'C': [Pos.conjunction, ConjunctionType, undefined],
-  'M': [Pos.numeral, NumeralForm, undefined, Gender, Numberr, Case, RequiredAnimacy],
+  'M': [Pos.cardinalNumeral, NumeralForm, undefined, Gender, Numberr, Case, RequiredAnimacy],
   'Q': [Pos.particle],
   'I': [Pos.interjection],
   'X': [Pos.x],
 };
 
 
-export const MAP_VESUM_FEAT = indexTableByColumns(FEATURE_TABLE, ['featStr', 'vesum']);
+export const MAP_VESUM_FEAT = indexTableByColumns(FEATURE_TABLE, ['feat', 'vesum']);
+export const MAP_VESUM_FEAT_STR = indexTableByColumns(FEATURE_TABLE, ['featStr', 'vesum']);
 const MAP_VESUM: Map<string, any> =
   indexTableByColumns(FEATURE_TABLE.filter((x: any) => x.vesum !== undefined), ['vesumStr']);
 export const MAP_MTE: Map<string, any> = indexTableByColumns(FEATURE_TABLE, ['feat', 'mte']);
@@ -396,6 +362,102 @@ for (let row of FEATURE_TABLE) {
   }
 }
 
+export const FEATURE_ORDER = {
+  [Pos.noun]: [
+    Pos,
+    Animacy,
+    Numberr,
+    Gender,
+    Case,
+    CaseInflectability,
+    NumberTantum,
+    Alternativity,
+    NounType,
+    NameType,
+    Possessiveness,
+    Pronoun,
+    PronominalType,
+  ],
+  [Pos.adjective]: [
+    Pos,
+    Beforeadj,
+    Gender,
+    Numberr,
+    Case,
+    RequiredAnimacy,
+    Variant,
+    Degree,
+    Possessiveness,
+    CaseInflectability,
+    NumberTantum,
+    Pronoun,
+    Participle,
+    PronominalType,
+    Aspect,
+    Voice,
+    OrdinalNumeral,
+    AdjectiveAsNoun,
+    Animacy,
+  ],
+  [Pos.verb]: [
+    Pos,
+    Reflexivity,
+    Voice,
+    Aspect,
+    Tense,
+    Mood,
+    Numberr,
+    Person,
+    Gender,
+    Dimin,
+    VuAlternativity,
+  ],
+  [Pos.cardinalNumeral]: [
+    Pos,
+    Gender,
+    Numberr,
+    Case,
+    CaseInflectability,
+    Pronoun,
+    PronominalType,
+  ],
+  [Pos.transgressive]: [
+    Pos,
+    Reflexivity,
+    Voice,
+    Aspect,
+    Alternativity,
+  ],
+  other: [  // todo check
+    Pos,
+    Degree,
+    ConjunctionType,
+    Case, RequiredCase,
+    RequiredAnimacy,
+    CaseInflectability,
+    Alternativity,
+    NumberTantum,
+    ParadigmOmonym,
+    SemanticOmohnym,
+    NameType,
+    Possessiveness,
+    Pronoun,
+    Participle,
+    OrdinalNumeral,
+    AdjectiveAsNoun,
+    PronominalType,
+    Person,
+  ],
+};
+
+for (let pos of Object.keys(FEATURE_ORDER)) {
+  FEATURE_ORDER[pos].push(ParadigmOmonym, Colloquial, Rarity, Bad, Oddness);
+}
+
+const POSWISE_COMPARATORS = {};
+Object.keys(Pos).forEach(x => POSWISE_COMPARATORS[x] = createVesumFlagCompare(Pos[x]));
+
+////////////////////////////////////////////////////////////////////////////////
 export class Features {
   pos: Pos;
   pronoun: Pronoun;
@@ -426,6 +488,8 @@ export class Features {
   beforeadj: Beforeadj;
   oddness: Oddness;
   paradigmOmonym: ParadigmOmonym;
+  possessiveness: Possessiveness;
+  abbreviation: Abbreviation;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -433,7 +497,7 @@ export class Features {
 export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'abbr', 'v-u', 'dimin', 'mock', 'foreign',
+    'nv', 'alt', 'bad', 'v-u', 'dimin', 'mock', 'foreign',
   ]);
 
 
@@ -548,7 +612,7 @@ export class MorphTag {
             ret.features.pos = Pos.adverb;
             break;
           case 'm':
-            ret.features.pos = Pos.numeral;
+            ret.features.pos = Pos.cardinalNumeral;
             break;
           default:
             throw new Error(`Unknown MTE pronoun Syntactic_Type: "${flags[8]}"`);
@@ -561,7 +625,7 @@ export class MorphTag {
           ret.features.ordinalNumeral = OrdinalNumeral.yes;
         }
         else if (flags[2] === 'c') {
-          ret.features.pos = Pos.numeral;
+          ret.features.pos = Pos.cardinalNumeral;
         }
         break;
 
@@ -580,7 +644,7 @@ export class MorphTag {
 
     // kill redundant info
     if (!isOddball(ret.features.gender) && ret.features.number === Numberr.singular
-      && ret.features.pos !== Pos.numeral && ret.features.ordinalNumeral === undefined) {
+      && ret.features.pos !== Pos.cardinalNumeral && ret.features.ordinalNumeral === undefined) {
       ret.features.number = undefined;
     }
 
@@ -605,7 +669,7 @@ export class MorphTag {
 
     flags = flags.filter(x => x !== 'letter');  // temp, hack
 
-    return flags.sort(createVesumFlagCompare(this.features.pos));
+    return flags.sort(POSWISE_COMPARATORS[this.features.pos]);
   }
 
   toVesumStr() {
@@ -617,6 +681,108 @@ export class MorphTag {
       lemma: this.lemma,
       flags: this.toVesumStr(),
     };
+  }
+
+  toMte(lemma?: string) {
+    if (this.isAbbreviation()) {
+      return 'Y';
+    }
+
+    if (this.isCardinalNumeral() || this.isOrdinalNumeral()) {
+      let form = map2mte(NumeralForm, this.features.numeralForm);
+      let type = this.isCardinalNumeral() ? 'c' : 'o';
+      let gender = map2mteOrDash(Gender, this.features.gender);
+      let number_ = map2mteOrDash(Numberr, this.features.number);
+      let case_ = map2mteOrDash(Case, this.features.case);
+      let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy);
+
+      return 'M' + form + type + gender + number_ + case_ + requiredAnimacy;
+    }
+
+    if (this.isPronoun()) {
+      let type = map2mte(PronominalType, this.features.pronominalType);
+      let possessiveness = this.isPossessive() ? 'p' : '-';
+      let person = map2mteOrDash(Person, this.features.person);
+      let gender = map2mteOrDash(Gender, this.features.gender);
+      let animacy = tryMapToMte(RequiredAnimacy, this.features.requiredAnimacy);
+      if (!animacy) {
+        animacy = map2mteOrDash(Animacy, this.features.animacy);
+      }
+      let number_ = map2mteOrDash(Numberr, this.features.number);
+      let case_ = map2mteOrDash(Case, this.features.case);
+      let syntacticType = map2mte(Pos, this.features.pos).toLowerCase();
+
+      return 'P' + type + possessiveness + person + gender + animacy + number_ + case_ + syntacticType;
+    }
+
+    if (this.isNoun() || this.isAdjectiveAsNoun()) {
+      let type = map2mte(NounType, this.features.nounType);
+      let gender = map2mte(Gender, this.features.gender);
+      let number_ = map2mteOrDash(Numberr, this.features.number);
+      let case_ = map2mteOrDash(Case, this.features.case);
+      let animacy = map2mteOrDash(Animacy, this.features.animacy);
+
+      return 'N' + type + gender + number_ + case_ + animacy;
+    }
+
+    if (this.isVerb() || this.isTransgressive()) {
+      if (!lemma) {
+        throw new Error('No lemma provided');
+      }
+      let type = isAuxVerb(lemma) ? 'a' : 'm';
+      let aspect = map2mte(Aspect, this.features.aspect);
+      let verbForm = this.isTransgressive() ? 'g' : map2mte(Mood, this.features.mood);
+      let tense = map2mteOrDash(Tense, this.features.tense);
+      let person = map2mteOrDash(Person, this.features.person);
+      let number_ = map2mteOrDash(Numberr, this.features.number);
+      let gender = map2mte(Gender, this.features.gender);
+
+      return trimTrailingDash('V' + type + aspect + verbForm + tense + person + number_ + gender);
+    }
+
+    switch (this.features.pos) {
+      case Pos.adjective: {
+        let type = this.isParticiple() ? 'p' : (this.isComparable() ? 'f' : 'o');
+        let degree = map2mteOrDash(Degree, this.features.degree);
+        let gender = map2mte(Gender, this.features.gender);
+        let number_ = map2mteOrDash(Numberr, this.features.number);
+        let case_ = map2mteOrDash(Case, this.features.case);
+        let definiteness = tryMapToMte(Variant, this.features.variant)
+          || defaultMteDefiniteness(this.features.gender, this.features.number, this.features.case,
+            this.features.requiredAnimacy);
+        let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy);
+
+        return 'A' + type + degree + gender + number_ + case_ + definiteness + requiredAnimacy;
+      }
+      case Pos.preposition: {
+        if (!lemma) {
+          throw new Error('No lemma provided')
+        }
+        let formation = lemma.includes('-') ? 'c' : 's';
+        let requiredCase = map2mte(RequiredCase, this.features.requiredCase);
+        return 'Sp' + formation + requiredCase;
+      }
+      case Pos.conjunction: {
+        if (!lemma) {
+          throw new Error('No lemma provided')
+        }
+        let type = MAP_VESUM_FEAT.get(ConjunctionType).get(this.features.conjunctionType).mte;
+        let formation = lemma.includes('-') ? 'c' : 's';
+        return 'C' + type + formation;
+      }
+      case Pos.adverb: {
+        return 'R' + tryMapToMte(Degree, this.features.degree) || '';
+      }
+      case Pos.particle:
+        return 'Q';
+      case Pos.interjection:
+        return 'I';
+      case Pos.x:
+        return 'X';
+
+      default:
+        break;
+    }
   }
 
   equals(other: MorphTag) {
@@ -654,9 +820,12 @@ export class MorphTag {
   isVerb() { return this.features.pos === Pos.verb; }
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
+  isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral; }
 
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
 
+  isPronoun() { return this.features.pronoun !== undefined; }
+  isPossessive() { return this.features.possessiveness === Possessiveness.yes; }
   isInanimate() { return this.features.animacy === Animacy.inanimate; }
   isComparable() { return this.features.degree !== undefined; }
   isPerfect() { return this.features.aspect === Aspect.perfect; }
@@ -666,6 +835,9 @@ export class MorphTag {
   isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular; }  // todo: tantum?
   isBeforeadj() { return this.features.beforeadj === Beforeadj.yes; }
   isOdd() { return this.features.oddness === Oddness.yes; }
+  isAbbreviation() { return this.features.abbreviation === Abbreviation.yes; }
+  isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes; }
+  isParticiple() { return this.features.participle !== undefined; }
 
   hasNumber() { return this.features.number !== undefined; }
 
@@ -703,102 +875,48 @@ export class MorphTag {
   }
 }
 
-
-
-export const FEATURE_ORDER = {
-  [Pos.noun]: [
-    Pos,
-    Animacy,
-    Numberr,
-    Gender,
-    Case,
-    CaseInflectability,
-    NumberTantum,
-    Alternativity,
-    NounType,
-    NameType,
-    Possessiveness,
-    Pronoun,
-    PronominalType,
-  ],
-  [Pos.adjective]: [
-    Pos,
-    Beforeadj,
-    Gender,
-    Numberr,
-    Case,
-    RequiredAnimacy,
-    Variant,
-    Degree,
-    Possessiveness,
-    CaseInflectability,
-    NumberTantum,
-    Pronoun,
-    Participle,
-    PronominalType,
-    Aspect,
-    Voice,
-    OrdinalNumeral,
-    AdjectiveAsNoun,
-    Animacy,
-  ],
-  [Pos.verb]: [
-    Pos,
-    Reflexivity,
-    Voice,
-    Aspect,
-    Tense,
-    Mood,
-    Numberr,
-    Person,
-    Gender,
-    Dimin,
-    VuAlternativity,
-  ],
-  [Pos.numeral]: [
-    Pos,
-    Gender,
-    Numberr,
-    Case,
-    CaseInflectability,
-    Pronoun,
-    PronominalType,
-  ],
-  [Pos.transgressive]: [
-    Pos,
-    Reflexivity,
-    Voice,
-    Aspect,
-    Alternativity,
-  ],
-  other: [  // todo check
-    Pos,
-    Degree,
-    ConjunctionType,
-    Case, RequiredCase,
-    RequiredAnimacy,
-    CaseInflectability,
-    Alternativity,
-    NumberTantum,
-    ParadigmOmonym,
-    SemanticOmohnym,
-    NameType,
-    Possessiveness,
-    Pronoun,
-    Participle,
-    OrdinalNumeral,
-    AdjectiveAsNoun,
-    PronominalType,
-    Person,
-  ],
-};
-
-for (let pos of Object.keys(FEATURE_ORDER)) {
-  FEATURE_ORDER[pos].push(ParadigmOmonym, Colloquial, Rarity, Bad, Oddness);
+//------------------------------------------------------------------------------
+function tryMapToMte(feature, value) {
+  let mappedFeature = MAP_VESUM_FEAT.get(feature);
+  if (mappedFeature) {
+    let mappedRow = mappedFeature.get(value);
+    if (mappedRow) {
+      let mte = mappedFeature.mte;
+      if (mte) {
+        return mte as string;
+      }
+    }
+  }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-export function createVesumFlagCompare(pos: Pos) {
+//------------------------------------------------------------------------------
+function map2mteOrDash(feature, value) {
+  return tryMapToMte(feature, value) || '-';
+}
+
+//------------------------------------------------------------------------------
+function map2mte(feature, value) {
+  let ret = tryMapToMte(feature, value);
+  if (!ret) {
+    throw new Error(`Unmappable feature "${feature}" value "${value}"`);
+  }
+  return ret;
+}
+
+//------------------------------------------------------------------------------
+function defaultMteDefiniteness(gender: Gender, number_: Number, case_: Case, requiredAnimacy: RequiredAnimacy) {  // todo: загалний
+  if ((gender === Gender.feminine || gender === Gender.neuter
+    || (number_ === Numberr.plural && requiredAnimacy !== RequiredAnimacy.animate))
+    && (case_ === Case.nominative || case_ === Case.accusative)) {
+
+    return 's';
+  }
+
+  return 'f';
+}
+
+//------------------------------------------------------------------------------
+function createVesumFlagCompare(pos: Pos) {
   return (a: string, b: string) => {
     let rowA = tryMapVesumFlag(a);
     let rowB = tryMapVesumFlag(b);
@@ -815,12 +933,27 @@ export function createVesumFlagCompare(pos: Pos) {
   };
 }
 
-////////////////////////////////////////////////////////////////////////////////
-export function createVesumFlagComparator2(pos: Pos) {
+//------------------------------------------------------------------------------
+function createVesumFlagComparator2(pos: Pos) {
   let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other;
   return (a, b) => {
     return overflowNegative(order.indexOf(a.feature)) - overflowNegative(order.indexOf(b.feature));
   };
+}
+
+//------------------------------------------------------------------------------
+function isAuxVerb(lemma: string) {
+  return lemma === 'бути' || lemma === 'будучи' || lemma === 'бувши';
+}
+
+//------------------------------------------------------------------------------
+function trimTrailingDash(str: string) {
+  let i = str.length;
+  while (i >= 0 && str.charAt(i - 1) === '-') {
+    --i;
+  }
+
+  return str.substring(0, i);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -866,7 +999,7 @@ export function mapVesumFeatureValue(featureName: string, value) {
     return 'xv' + value;
   }
 
-  let featMap = MAP_VESUM_FEAT.get(featureName);
+  let featMap = MAP_VESUM_FEAT_STR.get(featureName);
   if (featMap) {
     let row = featMap.get(value);
     if (row) {
