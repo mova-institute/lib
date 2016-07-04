@@ -9,6 +9,7 @@ import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
 import { MorphTag, compareTags } from './morph_tag';
 import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static';
+import { $d, MiTeiDocument } from './mi_tei_document';
 
 const wu: Wu.WuStatic = require('wu');
 
@@ -66,6 +67,11 @@ let PUNC_SPACING = {
   '?': [false, true],
   '…': [false, true],
 };
+
+const LEFT_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0]).map(x => '\\' + x).join('');
+const RIGHT_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][1]).map(x => '\\' + x).join('');
+const NO_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0] && PUNC_SPACING[x][1]).map(x => '\\' + x).join('');
+// console.log(NO_GLUE_PUNC);
 
 const WORD_TAGS = new Set([W, W_]);
 
@@ -503,11 +509,15 @@ export function fixLatinGlyphMisspell(value: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextString(value: string) {
   let ret = value
-    .replace(new RegExp(r`([${WORDCHAR}])\.{3}([^\.])?`, 'g'), '$1…$2')
-    .replace(/ [-–] /g, ' — ')
+    .replace(/\r/g, '\n')
+    .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
+    .replace(new RegExp(r`([${WORDCHAR}${RIGHT_GLUE_PUNC}])\.{3}([^\.])?`, 'g'), '$1…$2')
+    .replace(/(^|\s)[\-–] /g, '$1— ')
+    // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
     .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
-    .replace(new RegExp(r`(\s)"([${LETTER_UK}\w])`, 'g'), '$1“$2')
-    .replace(new RegExp(r`([${LETTER_UK}\w])"(\s)`, 'g'), '$1”$2')
+    .replace(new RegExp(r`(?=[${WORDCHAR}])'(?=[${WORDCHAR}])'`, 'g'), '’')
+    .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${LETTER_UK}\w])`, 'g'), '$1“$2')
+    .replace(new RegExp(r`([${LETTER_UK}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
   ret = fixLatinGlyphMisspell(ret)
 
   return ret;
@@ -517,6 +527,7 @@ export function normalizeCorpusTextString(value: string) {
 const unboxElems = new Set(['nobr', 'img']);
 const removeElems = new Set(['br']);
 export function normalizeCorpusText(root: AbstractElement) {
+  let doc = root.document();
   traverseDepthEl(root, el => {
     if (unboxElems.has(el.localName())) {
       el.unwrap();
@@ -532,15 +543,12 @@ export function normalizeCorpusText(root: AbstractElement) {
 
   for (let textNode of root.evaluateNodes('//text()', NS)) {
     let res = normalizeCorpusTextString(textNode.text());
-    textNode.text(res);
+    textNode.replace(doc.createTextNode(res));
   }
-
-  let ret = root.document().serialize(true);
 
   // todo:
   // if orig has >2 words
   // invisible spaces, libxmljs set entities
-  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -585,4 +593,30 @@ export function* tei2nosketch(root: AbstractElement) {
 //------------------------------------------------------------------------------
 function nosketchLine(token: string, lemma: string, tag: string) {
   return `${token}\t${lemma}\t${tag}`;
+}
+
+function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
+  let doc = root.document();
+  for (let textNode of root.evaluateNodes('./text()', NS)) {
+    (textNode.text().match(/(.|\n)*?\S(\n|$)/g) || []).forEach(match => {
+      let p = doc.createElement('p');
+      p.text(match.replace(/\n/g, ''));
+      root.appendChild(p);
+      // console.log(match);
+    });
+    textNode.remove();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const TEI_DOC_TRANSFORMS = {
+  normalize: normalizeCorpusText,
+  paragraphBySpaceBeforeNewLine,
+}
+export function processMiTeiDocument(root: AbstractElement) {
+  let doc = $d(root);
+
+  doc.getTransforms().forEach(transformName => {
+    TEI_DOC_TRANSFORMS[transformName](doc.getBody());
+  });
 }
