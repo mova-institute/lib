@@ -42,6 +42,8 @@ const NONLEMMA_PADDING = '  ';
 ////////////////////////////////////////////////////////////////////////////////
 export function* iterateDictCorpVizLines(lines: Iterable<string>) {
   let lineNum = -1;
+  let lemma;
+  let lemmaTag;
   for (let line of lines) {
     ++lineNum;
     let isLemma = !line.startsWith(' ');
@@ -49,8 +51,6 @@ export function* iterateDictCorpVizLines(lines: Iterable<string>) {
     if (l) {
       l = l.replace(/'/g, '’');  // fix apostrophe
       let [form, tag] = l.split(' ');
-      let lemma;
-      let lemmaTag;
       if (isLemma) {
         lemma = form;
         lemmaTag = tag;

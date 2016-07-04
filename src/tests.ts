@@ -1,7 +1,7 @@
 import { iterateDictCorpVizLines } from './nlp/vesum_utils';
 import { MorphTag, mapVesumFlag } from './nlp/morph_tag';
 import { rysin2multext } from './nlp/rysin2mulext';
-
+import { isValidMteTag } from './nlp/mte_utils';
 
 //const debug = require('debug')('testo');
 
@@ -27,6 +27,31 @@ export function findDuplicateFeatures(fileStr: string) {
 
   console.log(ret);
   return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function testMorphTag2Mte(fileStr: string) {
+  let lines = fileStr.split('\n');
+  for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
+    try {
+      var morphTag = MorphTag.fromVesumStr(tag, undefined, undefined, lemma);
+      var lemmaMorphTag = MorphTag.fromVesumStr(lemmaTag, undefined, undefined, lemma);
+      var mte1 = morphTag.toMte(lemma, lemmaMorphTag);
+      if (!isValidMteTag(mte1)) {
+        console.log(`${form}\t${mte1}\t\t\t${tag}`);
+      }
+
+      // var morphTagBack = MorphTag.fromMte(mte1);
+      // var mte2 = morphTagBack.toMte();
+      // if (mte1 !== mte2) {
+      //   console.error(`Error: "${mte1}" !== "${mte2}"`);
+      // }
+      morphTag = mte1 = undefined;
+    } catch (e) {
+      console.error({form, tag, mte1/*, mte2*/})
+      console.error(e.message);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

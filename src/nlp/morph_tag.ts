@@ -486,10 +486,11 @@ export class Features {
   nounType: NounType;
   auto: Auto;
   beforeadj: Beforeadj;
-  oddness: Oddness;
   paradigmOmonym: ParadigmOmonym;
   possessiveness: Possessiveness;
   abbreviation: Abbreviation;
+  oddness: Oddness;
+  bad: Bad;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -497,7 +498,7 @@ export class Features {
 export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'bad', 'v-u', 'dimin', 'mock', 'foreign',
+    'nv', 'alt', 'v-u', 'dimin', 'mock', 'foreign',
   ]);
 
 
@@ -683,18 +684,26 @@ export class MorphTag {
     };
   }
 
-  toMte(lemma?: string) {
+  toMte(lemma = this.lemma, lemmaTag?: MorphTag) {
+    if (lemma === 'незважаючи' && this.isPreposition()) {
+      return 'Vmpgp';
+    }
+
     if (this.isAbbreviation()) {
       return 'Y';
     }
 
+    if (this.isBeforeadj()) {
+      return 'Ab';
+    }
+
     if (this.isCardinalNumeral() || this.isOrdinalNumeral()) {
-      let form = map2mte(NumeralForm, this.features.numeralForm);
+      let form = tryMap2Mte(NumeralForm, this.features.numeralForm) || 'l';
       let type = this.isCardinalNumeral() ? 'c' : 'o';
       let gender = map2mteOrDash(Gender, this.features.gender);
-      let number_ = map2mteOrDash(Numberr, this.features.number);
+      let number_ = tryMap2Mte(Numberr, this.getNumber());
       let case_ = map2mteOrDash(Case, this.features.case);
-      let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy);
+      let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy);
 
       return 'M' + form + type + gender + number_ + case_ + requiredAnimacy;
     }
@@ -704,23 +713,37 @@ export class MorphTag {
       let possessiveness = this.isPossessive() ? 'p' : '-';
       let person = map2mteOrDash(Person, this.features.person);
       let gender = map2mteOrDash(Gender, this.features.gender);
-      let animacy = tryMapToMte(RequiredAnimacy, this.features.requiredAnimacy);
+      let animacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy);
       if (!animacy) {
         animacy = map2mteOrDash(Animacy, this.features.animacy);
       }
-      let number_ = map2mteOrDash(Numberr, this.features.number);
+      let number_ = map2mteOrDash(Numberr, this.getNumber());
       let case_ = map2mteOrDash(Case, this.features.case);
       let syntacticType = map2mte(Pos, this.features.pos).toLowerCase();
 
       return 'P' + type + possessiveness + person + gender + animacy + number_ + case_ + syntacticType;
     }
 
-    if (this.isNoun() || this.isAdjectiveAsNoun()) {
-      let type = map2mte(NounType, this.features.nounType);
-      let gender = map2mte(Gender, this.features.gender);
-      let number_ = map2mteOrDash(Numberr, this.features.number);
+    if (this.isNoun() /*|| this.isAdjectiveAsNoun()*/) {
+      let type = tryMap2Mte(NounType, this.features.nounType) || 'c';
+      let gender = tryMap2Mte(Gender, this.features.gender) || tryMap2Mte(Gender, lemmaTag.features.gender);
+      if (!gender) {
+        if (this.isNoSingular() || this.isBad()) {
+          gender = '-';
+        } else {
+          throw new Error('No gender info');
+        }
+      }
+      let number_ = map2mte(Numberr, this.getNumber());
       let case_ = map2mteOrDash(Case, this.features.case);
-      let animacy = map2mteOrDash(Animacy, this.features.animacy);
+      let animacy = tryMap2Mte(Animacy, this.features.animacy);
+      if (!animacy) {
+        if (this.isBacteria()) {
+          animacy = 'y';
+        } else {
+          throw new Error('Animacy missing');
+        }
+      }
 
       return 'N' + type + gender + number_ + case_ + animacy;
     }
@@ -731,11 +754,11 @@ export class MorphTag {
       }
       let type = isAuxVerb(lemma) ? 'a' : 'm';
       let aspect = map2mte(Aspect, this.features.aspect);
-      let verbForm = this.isTransgressive() ? 'g' : map2mte(Mood, this.features.mood);
+      let verbForm = this.isTransgressive() ? 'g' : tryMap2Mte(Mood, this.features.mood) || 'i';
       let tense = map2mteOrDash(Tense, this.features.tense);
       let person = map2mteOrDash(Person, this.features.person);
-      let number_ = map2mteOrDash(Numberr, this.features.number);
-      let gender = map2mte(Gender, this.features.gender);
+      let number_ = map2mteOrDash(Numberr, this.getNumber());
+      let gender = tryMap2Mte(Gender, this.features.gender);
 
       return trimTrailingDash('V' + type + aspect + verbForm + tense + person + number_ + gender);
     }
@@ -743,16 +766,26 @@ export class MorphTag {
     switch (this.features.pos) {
       case Pos.adjective: {
         let type = this.isParticiple() ? 'p' : (this.isComparable() ? 'f' : 'o');
-        let degree = map2mteOrDash(Degree, this.features.degree);
-        let gender = map2mte(Gender, this.features.gender);
-        let number_ = map2mteOrDash(Numberr, this.features.number);
+        let degree = this.isParticiple() ? '-' : map2mteOrDash(Degree, this.features.degree);
+        let gender = map2mteOrDash(Gender, this.features.gender);
+        let number_ = map2mte(Numberr, this.getNumber());
         let case_ = map2mteOrDash(Case, this.features.case);
-        let definiteness = tryMapToMte(Variant, this.features.variant)
+        let definiteness = tryMap2Mte(Variant, this.features.variant)
           || defaultMteDefiniteness(this.features.gender, this.features.number, this.features.case,
             this.features.requiredAnimacy);
+        if (!this.isParticiple()) {
+          let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy);
+          return 'A' + type + degree + gender + number_ + case_ + definiteness + requiredAnimacy
+        }
         let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy);
+        let aspect = tryMap2Mte(Aspect, this.features.aspect);
+        let voice = tryMap2Mte(Voice, this.features.voice);
+        let tense = tryMap2Mte(Tense, this.features.tense);
+        if (!tense && this.isActive() && this.isImperfect()) {
+          tense = 'p';
+        }
 
-        return 'A' + type + degree + gender + number_ + case_ + definiteness + requiredAnimacy;
+        return 'A' + type + degree + gender + number_ + case_ + definiteness + requiredAnimacy + aspect + voice + tense;
       }
       case Pos.preposition: {
         if (!lemma) {
@@ -766,12 +799,12 @@ export class MorphTag {
         if (!lemma) {
           throw new Error('No lemma provided')
         }
-        let type = MAP_VESUM_FEAT.get(ConjunctionType).get(this.features.conjunctionType).mte;
+        let type = map2mte(ConjunctionType, this.features.conjunctionType);
         let formation = lemma.includes('-') ? 'c' : 's';
         return 'C' + type + formation;
       }
       case Pos.adverb: {
-        return 'R' + tryMapToMte(Degree, this.features.degree) || '';
+        return 'R' + tryMap2Mte(Degree, this.features.degree);
       }
       case Pos.particle:
         return 'Q';
@@ -779,10 +812,14 @@ export class MorphTag {
         return 'I';
       case Pos.x:
         return 'X';
+      case Pos.predicative:  // todo
+        return 'Vm-p';
 
       default:
         break;
     }
+
+    throw new Error(`Cannot convert ${this.toVesumStr()} to MTE`);
   }
 
   equals(other: MorphTag) {
@@ -821,6 +858,7 @@ export class MorphTag {
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
   isTransgressive() { return this.features.pos === Pos.transgressive; }
   isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral; }
+  isPreposition() { return this.features.pos === Pos.preposition; }
 
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
 
@@ -830,6 +868,7 @@ export class MorphTag {
   isComparable() { return this.features.degree !== undefined; }
   isPerfect() { return this.features.aspect === Aspect.perfect; }
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
+  isActive() { return this.features.voice === Voice.active; }
   isFeminine() { return this.features.gender === Gender.feminine; }
   isSingular() { return this.features.number === Numberr.singular; }  // todo: tantum?
   isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular; }  // todo: tantum?
@@ -838,8 +877,12 @@ export class MorphTag {
   isAbbreviation() { return this.features.abbreviation === Abbreviation.yes; }
   isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes; }
   isParticiple() { return this.features.participle !== undefined; }
+  isBacteria() { return this.features.animacy === Animacy.bacteria; }
 
   hasNumber() { return this.features.number !== undefined; }
+  hasGender() { return this.features.gender !== undefined; }
+
+  isBad() { return this.features.bad === Bad.yes; }
 
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this; }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this; }
@@ -847,6 +890,15 @@ export class MorphTag {
 
   canBeKharkivSty() {
     return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber());
+  }
+
+  getNumber() {
+    if (this.hasNumber()) {
+      return this.features.number;
+    }
+    if (this.hasGender()) {
+      return Numberr.singular;  // tocheck
+    }
   }
 
   private fromMte(mteFlags: string[]) {
@@ -876,29 +928,30 @@ export class MorphTag {
 }
 
 //------------------------------------------------------------------------------
-function tryMapToMte(feature, value) {
+function tryMap2Mte(feature, value) {
   let mappedFeature = MAP_VESUM_FEAT.get(feature);
   if (mappedFeature) {
     let mappedRow = mappedFeature.get(value);
     if (mappedRow) {
-      let mte = mappedFeature.mte;
+      let mte = mappedRow.mte;
       if (mte) {
         return mte as string;
       }
     }
   }
+  return '';
 }
 
 //------------------------------------------------------------------------------
 function map2mteOrDash(feature, value) {
-  return tryMapToMte(feature, value) || '-';
+  return tryMap2Mte(feature, value) || '-';
 }
 
 //------------------------------------------------------------------------------
 function map2mte(feature, value) {
-  let ret = tryMapToMte(feature, value);
+  let ret = tryMap2Mte(feature, value);
   if (!ret) {
-    throw new Error(`Unmappable feature "${feature}" value "${value}"`);
+    throw new Error(`Unmappable feature "${Object.keys(feature).join(',')}" value "${value}"`);
   }
   return ret;
 }
