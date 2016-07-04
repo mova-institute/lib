@@ -21,28 +21,25 @@ ioArgs(filename1, filename2, async (input, output) => {
     if (args.v) {
       console.log('doing');
     }
-    let res = func(inputStr);
-    if (typeof res === 'object' && Symbol.iterator in res) {
-      for (let line of res) {
-        output.write(line + '\n');
+    if (args.xml) {
+      let root = string2lxmlRoot(inputStr);
+      let res = func(root);
+      if (typeof res === 'string') {
+        output.write(res);
+      }
+      else {
+        output.write((res || root).document().serialize(true));
       }
     }
     else {
-      if (args.xml) {
-        let root = string2lxmlRoot(inputStr);
-        let res = func(root);
-        if (typeof res === 'string') {
-          output.write(res);
-        }
-        else {
-          output.write((res || root).ownerDocument.serialize());
+      let res = func(inputStr);
+      if (typeof res === 'object' && Symbol.iterator in res) {
+        for (let line of res) {
+          output.write(line + '\n');
         }
       }
-      else {
-        let res = func(inputStr);
-        if (res) {
-          output.write(res);
-        }
+      else if (res) {
+        output.write(res);
       }
     }
   }
