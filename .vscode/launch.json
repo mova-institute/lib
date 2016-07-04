@@ -79,10 +79,10 @@
 			"program": "${workspaceRoot}/src/bin/do.ts",
 			"stopOnEntry": false,
 			"args": [
-        "nlp/vesum_utils",
-        "domesticateDictCorpViz",
-        "../dict/out/dict_corp_vis.txt",
-        "../dict/out/expanded.txt"
+        "nlp/utils",
+        "processMiTeiDocument",
+        "../corpus-text/text/авторське/Нечуй-Левицький Іван/Хмари.xml",
+        "--xml"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
