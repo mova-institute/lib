@@ -17,8 +17,6 @@ function main() {
   let dest = fs.openSync(args.out, 'a');
   for (let [i, sourcePath] of sourcePaths.entries()) {
     let basename = path.basename(sourcePath);
-//console.log('pasing');
-
     let root = filename2lxmlRootSync(sourcePath)
 
     console.log(`processing ${i + 1} of ${sourcePaths.length} "${basename}"`);

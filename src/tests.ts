@@ -34,8 +34,8 @@ export function testMorphTag2Mte(fileStr: string) {
   let lines = fileStr.split('\n');
   for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
     try {
-      var morphTag = MorphTag.fromVesumStr(tag, undefined, undefined, lemma);
-      var lemmaMorphTag = MorphTag.fromVesumStr(lemmaTag, undefined, undefined, lemma);
+      var morphTag = MorphTag.fromVesumStr(tag, lemma);
+      var lemmaMorphTag = MorphTag.fromVesumStr(lemmaTag, lemma);
       var mte1 = morphTag.toMte(lemma, lemmaMorphTag);
       if (!isValidMteTag(mte1)) {
         console.log(`${form}\t${mte1}\t\t\t${tag}`);

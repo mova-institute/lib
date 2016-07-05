@@ -30,12 +30,10 @@ function kotsybaUltif2DirtyTei(filename: string, destDir: string, corpusFile?: n
   try {
     let body = buffer.toString(charset);
     body = body.replace(/[\r\x00-\0x1F]/g, '');
-    let bibliographyTry = body.match(/<bibliography>(.*)<\/bibliography>/);
+    let bibliographyTry = body.match(/<bibliography>(.+)<\/bibliography>/);
     let title: string;
     if (bibliographyTry && bibliographyTry.length > 1) {
-      title = xmlUtils
-        .removeTags(bibliographyTry[1])
-        .trim().replace(/\s+/g, ' ');
+      title = xmlUtils.removeTags(bibliographyTry[1]).trim().replace(/\s+/g, ' ');
     } else {
       title = basename.replace(/\.xml$/, '').split(/[\s_]+/).map(x => capitalizeFirst(x)).join(' ');
     }

@@ -117,7 +117,7 @@ export class MorphAnalyzer {
         .filter(x => x.form.endsWith(suffix))
         .map(x => wu(expandInterp(x.flags, x.lemma)))
         .flatten()
-        .map(x => MorphTag.fromVesumStr(x, undefined, undefined, 'todo'))  // todo
+        .map(x => MorphTag.fromVesumStr(x, 'todo'))  // todo
       );
 
       // let n = Number.parseInt(match[1]);
@@ -148,7 +148,7 @@ export class MorphAnalyzer {
 
   private lookup(token: string) {
     return this.lookupRaw(token).map(
-      x => MorphTag.fromVesumStr(x.flags, undefined, token, x.lemma));
+      x => MorphTag.fromVesumStr(x.flags, x.lemma));
   }
 
   private isCompoundAdjective(token: string) {

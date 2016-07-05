@@ -81,25 +81,13 @@ export class TextToken {
     if (this.isDisambed()) {
       return [this.interp()];
     }
-    return this.definiteInterps();
-  }
+    let interps = this.interps();
+    let definiteInterps = interps.filter(x => x.flags !== TextToken.FLAGS_X);
+    if (definiteInterps.length) {
+      return definiteInterps;
+    }
 
-  possibleInterpsUnzipped() {
-    let interp = this.interp();
-    if (interp) {
-      return [[interp.flags], [interp.lemma]];
-    }
-    let flagss = new Set<string>();
-    let lemmas = new Set<string>();
-    let interps = this.definiteInterps();
-    if (!interps.length) {
-      interps = this.interps();
-    }
-    for (let {flags, lemma} of interps) {
-      flagss.add(flags);
-      lemmas.add(lemma);
-    }
-    return [[...flagss], [...lemmas]];
+    return interps;
   }
 
   hasDefiniteInterps() {

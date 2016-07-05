@@ -168,7 +168,7 @@ export function domesticateDictCorpViz(fileStr: string) {
     .map(x => x.replace(/'/g, '’'));
 
   return wu(iterateDictCorpVizLines(expandDictCorpViz(lines))).map(x => {
-    let tag = MorphTag.fromVesumStr(x.tag, x.lemmaTag, x.form).toVesumStr();
+    let tag = MorphTag.fromVesumStr(x.tag, x.lemma, x.lemmaTag).toVesumStr();
     return (x.isLemma ? '' : NONLEMMA_PADDING) + x.form + ' ' + tag;
   });
 }
@@ -228,7 +228,7 @@ export function domesticateDictCorpViz(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {
   for (let { lemmaTag, tag } of iterateDictCorpVizLines(fileStr.split('\n'))) {
-    MorphTag.fromVesumStr(tag, lemmaTag);
+    MorphTag.fromVesumStr(tag, undefined, lemmaTag);
   }
 }
 

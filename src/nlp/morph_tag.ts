@@ -455,7 +455,7 @@ for (let pos of Object.keys(FEATURE_ORDER)) {
 }
 
 const POSWISE_COMPARATORS = {};
-Object.keys(Pos).forEach(x => POSWISE_COMPARATORS[x] = createVesumFlagCompare(Pos[x]));
+Object.keys(Pos).filter(x => /^\d+$/.test(x)).forEach(x => POSWISE_COMPARATORS[x] = createVesumFlagCompare(x as any));
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Features {
@@ -520,7 +520,7 @@ export class MorphTag {
     }
   }
 
-  static fromVesum(flags: string[], lemmaFlags?: string[], form?: string, lemma?: string) {
+  static fromVesum(flags: string[], lemma?: string, lemmaFlags?: string[]) {
     let ret = new MorphTag();
 
     for (let flag of flags) {
@@ -549,15 +549,15 @@ export class MorphTag {
       }
     }
 
-    if (form && ret.features.pos === Pos.transgressive) {
-      if (/ши(сь)?/.test(form)) {
+    if (lemma && ret.features.pos === Pos.transgressive) {
+      if (/ши(сь)?/.test(lemma)) {
         ret.features.tense = Tense.past;
       }
-      else if (/чи(сь)?/.test(form)) {
+      else if (/чи(сь)?/.test(lemma)) {
         ret.features.tense = Tense.present;
       }
       else {
-        throw new Error(`Unexpected adverb "${form}" flection`);
+        throw new Error(`Unexpected adverb "${lemma}" flection`);
       }
     }
 
@@ -566,8 +566,8 @@ export class MorphTag {
     return ret;
   }
 
-  static fromVesumStr(flags: string, lemmaFlags?: string, form?: string, lemma?: string) {
-    return MorphTag.fromVesum(flags.split(':'), lemmaFlags && lemmaFlags.split(':'), form, lemma);
+  static fromVesumStr(flags: string, lemma?: string, lemmaFlags?: string) {
+    return MorphTag.fromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'));
   }
 
   static fromMte(tag: string, form?: string) {
@@ -658,17 +658,15 @@ export class MorphTag {
     for (let name of Object.keys(this.features)) {
       let value = this.features[name];
       if (value === undefined
-        || this.features.number === Numberr.plural && name === 'gender' && !this.isAdjectiveAsNoun()
+        // || this.features.number === Numberr.plural && name === 'gender' && !this.isAdjectiveAsNoun()
         || this.isTransgressive() && this.isPerfect() && name === 'tense') {
         continue;
       }
       let flag = mapVesumFeatureValue(name, value);
-      if (flag) {
+      if (flag && flag !== 'letter') {  // letter: temp, hack
         flags.push(flag);
       }
     }
-
-    flags = flags.filter(x => x !== 'letter');  // temp, hack
 
     return flags.sort(POSWISE_COMPARATORS[this.features.pos]);
   }
@@ -726,12 +724,14 @@ export class MorphTag {
 
     if (this.isNoun() /*|| this.isAdjectiveAsNoun()*/) {
       let type = tryMap2Mte(NounType, this.features.nounType) || 'c';
-      let gender = tryMap2Mte(Gender, this.features.gender) || tryMap2Mte(Gender, lemmaTag.features.gender);
+      let gender = tryMap2Mte(Gender, this.features.gender);
       if (!gender) {
         if (this.isNoSingular() || this.isBad()) {
           gender = '-';
+        } else if (lemmaTag) {
+          gender = map2mteOrDash(Gender, lemmaTag.features.gender);
         } else {
-          throw new Error('No gender info');
+          throw new Error(`No gender info for ${this.toVesumStr()} ${lemma}`);
         }
       }
       let number_ = map2mte(Numberr, this.getNumber());

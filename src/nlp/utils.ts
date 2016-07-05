@@ -3,6 +3,7 @@ import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elementNames from './common_elements';
 import { r } from '../lang';
+import { unique } from '../algo';
 import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
@@ -455,7 +456,7 @@ export function untag(root: AbstractElement) {
 export function getTeiDocName(doc: AbstractDocument) {  // todo
   let title = doc.root().evaluateElement('//tei:title[1]', NS);
   if (title) {
-    return title.evaluateElements('//mi:w_', NS).map(x => $t(x).text()).toArray().join(' ').trim();
+    return title.evaluateElements('./mi:w_', NS).map(x => $t(x).text()).toArray().join(' ').trim();
   }
 }
 
@@ -558,7 +559,7 @@ export function* tei2nosketch(root: AbstractElement) {
   if (!docName) {
     throw new Error(`Document has no TEI title`);
   }
-  yield `<doc id="${docName.substr(0, 20)}">`;
+  yield `<doc id="${docName}">`;
 
   let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
   for (let {node, entering} of elements) {
@@ -569,13 +570,17 @@ export function* tei2nosketch(root: AbstractElement) {
 
     switch (e.name()) {
       case elementNames.W_: {
-        let [flagss, lemmas] = $t(e).possibleInterpsUnzipped();
-        yield nosketchLine($t(e).text(), lemmas.join(MULTISEP), flagss.join(MULTISEP));
+        let interps = $t(e).possibleInterps();
+        let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
+        let vesumFlagss = interps.map(x => x.flags);
+        let lemmas = interps.map(x => x.lemma);
+        yield nosketchLine($t(e).text(), unique(lemmas).join(MULTISEP),
+          unique(mteTags).join(MULTISEP), unique(vesumFlagss).join(MULTISEP));
         break;
       }
 
       case 'pc':  // todo
-        yield nosketchLine(e.text(), e.text(), 'punct');
+        yield nosketchLine(e.text(), e.text(), 'U', 'punct');
         break;
 
       case elementNames.G:
@@ -591,8 +596,8 @@ export function* tei2nosketch(root: AbstractElement) {
 }
 
 //------------------------------------------------------------------------------
-function nosketchLine(token: string, lemma: string, tag: string) {
-  return `${token}\t${lemma}\t${tag}`;
+function nosketchLine(token: string, lemma: string, mteTag: string, vesumTag: string) {
+  return `${token}\t${lemma}\t${mteTag}\t${vesumTag}`;
 }
 
 function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
