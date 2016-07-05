@@ -74,6 +74,10 @@ export class MorphAnalyzer {
       return [{ lemma: token, flags: 'numr:roman' }];
     }
 
+    if (/^[@#$%*]$/.test(token)) {
+      return [{ lemma: token, flags: 'sym' }];
+    }
+
     if (FOREIGN_CHAR_RE.test(token)) {
       return [{ lemma: token, flags: this.foreignTag }];
     }

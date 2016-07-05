@@ -13,7 +13,7 @@ export enum Pos {
   verb,
   noun,
   adjective,
-  // sym,
+  sym,
   error,
   x,
 }
@@ -811,6 +811,7 @@ export class MorphTag {
       case Pos.interjection:
         return 'I';
       case Pos.x:
+      case Pos.sym:
         return 'X';
       case Pos.predicative:  // todo
         return 'Vm-p';
