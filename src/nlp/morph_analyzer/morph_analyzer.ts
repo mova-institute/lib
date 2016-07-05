@@ -70,6 +70,10 @@ export class MorphAnalyzer {
       return [{ lemma: token, flags: this.numberTag }];
     }
 
+    if (/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(token)) {
+      return [{ lemma: token, flags: 'numr:roman' }];
+    }
+
     if (FOREIGN_CHAR_RE.test(token)) {
       return [{ lemma: token, flags: this.foreignTag }];
     }
