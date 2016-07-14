@@ -1,7 +1,7 @@
 import * as xmlUtils from '../../xml/utils';
 import { string2lxmlRoot } from '../../utils.node';
 import { tokenizeTei, morphInterpret, tei2nosketch, normalizeCorpusTextString } from '../utils';
-import { createMorphAnalyserSync } from '../morph_analyzer/factories.node';
+import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node';
 
 // import { AllHtmlEntities } from 'html-entities';
 import * as fs from 'fs';
@@ -16,7 +16,7 @@ const globSync = require('glob').sync;
 const args = require('minimist')(process.argv.slice(2), {
   boolean: ['tee'],
 });
-const morphAnalyzer = createMorphAnalyserSync();
+const morphAnalyzer = createMorphAnalyzerSync();
 
 main();
 

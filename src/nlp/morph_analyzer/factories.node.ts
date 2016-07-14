@@ -1,12 +1,13 @@
 import { Dictionary } from '../dictionary/dictionary';
 import { WordDawgPayload } from '../dictionary/word_dawg_payload';
 import { MorphAnalyzer } from './morph_analyzer';
-import { readFileSync } from 'fs';
-import { readStringMapDawgSync } from 'dawgjs';
 import { getLibRootRelative } from '../../path.node';
 
+import { readFileSync } from 'fs';
+import { readStringMapDawgSync } from 'dawgjs';
 
-export function createMorphAnalyserSync(dictFolder = getLibRootRelative('../data/dict/vesum')) {
+
+export function createMorphAnalyzerSync(dictFolder = getLibRootRelative('../data/dict/vesum')) {
   let tags = JSON.parse(readFileSync(dictFolder + '/tags.json', 'utf8'));
   let suffixes = JSON.parse(readFileSync(dictFolder + '/suffixes.json', 'utf8'));
 

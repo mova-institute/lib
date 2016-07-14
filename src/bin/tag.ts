@@ -1,5 +1,5 @@
 import { ioArgsPlain } from '../cli_utils';
-import { createMorphAnalyserSync } from '../nlp/morph_analyzer/factories.node';
+import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node';
 import { readTillEnd } from '../stream_utils.node';
 import { tokenizeTei, morphInterpret, enumerateWords } from '../nlp/utils';
 import { $t } from '../nlp/text_token';
@@ -30,7 +30,7 @@ ioArgsPlain(async (input, outputFromIoargs) => {
 
   let dictName = args.d || args.dict || 'vesum';
   let dictDir = getLibRootRelative('../data/dict', dictName);
-  let tagger = createMorphAnalyserSync(dictDir);
+  let tagger = createMorphAnalyzerSync(dictDir);
 
   let root = string2lxmlRoot(inputStr);
   tokenizeTei(root, tagger);
