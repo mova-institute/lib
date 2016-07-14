@@ -267,14 +267,19 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
   for (let token of words.map(x => $t(x))) {
     let form = token.text();
     let interps = token.getDisambedInterps();
-    token.elem.clear();
-    token.clearDisamb();
-    fillInterpElement(token.elem, form, analyzer.tagOrX(form));
-    interps.forEach(x => {
-      if (token.hasInterp(x.flags, x.lemma)) {
-        token.alsoInterpAs(x.flags, x.lemma);
-      }
-    });
+    let lang = token.elem.lang();
+    if (lang && lang !== 'uk') {
+      token.onlyInterpAs('x:foreign', form);
+    } else {
+      token.elem.clear();
+      token.clearDisamb();
+      fillInterpElement(token.elem, form, analyzer.tagOrX(form));
+      interps.forEach(x => {
+        if (token.hasInterp(x.flags, x.lemma)) {
+          token.alsoInterpAs(x.flags, x.lemma);
+        }
+      });
+    }
   }
 }
 
