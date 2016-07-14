@@ -49,15 +49,17 @@ export function markResolveConflicts(hisName: string, his: AbstractElement, herN
   for (let [i, hisWordEl] of hisWords.entries()) {
     let hisWord = $t(hisWordEl);
     let herWord = $t(herWords[i]);
-    let herInterp = herWord.interp();
+    let herInterps = herWord.getDisambedInterps();
 
-    if (!hisWord.isInterpreted(herInterp.flags, herInterp.lemma)) {
+    if (!hisWord.isEquallyInterpreted(herWord)) {
       ++numDiffs;
-      hisWord.mark('to-resolve');
-      hisWord.setDisambedInterpAuthor(hisName);
-      hisWord.resetDisamb();
-      hisWord.assureHasInterp(herInterp.flags, herInterp.lemma);
-      hisWord.setInterpAuthor(herInterp.flags, herInterp.lemma, herName);
+      hisWord.setMark('to-resolve');
+      hisWord.setDisambedInterpsAuthor(hisName);
+      hisWord.clearDisamb();
+      herInterps.forEach(x => {
+        hisWord.assureHasInterp(x.flags, x.lemma);
+        hisWord.addInterpAuthor(x.flags, x.lemma, herName);
+      })
     }
   }
 

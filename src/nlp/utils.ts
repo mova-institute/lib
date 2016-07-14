@@ -266,13 +266,15 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer) {
 export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyzer) {
   for (let token of words.map(x => $t(x))) {
     let form = token.text();
-    let interp = token.interp();
+    let interps = token.getDisambedInterps();
     token.elem.clear();
-    token.resetDisamb();
+    token.clearDisamb();
     fillInterpElement(token.elem, form, analyzer.tagOrX(form));
-    if (interp && token.hasInterp(interp.flags, interp.lemma)) {
-      token.setInterp(interp.flags, interp.lemma);
-    }
+    interps.forEach(x => {
+      if (token.hasInterp(x.flags, x.lemma)) {
+        token.alsoInterpAs(x.flags, x.lemma);
+      }
+    });
   }
 }
 
@@ -359,7 +361,7 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
   for (let [mineW, theirW] of wordPairs) {
     if (!$t(mineW).isEquallyInterpreted($t(theirW))) {
       ++numDiffs;
-      $t(mineW).mark('to-review');
+      $t(mineW).setMark('to-review');
     }
   }
   if (!wordPairs.next().done) {  // todo: check wat's up with wu's zipLongest
@@ -462,17 +464,18 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
 
 ////////////////////////////////////////////////////////////////////////////////
 export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
-  for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
-    let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${miwSource.attribute('n')}"]`, NS);
-    let tokenSource = $t(miwSource);
-    let { flags, lemma } = tokenSource.interp();
-    let w = miwSource.document().createElement('w').setAttributes({
-      ana: flags,
-      lemma,
-    });
-    w.text(tokenSource.text());
-    miwDest.replace(w);
-  }
+  // for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
+  //   let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${miwSource.attribute('n')}"]`, NS);
+  //   let tokenSource = $t(miwSource);
+  //   let { flags, lemma } = tokenSource.getDisambedInterps();
+  //   let w = miwSource.document().createElement('w').setAttributes({
+  //     ana: flags,
+  //     lemma,
+  //   });
+  //   w.text(tokenSource.text());
+  //   miwDest.replace(w);
+  // }
+  throw new Error('todo');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -570,7 +573,7 @@ export function* tei2nosketch(root: AbstractElement) {
 
     switch (e.name()) {
       case elementNames.W_: {
-        let interps = $t(e).possibleInterps();
+        let interps = $t(e).disambedOrDefiniteInterps();
         let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
         let vesumFlagss = interps.map(x => x.flags);
         let lemmas = interps.map(x => x.lemma);

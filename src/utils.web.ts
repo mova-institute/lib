@@ -13,6 +13,16 @@ function getDomParser() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isMacos() {  // todo: do it right
+  return window.navigator.platform.startsWith('Mac');
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isModifierKeyPressed(e: MouseEvent) {
+  return isMacos() ? e.metaKey : e.ctrlKey;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function parseXml(str: string) {  // todo: test in non-chrome
   let doc = getDomParser().parseFromString(str, 'application/xml');
   let error = doc.evaluate('//xhtml:parsererror', doc, <any>xmlNsResolver,
