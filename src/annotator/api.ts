@@ -8,12 +8,12 @@ import { firstNWords, morphInterpret, morphReinterpret, enumerateWords } from '.
 import { NS } from '../xml/utils';
 import * as assert from 'assert';
 import { string2lxmlRoot } from '../utils.node';
-import { createMorphAnalyserSync } from '../nlp/morph_analyzer/factories.node';
+import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node';
 import { getLibRootRelative } from '../path.node';
 
 
 // const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve']);
-let morph = createMorphAnalyserSync(getLibRootRelative('../data/dict/vesum'));
+let morph = createMorphAnalyzerSync(getLibRootRelative('../data/dict/vesum'));
 
 const COOKIE_CONFIG = {
   maxAge: 1000 * 3600 * 24 * 100,
