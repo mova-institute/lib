@@ -703,7 +703,7 @@ export class MorphTag {
       let case_ = map2mteOrDash(Case, this.features.case);
       let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy);
 
-      return 'M' + form + type + gender + number_ + case_ + requiredAnimacy;
+      return trimTrailingDash('M' + form + type + gender + number_ + case_ + requiredAnimacy);
     }
 
     if (this.isPronoun()) {
