@@ -536,6 +536,7 @@ msgstr "Jméno nového subkorpusu"
 #: cmpltmpl/subcorp_info.py:103 cmpltmpl/subcorp.py:251 cmpltmpl/view.py:1390
 msgid "of"
 msgstr "ze"
+msgstr "з"
 
 msgid "Subcorpus Info"
 msgstr "Subkorpus - info"
@@ -652,7 +653,7 @@ msgstr "Dokončit"
 
 #: cmpltmpl/collx.py:226 cmpltmpl/trends.py:240 cmpltmpl/view.py:1335
 msgid "First"
-msgstr "První"
+msgstr "Перша"
 
 #: cmpltmpl/collx.py:238 cmpltmpl/trends.py:258 cmpltmpl/view.py:1350
 msgid "Previous"
@@ -662,14 +663,17 @@ msgstr "Předchozí"
 #: cmpltmpl/wordlist.py:532
 msgid "Page"
 msgstr "Strana"
+msgstr "Сторінка"
 
 #: cmpltmpl/collx.py:327 cmpltmpl/trends.py:252 cmpltmpl/view.py:1426
 msgid "Next"
 msgstr "Další"
+msgstr "Наступна"
 
 #: cmpltmpl/conc.py:212 cmpltmpl/trends.py:246 cmpltmpl/view.py:1441
 msgid "Last"
 msgstr "Poslední"
+msgstr "Остання"
 
 #: cmpltmpl/wordlist.py:700
 msgid "Reference corpus"
@@ -875,6 +879,7 @@ msgstr "Uložit konkordanci do textového souboru nebo XML"
 #: cmpltmpl/wordlist.py:549
 msgid "Go"
 msgstr "Jdi"
+msgstr "Перейти"
 
 msgid "Make Word List"
 msgstr "Vytvořit seznam slov"
@@ -1856,6 +1861,7 @@ msgstr "Uživatel"
 #: cmpltmpl/document.py:2911
 msgid "Menu position"
 msgstr "Umístění menu"
+msgstr "Перевернути меню"
 
 msgid "? Help on FindX"
 msgstr "? Nápověda pro Najdi X"
@@ -3486,6 +3492,7 @@ msgstr "Domů"
 #: cmpltmpl/document.py:2870
 msgid "User guide"
 msgstr "Uživatelská příručka"
+msgstr "Посібник користувача"
 
 #: cmpltmpl/document.py:2957
 msgid "Selected subcorpus is obsolete and needs to be rebuilt."
