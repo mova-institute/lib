@@ -41,6 +41,7 @@ msgstr "Kandidáti na kolokace"
 #: cmpltmpl/trends_form.py:320
 msgid "Attribute"
 msgstr "Atribut"
+msgstr "Атрибут"
 
 #: cmpltmpl/coll.py:215
 msgid "In the range from"
@@ -78,6 +79,7 @@ msgstr "MI3"
 #: cmpltmpl/coll.py:345 cmpltmpl/coll.py:444
 msgid "log likelihood"
 msgstr "log likelihood"
+msgstr "логарифмічна правдоподібність"
 
 #: cmpltmpl/coll.py:358 cmpltmpl/coll.py:457
 msgid "min. sensitivity"
@@ -97,6 +99,7 @@ msgstr "Kolokace"
 #: cmpltmpl/wsketch.py:285
 msgid "Save"
 msgstr "Uložit"
+msgstr "Зберегти"
 
 #: cmpltmpl/concdesc.py:121 cmpltmpl/view.py:1991
 msgid "Concordance description"
@@ -111,6 +114,7 @@ msgstr "Popis konkordance"
 #: cmpltmpl/wordlist.py:666 cmpltmpl/wsketch_form.py:740
 msgid "Corpus"
 msgstr "Korpus"
+msgstr "Корпус"
 
 #: cmpltmpl/concdesc.py:138 cmpltmpl/first_form.py:803
 #: cmpltmpl/savecoll.py:180 cmpltmpl/saveconc.py:270
@@ -119,6 +123,7 @@ msgstr "Korpus"
 #: cmpltmpl/wordlist.py:677 cmpltmpl/wsketch_form.py:284
 msgid "Subcorpus"
 msgstr "Subkorpus"
+msgstr "Підкорпус"
 
 #: cmpltmpl/concdesc.py:162
 msgid "Operation"
@@ -133,11 +138,13 @@ msgstr "Počet výskytů"
 
 msgid "Concordance Filter"
 msgstr "Filtr konkordance"
+msgstr "Фільтр конкордансу"
 
 #: cmpltmpl/conc.py:270 cmpltmpl/filter_form.py:88 cmpltmpl/filter_form.py:207
 #: cmpltmpl/lngroupinfo.py:359
 msgid "Filter"
 msgstr "Filtr"
+msgstr "Фільтр"
 
 #: cmpltmpl/filter_form.py:218
 msgid "positive"
@@ -204,6 +211,7 @@ msgstr "tokenů"
 #: cmpltmpl/wsketch_form.py:779 cmpltmpl/wsketch.py:1591
 msgid "Lemma"
 msgstr "Lemma"
+msgstr "Лема"
 
 msgid "Word Form"
 msgstr "Slovní tvar"
@@ -212,6 +220,7 @@ msgstr "Slovní tvar"
 #: cmpltmpl/first_form.py:703 cmpltmpl/wsketch.py:1599
 msgid "PoS"
 msgstr "Slovní druh (PoS)"
+msgstr "Частина мови (PoS)"
 
 msgid "Text Types"
 msgstr "Typy textů"
@@ -370,11 +379,13 @@ msgstr "Uložit kolokace jako"
 #: cmpltmpl/savewl_form.py:259 cmpltmpl/savews_form.py:210
 msgid "Text"
 msgstr "Text"
+msgstr "Текст"
 
 #: cmpltmpl/savecoll_form.py:206 cmpltmpl/saveconc_form.py:235
 #: cmpltmpl/savefreq_form.py:220 cmpltmpl/savethes_form.py:209
 #: cmpltmpl/savewl_form.py:272 cmpltmpl/savews_form.py:223
 msgid "XML"
+msgstr "XML"
 msgstr "XML"
 
 #: cmpltmpl/savecoll_form.py:266 cmpltmpl/saveconc_form.py:299
@@ -2104,6 +2115,7 @@ msgstr "&lt; Konkordance"
 #: cmpltmpl/document.py:981 cmpltmpl/document.py:1012
 msgid "Query types"
 msgstr "Typy dotazů"
+msgstr "Типи запитів"
 
 #: cmpltmpl/document.py:1357
 msgid "match case"
@@ -2116,6 +2128,11 @@ msgid ""
 "list should be a list of lemmas. We use exact matching, not regular-"
 "expression matching, for file input."
 msgstr ""
+"Білі і чорні списки слів мають бути простим текстом (.txt), закодованим в "
+"UTF-8, по слову на рядок. "
+""
+""
+""
 "Seznamy pozitivních a negativních příkladů pro wordlisty musí být v "
 "jednoduchém textovém formátu (.txt), v kódování UTF-8, s jednou položkou na "
 "řádku. Položky musí odpovídat vybraným atributům. Např. pokud je vybráno "
@@ -2163,11 +2180,11 @@ msgstr "KWIC"
 
 #: cmpltmpl/view.py:603
 msgid "Show sentences"
-msgstr "Zobraz věty"
+msgstr "Показати речення"
 
 #: cmpltmpl/view.py:617
 msgid "Sentence"
-msgstr "Věta"
+msgstr "Речення"
 
 #: cmpltmpl/view.py:625
 msgid "Show aligned segments"
@@ -2281,6 +2298,7 @@ msgstr "Odstavce"
 #: cmpltmpl/corp_info.py:247
 msgid "Documents"
 msgstr "Dokumenty"
+msgstr "Документи"
 
 #: cmpltmpl/corp_info.py:396
 msgid "Tags legend"
@@ -2363,11 +2381,13 @@ msgstr "Kolokace z word sketchů"
 #: cmpltmpl/wordlist.py:1120
 msgid "-grams"
 msgstr "-gramy"
+msgstr "-грами"
 
 #: cmpltmpl/savewipo.py:119 cmpltmpl/wipo.py:339 cmpltmpl/wordlist.py:1135
 #: cmpltmpl/wordlist.py:1163
 msgid "/mill"
 msgstr "/mil."
+msgstr "/млн."
 
 #: conccgi.py:2210
 msgid "You must specify corpus, entry and username"
