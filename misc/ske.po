@@ -1,0 +1,4214 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-11 12:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: cmpltmpl/addlngrouplabel.py:123 cmpltmpl/view.py:1715
+#: cmpltmpl/wsketch.py:908
+msgid "Add next"
+msgstr "Přidat další"
+
+#: cmpltmpl/addlngrouplabel.py:131 cmpltmpl/document.py:1847
+#: cmpltmpl/lngroupinfo.py:216 cmpltmpl/viewattrs.py:558 cmpltmpl/view.py:1723
+#: cmpltmpl/wsketch_form.py:456 cmpltmpl/wsketch_form.py:716
+#: cmpltmpl/wsketch_form.py:756 cmpltmpl/wsketch.py:914
+msgid "None"
+msgstr "Žádný"
+
+msgid "Collocation form"
+msgstr "Kolokace - formulář"
+
+#: cmpltmpl/coll.py:156 cmpltmpl/collx.py:379 cmpltmpl/conc.py:541
+msgid "Collocation candidates"
+msgstr "Kandidáti na kolokace"
+
+#: cmpltmpl/coll.py:189 cmpltmpl/freq.py:236 cmpltmpl/sort.py:165
+#: cmpltmpl/sort.py:323 cmpltmpl/sort.py:419 cmpltmpl/sort.py:515
+#: cmpltmpl/trends_form.py:320
+msgid "Attribute"
+msgstr "Atribut"
+
+#: cmpltmpl/coll.py:215
+msgid "In the range from"
+msgstr "V rozsahu od"
+
+#: cmpltmpl/coll.py:231 cmpltmpl/filter_form.py:286
+#: cmpltmpl/wordlist_form.py:572
+msgid "to"
+msgstr "do"
+
+#: cmpltmpl/coll.py:250
+msgid "Minimum frequency in corpus"
+msgstr "Minimální frekvence v korpusu"
+
+#: cmpltmpl/coll.py:269
+msgid "Minimum frequency in given range"
+msgstr "Minimální frekvence v daném rozsahu"
+
+#: cmpltmpl/coll.py:292
+msgid "Show functions"
+msgstr "Zobrazit funkce"
+
+#: cmpltmpl/coll.py:306 cmpltmpl/coll.py:405
+msgid "T-score"
+msgstr "T-score"
+
+#: cmpltmpl/coll.py:319 cmpltmpl/coll.py:418
+msgid "MI"
+msgstr "MI"
+
+#: cmpltmpl/coll.py:332 cmpltmpl/coll.py:431
+msgid "MI3"
+msgstr "MI3"
+
+#: cmpltmpl/coll.py:345 cmpltmpl/coll.py:444
+msgid "log likelihood"
+msgstr "log likelihood"
+
+#: cmpltmpl/coll.py:358 cmpltmpl/coll.py:457
+msgid "min. sensitivity"
+msgstr "min. senzitivita"
+
+#: cmpltmpl/coll.py:391 cmpltmpl/trends_form.py:435
+msgid "Sort by"
+msgstr "Třídit podle"
+
+#: cmpltmpl/coll.py:88 cmpltmpl/collx.py:88 cmpltmpl/conc.py:552
+#: cmpltmpl/savecoll.py:163 cmpltmpl/simple_search.py:389
+msgid "Collocations"
+msgstr "Kolokace"
+
+#: cmpltmpl/collx.py:184 cmpltmpl/freqs.py:255 cmpltmpl/thes.py:383
+#: cmpltmpl/view.py:399 cmpltmpl/view.py:418 cmpltmpl/wordlist.py:307
+#: cmpltmpl/wsketch.py:285
+msgid "Save"
+msgstr "Uložit"
+
+#: cmpltmpl/concdesc.py:121 cmpltmpl/view.py:1991
+msgid "Concordance description"
+msgstr "Popis konkordance"
+
+#: cmpltmpl/concdesc.py:128 cmpltmpl/corp_info.py:163 cmpltmpl/document.py:402
+#: cmpltmpl/findx.py:185 cmpltmpl/jobs.py:190 cmpltmpl/jobs.py:594
+#: cmpltmpl/jobs.py:647 cmpltmpl/jobs.py:682 cmpltmpl/savecoll.py:169
+#: cmpltmpl/saveconc.py:259 cmpltmpl/savewipo.py:95
+#: cmpltmpl/selectstored.py:126 cmpltmpl/simple_search.py:255
+#: cmpltmpl/trends.py:489 cmpltmpl/wipo.py:299 cmpltmpl/wordlist.py:640
+#: cmpltmpl/wordlist.py:666 cmpltmpl/wsketch_form.py:740
+msgid "Corpus"
+msgstr "Korpus"
+
+#: cmpltmpl/concdesc.py:138 cmpltmpl/first_form.py:803
+#: cmpltmpl/savecoll.py:180 cmpltmpl/saveconc.py:270
+#: cmpltmpl/simple_search.py:266 cmpltmpl/trends_form.py:301
+#: cmpltmpl/trends.py:500 cmpltmpl/wordlist_form.py:431
+#: cmpltmpl/wordlist.py:677 cmpltmpl/wsketch_form.py:284
+msgid "Subcorpus"
+msgstr "Subkorpus"
+
+#: cmpltmpl/concdesc.py:162
+msgid "Operation"
+msgstr "Operace"
+
+#: cmpltmpl/concdesc.py:168
+msgid "Parameters"
+msgstr "Parametry"
+
+msgid "Num of Hits"
+msgstr "Počet výskytů"
+
+msgid "Concordance Filter"
+msgstr "Filtr konkordance"
+
+#: cmpltmpl/conc.py:270 cmpltmpl/filter_form.py:88 cmpltmpl/filter_form.py:207
+#: cmpltmpl/lngroupinfo.py:359
+msgid "Filter"
+msgstr "Filtr"
+
+#: cmpltmpl/filter_form.py:218
+msgid "positive"
+msgstr "pozitivní"
+
+#: cmpltmpl/filter_form.py:229
+msgid "negative"
+msgstr "negativní"
+
+#: cmpltmpl/filter_form.py:235
+msgid "Selected token"
+msgstr "Vybraný token"
+
+#: cmpltmpl/filter_form.py:246
+msgid "first"
+msgstr "první"
+
+#: cmpltmpl/filter_form.py:257
+msgid "last"
+msgstr "poslední"
+
+msgid "Search Span"
+msgstr "Rozsah hledání"
+
+#: cmpltmpl/filter_form.py:270 cmpltmpl/wordlist_form.py:554
+msgid "from"
+msgstr "od"
+
+#: conclib.py:423 conclib.py:424 conclib.py:426
+msgid "Query"
+msgstr "Dotaz"
+
+#: cmpltmpl/document.py:1019 cmpltmpl/first_form.py:296
+#: cmpltmpl/first_form.py:462
+msgid "Context"
+msgstr "Kontext"
+
+#: cmpltmpl/savecoll_form.py:229 cmpltmpl/saveconc_form.py:258
+#: cmpltmpl/savefreq_form.py:245 cmpltmpl/savewl_form.py:295
+#: cmpltmpl/wsketch_form.py:630 cmpltmpl/wsketch_form.py:832
+msgid "All"
+msgstr "Všechny"
+
+#: cmpltmpl/first_form.py:615 cmpltmpl/first_form.py:778
+msgid "of these items"
+msgstr "z následujících"
+
+#: cmpltmpl/sort.py:205
+msgid "Left context"
+msgstr "Levý kontext"
+
+#: cmpltmpl/sort.py:227
+msgid "Right context"
+msgstr "Pravý kontext"
+
+#: cmpltmpl/first_form.py:546 cmpltmpl/first_form.py:694
+#: cmpltmpl/subcorp_info.py:111 cmpltmpl/subcorp.py:259
+msgid "tokens"
+msgstr "tokenů"
+
+#: cmpltmpl/document.py:1176 cmpltmpl/patterns_form.py:192
+#: cmpltmpl/tblex.py:319 cmpltmpl/thes_form.py:172 cmpltmpl/thes.py:525
+#: cmpltmpl/wsdiff_form.py:204 cmpltmpl/wsketch_form.py:185
+#: cmpltmpl/wsketch_form.py:779 cmpltmpl/wsketch.py:1591
+msgid "Lemma"
+msgstr "Lemma"
+
+msgid "Word Form"
+msgstr "Slovní tvar"
+
+#: cmpltmpl/document.py:1203 cmpltmpl/document.py:1309
+#: cmpltmpl/first_form.py:703 cmpltmpl/wsketch.py:1599
+msgid "PoS"
+msgstr "Slovní druh (PoS)"
+
+msgid "Text Types"
+msgstr "Typy textů"
+
+#: cmpltmpl/subcorp.py:182
+msgid "Subcorpora"
+msgstr "Subkorpusy"
+
+#: cmpltmpl/subcorp.py:214
+msgid "no subcorpus"
+msgstr "žádný subkorpus"
+
+#: cmpltmpl/document.py:500 cmpltmpl/subcorp.py:229
+msgid "create new"
+msgstr "vytvořit nový"
+
+#: cmpltmpl/freqs.py:97 cmpltmpl/freqs.py:443
+msgid "Frequency list"
+msgstr "Frekvenční seznam"
+
+#: pyconc.py:184 pyconc.py:271 cmpltmpl/conc.py:421
+#: cmpltmpl/freq_distrib.py:200 cmpltmpl/freq_distrib.py:248
+#: cmpltmpl/freq.py:88 cmpltmpl/savewipo.py:110 cmpltmpl/trends.py:637
+#: cmpltmpl/wipo.py:329
+msgid "Frequency"
+msgstr "Frekvence"
+
+#: cmpltmpl/conc.py:441
+msgid "Node tags"
+msgstr "Značky (tags)"
+
+#: cmpltmpl/conc.py:459
+msgid "Node forms"
+msgstr "Slovní tvary"
+
+#: cmpltmpl/conc.py:481
+msgid "Doc IDs"
+msgstr "ID dokumentů"
+
+#: cmpltmpl/freq.py:193 cmpltmpl/freq.py:331 cmpltmpl/freqs.py:546
+msgid "Frequency limit"
+msgstr "Frekvenční limit"
+
+#: cmpltmpl/freq.py:161
+msgid "Multilevel frequency distribution"
+msgstr "Víceúrovňové frekvenční rozložení"
+
+#: cmpltmpl/freq.py:212
+msgid "first level"
+msgstr "první úroveň"
+
+#: cmpltmpl/freq.py:256 cmpltmpl/sort.py:254 cmpltmpl/sort.py:352
+#: cmpltmpl/sort.py:449 cmpltmpl/sort.py:545
+msgid "Ignore case"
+msgstr "Ignorovat velikost písmen"
+
+#: cmpltmpl/freq.py:274 cmpltmpl/sort.py:377 cmpltmpl/sort.py:473
+#: cmpltmpl/sort.py:569
+msgid "Position"
+msgstr "Pozice"
+
+#: cmpltmpl/freq.py:214
+msgid "second level"
+msgstr "druhá úroveň"
+
+#: cmpltmpl/freq.py:216
+msgid "third level"
+msgstr "třetí úroveň"
+
+msgid "Text Type frequency distribution"
+msgstr "Rozložení frekvencí podle typů textu"
+
+msgid "Word Sketch Patterns Entry Form"
+msgstr "Word Sketch Patterns - formulář"
+
+#: cmpltmpl/patterns_form.py:210 cmpltmpl/thes_form.py:202
+#: cmpltmpl/wsdiff_form.py:224 cmpltmpl/wsketch_form.py:215
+#: cmpltmpl/wsketch_form.py:792
+msgid "Part of speech"
+msgstr "Slovní druh (PoS)"
+
+#: cmpltmpl/patterns_form.py:222
+msgid "noun"
+msgstr "podstatné jméno"
+
+#: cmpltmpl/patterns_form.py:233
+msgid "verb"
+msgstr "sloveso"
+
+#: cmpltmpl/patterns_form.py:244
+msgid "adjective"
+msgstr "přídavné jméno"
+
+#: cmpltmpl/patterns_form.py:266 cmpltmpl/trends.py:570
+#: cmpltmpl/wordlist_form.py:659 cmpltmpl/wsdiff_form.py:444
+#: cmpltmpl/wsketch_form.py:302 cmpltmpl/wsketch_form.py:578
+msgid "Minimum frequency"
+msgstr "Minimální frekvence"
+
+#: cmpltmpl/patterns_form.py:284
+msgid "Minimum salience"
+msgstr "Minimální salience"
+
+#: cmpltmpl/patterns_form.py:302 cmpltmpl/thes_form.py:261
+#: cmpltmpl/wsdiff_form.py:462 cmpltmpl/wsdiff_form.py:492
+#: cmpltmpl/wsketch_form.py:338
+msgid "Maximum number of items"
+msgstr "Maximální počet položek"
+
+#: cmpltmpl/patterns_form.py:307 cmpltmpl/wsdiff_form.py:468
+#: cmpltmpl/wsdiff_form.py:498 cmpltmpl/wsketch_form.py:343
+msgid "in a grammatical relation"
+msgstr "v gramatické relaci"
+
+#: cmpltmpl/patterns_form.py:325 cmpltmpl/thes_form.py:332
+#: cmpltmpl/wsketch_form.py:516
+msgid "Minimum similarity"
+msgstr "Minimální podobnost"
+
+#: cmpltmpl/patterns_form.py:330 cmpltmpl/thes_form.py:342
+#: cmpltmpl/wsketch_form.py:521
+msgid "between cluster items"
+msgstr "mezi sdruženými položkami"
+
+#: cmpltmpl/patterns_form.py:348
+msgid "Maximum number of patterns"
+msgstr "Maximální počet patternů"
+
+msgid "Word Sketch Patterns"
+msgstr "Word Sketch Patterns"
+
+#: conclib.py:427 cmpltmpl/reduce_form.py:158
+msgid "Random sample"
+msgstr "Náhodný vzorek"
+
+#: cmpltmpl/reduce_form.py:189
+msgid "Make a random sample from the concordance"
+msgstr "Vybere z konkordance náhodný vzorek"
+
+#: cmpltmpl/reduce_form.py:196
+msgid "Number of lines in the sample"
+msgstr "Počet řádků vzorku"
+
+msgid "Save Collocations"
+msgstr "Uložit kolokace"
+
+msgid "Save Collocation Candidates"
+msgstr "Uložit kandidáty na kolokace"
+
+#: cmpltmpl/savecoll_form.py:180
+msgid "Save collocations as"
+msgstr "Uložit kolokace jako"
+
+#: cmpltmpl/savecoll_form.py:193 cmpltmpl/saveconc_form.py:222
+#: cmpltmpl/savefreq_form.py:207 cmpltmpl/savethes_form.py:196
+#: cmpltmpl/savewl_form.py:259 cmpltmpl/savews_form.py:210
+msgid "Text"
+msgstr "Text"
+
+#: cmpltmpl/savecoll_form.py:206 cmpltmpl/saveconc_form.py:235
+#: cmpltmpl/savefreq_form.py:220 cmpltmpl/savethes_form.py:209
+#: cmpltmpl/savewl_form.py:272 cmpltmpl/savews_form.py:223
+msgid "XML"
+msgstr "XML"
+
+#: cmpltmpl/savecoll_form.py:266 cmpltmpl/saveconc_form.py:299
+#: cmpltmpl/savefreq_form.py:283 cmpltmpl/savethes_form.py:219
+#: cmpltmpl/savewl_form.py:333 cmpltmpl/savews_form.py:233
+msgid "Include heading"
+msgstr "Přidat hlavičku"
+
+msgid "Save Concordance Form"
+msgstr "Uložení konkordance - formulář"
+
+msgid "Save Concordance"
+msgstr "Uložit konkordanci"
+
+#: cmpltmpl/saveconc_form.py:209
+msgid "Save concordance as"
+msgstr "Uložit konkordanci jako"
+
+#: cmpltmpl/savecoll_form.py:216 cmpltmpl/saveconc_form.py:245
+#: cmpltmpl/savefreq_form.py:232 cmpltmpl/savewl_form.py:282
+msgid "Save pages"
+msgstr "Uložit strany"
+
+#: cmpltmpl/savecoll_form.py:246 cmpltmpl/saveconc_form.py:278
+#: cmpltmpl/savefreq_form.py:262 cmpltmpl/savewl_form.py:312
+msgid "Only page"
+msgstr "Pouze stranu"
+
+#: cmpltmpl/saveconc_form.py:307
+msgid "Number lines"
+msgstr "Číslování řádků"
+
+#: cmpltmpl/saveconc_form.py:324
+msgid "Align KWIC"
+msgstr "Zarovnat KWIC"
+
+#: cmpltmpl/savecoll_form.py:275 cmpltmpl/saveconc_form.py:332
+#: cmpltmpl/savefreq_form.py:294 cmpltmpl/savewl_form.py:343
+msgid "Maximum number of lines"
+msgstr "Maximální počet řádků"
+
+msgid "Store Concordance"
+msgstr "Uschovat konkordanci"
+
+#: cmpltmpl/saveconc_form.py:379
+msgid "Concordance stored"
+msgstr "Konkordance uložena"
+
+#: cmpltmpl/saveconc_form.py:398
+msgid "Concordance name"
+msgstr "Jméno konkordance"
+
+msgid "Save Frequency List"
+msgstr "Uložit frekvenční seznam"
+
+msgid "Save Frequency list"
+msgstr "Uložit frekvenční seznam"
+
+#: cmpltmpl/savefreq_form.py:194
+msgid "Save frequency list as"
+msgstr "Uložit frekvenční seznam jako"
+
+msgid "Save Thesaurus"
+msgstr "Uložit tezaurus"
+
+msgid "Save Thesaurus as"
+msgstr "Uložit tezaurus jako"
+
+msgid "Save Keywords"
+msgstr "Uložit klíčová slova"
+
+msgid "Save Word List"
+msgstr "Uložit seznam slov"
+
+#: cmpltmpl/savewl_form.py:245
+msgid "Save word list as"
+msgstr "Uložit seznam slov jako"
+
+msgid "Save Word Sketch"
+msgstr "Uložit Word Sketch"
+
+#: cmpltmpl/savews_form.py:193
+msgid "Save word sketch as"
+msgstr "Uložit Word Sketch jako"
+
+#: cmpltmpl/selectstored.py:140
+msgid "Selected"
+msgstr "Vybráno"
+
+#: cmpltmpl/selectstored.py:160
+msgid "View conc"
+msgstr "Zobrazit konkordanci"
+
+msgid "Last Stored Concordances"
+msgstr "Poslední uložené konkordance"
+
+msgid "Sort form"
+msgstr "Třídění - formulář"
+
+msgid "Simple Sort"
+msgstr "Jednoduché třídění"
+
+#: cmpltmpl/sort.py:194
+msgid "Sort key"
+msgstr "Třídící klíč"
+
+#: conclib.py:31 cmpltmpl/sort.py:216 cmpltmpl/view.py:741
+#: cmpltmpl/view.py:1820
+msgid "Node"
+msgstr "Node"
+
+#: cmpltmpl/sort.py:235
+msgid "Number of tokens to sort"
+msgstr "Počet tokenů k třídění"
+
+#: cmpltmpl/sort.py:265 cmpltmpl/sort.py:364 cmpltmpl/sort.py:460
+#: cmpltmpl/sort.py:556
+msgid "Backward"
+msgstr "Pozpátku"
+
+#: cmpltmpl/sort.py:289
+msgid "Multilevel sort"
+msgstr "Víceúrovňové třídění"
+
+#: cmpltmpl/sort.py:314
+msgid "first level (Sort by ...)"
+msgstr "první úroveň (třídit podle...)"
+
+#: cmpltmpl/sort.py:410
+msgid "second level (... then sort by ...)"
+msgstr "druhá úroveň (... pak třídit podle ...)"
+
+#: cmpltmpl/sort.py:507
+msgid "third level (... finally sort by)"
+msgstr "třetí úroveň (... nakonec setřídit podle)"
+
+#: cmpltmpl/sort.py:608
+msgid "Line group sort"
+msgstr "Třídění podle čísel řádků"
+
+msgid "Create Subcorpus"
+msgstr "Vytvořit subkorpus"
+
+#: cmpltmpl/subcorp_form.py:180
+msgid "New subcorpus name"
+msgstr "Jméno nového subkorpusu"
+
+#: cmpltmpl/subcorp_info.py:103 cmpltmpl/subcorp.py:251 cmpltmpl/view.py:1390
+msgid "of"
+msgstr "ze"
+
+msgid "Subcorpus Info"
+msgstr "Subkorpus - info"
+
+msgid "Thesaurus Entry Form"
+msgstr "Tezaurus - formulář"
+
+#: cmpltmpl/patterns_form.py:126 cmpltmpl/patterns_form.py:257
+#: cmpltmpl/thes_form.py:241 cmpltmpl/thes_form.py:253
+#: cmpltmpl/trends_form.py:364 cmpltmpl/trends_form.py:376
+#: cmpltmpl/wsdiff_form.py:394 cmpltmpl/wsdiff_form.py:405
+#: cmpltmpl/wsketch_form.py:263 cmpltmpl/wsketch_form.py:275
+msgid "Advanced options"
+msgstr "Pokročilé možnosti"
+
+#: cmpltmpl/thes_form.py:316
+msgid "Cluster items"
+msgstr "Seskupovat položky"
+
+#: cmpltmpl/document.py:2687 cmpltmpl/thes_form.py:88
+#: cmpltmpl/thes_form.py:135 cmpltmpl/thes.py:91
+msgid "Thesaurus"
+msgstr "Tezaurus"
+
+#: cmpltmpl/load_all_wseval.py:159 cmpltmpl/pcws.py:378 cmpltmpl/pcws.py:417
+#: cmpltmpl/store_wseval.py:173 cmpltmpl/thes.py:472 cmpltmpl/thes.py:491
+#: cmpltmpl/wseval.py:244 cmpltmpl/wsketch.py:598 cmpltmpl/wsketch.py:712
+msgid "freq"
+msgstr "frekvence"
+
+#: cmpltmpl/viewattrs.py:88 cmpltmpl/viewattrs.py:135 cmpltmpl/view.py:576
+msgid "View options"
+msgstr "Možnosti zobrazení"
+
+#: cmpltmpl/viewattrs.py:172
+msgid "Attributes"
+msgstr "Atributy"
+
+#: cmpltmpl/viewattrs.py:180
+msgid "Structures"
+msgstr "Struktury"
+
+#: cmpltmpl/viewattrs.py:187 cmpltmpl/view.py:773
+msgid "References"
+msgstr "Reference"
+
+#: cmpltmpl/viewattrs.py:216
+msgid "Display attributes"
+msgstr "Zobrazit atributy"
+
+#: cmpltmpl/viewattrs.py:227
+msgid "For each token"
+msgstr "Pro každý token"
+
+#: cmpltmpl/viewattrs.py:238
+msgid "KWIC tokens only"
+msgstr "Pouze KWIC"
+
+#: cmpltmpl/viewattrs.py:320
+msgid "Page size (number of lines)"
+msgstr "Velikost strany (počet řádků)"
+
+msgid "KWIC Context size (number of characters)"
+msgstr "Velikost KWIC kontextu (počet znaků)"
+
+#: cmpltmpl/document.py:2631 cmpltmpl/simple_search.py:88 cmpltmpl/view.py:100
+msgid "Concordance"
+msgstr "Konkordance"
+
+#: cmpltmpl/conc.py:199 cmpltmpl/reduce_form.py:88
+msgid "Sample"
+msgstr "Vzorek"
+
+#: cmpltmpl/view.py:705 cmpltmpl/view.py:1812
+msgid "Left"
+msgstr "Levý kontext"
+
+#: cmpltmpl/view.py:723 cmpltmpl/view.py:1828
+msgid "Right"
+msgstr "Pravý kontext"
+
+#: conclib.py:428 cmpltmpl/sort.py:88 cmpltmpl/view.py:686
+#: cmpltmpl/view.py:1591 cmpltmpl/view.py:1807
+msgid "Sort"
+msgstr "Třídění"
+
+#: cmpltmpl/wseval.py:379
+msgid "Collocation"
+msgstr "Kolokace"
+
+#: cmpltmpl/lngroupinfo.py:313 cmpltmpl/view.py:1561 cmpltmpl/wsketch.py:817
+msgid "Annotating"
+msgstr "Anotace"
+
+#: cmpltmpl/view.py:1633
+msgid "New pattern"
+msgstr "Nový pattern"
+
+#: cmpltmpl/view.py:1647
+msgid "Number globally"
+msgstr "Číslovat globálně"
+
+#: cmpltmpl/view.py:1655
+msgid "Number selected"
+msgstr "Vybrané číslo"
+
+#: cmpltmpl/view.py:1576 cmpltmpl/wsketch.py:832
+msgid "Info"
+msgstr "Info"
+
+#: cmpltmpl/lngroupinfo.py:331 cmpltmpl/view.py:1606 cmpltmpl/wsketch.py:847
+msgid "Finish"
+msgstr "Dokončit"
+
+#: cmpltmpl/collx.py:226 cmpltmpl/trends.py:240 cmpltmpl/view.py:1335
+msgid "First"
+msgstr "První"
+
+#: cmpltmpl/collx.py:238 cmpltmpl/trends.py:258 cmpltmpl/view.py:1350
+msgid "Previous"
+msgstr "Předchozí"
+
+#: cmpltmpl/collx.py:290 cmpltmpl/freqs.py:361 cmpltmpl/view.py:1369
+#: cmpltmpl/wordlist.py:532
+msgid "Page"
+msgstr "Strana"
+
+#: cmpltmpl/collx.py:327 cmpltmpl/trends.py:252 cmpltmpl/view.py:1426
+msgid "Next"
+msgstr "Další"
+
+#: cmpltmpl/conc.py:212 cmpltmpl/trends.py:246 cmpltmpl/view.py:1441
+msgid "Last"
+msgstr "Poslední"
+
+#: cmpltmpl/wordlist.py:700
+msgid "Reference corpus"
+msgstr "Referenční korpus"
+
+#: cmpltmpl/wordlist.py:711
+msgid "Reference subcorpus"
+msgstr "Referenční subkorpus"
+
+#: cmpltmpl/document.py:2645 cmpltmpl/wordlist_form.py:88
+#: cmpltmpl/wordlist.py:88 cmpltmpl/wordlist.py:660
+msgid "Word list"
+msgstr "Seznam slov"
+
+#: cmpltmpl/wordlist_form.py:832
+msgid "Keywords"
+msgstr "Klíčová slova"
+
+#: cmpltmpl/wordlist.py:746
+msgid ""
+"Subcorpora operations need more preprocessing. It will take a while, please "
+"wait."
+msgstr ""
+"Operace nad subkorpusy jsou náročnější na předzpracování, prosím čekejte."
+
+#: cmpltmpl/wordlist.py:752
+msgid ""
+"Once the list has been computed, it will be stored, so will be immediately "
+"available next time."
+msgstr ""
+"Po prvním výpočtu se výsledná data uloží, takže pro příští hledání budou již "
+"okamžitě dostupná."
+
+msgid ""
+"You can close this window. Repeating wordlist or keywords queries on the "
+"same subcorpus will show you progress of the computation."
+msgstr ""
+"Toto okno můžete zavřít. Postup výpočtu se zobrazí při opakování dotazu nad "
+"tímto subkorpusem."
+
+#: conccgi.py:1654 cmpltmpl/findx.py:231 cmpltmpl/savewipo.py:115
+#: cmpltmpl/thes.py:537 cmpltmpl/trends.py:645 cmpltmpl/trends.py:655
+#: cmpltmpl/wipo.py:335 cmpltmpl/wseval.py:393
+msgid "Freq"
+msgstr "Frekvence"
+
+#: conccgi.py:1654 cmpltmpl/wordlist_form.py:801
+msgid "ARF"
+msgstr "ARF"
+
+#: cmpltmpl/savewipo.py:124 cmpltmpl/thes.py:531 cmpltmpl/wipo.py:346
+#: cmpltmpl/wordlist.py:1170 cmpltmpl/wseval.py:401
+#: cmpltmpl/wsketch_form.py:377
+msgid "Score"
+msgstr "Skóre"
+
+#: cmpltmpl/collx.py:505 cmpltmpl/document.py:854 cmpltmpl/findx.py:304
+#: cmpltmpl/pcws.py:492 cmpltmpl/wordlist.py:1474
+msgid "Nothing found."
+msgstr "Prázdný výsledek."
+
+msgid "Word Sketch Entry Form"
+msgstr "Word Sketch - formulář"
+
+msgid "Word Sketch"
+msgstr "Word Sketch"
+
+msgid "Word Sketch Differences Entry Form"
+msgstr "Word Sketch - rozdíly - formulář"
+
+#: cmpltmpl/wsdiff_form.py:275
+msgid "Second lemma"
+msgstr "Druhé lemma"
+
+#: cmpltmpl/wsdiff_form.py:413
+msgid "Separate blocks"
+msgstr "Rozlišení bloků"
+
+#: cmpltmpl/wsdiff_form.py:425
+msgid "all in one block"
+msgstr "všechno v jednom bloku"
+
+#: cmpltmpl/wsdiff_form.py:437
+msgid "common/exclusive blocks"
+msgstr "rozlišit společné a výhradní bloky"
+
+#: cmpltmpl/wsdiff_form.py:474
+msgid "of the common block"
+msgstr "ve společném bloku"
+
+#: cmpltmpl/wsdiff_form.py:504
+msgid "of the exclusive block"
+msgstr "ve výhradním bloku"
+
+#: cmpltmpl/concdesc.py:174 cmpltmpl/simple_search.py:279
+msgid "Hits"
+msgstr "Výskytů"
+
+#: cmpltmpl/wseval.py:304
+msgid "Back"
+msgstr "Zpět"
+
+msgid "Word List"
+msgstr "Seznamy slov"
+
+msgid "Sketch-Diff"
+msgstr "Sketch-Diff"
+
+#: cmpltmpl/document.py:1212 cmpltmpl/document.py:1318
+msgid "unspecified"
+msgstr "nespecifikováno"
+
+#: cmpltmpl/document.py:1249
+msgid "Phrase"
+msgstr "Fráze"
+
+#: cmpltmpl/document.py:1159 cmpltmpl/document.py:1410
+msgid "CQL"
+msgstr "CQL"
+
+#: cmpltmpl/document.py:1442
+msgid "Default attribute"
+msgstr "Implicitní atribut"
+
+#: cmpltmpl/document.py:1483
+msgid "Tagset summary"
+msgstr "Přehled značek"
+
+msgid "Make Candidate List"
+msgstr "Vytvořit seznam kandidátů"
+
+#: cmpltmpl/collx.py:146
+msgid "Save Collocation candidates to a text file or XML"
+msgstr "Uložit kandidáty na kolokace do textového souboru nebo XML"
+
+msgid "Filter Concordance"
+msgstr "Filtrovat konkordanci"
+
+#: cmpltmpl/document.py:966 cmpltmpl/first_form.py:837
+msgid "Make Concordance"
+msgstr "Vytvořit konkordanci"
+
+msgid "Make Frequency List"
+msgstr "Vytvořit frekvenční seznam"
+
+msgid "Save Frequency list to a text file or XML"
+msgstr "Uložit frekvenční seznam do textového souboru nebo XML"
+
+#: cmpltmpl/freqs.py:563
+msgid "Set limit"
+msgstr "Nastavit limit"
+
+#: cmpltmpl/patterns_form.py:371
+msgid "Compute patterns"
+msgstr "Vyhodnotit patterny"
+
+msgid "Create Sample"
+msgstr "Vytvořit vzorek"
+
+msgid "Save Collocation candidates"
+msgstr "Uložit kandidáty na kolokace"
+
+msgid "Store Concordance For Annotation"
+msgstr "Uschovat konkordanci pro anotaci"
+
+msgid "Sort Concordance"
+msgstr "Třídit konkordanci"
+
+msgid "Delete Selected"
+msgstr "Vymazat vybrané"
+
+msgid "Show Similar Words"
+msgstr "Ukázat podobná slova"
+
+#: cmpltmpl/thes.py:362
+msgid "Save thesaurus to a text file or XML"
+msgstr "Uložit tezaurus do textového souboru nebo XML"
+
+msgid "Change View Options"
+msgstr "Změnit možnosti zobrazení"
+
+#: cmpltmpl/view.py:693
+msgid "Sort to left"
+msgstr "Třídit vlevo"
+
+#: cmpltmpl/view.py:729
+msgid "Sort by node word"
+msgstr "Třídit podle klíčového slova"
+
+#: cmpltmpl/view.py:711
+msgid "Sort to right"
+msgstr "Třídit vpravo"
+
+#: cmpltmpl/view.py:675
+msgid "Complex sorting options"
+msgstr "Komplexní možnosti třídění"
+
+#: cmpltmpl/view.py:375
+msgid "Save concordance to a text file or xml"
+msgstr "Uložit konkordanci do textového souboru nebo XML"
+
+#: cmpltmpl/collx.py:307 cmpltmpl/freqs.py:373 cmpltmpl/view.py:1403
+#: cmpltmpl/wordlist.py:549
+msgid "Go"
+msgstr "Jdi"
+
+msgid "Make Word List"
+msgstr "Vytvořit seznam slov"
+
+msgid "Save Word List/Keywords to a text file or XML"
+msgstr "Uložit výsledek do textového souboru nebo XML"
+
+msgid "Show Word Sketch"
+msgstr "Ukaž word sketch"
+
+msgid "Show Diff"
+msgstr "Ukaž rozdíl"
+
+#: cmpltmpl/wsketch.py:271
+msgid "Save word sketch to a text file or XML"
+msgstr "Uložit word sketch do textového souboru nebo XML"
+
+#: cmpltmpl/document.py:2620
+msgid "New query entry form"
+msgstr "Formulář pro nový dotaz"
+
+#: cmpltmpl/document.py:2693
+msgid "Word sketch difference"
+msgstr "Word sketch - rozdíly"
+
+#: cmpltmpl/conc.py:139
+msgid "View current concordance"
+msgstr "Zobrazit aktuální konkordanci"
+
+msgid "Corpus Query Language"
+msgstr "Korpusový dotazovací jazyk (Corpus Query Language)"
+
+#: cmpltmpl/wsdiff.py:295 cmpltmpl/wsketch.py:1167
+msgid "overall frequency"
+msgstr "celková frekvence"
+
+#: cmpltmpl/wsdiff.py:304 cmpltmpl/wsketch.py:1190
+msgid "overall score"
+msgstr "celkové skóre"
+
+msgid "Find X"
+msgstr "Najdi X"
+
+#: cmpltmpl/findx.py:194
+msgid "Selected list"
+msgstr "Vybraný seznam"
+
+#: cmpltmpl/findx.py:215
+msgid "Percentil"
+msgstr "Percentil"
+
+#: cmpltmpl/findx.py:221
+msgid "Ratio"
+msgstr "Poměr"
+
+#: cmpltmpl/findx.py:267 cmpltmpl/lngroupinfo.py:445
+#: cmpltmpl/wsketch_form.py:899
+msgid "Show word sketch"
+msgstr "Zobraz word sketch"
+
+#: cmpltmpl/findx.py:292
+msgid "Show concordances"
+msgstr "Zobraz konkordance"
+
+#: cmpltmpl/first_form.py:843
+msgid "Clear All"
+msgstr "Vymazat vše"
+
+#: cmpltmpl/lngroupinfo.py:472
+msgid "Automatically annotated"
+msgstr "Automaticky anotováno"
+
+#: cmpltmpl/lngroupinfo.py:480 cmpltmpl/view.py:1766
+msgid "hits"
+msgstr "hitů"
+
+#: cmpltmpl/lngroupinfo.py:497
+msgid "Minscore"
+msgstr "Min. skóre"
+
+#: cmpltmpl/lngroupinfo.py:514
+msgid "Mindiff"
+msgstr "Min. rozdíl"
+
+msgid "View Word Sketch Evaluation"
+msgstr "Zobraz hodnocení word sketchů"
+
+msgid "View Word Sketch for Evaluation"
+msgstr "Zobraz Word sketch pro hodnocení"
+
+msgid "Sorry, you are not allowed to evaluate Word Sketches on this corpus."
+msgstr "Nemáte právo hodnotit word sketche v tomto korpusu"
+
+#: cmpltmpl/load_all_wseval.py:181
+msgid "Available records"
+msgstr "Dostupné záznamy"
+
+#: cmpltmpl/load_all_wseval.py:194
+msgid "Record ID"
+msgstr "ID záznamu"
+
+#: cmpltmpl/load_all_wseval.py:199
+msgid "Timestamp"
+msgstr "Časová známka"
+
+msgid "Evaluation Settings"
+msgstr "Nastavení hodnocení"
+
+#: cmpltmpl/load_all_wseval.py:219
+msgid "No. collocations"
+msgstr "Počet kolokací"
+
+#: cmpltmpl/load_all_wseval.py:224
+msgid "Min. freq"
+msgstr "Min. frek."
+
+msgid "Word Sketch Evaluation"
+msgstr "Word sketch hodnocení"
+
+msgid "Successfully Stored"
+msgstr "Úspěšně uloženo"
+
+#: cmpltmpl/store_wseval.py:137
+msgid "The following word sketch evaluation was successfully stored"
+msgstr "Následující hodnocení word sketche bylo uloženo"
+
+#: cmpltmpl/document.py:1098 cmpltmpl/store_wseval.py:145
+#: cmpltmpl/wsdiff_form.py:266
+msgid "lemma"
+msgstr "lemma"
+
+#: cmpltmpl/store_wseval.py:184
+msgid "filename"
+msgstr "jméno souboru"
+
+#: cmpltmpl/store_wseval.py:224
+msgid "Next Evaluation"
+msgstr "Další hodnocení"
+
+#: cmpltmpl/viewattrs.py:461
+msgid "Icon for one-click sentence copying"
+msgstr "Ikona pro ukládání"
+
+#: cmpltmpl/viewattrs.py:410
+msgid "Number of lines to be sorted"
+msgstr "Počet řádků k seřazení"
+
+#: cmpltmpl/wordlist_form.py:160
+msgid "All words"
+msgstr "Všechna slova"
+
+#: cmpltmpl/wordlist_form.py:176
+msgid "All lemmas"
+msgstr "Všechna lemmata"
+
+#: cmpltmpl/wordlist_form.py:386
+msgid "Word list options"
+msgstr "Nastavení seznamu slov"
+
+#: cmpltmpl/document.py:2299
+msgid "corpus"
+msgstr "korpus"
+
+#: cmpltmpl/findx_form.py:166
+msgid "Existing lists"
+msgstr "Existující seznamy"
+
+#: cmpltmpl/skell.py:796
+msgid "or"
+msgstr "nebo"
+
+msgid "Word Sketch for Evaluation Entry Form"
+msgstr "Hodnocení word sketche formulář"
+
+msgid "Word Sketch for Evaluation"
+msgstr "Hodnocení word sketchů"
+
+#: cmpltmpl/wseval.py:272
+msgid "Working with existing record"
+msgstr "Pracujete s existujícím záznamem"
+
+#: cmpltmpl/wseval.py:284
+msgid ""
+"Warning: Another evaluation record for this lemma was found in the database."
+msgstr "Varování: v databázi nalezen jiný záznam pro toto lema."
+
+#: cmpltmpl/wseval.py:432
+msgid "Good"
+msgstr "Dobré"
+
+#: cmpltmpl/wseval.py:438
+msgid "Bad"
+msgstr "Špatné"
+
+#: cmpltmpl/tblex.py:328
+msgid "Gramrel"
+msgstr "Relace"
+
+#: cmpltmpl/wseval.py:385
+msgid "Rating"
+msgstr "Hodnocení"
+
+msgid "Store Word Sketch Evaluation"
+msgstr "Uložit hodnocení word sketchů"
+
+#: cmpltmpl/wsketch_form.py:501
+msgid "Cluster collocations"
+msgstr "Shlukovat kolokace"
+
+#: cmpltmpl/wsketch.py:366
+msgid "Switch between clustered and unclustered word sketches"
+msgstr "Přepnout mezi shlukovanými a neshlukovanými word sketchi"
+
+#: cmpltmpl/pcws.py:285 cmpltmpl/wsketch.py:411
+msgid "Display more data (decreases limits and increases number of items)"
+msgstr "Zobraz více dat (sníží limity a zvýší počet položek)"
+
+#: cmpltmpl/pcws.py:302 cmpltmpl/wsketch.py:428
+msgid "Display less data (increases limits and decreases number of items)"
+msgstr "Zobraz méně dat (zvýší limity a sníží počet položek)"
+
+#: cmpltmpl/wsketch.py:856
+msgid "New label"
+msgstr "Nová značka"
+
+#: cmpltmpl/wsketch.py:1275
+msgid "word frequency"
+msgstr "slovní frekvence"
+
+#: cmpltmpl/wsketch.py:1303
+msgid "cluster frequency"
+msgstr "frekvence shluků"
+
+#: cmpltmpl/wsketch.py:971 cmpltmpl/wsketch.py:1318 cmpltmpl/wsketch.py:1475
+#: cmpltmpl/wsketch.py:1554
+msgid "score"
+msgstr "skóre"
+
+#: cmpltmpl/trends_form.py:482 cmpltmpl/trends.py:445 cmpltmpl/wsketch.py:956
+msgid "frequency"
+msgstr "frekvence"
+
+msgid "Save Options"
+msgstr "Uložit nastavení"
+
+#: cmpltmpl/findx_form.py:189
+msgid "no lists available"
+msgstr "žádné seznamy k dispozici"
+
+#: cmpltmpl/findx_upload_form.py:163
+msgid ""
+"Building uploaded histograms in progress (reload the page to show current "
+"status)"
+msgstr ""
+"Právě se vytváří histogramy (načtěte stránku znovu pro zobrazení aktuálního "
+"stavu)"
+
+#: cmpltmpl/findx_upload_form.py:174
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: cmpltmpl/findx_upload_form.py:225
+msgid "Upload"
+msgstr "Nahrát"
+
+msgid "Tickbox Lexicography - Select Examples"
+msgstr "Tickbox Lexicography - Vybrat příklady"
+
+#: cmpltmpl/wsketch.py:1502
+msgid ">>"
+msgstr ">>"
+
+#: cmpltmpl/tblex.py:639
+msgid "Sorry, you are not allowed to use the tickbox lexicography"
+msgstr "Nemáte oprávnění používat tickbox lexicography"
+
+#: cmpltmpl/wsketch_form.py:361
+msgid "Sort collocations"
+msgstr "Třídit kolokace"
+
+#: cmpltmpl/wsketch_form.py:366
+msgid "according to"
+msgstr "podle"
+
+#: cmpltmpl/wsketch_form.py:388
+msgid "Raw frequency"
+msgstr "Frekvence"
+
+#: cmpltmpl/tblex.py:337
+msgid "Template"
+msgstr "Šablona"
+
+#: cmpltmpl/tblex.py:615 cmpltmpl/tblex.py:623
+msgid "Copy to clipboard"
+msgstr "Kopírovat do schránky"
+
+#: cmpltmpl/freqs.py:301 cmpltmpl/wordlist.py:422
+msgid "<< First"
+msgstr "<< První"
+
+#: cmpltmpl/freqs.py:310 cmpltmpl/wordlist.py:433
+msgid "< Previous"
+msgstr "< Předchozí"
+
+#: cmpltmpl/freqs.py:393 cmpltmpl/wordlist.py:568
+msgid "Next >"
+msgstr "Další >"
+
+msgid "Tickbox Lexicography template"
+msgstr "Šablona pro tickbox lexicography"
+
+#: cmpltmpl/wsketch_form.py:480
+msgid "Examples per collocate"
+msgstr "Příkladů na kolokaci"
+
+#: cmpltmpl/findx_upload_form.py:200
+msgid "Building histograms can be time-consuming on bigger corpora"
+msgstr "Vytváření histogramů může být časově náročné pro větší korpusy"
+
+#: cmpltmpl/findx_upload_form.py:218
+msgid "Send me an e-mail when finished"
+msgstr "Poslat email po ukončení"
+
+#: cmpltmpl/thes.py:546 cmpltmpl/wsketch.py:351
+msgid "Cluster"
+msgstr "Cluster"
+
+#: cmpltmpl/viewattrs.py:477
+msgid "Allow multiple lines selection"
+msgstr "Povolit výběr více řádků"
+
+#: cmpltmpl/viewattrs.py:551
+msgid "XML template for one-click copying"
+msgstr "XML šablona pro kopírování do schránky"
+
+#: cmpltmpl/load_all_wseval.py:170
+msgid "Evaluation set"
+msgstr "Sada pro hodnocení"
+
+#: cmpltmpl/store_wseval.py:153
+msgid "testing set"
+msgstr "testovací sada"
+
+#: cmpltmpl/subcorp_form.py:159
+msgid "Sorry, creating user subcorpora is not available in the open version"
+msgstr "Vytváření uživatelských subkorpusů není v této verzi dostupné"
+
+#: cmpltmpl/viewattrs.py:371
+msgid "Sort good dictionary examples"
+msgstr "Třiď dobré slovníkové příklady"
+
+#: cmpltmpl/wsdiff.py:88
+msgid "WS Diff for"
+msgstr "WS rozdíl pro"
+
+#: cmpltmpl/wsdiff.py:96
+msgid "and"
+msgstr "a"
+
+#: cmpltmpl/tblex.py:296
+msgid "logging..."
+msgstr "logování..."
+
+#: cmpltmpl/tblex.py:303
+msgid ""
+"(if this page is not redirected in a few seconds, please click the \"Back\" "
+"button)"
+msgstr "(pokud se stránka nepřesměruje do několika sekund, klikněte na Zpět)"
+
+#: cmpltmpl/document.py:705 cmpltmpl/document.py:765 cmpltmpl/document.py:803
+#: cmpltmpl/document.py:815
+msgid "Select All"
+msgstr "Vyber vše"
+
+#: cmpltmpl/wordlist_form.py:450
+msgid "Search attribute"
+msgstr "Hledej atributy"
+
+#: cmpltmpl/wsketch.py:661
+msgid "displaying only"
+msgstr "zobrazuje se pouze"
+
+#: cmpltmpl/wsketch.py:676
+msgid "whole word sketch"
+msgstr "celý word sketch"
+
+#: cmpltmpl/freq.py:350
+msgid "Include categories with no hits"
+msgstr "Zahrnout kategorie bez hitů"
+
+#: cmpltmpl/view.py:758
+msgid "Sort according to the 'References' field"
+msgstr "Utřiď podle Referencí"
+
+#: cmpltmpl/conc.py:187
+msgid "Make a random sample from the concordance."
+msgstr "Vytvoř náhodný vzorek z konkordance"
+
+#: cmpltmpl/conc.py:258
+msgid "Make a query on the current concordance."
+msgstr "Vytvořit dotaz z aktuální konkordance"
+
+msgid "Entry form for computing frequencies"
+msgstr "Vstupní formulář pro výpočet frekvence"
+
+msgid "Show frequencies of Node tags"
+msgstr "Zobraz frekvence značek uzlů"
+
+msgid "Show frequencies of Node forms"
+msgstr "Zobraz frekvence tvarů uzlů"
+
+msgid "Show frequencies of Doc IDs"
+msgstr "Zobraz frekvence ID dokumentů"
+
+msgid "Show frequencies of Text Types"
+msgstr "Zobraz frekvence typů textu"
+
+msgid "ConcDesc"
+msgstr "Popis konkordance"
+
+msgid "Corpus Pattern Analysis"
+msgstr "Analýza vzorů v korpusu"
+
+#: cmpltmpl/cpa_form.py:206
+msgid "Annotate"
+msgstr "Anotuj"
+
+#: cmpltmpl/document.py:670
+msgid "hide/show"
+msgstr "skryj/zobraz"
+
+msgid "leaf"
+msgstr "list"
+
+msgid "Concordance: Filter form"
+msgstr "Konkordance: formulář filtru"
+
+#: cmpltmpl/findx.py:138 cmpltmpl/freqs.py:206 cmpltmpl/patterns.py:122
+#: cmpltmpl/thes.py:626 cmpltmpl/trends.py:396 cmpltmpl/wordlist.py:219
+#: cmpltmpl/wsdiff.py:137 cmpltmpl/wsdiff.py:181 cmpltmpl/wsketch.py:214
+#: cmpltmpl/wsketch.py:225
+msgid "Change options"
+msgstr "Změnit nastavení"
+
+msgid "Error Code"
+msgstr "Kód chyby"
+
+#: cmpltmpl/document.py:1636
+msgid "Incorrect word(s)"
+msgstr "Nesprávná slova"
+
+#: cmpltmpl/document.py:1651
+msgid "Corrected word(s)"
+msgstr "Opravená slova"
+
+#: cmpltmpl/document.py:2637
+msgid "Various methods for creating word lists"
+msgstr "Různé způsoby tvorby seznamů slov"
+
+msgid "Word Sketch query entry form"
+msgstr "Word sketch formulář"
+
+#: cmpltmpl/document.py:2673
+msgid "Thesaurus query entry form"
+msgstr "Tesaurus formulář"
+
+msgid "Sketch-Eval"
+msgstr "Sketch-Hodnocení"
+
+#: cmpltmpl/selectstored.py:88
+msgid "Select stored concordance"
+msgstr "Vybrat uložené konkordance"
+
+#: usercgi.py:154 cmpltmpl/document.py:2941
+msgid "Selected options successfully saved"
+msgstr "Nastavení úspěšně uloženo"
+
+#: cmpltmpl/skell.py:103 cmpltmpl/skell.py:319 cmpltmpl/skell.py:354
+msgid "Sketch Engine"
+msgstr "Sketch Engine"
+
+#: cmpltmpl/view.py:562
+msgid "Concordance view settings"
+msgstr "Nastavení zobrazení konkordance"
+
+msgid "hide detail"
+msgstr "skrýt detail"
+
+#: cmpltmpl/widectx.py:213
+msgid "display whole document"
+msgstr "zobraz celý dokument"
+
+#: cmpltmpl/wordlist_form.py:152
+msgid "Compute a list of all words"
+msgstr "Seznam všech slovních tvarů"
+
+#: cmpltmpl/wordlist_form.py:168
+msgid "Compute a list of all lemmas"
+msgstr "Seznam všech lemmat"
+
+#: cmpltmpl/document.py:489
+msgid "info"
+msgstr "info"
+
+#: cmpltmpl/document.py:710 cmpltmpl/document.py:770 cmpltmpl/document.py:820
+msgid "Deselect All"
+msgstr "Zrušit vše"
+
+#: cmpltmpl/wseval.py:297
+msgid "Show available records"
+msgstr "Zobraz dostupné záznamy"
+
+#: cmpltmpl/wordlist_form.py:820
+msgid "Simple"
+msgstr "Jednoduchý"
+
+#: cmpltmpl/simple_search.py:303
+msgid "Concordance lines"
+msgstr "Řádky konkordance"
+
+#: cmpltmpl/simple_search.py:377 cmpltmpl/simple_search.py:457
+#: cmpltmpl/simple_search.py:545
+msgid ">> More"
+msgstr ">> Více"
+
+#: cmpltmpl/simple_search.py:413
+msgid "other"
+msgstr "jiné"
+
+#: conccgi.py:508 cmpltmpl/trends.py:265
+msgid "Empty result"
+msgstr "Prázdný výsledek"
+
+#: conccgi.py:829
+msgid "Undefined lemma PoS"
+msgstr "Nedefinovaný slovní druh lemmatu"
+
+#: conccgi.py:838 conccgi.py:857
+msgid "Undefined word form PoS"
+msgstr "Nedefinován slovní druh slovního tvaru"
+
+#: conccgi.py:786 conccgi.py:1050
+msgid "No query entered."
+msgstr "Dotaz nezadán."
+
+msgid "Select Positive or Negative filter type"
+msgstr "Vyber pozitivní nebo negativní typ filtru"
+
+#: conccgi.py:1270
+msgid "No text type selected"
+msgstr "Nevybrali jste typ textu"
+
+#: conccgi.py:1804
+msgid "No output attribute specified"
+msgstr "Atribut výstupu nespecifikován"
+
+#: conccgi.py:1933
+msgid "No subcorpus name specified!"
+msgstr "Jméno subkorpusu nespecifikováno!"
+
+#: conccgi.py:1966
+msgid "Nothing specified!"
+msgstr "Nic není specifikováno!"
+
+#: conccgi.py:1981
+msgid "Empty subcorpus!"
+msgstr "Prázdný subkorpus!"
+
+#: pyconc.py:60
+msgid "Unknown action"
+msgstr "Neznámá akce"
+
+msgid "No Word Sketch available"
+msgstr "Word sketch není k dispozici"
+
+#: wseval.py:125
+msgid "Corrupted evaluation file"
+msgstr "Porušený soubor s hodnocením"
+
+#: wsketchlib.py:34
+msgid "WMapStream: end of stream"
+msgstr "WMapStream: konec streamu"
+
+#: wsketchcgi.py:412 wsketchlib.py:162 wsketchlib.py:481
+msgid "Insufficient data for"
+msgstr "Nedostatečná data pro"
+
+#: wsketchlib.py:463
+msgid "Insufficient data for id"
+msgstr "Nedostatečná data pro id"
+
+#: conccgi.py:1840
+msgid "No meta-information to create a subcorpus."
+msgstr "Žádné metainformace pro vytvoření subkorpusu"
+
+msgid "? Help on Concordance"
+msgstr "? Nápověda pro Konkordance"
+
+msgid "Correction Code"
+msgstr "Kód oprav"
+
+msgid "Error Query"
+msgstr "Dotaz na chyby"
+
+msgid "? Help on main menu"
+msgstr "? Nápověda pro hlavní nabídku"
+
+msgid "? Help on View Options"
+msgstr "? Nápověda pro Nastavení zobrazení"
+
+#: cmpltmpl/view.py:780
+msgid "Randomize ordering of lines"
+msgstr "Náhodně zamíchat pořadí řádků"
+
+#: conclib.py:429 cmpltmpl/view.py:791
+msgid "Shuffle"
+msgstr "Zamíchat"
+
+msgid "? Help on Word Sketches"
+msgstr "? Nápověda pro word sketche"
+
+msgid "? Help on Thesaurus"
+msgstr "? Nápověda pro Tesaurus"
+
+msgid "? Help on Sort form"
+msgstr "? Nápověda pro Formulář třídění"
+
+msgid "? Help on Word Lists"
+msgstr "? Nápověda pro Seznam slov"
+
+msgid "? Help on Sample form"
+msgstr "? Nápověda pro Formulář vzorku"
+
+msgid "? Help on Saving Conc."
+msgstr "? Nápověda pro Uložení konkordance"
+
+msgid "? Help on Filter form"
+msgstr "? Nápověda pro Formulář filtru"
+
+msgid "? Help on Frequency form"
+msgstr "? Nápověda pro Formulář frekvence"
+
+msgid "? Help on Collocations"
+msgstr "? Nápověd pro Kolokace"
+
+#: cmpltmpl/conc.py:647
+msgid "Take me to the original concordance"
+msgstr "Návrat k původní konkordanci"
+
+msgid "Original Conc."
+msgstr "Původní konk."
+
+#: corplib.py:68
+#, python-format
+msgid "Subcorpus \"%s\" not found"
+msgstr "Subkorpus \"%s\" nenalezen"
+
+#: wsketchlib.py:152
+#, python-format
+msgid "Lemma \"%s\" not found in the corpus"
+msgstr "Lemma \"%s\" nenalezeno v korpusu"
+
+#: CGIPublisher.py:280
+msgid "You are not allowed to use this corpus."
+msgstr "Nemáte oprávnění používat tento korpus."
+
+#: conccgi.py:1128
+msgid "Empty list"
+msgstr "Prázdný seznam"
+
+msgid "Text types are limited to Simple output"
+msgstr "Typy textů jsou omezeny na jednoduchý výstup"
+
+#: conccgi.py:1566
+msgid "ARF cannot be used with text types"
+msgstr "ARF nelze použít s typy textů"
+
+#: cmpltmpl/coll.py:371 cmpltmpl/coll.py:470
+msgid "logDice"
+msgstr "logDice"
+
+#: cmpltmpl/coll.py:384 cmpltmpl/coll.py:483
+msgid "MI.log_f"
+msgstr "MI.log_f"
+
+#: cmpltmpl/document.py:467
+msgid "None (whole corpus)"
+msgstr "Žádný (celý korpus)"
+
+#: cmpltmpl/document.py:1374
+msgid "Character"
+msgstr "Znak"
+
+#: cmpltmpl/document.py:1858
+msgid "default"
+msgstr "implicitní"
+
+#: cmpltmpl/filter_form.py:304
+msgid "include KWIC"
+msgstr "zahrnout KWIC"
+
+msgid "See Upload progress"
+msgstr "Zobraz stav nahrávání"
+
+#: cmpltmpl/findx_form.py:216
+msgid "Upload new list"
+msgstr "Nahraj nový seznam"
+
+msgid "Find X File Upload Form"
+msgstr "Najdi X Formulář pro nahrání souboru"
+
+msgid "Find X File Upload"
+msgstr "Najdi X nahrání souboru"
+
+msgid "? Help on Error Query"
+msgstr "? Nápověda pro dotazování chyb"
+
+#: cmpltmpl/first_form.py:472
+msgid "Lemma filter"
+msgstr "Filtr lemmat"
+
+#: cmpltmpl/first_form.py:480
+msgid "Word form filter"
+msgstr "Filter slovních tvarů"
+
+#: cmpltmpl/first_form.py:489 cmpltmpl/first_form.py:637
+msgid "Window"
+msgstr "Rozsah"
+
+#: cmpltmpl/first_form.py:503 cmpltmpl/first_form.py:651
+msgid "left"
+msgstr "levý"
+
+#: cmpltmpl/first_form.py:516 cmpltmpl/first_form.py:664
+msgid "right"
+msgstr "pravý"
+
+#: cmpltmpl/first_form.py:529 cmpltmpl/first_form.py:677
+msgid "both"
+msgstr "oba"
+
+#: cmpltmpl/first_form.py:557
+msgid "Lemma(s)"
+msgstr "Lemma(ta)"
+
+#: cmpltmpl/first_form.py:565
+msgid "Word form(s)"
+msgstr "Slovní tvar(y)"
+
+#: cmpltmpl/first_form.py:582 cmpltmpl/first_form.py:745
+#: cmpltmpl/wsketch_form.py:233
+msgid "all"
+msgstr "vše"
+
+#: cmpltmpl/first_form.py:595 cmpltmpl/first_form.py:758
+msgid "any"
+msgstr "libovolný"
+
+#: cmpltmpl/first_form.py:608 cmpltmpl/first_form.py:771
+msgid "none"
+msgstr "žádný"
+
+#: cmpltmpl/first_form.py:629
+msgid "PoS filter"
+msgstr "filtr slovních druhů"
+
+msgid "Find X entry form"
+msgstr "Najdi X formulář"
+
+#: cmpltmpl/document.py:2751
+msgid "CPA"
+msgstr "CPA"
+
+msgid "Interface language"
+msgstr "Jazyk rozhraní"
+
+#: cmpltmpl/tblex.py:383
+msgid "Alternative GDEX configuration"
+msgstr "Alternativní GDEX konfigurace"
+
+#: cmpltmpl/thes.py:344
+msgid "Switch between clustered and unclustered thesaurus"
+msgstr "Přepni mezi (ne)shlukovaným thesaurem"
+
+#: cmpltmpl/viewattrs.py:431
+msgid "GDEX configuration for current corpus"
+msgstr "GDEX konfigurace pro aktuální korpus"
+
+#: cmpltmpl/view.py:1456
+msgid "Concordance is sorted. Jump to"
+msgstr "Konkordance je utříděná. Přejdi na"
+
+#: cmpltmpl/thes.py:511 cmpltmpl/view.py:1776 cmpltmpl/view.py:1888
+#: cmpltmpl/view.py:1982 cmpltmpl/wsketch.py:618 cmpltmpl/wsketch.py:732
+msgid "per million"
+msgstr "v milionu"
+
+msgid "Filter wordlist by"
+msgstr "Filtruj seznam slov podle"
+
+#: cmpltmpl/wordlist_form.py:701
+msgid "Whitelist"
+msgstr "Whitelist"
+
+#: cmpltmpl/wordlist_form.py:715
+msgid "Blacklist"
+msgstr "Blacklist"
+
+#: cmpltmpl/wordlist_form.py:729
+msgid "format"
+msgstr "formát"
+
+#: cmpltmpl/wordlist_form.py:750
+msgid "Include non-words"
+msgstr "Zahrnout ne-slova"
+
+#: cmpltmpl/wordlist_form.py:767
+msgid "Frequency figures"
+msgstr "Frekvenční údaje"
+
+#: conccgi.py:1888
+msgid "Word counts"
+msgstr "Počet slov"
+
+#: conccgi.py:1879 cmpltmpl/wordlist_form.py:790
+msgid "Document counts"
+msgstr "Počet dokumentů"
+
+#: cmpltmpl/wordlist_form.py:809
+msgid "Output type"
+msgstr "Typ výstupu"
+
+#: cmpltmpl/wordlist_form.py:839
+msgid "Reference (sub)corpus"
+msgstr "Referenční (sub)korpus"
+
+#: cmpltmpl/trends.py:505 cmpltmpl/wordlist_form.py:897
+msgid "whole corpus"
+msgstr "celý korpus"
+
+#: cmpltmpl/wsdiff_form.py:250
+msgid "Sketch diff by"
+msgstr "Sketch rozdíl podle"
+
+#: cmpltmpl/document.py:2324 cmpltmpl/wsdiff_form.py:300
+msgid "subcorpus"
+msgstr "subkorpus"
+
+#: cmpltmpl/wsdiff_form.py:310
+msgid "First subcorpus"
+msgstr "První subkorpus"
+
+#: cmpltmpl/wsdiff_form.py:329
+msgid "Second subcorpus"
+msgstr "Druhý subkorpus"
+
+#: cmpltmpl/wsdiff_form.py:355
+msgid "word form"
+msgstr "slovní tvar"
+
+#: cmpltmpl/wsdiff_form.py:365
+msgid "First word form"
+msgstr "První slovní tvar"
+
+#: cmpltmpl/wsdiff_form.py:377
+msgid "Second word form"
+msgstr "Druhý slovní tvar"
+
+#: cmpltmpl/wsdiff.py:245
+msgid "overall frequency for the first"
+msgstr "celková frekvence pro první"
+
+#: cmpltmpl/wsdiff.py:257
+msgid "overall frequency for the second"
+msgstr "celková frekvence pro druhý"
+
+#: cmpltmpl/wsdiff.py:269
+msgid "overall score for the first"
+msgstr "celkové skóre pro první"
+
+#: cmpltmpl/wsdiff.py:281
+msgid "overall score for the second"
+msgstr "celkové skóre pro druhý"
+
+#: cmpltmpl/wsdiff.py:333
+msgid "frequency for the first"
+msgstr "frekvence pro první"
+
+#: cmpltmpl/wsdiff.py:369
+msgid "frequency for the second"
+msgstr "frekvence pro druhé"
+
+#: cmpltmpl/wsdiff.py:405
+msgid "score for the first"
+msgstr "skóre pro první"
+
+#: cmpltmpl/wsdiff.py:419
+msgid "score for the second"
+msgstr "skóre pro druhé"
+
+#: cmpltmpl/wsdiff.py:513
+msgid "freqs"
+msgstr "frekvence"
+
+#: cmpltmpl/wsdiff.py:544
+msgid "Common patterns"
+msgstr "Společné vzory"
+
+#: cmpltmpl/wsdiff.py:598 cmpltmpl/wsdiff.py:614
+#, python-format
+msgid "\"%s\" only patterns"
+msgstr "\"%s\" pouze vzory"
+
+#: cmpltmpl/wseval.py:414
+msgid "Commonest match"
+msgstr "Běžný řetězec"
+
+#: cmpltmpl/wsketch_form.py:539
+msgid "Structure word sketch by gramrels"
+msgstr "Řadit word sketche podle relací"
+
+#: cmpltmpl/wsketch_form.py:623 cmpltmpl/wsketch_form.py:825
+msgid "Select gramrels:"
+msgstr "Vyber relace:"
+
+#: cmpltmpl/pcws.py:296 cmpltmpl/wipo.py:399 cmpltmpl/wsketch.py:422
+msgid "More data"
+msgstr "Více dat"
+
+#: cmpltmpl/pcws.py:313 cmpltmpl/wsketch.py:439
+msgid "Less data"
+msgstr "Méně dat"
+
+#: wsketchcgi.py:107
+msgid "This corpus does not have sketches"
+msgstr "Tento korpus nemá sketche"
+
+#: wsketchlib.py:151
+msgid "No lemma entered"
+msgstr "Lemma nezadáno"
+
+#: cmpltmpl/cpa_form.py:129
+msgid "Last edited"
+msgstr "Poslední editované"
+
+#: cmpltmpl/cpa_form.py:181 cmpltmpl/view.py:91
+msgid "Annotation"
+msgstr "Anotace"
+
+#: cmpltmpl/document.py:1669
+msgid "Error codes"
+msgstr "Kódy chyb"
+
+#: cmpltmpl/document.py:1675
+msgid "Highlighting options"
+msgstr "Nastavení zvýrazňování"
+
+#: cmpltmpl/document.py:1685
+msgid "Highlight error words"
+msgstr "Zvýraznit chybná slova"
+
+#: cmpltmpl/document.py:1687
+msgid "Highlight corrected words"
+msgstr "Zvýraznit správná slova"
+
+#: cmpltmpl/document.py:1689
+msgid "Highlight both"
+msgstr "Zvýraznit oboje"
+
+#: cmpltmpl/document.py:1691
+msgid "Highlight query result"
+msgstr "Zvýraznit výsledek dotazu"
+
+#: cmpltmpl/jobs.py:224 cmpltmpl/jobs.py:604 cmpltmpl/jobs.py:651
+#: cmpltmpl/jobs.py:712
+msgid "User"
+msgstr "Uživatel"
+
+#: cmpltmpl/document.py:2911
+msgid "Menu position"
+msgstr "Umístění menu"
+
+msgid "? Help on FindX"
+msgstr "? Nápověda pro Najdi X"
+
+msgid "Find all the words that are most X"
+msgstr "Najdi všechna slova která jsou nejvíc X"
+
+msgid "Std. Query"
+msgstr "Std. dotaz"
+
+msgid "Parallel Query"
+msgstr "Paralelní dotaz"
+
+#: cmpltmpl/first_form.py:418
+msgid "Contains"
+msgstr "Obsahuje"
+
+#: cmpltmpl/first_form.py:424
+msgid "Does NOT contain"
+msgstr "Neobsahuje"
+
+#: cmpltmpl/freq.py:218
+msgid "fourth level"
+msgstr "čtvrtá úroveň"
+
+#: cmpltmpl/freqs.py:470
+msgid "Using first"
+msgstr "S použitím prvních"
+
+#: cmpltmpl/freqs.py:462 cmpltmpl/freqs.py:478 cmpltmpl/view.py:1920
+#: cmpltmpl/view.py:1941
+msgid "lines only"
+msgstr "řádků"
+
+#: cmpltmpl/freqs.py:487
+msgid "Use random"
+msgstr "Použít náhodných"
+
+#: cmpltmpl/freqs.py:496
+msgid "instead"
+msgstr "místo toho"
+
+#: cmpltmpl/lngroupinfo.py:347 cmpltmpl/patterns2.py:169
+msgid "Label"
+msgstr "Značka"
+
+#: cmpltmpl/lngroupinfo.py:353
+msgid "Occurs"
+msgstr "Výskyt"
+
+#: cmpltmpl/jobs.py:392 cmpltmpl/jobs.py:624 cmpltmpl/jobs.py:772
+#: cmpltmpl/lngroupinfo.py:365
+msgid "Action"
+msgstr "Akce"
+
+msgid "Show Wordsketch"
+msgstr "Zobraz word sketch"
+
+#: cmpltmpl/load_all_wseval.py:211
+msgid "Complete"
+msgstr "Kompletní"
+
+#: cmpltmpl/load_all_wseval.py:230
+msgid "Min. score"
+msgstr "Min. skóre"
+
+#: cmpltmpl/pcws.py:452
+msgid "No translation was found."
+msgstr "Překlad nenalezen."
+
+#: cmpltmpl/thes.py:356
+msgid "Clustering"
+msgstr "Shlukování"
+
+#: cmpltmpl/view.py:1055 cmpltmpl/view.py:1083 cmpltmpl/view.py:2009
+#: cmpltmpl/view.py:2064 cmpltmpl/view.py:2111 cmpltmpl/view.py:2165
+#: cmpltmpl/view.py:2214 cmpltmpl/widectx.py:110 cmpltmpl/widectx.py:182
+#: cmpltmpl/widectx.py:207
+msgid "Loading..."
+msgstr "Nahrávání..."
+
+#: cmpltmpl/view.py:1932
+msgid "using first"
+msgstr "použito prvních"
+
+#: cmpltmpl/view.py:1898
+msgid "using random"
+msgstr "použito náhodných"
+
+#: cmpltmpl/view.py:1866 cmpltmpl/view.py:1913
+msgid "counting"
+msgstr "počítá se"
+
+#: cmpltmpl/view.py:1663
+msgid "Clear selection"
+msgstr "Zruš výběr"
+
+msgid "Positional Attributes"
+msgstr "Poziční atributy"
+
+#: cmpltmpl/wordlist_form.py:503
+msgid "collocations"
+msgstr "kolokace"
+
+#: cmpltmpl/wordlist_form.py:619
+msgid "Filter options"
+msgstr "Nastavení filtru"
+
+#: cmpltmpl/findx_upload_form.py:193 cmpltmpl/wordlist_form.py:708
+#: cmpltmpl/wordlist_form.py:722
+msgid "Clear"
+msgstr "Vymaž"
+
+#: cmpltmpl/wordlist_form.py:760
+msgid "Output options"
+msgstr "Nastavení výstupu"
+
+msgid "? Help on SketchDiff"
+msgstr "? Nápověda pro SketchDiff"
+
+#: cmpltmpl/wsdiff.py:484
+msgid "Sketch diff for subcorpora"
+msgstr "Sketch diff pro subkorpusy"
+
+#: cmpltmpl/wsdiff.py:492
+msgid "Sketch diff for word forms"
+msgstr "Sketch diff pro slovní tvary"
+
+msgid "Evaluation of Word Sketch"
+msgstr "Hodnocení word sketchů"
+
+#: cmpltmpl/wseval_form.py:162
+msgid "Available evaluation sets:"
+msgstr "Dostupné sady pro hodnocení"
+
+#: cmpltmpl/wseval_form.py:182
+msgid "No evaluation sets available"
+msgstr "Žádné sady nejsou k dispozici"
+
+#: cmpltmpl/wseval.py:408
+msgid "Concordance link"
+msgstr "Odkaz do korpusu"
+
+#: cmpltmpl/thes_form.py:280 cmpltmpl/wsketch_form.py:320
+#: cmpltmpl/wsketch_form.py:554
+msgid "Minimum score"
+msgstr "Minimální skóre"
+
+#: cmpltmpl/wsketch.py:381
+msgid "Switch between sorting collocates according to raw frequency and score"
+msgstr "Přepnout mezi třídění kolokací podle frekvence a podle skóre"
+
+msgid "Sorting"
+msgstr "Třídění"
+
+#: cmpltmpl/pcws.py:268 cmpltmpl/wsketch.py:396
+msgid "Switch between flat list and gramrel tables"
+msgstr "Přepnout mezi seznamem a tabulkami"
+
+#: cmpltmpl/pcws.py:279
+msgid "Gramrels"
+msgstr "Gramatické relace"
+
+#: conccgi.py:644 conclib.py:550
+msgid "Token number"
+msgstr "Číslo tokenu"
+
+#: conccgi.py:652
+msgid "Document number"
+msgstr "Číslo dokumentu"
+
+#: conccgi.py:1880 cmpltmpl/corp_info.py:211
+msgid "Tokens"
+msgstr "Tokenů"
+
+#: conclib.py:29
+#, python-format
+msgid "%iL"
+msgstr "%iL"
+
+#: conclib.py:35
+#, python-format
+msgid "%iR"
+msgstr "%iR"
+
+#: pyconc.py:198
+msgid "Rel [%]"
+msgstr "Rel [%]"
+
+#: conclib.py:432
+msgid "Negative filter"
+msgstr "Negativní filtr"
+
+#: conclib.py:433
+msgid "Negative filter (excluding KWIC)"
+msgstr "Negativní filtr (vyjma KWIC)"
+
+#: conclib.py:434
+msgid "Positive filter"
+msgstr "Pozitivní filtr"
+
+#: conclib.py:435
+msgid "Positive filter (excluding KWIC)"
+msgstr "Pozitivní filtr (vyjma KWIC)"
+
+#: conclib.py:436
+msgid "Word sketch item"
+msgstr "Položka word sketche"
+
+#: conclib.py:438 cmpltmpl/viewattrs.py:376
+msgid "GDEX"
+msgstr "GDEX"
+
+#: conclib.py:439
+msgid "Switch KWIC"
+msgstr "Přepni KWIC"
+
+#: cmpltmpl/document.py:930
+msgid "Simple query"
+msgstr "Jednoduchý dotaz"
+
+#: cmpltmpl/document.py:1065
+msgid "Query type"
+msgstr "Typ dotazu"
+
+#: cmpltmpl/document.py:1081
+msgid "simple"
+msgstr "jednoduchý"
+
+#: cmpltmpl/document.py:1114
+msgid "phrase"
+msgstr "fráze"
+
+#: cmpltmpl/document.py:1129
+msgid "word"
+msgstr "slovo"
+
+#: cmpltmpl/document.py:1144
+msgid "character"
+msgstr "znak"
+
+#: cmpltmpl/findx_form.py:229
+msgid "Minimum ratio (%)"
+msgstr "Min. poměr (%)"
+
+#: cmpltmpl/findx_form.py:248
+msgid "Minimum freq."
+msgstr "Min. frek."
+
+#: cmpltmpl/wordlist_form.py:631
+msgid "Regular expression pattern"
+msgstr "Vzor regulárního výrazu"
+
+msgid "&lt; Concordance"
+msgstr "&lt; Konkordance"
+
+#: cmpltmpl/document.py:981 cmpltmpl/document.py:1012
+msgid "Query types"
+msgstr "Typy dotazů"
+
+#: cmpltmpl/document.py:1357
+msgid "match case"
+msgstr "citlivé na velikost znaků"
+
+msgid ""
+"Wordlist whitelists and blacklists must be plain text (.txt), encoded in "
+"UTF-8, with one item per line.  The items must correspond to the selected "
+"attribute, so, eg, if 'lemma' is selected from the attribute menu, then the "
+"list should be a list of lemmas. We use exact matching, not regular-"
+"expression matching, for file input."
+msgstr ""
+"Seznamy pozitivních a negativních příkladů pro wordlisty musí být v "
+"jednoduchém textovém formátu (.txt), v kódování UTF-8, s jednou položkou na "
+"řádku. Položky musí odpovídat vybraným atributům. Např. pokud je vybráno "
+"'lemma' z menu atributů, seznam pak musí být seznamem lemmat. Používá se "
+"přesná shoda, nikoli regulární výrazy."
+
+#: cmpltmpl/wseval.py:422
+msgid "Sources"
+msgstr "Zdroje"
+
+#: cmpltmpl/wsketch.py:515
+msgid "usually in"
+msgstr "obvykle v"
+
+#: cmpltmpl/wsketch.py:526
+msgid "%, percentile"
+msgstr "%, percentil"
+
+#: conccgi.py:860
+msgid "No char entered"
+msgstr "Nebyl vybrán žádný znak"
+
+#: conccgi.py:1033
+msgid "Please specify positive filter to switch"
+msgstr "Specifikujte pozitivní filtr pro přepnutí"
+
+#: cmpltmpl/document.py:1507
+msgid "filter out empty lines"
+msgstr "vyfiltrovat prázdné řádky"
+
+#: cmpltmpl/viewattrs.py:301
+msgid "Show references above the concordance lines, instead of the left column"
+msgstr "Zobraz reference nad řádky konkordance, ne v levém sloupci"
+
+#: cmpltmpl/viewattrs.py:306
+msgid "References up"
+msgstr "Reference nahoře"
+
+msgid "Key Words In Context"
+msgstr "Klíčová slova v kontextu"
+
+#: cmpltmpl/view.py:425 cmpltmpl/view.py:597
+msgid "KWIC"
+msgstr "KWIC"
+
+#: cmpltmpl/view.py:603
+msgid "Show sentences"
+msgstr "Zobraz věty"
+
+#: cmpltmpl/view.py:617
+msgid "Sentence"
+msgstr "Věta"
+
+#: cmpltmpl/view.py:625
+msgid "Show aligned segments"
+msgstr "Zobraz zarovnané segmenty"
+
+#: cmpltmpl/view.py:639
+msgid "Alignment"
+msgstr "Zarovnání"
+
+#: cmpltmpl/view.py:1067
+msgid "<--not translated-->"
+msgstr "<--nepřeloženo-->"
+
+#: cmpltmpl/conc.py:505 cmpltmpl/document.py:990 cmpltmpl/document.py:1026
+#: cmpltmpl/filter_form.py:326 cmpltmpl/first_form.py:304
+#: cmpltmpl/first_form.py:794 cmpltmpl/simple_search.py:469
+#: cmpltmpl/wordlist_form.py:364 cmpltmpl/wordlist_form.py:511
+msgid "Text types"
+msgstr "Typy textů"
+
+#: conccgi.py:1665 conccgi.py:1710
+#, python-format
+msgid "You are allowed to see only %s items."
+msgstr "Můžete zobrazit pouze %s položek."
+
+#: conclib.py:425 cmpltmpl/view.py:1841
+msgid "Label filter"
+msgstr "Filtr značek"
+
+#: conclib.py:441
+msgid "Sort labels"
+msgstr "Třiď značky"
+
+#: conclib.py:491
+msgid "Error while reading .info file"
+msgstr "Chyba během čtení .info souboru"
+
+#: cmpltmpl/freqs.py:454
+msgid "Using random"
+msgstr "Použito náhodných"
+
+#: cmpltmpl/view.py:1677 cmpltmpl/wsketch.py:878
+msgid "Undo"
+msgstr "Zpět"
+
+#: cmpltmpl/view.py:1953
+msgid "use random"
+msgstr "použít náhodných"
+
+#: cmpltmpl/wordlist_form.py:677
+msgid "Maximum frequency"
+msgstr "Maximální frekvence"
+
+#: cmpltmpl/wordlist_form.py:694
+msgid "(0 = no maximum frequency)"
+msgstr "(0 = bez omezení max. frekvencí)"
+
+#: cmpltmpl/wordlist_form.py:964
+msgid "Change output attribute(s)"
+msgstr "Změnit výstupní atribut(y)"
+
+#: cmpltmpl/wordlist_form.py:1001
+msgid ""
+"You can select one or more output attributes. Please note that this option "
+"can be time-consuming."
+msgstr ""
+"Můžete vybrat jeden a více výstupních atributů. Tato volba může zvýšit "
+"časovou náročnost výpočtu."
+
+#: conccgi.py:1572
+msgid "Word sketch collocations are available with raw hit counts only"
+msgstr "Kolokace z word sketchů jsou k dispozici pouze s počty výskytů"
+
+#: conccgi.py:1654
+msgid "Doc freq"
+msgstr "Frek. dok."
+
+#: conccgi.py:2155 conccgi.py:2178 conccgi.py:2245 conccgi.py:2269
+#: conccgi.py:2318 conccgi.py:2388
+msgid "Annotation locked by user"
+msgstr "Anotace zamknutá uživatelem"
+
+#: cmpltmpl/conc.py:344
+msgid "Filter selected lines"
+msgstr "Filtr vybraných řádků"
+
+#: cmpltmpl/conc.py:585
+msgid "Concordance distribution overview"
+msgstr "Přehled rozložení konkordance"
+
+#: cmpltmpl/conc.py:597
+msgid "Visualize"
+msgstr "Vizualizace"
+
+#: cmpltmpl/corp_info.py:203
+msgid "Counts"
+msgstr "Počty"
+
+#: cmpltmpl/corp_info.py:220
+msgid "Words"
+msgstr "Slova"
+
+#: cmpltmpl/corp_info.py:229
+msgid "Sentences"
+msgstr "Věty"
+
+#: cmpltmpl/corp_info.py:238
+msgid "Paragraphs"
+msgstr "Odstavce"
+
+#: cmpltmpl/corp_info.py:247
+msgid "Documents"
+msgstr "Dokumenty"
+
+#: cmpltmpl/corp_info.py:396
+msgid "Tags legend"
+msgstr "Popis značek"
+
+msgid "tagset"
+msgstr "sada značek"
+
+#: cmpltmpl/corp_info.py:263
+msgid "General info"
+msgstr "Obecné informace"
+
+#: cmpltmpl/corp_info.py:293 cmpltmpl/wsketch_form.py:705
+msgid "Language"
+msgstr "Jazyk"
+
+#: cmpltmpl/corp_info.py:303
+msgid "Encoding"
+msgstr "Kódování"
+
+#: cmpltmpl/corp_info.py:312
+msgid "Compiled"
+msgstr "Vytvořeno"
+
+#: cmpltmpl/corp_info.py:333 cmpltmpl/jobs.py:196 cmpltmpl/jobs.py:596
+#: cmpltmpl/jobs.py:649 cmpltmpl/jobs.py:688
+msgid "Description"
+msgstr "Popis"
+
+#: cmpltmpl/corp_info.py:368
+msgid "Lexicon sizes"
+msgstr "Velikosti slovníků"
+
+#: cmpltmpl/corp_info.py:422
+msgid "Lempos suffixes"
+msgstr "Koncovky lemposů"
+
+#: cmpltmpl/freq_distrib.py:88
+msgid "Frequency distribution"
+msgstr "Frekvenční distribuce"
+
+#: cmpltmpl/freq_distrib.py:243
+msgid "Concordance positions"
+msgstr "Pozice v konkordanci"
+
+msgid "Frequency distribution over corpus positions"
+msgstr "Frekvenční distribuce přes pozice korpusu"
+
+#: cmpltmpl/freq_distrib.py:295
+msgid "Frequency distribution over concordance positions"
+msgstr "Frekvenční rozložení přes pozice konkordance"
+
+#: cmpltmpl/lngroupinfo.py:128
+msgid "Annotation statistics"
+msgstr "Anotační statistiky"
+
+msgid "Bilingual Word Sketch"
+msgstr "Dvojjazyčné word sketche"
+
+#: cmpltmpl/viewattrs.py:509
+msgid "Checkbox for selecting lines"
+msgstr "Checkbox pro výběr řádků"
+
+#: cmpltmpl/view.py:1671 cmpltmpl/wsketch.py:872
+msgid "lines assigned"
+msgstr "řádků zarovnáno"
+
+#: cmpltmpl/wordlist_form.py:779
+msgid "Hit counts"
+msgstr "Počty hitů"
+
+#: cmpltmpl/wordlist.py:735
+msgid "Switch focus and reference (sub)corpus"
+msgstr "Zaměň hlavní a referenční (sub)korpus"
+
+#: cmpltmpl/wordlist.py:840
+msgid "Word sketch collocations"
+msgstr "Kolokace z word sketchů"
+
+#: cmpltmpl/wordlist.py:1120
+msgid "-grams"
+msgstr "-gramy"
+
+#: cmpltmpl/savewipo.py:119 cmpltmpl/wipo.py:339 cmpltmpl/wordlist.py:1135
+#: cmpltmpl/wordlist.py:1163
+msgid "/mill"
+msgstr "/mil."
+
+#: conccgi.py:2210
+msgid "You must specify corpus, entry and username"
+msgstr "Musíte zadat korpus, heslo a uživatelské jméno"
+
+#: conccgi.py:2326
+msgid "Label not found"
+msgstr "Značka nenalezena"
+
+#: conccgi.py:2398 conccgi.py:2419
+msgid "Error while renaming labels"
+msgstr "Chyba při přejmenování značek"
+
+#: conclib.py:489
+msgid "Empty .info file"
+msgstr "Prázdný soubor .info"
+
+#: cmpltmpl/corp_info.py:88 cmpltmpl/document.py:2808
+msgid "Corpus info"
+msgstr "Info o korpusu"
+
+msgid "Position in corpus"
+msgstr "Pozice v korpusu"
+
+#: cmpltmpl/document.py:3081 cmpltmpl/document.py:3093
+msgid "WARNING"
+msgstr "VAROVÁNÍ"
+
+#: cmpltmpl/freq_distrib.py:307
+msgid "Granularity"
+msgstr "Granularita"
+
+#: cmpltmpl/freq_distrib.py:318
+msgid "Redraw"
+msgstr "Překresli"
+
+msgid "Extracted Terms"
+msgstr "Extrahované termíny"
+
+#: conclib.py:437 cmpltmpl/savewipo.py:105 cmpltmpl/wipo.py:322
+msgid "Term"
+msgstr "Termín"
+
+#: cmpltmpl/document.py:2667 cmpltmpl/skell.py:403
+#: cmpltmpl/wordlist_form.py:480 cmpltmpl/wsketch_form.py:88
+#: cmpltmpl/wsketch_form.py:148 cmpltmpl/wsketch.py:92
+msgid "Word sketch"
+msgstr "Word sketch"
+
+msgid "Word"
+msgstr "Slovo"
+
+msgid "Do not use Flash for copying to clipboard"
+msgstr "Nepoužívat Flash pro kopírování do schránky"
+
+#: cmpltmpl/viewattrs.py:525
+msgid "Show line numbers"
+msgstr "Zobrazit čísla řádků"
+
+#: cmpltmpl/view.py:1551
+msgid "Wait for page reload"
+msgstr "Čekejte dokud se stránky znovu nenačte"
+
+#: cmpltmpl/wipo.py:232
+msgid "Upload additional blacklist"
+msgstr "Nahrajte další blacklist"
+
+#: cmpltmpl/wipo.py:239 cmpltmpl/wipo.py:284
+msgid "OK"
+msgstr "OK"
+
+#: cmpltmpl/wipo.py:264
+msgid "Save top"
+msgstr "Uložit horních"
+
+#: cmpltmpl/wipo.py:278
+msgid "results as CSV"
+msgstr "výsledky v CSV"
+
+#: cmpltmpl/wipo.py:309
+msgid "Term candidates total count"
+msgstr "Celkový počet kandidátů na termíny"
+
+#: cmpltmpl/wordlist_form.py:543
+msgid "use n-grams"
+msgstr "použít n-gramy"
+
+#: cmpltmpl/wordlist_form.py:548
+msgid "Value of n:"
+msgstr "Hodnota n:"
+
+#: cmpltmpl/wsketch_form.py:559
+msgid "for unary relations"
+msgstr "pro unární relace"
+
+#: wsketchcgi.py:404
+msgid "Insufficient data for multiword sketch of"
+msgstr "Nedostatek dat pro víceslovné sketche pro"
+
+#: cmpltmpl/freq_distrib.py:195
+msgid "Corpus positions"
+msgstr "Pozice korpusu"
+
+msgid "English Language Learning"
+msgstr "Výuka anglického jazyka"
+
+#: cmpltmpl/skell.py:489
+msgid "hits per million"
+msgstr "v milionu"
+
+#: cmpltmpl/wordlist_form.py:492
+msgid "terms"
+msgstr "termy"
+
+#: cmpltmpl/wordlist_form.py:923
+msgid "Prefer"
+msgstr "Preferuj"
+
+#: cmpltmpl/wordlist_form.py:929
+msgid "rare words"
+msgstr "málo častá slova"
+
+#: cmpltmpl/wordlist_form.py:936
+msgid "common words"
+msgstr "častá slova"
+
+#: cmpltmpl/wordlist.py:851 cmpltmpl/wordlist.py:1105
+msgid "Terms"
+msgstr "Termy"
+
+#: cmpltmpl/view.py:503 cmpltmpl/wsketch_form.py:914
+msgid "Saved"
+msgstr "Uloženo"
+
+#: cmpltmpl/document.py:2309 cmpltmpl/document.py:2797
+msgid "Corpus info page for"
+msgstr "Stránka informací pro korpus"
+
+msgid "Corpus Info"
+msgstr "Korpus info"
+
+#: cmpltmpl/document.py:2443 cmpltmpl/document.py:2448
+msgid "Print this page"
+msgstr "Verze pro tisk"
+
+#: cmpltmpl/document.py:2465
+msgid "Get short permanent link"
+msgstr "Generuj trvalý odkaz"
+
+#: cmpltmpl/document.py:2470
+msgid "Permalink"
+msgstr "Trvalý odkaz"
+
+#: cmpltmpl/viewattrs.py:542
+msgid "Shorten long references"
+msgstr "Zkracovat dlouhé reference"
+
+#: conclib.py:430
+msgid "Subparts filter"
+msgstr "Filtr překryvů"
+
+#: conclib.py:431 cmpltmpl/conc.py:321
+msgid "Filter all but first hit in document"
+msgstr "Odfiltruj vše kromě 1. výskytů v dokumentu"
+
+#: wsketchlib.py:387 cmpltmpl/wsketch.py:1203
+msgid "unary rels"
+msgstr "unární relace"
+
+#: cmpltmpl/conc.py:277
+msgid "Filter lines with subpart matches"
+msgstr "Odfiltruj překrývající se výskyty"
+
+#: cmpltmpl/conc.py:336
+msgid "1st hit in doc"
+msgstr "1. výskyt/dok."
+
+#: cmpltmpl/conc.py:356
+msgid "Selected lines"
+msgstr "Vybrané řádky"
+
+#: cmpltmpl/collx.py:452 cmpltmpl/freqs.py:643 cmpltmpl/lngroupinfo.py:402
+msgid "P"
+msgstr "P"
+
+#: cmpltmpl/collx.py:469 cmpltmpl/collx.py:477 cmpltmpl/freqs.py:658
+#: cmpltmpl/freqs.py:665 cmpltmpl/lngroupinfo.py:423
+msgid "N"
+msgstr "N"
+
+#: cmpltmpl/conc.py:289
+msgid "Overlaps"
+msgstr "Překryvy"
+
+#: cmpltmpl/document.py:3062
+msgid "Lexical Computing logo"
+msgstr "Logo Lexical Computing"
+
+#: cmpltmpl/first_form.py:453
+msgid "Corpus documentation"
+msgstr "Dokumentace korpusu"
+
+#: cmpltmpl/skell.py:936
+msgid "Lexical Computing Ltd."
+msgstr "Lexical Computing Ltd."
+
+#: cmpltmpl/wipo.py:166
+msgid "Remove single"
+msgstr "Odstraň jeden"
+
+#: cmpltmpl/wipo.py:177
+msgid "Add single"
+msgstr "Přidej jeden"
+
+#: cmpltmpl/wseval.py:554
+msgid "Show concordance"
+msgstr "Zobraz konkordanci"
+
+#: cmpltmpl/wsketch.py:1246 cmpltmpl/wsketch.py:1403
+msgid "Show multiword sketch"
+msgstr "Zobraz víceslovný sketch"
+
+#: conccgi.py:1091 conccgi.py:1094 conccgi.py:1096 conccgi.py:1098
+#: cmpltmpl/document.py:1553
+msgid "Error code"
+msgstr "Typ chyby"
+
+#: conccgi.py:1092 conccgi.py:1100
+msgid "Error form"
+msgstr "Forma chyby"
+
+#: conccgi.py:1093
+msgid "Correction form"
+msgstr "Forma opravy"
+
+#: conccgi.py:1094 conccgi.py:1098
+msgid "error form"
+msgstr "forma chyby"
+
+#: conccgi.py:1096 conccgi.py:1098 conccgi.py:1100
+msgid "correction form"
+msgstr "forma opravy"
+
+#: conccgi.py:1550
+msgid "N-grams and \"rest of corpus\" can use only raw hit counts"
+msgstr ""
+"Pro n-gramy a \"zbytek korpusu\" jsou k dispozici pouze jednoduché četnosti"
+
+#: conccgi.py:1553
+msgid "N-grams are not compatible with changing output attribute(s)"
+msgstr "N-gramy nejsou kompatibilní s výstupními atributy"
+
+#: conccgi.py:1557
+msgid "N-grams and \"rest of corpus\" can use only positional attributes"
+msgstr "N-gramy a \"zbytek korpusu\" pouze pro poziční atributy"
+
+msgid "N-grams and \"rest of corpus\" can not be used together"
+msgstr "N-gramy a \"zbytek korpusu\" nelze kombinovat"
+
+#: conccgi.py:1575
+msgid "Terms are available with raw hit counts only"
+msgstr "Pro termíny jsou k dispozici pouze jednoduché četnosti"
+
+#: corplib.py:365
+msgid "--nothing found--"
+msgstr "--nenalezeno--"
+
+#: cmpltmpl/concdesc.py:149 cmpltmpl/document.py:2335 cmpltmpl/wordlist.py:688
+#: cmpltmpl/wordlist.py:1082
+msgid "-- the rest of the corpus"
+msgstr "-- zbytek korpusu"
+
+#: cmpltmpl/conc.py:298
+msgid "Filter definition candidates"
+msgstr "Filtruj kandidáty na definice"
+
+#: cmpltmpl/conc.py:313
+msgid "Definitions"
+msgstr "Definice"
+
+#: cmpltmpl/conc.py:362
+msgid "Filter unselected lines"
+msgstr "Filtruj nevybrané řádky"
+
+#: cmpltmpl/conc.py:374
+msgid "Unselected"
+msgstr "Nevybrané"
+
+#: cmpltmpl/corp_info.py:171
+msgid "statistics and info"
+msgstr "statistika a informace"
+
+#: cmpltmpl/corp_info.py:492
+msgid "Structures and attributes"
+msgstr "Struktury a atributy"
+
+#: cmpltmpl/corp_info.py:503
+msgid "Click to see attributes"
+msgstr "Zobraz atributy"
+
+msgid "Click to see examples"
+msgstr "Zobraz příklady"
+
+msgid "value"
+msgstr "hodnota"
+
+#: cmpltmpl/freq.py:129
+msgid "Top error lists"
+msgstr "Seznamy nejčastějších chyb"
+
+#: cmpltmpl/thes_form.py:211 cmpltmpl/wsketch_form.py:224
+msgid "auto"
+msgstr "auto"
+
+#: cmpltmpl/thes.py:443 cmpltmpl/wsketch.py:566
+msgid "Alternative PoS"
+msgstr "Jiné slovní druhy"
+
+msgid "Save & Change Options"
+msgstr "Ulož a změň nastavení"
+
+#: cmpltmpl/wordlist_form.py:906
+msgid "the rest of the corpus"
+msgstr "zbytek korpusu"
+
+msgid "Concordance for word sketch not available"
+msgstr "Konkordance pro word sketch není k dispozici"
+
+#: skellcgi.py:250
+msgid "Thesaurus not available for multiword queries"
+msgstr "Tezaurus není k dispozici pro víceslovné dotazy"
+
+#: wsketchcgi.py:290
+msgid "No translation found for"
+msgstr "Překlad nenalezen pro"
+
+#: cmpltmpl/pcws.py:430 cmpltmpl/wsketch.py:742
+msgid "Use another candidate translation"
+msgstr "Použít jiný překlad"
+
+#: cmpltmpl/wsketch_form.py:815
+msgid "No corpora available"
+msgstr "Žádný korpus není k dispozici"
+
+#: cmpltmpl/wsketch.py:447
+msgid "Translate"
+msgstr "Přelož"
+
+#: cmpltmpl/wsketch.py:765
+msgid "Click on collocates to access reciprocal bilingual search"
+msgstr "Klikni na kolokaci pro opačné vícejazyčné hledání"
+
+#: cmpltmpl/wsketch.py:773
+msgid "or find"
+msgstr "nebo najdi"
+
+#: cmpltmpl/wsketch.py:805
+msgid "translated collocations"
+msgstr "přeložené kolokace"
+
+#: skellcgi.py:59 skellcgi.py:90 skellcgi.py:211 skellcgi.py:252
+msgid "Empty query"
+msgstr "Prázdný dotaz"
+
+#: skellcgi.py:264
+msgid "No salient entries for this query"
+msgstr "Žádná kolokace nenalezena"
+
+#: wsketchlib.py:407
+msgid "Constructions"
+msgstr "Konstrukce"
+
+#: cmpltmpl/coll.py:225 cmpltmpl/coll.py:241
+msgid "Enter an integer"
+msgstr "Zadejte celé číslo"
+
+#: cmpltmpl/coll.py:261 cmpltmpl/coll.py:280 cmpltmpl/findx_form.py:259
+#: cmpltmpl/patterns_form.py:277 cmpltmpl/wordlist_form.py:670
+msgid "Minimum frequency must be a positive integer or zero"
+msgstr "Minimální frekvence musí být kladné celé číslo nebo nula"
+
+#: cmpltmpl/collx.py:301 cmpltmpl/savecoll_form.py:256
+#: cmpltmpl/savefreq_form.py:272 cmpltmpl/savewl_form.py:323
+#: cmpltmpl/wordlist.py:543
+msgid "Page must be a positive integer"
+msgstr "Strana musí být kladné celé číslo"
+
+#: cmpltmpl/cpa_form.py:189 cmpltmpl/thes_form.py:192
+#: cmpltmpl/wsketch_form.py:205
+msgid "Enter a query"
+msgstr "Zadejte dotaz"
+
+msgid "? Help on Concordance Query"
+msgstr "? Nápověda pro Konkordanci"
+
+#: cmpltmpl/document.py:2152 cmpltmpl/skell.py:228
+msgid "Feedback form"
+msgstr "Formulář pro zpětnou vazbu"
+
+#: cmpltmpl/document.py:2575
+msgid ""
+"Please update your bookmarks. This corpus version is now obsolete. Go to the"
+msgstr "Aktualizujte si záložku. Tento korpus je nyní zastaralý, přejděte na"
+
+#: cmpltmpl/document.py:2584
+msgid "up-to-date version"
+msgstr "aktuální verze"
+
+#: cmpltmpl/document.py:2590
+msgid "See"
+msgstr "Viz"
+
+#: cmpltmpl/document.py:2598
+msgid "what's new"
+msgstr "co je nového"
+
+#: cmpltmpl/document.py:2831
+msgid "List my currently running background jobs"
+msgstr "Vypiš seznam mých procesů běžících na pozadí"
+
+#: cmpltmpl/document.py:2839 cmpltmpl/jobs.py:98
+msgid "My jobs"
+msgstr "Mé úlohy"
+
+#: cmpltmpl/document.py:2847
+msgid "List all currently running background jobs"
+msgstr "Vypiš všechny aktuálně běžící úlohy na pozadí"
+
+#: cmpltmpl/document.py:2855 cmpltmpl/jobs.py:91
+msgid "All jobs"
+msgstr "Všechny úlohy"
+
+#: cmpltmpl/filter_form.py:280 cmpltmpl/filter_form.py:296
+msgid "Must be an integer"
+msgstr "Musí být celé číslo"
+
+#: cmpltmpl/findx_form.py:240
+msgid "Minimum ratio must be between 0 and 100"
+msgstr "Minimální poměr musí být mezi 0 a 100"
+
+#: cmpltmpl/freq.py:204 cmpltmpl/freq.py:342 cmpltmpl/freqs.py:557
+msgid "Must be a positive integer or zero"
+msgstr "Musí být kladné celé číslo nebo nula"
+
+#: cmpltmpl/lngroupinfo.py:508 cmpltmpl/lngroupinfo.py:525
+msgid "Must be a real number"
+msgstr "Musí být desetinné číslo"
+
+#: cmpltmpl/patterns_form.py:202
+msgid "Entry a lemma"
+msgstr "Zadejte lemma"
+
+#: cmpltmpl/patterns_form.py:295
+msgid "Minimum salience must be a real number"
+msgstr "Minimální salience musí být desetinné číslo"
+
+#: cmpltmpl/patterns_form.py:318
+msgid "Maximum number must be an integer"
+msgstr "Maximální počet musí být celé číslo"
+
+#: cmpltmpl/patterns_form.py:341 cmpltmpl/thes_form.py:353
+#: cmpltmpl/wsketch_form.py:532
+msgid "Minimum similarity must be a real number"
+msgstr "Minimální podobnost musí být desetinné číslo"
+
+#: cmpltmpl/patterns_form.py:359 cmpltmpl/savecoll_form.py:285
+#: cmpltmpl/savefreq_form.py:304 cmpltmpl/savewl_form.py:354
+#: cmpltmpl/thes_form.py:272 cmpltmpl/wsdiff_form.py:485
+#: cmpltmpl/wsdiff_form.py:516 cmpltmpl/wsketch_form.py:354
+msgid "Maximum number must be a positive integer"
+msgstr "Maximální počet musí být kladné celé číslo"
+
+#: cmpltmpl/reduce_form.py:206 cmpltmpl/saveconc_form.py:289
+#: cmpltmpl/saveconc_form.py:344 cmpltmpl/sort.py:245 cmpltmpl/wipo.py:272
+#: cmpltmpl/wsketch_form.py:491 cmpltmpl/wsketch_form.py:613
+msgid "Must be a positive integer"
+msgstr "Musí být kladné celé číslo"
+
+#: cmpltmpl/saveconc_form.py:349
+msgid "(max. 100,000)"
+msgstr "(max. 100 000)"
+
+#: cmpltmpl/saveconc_form.py:408
+msgid "Enter a name"
+msgstr "Zadejte jméno"
+
+#: cmpltmpl/skell.py:390
+msgid "Examples"
+msgstr "Příklady"
+
+#: cmpltmpl/skell.py:416
+msgid "Similar words"
+msgstr "Podobná slova"
+
+#: cmpltmpl/skell.py:950
+msgid "Ad free version"
+msgstr "Verze bez reklam"
+
+#: cmpltmpl/skell.py:327
+msgid "Contact us"
+msgstr "Kontaktujte nás"
+
+#: cmpltmpl/subcorp_form.py:188
+msgid "Enter a name without any special symbols"
+msgstr "Zadejte název bez speciálních znaků"
+
+#: cmpltmpl/thes_form.py:291 cmpltmpl/wsketch_form.py:331
+#: cmpltmpl/wsketch_form.py:570
+msgid "Minimum score must be a real number"
+msgstr "Minimální skóre musí být desetinné číslo"
+
+#: cmpltmpl/thes.py:620
+msgid "No matching entries"
+msgstr "Žádné odpovídající výsledky"
+
+#: cmpltmpl/thes.py:644
+msgid "Back to form"
+msgstr "Zpět k formuláři"
+
+#: cmpltmpl/viewattrs.py:251
+msgid "as tooltips"
+msgstr "jako tooltipy"
+
+#: cmpltmpl/viewattrs.py:331
+msgid "Page size must be a positive integer"
+msgstr "Velikost stránky musí být kladné celé číslo"
+
+#: cmpltmpl/viewattrs.py:349
+msgid "KWIC context size must be a positive integer or zero"
+msgstr "Velikost kontextu musí být kladné celé číslo nebo nula"
+
+#: cmpltmpl/viewattrs.py:422
+msgid "Number of lines must be a positive integer"
+msgstr "Počet řádků musí být kladné celé číslo"
+
+msgid "Save concordance as a subcorpus"
+msgstr "Ulož konkordanci jako subkorpus"
+
+msgid "as subcorpus"
+msgstr "jako subkorpus"
+
+#: cmpltmpl/view.py:1380
+msgid "Page must be a positive number"
+msgstr "Strana musí být kladné číslo"
+
+#: cmpltmpl/view.py:1640 cmpltmpl/wsketch.py:863
+msgid "Enter a new label"
+msgstr "Zadejte nový štítek"
+
+#: cmpltmpl/widectx.py:115
+msgid "previous"
+msgstr "předchozí"
+
+#: cmpltmpl/widectx.py:188
+msgid "next"
+msgstr "další"
+
+#: cmpltmpl/wordlist_form.py:636
+msgid "Regular expression"
+msgstr "Regulární výraz"
+
+#: cmpltmpl/wordlist_form.py:688
+msgid "Maximum frequency must be a positive integer or zero"
+msgstr "Maximální frekvence musí být kladné celé číslo nebo nula"
+
+#: cmpltmpl/wordlist_form.py:943
+msgid "Parameter must be a real number"
+msgstr "Parametr musí být desetinné číslo"
+
+#: cmpltmpl/wordlist.py:764
+msgid "You can also get back to this computation through your"
+msgstr "Můžete se dostat k výpočtu přes váš"
+
+#: cmpltmpl/trends.py:836 cmpltmpl/wordlist.py:784
+msgid "Notify me by e-mail upon completion"
+msgstr "Po dokončení mne upozorni emailem"
+
+#: cmpltmpl/trends.py:843 cmpltmpl/wordlist.py:791
+msgid "Estimated time to complete:"
+msgstr "Odhadovaný čas dokončení:"
+
+#: cmpltmpl/wsdiff_form.py:214
+msgid "Enter a lemma"
+msgstr "Zadejte lemma"
+
+#: cmpltmpl/wsdiff_form.py:285
+msgid "Enter a second lemma"
+msgstr "Zadejte druhé lemma"
+
+#: cmpltmpl/wsdiff_form.py:455
+msgid "Minimum frequency must be a positive integer, zero or 'auto'"
+msgstr "Minimální frekvence musí být kladné celé číslo, nula nebo 'auto'"
+
+#: cmpltmpl/wsketch_form.py:313
+msgid "Minimum frequency must be a positive integer or 'auto'"
+msgstr "Minimální frekvence musí být kladné celé číslo nebo 'auto'"
+
+#: cmpltmpl/wsketch_form.py:583
+msgid "for multiword word sketch links"
+msgstr "pro odkazy na víceslovné word sketche"
+
+#: cmpltmpl/wsketch_form.py:594
+msgid "Minimum frequency must be a positive integer"
+msgstr "Minimální frekvence musí být kladné celé číslo"
+
+#: cmpltmpl/wsketch_form.py:602
+msgid "Number of gramrel columns"
+msgstr "Počet sloupců gramatických relací"
+
+#: skellcgi.py:103
+#, python-format
+msgid "Word sketch not available for %s"
+msgstr "Word sketch není pro %s k dispozici"
+
+#: skellcgi.py:105
+#, python-format
+msgid "Insufficient data for %s"
+msgstr "Nedostatečná data pro %s"
+
+#: skellcgi.py:206
+#, python-format
+msgid "Nothing found for \"%s\""
+msgstr "Nic nenalezeno pro \"%s\""
+
+#: skellcgi.py:262
+#, python-format
+msgid "Similar words not available for %s"
+msgstr "Podobná slova pro %s nejsou k dispozici"
+
+#: usercgi.py:203
+#, python-format
+msgid "Your feedback has been sent to %s. Thank you for your time!"
+msgstr "Zpětná vazba odeslána na %s. Děkujeme za Váš čas!"
+
+#: cmpltmpl/document.py:956
+msgid "You may use * and ? wildcards."
+msgstr "Můžete použít * a ?."
+
+#: cmpltmpl/document.py:1431
+msgid "You may use regular expressions in CQL."
+msgstr "Můžete používat regulární výrazy v CQL"
+
+#: cmpltmpl/freqs.py:753
+msgid "Max. 5,000 items are allowed, due to efficiency reasons"
+msgstr "Max. 5000 položek, kvůli efektivitě"
+
+#: cmpltmpl/viewattrs.py:355
+msgid "Including positional attributes"
+msgstr "Včetně pozičních atributů"
+
+#: corplib.py:880
+msgid "Aligned corpus not specified"
+msgstr "Chybí zarovnaný korpus"
+
+#: corplib.py:883
+msgid "No bilingual terminology for"
+msgstr "Dvojjazyčná terminologie není dostupná pro"
+
+#: usercgi.py:149
+#, python-format
+msgid "Options have been reset for %s"
+msgstr "Výchozí nastavení obnoveno pro %s"
+
+#: wsketchlib.py:255
+#, python-format
+msgid "(%(wrd)s filtered by %(fwords)s)"
+msgstr "(%(wrd)s filtrované %(fwords)s)"
+
+msgid "Please, provide a detailed description of the issue"
+msgstr "Popište prosím detailně problém, který se vyskytl"
+
+#: cmpltmpl/document.py:2292 cmpltmpl/skell.py:253
+msgid "Send feedback"
+msgstr "Zpětná vazba"
+
+#: cmpltmpl/document.py:2405
+msgid "Search in corpora"
+msgstr "Hledej v korpusech"
+
+#: cmpltmpl/document.py:2477
+msgid "Reset user settings and purge cookies"
+msgstr "Obnovit výchozí nastavení a vymazat cookies"
+
+#: cmpltmpl/document.py:2483
+msgid "Reset settings"
+msgstr "Obnovit výchozí nastavení"
+
+#: cmpltmpl/document.py:2495
+msgid "User profile"
+msgstr "Uživatelský profil"
+
+#: cmpltmpl/document.py:2504
+msgid "Change password"
+msgstr "Změnit heslo"
+
+#: cmpltmpl/document.py:2515
+msgid "Register"
+msgstr "Registrovat"
+
+#: cmpltmpl/document.py:2524
+msgid "Log in"
+msgstr "Přihlásit"
+
+#: cmpltmpl/document.py:2535
+msgid "Log out"
+msgstr "Odhlásit"
+
+#: cmpltmpl/viewattrs.py:403
+msgid "Show GDEX scores in concordance (slow, use only for GDEX development)"
+msgstr ""
+"Zobraz GDEX skóre v konkordanci (pomalé, používat pouze pro vývoj GDEX)"
+
+#: cmpltmpl/wordlist_form.py:199
+msgid "Bilingual terminology"
+msgstr "Dvojjazyčná terminologie"
+
+msgid "Save Bilingual Terminology candidates as"
+msgstr "Uložit kandidáty dvojjazyčné terminologie jako"
+
+#: cmpltmpl/wordlist.py:273 cmpltmpl/wordlist.py:291
+msgid "Save as"
+msgstr "Uložit jako"
+
+#: cmpltmpl/wordlist.py:619
+msgid "Bilingual terminology candidates"
+msgstr "Dvojjazyčná terminologie"
+
+msgid ""
+"Please, be aware of the fact that the precision of the extraction procedure "
+"strongly depends on the size of the aligned data."
+msgstr ""
+"Vemte prosím na vědomí, že přesnost extrakce silně závisí na velikosti "
+"paralelního korpusu."
+
+#: cmpltmpl/wordlist.py:649
+msgid "aligned corpus"
+msgstr "zarovnaný korpus"
+
+#: cmpltmpl/wordlist.py:1370
+msgid "L1 term"
+msgstr "L1 termín"
+
+#: cmpltmpl/wordlist.py:1376
+msgid "L2 term"
+msgstr "L2 termín"
+
+msgid "Logdice"
+msgstr "Logdice"
+
+#: cmpltmpl/wordlist.py:1388
+msgid "Co-freq"
+msgstr "Sou-frekv"
+
+#: cmpltmpl/wordlist.py:1394
+msgid "L1 freq"
+msgstr "L1 frekv"
+
+#: cmpltmpl/wordlist.py:1400
+msgid "L2 freq"
+msgstr "L2 frekv"
+
+#: cmpltmpl/document.py:3076
+#, python-format
+msgid ""
+"You are using Manatee version %(mv)s but using version %(rv)s.X is required."
+msgstr "Používáte Manatee verze %(mv)s ale je potřeba verze %(rv)s.X"
+
+#: cmpltmpl/document.py:3088
+#, python-format
+msgid ""
+"You are using Manatee version %(mv)s but at least version %(rv)s is required."
+msgstr "Používáte Manatee verzi %(mv)s ale je potřeba verze %(rv)s"
+
+#: cmpltmpl/corp_info.py:583
+msgid "Corpus sanity report"
+msgstr "Výpis z kontroly korpusu"
+
+#: cmpltmpl/document.py:2079
+msgid "Search in"
+msgstr "Vyhledej v"
+
+msgid "Search"
+msgstr "Hledání"
+
+#: cmpltmpl/document.py:2174
+msgid "Please, provide a detailed description of the issue."
+msgstr "Popište prosím detailně problém."
+
+#: cmpltmpl/document.py:2180
+msgid "Corpus, settings, query and your username are sent automatically."
+msgstr "Korpus, nastavení, dotaz a uživatelské jméno se posílá automaticky."
+
+#: cmpltmpl/document.py:2345
+msgid "Logged in user"
+msgstr "Přihlášený uživatel"
+
+#: conccgi.py:1961
+msgid "Subcorpus saved."
+msgstr "Subkorpus uložen"
+
+#: conccgi.py:1963
+msgid "Nothing saved: empty subcorpus!"
+msgstr "Neuloženo: prázdný subkorpus!"
+
+#: cmpltmpl/corp_info.py:448
+msgid "Aligned structure counts"
+msgstr "Počty zarovnaných struktur"
+
+#: cmpltmpl/corp_info.py:454
+msgid "Aligned corpus"
+msgstr "Zarovnaný korpus"
+
+#: cmpltmpl/corp_info.py:459
+msgid "L1"
+msgstr "J1"
+
+#: cmpltmpl/corp_info.py:464
+msgid "L2"
+msgstr "J2"
+
+#: cmpltmpl/document.py:2781 cmpltmpl/document.py:2789
+#: cmpltmpl/trends_form.py:88 cmpltmpl/trends_form.py:232
+#: cmpltmpl/trends.py:88
+msgid "Trends"
+msgstr "Trendy"
+
+#: cmpltmpl/jobs.py:184 cmpltmpl/jobs.py:592 cmpltmpl/jobs.py:645
+#: cmpltmpl/jobs.py:676
+msgid "ID"
+msgstr "ID"
+
+#: cmpltmpl/jobs.py:206 cmpltmpl/jobs.py:598 cmpltmpl/jobs.py:694
+msgid "Command"
+msgstr "Příkaz"
+
+#: cmpltmpl/jobs.py:218 cmpltmpl/jobs.py:602 cmpltmpl/jobs.py:706
+msgid "PID"
+msgstr "PID"
+
+#: cmpltmpl/jobs.py:235 cmpltmpl/jobs.py:606 cmpltmpl/jobs.py:653
+#: cmpltmpl/jobs.py:718
+msgid "Started"
+msgstr "Spuštěno"
+
+#: cmpltmpl/jobs.py:245 cmpltmpl/jobs.py:608 cmpltmpl/jobs.py:655
+#: cmpltmpl/jobs.py:724
+msgid "Estimation"
+msgstr "Odhad"
+
+#: cmpltmpl/jobs.py:253 cmpltmpl/jobs.py:271 cmpltmpl/jobs.py:610
+#: cmpltmpl/jobs.py:657 cmpltmpl/jobs.py:730
+msgid "Status"
+msgstr "Stav"
+
+#: cmpltmpl/jobs.py:282 cmpltmpl/jobs.py:612 cmpltmpl/jobs.py:736
+msgid "CPU"
+msgstr "CPU"
+
+#: cmpltmpl/jobs.py:293 cmpltmpl/jobs.py:614 cmpltmpl/jobs.py:742
+msgid "MEM"
+msgstr "Paměť"
+
+#: cmpltmpl/jobs.py:304 cmpltmpl/jobs.py:616 cmpltmpl/jobs.py:659
+#: cmpltmpl/jobs.py:748
+msgid "Progress"
+msgstr "Stav"
+
+#: cmpltmpl/jobs.py:314 cmpltmpl/jobs.py:618 cmpltmpl/jobs.py:754
+msgid "CPU priority"
+msgstr "Priorita CPU"
+
+#: cmpltmpl/jobs.py:323 cmpltmpl/jobs.py:359
+msgid "Set to maximum"
+msgstr "Nastav maximum"
+
+#: cmpltmpl/jobs.py:329 cmpltmpl/jobs.py:365
+msgid "Set one step higher"
+msgstr "Zvyš o jedna"
+
+#: cmpltmpl/jobs.py:335 cmpltmpl/jobs.py:371
+msgid "Set one step lower"
+msgstr "Sniž o jedna"
+
+#: cmpltmpl/jobs.py:341 cmpltmpl/jobs.py:377
+msgid "Set to minimum"
+msgstr "Nastav minimum"
+
+#: cmpltmpl/jobs.py:350 cmpltmpl/jobs.py:620 cmpltmpl/jobs.py:760
+msgid "IO priority"
+msgstr "Priorita IO"
+
+#: cmpltmpl/jobs.py:386 cmpltmpl/jobs.py:622 cmpltmpl/jobs.py:766
+msgid "Cgroup"
+msgstr "Cgroup"
+
+#: cmpltmpl/jobs.py:550
+msgid "All background jobs"
+msgstr "Všechny úlohy"
+
+#: cmpltmpl/jobs.py:558
+msgid "My background jobs"
+msgstr "Mé úlohy"
+
+#: cmpltmpl/jobs.py:567
+msgid "Auto-reload every 10 seconds"
+msgstr "Obnovit každých 10 sekund"
+
+#: cmpltmpl/jobs.py:574
+msgid "reload now"
+msgstr "obnovit nyní"
+
+#: cmpltmpl/jobs.py:583
+msgid "Show completed jobs"
+msgstr "Zobraz dokončené úlohy"
+
+#: cmpltmpl/jobs.py:629
+msgid "Show/hide columns"
+msgstr "Zobraz/skryj sloupce"
+
+#: cmpltmpl/skell.py:343
+msgid "More features"
+msgstr "Více funkcí"
+
+#: cmpltmpl/trends_form.py:268
+msgid "Period"
+msgstr "Období"
+
+#: cmpltmpl/trends_form.py:385 cmpltmpl/trends.py:512
+msgid "Method"
+msgstr "Metoda"
+
+#: conccgi.py:2750 cmpltmpl/trends.py:520
+msgid "Mann-Kendall, Theil-Sen (all)"
+msgstr "Mann-Kendall, Theil-Sen (všechny)"
+
+#: conccgi.py:2752 cmpltmpl/trends.py:536
+msgid "Linear regression (all)"
+msgstr "Lineární regrese (všechny)"
+
+#: conccgi.py:2753 cmpltmpl/trends.py:544
+msgid "Linear regression (non zero)"
+msgstr "Lineární regrese (nenulové)"
+
+#: cmpltmpl/trends.py:553
+msgid "Weighted linear regression"
+msgstr "Vážená lineární regrese"
+
+#: cmpltmpl/trends_form.py:423
+msgid "Enter a float number"
+msgstr "Zadejte reálné číslo"
+
+#: cmpltmpl/trends_form.py:452 cmpltmpl/trends.py:450 cmpltmpl/trends.py:619
+#: cmpltmpl/trends.py:629
+msgid "p-value"
+msgstr "hodnota p"
+
+#: cmpltmpl/trends_form.py:491
+msgid "Minimum overall frequency"
+msgstr "Minimální celková frekvence"
+
+#: cmpltmpl/trends_form.py:502
+msgid "Enter a positive integer"
+msgstr "Zadejte kladné celé číslo"
+
+#: cmpltmpl/trends_form.py:509
+msgid "Regular expression filter"
+msgstr "Filtr regulárním výrazem"
+
+#: cmpltmpl/trends_form.py:522
+msgid "Filter non words"
+msgstr "Pouze slova"
+
+#: cmpltmpl/trends_form.py:541
+msgid "Filter capitalized"
+msgstr "Filtr prvního velká písmena"
+
+#: cmpltmpl/trends_form.py:563
+msgid "Compute trends"
+msgstr "Spočítat trendy"
+
+#: cmpltmpl/trends.py:271
+msgid "Showing _START_&ndash;_END_ / _TOTAL_ items."
+msgstr "Zobrazeno _START_&ndash;_END_ / _TOTAL_ položek."
+
+#: cmpltmpl/trends.py:277
+msgid "Show _MENU_ items"
+msgstr "Zobraz _MENU_ položek"
+
+#: cmpltmpl/trends.py:593 cmpltmpl/trends.py:603
+msgid "Trend"
+msgstr "Trend"
+
+#: cmpltmpl/trends.py:611
+msgid "Statistical significance"
+msgstr "Statistická signifikance"
+
+#: cmpltmpl/trends.py:663 cmpltmpl/trends.py:668
+msgid "Graph"
+msgstr "Graf"
+
+msgid "Data not available."
+msgstr "Data nejsou k dispozici."
+
+#: cmpltmpl/view.py:409
+msgid "Subcorpus name"
+msgstr "Jméno subkorpusu"
+
+#: cmpltmpl/view.py:442
+msgid "structures"
+msgstr "struktury"
+
+#: cmpltmpl/view.py:479
+msgid "Enter subcorpus name"
+msgstr "Zadejte jméno subkorpusu"
+
+#: cmpltmpl/view.py:511
+msgid "Failed to save the subcorpus"
+msgstr "Nepodařilo se uložit subkorpus"
+
+msgid "? Help"
+msgstr "? Nápověda"
+
+#: cmpltmpl/trends_form.py:241
+msgid "? Help on Trends"
+msgstr "? Nápověda pro trendy"
+
+#: cmpltmpl/trends_form.py:416 cmpltmpl/trends.py:561
+msgid "Maximum p-value"
+msgstr "Maximální hodnota p"
+
+#: cmpltmpl/trends_form.py:467 cmpltmpl/trends.py:440
+msgid "trend"
+msgstr "trend"
+
+#: cmpltmpl/trends.py:455
+msgid "Top"
+msgstr "Top"
+
+#: cmpltmpl/trends.py:462
+msgid "trends sorted by"
+msgstr "trendy utříděné podle hodnoty"
+
+#: cmpltmpl/trends.py:686
+msgid "Show frequency distribution on text type"
+msgstr "Zobraz frekvenční distribuci"
+
+#: cmpltmpl/trends.py:752
+msgid "Show (subcorpus) concordance"
+msgstr "Zobraz konkordanci (pro subkorpus)"
+
+#: conccgi.py:1808
+msgid ""
+"You must specify either a regular expression or a file to get the multilevel "
+"wordlist"
+msgstr ""
+"Musíte zadat buď regulární výraz nebo soubor pro víceúrovňový seznam slov"
+
+#: cmpltmpl/collx.py:541
+msgid "Change settings and try again"
+msgstr "Změň nastavení a zkus znovu"
+
+#: cmpltmpl/corp_info.py:324
+msgid "Tagset"
+msgstr "Značky"
+
+#: cmpltmpl/corp_info.py:275
+msgid "Corpus description"
+msgstr "Popis korpusu"
+
+#: cmpltmpl/corp_info.py:284
+msgid "Document"
+msgstr "Dokument"
+
+#: cmpltmpl/corp_info.py:352
+msgid "Definition"
+msgstr "Definice"
+
+#: cmpltmpl/document.py:2189 cmpltmpl/skell.py:246
+msgid "Email:"
+msgstr "Email:"
+
+#: cmpltmpl/document.py:2261
+msgid "Sketch Engine homepage"
+msgstr "Domovská stránka Sketch Engine"
+
+msgid "System menu icon"
+msgstr "Ikona systémového menu"
+
+#: cmpltmpl/document.py:2816
+msgid "Manage my corpus"
+msgstr "Spravovat můj korpus"
+
+#: cmpltmpl/document.py:2824
+msgid "Manage corpus"
+msgstr "Spravovat korpus"
+
+#: cmpltmpl/document.py:2614
+msgid "Home"
+msgstr "Domů"
+
+#: cmpltmpl/document.py:2870
+msgid "User guide"
+msgstr "Uživatelská příručka"
+
+#: cmpltmpl/document.py:2957
+msgid "Selected subcorpus is obsolete and needs to be rebuilt."
+msgstr "Vybraný subkorpus je zastaralý a je potřeba ho předělat."
+
+#: cmpltmpl/document.py:2972
+msgid "Rebuild"
+msgstr "Předělat"
+
+#: cmpltmpl/document.py:2979
+msgid "Done."
+msgstr "Hotovo."
+
+#: cmpltmpl/document.py:2985
+msgid "Reload this window."
+msgstr "Znovu načíst okno"
+
+#: cmpltmpl/document.py:2992
+msgid "Failed, please, send us feedback."
+msgstr "Selhalo, pošlete nám zpětnou vazbu prosím"
+
+#: cmpltmpl/document.py:3027
+msgid "Remove it and rebuild it manually."
+msgstr "Odstranit a předělat ručně"
+
+#: cmpltmpl/document.py:3042
+msgid "This action may take several minutes for large corpora, please wait."
+msgstr "Akce může trvat několik minut pro velké korpusy, prosím čekejte."
+
+#: cmpltmpl/first_form.py:89
+msgid "Search corpus"
+msgstr "Vyhledat v korpusu"
+
+#: cmpltmpl/jobs.py:212 cmpltmpl/jobs.py:600 cmpltmpl/jobs.py:700
+msgid "Server"
+msgstr "Server"
+
+#: cmpltmpl/skell.py:337
+msgid "Feedback"
+msgstr "Zpětná vazba"
+
+#: cmpltmpl/skell.py:560
+msgid "switch to"
+msgstr "přepnout na"
+
+msgid "Thesaurus Entry"
+msgstr "Thesaurus"
+
+#: cmpltmpl/thes_form.py:299
+msgid "Headword in word cloud"
+msgstr "Klíčové slovo v oblaku slov"
+
+#: cmpltmpl/view.py:2284
+msgid "Loading translation candidates for KWIC, please wait."
+msgstr "Načítání překladových kandidátů pro KWIC, prosím čekejte."
+
+#: cmpltmpl/wordlist_form.py:851
+msgid "Compatible corpora"
+msgstr "Kompatibilní korpusy"
+
+#: cmpltmpl/wordlist_form.py:873
+msgid "Other corpora"
+msgstr "Ostatní korpusy"
+
+#: cmpltmpl/trends.py:857 cmpltmpl/wordlist.py:805
+msgid ""
+"The computation has failed. You may contact the developers by sending "
+"feedback or try again later. We are sorry for your inconvenience."
+msgstr ""
+"Komunikace selhala. Můžete kontaktovat vývojáře posláním zpětné vazby nebo "
+"zkusit znovu později. Omlouváme se za potíže."
+
+#: cmpltmpl/trends.py:863 cmpltmpl/wordlist.py:811
+msgid "Failed"
+msgstr "Selhalo"
+
+#: cmpltmpl/wordlist.py:1146
+msgid "? Normalized frequency per million"
+msgstr "? Normalizovaná frekvence na milión"
+
+#: cmpltmpl/wsketch_form.py:397
+msgid "Show lemma coverage"
+msgstr "Zobraz pokrytí lemmatu"
+
+#: cmpltmpl/wsketch.py:349
+msgid "Don't cluster"
+msgstr "Neklastruj"
+
+#: cmpltmpl/wsketch.py:354
+msgid "Sort by freq"
+msgstr "Třiď podle frekvence"
+
+#: cmpltmpl/wsketch.py:356
+msgid "Sort by score"
+msgstr "Třiď podle skóre"
+
+#: cmpltmpl/wsketch.py:359
+msgid "Hide gramrels"
+msgstr "Skryj relace"
+
+#: cmpltmpl/wsketch.py:361
+msgid "Show gramrels"
+msgstr "Zobraz relace"
+
+#: cmpltmpl/wsketch.py:626
+msgid "Word sketch coverage for the current lemma + pos"
+msgstr "Pokrytí lemmatu wordsketchovými trojicemi"
+
+#: cmpltmpl/wsketch.py:631
+msgid "Coverage:"
+msgstr "Pokrytí:"
+
+#: conclib.py:349
+msgid "Cannot fetch result: server port missing"
+msgstr "Prázdný výsledek: chyba serverového portu"
+
+#: cmpltmpl/coll.py:167
+msgid "? Help on collocations"
+msgstr "? Nápověda ke kolokacím"
+
+#: cmpltmpl/coll.py:495
+msgid "Make candidate list"
+msgstr "Vytvoř seznam kandidátů"
+
+#: cmpltmpl/coll.py:503 cmpltmpl/thes_form.py:372 cmpltmpl/wsdiff_form.py:535
+#: cmpltmpl/wsketch_form.py:907
+msgid "Save options"
+msgstr "Uložit nastavení"
+
+#: cmpltmpl/conc.py:102
+msgid "? Help on concordance"
+msgstr "? Nápověda ke konkordanci"
+
+msgid "&lt; concordance"
+msgstr "&lt; konkordance"
+
+#: cmpltmpl/conc.py:410
+msgid "Compute frequencies"
+msgstr "Spočítat frekvence"
+
+#: cmpltmpl/conc.py:430
+msgid "Show frequencies of node tags"
+msgstr "Zobrazit frekvence morfologických značek"
+
+#: cmpltmpl/conc.py:448
+msgid "Show frequencies of node forms"
+msgstr "Zobrazit frekvence slovních tvarů"
+
+#: cmpltmpl/conc.py:467
+msgid "Show frequencies of document IDs"
+msgstr "Zobrazit frekvence ID dokumentů"
+
+#: cmpltmpl/conc.py:489
+msgid "Show frequencies of text types"
+msgstr "Zobrazit frekvence typů textů"
+
+#: cmpltmpl/conc.py:655
+msgid "Original conc."
+msgstr "Původní konk."
+
+#: cmpltmpl/corp_info.py:343
+msgid "Word sketch grammar"
+msgstr "Word sketch gramatika"
+
+#: cmpltmpl/corp_info.py:531
+msgid "Show full word list for this structure attribute"
+msgstr "Zobrazit celý seznam slov pro strukturní atribut"
+
+#: cmpltmpl/corp_info.py:541
+msgid "Number of distinct values of the structure attribute"
+msgstr "Počet různých hodnot strukturního atributu"
+
+#: cmpltmpl/corp_info.py:561
+msgid "Registry"
+msgstr "Registry"
+
+#: cmpltmpl/corp_info.py:566
+msgid "Corpus definition file"
+msgstr "Definiční soubor korpusu"
+
+#: cmpltmpl/cpa_form.py:88 cmpltmpl/cpa_form.py:176 cmpltmpl/document.py:2737
+msgid "Corpus pattern analysis"
+msgstr "Corpus pattern analysis"
+
+#: cmpltmpl/document.py:1038
+msgid "? Help on concordance query"
+msgstr "? Nápověd k vyhledávacím dotazům"
+
+#: cmpltmpl/document.py:1281 cmpltmpl/thes_form.py:180
+#: cmpltmpl/wsketch_form.py:193
+msgid "Word form"
+msgstr "Slovní tvar"
+
+#: cmpltmpl/document.py:1405
+msgid "Corpus query language"
+msgstr "Dotazovací jazyk"
+
+#: cmpltmpl/document.py:1566
+msgid "Correction code"
+msgstr "Kód opravy"
+
+#: cmpltmpl/document.py:2653
+msgid "Word sketch query entry form"
+msgstr "Formulář pro word sketch"
+
+#: cmpltmpl/document.py:2707
+msgid "Sketch diff"
+msgstr "Sketch rozdíl"
+
+#: cmpltmpl/document.py:2715 cmpltmpl/store_wseval.py:91 cmpltmpl/wseval.py:91
+msgid "Word sketch evaluation"
+msgstr "Hodnocení word sketchů"
+
+#: cmpltmpl/document.py:2729
+msgid "Sketch eval"
+msgstr "Hodnocení sketchů"
+
+#: cmpltmpl/document.py:2759 cmpltmpl/document.py:2773
+#: cmpltmpl/patterns2.py:91 cmpltmpl/patterns_form.py:88
+#: cmpltmpl/patterns_form.py:174 cmpltmpl/patterns.py:91
+msgid "Word sketch patterns"
+msgstr "Word sketchové vzory"
+
+#: cmpltmpl/filter_form.py:163
+msgid "Concordance filter"
+msgstr "Filter konkordance"
+
+#: cmpltmpl/filter_form.py:174
+msgid "? Help on filter form"
+msgstr "? Nápověda k filtru"
+
+#: cmpltmpl/filter_form.py:263
+msgid "Search span"
+msgstr "Rozsah hledání"
+
+#: cmpltmpl/filter_form.py:346
+msgid "Filter concordance"
+msgstr "Filtrovat konkordanci"
+
+#: cmpltmpl/findx_form.py:88 cmpltmpl/findx_form.py:270 cmpltmpl/findx.py:88
+#: cmpltmpl/findx.py:178 cmpltmpl/wordlist_form.py:191
+msgid "Find x"
+msgstr "Najdi x"
+
+#: cmpltmpl/findx_form.py:132
+msgid "Find all the words that are most x"
+msgstr "Najít všechny slova, která  jsou nejvíce x"
+
+#: cmpltmpl/findx_form.py:143
+msgid "? Help on find x"
+msgstr "? Nápověda k najdi x"
+
+#: cmpltmpl/findx_form.py:208
+msgid "See upload progress"
+msgstr "Zobrazit proces nahrávání"
+
+#: cmpltmpl/findx_upload_form.py:88 cmpltmpl/findx_upload_form.py:127
+msgid "Find x file upload"
+msgstr "Najdi x, nahrání souboru"
+
+#: cmpltmpl/first_form.py:206 cmpltmpl/first_form.py:219
+#: cmpltmpl/first_form.py:265
+msgid "Std. query"
+msgstr "Běžný dotaz"
+
+#: cmpltmpl/first_form.py:243 cmpltmpl/first_form.py:370
+msgid "Error query"
+msgstr "Chybový dotaz"
+
+#: cmpltmpl/first_form.py:283
+msgid "? Help on error query"
+msgstr "? Nápověda k chybovému dotazu"
+
+#: cmpltmpl/first_form.py:388
+msgid "Parallel query"
+msgstr "Paralelní dotaz"
+
+#: cmpltmpl/freq.py:172
+msgid "? Help on frequency form"
+msgstr "? Nápověda k formuláři frekvencí"
+
+#: cmpltmpl/freq.py:303 cmpltmpl/freq.py:376
+msgid "Make frequency list"
+msgstr "Vytvořit seznam frekvencí"
+
+#: cmpltmpl/freq.py:314
+msgid "Text type frequency distribution"
+msgstr "Rozložení frekvencí podle typů textů"
+
+#: cmpltmpl/freqs.py:247
+msgid "Save frequency list to a text file or XML"
+msgstr "Uložit seznam frekvencí do textového souboru nebo XML"
+
+#: cmpltmpl/load_all_wseval.py:91
+msgid "View word sketch evaluation"
+msgstr "Zobrazit hodnocení word sketchů"
+
+#: cmpltmpl/load_all_wseval.py:133
+msgid "View word sketch for evaluation"
+msgstr "Zobrazit word sketch pro hodnocení"
+
+#: cmpltmpl/load_all_wseval.py:142 cmpltmpl/wseval.py:226
+msgid "Sorry, you are not allowed to evaluate word sketches on this corpus."
+msgstr "Omlouváme se, ale nemůžete v tomto korpusu hodnotit word sketche."
+
+#: cmpltmpl/load_all_wseval.py:205
+msgid "Evaluation settings"
+msgstr "Nastavení hodnocení"
+
+#: cmpltmpl/pcws.py:88 cmpltmpl/wsketch_form.py:683
+msgid "Bilingual word sketch"
+msgstr "Dvojjazyčný word sketch"
+
+#: cmpltmpl/reduce_form.py:169
+msgid "? Help on sample form"
+msgstr "? Nápověda k vzorku"
+
+#: cmpltmpl/reduce_form.py:215
+msgid "Create sample"
+msgstr "Vytvořit vzorek"
+
+#: cmpltmpl/savecoll_form.py:88
+msgid "Save collocations"
+msgstr "Uložit kolokace"
+
+#: cmpltmpl/savecoll_form.py:130 cmpltmpl/savecoll_form.py:295
+msgid "Save collocation candidates"
+msgstr "Uložit kandidáty kolokací"
+
+#: cmpltmpl/saveconc_form.py:88 cmpltmpl/saveconc_form.py:165
+#: cmpltmpl/saveconc_form.py:359
+msgid "Save concordance"
+msgstr "Uložit konkordanci"
+
+#: cmpltmpl/saveconc_form.py:176
+msgid "? Help on saving conc."
+msgstr "? Nápověda k ukládání konkordance"
+
+#: cmpltmpl/saveconc_form.py:371
+msgid "Store concordance"
+msgstr "Uchovat konkordanci"
+
+#: cmpltmpl/saveconc_form.py:415
+msgid "Store concordance for annotation"
+msgstr "Uchovat konkordanci pro anotaci"
+
+#: cmpltmpl/savefreq_form.py:88 cmpltmpl/savefreq_form.py:130
+#: cmpltmpl/savefreq_form.py:315
+msgid "Save frequency list"
+msgstr "Uložit seznam frekvencí"
+
+#: cmpltmpl/savethes_form.py:91 cmpltmpl/savethes_form.py:135
+#: cmpltmpl/savethes_form.py:231
+msgid "Save thesaurus"
+msgstr "Uložit tezaurus"
+
+#: cmpltmpl/savethes_form.py:179
+msgid "Save thesaurus as"
+msgstr "Uložit tezaurus jako"
+
+#: cmpltmpl/savewipo.py:89 cmpltmpl/wipo.py:88 cmpltmpl/wipo.py:293
+msgid "Extracted terms"
+msgstr "Extrahované termíny"
+
+#: cmpltmpl/savewl_form.py:88 cmpltmpl/savewl_form.py:141
+#: cmpltmpl/savewl_form.py:364
+msgid "Save word list"
+msgstr "Uložit seznam slov"
+
+#: cmpltmpl/savewl_form.py:133
+msgid "Save keywords"
+msgstr "Uložit klíčová slova"
+
+#: cmpltmpl/savews_form.py:88 cmpltmpl/savews_form.py:134
+#: cmpltmpl/savews_form.py:245
+msgid "Save word sketch"
+msgstr "Uložit word sketch"
+
+#: cmpltmpl/selectstored.py:167
+msgid "Last stored concordances"
+msgstr "Naposledy uchované konkordance"
+
+#: cmpltmpl/skell.py:98
+msgid "English language learning"
+msgstr "Výuka anglického jazyka"
+
+#: cmpltmpl/sort.py:132
+msgid "Simple sort"
+msgstr "Jednoduché řazení"
+
+#: cmpltmpl/sort.py:143
+msgid "? Help on sort form"
+msgstr "? Nápověda k řazení"
+
+#: cmpltmpl/sort.py:280 cmpltmpl/sort.py:597
+msgid "Sort concordance"
+msgstr "Seřadit konkordanci"
+
+#: cmpltmpl/store_wseval.py:129
+msgid "Successfully stored"
+msgstr "Úspěšně uchováno"
+
+#: cmpltmpl/subcorp_form.py:88 cmpltmpl/subcorp_form.py:208
+msgid "Create subcorpus"
+msgstr "Vytvořit subkorpus"
+
+#: cmpltmpl/subcorp.py:88
+msgid "Subcorpus information"
+msgstr "Info o subkorpusu"
+
+#: cmpltmpl/subcorp.py:275
+msgid "Delete selected"
+msgstr "Vymazat vybrané"
+
+#: cmpltmpl/tblex.py:88 cmpltmpl/tblex.py:312
+msgid "Tickbox lexicography - select examples"
+msgstr "Tickbox lexikografie - výběr příkladů"
+
+#: cmpltmpl/thes_form.py:146
+msgid "? Help on thesaurus"
+msgstr "? Nápověda k tezauru"
+
+#: cmpltmpl/thes_form.py:364
+msgid "Show similar words"
+msgstr "Zobrazit podobná slova"
+
+#: cmpltmpl/trends_form.py:572
+msgid "Data for diachronic analysis is not available"
+msgstr "Data k diachronní analýze nejsou k dispozici"
+
+#: cmpltmpl/trends.py:477
+msgid "? Help on trends"
+msgstr "? Nápověda k trendům"
+
+#: cmpltmpl/viewattrs.py:146
+msgid "? Help on view options"
+msgstr "? Nápověda k nastavení zobrazení"
+
+#: cmpltmpl/viewattrs.py:337
+msgid "KWIC context size (number of characters)"
+msgstr "KWIC velikost kontextu (počet znaků)"
+
+#: cmpltmpl/viewattrs.py:493
+msgid "Do not use flash for copying to clipboard"
+msgstr "Nepoužívat flash pro kopírování do schránky"
+
+#: cmpltmpl/viewattrs.py:592
+msgid "Change view options"
+msgstr "Změnit nastavení zobrazení"
+
+#: cmpltmpl/viewattrs.py:600
+msgid "Save & change options"
+msgstr "Uložit a změnit nastavení"
+
+#: cmpltmpl/view.py:583
+msgid "Key words in context"
+msgstr "Klíčová slova v kontextu"
+
+#: cmpltmpl/wordlist_form.py:397
+msgid "? Help on word lists"
+msgstr "? Nápověda k seznamům slov"
+
+#: cmpltmpl/wordlist_form.py:183
+msgid "Find x entry form"
+msgstr "Formulář najdi x"
+
+#: cmpltmpl/wordlist_form.py:457
+msgid "Positional attributes"
+msgstr "Poziční atributy"
+
+#: cmpltmpl/wordlist_form.py:626
+msgid "Filter word list by"
+msgstr "Filtrovat seznam slov pomocí"
+
+#: cmpltmpl/wordlist_form.py:736
+msgid ""
+"Word list whitelists and blacklists must be plain text (.txt), encoded in "
+"UTF-8, with one item per line.  The items must correspond to the selected "
+"attribute, so, eg, if 'lemma' is selected from the attribute menu, then the "
+"list should be a list of lemmas. We use exact matching, not regular-"
+"expression matching, for file input."
+msgstr ""
+"Povolená a zakázaná slova pro seznam slov musí být v jednoduchém textovém "
+"souboru (.txt), v kódování UTF-8, jedna položka na řádek. Položky musí "
+"odpovídat vybraným atributům, např. pokud je vybrané lemma ve formuláři, "
+"položky musí být lemmata. Používá se přesná shoda, nikoli regulární výrazy."
+
+#: cmpltmpl/wordlist_form.py:1013
+msgid "Make word list"
+msgstr "Vytvoř seznam slov"
+
+#: cmpltmpl/wordlist.py:261 cmpltmpl/wordlist.py:279
+msgid "Save bilingual terminology candidates as"
+msgstr "Uložit kandidáty na dvojjazyčné termíny jako"
+
+#: cmpltmpl/wordlist.py:299
+msgid "Save word list/Keywords to a text file or XML"
+msgstr "Uložit seznam slov/klíčová slova do textového souboru nebo XML"
+
+#: cmpltmpl/wordlist.py:758
+msgid ""
+"You can close this window. Repeating word list or keywords queries on the "
+"same subcorpus will show you progress of the computation."
+msgstr ""
+"Můžete zavřít okno. Opakováním dotazů na seznamy slov nebo klíčová slova na "
+"stejném korpusu zobrazíte postup výpočtu."
+
+#: cmpltmpl/wsdiff_form.py:88 cmpltmpl/wsdiff_form.py:171
+msgid "Word sketch differences"
+msgstr "Word sketchové rozdíly"
+
+#: cmpltmpl/wsdiff_form.py:182
+msgid "? Help on sketch diff"
+msgstr "? Nápověda k word sketchovým rozdílům"
+
+#: cmpltmpl/wsdiff_form.py:527
+msgid "Show diff"
+msgstr "Zobraz rozdíly"
+
+#: cmpltmpl/wseval_form.py:89 cmpltmpl/wseval.py:217
+msgid "Word sketch for evaluation"
+msgstr "Word sketch pro hodnocení"
+
+#: cmpltmpl/wseval_form.py:153
+msgid "Evaluation of word sketch"
+msgstr "Hodnocení word sketchů"
+
+#: cmpltmpl/wseval.py:634
+msgid "Store word sketch evaluation"
+msgstr "Uložit hodnocení word sketche"
+
+#: cmpltmpl/wsketch_form.py:159
+msgid "? Help on word sketches"
+msgstr "? Nápověda k word sketchům"
+
+#: cmpltmpl/wsketch_form.py:416
+msgid "Use tickbox lexicography"
+msgstr "Použít tickbox lexikografii"
+
+#: cmpltmpl/wsketch_form.py:448
+msgid "Tickbox lexicography template"
+msgstr "Šablona pro tickbox lexikografii"
+
+#: conccgi.py:1041
+msgid "Select positive or negative filter type"
+msgstr "Vyber pozitivní nebo negativní typ filtru"
+
+#: conccgi.py:1564
+msgid "Text types are limited to simple output"
+msgstr "Typy textů jsou omezeny na jednoduchý výstup"
+
+#: wsdiff.py:223 wsketchlib.py:372
+msgid "No word sketch available"
+msgstr "Word sketch není k dispozici"
+
+#: conccgi.py:2751 cmpltmpl/trends.py:528
+msgid "Mann-Kendall, Theil-Sen (non zero)"
+msgstr "Mann-Kendall, Theil-Sen (nenulový)"
+
+#: conccgi.py:2803
+msgid "No data available for these parameters"
+msgstr "Pro tyto parametry nejsou k dispozici žádná data"
+
+#: conclib.py:440
+msgid "Filter by aligned corpus"
+msgstr "Filtrovat zarovnaným korpusem"
+
+#: corplib.py:746
+#, python-format
+msgid "Trends computation (%s)"
+msgstr "Výpočet trendů (%s)"
+
+#: corplib.py:756
+#, python-format
+msgid "Norms computation (%s)"
+msgstr "Výpočet norem (%s)"
+
+#: cmpltmpl/document.py:509
+msgid "? Help on creating a subcorpus"
+msgstr "Nápověda k vytváření subkorpusu"
+
+#: cmpltmpl/trends.py:797
+msgid ""
+"The data was not available and is currently being computed. Please, wait."
+msgstr "Data nejsou k dispozici, právě se počítají. Prosím čekejte."
+
+#: cmpltmpl/trends.py:803
+msgid "You may check the status of the process on"
+msgstr "Zobrazte stav procesu na"
+
+#: cmpltmpl/trends.py:812
+msgid "Once it is computed, this page will show the results."
+msgstr "Jakmile bude zkompilován, tato stránka zobrazí výsledky."
+
+#: cmpltmpl/wordlist_form.py:593
+msgid "? Help on n-grams"
+msgstr "Nápověda k n-gramům"
+
+#: cmpltmpl/wordlist_form.py:649
+msgid "? Help on regular expressions"
+msgstr "Nápověda k regulárním výrazům"
+
+#: cmpltmpl/wsketch_form.py:692
+msgid "? Help on bilingual word sketches"
+msgstr "Nápověda k vícejazyčným word sketchům"
+
+#: conccgi.py:1560
+msgid "N-grams and \"rest of corpus\" can not be usedtogether"
+msgstr "N-gramy a \"doplněk korpusu\" nelze použít zároveň"
+
+#: corplib.py:773
+#, python-format
+msgid "Freqs computation (%s)"
+msgstr "Výpočet frekvencí (%s)"
+
+#: cmpltmpl/conc.py:153
+msgid "concordance"
+msgstr "konkordance"
+
+#: cmpltmpl/corp_info.py:180
+msgid "? Help on corpus info page"
+msgstr "? Nápověda ke stránce s informace o korpusu"
+
+#: cmpltmpl/document.py:2273
+msgid "Sketch Engine logo"
+msgstr "Logo Sketch Engine"
+
+#: cmpltmpl/document.py:2354
+msgid "System menu"
+msgstr "Systémové menu"
+
+#: cmpltmpl/document.py:2544
+msgid "Change interface language"
+msgstr "Změnit jazyk rozhraní"
+
+#: cmpltmpl/document.py:2865
+msgid "Documentation"
+msgstr "Dokumentace"
+
+#: cmpltmpl/trends.py:818
+msgid "The page will be reloaded automatically."
+msgstr "Stránka se automaticky obnoví."
+
+#: cmpltmpl/viewattrs.py:385
+msgid "? Help on GDEX"
+msgstr "? Nápověda ke GDEXu"
+
+#: cmpltmpl/view.py:452 cmpltmpl/view.py:463
+msgid "Make subcorpus"
+msgstr "Vytvoř subkorpus"
+
+#: cmpltmpl/wordlist_form.py:211 cmpltmpl/wordlist.py:630
+msgid "? Help on bilingual terminology extraction"
+msgstr "? Nápověda k dvojjazyčné extrakci terminologie"
+
+#: cmpltmpl/wordlist_form.py:610
+msgid "hide/nest sub-n-grams"
+msgstr "skryj/zanoř pod-n-gramy"
+
+#: cmpltmpl/wordlist.py:873
+msgid "n-grams"
+msgstr "n-gramy"
+
+#: cmpltmpl/wordlist.py:1034
+msgid "Displaying first"
+msgstr "Zobrazuji prvních"
+
+#: cmpltmpl/wordlist.py:1042
+msgid "items"
+msgstr "položek"
+
+#: cmpltmpl/wordlist.py:1054
+msgid "Show more"
+msgstr "Zobraz víc"
+
+#: cmpltmpl/wordlist.py:1382
+msgid "LogDice"
+msgstr ""
+
+#: cmpltmpl/wordlist.py:1493
+msgid "More details"
+msgstr "Více detailů"
+
+#: pyconc.py:273
+msgid "Cooccurrence count"
+msgstr "Poučet souvýskytů"
+
+#: pyconc.py:275
+msgid "Candidate count"
+msgstr "Počet kandidátů"
+
+#: cmpltmpl/corp_info.py:504
+msgid "The number of structures"
+msgstr "Počet struktur"
+
+#: cmpltmpl/jobs.py:568
+msgid "? Help on my jobs"
+msgstr "? Nápověda k mým procesům"
+
+#: cmpltmpl/skell.py:249
+msgid "Describe the issue"
+msgstr "Popište problém"
+
+#: cmpltmpl/skell.py:304
+msgid "Terms of Use"
+msgstr "Podmínky užití"
+
+#: cmpltmpl/skell.py:310
+msgid ""
+"This service is provided by the copyright holders and contributors &quot;as "
+"is&quot; and any express or implied warranties, including, but not limited "
+"to, the implied warranties of merchantability and fitness for a particular "
+"purpose are disclaimed. In no event shall Lexical Computing Ltd. be liable "
+"for any direct, indirect, incidental, special, exemplary, or consequential "
+"damages (including, but not limited to, procurement of substitute goods or "
+"services; loss of use, data, or profits; or business interruption) however "
+"caused and on any theory of liability, whether in contract, strict "
+"liability, or tort (including negligence or otherwise) arising in any way "
+"out of the use of this software, even if advised of the possibility of such "
+"damage."
+msgstr ""
+
+#: cmpltmpl/skell.py:319
+msgid "version:"
+msgstr "verze:"
+
+#: cmpltmpl/skell.py:332
+msgid "Terms of use"
+msgstr "Podmínky užití"
+
+#: cmpltmpl/skell.py:487
+msgid "Learn more"
+msgstr "Zjistěte víc"
+
+#: cmpltmpl/skell.py:552
+msgid "Empty result for"
+msgstr "Prázdný výsledek pro"
+
+#: cmpltmpl/wordlist_form.py:956
+msgid "Help on simple math parameter"
+msgstr "Nápověda k parametru simple math"
