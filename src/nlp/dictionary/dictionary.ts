@@ -36,20 +36,21 @@ export class Dictionary {
   private nthInParadigm(paradigm: Uint16Array, n: number) {
     let suffix = this.suffixes[paradigm[n]];
     let flags = this.flags[paradigm[paradigm.length / 3 + n]];
-    let prefix = this.flags[paradigm[paradigm.length / 3 * 2 + n]];
+    let prefix = '';  // todo
 
     return { suffix, flags, prefix };
   }
 
-  private buildInterp(word: string, paraIndex: WordDawgPayload): IMorphInterp {
+  private buildInterp(word: string, paraIndex: WordDawgPayload) {
     let paradigm = this.paradigms[paraIndex.paradigmId];
     let { suffix, flags, prefix } = this.nthInParadigm(paradigm, paraIndex.indexInPradigm);
 
     let lemmaSuffix = this.suffixes[paradigm[0]];
     let lemma = word.slice(0, -suffix.length || word.length) + lemmaSuffix;
+    let lemmaFlags = this.flags[paradigm[paradigm.length / 3]];
     // todo: prefixed
 
-    return { lemma, flags };
+    return { lemma, flags, lemmaFlags };
   }
 
   private *buildLexeme(paradigmIndex: number, lemma: string) {

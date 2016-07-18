@@ -23,9 +23,8 @@ export function createMorphAnalyzerSync(dictFolder = getLibRootRelative('../data
 
   let words = readStringMapDawgSync<WordDawgPayload>(dictFolder + '/words.dawg', WordDawgPayload.create);
 
-  let numberTag = dictFolder.includes('vesum') ? 'numr:digit' : 'Md';  // todo
   let dictionary = new Dictionary(words, paradigms, suffixes, tags);
-  let ret = new MorphAnalyzer(dictionary, numberTag, 'x:foreign', 'x');
+  let ret = new MorphAnalyzer(dictionary);
 
   return ret;
 }

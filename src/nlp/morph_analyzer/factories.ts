@@ -23,5 +23,5 @@ export function createMorphAnalyser(
 
   let wordsDawg = readStringMapDawg(wordsBuf, WordDawgPayload.create, 1, true);
   let dictionary = new Dictionary(wordsDawg, paradigms, suffixes, tags);
-  return new MorphAnalyzer(dictionary, 'numr', 'x:foreign', 'x');
+  return new MorphAnalyzer(dictionary);
 }

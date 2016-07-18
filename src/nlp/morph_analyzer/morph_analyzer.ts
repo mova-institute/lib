@@ -42,12 +42,7 @@ const PREFIX_SPECS = [
 export class MorphAnalyzer {
   numeralMap: Array<{ form: string, flags: string, lemma: string }>;
 
-  constructor(
-    private dictionary: Dictionary,
-    private numberTag: string,
-    private foreignTag: string,
-    private xTag: string) {
-
+  constructor(private dictionary: Dictionary) {
     this.buildNumeralMap();
   }
 
@@ -63,23 +58,23 @@ export class MorphAnalyzer {
   }
 
   /** @token is atomic */
-  tag(token: string, nextToken?: string): Iterable<IMorphInterp> {
+  tag(token: string, nextToken?: string) {
     token = token.replace(/́/g, '');  // kill emphasis
 
     if (/^\d+[½]?$/.test(token)) {
-      return [{ lemma: token, flags: this.numberTag }];
+      return [MorphTag.fromVesumStr('numr', token)];
     }
 
     if (/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(token)) {
-      return [{ lemma: token, flags: 'numr:roman' }];
+      return [MorphTag.fromVesumStr('numr:roman', token)];
     }
 
     if (/^[@#$%*]$/.test(token)) {
-      return [{ lemma: token, flags: 'sym' }];
+      return [MorphTag.fromVesumStr('sym', token)];
     }
 
     if (FOREIGN_CHAR_RE.test(token)) {
-      return [{ lemma: token, flags: this.foreignTag }];
+      return [MorphTag.fromVesumStr('x:foreign', token)];
     }
 
     let lookupees = originalAndLowercase(token);
@@ -137,26 +132,23 @@ export class MorphAnalyzer {
       // }
     }
 
-    return wu(ret)
-      .filter(x => nextToken === '-' || !x.isBeforeadj())
-      .map(x => x.toVesumStrMorphInterp());
-  }
-
-  tagOrX(token: string, nextToken?: string) {
-    let ret = [...this.tag(token, nextToken)];
-    return ret.length ? ret : [{ lemma: token, flags: this.xTag }];
+    return [...ret].filter(x => nextToken === '-' || !x.isBeforeadj());
   }
 
   private lookupRaw(token: string) {
     return this.dictionary.lookup(token)
       .map(x => wu(expandInterp(x.flags, x.lemma))
         .map(flags => ({ flags, lemma: x.lemma })))
-      .flatten() as Wu.WuIterable<IMorphInterp>;
+      .flatten() as Wu.WuIterable<{
+        lemma: string;
+        flags: string;
+        lemmaFlags: string;
+      }>;
   }
 
   private lookup(token: string) {
     return this.lookupRaw(token).map(
-      x => MorphTag.fromVesumStr(x.flags, x.lemma));
+      x => MorphTag.fromVesumStr(x.flags, x.lemma, x.lemmaFlags));
   }
 
   private isCompoundAdjective(token: string) {

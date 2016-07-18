@@ -682,6 +682,13 @@ export class MorphTag {
     };
   }
 
+  toMteMorphInterp() {
+    return {
+      lemma: this.lemma,
+      flags: this.toMte(),
+    };
+  }
+
   toMte(lemma = this.lemma, lemmaTag?: MorphTag) {
     if (lemma === 'незважаючи' && this.isPreposition()) {
       return 'Vmpgp';

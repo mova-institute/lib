@@ -42,14 +42,14 @@ export function textFragmentCorpusText(doc: Document) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boolean) {
+export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boolean, mte = false) {
   let doc = parseXml(value);
   if (!doc || !doc.lookupNamespaceURI('mi')) {
     doc = parseXml(encloseInRootNs(value, 'text'));
   }
   let root = new WebapiDocument(doc).root();
   tokenizeTei(root, tagger);
-  morphInterpret(root, tagger);
+  morphInterpret(root, tagger, mte);
   if (numerate) {
     enumerateWords(root);
   }

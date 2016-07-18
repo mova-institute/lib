@@ -223,6 +223,18 @@ function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
   return miw;
 }
 
+//------------------------------------------------------------------------------
+function tagOrXVesum(analyzer: MorphAnalyzer, token: string, nextToken?: string) {
+  let ret = [...analyzer.tag(token, nextToken)].map(x => x.toVesumStrMorphInterp());
+  return ret.length ? ret : [{ lemma: token, flags: 'x' }];
+}
+
+//------------------------------------------------------------------------------
+function tagOrXMte(analyzer: MorphAnalyzer, token: string, nextToken?: string) {
+  let ret = [...analyzer.tag(token, nextToken)].map(x => x.toMteMorphInterp());
+  return ret.length ? ret : [{ lemma: token, flags: 'x' }];
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function isRegularizedFlowElement(el: AbstractElement) {
   let ret = !(el.name() === elementNames.teiOrig && el.parent() && el.parent().name() === elementNames.teiChoice);
@@ -231,7 +243,9 @@ export function isRegularizedFlowElement(el: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer) {
+export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, mte = false) {
+  let tagFunction = mte ? tagOrXMte : tagOrXVesum;
+
   let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)];
   if (!subroots.length) {
     subroots = [root];
@@ -253,7 +267,7 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer) {
         else {
           let next = el.nextElementSiblings()
             .find(x => x.localName() === 'pc' || x.localName === 'w');
-          tagWord(el, analyzer.tagOrX(el.text(), next && next.text()));
+          tagWord(el, tagFunction(analyzer, el.text(), next && next.text()));
         }
       }
     });
@@ -273,7 +287,7 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     } else {
       token.elem.clear();
       token.clearDisamb();
-      fillInterpElement(token.elem, form, analyzer.tagOrX(form));
+      fillInterpElement(token.elem, form, tagOrXVesum(analyzer, form));
       interps.forEach(x => {
         if (token.hasInterp(x.flags, x.lemma)) {
           token.alsoInterpAs(x.flags, x.lemma);
