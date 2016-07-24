@@ -1,5 +1,6 @@
 import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements
   , traverseDepthGen } from '../xml/utils';
+import * as xmlutils from '../xml/utils';
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elementNames from './common_elements';
 import { r } from '../lang';
@@ -14,6 +15,8 @@ import { $d, MiTeiDocument } from './mi_tei_document';
 
 const wu: Wu.WuStatic = require('wu');
 
+
+export type DocCreator = (xmlstr: string) => AbstractDocument;
 
 
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
@@ -168,7 +171,7 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
 
         for (let tok of tokenizeUk(text, tagger)) {
           if (tok.glue) {
-            cursor.insertBefore(doc.createElement('mi:g'));
+            cursor.insertBefore(doc.createElement('g', NS.mi));
           }
           cursor.insertBefore(elementFromToken(tok.token, doc));
         }
@@ -218,7 +221,7 @@ function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterab
 
 //------------------------------------------------------------------------------
 function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
-  let miw = fillInterpElement(el.document().createElement('mi:w_'), el.text(), morphTags);
+  let miw = fillInterpElement(el.document().createElement('w_', NS.mi), el.text(), morphTags);
   el.replace(miw);
   return miw;
 }
@@ -576,42 +579,51 @@ export function normalizeCorpusText(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const MULTISEP = '|';
-export function* tei2nosketch(root: AbstractElement) {
-  let docName = getTeiDocName(root.document());
-  if (!docName) {
-    throw new Error(`Document has no TEI title`);
+export function* tei2nosketch(root: AbstractElement, docMeta: any = {}) {
+  if (!docMeta.id) {
+    docMeta.id = getTeiDocName(root.document());
+    if (!docMeta.id) {
+      throw new Error(`Document has no TEI title`);
+    }
   }
-  yield `<doc id="${docName}">`;
+  let meta = Object.keys(docMeta).map(x => `${x}="${docMeta[x]}"`).join(' ');
+
+  yield `<doc ${meta}>`;
 
   let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
-  for (let {node, entering} of elements) {
-    if (!entering) {
-      continue;
-    }
+  for (let { node, entering } of elements) {
     let e = node.asElement();
-
-    switch (e.name()) {
-      case elementNames.W_: {
-        let interps = $t(e).disambedOrDefiniteInterps();
-        let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
-        let vesumFlagss = interps.map(x => x.flags);
-        let lemmas = interps.map(x => x.lemma);
-        yield nosketchLine($t(e).text(), unique(lemmas).join(MULTISEP),
-          unique(mteTags).join(MULTISEP), unique(vesumFlagss).join(MULTISEP));
-        break;
+    if (entering) {
+      switch (e.name()) {
+        case elementNames.W_: {
+          let interps = $t(e).disambedOrDefiniteInterps();
+          let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
+          let vesumFlagss = interps.map(x => x.flags);
+          let lemmas = interps.map(x => x.lemma);
+          yield nosketchLine($t(e).text(), unique(lemmas).join(MULTISEP),
+            unique(mteTags).join(MULTISEP), unique(vesumFlagss).join(MULTISEP));
+          break;
+        }
+        case elementNames.PC:  // todo
+          yield nosketchLine(e.text(), e.text(), 'U', 'punct');
+          break;
+        case elementNames.G:
+          yield '<g/>';
+          break;
+        case elementNames.S:
+          yield '<s>';
+          break;
+        default:
+          break;
       }
-
-      case 'pc':  // todo
-        yield nosketchLine(e.text(), e.text(), 'U', 'punct');
-        break;
-
-      case elementNames.G:
-        yield '<g/>';
-        break;
-
-      default:
-        break;
-      // throw new Error(`Unexpected element name "${e.name()}"`);
+    } else {
+      switch (e.name()) {
+        case elementNames.S:
+          yield '</s>';
+          break;
+        default:
+          break;
+      }
     }
   }
   yield `</doc>`;
@@ -646,4 +658,18 @@ export function processMiTeiDocument(root: AbstractElement) {
   doc.getTransforms().forEach(transformName => {
     TEI_DOC_TRANSFORMS[transformName](doc.getBody());
   });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function tagText(value: string, analyzer: MorphAnalyzer, docCreator: DocCreator) {
+  value = xmlutils.removeProcessingInstructions(value);
+  if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(value)) {
+    value = xmlutils.encloseInRootNs(value);
+  }
+
+  let doc = docCreator(value);
+  tokenizeTei(doc.root(), analyzer);
+  morphInterpret(doc.root(), analyzer);
+
+  return doc.serialize(true);
 }

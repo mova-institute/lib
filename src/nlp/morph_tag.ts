@@ -276,6 +276,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
   { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'intj', mte: 'I' },
   { featStr: 'pos', feat: Pos, vesum: Pos.cardinalNumeral, vesumStr: 'numr', mte: 'M' },
+  { featStr: 'pos', feat: Pos, vesum: Pos.sym, vesumStr: 'sym' },
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
 

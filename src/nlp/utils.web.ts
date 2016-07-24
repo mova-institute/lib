@@ -45,6 +45,7 @@ export function textFragmentCorpusText(doc: Document) {
 export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boolean, mte = false) {
   let doc = parseXml(value);
   if (!doc || !doc.lookupNamespaceURI('mi')) {
+    value = value.replace(/^\s*<\?[^>]*>/, '');
     doc = parseXml(encloseInRootNs(value, 'text'));
   }
   let root = new WebapiDocument(doc).root();

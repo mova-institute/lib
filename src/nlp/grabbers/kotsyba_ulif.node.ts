@@ -21,7 +21,9 @@ const morphAnalyzer = createMorphAnalyzerSync();
 main();
 
 //------------------------------------------------------------------------------
-function kotsybaUltif2DirtyTei(filename: string, destDir: string, corpusFile?: number) {
+function kotsybaUltif2DirtyTei(filename: string, destDir: string,
+  author?: string, title?: string, corpusFile?: number) {
+
   let buffer = fs.readFileSync(filename);
   let charset = charsetDetector.detectCharset(buffer);
   let basename = path.basename(filename).replace(/\.txt$/, '.xml');
@@ -31,18 +33,19 @@ function kotsybaUltif2DirtyTei(filename: string, destDir: string, corpusFile?: n
     let body = buffer.toString(charset);
     body = body.replace(/[\r\x00-\0x1F]/g, '');
     let bibliographyTry = body.match(/<bibliography>(.+)<\/bibliography>/);
-    let title: string;
-    if (bibliographyTry && bibliographyTry.length > 1) {
-      title = xmlUtils.removeTags(bibliographyTry[1]).trim().replace(/\s+/g, ' ');
-    } else {
-      title = basename.replace(/\.xml$/, '').split(/[\s_]+/).map(x => capitalizeFirst(x)).join(' ');
+    if (!title) {
+      if (bibliographyTry && bibliographyTry.length > 1) {
+        title = xmlUtils.removeTags(bibliographyTry[1]).trim().replace(/\s+/g, ' ');
+      } else {
+        title = basename.replace(/\.xml$/, '').split(/[\s_]+/).map(x => capitalizeFirst(x)).join(' ');
+      }
     }
     body = xmlUtils.removeElements(body, ['bibliography', 'comment', 'annotation']);
     body = xmlUtils.removeTags(body);
     body = normalizeCorpusTextString(body);
     body = xmlUtils.escape(body);
     body = `<p>${body}</p>`;
-    body = teiString({ title, body });
+    body = teiString({ title, body, author });
     // fs.writeFileSync('problem.xml', fileString, 'utf8')
     let root = string2lxmlRoot(body);
     tokenizeTei(root, morphAnalyzer);
@@ -114,6 +117,14 @@ function capitalizeFirst(value: string) {
 
 //------------------------------------------------------------------------------
 function main() {
+  let listLines = fs.readFileSync(path.join(args.in, '_list.txt'), 'utf8').split('\n');
+  let nameMap = new Map<string, string[]>();
+  listLines.forEach(line => {
+    let [filename, ...meta] = line.split('\t');
+    nameMap.set(filename.toLowerCase(), meta);
+  });
+
+
   let filenames = buildFilenames(args.in);
   mkdirp.sync(args.out);
   let corpusFile = args.tee ? fs.openSync(args.out + 'corpus.vertical.txt', 'a') : undefined;
@@ -122,13 +133,14 @@ function main() {
   for (let filePath of filenames.values()) {
     ++i;
     let basename = path.basename(filePath);
+    let [author, title] = nameMap.get(basename.toLowerCase());
     let destPath = `${args.out}/${basename}`;
     if (fs.existsSync(destPath)) {
       console.log(`skipping "${basename}" (exists)`);
     }
     else {
       console.log(`processing "${basename}" (${i} of ${filenames.size})`);
-      kotsybaUltif2DirtyTei(filePath, args.out, corpusFile);
+      kotsybaUltif2DirtyTei(filePath, args.out, author, title, corpusFile);
     }
   }
 }

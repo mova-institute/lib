@@ -40,10 +40,15 @@ const PREFIX_SPECS = [
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
+  expandAdjectivesAsNouns = true;
   numeralMap: Array<{ form: string, flags: string, lemma: string }>;
 
   constructor(private dictionary: Dictionary) {
     this.buildNumeralMap();
+  }
+
+  setExpandAdjectivesAsNouns(value: boolean) {
+    this.expandAdjectivesAsNouns = value;
   }
 
   hasAnyCase(token: string) {
@@ -118,7 +123,7 @@ export class MorphAnalyzer {
       let suffix = match[2];
       ret.addAll(wu(this.numeralMap)
         .filter(x => x.form.endsWith(suffix))
-        .map(x => wu(expandInterp(x.flags, x.lemma)))
+        .map(x => wu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma)))
         .flatten()
         .map(x => MorphTag.fromVesumStr(x, 'todo'))  // todo
       );
@@ -137,7 +142,7 @@ export class MorphAnalyzer {
 
   private lookupRaw(token: string) {
     return this.dictionary.lookup(token)
-      .map(x => wu(expandInterp(x.flags, x.lemma))
+      .map(x => wu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
         .map(flags => ({ flags, lemma: x.lemma })))
       .flatten() as Wu.WuIterable<{
         lemma: string;
@@ -225,9 +230,10 @@ function originalAndLowercase(value: string) {
 
 //------------------------------------------------------------------------------
 const ignoreLemmas = new Set(['ввесь', 'весь', 'увесь', 'той', 'цей', 'його', 'її']);
-function* expandInterp(flags: string, lemma?: string) {
+function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: string) {
   yield flags;
-  if (flags.includes('adj:')
+  if (expandAdjectivesAsNouns
+    && flags.includes('adj:')
     && !ignoreLemmas.has(lemma)
     && !flags.includes('beforeadj')) {
     let suffixes = flags.includes(':p:')

@@ -62,6 +62,17 @@ export function removeRoot(xmlstr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function removeProcessingInstructions(xmlstr: string) {
+  let len;
+  do {
+    len = xmlstr.length;
+    xmlstr = xmlstr.replace(/^\s*<(\?|!DOCTYPE)[^>]*>\s*/, '');
+  } while (len !== xmlstr.length);
+
+  return xmlstr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function encloseInRoot(xmlstr: string, rootName = 'root') {
   return `<${rootName}>${xmlstr}</${rootName}>`;
 }

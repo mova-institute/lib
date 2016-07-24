@@ -5,6 +5,7 @@ import { tokenizeTei, morphInterpret, enumerateWords } from '../nlp/utils';
 import { $t } from '../nlp/text_token';
 import { string2lxmlRoot } from '../utils.node';
 import { encloseInRootNsIf, NS } from '../xml/utils';
+import * as xmlutils from '../xml/utils';
 import { createReadStream, readFileSync } from 'fs';
 import { getLibRootRelative } from '../path.node';
 
@@ -25,7 +26,10 @@ ioArgsPlain(async (input, outputFromIoargs) => {
     // inputStr = readFileSync(args._[0], 'utf8');
   }
 
-  inputStr = encloseInRootNsIf(inputStr);
+  inputStr = xmlutils.removeProcessingInstructions(inputStr);
+  if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(inputStr)) {
+    inputStr = xmlutils.encloseInRootNs(inputStr);
+  }
 
 
   let dictName = args.d || args.dict || 'vesum';
