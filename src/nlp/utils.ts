@@ -586,14 +586,22 @@ export function* tei2nosketch(root: AbstractElement, docMeta: any = {}) {
       throw new Error(`Document has no TEI title`);
     }
   }
-  let meta = Object.keys(docMeta).map(x => `${x}="${docMeta[x]}"`).join(' ');
+  let meta = xmlutils.keyvalue2attributes(docMeta);
+  let specialDisambed = false;  // todo
 
   yield `<doc ${meta}>`;
+
 
   let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
   for (let { node, entering } of elements) {
     let e = node.asElement();
     if (entering) {
+      if (specialDisambed && e.name() === elementNames.W) {
+        let mte = e.attribute('ana');
+        let lemma = e.attribute('lemma');
+        yield nosketchLine(e.text().trim(), lemma, mte, 'xx');
+        continue;
+      }
       switch (e.name()) {
         case elementNames.W_: {
           let interps = $t(e).disambedOrDefiniteInterps();

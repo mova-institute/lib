@@ -1,0 +1,79 @@
+NAME "усі тексти"
+INFOHREF "https://mova.institute/corpus"
+MAINTAINER "corpus@mova.institute"
+TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
+
+PATH "/srv/corpora/manatee/everything"
+SUBCDEF "/srv/corpora/registry/everything_sub"
+VERTICAL "/srv/corpora/vertical/everything.vertical.txt"
+
+
+LANGUAGE "Ukrainian"
+ENCODING "utf8"
+LOCALE "uk_UA.UTF-8"
+NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’[:alpha:]]"
+
+
+ATTRIBUTE word
+ATTRIBUTE lemma {
+  MULTIVALUE yes
+  MULTISEP  "|"
+}
+ATTRIBUTE tag {
+  MULTIVALUE yes
+  MULTISEP "|"
+}
+ATTRIBUTE dictag {
+  MULTIVALUE yes
+  MULTISEP "|"
+}
+ATTRIBUTE lc {
+  LABEL "word (lowercase)"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR word
+  TYPE index
+  TRANSQUERY yes
+}
+ATTRIBUTE  lemma_lc  {
+  LABEL "lemma  (lowercase)"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR lemma
+  TYPE index
+  TRANSQUERY yes
+}
+
+
+
+STRUCTURE doc {
+  ATTRIBUTE id
+  ATTRIBUTE title
+  ATTRIBUTE "year_created"
+  ATTRIBUTE author {
+		MULTIVALUE yes
+		MULTISEP ";"
+	}
+  ATTRIBUTE disamb
+  ATTRIBUTE wordcount
+}
+#STRUCTURE p
+#STRUCTURE s
+STRUCTURE g {
+  DISPLAYTAG "0"
+  DISPLAYBEGIN "_EMPTY_"
+}
+
+SHORTREF "=doc.id"
+
+#HARDCUT "0"
+#MAXKWIC "100"
+#MAXCONTEXT "100"
+#MAXDETAIL
+
+
+WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,займенник,P.*,прислівник,R.*,прийменник,S.*,сполучник,C.*,числівник,M.*,частка,Q.*,вигук,I.*,скорочення,Y.*,розділовий,U.*,залишок,X.*"

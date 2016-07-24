@@ -101,6 +101,11 @@ export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function keyvalue2attributes(value: any) {
+  return Object.keys(value).map(x => `${x}="${escape(value[x])}"`).join(' ');
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function tagStr(open: boolean, prefix: string, elem: string, attrs = new Map()) {
   if (!open) {
     return `</${namePrefixed(prefix, elem)}>`;

@@ -1,0 +1,9 @@
+*FREQLISTATTRS word word_lc lemma
+
+=рік1929
+  year_created
+  year_created="1929"
+
+#=знята_омонімія
+#  disamb
+#  disamb="hands"
