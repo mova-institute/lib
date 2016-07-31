@@ -55,15 +55,16 @@ export function compileCorpus(inputDir: string, outDir: string) {
 
   let verticalFile = fs.openSync(path.join(outDir, 'corpus.vertical.txt'), 'a');
 
-  // console.log(`Verticalizing texts from parallel corpora`);
-  // verticalizeDir(destDirParallel, verticalFile);
+  console.log(`Verticalizing texts from parallel corpora`);
+  verticalizeDir(destDirParallel, verticalFile);
 
-  console.log(`Verticalizing texts from kupa`);
-  let destDirKupa = path.join(outDir, 'tagged', 'kupa');
-  verticalizeDir(destDirKupa, verticalFile);
+  // console.log(`Verticalizing texts from kupa`);
+  // let destDirKupa = path.join(outDir, 'tagged', 'kupa');
+  // verticalizeDir(destDirKupa, verticalFile);
 
 }
 
+//------------------------------------------------------------------------------
 function verticalizeDir(dir: string, verticalFile: number) {
   let taggedFiles = globSync(dir + '/**/*.xml');
   taggedFiles.forEach((filePath, i) => {
@@ -80,7 +81,6 @@ function verticalizeDir(dir: string, verticalFile: number) {
       buf.push(line + '\n')
     }
     fs.appendFileSync(verticalFile as any, buf.join(''), 'utf8');
-
   });
 }
 
@@ -90,8 +90,8 @@ function main() {
   const args = require('minimist')(process.argv.slice(2), {
     // boolean: ['tee'],
   });
-  // compileCorpus(args.in, args.out);
-  updateMetadataInVertical(args.meta, args.in, args.out);
+  compileCorpus(args.in, args.out);
+  // updateMetadataInVertical(args.meta, args.in, args.out);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

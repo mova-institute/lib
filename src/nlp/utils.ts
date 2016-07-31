@@ -580,14 +580,17 @@ export function normalizeCorpusText(root: AbstractElement) {
 ////////////////////////////////////////////////////////////////////////////////
 const MULTISEP = '|';
 export function* tei2nosketch(root: AbstractElement, docMeta: any = {}) {
-  if (!docMeta.id) {
-    docMeta.id = getTeiDocName(root.document());
-    if (!docMeta.id) {
-      throw new Error(`Document has no TEI title`);
-    }
+  // if (!docMeta.id) {
+  //   docMeta.id = getTeiDocName(root.document());
+  //   if (!docMeta.id) {
+  //     throw new Error(`Document has no TEI title`);
+  //   }
+  // }
+  if (!docMeta.filename) {
+    throw new Error(`docMeta has no filename`);
   }
   let meta = xmlutils.keyvalue2attributes(docMeta);
-  let specialDisambed = false;  // todo
+  let specialDisambed = docMeta.disambed;  // todo
 
   yield `<doc ${meta}>`;
 
