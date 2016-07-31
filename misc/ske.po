@@ -195,10 +195,12 @@ msgstr "z následujících"
 #: cmpltmpl/sort.py:205
 msgid "Left context"
 msgstr "Levý kontext"
+msgstr "Лівий контекст"
 
 #: cmpltmpl/sort.py:227
 msgid "Right context"
 msgstr "Pravý kontext"
+msgstr "Правий контекст"
 
 #: cmpltmpl/first_form.py:546 cmpltmpl/first_form.py:694
 #: cmpltmpl/subcorp_info.py:111 cmpltmpl/subcorp.py:259
@@ -224,10 +226,12 @@ msgstr "Частина мови (PoS)"
 
 msgid "Text Types"
 msgstr "Typy textů"
+msgstr "Типи текстів"
 
 #: cmpltmpl/subcorp.py:182
 msgid "Subcorpora"
 msgstr "Subkorpusy"
+msgstr "Підкорпуси"
 
 #: cmpltmpl/subcorp.py:214
 msgid "no subcorpus"
@@ -247,6 +251,7 @@ msgstr "Frekvenční seznam"
 #: cmpltmpl/wipo.py:329
 msgid "Frequency"
 msgstr "Frekvence"
+msgstr "Частота"
 
 #: cmpltmpl/conc.py:441
 msgid "Node tags"
