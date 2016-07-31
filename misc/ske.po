@@ -565,6 +565,7 @@ msgstr "Seskupovat položky"
 #: cmpltmpl/thes_form.py:135 cmpltmpl/thes.py:91
 msgid "Thesaurus"
 msgstr "Tezaurus"
+msgstr "Тезаурус"
 
 #: cmpltmpl/load_all_wseval.py:159 cmpltmpl/pcws.py:378 cmpltmpl/pcws.py:417
 #: cmpltmpl/store_wseval.py:173 cmpltmpl/thes.py:472 cmpltmpl/thes.py:491
@@ -583,6 +584,7 @@ msgstr "Atributy"
 #: cmpltmpl/viewattrs.py:180
 msgid "Structures"
 msgstr "Struktury"
+msgstr "Структури"
 
 #: cmpltmpl/viewattrs.py:187 cmpltmpl/view.py:773
 msgid "References"
@@ -610,6 +612,7 @@ msgstr "Velikost KWIC kontextu (počet znaků)"
 #: cmpltmpl/document.py:2631 cmpltmpl/simple_search.py:88 cmpltmpl/view.py:100
 msgid "Concordance"
 msgstr "Konkordance"
+msgstr "Конкорданс"
 
 #: cmpltmpl/conc.py:199 cmpltmpl/reduce_form.py:88
 msgid "Sample"
@@ -692,6 +695,7 @@ msgstr "Referenční subkorpus"
 #: cmpltmpl/wordlist.py:88 cmpltmpl/wordlist.py:660
 msgid "Word list"
 msgstr "Seznam slov"
+msgstr "Список слів"
 
 #: cmpltmpl/wordlist_form.py:832
 msgid "Keywords"
@@ -790,10 +794,12 @@ msgstr "Sketch-Diff"
 #: cmpltmpl/document.py:1212 cmpltmpl/document.py:1318
 msgid "unspecified"
 msgstr "nespecifikováno"
+msgstr "не зазначено"
 
 #: cmpltmpl/document.py:1249
 msgid "Phrase"
 msgstr "Fráze"
+msgstr "Фраза"
 
 #: cmpltmpl/document.py:1159 cmpltmpl/document.py:1410
 msgid "CQL"
@@ -820,6 +826,7 @@ msgstr "Filtrovat konkordanci"
 #: cmpltmpl/document.py:966 cmpltmpl/first_form.py:837
 msgid "Make Concordance"
 msgstr "Vytvořit konkordanci"
+msgstr "Зробити конкорданс"
 
 msgid "Make Frequency List"
 msgstr "Vytvořit frekvenční seznam"
@@ -830,6 +837,7 @@ msgstr "Uložit frekvenční seznam do textového souboru nebo XML"
 #: cmpltmpl/freqs.py:563
 msgid "Set limit"
 msgstr "Nastavit limit"
+msgstr "Встановити ліміт"
 
 #: cmpltmpl/patterns_form.py:371
 msgid "Compute patterns"
@@ -846,16 +854,19 @@ msgstr "Uschovat konkordanci pro anotaci"
 
 msgid "Sort Concordance"
 msgstr "Třídit konkordanci"
+msgstr "Сортувати конкорданс"
 
 msgid "Delete Selected"
 msgstr "Vymazat vybrané"
 
 msgid "Show Similar Words"
 msgstr "Ukázat podobná slova"
+msgstr "Показати схожі слова"
 
 #: cmpltmpl/thes.py:362
 msgid "Save thesaurus to a text file or XML"
 msgstr "Uložit tezaurus do textového souboru nebo XML"
+msgstr "Зберегти тезаурус у текстовий файл чи XML"
 
 msgid "Change View Options"
 msgstr "Změnit možnosti zobrazení"
@@ -863,6 +874,7 @@ msgstr "Změnit možnosti zobrazení"
 #: cmpltmpl/view.py:693
 msgid "Sort to left"
 msgstr "Třídit vlevo"
+msgstr "Сортувати ліворуч"
 
 #: cmpltmpl/view.py:729
 msgid "Sort by node word"
@@ -870,7 +882,7 @@ msgstr "Třídit podle klíčového slova"
 
 #: cmpltmpl/view.py:711
 msgid "Sort to right"
-msgstr "Třídit vpravo"
+msgstr "Сортувати праворуч"
 
 #: cmpltmpl/view.py:675
 msgid "Complex sorting options"
@@ -879,6 +891,7 @@ msgstr "Komplexní možnosti třídění"
 #: cmpltmpl/view.py:375
 msgid "Save concordance to a text file or xml"
 msgstr "Uložit konkordanci do textového souboru nebo XML"
+msgstr "Зберегти конкорданс у текстовий файл чи XML"
 
 #: cmpltmpl/collx.py:307 cmpltmpl/freqs.py:373 cmpltmpl/view.py:1403
 #: cmpltmpl/wordlist.py:549
@@ -888,12 +901,14 @@ msgstr "Перейти"
 
 msgid "Make Word List"
 msgstr "Vytvořit seznam slov"
+msgstr "Створити список слів"
 
 msgid "Save Word List/Keywords to a text file or XML"
 msgstr "Uložit výsledek do textového souboru nebo XML"
 
 msgid "Show Word Sketch"
 msgstr "Ukaž word sketch"
+msgstr "Показати шкіц слова"
 
 msgid "Show Diff"
 msgstr "Ukaž rozdíl"
@@ -3633,6 +3648,7 @@ msgstr "? Nápověda ke konkordanci"
 
 msgid "&lt; concordance"
 msgstr "&lt; konkordance"
+msgstr "&lt; конкорданс"
 
 #: cmpltmpl/conc.py:410
 msgid "Compute frequencies"
@@ -3690,10 +3706,12 @@ msgstr "? Nápověd k vyhledávacím dotazům"
 #: cmpltmpl/wsketch_form.py:193
 msgid "Word form"
 msgstr "Slovní tvar"
+msgstr "Словоформа"
 
 #: cmpltmpl/document.py:1405
 msgid "Corpus query language"
 msgstr "Dotazovací jazyk"
+msgstr "Мова корпусових запитів"
 
 #: cmpltmpl/document.py:1566
 msgid "Correction code"
@@ -3741,6 +3759,7 @@ msgstr "Filtrovat konkordanci"
 #: cmpltmpl/findx.py:178 cmpltmpl/wordlist_form.py:191
 msgid "Find x"
 msgstr "Najdi x"
+msgstr "Знайти x"
 
 #: cmpltmpl/findx_form.py:132
 msgid "Find all the words that are most x"
@@ -3831,6 +3850,7 @@ msgstr "Uložit kandidáty kolokací"
 #: cmpltmpl/saveconc_form.py:359
 msgid "Save concordance"
 msgstr "Uložit konkordanci"
+msgstr "Зберегти конкорданс"
 
 #: cmpltmpl/saveconc_form.py:176
 msgid "? Help on saving conc."
@@ -4116,6 +4136,7 @@ msgstr "Výpočet frekvencí (%s)"
 #: cmpltmpl/conc.py:153
 msgid "concordance"
 msgstr "konkordance"
+msgstr "конкорданс"
 
 #: cmpltmpl/corp_info.py:180
 msgid "? Help on corpus info page"
@@ -4136,6 +4157,7 @@ msgstr "Změnit jazyk rozhraní"
 #: cmpltmpl/document.py:2865
 msgid "Documentation"
 msgstr "Dokumentace"
+msgstr "Документація"
 
 #: cmpltmpl/trends.py:818
 msgid "The page will be reloaded automatically."
@@ -4148,6 +4170,7 @@ msgstr "? Nápověda ke GDEXu"
 #: cmpltmpl/view.py:452 cmpltmpl/view.py:463
 msgid "Make subcorpus"
 msgstr "Vytvoř subkorpus"
+msgstr "Створити підкорпус"
 
 #: cmpltmpl/wordlist_form.py:211 cmpltmpl/wordlist.py:630
 msgid "? Help on bilingual terminology extraction"
@@ -4156,10 +4179,12 @@ msgstr "? Nápověda k dvojjazyčné extrakci terminologie"
 #: cmpltmpl/wordlist_form.py:610
 msgid "hide/nest sub-n-grams"
 msgstr "skryj/zanoř pod-n-gramy"
+msgstr "сховати/вкласти під-N-грами"
 
 #: cmpltmpl/wordlist.py:873
 msgid "n-grams"
 msgstr "n-gramy"
+msgstr "N-грами"
 
 #: cmpltmpl/wordlist.py:1034
 msgid "Displaying first"
@@ -4172,14 +4197,17 @@ msgstr "položek"
 #: cmpltmpl/wordlist.py:1054
 msgid "Show more"
 msgstr "Zobraz víc"
+msgstr "Показати більше"
 
 #: cmpltmpl/wordlist.py:1382
 msgid "LogDice"
 msgstr ""
+#msgstr "Лог. Дайс"
 
 #: cmpltmpl/wordlist.py:1493
 msgid "More details"
 msgstr "Více detailů"
+msgstr "Детальніше"
 
 #: pyconc.py:273
 msgid "Cooccurrence count"
@@ -4192,6 +4220,7 @@ msgstr "Počet kandidátů"
 #: cmpltmpl/corp_info.py:504
 msgid "The number of structures"
 msgstr "Počet struktur"
+msgstr "Кількість структур"
 
 #: cmpltmpl/jobs.py:568
 msgid "? Help on my jobs"
@@ -4200,10 +4229,12 @@ msgstr "? Nápověda k mým procesům"
 #: cmpltmpl/skell.py:249
 msgid "Describe the issue"
 msgstr "Popište problém"
+msgstr "Опишіть проблему"
 
 #: cmpltmpl/skell.py:304
 msgid "Terms of Use"
 msgstr "Podmínky užití"
+msgstr "Умови користування"
 
 #: cmpltmpl/skell.py:310
 msgid ""
@@ -4223,18 +4254,22 @@ msgstr ""
 #: cmpltmpl/skell.py:319
 msgid "version:"
 msgstr "verze:"
+msgstr "версія:"
 
 #: cmpltmpl/skell.py:332
 msgid "Terms of use"
 msgstr "Podmínky užití"
+msgstr "Умови користування"
 
 #: cmpltmpl/skell.py:487
 msgid "Learn more"
 msgstr "Zjistěte víc"
+msgstr "Докладніше"
 
 #: cmpltmpl/skell.py:552
 msgid "Empty result for"
 msgstr "Prázdný výsledek pro"
+msgstr "Порожній результат для"
 
 #: cmpltmpl/wordlist_form.py:956
 msgid "Help on simple math parameter"
