@@ -215,7 +215,7 @@ msgstr "Контекст"
 #: cmpltmpl/wsketch_form.py:630 cmpltmpl/wsketch_form.py:832
 msgid "All"
 msgstr "Všechny"
-msgstr ""
+msgstr "Всі"
 
 #: cmpltmpl/first_form.py:615 cmpltmpl/first_form.py:778
 msgid "of these items"
@@ -353,7 +353,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:792
 msgid "Part of speech"
 msgstr "Slovní druh (PoS)"
-msgstr ""
+msgstr "Частина мови"
 
 #: cmpltmpl/patterns_form.py:222
 msgid "noun"
@@ -387,25 +387,25 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:338
 msgid "Maximum number of items"
 msgstr "Maximální počet položek"
-msgstr ""
+msgstr "Максимальна кількість елементів"
 
 #: cmpltmpl/patterns_form.py:307 cmpltmpl/wsdiff_form.py:468
 #: cmpltmpl/wsdiff_form.py:498 cmpltmpl/wsketch_form.py:343
 msgid "in a grammatical relation"
 msgstr "v gramatické relaci"
-msgstr ""
+msgstr "у синтаксичному зв’язку"
 
 #: cmpltmpl/patterns_form.py:325 cmpltmpl/thes_form.py:332
 #: cmpltmpl/wsketch_form.py:516
 msgid "Minimum similarity"
 msgstr "Minimální podobnost"
-msgstr ""
+msgstr "Мінімальна подібність"
 
 #: cmpltmpl/patterns_form.py:330 cmpltmpl/thes_form.py:342
 #: cmpltmpl/wsketch_form.py:521
 msgid "between cluster items"
 msgstr "mezi sdruženými položkami"
-msgstr ""
+msgstr "між елементами кластерів"
 
 #: cmpltmpl/patterns_form.py:348
 msgid "Maximum number of patterns"
@@ -535,33 +535,33 @@ msgstr ""
 
 msgid "Save Thesaurus"
 msgstr "Uložit tezaurus"
-msgstr ""
+msgstr "Зберегти тезаурус"
 
 msgid "Save Thesaurus as"
 msgstr "Uložit tezaurus jako"
-msgstr ""
+msgstr "Зберегти тезаурус як"
 
 msgid "Save Keywords"
 msgstr "Uložit klíčová slova"
-msgstr ""
+msgstr "Зберегти ключові слова"
 
 msgid "Save Word List"
 msgstr "Uložit seznam slov"
-msgstr ""
+msgstr "Зберегти словник частот"
 
 #: cmpltmpl/savewl_form.py:245
 msgid "Save word list as"
 msgstr "Uložit seznam slov jako"
-msgstr ""
+msgstr "Зберегти словник частот як"
 
 msgid "Save Word Sketch"
 msgstr "Uložit Word Sketch"
-msgstr ""
+msgstr "Зберегти шкіц слова"
 
 #: cmpltmpl/savews_form.py:193
 msgid "Save word sketch as"
 msgstr "Uložit Word Sketch jako"
-msgstr ""
+msgstr "Зберегти шкіц слова як"
 
 #: cmpltmpl/selectstored.py:140
 msgid "Selected"
@@ -661,12 +661,12 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:263 cmpltmpl/wsketch_form.py:275
 msgid "Advanced options"
 msgstr "Pokročilé možnosti"
-msgstr ""
+msgstr "Розширені параметри"
 
 #: cmpltmpl/thes_form.py:316
 msgid "Cluster items"
 msgstr "Seskupovat položky"
-msgstr ""
+msgstr "Елементи кластера"
 
 #: cmpltmpl/document.py:2687 cmpltmpl/thes_form.py:88
 #: cmpltmpl/thes_form.py:135 cmpltmpl/thes.py:91
@@ -679,7 +679,7 @@ msgstr "Тезаурус"
 #: cmpltmpl/wseval.py:244 cmpltmpl/wsketch.py:598 cmpltmpl/wsketch.py:712
 msgid "freq"
 msgstr "frekvence"
-msgstr ""
+msgstr "частота"
 
 #: cmpltmpl/viewattrs.py:88 cmpltmpl/viewattrs.py:135 cmpltmpl/view.py:576
 msgid "View options"
@@ -874,7 +874,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:377
 msgid "Score"
 msgstr "Skóre"
-msgstr ""
+msgstr "Бал"
 
 #: cmpltmpl/collx.py:505 cmpltmpl/document.py:854 cmpltmpl/findx.py:304
 #: cmpltmpl/pcws.py:492 cmpltmpl/wordlist.py:1474
@@ -1140,12 +1140,12 @@ msgstr "Відношення"
 #: cmpltmpl/wsketch_form.py:899
 msgid "Show word sketch"
 msgstr "Zobraz word sketch"
-msgstr ""
+msgstr "Показати шкіц слова"
 
 #: cmpltmpl/findx.py:292
 msgid "Show concordances"
 msgstr "Zobraz konkordance"
-msgstr ""
+msgstr "Показати конкорданс"
 
 #: cmpltmpl/first_form.py:843
 msgid "Clear All"
@@ -1327,7 +1327,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:501
 msgid "Cluster collocations"
 msgstr "Shlukovat kolokace"
-msgstr ""
+msgstr "Скупчувати колокації"
 
 #: cmpltmpl/wsketch.py:366
 msgid "Switch between clustered and unclustered word sketches"
@@ -1404,7 +1404,7 @@ msgstr ""
 #: cmpltmpl/wsketch.py:1502
 msgid ">>"
 msgstr ">>"
-msgstr ""
+msgstr ">>"
 
 #: cmpltmpl/tblex.py:639
 msgid "Sorry, you are not allowed to use the tickbox lexicography"
@@ -1414,17 +1414,17 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:361
 msgid "Sort collocations"
 msgstr "Třídit kolokace"
-msgstr ""
+msgstr "Сортувати колокації"
 
 #: cmpltmpl/wsketch_form.py:366
 msgid "according to"
 msgstr "podle"
-msgstr ""
+msgstr "за показником"
 
 #: cmpltmpl/wsketch_form.py:388
 msgid "Raw frequency"
 msgstr "Frekvence"
-msgstr ""
+msgstr "Частота"
 
 #: cmpltmpl/tblex.py:337
 msgid "Template"
@@ -2012,7 +2012,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:233
 msgid "all"
 msgstr "vše"
-msgstr ""
+msgstr "всі"
 
 #: cmpltmpl/first_form.py:595 cmpltmpl/first_form.py:758
 msgid "any"
@@ -2221,12 +2221,12 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:539
 msgid "Structure word sketch by gramrels"
 msgstr "Řadit word sketche podle relací"
-msgstr ""
+msgstr "Групувати шкіц слова за синтзв’язками"
 
 #: cmpltmpl/wsketch_form.py:623 cmpltmpl/wsketch_form.py:825
 msgid "Select gramrels:"
 msgstr "Vyber relace:"
-msgstr ""
+msgstr "Вибрати синтзв’язки:"
 
 #: cmpltmpl/pcws.py:296 cmpltmpl/wipo.py:399 cmpltmpl/wsketch.py:422
 msgid "More data"
@@ -2481,7 +2481,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:554
 msgid "Minimum score"
 msgstr "Minimální skóre"
-msgstr ""
+msgstr "Мінімальний бал"
 
 #: cmpltmpl/wsketch.py:381
 msgid "Switch between sorting collocates according to raw frequency and score"
@@ -2858,7 +2858,7 @@ msgstr ""
 #: cmpltmpl/corp_info.py:293 cmpltmpl/wsketch_form.py:705
 msgid "Language"
 msgstr "Jazyk"
-msgstr ""
+msgstr "Мова"
 
 #: cmpltmpl/corp_info.py:303
 msgid "Encoding"
@@ -3066,7 +3066,7 @@ msgstr "Значення N:"
 #: cmpltmpl/wsketch_form.py:559
 msgid "for unary relations"
 msgstr "pro unární relace"
-msgstr ""
+msgstr "для унарних зв’язків"
 
 #: wsketchcgi.py:404
 msgid "Insufficient data for multiword sketch of"
@@ -3115,7 +3115,7 @@ msgstr ""
 #: cmpltmpl/view.py:503 cmpltmpl/wsketch_form.py:914
 msgid "Saved"
 msgstr "Uloženo"
-msgstr ""
+msgstr "Збережено"
 
 #: cmpltmpl/document.py:2309 cmpltmpl/document.py:2797
 msgid "Corpus info page for"
@@ -3339,7 +3339,7 @@ msgstr ""
 #: cmpltmpl/thes_form.py:211 cmpltmpl/wsketch_form.py:224
 msgid "auto"
 msgstr "auto"
-msgstr ""
+msgstr "розпізнати"
 
 #: cmpltmpl/thes.py:443 cmpltmpl/wsketch.py:566
 msgid "Alternative PoS"
@@ -3377,7 +3377,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:815
 msgid "No corpora available"
 msgstr "Žádný korpus není k dispozici"
-msgstr ""
+msgstr "Жоден корпус не доступний"
 
 #: cmpltmpl/wsketch.py:447
 msgid "Translate"
@@ -3430,17 +3430,17 @@ msgstr "Мінімальна частота має бути цілим неві�
 #: cmpltmpl/wordlist.py:543
 msgid "Page must be a positive integer"
 msgstr "Strana musí být kladné celé číslo"
-msgstr "Номер сторінки має бути цілим додатнім числом"
+msgstr "Номер сторінки має бути цілим додатним числом"
 
 #: cmpltmpl/cpa_form.py:189 cmpltmpl/thes_form.py:192
 #: cmpltmpl/wsketch_form.py:205
 msgid "Enter a query"
 msgstr "Zadejte dotaz"
-msgstr ""
+msgstr "Уведіть запит"
 
 msgid "? Help on Concordance Query"
 msgstr "? Nápověda pro Konkordanci"
-msgstr ""
+msgstr "Довідка з конкордансів"
 
 #: cmpltmpl/document.py:2152 cmpltmpl/skell.py:228
 msgid "Feedback form"
@@ -3526,7 +3526,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:532
 msgid "Minimum similarity must be a real number"
 msgstr "Minimální podobnost musí být desetinné číslo"
-msgstr ""
+msgstr "Мінімальна подібність має бути дійсним числом"
 
 #: cmpltmpl/patterns_form.py:359 cmpltmpl/savecoll_form.py:285
 #: cmpltmpl/savefreq_form.py:304 cmpltmpl/savewl_form.py:354
@@ -3534,14 +3534,14 @@ msgstr ""
 #: cmpltmpl/wsdiff_form.py:516 cmpltmpl/wsketch_form.py:354
 msgid "Maximum number must be a positive integer"
 msgstr "Maximální počet musí být kladné celé číslo"
-msgstr ""
+msgstr "Мінімальна кількість має бути додатним числом"
 
 #: cmpltmpl/reduce_form.py:206 cmpltmpl/saveconc_form.py:289
 #: cmpltmpl/saveconc_form.py:344 cmpltmpl/sort.py:245 cmpltmpl/wipo.py:272
 #: cmpltmpl/wsketch_form.py:491 cmpltmpl/wsketch_form.py:613
 msgid "Must be a positive integer"
 msgstr "Musí být kladné celé číslo"
-msgstr ""
+msgstr "Має бути додатним числом"
 
 #: cmpltmpl/saveconc_form.py:349
 msgid "(max. 100,000)"
@@ -3582,7 +3582,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:570
 msgid "Minimum score must be a real number"
 msgstr "Minimální skóre musí být desetinné číslo"
-msgstr ""
+msgstr "Мінімальний бал має бути дійсним числом"
 
 #: cmpltmpl/thes.py:620
 msgid "No matching entries"
@@ -3690,22 +3690,22 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:313
 msgid "Minimum frequency must be a positive integer or 'auto'"
 msgstr "Minimální frekvence musí být kladné celé číslo nebo 'auto'"
-msgstr ""
+msgstr "Мінімальна частота має бути додатним числом або „авто“"
 
 #: cmpltmpl/wsketch_form.py:583
 msgid "for multiword word sketch links"
 msgstr "pro odkazy na víceslovné word sketche"
-msgstr ""
+msgstr "для багатослівних шкіців"
 
 #: cmpltmpl/wsketch_form.py:594
 msgid "Minimum frequency must be a positive integer"
 msgstr "Minimální frekvence musí být kladné celé číslo"
-msgstr ""
+msgstr "Мінімальна частота має бути додатним цілим числом"
 
 #: cmpltmpl/wsketch_form.py:602
 msgid "Number of gramrel columns"
 msgstr "Počet sloupců gramatických relací"
-msgstr ""
+msgstr "Кількість cтовпчиків синтзв’язків"
 
 #: skellcgi.py:103
 #, python-format
@@ -4378,7 +4378,7 @@ msgstr ""
 #: cmpltmpl/thes_form.py:299
 msgid "Headword in word cloud"
 msgstr "Klíčové slovo v oblaku slov"
-msgstr ""
+msgstr "Заголовне слово у хмарці слів"
 
 #: cmpltmpl/view.py:2284
 msgid "Loading translation candidates for KWIC, please wait."
@@ -4416,7 +4416,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:397
 msgid "Show lemma coverage"
 msgstr "Zobraz pokrytí lemmatu"
-msgstr ""
+msgstr "Показувати покриття леми"
 
 #: cmpltmpl/wsketch.py:349
 msgid "Don't cluster"
@@ -4472,7 +4472,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:907
 msgid "Save options"
 msgstr "Uložit nastavení"
-msgstr ""
+msgstr "Зберегти параметри"
 
 #: cmpltmpl/conc.py:102
 msgid "? Help on concordance"
@@ -4701,7 +4701,7 @@ msgstr ""
 #: cmpltmpl/pcws.py:88 cmpltmpl/wsketch_form.py:683
 msgid "Bilingual word sketch"
 msgstr "Dvojjazyčný word sketch"
-msgstr ""
+msgstr "Двомовний шкіц слова"
 
 #: cmpltmpl/reduce_form.py:169
 msgid "? Help on sample form"
@@ -4754,12 +4754,12 @@ msgstr ""
 #: cmpltmpl/savethes_form.py:231
 msgid "Save thesaurus"
 msgstr "Uložit tezaurus"
-msgstr ""
+msgstr "Зберегти тезаурус"
 
 #: cmpltmpl/savethes_form.py:179
 msgid "Save thesaurus as"
 msgstr "Uložit tezaurus jako"
-msgstr ""
+msgstr "Зберегти тезаурус як"
 
 #: cmpltmpl/savewipo.py:89 cmpltmpl/wipo.py:88 cmpltmpl/wipo.py:293
 msgid "Extracted terms"
@@ -4836,12 +4836,12 @@ msgstr ""
 #: cmpltmpl/thes_form.py:146
 msgid "? Help on thesaurus"
 msgstr "? Nápověda k tezauru"
-msgstr ""
+msgstr "? Довідка з тезаурусу"
 
 #: cmpltmpl/thes_form.py:364
 msgid "Show similar words"
 msgstr "Zobrazit podobná slova"
-msgstr ""
+msgstr "Показати схожі слова"
 
 #: cmpltmpl/trends_form.py:572
 msgid "Data for diachronic analysis is not available"
@@ -4972,7 +4972,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:159
 msgid "? Help on word sketches"
 msgstr "? Nápověda k word sketchům"
-msgstr ""
+msgstr "? Довідка зі шкіців слів"
 
 #: cmpltmpl/wsketch_form.py:416
 msgid "Use tickbox lexicography"
