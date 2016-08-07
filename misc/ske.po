@@ -21,7 +21,7 @@ msgstr ""
 #: cmpltmpl/wsketch.py:908
 msgid "Add next"
 msgstr "Přidat další"
-msgstr "Додати текст"
+msgstr ""
 
 #: cmpltmpl/addlngrouplabel.py:131 cmpltmpl/document.py:1847
 #: cmpltmpl/lngroupinfo.py:216 cmpltmpl/viewattrs.py:558 cmpltmpl/view.py:1723
@@ -504,7 +504,7 @@ msgstr ""
 #: cmpltmpl/savefreq_form.py:294 cmpltmpl/savewl_form.py:343
 msgid "Maximum number of lines"
 msgstr "Maximální počet řádků"
-msgstr "Максимальна кільсть рядків"
+msgstr "Максимально рядків"
 
 msgid "Store Concordance"
 msgstr "Uschovat konkordanci"
@@ -880,7 +880,7 @@ msgstr "Бал"
 #: cmpltmpl/pcws.py:492 cmpltmpl/wordlist.py:1474
 msgid "Nothing found."
 msgstr "Prázdný výsledek."
-msgstr "Пустий результат."
+msgstr "Жодних траплень."
 
 msgid "Word Sketch Entry Form"
 msgstr "Word Sketch - formulář"
@@ -927,7 +927,7 @@ msgstr "в блоках власного"
 #: cmpltmpl/concdesc.py:174 cmpltmpl/simple_search.py:279
 msgid "Hits"
 msgstr "Výskytů"
-msgstr "Результатів"
+msgstr "Траплень"
 
 #: cmpltmpl/wseval.py:304
 msgid "Back"
@@ -1439,17 +1439,17 @@ msgstr ""
 #: cmpltmpl/freqs.py:301 cmpltmpl/wordlist.py:422
 msgid "<< First"
 msgstr "<< První"
-msgstr ""
+msgstr "<< Перша"
 
 #: cmpltmpl/freqs.py:310 cmpltmpl/wordlist.py:433
 msgid "< Previous"
 msgstr "< Předchozí"
-msgstr ""
+msgstr "< Попередня"
 
 #: cmpltmpl/freqs.py:393 cmpltmpl/wordlist.py:568
 msgid "Next >"
 msgstr "Další >"
-msgstr ""
+msgstr "Наступна >"
 
 msgid "Tickbox Lexicography template"
 msgstr "Šablona pro tickbox lexicography"
@@ -1550,7 +1550,7 @@ msgstr ""
 #: cmpltmpl/freq.py:350
 msgid "Include categories with no hits"
 msgstr "Zahrnout kategorie bez hitů"
-msgstr ""
+msgstr "Долучити категорії без траплень"
 
 #: cmpltmpl/view.py:758
 msgid "Sort according to the 'References' field"
@@ -1731,7 +1731,7 @@ msgstr ""
 #: conccgi.py:508 cmpltmpl/trends.py:265
 msgid "Empty result"
 msgstr "Prázdný výsledek"
-msgstr "Пустий результат"
+msgstr "Жодних траплень"
 
 #: conccgi.py:829
 msgid "Undefined lemma PoS"
@@ -2927,7 +2927,7 @@ msgstr ""
 #: cmpltmpl/wordlist_form.py:779
 msgid "Hit counts"
 msgstr "Počty hitů"
-msgstr "Кількість траплянь"
+msgstr "Кількість траплень"
 
 #: cmpltmpl/wordlist.py:735
 msgid "Switch focus and reference (sub)corpus"
@@ -3036,7 +3036,7 @@ msgstr ""
 #: cmpltmpl/wipo.py:239 cmpltmpl/wipo.py:284
 msgid "OK"
 msgstr "OK"
-msgstr ""
+msgstr "OK"
 
 #: cmpltmpl/wipo.py:264
 msgid "Save top"
@@ -3085,7 +3085,7 @@ msgstr "Вивчення англійської"
 #: cmpltmpl/skell.py:489
 msgid "hits per million"
 msgstr "v milionu"
-msgstr "результатів на мільйон"
+msgstr "Траплень на мільйон"
 
 #: cmpltmpl/wordlist_form.py:492
 msgid "terms"
@@ -3124,12 +3124,12 @@ msgstr ""
 
 msgid "Corpus Info"
 msgstr "Korpus info"
-msgstr ""
+msgstr "Про корпус"
 
 #: cmpltmpl/document.py:2443 cmpltmpl/document.py:2448
 msgid "Print this page"
 msgstr "Verze pro tisk"
-msgstr "Роздрукувати цю сторінку"
+msgstr "Друкувати цю сторінку"
 
 #: cmpltmpl/document.py:2465
 msgid "Get short permanent link"
@@ -3169,7 +3169,7 @@ msgstr ""
 #: cmpltmpl/conc.py:336
 msgid "1st hit in doc"
 msgstr "1. výskyt/dok."
-msgstr ""
+msgstr "1-е в документі"
 
 #: cmpltmpl/conc.py:356
 msgid "Selected lines"
@@ -3339,7 +3339,7 @@ msgstr ""
 #: cmpltmpl/thes_form.py:211 cmpltmpl/wsketch_form.py:224
 msgid "auto"
 msgstr "auto"
-msgstr "розпізнати"
+msgstr "auto"
 
 #: cmpltmpl/thes.py:443 cmpltmpl/wsketch.py:566
 msgid "Alternative PoS"
@@ -3445,7 +3445,7 @@ msgstr "Довідка з конкордансів"
 #: cmpltmpl/document.py:2152 cmpltmpl/skell.py:228
 msgid "Feedback form"
 msgstr "Formulář pro zpětnou vazbu"
-msgstr ""
+msgstr "Зв’язок"
 
 #: cmpltmpl/document.py:2575
 msgid ""
@@ -3685,12 +3685,12 @@ msgstr "Введіть лему"
 #: cmpltmpl/wsdiff_form.py:455
 msgid "Minimum frequency must be a positive integer, zero or 'auto'"
 msgstr "Minimální frekvence musí být kladné celé číslo, nula nebo 'auto'"
-msgstr "Мінімальна частота має бути невід’ємним числом або „авто“"
+msgstr "Мінімальна частота має бути невід’ємним цілим числом або „auto“"
 
 #: cmpltmpl/wsketch_form.py:313
 msgid "Minimum frequency must be a positive integer or 'auto'"
 msgstr "Minimální frekvence musí být kladné celé číslo nebo 'auto'"
-msgstr "Мінімальна частота має бути додатним числом або „авто“"
+msgstr "Мінімальна частота має бути додатним цілим числом або „auto“"
 
 #: cmpltmpl/wsketch_form.py:583
 msgid "for multiword word sketch links"
@@ -3786,7 +3786,7 @@ msgstr ""
 #: cmpltmpl/document.py:2292 cmpltmpl/skell.py:253
 msgid "Send feedback"
 msgstr "Zpětná vazba"
-msgstr ""
+msgstr "Надіслати"
 
 #: cmpltmpl/document.py:2405
 msgid "Search in corpora"
@@ -3924,7 +3924,7 @@ msgstr "Пошук"
 #: cmpltmpl/document.py:2174
 msgid "Please, provide a detailed description of the issue."
 msgstr "Popište prosím detailně problém."
-msgstr ""
+msgstr "Опишіть, будь ласка, детально проблему чи поставте питання."
 
 #: cmpltmpl/document.py:2180
 msgid "Corpus, settings, query and your username are sent automatically."
@@ -4311,7 +4311,7 @@ msgstr ""
 #: cmpltmpl/document.py:2614
 msgid "Home"
 msgstr "Domů"
-msgstr ""
+msgstr "Головна"
 
 #: cmpltmpl/document.py:2870
 msgid "User guide"
@@ -5225,7 +5225,7 @@ msgstr "Докладніше"
 #: cmpltmpl/skell.py:552
 msgid "Empty result for"
 msgstr "Prázdný výsledek pro"
-msgstr "Порожній результат для"
+msgstr "Жодних траплень для"
 
 #: cmpltmpl/wordlist_form.py:956
 msgid "Help on simple math parameter"
