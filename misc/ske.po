@@ -1817,7 +1817,7 @@ msgstr ""
 
 msgid "? Help on Concordance"
 msgstr "? Nápověda pro Konkordance"
-msgstr "? Довідка"
+msgstr "? Довідка: конкорданс"
 
 msgid "Correction Code"
 msgstr "Kód oprav"
@@ -1829,11 +1829,11 @@ msgstr ""
 
 msgid "? Help on main menu"
 msgstr "? Nápověda pro hlavní nabídku"
-msgstr "? Довідка"
+msgstr "? Довідка: головне меню"
 
 msgid "? Help on View Options"
 msgstr "? Nápověda pro Nastavení zobrazení"
-msgstr "? Довідка"
+msgstr "? Довідка: налаштування вигляду"
 
 #: cmpltmpl/view.py:780
 msgid "Randomize ordering of lines"
@@ -1847,39 +1847,39 @@ msgstr ""
 
 msgid "? Help on Word Sketches"
 msgstr "? Nápověda pro word sketche"
-msgstr "? Довідка"
+msgstr "? Довідка: шкіци слів"
 
 msgid "? Help on Thesaurus"
 msgstr "? Nápověda pro Tesaurus"
-msgstr "? Довідка"
+msgstr "? Довідка: тезаурус"
 
 msgid "? Help on Sort form"
 msgstr "? Nápověda pro Formulář třídění"
-msgstr "? Довідка"
+msgstr "? Довідка: параметри сортування"
 
 msgid "? Help on Word Lists"
 msgstr "? Nápověda pro Seznam slov"
-msgstr "? Довідка"
+msgstr "? Довідка: словники частот"
 
 msgid "? Help on Sample form"
 msgstr "? Nápověda pro Formulář vzorku"
-msgstr "? Довідка"
+msgstr "? Довідка: параметри вибірки"
 
 msgid "? Help on Saving Conc."
 msgstr "? Nápověda pro Uložení konkordance"
-msgstr "? Довідка"
+msgstr "? Довідка: зберігання конкордансу"
 
 msgid "? Help on Filter form"
 msgstr "? Nápověda pro Formulář filtru"
-msgstr "? Довідка"
+msgstr "? Довідка: параметри фільтрування"
 
 msgid "? Help on Frequency form"
 msgstr "? Nápověda pro Formulář frekvence"
-msgstr "? Довідка"
+msgstr "? Довідка: параметри списку частот"
 
 msgid "? Help on Collocations"
 msgstr "? Nápověd pro Kolokace"
-msgstr "? Довідка"
+msgstr "? Довідка: колокації"
 
 #: cmpltmpl/conc.py:647
 msgid "Take me to the original concordance"
@@ -3444,7 +3444,7 @@ msgstr "Введіть запит"
 
 msgid "? Help on Concordance Query"
 msgstr "? Nápověda pro Konkordanci"
-msgstr "Довідка"
+msgstr "Довідка: "
 
 #: cmpltmpl/document.py:2152 cmpltmpl/skell.py:228
 msgid "Feedback form"
@@ -4229,7 +4229,7 @@ msgstr "? Довідка"
 #: cmpltmpl/trends_form.py:241
 msgid "? Help on Trends"
 msgstr "? Nápověda pro trendy"
-msgstr "Довідка"
+msgstr "Довідка: тренди"
 
 #: cmpltmpl/trends_form.py:416 cmpltmpl/trends.py:561
 msgid "Maximum p-value"
@@ -4475,7 +4475,7 @@ msgstr ""
 #: cmpltmpl/coll.py:167
 msgid "? Help on collocations"
 msgstr "? Nápověda ke kolokacím"
-msgstr "Довідка"
+msgstr "Довідка: колокації"
 
 #: cmpltmpl/coll.py:495
 msgid "Make candidate list"
@@ -4491,7 +4491,7 @@ msgstr "Зберегти параметри"
 #: cmpltmpl/conc.py:102
 msgid "? Help on concordance"
 msgstr "? Nápověda ke konkordanci"
-msgstr "Довідка"
+msgstr "Довідка: конкорданс"
 
 msgid "&lt; concordance"
 msgstr "&lt; konkordance"
@@ -4613,7 +4613,7 @@ msgstr "Відфільтрувати конкорданс"
 #: cmpltmpl/filter_form.py:174
 msgid "? Help on filter form"
 msgstr "? Nápověda k filtru"
-msgstr "Довідка"
+msgstr "Довідка: параметри фільтрування"
 
 #: cmpltmpl/filter_form.py:263
 msgid "Search span"
@@ -4665,7 +4665,7 @@ msgstr ""
 #: cmpltmpl/first_form.py:283
 msgid "? Help on error query"
 msgstr "? Nápověda k chybovému dotazu"
-msgstr "Довідка"
+msgstr ""
 
 #: cmpltmpl/first_form.py:388
 msgid "Parallel query"
@@ -4675,7 +4675,7 @@ msgstr ""
 #: cmpltmpl/freq.py:172
 msgid "? Help on frequency form"
 msgstr "? Nápověda k formuláři frekvencí"
-msgstr "Довідка"
+msgstr "Довідка: параметри списку частот"
 
 #: cmpltmpl/freq.py:303 cmpltmpl/freq.py:376
 msgid "Make frequency list"
@@ -4720,7 +4720,7 @@ msgstr "Двомовний шкіц слова"
 #: cmpltmpl/reduce_form.py:169
 msgid "? Help on sample form"
 msgstr "? Nápověda k vzorku"
-msgstr "Довідка"
+msgstr "Довідка: параметри вибірки"
 
 #: cmpltmpl/reduce_form.py:215
 msgid "Create sample"
@@ -4746,7 +4746,7 @@ msgstr "Зберегти конкорданс"
 #: cmpltmpl/saveconc_form.py:176
 msgid "? Help on saving conc."
 msgstr "? Nápověda k ukládání konkordance"
-msgstr "Довідка"
+msgstr "Довідка: збереження конкордансу"
 
 #: cmpltmpl/saveconc_form.py:371
 msgid "Store concordance"
@@ -4815,7 +4815,7 @@ msgstr "Просте сортування"
 #: cmpltmpl/sort.py:143
 msgid "? Help on sort form"
 msgstr "? Nápověda k řazení"
-msgstr "Довідка"
+msgstr "Довідка: параметри сортування"
 
 #: cmpltmpl/sort.py:280 cmpltmpl/sort.py:597
 msgid "Sort concordance"
@@ -4850,7 +4850,7 @@ msgstr ""
 #: cmpltmpl/thes_form.py:146
 msgid "? Help on thesaurus"
 msgstr "? Nápověda k tezauru"
-msgstr "Довідка"
+msgstr "Довідка: тезаурус"
 
 #: cmpltmpl/thes_form.py:364
 msgid "Show similar words"
@@ -4865,12 +4865,12 @@ msgstr "Дані для діахронічного аналізу недосту
 #: cmpltmpl/trends.py:477
 msgid "? Help on trends"
 msgstr "? Nápověda k trendům"
-msgstr "Довідка"
+msgstr "Довідка: тренди"
 
 #: cmpltmpl/viewattrs.py:146
 msgid "? Help on view options"
 msgstr "? Nápověda k nastavení zobrazení"
-msgstr "Довідка"
+msgstr "Довідка: налаштування вигляду"
 
 #: cmpltmpl/viewattrs.py:337
 msgid "KWIC context size (number of characters)"
@@ -4900,7 +4900,7 @@ msgstr ""
 #: cmpltmpl/wordlist_form.py:397
 msgid "? Help on word lists"
 msgstr "? Nápověda k seznamům slov"
-msgstr "Довідка"
+msgstr "Довідка: словники частот"
 
 #: cmpltmpl/wordlist_form.py:183
 msgid "Find x entry form"
@@ -4964,7 +4964,7 @@ msgstr ""
 #: cmpltmpl/wsdiff_form.py:182
 msgid "? Help on sketch diff"
 msgstr "? Nápověda k word sketchovým rozdílům"
-msgstr "Довідка"
+msgstr "Довідка: шкіци різниць"
 
 #: cmpltmpl/wsdiff_form.py:527
 msgid "Show diff"
@@ -4989,7 +4989,7 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:159
 msgid "? Help on word sketches"
 msgstr "? Nápověda k word sketchům"
-msgstr "Довідка"
+msgstr "Довідка: шкіци слів"
 
 #: cmpltmpl/wsketch_form.py:416
 msgid "Use tickbox lexicography"
@@ -5046,7 +5046,7 @@ msgstr ""
 #: cmpltmpl/document.py:509
 msgid "? Help on creating a subcorpus"
 msgstr "Nápověda k vytváření subkorpusu"
-msgstr "Довідка"
+msgstr "Довідка: створення підкорпусу"
 
 #: cmpltmpl/trends.py:797
 msgid ""
@@ -5066,17 +5066,17 @@ msgstr ""
 #: cmpltmpl/wordlist_form.py:593
 msgid "? Help on n-grams"
 msgstr "Nápověda k n-gramům"
-msgstr "Довідка"
+msgstr "Довідка: N-грами"
 
 #: cmpltmpl/wordlist_form.py:649
 msgid "? Help on regular expressions"
 msgstr "Nápověda k regulárním výrazům"
-msgstr "Довідка"
+msgstr "Довідка: регулярні вирази"
 
 #: cmpltmpl/wsketch_form.py:692
 msgid "? Help on bilingual word sketches"
 msgstr "Nápověda k vícejazyčným word sketchům"
-msgstr "Довідка"
+msgstr "Довідка: двомовні шкіци слів"
 
 #: conccgi.py:1560
 msgid "N-grams and \"rest of corpus\" can not be usedtogether"
@@ -5097,7 +5097,7 @@ msgstr "конкорданс"
 #: cmpltmpl/corp_info.py:180
 msgid "? Help on corpus info page"
 msgstr "? Nápověda ke stránce s informace o korpusu"
-msgstr "Довідка"
+msgstr "Довідка: сторінка про корпус"
 
 #: cmpltmpl/document.py:2273
 msgid "Sketch Engine logo"
@@ -5127,7 +5127,7 @@ msgstr "Сторінка оновиться автоматично"
 #: cmpltmpl/viewattrs.py:385
 msgid "? Help on GDEX"
 msgstr "? Nápověda ke GDEXu"
-msgstr "Довідка"
+msgstr "Довідка: хороші приклади для словника"
 
 #: cmpltmpl/view.py:452 cmpltmpl/view.py:463
 msgid "Make subcorpus"
@@ -5137,7 +5137,7 @@ msgstr "Створити підкорпус"
 #: cmpltmpl/wordlist_form.py:211 cmpltmpl/wordlist.py:630
 msgid "? Help on bilingual terminology extraction"
 msgstr "? Nápověda k dvojjazyčné extrakci terminologie"
-msgstr "Довідка"
+msgstr "Довідка: витягування двомовної термінології"
 
 #: cmpltmpl/wordlist_form.py:610
 msgid "hide/nest sub-n-grams"
@@ -5192,7 +5192,7 @@ msgstr "Кількість структур"
 #: cmpltmpl/jobs.py:568
 msgid "? Help on my jobs"
 msgstr "? Nápověda k mým procesům"
-msgstr "Довідка"
+msgstr "Довідка: серверні задачі"
 
 #: cmpltmpl/skell.py:249
 msgid "Describe the issue"
@@ -5242,4 +5242,4 @@ msgstr "Жодних траплень для"
 #: cmpltmpl/wordlist_form.py:956
 msgid "Help on simple math parameter"
 msgstr "Nápověda k parametru simple math"
-msgstr "Довідка"
+msgstr "Довідка: проста математика"
