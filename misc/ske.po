@@ -33,7 +33,7 @@ msgstr "Немає"
 
 msgid "Collocation form"
 msgstr "Kolokace - formulář"
-msgstr ""    # nocontext
+msgstr "Параметри колокацій"    # nocontext
 
 #: cmpltmpl/coll.py:156 cmpltmpl/collx.py:379 cmpltmpl/conc.py:541
 msgid "Collocation candidates"
@@ -71,7 +71,7 @@ msgstr "Мінімальна частота в заданому околі"
 #: cmpltmpl/coll.py:292
 msgid "Show functions"
 msgstr "Zobrazit funkce"
-msgstr "Виводити показники"
+msgstr "Виводити бали"
 
 #: cmpltmpl/coll.py:306 cmpltmpl/coll.py:405
 msgid "T-score"
@@ -306,17 +306,17 @@ msgstr "Документи"
 #: cmpltmpl/freq.py:193 cmpltmpl/freq.py:331 cmpltmpl/freqs.py:546
 msgid "Frequency limit"
 msgstr "Frekvenční limit"
-msgstr "Частота щонайменше"
+msgstr "Найменша частота, яку показувати"
 
 #: cmpltmpl/freq.py:161
 msgid "Multilevel frequency distribution"
 msgstr "Víceúrovňové frekvenční rozložení"
-msgstr ""
+msgstr "Кількарівневий розподіл частот"
 
 #: cmpltmpl/freq.py:212
 msgid "first level"
 msgstr "první úroveň"
-msgstr ""
+msgstr "перший рівень"
 
 #: cmpltmpl/freq.py:256 cmpltmpl/sort.py:254 cmpltmpl/sort.py:352
 #: cmpltmpl/sort.py:449 cmpltmpl/sort.py:545
@@ -433,16 +433,16 @@ msgstr "Кількість рядків у вибірці"
 
 msgid "Save Collocations"
 msgstr "Uložit kolokace"
-msgstr "Зберегти колокації"
+msgstr "Стягнути колокації"
 
 msgid "Save Collocation Candidates"
 msgstr "Uložit kandidáty na kolokace"
-msgstr "Зберегти потенційні колокації"
+msgstr "Стрягнути потенційні колокації"
 
 #: cmpltmpl/savecoll_form.py:180
 msgid "Save collocations as"
 msgstr "Uložit kolokace jako"
-msgstr "Зберегти колокації як"
+msgstr "Стягнути колокації як"
 
 #: cmpltmpl/savecoll_form.py:193 cmpltmpl/saveconc_form.py:222
 #: cmpltmpl/savefreq_form.py:207 cmpltmpl/savethes_form.py:196
@@ -471,18 +471,18 @@ msgstr "Форма збереження конкордансу"
 
 msgid "Save Concordance"
 msgstr "Uložit konkordanci"
-msgstr "Зберегти конкорданс"
+msgstr "Стягнути конкорданс"
 
 #: cmpltmpl/saveconc_form.py:209
 msgid "Save concordance as"
 msgstr "Uložit konkordanci jako"
-msgstr "Зберегти конкорданс як"
+msgstr "Стягнути конкорданс як"
 
 #: cmpltmpl/savecoll_form.py:216 cmpltmpl/saveconc_form.py:245
 #: cmpltmpl/savefreq_form.py:232 cmpltmpl/savewl_form.py:282
 msgid "Save pages"
 msgstr "Uložit strany"
-msgstr "Зберегти сторінки"
+msgstr "Стягнути сторінки"
 
 #: cmpltmpl/savecoll_form.py:246 cmpltmpl/saveconc_form.py:278
 #: cmpltmpl/savefreq_form.py:262 cmpltmpl/savewl_form.py:312
@@ -518,36 +518,36 @@ msgstr "Конкорданс збережено"
 #: cmpltmpl/saveconc_form.py:398
 msgid "Concordance name"
 msgstr "Jméno konkordance"
-msgstr ""
+msgstr "Назва конкордансу"
 
 msgid "Save Frequency List"
 msgstr "Uložit frekvenční seznam"
-msgstr ""
+msgstr "Стягнути список частот"
 
 msgid "Save Frequency list"
 msgstr "Uložit frekvenční seznam"
-msgstr ""
+msgstr "Стягнути список частот"
 
 #: cmpltmpl/savefreq_form.py:194
 msgid "Save frequency list as"
 msgstr "Uložit frekvenční seznam jako"
-msgstr ""
+msgstr "Стягнути список частот як"
 
 msgid "Save Thesaurus"
 msgstr "Uložit tezaurus"
-msgstr "Зберегти тезаурус"
+msgstr "Стягнути тезаурус"
 
 msgid "Save Thesaurus as"
 msgstr "Uložit tezaurus jako"
-msgstr "Зберегти тезаурус як"
+msgstr "Стягнути тезаурус як"
 
 msgid "Save Keywords"
 msgstr "Uložit klíčová slova"
-msgstr "Зберегти ключові слова"
+msgstr "Стягнути ключові слова"
 
 msgid "Save Word List"
 msgstr "Uložit seznam slov"
-msgstr "Зберегти словник частот"
+msgstr "Стягнути словник частот"
 
 #: cmpltmpl/savewl_form.py:245
 msgid "Save word list as"
@@ -556,12 +556,12 @@ msgstr "Стягнути словник частот як"
 
 msgid "Save Word Sketch"
 msgstr "Uložit Word Sketch"
-msgstr "Зберегти шкіц слова"
+msgstr "Стягнути шкіц слова"
 
 #: cmpltmpl/savews_form.py:193
 msgid "Save word sketch as"
 msgstr "Uložit Word Sketch jako"
-msgstr "Зберегти шкіц слова як"
+msgstr "Стягнути шкіц слова як"
 
 #: cmpltmpl/selectstored.py:140
 msgid "Selected"
@@ -699,7 +699,7 @@ msgstr "Структури"
 #: cmpltmpl/viewattrs.py:187 cmpltmpl/view.py:773
 msgid "References"
 msgstr "Reference"
-msgstr "За джерелом"
+msgstr "Джерела"
 
 #: cmpltmpl/viewattrs.py:216
 msgid "Display attributes"
@@ -884,7 +884,7 @@ msgstr "Бал"
 #: cmpltmpl/pcws.py:492 cmpltmpl/wordlist.py:1474
 msgid "Nothing found."
 msgstr "Prázdný výsledek."
-msgstr "Жодних знайдень."
+msgstr "Нічого не знайдено."
 
 msgid "Word Sketch Entry Form"
 msgstr "Word Sketch - formulář"
@@ -991,11 +991,11 @@ msgstr "Побудувати конкорданс"
 
 msgid "Make Frequency List"
 msgstr "Vytvořit frekvenční seznam"
-msgstr ""
+msgstr "Побудувати список частот"
 
 msgid "Save Frequency list to a text file or XML"
 msgstr "Uložit frekvenční seznam do textového souboru nebo XML"
-msgstr ""
+msgstr "Стягнути список частот як текстовий файл чи як XML"
 
 #: cmpltmpl/freqs.py:563
 msgid "Set limit"
@@ -1013,7 +1013,7 @@ msgstr "Створити вибірку"
 
 msgid "Save Collocation candidates"
 msgstr "Uložit kandidáty na kolokace"
-msgstr "Зберегти потенційні колокації"
+msgstr "Стягнути потенційні колокації"
 
 msgid "Store Concordance For Annotation"
 msgstr "Uschovat konkordanci pro anotaci"
@@ -1034,7 +1034,7 @@ msgstr "Показати схожі слова"
 #: cmpltmpl/thes.py:362
 msgid "Save thesaurus to a text file or XML"
 msgstr "Uložit tezaurus do textového souboru nebo XML"
-msgstr "Зберегти тезаурус у текстовий файл чи XML"
+msgstr "Стягнути тезаурус у текстовий файл чи XML"
 
 msgid "Change View Options"
 msgstr "Změnit možnosti zobrazení"
@@ -1063,7 +1063,7 @@ msgstr "Комплексні параметри сортування"
 #: cmpltmpl/view.py:375
 msgid "Save concordance to a text file or xml"
 msgstr "Uložit konkordanci do textového souboru nebo XML"
-msgstr "Зберегти конкорданс у текстовий файл чи XML"
+msgstr "Стягнути конкорданс у текстовий файл чи XML"
 
 #: cmpltmpl/collx.py:307 cmpltmpl/freqs.py:373 cmpltmpl/view.py:1403
 #: cmpltmpl/wordlist.py:549
@@ -1077,7 +1077,7 @@ msgstr "Створити словник частот"
 
 msgid "Save Word List/Keywords to a text file or XML"
 msgstr "Uložit výsledek do textového souboru nebo XML"
-msgstr "Зберегти словник у текстовий файл чи XML"
+msgstr "Стягнути словник у текстовий файл чи XML"
 
 msgid "Show Word Sketch"
 msgstr "Ukaž word sketch"
@@ -1090,7 +1090,7 @@ msgstr "Показати відмінності"
 #: cmpltmpl/wsketch.py:271
 msgid "Save word sketch to a text file or XML"
 msgstr "Uložit word sketch do textového souboru nebo XML"
-msgstr "Зберегти шкіц слова у текстовий файл чи XML"
+msgstr "Стягнути шкіц слова у текстовий файл чи XML"
 
 #: cmpltmpl/document.py:2620
 msgid "New query entry form"
@@ -1178,11 +1178,11 @@ msgstr ""
 
 msgid "View Word Sketch Evaluation"
 msgstr "Zobraz hodnocení word sketchů"
-msgstr ""
+msgstr "Показати аналіз шкіцу слова"
 
 msgid "View Word Sketch for Evaluation"
 msgstr "Zobraz Word sketch pro hodnocení"
-msgstr ""
+msgstr "Показати шкіц слова для аналізу"
 
 msgid "Sorry, you are not allowed to evaluate Word Sketches on this corpus."
 msgstr "Nemáte právo hodnotit word sketche v tomto korpusu"
@@ -1205,7 +1205,7 @@ msgstr ""
 
 msgid "Evaluation Settings"
 msgstr "Nastavení hodnocení"
-msgstr ""
+msgstr "Параметри аналізування"
 
 #: cmpltmpl/load_all_wseval.py:219
 msgid "No. collocations"
@@ -1219,7 +1219,7 @@ msgstr "Мін. част."
 
 msgid "Word Sketch Evaluation"
 msgstr "Word sketch hodnocení"
-msgstr ""
+msgstr "Аналізування шкіців слів"
 
 msgid "Successfully Stored"
 msgstr "Úspěšně uloženo"
@@ -1228,7 +1228,7 @@ msgstr "Збережено"
 #: cmpltmpl/store_wseval.py:137
 msgid "The following word sketch evaluation was successfully stored"
 msgstr "Následující hodnocení word sketche bylo uloženo"
-msgstr ""
+msgstr "Цей аналіз шкіцу слова збережено"
 
 #: cmpltmpl/document.py:1098 cmpltmpl/store_wseval.py:145
 #: cmpltmpl/wsdiff_form.py:266
@@ -1244,12 +1244,12 @@ msgstr "назва файлу"
 #: cmpltmpl/store_wseval.py:224
 msgid "Next Evaluation"
 msgstr "Další hodnocení"
-msgstr ""
+msgstr "Наступний аналіз"
 
 #: cmpltmpl/viewattrs.py:461
 msgid "Icon for one-click sentence copying"
 msgstr "Ikona pro ukládání"
-msgstr ""
+msgstr "Показувати іконки копіювання речень"
 
 #: cmpltmpl/viewattrs.py:410
 msgid "Number of lines to be sorted"
@@ -1288,11 +1288,11 @@ msgstr ""
 
 msgid "Word Sketch for Evaluation Entry Form"
 msgstr "Hodnocení word sketche formulář"
-msgstr ""
+msgstr "Параметри аналізу шкіцу"
 
 msgid "Word Sketch for Evaluation"
 msgstr "Hodnocení word sketchů"
-msgstr ""
+msgstr "Шкіц слова для аналізу"
 
 #: cmpltmpl/wseval.py:272
 msgid "Working with existing record"
@@ -1303,65 +1303,66 @@ msgstr ""
 msgid ""
 "Warning: Another evaluation record for this lemma was found in the database."
 msgstr "Varování: v databázi nalezen jiný záznam pro toto lema."
+msgstr "Увага: в базі знайдений аналіз шкіцу цієї леми."
 
 #: cmpltmpl/wseval.py:432
 msgid "Good"
 msgstr "Dobré"
-msgstr ""
+msgstr "Добре"
 
 #: cmpltmpl/wseval.py:438
 msgid "Bad"
 msgstr "Špatné"
-msgstr ""
+msgstr "Погано"
 
 #: cmpltmpl/tblex.py:328
 msgid "Gramrel"
 msgstr "Relace"
-msgstr ""
+msgstr "Синтзв’язок"
 
 #: cmpltmpl/wseval.py:385
 msgid "Rating"
 msgstr "Hodnocení"
-msgstr ""
+msgstr "Оцінка"
 
 msgid "Store Word Sketch Evaluation"
 msgstr "Uložit hodnocení word sketchů"
-msgstr ""
+msgstr "Зберегти аналіз шкіцу слова"
 
 #: cmpltmpl/wsketch_form.py:501
 msgid "Cluster collocations"
 msgstr "Shlukovat kolokace"
-msgstr "Скупчувати колокації"
+msgstr "Групувати колокації"
 
 #: cmpltmpl/wsketch.py:366
 msgid "Switch between clustered and unclustered word sketches"
 msgstr "Přepnout mezi shlukovanými a neshlukovanými word sketchi"
-msgstr ""
+msgstr "Перемкнути між згрупованими і незгрупованими шкіцами слів"
 
 #: cmpltmpl/pcws.py:285 cmpltmpl/wsketch.py:411
 msgid "Display more data (decreases limits and increases number of items)"
 msgstr "Zobraz více dat (sníží limity a zvýší počet položek)"
-msgstr ""
+msgstr "Показати більше даних, послабивши критерії"
 
 #: cmpltmpl/pcws.py:302 cmpltmpl/wsketch.py:428
 msgid "Display less data (increases limits and decreases number of items)"
 msgstr "Zobraz méně dat (zvýší limity a sníží počet položek)"
-msgstr ""
+msgstr "Показати менше даних, посиливши критерії"
 
 #: cmpltmpl/wsketch.py:856
 msgid "New label"
 msgstr "Nová značka"
-msgstr ""
+msgstr "Новий значок"
 
 #: cmpltmpl/wsketch.py:1275
 msgid "word frequency"
 msgstr "slovní frekvence"
-msgstr ""
+msgstr "частота слова"
 
 #: cmpltmpl/wsketch.py:1303
 msgid "cluster frequency"
 msgstr "frekvence shluků"
-msgstr ""
+msgstr "частота кластера"
 
 #: cmpltmpl/wsketch.py:971 cmpltmpl/wsketch.py:1318 cmpltmpl/wsketch.py:1475
 #: cmpltmpl/wsketch.py:1554
@@ -1482,12 +1483,12 @@ msgstr "Групувати"
 #: cmpltmpl/viewattrs.py:477
 msgid "Allow multiple lines selection"
 msgstr "Povolit výběr více řádků"
-msgstr ""
+msgstr "Дозволити копіювати по декілька рядків"
 
 #: cmpltmpl/viewattrs.py:551
 msgid "XML template for one-click copying"
 msgstr "XML šablona pro kopírování do schránky"
-msgstr ""
+msgstr "XML-форматувати скопійовані речення за шаблоном"
 
 #: cmpltmpl/load_all_wseval.py:170
 msgid "Evaluation set"
@@ -1593,7 +1594,7 @@ msgstr "Показати частоти по типах тексту"
 
 msgid "ConcDesc"
 msgstr "Popis konkordance"
-msgstr ""
+msgstr "Характеристики конкордансу"
 
 msgid "Corpus Pattern Analysis"
 msgstr "Analýza vzorů v korpusu"
@@ -1602,20 +1603,20 @@ msgstr ""
 #: cmpltmpl/cpa_form.py:206
 msgid "Annotate"
 msgstr "Anotuj"
-msgstr ""
+msgstr "Анотувати"
 
 #: cmpltmpl/document.py:670
 msgid "hide/show"
 msgstr "skryj/zobraz"
-msgstr ""
+msgstr "сховати/показати"
 
 msgid "leaf"
 msgstr "list"
-msgstr ""
+msgstr "листок"
 
 msgid "Concordance: Filter form"
 msgstr "Konkordance: formulář filtru"
-msgstr ""
+msgstr "Конкорданс: параметри фільтру"
 
 #: cmpltmpl/findx.py:138 cmpltmpl/freqs.py:206 cmpltmpl/patterns.py:122
 #: cmpltmpl/thes.py:626 cmpltmpl/trends.py:396 cmpltmpl/wordlist.py:219
@@ -1709,7 +1710,7 @@ msgstr "Розвибрати все"
 #: cmpltmpl/wseval.py:297
 msgid "Show available records"
 msgstr "Zobraz dostupné záznamy"
-msgstr ""
+msgstr "Показати доступні записи"
 
 #: cmpltmpl/wordlist_form.py:820
 msgid "Simple"
@@ -1793,12 +1794,12 @@ msgstr "Шкіци слів недоступні"
 #: wseval.py:125
 msgid "Corrupted evaluation file"
 msgstr "Porušený soubor s hodnocením"
-msgstr ""
+msgstr "Зіпсований файл аналізу"
 
 #: wsketchlib.py:34
 msgid "WMapStream: end of stream"
 msgstr "WMapStream: konec streamu"
-msgstr ""
+msgstr "WMapStream: кінець потоку"
 
 #: wsketchcgi.py:412 wsketchlib.py:162 wsketchlib.py:481
 msgid "Insufficient data for"
@@ -1808,12 +1809,12 @@ msgstr "Недостатньо даних для"
 #: wsketchlib.py:463
 msgid "Insufficient data for id"
 msgstr "Nedostatečná data pro id"
-msgstr ""
+msgstr "Недомтатньо даних для ідентифікації"
 
 #: conccgi.py:1840
 msgid "No meta-information to create a subcorpus."
 msgstr "Žádné metainformace pro vytvoření subkorpusu"
-msgstr ""
+msgstr "Жодної мета-інформації щоб створити підкопрус"
 
 msgid "? Help on Concordance"
 msgstr "? Nápověda pro Konkordance"
@@ -1934,7 +1935,7 @@ msgstr "MI.log_f"
 #: cmpltmpl/document.py:467
 msgid "None (whole corpus)"
 msgstr "Žádný (celý korpus)"
-msgstr ""
+msgstr "Жоден (цілий корпус)"
 
 #: cmpltmpl/document.py:1374
 msgid "Character"
@@ -1953,7 +1954,7 @@ msgstr ""
 
 msgid "See Upload progress"
 msgstr "Zobraz stav nahrávání"
-msgstr ""
+msgstr "Стежити за процесом відвантеження"
 
 #: cmpltmpl/findx_form.py:216
 msgid "Upload new list"
@@ -2332,7 +2333,7 @@ msgstr ""
 #: cmpltmpl/freq.py:218
 msgid "fourth level"
 msgstr "čtvrtá úroveň"
-msgstr ""
+msgstr "четвертий рівень"
 
 #: cmpltmpl/freqs.py:470
 msgid "Using first"
@@ -2678,12 +2679,12 @@ msgstr ""
 #: cmpltmpl/viewattrs.py:301
 msgid "Show references above the concordance lines, instead of the left column"
 msgstr "Zobraz reference nad řádky konkordance, ne v levém sloupci"
-msgstr ""
+msgstr "Показувати джерела над рядком, а не у лівому стовпчику"
 
 #: cmpltmpl/viewattrs.py:306
 msgid "References up"
 msgstr "Reference nahoře"
-msgstr ""
+msgstr "Підіймати джерела"
 
 msgid "Key Words In Context"
 msgstr "Klíčová slova v kontextu"
@@ -2813,7 +2814,7 @@ msgstr "Лишити тільки вибрані рядки"
 #: cmpltmpl/conc.py:585
 msgid "Concordance distribution overview"
 msgstr "Přehled rozložení konkordance"
-msgstr ""
+msgstr "Розподіл частот в коркордансі"
 
 #: cmpltmpl/conc.py:597
 msgid "Visualize"
@@ -2921,7 +2922,7 @@ msgstr "Двомовний шкіц слоав"
 #: cmpltmpl/viewattrs.py:509
 msgid "Checkbox for selecting lines"
 msgstr "Checkbox pro výběr řádků"
-msgstr ""
+msgstr "Показувати прапореці для вибору рядка"
 
 #: cmpltmpl/view.py:1671 cmpltmpl/wsketch.py:872
 msgid "lines assigned"
@@ -3025,7 +3026,7 @@ msgstr ""
 #: cmpltmpl/viewattrs.py:525
 msgid "Show line numbers"
 msgstr "Zobrazit čísla řádků"
-msgstr ""
+msgstr "Нумерувати рядки "
 
 #: cmpltmpl/view.py:1551
 msgid "Wait for page reload"
@@ -3148,7 +3149,7 @@ msgstr "Стале посилання"
 #: cmpltmpl/viewattrs.py:542
 msgid "Shorten long references"
 msgstr "Zkracovat dlouhé reference"
-msgstr ""
+msgstr "Скорочувати довгі джерела"
 
 #: conclib.py:430
 msgid "Subparts filter"
@@ -3504,17 +3505,17 @@ msgstr ""
 #: cmpltmpl/freq.py:204 cmpltmpl/freq.py:342 cmpltmpl/freqs.py:557
 msgid "Must be a positive integer or zero"
 msgstr "Musí být kladné celé číslo nebo nula"
-msgstr ""
+msgstr "Частота має бути невід’ємним цілим числом"
 
 #: cmpltmpl/lngroupinfo.py:508 cmpltmpl/lngroupinfo.py:525
 msgid "Must be a real number"
 msgstr "Musí být desetinné číslo"
-msgstr ""
+msgstr "Має бути дійстним числом"
 
 #: cmpltmpl/patterns_form.py:202
 msgid "Entry a lemma"
 msgstr "Zadejte lemma"
-msgstr ""
+msgstr "Введіть лему"
 
 #: cmpltmpl/patterns_form.py:295
 msgid "Minimum salience must be a real number"
@@ -3846,7 +3847,7 @@ msgstr "Двомовна термінологія"
 
 msgid "Save Bilingual Terminology candidates as"
 msgstr "Uložit kandidáty dvojjazyčné terminologie jako"
-msgstr "Зберегти потенційну двомовну термінологію як"
+msgstr "Стягнути потенційну двомовну термінологію як"
 
 #: cmpltmpl/wordlist.py:273 cmpltmpl/wordlist.py:291
 msgid "Save as"
@@ -4576,7 +4577,7 @@ msgstr "Мова корпусових запитів"
 #: cmpltmpl/document.py:1566
 msgid "Correction code"
 msgstr "Kód opravy"
-msgstr ""
+msgstr "Код виправлення"
 
 #: cmpltmpl/document.py:2653
 msgid "Word sketch query entry form"
@@ -4603,7 +4604,7 @@ msgstr ""
 #: cmpltmpl/patterns_form.py:174 cmpltmpl/patterns.py:91
 msgid "Word sketch patterns"
 msgstr "Word sketchové vzory"
-msgstr ""
+msgstr "Патерни шкіців слів"
 
 #: cmpltmpl/filter_form.py:163
 msgid "Concordance filter"
@@ -4623,7 +4624,7 @@ msgstr "Діапазон пошуку"
 #: cmpltmpl/filter_form.py:346
 msgid "Filter concordance"
 msgstr "Filtrovat konkordanci"
-msgstr ""
+msgstr "Відфільтрувати конкорданс"
 
 #: cmpltmpl/findx_form.py:88 cmpltmpl/findx_form.py:270 cmpltmpl/findx.py:88
 #: cmpltmpl/findx.py:178 cmpltmpl/wordlist_form.py:191
@@ -4680,17 +4681,17 @@ msgstr "? Довідка: параметри списку частот"
 #: cmpltmpl/freq.py:303 cmpltmpl/freq.py:376
 msgid "Make frequency list"
 msgstr "Vytvořit seznam frekvencí"
-msgstr ""
+msgstr "Створити список частот"
 
 #: cmpltmpl/freq.py:314
 msgid "Text type frequency distribution"
 msgstr "Rozložení frekvencí podle typů textů"
-msgstr ""
+msgstr "Розподіл частот по типах тексту"
 
 #: cmpltmpl/freqs.py:247
 msgid "Save frequency list to a text file or XML"
 msgstr "Uložit seznam frekvencí do textového souboru nebo XML"
-msgstr ""
+msgstr "Стягнути список частот як текстовий файл чи як XML"
 
 #: cmpltmpl/load_all_wseval.py:91
 msgid "View word sketch evaluation"
@@ -4705,12 +4706,12 @@ msgstr ""
 #: cmpltmpl/load_all_wseval.py:142 cmpltmpl/wseval.py:226
 msgid "Sorry, you are not allowed to evaluate word sketches on this corpus."
 msgstr "Omlouváme se, ale nemůžete v tomto korpusu hodnotit word sketche."
-msgstr ""
+msgstr "На жаль, ви не маєте прав перевіряти шкіци слів на цьому корпусі"
 
 #: cmpltmpl/load_all_wseval.py:205
 msgid "Evaluation settings"
 msgstr "Nastavení hodnocení"
-msgstr ""
+msgstr "Параметри перевірки"
 
 #: cmpltmpl/pcws.py:88 cmpltmpl/wsketch_form.py:683
 msgid "Bilingual word sketch"
@@ -4730,18 +4731,18 @@ msgstr "Вибрати"
 #: cmpltmpl/savecoll_form.py:88
 msgid "Save collocations"
 msgstr "Uložit kolokace"
-msgstr ""
+msgstr "Стягнути колокації"
 
 #: cmpltmpl/savecoll_form.py:130 cmpltmpl/savecoll_form.py:295
 msgid "Save collocation candidates"
 msgstr "Uložit kandidáty kolokací"
-msgstr ""
+msgstr "Стягнути потенційні колокації"
 
 #: cmpltmpl/saveconc_form.py:88 cmpltmpl/saveconc_form.py:165
 #: cmpltmpl/saveconc_form.py:359
 msgid "Save concordance"
 msgstr "Uložit konkordanci"
-msgstr "Зберегти конкорданс"
+msgstr "Стягнути конкорданс"
 
 #: cmpltmpl/saveconc_form.py:176
 msgid "? Help on saving conc."
@@ -4762,18 +4763,18 @@ msgstr "Зберегти конкорданс для розмічування"
 #: cmpltmpl/savefreq_form.py:315
 msgid "Save frequency list"
 msgstr "Uložit seznam frekvencí"
-msgstr ""
+msgstr "Стягнути список частот"
 
 #: cmpltmpl/savethes_form.py:91 cmpltmpl/savethes_form.py:135
 #: cmpltmpl/savethes_form.py:231
 msgid "Save thesaurus"
 msgstr "Uložit tezaurus"
-msgstr "Зберегти тезаурус"
+msgstr "Стягнути тезаурус"
 
 #: cmpltmpl/savethes_form.py:179
 msgid "Save thesaurus as"
 msgstr "Uložit tezaurus jako"
-msgstr "Зберегти тезаурус як"
+msgstr "Стягнути тезаурус як"
 
 #: cmpltmpl/savewipo.py:89 cmpltmpl/wipo.py:88 cmpltmpl/wipo.py:293
 msgid "Extracted terms"
@@ -4789,13 +4790,13 @@ msgstr "Стягнути словник"
 #: cmpltmpl/savewl_form.py:133
 msgid "Save keywords"
 msgstr "Uložit klíčová slova"
-msgstr "Зберегти ключові слова"
+msgstr "Стягнути ключові слова"
 
 #: cmpltmpl/savews_form.py:88 cmpltmpl/savews_form.py:134
 #: cmpltmpl/savews_form.py:245
 msgid "Save word sketch"
 msgstr "Uložit word sketch"
-msgstr "Зберегти шкіц слова"
+msgstr "Стягнути шкіц слова"
 
 #: cmpltmpl/selectstored.py:167
 msgid "Last stored concordances"
@@ -4880,12 +4881,12 @@ msgstr ""
 #: cmpltmpl/viewattrs.py:493
 msgid "Do not use flash for copying to clipboard"
 msgstr "Nepoužívat flash pro kopírování do schránky"
-msgstr ""
+msgstr "Не вживати Флеш для записування в буфер"
 
 #: cmpltmpl/viewattrs.py:592
 msgid "Change view options"
 msgstr "Změnit nastavení zobrazení"
-msgstr "Налаштувати подання"
+msgstr "Налаштувати вигляд конкордансу"
 
 #: cmpltmpl/viewattrs.py:600
 msgid "Save & change options"
@@ -4984,7 +4985,7 @@ msgstr ""
 #: cmpltmpl/wseval.py:634
 msgid "Store word sketch evaluation"
 msgstr "Uložit hodnocení word sketche"
-msgstr ""
+msgstr "Зберегти аналіз шкіцу"
 
 #: cmpltmpl/wsketch_form.py:159
 msgid "? Help on word sketches"
