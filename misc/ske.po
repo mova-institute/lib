@@ -254,7 +254,7 @@ msgstr "Словоформа"
 #: cmpltmpl/first_form.py:703 cmpltmpl/wsketch.py:1599
 msgid "PoS"
 msgstr "Slovní druh (PoS)"
-msgstr "Частина мови"
+msgstr "Частина мови (ЧМ)"
 
 msgid "Text Types"
 msgstr "Typy textů"
@@ -463,7 +463,7 @@ msgstr "XML"
 #: cmpltmpl/savewl_form.py:333 cmpltmpl/savews_form.py:233
 msgid "Include heading"
 msgstr "Přidat hlavičku"
-msgstr "Долучити заголовок"
+msgstr "Додати заголовок"
 
 msgid "Save Concordance Form"
 msgstr "Uložení konkordance - formulář"
@@ -482,7 +482,7 @@ msgstr "Стягнути конкорданс як"
 #: cmpltmpl/savefreq_form.py:232 cmpltmpl/savewl_form.py:282
 msgid "Save pages"
 msgstr "Uložit strany"
-msgstr "Стягнути сторінки"
+msgstr "Взяти сторінки"
 
 #: cmpltmpl/savecoll_form.py:246 cmpltmpl/saveconc_form.py:278
 #: cmpltmpl/savefreq_form.py:262 cmpltmpl/savewl_form.py:312
@@ -493,18 +493,18 @@ msgstr "Тільки сторінку"
 #: cmpltmpl/saveconc_form.py:307
 msgid "Number lines"
 msgstr "Číslování řádků"
-msgstr "Нумерувати рядки"
+msgstr "Пронумерувати рядки"
 
 #: cmpltmpl/saveconc_form.py:324
 msgid "Align KWIC"
 msgstr "Zarovnat KWIC"
-msgstr ""
+msgstr "Зцентрувати знайдене"
 
 #: cmpltmpl/savecoll_form.py:275 cmpltmpl/saveconc_form.py:332
 #: cmpltmpl/savefreq_form.py:294 cmpltmpl/savewl_form.py:343
 msgid "Maximum number of lines"
 msgstr "Maximální počet řádků"
-msgstr "Максимально рядків"
+msgstr "Рядків щонайбільше"
 
 msgid "Store Concordance"
 msgstr "Uschovat konkordanci"
@@ -552,7 +552,7 @@ msgstr "Стягнути словник частот"
 #: cmpltmpl/savewl_form.py:245
 msgid "Save word list as"
 msgstr "Uložit seznam slov jako"
-msgstr "Стягнути словник частот як"
+msgstr "Укласти словник як"
 
 msgid "Save Word Sketch"
 msgstr "Uložit Word Sketch"
@@ -1123,12 +1123,12 @@ msgstr "загальний бал"
 
 msgid "Find X"
 msgstr "Najdi X"
-msgstr ""
+msgstr "Знайти найтакіше"
 
 #: cmpltmpl/findx.py:194
 msgid "Selected list"
 msgstr "Vybraný seznam"
-msgstr ""
+msgstr "Вибраний список"
 
 #: cmpltmpl/findx.py:215
 msgid "Percentil"
@@ -1382,7 +1382,7 @@ msgstr "Зберегти параметри"
 #: cmpltmpl/findx_form.py:189
 msgid "no lists available"
 msgstr "žádné seznamy k dispozici"
-msgstr ""
+msgstr "жодного"
 
 #: cmpltmpl/findx_upload_form.py:163
 msgid ""
@@ -1407,7 +1407,7 @@ msgstr "Викласти"
 
 msgid "Tickbox Lexicography - Select Examples"
 msgstr "Tickbox Lexicography - Vybrat příklady"
-msgstr ""
+msgstr "Tickbox Лексикографія - Вибрати приклади"
 
 #: cmpltmpl/wsketch.py:1502
 msgid ">>"
@@ -1461,7 +1461,7 @@ msgstr "Наступна >"
 
 msgid "Tickbox Lexicography template"
 msgstr "Šablona pro tickbox lexicography"
-msgstr ""
+msgstr "Взірець для tickbox лексикографії"
 
 #: cmpltmpl/wsketch_form.py:480
 msgid "Examples per collocate"
@@ -1476,7 +1476,7 @@ msgstr "Побудова гістограм часовитратна на вел
 #: cmpltmpl/findx_upload_form.py:218
 msgid "Send me an e-mail when finished"
 msgstr "Poslat email po ukončení"
-msgstr "Надіслати листа як закінчено"
+msgstr "Надіслати листа як завершиться"
 
 #: cmpltmpl/thes.py:546 cmpltmpl/wsketch.py:351
 msgid "Cluster"
@@ -1962,7 +1962,7 @@ msgstr "Стежити за процесом відвантеження"
 #: cmpltmpl/findx_form.py:216
 msgid "Upload new list"
 msgstr "Nahraj nový seznam"
-msgstr ""
+msgstr "Викласти новий список"
 
 msgid "Find X File Upload Form"
 msgstr "Najdi X Formulář pro nahrání souboru"
@@ -1970,7 +1970,7 @@ msgstr ""
 
 msgid "Find X File Upload"
 msgstr "Najdi X nahrání souboru"
-msgstr ""
+msgstr "Надсилання файлу такішості"
 
 msgid "? Help on Error Query"
 msgstr "? Nápověda pro dotazování chyb"
@@ -2039,7 +2039,7 @@ msgstr "Фільтр частин мови"
 
 msgid "Find X entry form"
 msgstr "Najdi X formulář"
-msgstr ""
+msgstr "Форма пошуку найтакішого"
 
 #: cmpltmpl/document.py:2751
 msgid "CPA"
@@ -2309,11 +2309,11 @@ msgstr "Переставити меню"
 
 msgid "? Help on FindX"
 msgstr "? Nápověda pro Najdi X"
-msgstr ""
+msgstr "? Довідка: знайти найтакіше"
 
 msgid "Find all the words that are most X"
 msgstr "Najdi všechna slova která jsou nejvíc X"
-msgstr ""
+msgstr "Знайти всі найтакіші слова"
 
 msgid "Std. Query"
 msgstr "Std. dotaz"
@@ -2321,7 +2321,7 @@ msgstr "Простий запит"
 
 msgid "Parallel Query"
 msgstr "Paralelní dotaz"
-msgstr "Паралельеий запит"
+msgstr "Паралельний запит"
 
 #: cmpltmpl/first_form.py:418
 msgid "Contains"
@@ -2610,12 +2610,12 @@ msgstr "буква"
 #: cmpltmpl/findx_form.py:229
 msgid "Minimum ratio (%)"
 msgstr "Min. poměr (%)"
-msgstr ""
+msgstr "Мінімальне відношення (%)"
 
 #: cmpltmpl/findx_form.py:248
 msgid "Minimum freq."
 msgstr "Min. frek."
-msgstr ""
+msgstr "Мінімальна частота"
 
 #: cmpltmpl/wordlist_form.py:631
 msgid "Regular expression pattern"
@@ -3386,7 +3386,7 @@ msgstr "Не знайдено перекладу для"
 #: cmpltmpl/pcws.py:430 cmpltmpl/wsketch.py:742
 msgid "Use another candidate translation"
 msgstr "Použít jiný překlad"
-msgstr "Вибрати інший переклад"
+msgstr "Вибрати інший переклад-претендент"
 
 #: cmpltmpl/wsketch_form.py:815
 msgid "No corpora available"
@@ -3401,17 +3401,17 @@ msgstr "Перекласти"
 #: cmpltmpl/wsketch.py:765
 msgid "Click on collocates to access reciprocal bilingual search"
 msgstr "Klikni na kolokaci pro opačné vícejazyčné hledání"
-msgstr ""
+msgstr "Клацніть на колоканті для оберненого домовного пошуку"
 
 #: cmpltmpl/wsketch.py:773
 msgid "or find"
 msgstr "nebo najdi"
-msgstr "або знайти"
+msgstr "або власноруч шукайте"
 
 #: cmpltmpl/wsketch.py:805
 msgid "translated collocations"
 msgstr "přeložené kolokace"
-msgstr "перекладені колокації"
+msgstr "переклади колокацій"
 
 #: skellcgi.py:59 skellcgi.py:90 skellcgi.py:211 skellcgi.py:252
 msgid "Empty query"
@@ -3509,7 +3509,7 @@ msgstr ""
 #: cmpltmpl/findx_form.py:240
 msgid "Minimum ratio must be between 0 and 100"
 msgstr "Minimální poměr musí být mezi 0 a 100"
-msgstr ""
+msgstr "Мінімальне відношення має бути між 0 і 100"
 
 #: cmpltmpl/freq.py:204 cmpltmpl/freq.py:342 cmpltmpl/freqs.py:557
 msgid "Must be a positive integer or zero"
@@ -3548,7 +3548,7 @@ msgstr "Мінімальна подібність має бути дійсним
 #: cmpltmpl/wsdiff_form.py:516 cmpltmpl/wsketch_form.py:354
 msgid "Maximum number must be a positive integer"
 msgstr "Maximální počet musí být kladné celé číslo"
-msgstr "Мінімальна кількість має бути додатним числом"
+msgstr "Максимальна кількість має бути додатним числом"
 
 #: cmpltmpl/reduce_form.py:206 cmpltmpl/saveconc_form.py:289
 #: cmpltmpl/saveconc_form.py:344 cmpltmpl/sort.py:245 cmpltmpl/wipo.py:272
@@ -3565,7 +3565,7 @@ msgstr "(макс. 100 000)"
 #: cmpltmpl/saveconc_form.py:408
 msgid "Enter a name"
 msgstr "Zadejte jméno"
-msgstr ""
+msgstr "Введіть назву"
 
 #: cmpltmpl/skell.py:390
 msgid "Examples"
@@ -3731,7 +3731,7 @@ msgstr ""
 #, python-format
 msgid "Insufficient data for %s"
 msgstr "Nedostatečná data pro %s"
-msgstr "Недостатньо даних для"
+msgstr "Недостатньо даних для %s"
 
 #: skellcgi.py:206
 #, python-format
@@ -3754,7 +3754,7 @@ msgstr ""
 #: cmpltmpl/document.py:956
 msgid "You may use * and ? wildcards."
 msgstr "Můžete použít * a ?."
-msgstr ""
+msgstr "Можна вживати * та ?"
 
 #: cmpltmpl/document.py:1431
 msgid "You may use regular expressions in CQL."
@@ -3973,7 +3973,7 @@ msgstr ""
 #: cmpltmpl/corp_info.py:454
 msgid "Aligned corpus"
 msgstr "Zarovnaný korpus"
-msgstr "Вирівняний корпус"
+msgstr "Паралельний корпус"
 
 #: cmpltmpl/corp_info.py:459
 msgid "L1"
@@ -4055,17 +4055,17 @@ msgstr "Поставити на максимум"
 #: cmpltmpl/jobs.py:329 cmpltmpl/jobs.py:365
 msgid "Set one step higher"
 msgstr "Zvyš o jedna"
-msgstr ""
+msgstr "Підвищити на ступінь"
 
 #: cmpltmpl/jobs.py:335 cmpltmpl/jobs.py:371
 msgid "Set one step lower"
 msgstr "Sniž o jedna"
-msgstr ""
+msgstr "Понизити на ступінь"
 
 #: cmpltmpl/jobs.py:341 cmpltmpl/jobs.py:377
 msgid "Set to minimum"
 msgstr "Nastav minimum"
-msgstr ""
+msgstr "Поставити мінімум"
 
 #: cmpltmpl/jobs.py:350 cmpltmpl/jobs.py:620 cmpltmpl/jobs.py:760
 msgid "IO priority"
@@ -4075,7 +4075,7 @@ msgstr ""
 #: cmpltmpl/jobs.py:386 cmpltmpl/jobs.py:622 cmpltmpl/jobs.py:766
 msgid "Cgroup"
 msgstr "Cgroup"
-msgstr ""
+msgstr "Cgroup"
 
 #: cmpltmpl/jobs.py:550
 msgid "All background jobs"
@@ -4639,17 +4639,17 @@ msgstr "Відфільтрувати конкорданс"
 #: cmpltmpl/findx.py:178 cmpltmpl/wordlist_form.py:191
 msgid "Find x"
 msgstr "Najdi x"
-msgstr "Знайти x"
+msgstr "Знайти найтакіше"
 
 #: cmpltmpl/findx_form.py:132
 msgid "Find all the words that are most x"
 msgstr "Najít všechny slova, která  jsou nejvíce x"
-msgstr ""
+msgstr "Пошук всіх найтакіших слів"
 
 #: cmpltmpl/findx_form.py:143
 msgid "? Help on find x"
 msgstr "? Nápověda k najdi x"
-msgstr ""
+msgstr "? Довідка: знайти найтакіше"
 
 #: cmpltmpl/findx_form.py:208
 msgid "See upload progress"
@@ -4659,7 +4659,7 @@ msgstr ""
 #: cmpltmpl/findx_upload_form.py:88 cmpltmpl/findx_upload_form.py:127
 msgid "Find x file upload"
 msgstr "Najdi x, nahrání souboru"
-msgstr ""
+msgstr "Надсилання файлу такішості"
 
 #: cmpltmpl/first_form.py:206 cmpltmpl/first_form.py:219
 #: cmpltmpl/first_form.py:265
@@ -4855,7 +4855,7 @@ msgstr "Знищити вибране"
 #: cmpltmpl/tblex.py:88 cmpltmpl/tblex.py:312
 msgid "Tickbox lexicography - select examples"
 msgstr "Tickbox lexikografie - výběr příkladů"
-msgstr ""
+msgstr "Tickbox лексикографія — вибрати приклади"
 
 #: cmpltmpl/thes_form.py:146
 msgid "? Help on thesaurus"
@@ -4915,7 +4915,7 @@ msgstr "? Довідка: словники частот"
 #: cmpltmpl/wordlist_form.py:183
 msgid "Find x entry form"
 msgstr "Formulář najdi x"
-msgstr "Форма пошуку X"
+msgstr "Форма пошуку найтакішого"
 
 #: cmpltmpl/wordlist_form.py:457
 msgid "Positional attributes"
@@ -5004,12 +5004,12 @@ msgstr "? Довідка: шкіци слів"
 #: cmpltmpl/wsketch_form.py:416
 msgid "Use tickbox lexicography"
 msgstr "Použít tickbox lexikografii"
-msgstr "Використовувати tickbox lexicography"
+msgstr "Використовувати tickbox лексикографію"
 
 #: cmpltmpl/wsketch_form.py:448
 msgid "Tickbox lexicography template"
 msgstr "Šablona pro tickbox lexikografii"
-msgstr ""
+msgstr "Взірець для tickbox лексикографії"
 
 #: conccgi.py:1041
 msgid "Select positive or negative filter type"

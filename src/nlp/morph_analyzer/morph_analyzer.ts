@@ -229,7 +229,7 @@ function originalAndLowercase(value: string) {
 }
 
 //------------------------------------------------------------------------------
-const ignoreLemmas = new Set(['ввесь', 'весь', 'увесь', 'той', 'цей', 'його', 'її']);
+const ignoreLemmas = new Set(['ввесь', 'весь', 'увесь', 'той', 'цей', 'cей', 'його', 'її']);
 function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: string) {
   yield flags;
   if (expandAdjectivesAsNouns
