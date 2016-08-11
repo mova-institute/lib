@@ -178,7 +178,7 @@ msgstr "прибрати збіги"
 #: cmpltmpl/filter_form.py:235
 msgid "Selected token"
 msgstr "Vybraný token"
-msgstr "Підсвічувати токен"
+msgstr "Підсвітлювати токен"
 
 #: cmpltmpl/filter_form.py:246
 msgid "first"
@@ -225,12 +225,12 @@ msgstr "з цих елементів"
 #: cmpltmpl/sort.py:205
 msgid "Left context"
 msgstr "Levý kontext"
-msgstr "лівим контекстом"
+msgstr "Лівий контекст"
 
 #: cmpltmpl/sort.py:227
 msgid "Right context"
 msgstr "Pravý kontext"
-msgstr "правим контекстом"
+msgstr "Правий контекст"
 
 #: cmpltmpl/first_form.py:546 cmpltmpl/first_form.py:694
 #: cmpltmpl/subcorp_info.py:111 cmpltmpl/subcorp.py:259
@@ -342,7 +342,7 @@ msgstr "третій рівень"
 
 msgid "Text Type frequency distribution"
 msgstr "Rozložení frekvencí podle typů textu"
-msgstr ""
+msgstr "Розподіл частоти по типах тексту"
 
 msgid "Word Sketch Patterns Entry Form"
 msgstr "Word Sketch Patterns - formulář"
@@ -588,18 +588,18 @@ msgstr "Просте сортування"
 #: cmpltmpl/sort.py:194
 msgid "Sort key"
 msgstr "Třídící klíč"
-msgstr "Сортувати за"
+msgstr "Ключ сортування"
 
 #: conclib.py:31 cmpltmpl/sort.py:216 cmpltmpl/view.py:741
 #: cmpltmpl/view.py:1820
 msgid "Node"
 msgstr "Node"
-msgstr "За знайдениим"
+msgstr "Ключові слова"
 
 #: cmpltmpl/sort.py:235
 msgid "Number of tokens to sort"
 msgstr "Počet tokenů k třídění"
-msgstr ""
+msgstr "Сортованих токенів"
 
 #: cmpltmpl/sort.py:265 cmpltmpl/sort.py:364 cmpltmpl/sort.py:460
 #: cmpltmpl/sort.py:556
@@ -620,17 +620,17 @@ msgstr "перший рівень (Сортувати за…)"
 #: cmpltmpl/sort.py:410
 msgid "second level (... then sort by ...)"
 msgstr "druhá úroveň (... pak třídit podle ...)"
-msgstr ""
+msgstr "другий рівень (… потім за…)"
 
 #: cmpltmpl/sort.py:507
 msgid "third level (... finally sort by)"
 msgstr "třetí úroveň (... nakonec setřídit podle)"
-msgstr ""
+msgstr "третій рівень (… врешті сортувати за)"
 
 #: cmpltmpl/sort.py:608
 msgid "Line group sort"
 msgstr "Třídění podle čísel řádků"
-msgstr ""
+msgstr "Сортувати за номерами рядків"
 
 msgid "Create Subcorpus"
 msgstr "Vytvořit subkorpus"
@@ -738,12 +738,12 @@ msgstr "Вибірка"
 #: cmpltmpl/view.py:705 cmpltmpl/view.py:1812
 msgid "Left"
 msgstr "Levý kontext"
-msgstr "За лівим"
+msgstr "Ліворуч"
 
 #: cmpltmpl/view.py:723 cmpltmpl/view.py:1828
 msgid "Right"
 msgstr "Pravý kontext"
-msgstr "За правим"
+msgstr "Праворуч"
 
 #: conclib.py:428 cmpltmpl/sort.py:88 cmpltmpl/view.py:686
 #: cmpltmpl/view.py:1591 cmpltmpl/view.py:1807
@@ -759,32 +759,32 @@ msgstr "Колокація"
 #: cmpltmpl/lngroupinfo.py:313 cmpltmpl/view.py:1561 cmpltmpl/wsketch.py:817
 msgid "Annotating"
 msgstr "Anotace"
-msgstr ""
+msgstr "Анотування"
 
 #: cmpltmpl/view.py:1633
 msgid "New pattern"
 msgstr "Nový pattern"
-msgstr ""
+msgstr "Новий патерн"
 
 #: cmpltmpl/view.py:1647
 msgid "Number globally"
 msgstr "Číslovat globálně"
-msgstr ""
+msgstr "Кількість загалом"
 
 #: cmpltmpl/view.py:1655
 msgid "Number selected"
 msgstr "Vybrané číslo"
-msgstr ""
+msgstr "Рядків вибрано"
 
 #: cmpltmpl/view.py:1576 cmpltmpl/wsketch.py:832
 msgid "Info"
 msgstr "Info"
-msgstr ""
+msgstr "Відомості"
 
 #: cmpltmpl/lngroupinfo.py:331 cmpltmpl/view.py:1606 cmpltmpl/wsketch.py:847
 msgid "Finish"
 msgstr "Dokončit"
-msgstr ""
+msgstr "Закінчити"
 
 #: cmpltmpl/collx.py:226 cmpltmpl/trends.py:240 cmpltmpl/view.py:1335
 msgid "First"
@@ -850,9 +850,7 @@ msgid ""
 msgstr ""
 "Po prvním výpočtu se výsledná data uloží, takže pro příští hledání budou již "
 "okamžitě dostupná."
-msgid ""
-"Once the list has been computed, it will be stored, so will be immediately "
-"available next time."
+msgid "Побудовані списки зберігаються і наступного разу доступні миттєво."
 
 msgid ""
 "You can close this window. Repeating wordlist or keywords queries on the "
@@ -860,6 +858,9 @@ msgid ""
 msgstr ""
 "Toto okno můžete zavřít. Postup výpočtu se zobrazí při opakování dotazu nad "
 "tímto subkorpusem."
+msgstr ""
+"Можна закрити це вікно. Повторний запит словника частот з того ж підкорпусу "
+"покаже статус підрахунку."
 
 #: conccgi.py:1654 cmpltmpl/findx.py:231 cmpltmpl/savewipo.py:115
 #: cmpltmpl/thes.py:537 cmpltmpl/trends.py:645 cmpltmpl/trends.py:655
@@ -896,7 +897,7 @@ msgstr "Шкіц слова"
 
 msgid "Word Sketch Differences Entry Form"
 msgstr "Word Sketch - rozdíly - formulář"
-msgstr "Форма шкіців різниць між словами"
+msgstr "Форма шкіц-різниць між словами"
 
 #: cmpltmpl/wsdiff_form.py:275
 msgid "Second lemma"
@@ -936,7 +937,7 @@ msgstr "Знайдень"
 #: cmpltmpl/wseval.py:304
 msgid "Back"
 msgstr "Zpět"
-msgstr ""
+msgstr "Назад"
 
 msgid "Word List"
 msgstr "Seznamy slov"
@@ -944,7 +945,7 @@ msgstr "Словник частот"
 
 msgid "Sketch-Diff"
 msgstr "Sketch-Diff"
-msgstr ""
+msgstr "Шкіц-різниця"
 
 #: cmpltmpl/document.py:1212 cmpltmpl/document.py:1318
 msgid "unspecified"
@@ -1021,7 +1022,7 @@ msgstr "Зберегти конкорданс для розмічування"
 
 msgid "Sort Concordance"
 msgstr "Třídit konkordanci"
-msgstr "Сортувати конкорданс"
+msgstr "Посортувати конкорданс"
 
 msgid "Delete Selected"
 msgstr "Vymazat vybrané"
@@ -1100,7 +1101,7 @@ msgstr ""
 #: cmpltmpl/document.py:2693
 msgid "Word sketch difference"
 msgstr "Word sketch - rozdíly"
-msgstr ""
+msgstr "Різниця шкіців слів"
 
 #: cmpltmpl/conc.py:139
 msgid "View current concordance"
@@ -1254,7 +1255,7 @@ msgstr "Показувати іконки копіювання речень"
 #: cmpltmpl/viewattrs.py:410
 msgid "Number of lines to be sorted"
 msgstr "Počet řádků k seřazení"
-msgstr ""
+msgstr "Сортувати рядків"
 
 #: cmpltmpl/wordlist_form.py:160
 msgid "All words"
@@ -1337,7 +1338,7 @@ msgstr "Групувати колокації"
 #: cmpltmpl/wsketch.py:366
 msgid "Switch between clustered and unclustered word sketches"
 msgstr "Přepnout mezi shlukovanými a neshlukovanými word sketchi"
-msgstr "Перемкнути між згрупованими і незгрупованими шкіцами слів"
+msgstr "Перемкнути між кластеризованими і некластеризованими шкіцами слів"
 
 #: cmpltmpl/pcws.py:285 cmpltmpl/wsketch.py:411
 msgid "Display more data (decreases limits and increases number of items)"
@@ -1417,12 +1418,12 @@ msgstr ">>"
 #: cmpltmpl/tblex.py:639
 msgid "Sorry, you are not allowed to use the tickbox lexicography"
 msgstr "Nemáte oprávnění používat tickbox lexicography"
-msgstr ""
+msgstr "У вас немає прав користуватися tickbox lexicography"
 
 #: cmpltmpl/wsketch_form.py:361
 msgid "Sort collocations"
 msgstr "Třídit kolokace"
-msgstr "Сортувати колокації"
+msgstr "Посортувати колокації"
 
 #: cmpltmpl/wsketch_form.py:366
 msgid "according to"
@@ -1466,7 +1467,7 @@ msgstr "Взірець для tickbox лексикографії"
 #: cmpltmpl/wsketch_form.py:480
 msgid "Examples per collocate"
 msgstr "Příkladů na kolokaci"
-msgstr ""
+msgstr "Приклади на колоканта"
 
 #: cmpltmpl/findx_upload_form.py:200
 msgid "Building histograms can be time-consuming on bigger corpora"
@@ -1496,12 +1497,12 @@ msgstr "XML-форматувати скопійовані речення за ш
 #: cmpltmpl/load_all_wseval.py:170
 msgid "Evaluation set"
 msgstr "Sada pro hodnocení"
-msgstr ""
+msgstr "Evaluation-вибірка"    # todo
 
 #: cmpltmpl/store_wseval.py:153
 msgid "testing set"
 msgstr "testovací sada"
-msgstr "контрольна підвибірка"
+msgstr "контрольна вибірка"
 
 #: cmpltmpl/subcorp_form.py:159
 msgid "Sorry, creating user subcorpora is not available in the open version"
@@ -1516,7 +1517,7 @@ msgstr ""
 #: cmpltmpl/wsdiff.py:88
 msgid "WS Diff for"
 msgstr "WS rozdíl pro"
-msgstr "Шкіц різниці між"
+msgstr "Шкіц-різниця між"
 
 #: cmpltmpl/wsdiff.py:96
 msgid "and"
@@ -1601,7 +1602,7 @@ msgstr "Характеристики конкордансу"
 
 msgid "Corpus Pattern Analysis"
 msgstr "Analýza vzorů v korpusu"
-msgstr ""
+msgstr "Аналіз патернів в корпусі"
 
 #: cmpltmpl/cpa_form.py:206
 msgid "Annotate"
@@ -1683,12 +1684,12 @@ msgstr "Налаштування вигляду конкордансу"
 
 msgid "hide detail"
 msgstr "skrýt detail"
-msgstr ""
+msgstr "сховати деталі"
 
 #: cmpltmpl/widectx.py:213
 msgid "display whole document"
 msgstr "zobraz celý dokument"
-msgstr ""
+msgstr "показати весь документ"
 
 #: cmpltmpl/wordlist_form.py:152
 msgid "Compute a list of all words"
@@ -1797,7 +1798,7 @@ msgstr "Шкіци слів недоступні"
 #: wseval.py:125
 msgid "Corrupted evaluation file"
 msgstr "Porušený soubor s hodnocením"
-msgstr "Зіпсований файл аналізу"
+msgstr "Зіпсований файл з аналізом"
 
 #: wsketchlib.py:34
 msgid "WMapStream: end of stream"
@@ -1825,11 +1826,11 @@ msgstr "? Довідка: конкорданс"
 
 msgid "Correction Code"
 msgstr "Kód oprav"
-msgstr ""
+msgstr "Код виправлення"
 
 msgid "Error Query"
 msgstr "Dotaz na chyby"
-msgstr ""
+msgstr "Помильний запит"
 
 msgid "? Help on main menu"
 msgstr "? Nápověda pro hlavní nabídku"
@@ -1918,7 +1919,7 @@ msgstr "Пустий список"
 
 msgid "Text types are limited to Simple output"
 msgstr "Typy textů jsou omezeny na jednoduchý výstup"
-msgstr ""
+msgstr "Типи тексту працюють тільки з простим виводом"
 
 #: conccgi.py:1566
 msgid "ARF cannot be used with text types"
@@ -1948,12 +1949,12 @@ msgstr "Буква"
 #: cmpltmpl/document.py:1858
 msgid "default"
 msgstr "implicitní"
-msgstr ""
+msgstr "типово"    # nocontext
 
 #: cmpltmpl/filter_form.py:304
 msgid "include KWIC"
 msgstr "zahrnout KWIC"
-msgstr ""
+msgstr "охопити ключові слова"
 
 msgid "See Upload progress"
 msgstr "Zobraz stav nahrávání"
@@ -1974,7 +1975,7 @@ msgstr "Надсилання файлу такішості"
 
 msgid "? Help on Error Query"
 msgstr "? Nápověda pro dotazování chyb"
-msgstr ""
+msgstr "? Довідка: помильні запити"
 
 #: cmpltmpl/first_form.py:472
 msgid "Lemma filter"
@@ -1984,12 +1985,12 @@ msgstr "Містить леми"
 #: cmpltmpl/first_form.py:480
 msgid "Word form filter"
 msgstr "Filter slovních tvarů"
-msgstr ""
+msgstr "Фільтр словоформ"
 
 #: cmpltmpl/first_form.py:489 cmpltmpl/first_form.py:637
 msgid "Window"
 msgstr "Rozsah"
-msgstr ""
+msgstr "Проміжок"
 
 #: cmpltmpl/first_form.py:503 cmpltmpl/first_form.py:651
 msgid "left"
@@ -2014,7 +2015,7 @@ msgstr "Леми"
 #: cmpltmpl/first_form.py:565
 msgid "Word form(s)"
 msgstr "Slovní tvar(y)"
-msgstr ""
+msgstr "Словоформи"
 
 #: cmpltmpl/first_form.py:582 cmpltmpl/first_form.py:745
 #: cmpltmpl/wsketch_form.py:233
@@ -2044,11 +2045,11 @@ msgstr "Форма пошуку найтакішого"
 #: cmpltmpl/document.py:2751
 msgid "CPA"
 msgstr "CPA"
-msgstr ""
+msgstr "CPA"    # todo
 
 msgid "Interface language"
 msgstr "Jazyk rozhraní"
-msgstr ""
+msgstr "Мова інтерфейсу"
 
 #: cmpltmpl/tblex.py:383
 msgid "Alternative GDEX configuration"
@@ -2058,7 +2059,7 @@ msgstr ""
 #: cmpltmpl/thes.py:344
 msgid "Switch between clustered and unclustered thesaurus"
 msgstr "Přepni mezi (ne)shlukovaným thesaurem"
-msgstr ""
+msgstr "Перемкнути між кластеризованим і некластеризованим тезаурусом"
 
 #: cmpltmpl/viewattrs.py:431
 msgid "GDEX configuration for current corpus"
@@ -2078,7 +2079,7 @@ msgstr "на мільйон"
 
 msgid "Filter wordlist by"
 msgstr "Filtruj seznam slov podle"
-msgstr ""
+msgstr "Вибрати слова"
 
 #: cmpltmpl/wordlist_form.py:701
 msgid "Whitelist"
@@ -2108,7 +2109,7 @@ msgstr "Показувані частоти"
 #: conccgi.py:1888
 msgid "Word counts"
 msgstr "Počet slov"
-msgstr ""
+msgstr "Кількість слів"
 
 #: conccgi.py:1879 cmpltmpl/wordlist_form.py:790
 msgid "Document counts"
@@ -2133,12 +2134,12 @@ msgstr "цілий корпус"
 #: cmpltmpl/wsdiff_form.py:250
 msgid "Sketch diff by"
 msgstr "Sketch rozdíl podle"
-msgstr ""
+msgstr "Порівнюване"    # agreement hack
 
 #: cmpltmpl/document.py:2324 cmpltmpl/wsdiff_form.py:300
 msgid "subcorpus"
 msgstr "subkorpus"
-msgstr ""
+msgstr "підкорпус"
 
 #: cmpltmpl/wsdiff_form.py:310
 msgid "First subcorpus"
@@ -2153,7 +2154,7 @@ msgstr "Другий підкорпус"
 #: cmpltmpl/wsdiff_form.py:355
 msgid "word form"
 msgstr "slovní tvar"
-msgstr ""
+msgstr "словоформа"
 
 #: cmpltmpl/wsdiff_form.py:365
 msgid "First word form"
@@ -2168,42 +2169,42 @@ msgstr "Друга словоформа"
 #: cmpltmpl/wsdiff.py:245
 msgid "overall frequency for the first"
 msgstr "celková frekvence pro první"
-msgstr "загальна частота для першої"
+msgstr "загальна частота: перша"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:257
 msgid "overall frequency for the second"
 msgstr "celková frekvence pro druhý"
-msgstr "загальна частота для другої"
+msgstr "загальна частота: друга"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:269
 msgid "overall score for the first"
 msgstr "celkové skóre pro první"
-msgstr "загальний бал для першої"
+msgstr "загальний бал: перша"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:281
 msgid "overall score for the second"
 msgstr "celkové skóre pro druhý"
-msgstr "загальний бал для другої"
+msgstr "загальний бал: друга"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:333
 msgid "frequency for the first"
 msgstr "frekvence pro první"
-msgstr "частота для першої"
+msgstr "частота: перша"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:369
 msgid "frequency for the second"
 msgstr "frekvence pro druhé"
-msgstr "частота для другої"
+msgstr "частота: друга"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:405
 msgid "score for the first"
 msgstr "skóre pro první"
-msgstr "бал для першої"
+msgstr "бал: перша"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:419
 msgid "score for the second"
 msgstr "skóre pro druhé"
-msgstr "бал для другої"
+msgstr "бал: друга"    # agreement hack
 
 #: cmpltmpl/wsdiff.py:513
 msgid "freqs"
@@ -2279,22 +2280,22 @@ msgstr "Підствічуються пераметри"
 #: cmpltmpl/document.py:1685
 msgid "Highlight error words"
 msgstr "Zvýraznit chybná slova"
-msgstr "Підсвічувати неправильні слова"
+msgstr "Підсвітлювати неправильні слова"
 
 #: cmpltmpl/document.py:1687
 msgid "Highlight corrected words"
 msgstr "Zvýraznit správná slova"
-msgstr "Підсвічувати виправлені слова"
+msgstr "Підсвітлювати виправлені слова"
 
 #: cmpltmpl/document.py:1689
 msgid "Highlight both"
 msgstr "Zvýraznit oboje"
-msgstr ""
+msgstr "Підсвітлювати обидва"
 
 #: cmpltmpl/document.py:1691
 msgid "Highlight query result"
 msgstr "Zvýraznit výsledek dotazu"
-msgstr ""
+msgstr "Підсвітлювати знайдене"
 
 #: cmpltmpl/jobs.py:224 cmpltmpl/jobs.py:604 cmpltmpl/jobs.py:651
 #: cmpltmpl/jobs.py:712
@@ -2326,12 +2327,12 @@ msgstr "Паралельний запит"
 #: cmpltmpl/first_form.py:418
 msgid "Contains"
 msgstr "Obsahuje"
-msgstr ""
+msgstr "Містить"
 
 #: cmpltmpl/first_form.py:424
 msgid "Does NOT contain"
 msgstr "Neobsahuje"
-msgstr ""
+msgstr "Не містить"
 
 #: cmpltmpl/freq.py:218
 msgid "fourth level"
@@ -2341,23 +2342,23 @@ msgstr "четвертий рівень"
 #: cmpltmpl/freqs.py:470
 msgid "Using first"
 msgstr "S použitím prvních"
-msgstr ""
+msgstr "Взято перші"
 
 #: cmpltmpl/freqs.py:462 cmpltmpl/freqs.py:478 cmpltmpl/view.py:1920
 #: cmpltmpl/view.py:1941
 msgid "lines only"
 msgstr "řádků"
-msgstr ""
+msgstr "рядків"
 
 #: cmpltmpl/freqs.py:487
 msgid "Use random"
 msgstr "Použít náhodných"
-msgstr ""
+msgstr "Взяти натомість"
 
 #: cmpltmpl/freqs.py:496
 msgid "instead"
 msgstr "místo toho"
-msgstr ""
+msgstr "випадкових"
 
 #: cmpltmpl/lngroupinfo.py:347 cmpltmpl/patterns2.py:169
 msgid "Label"
@@ -2367,22 +2368,22 @@ msgstr "Значок"
 #: cmpltmpl/lngroupinfo.py:353
 msgid "Occurs"
 msgstr "Výskyt"
-msgstr ""
+msgstr "Трапляється"
 
 #: cmpltmpl/jobs.py:392 cmpltmpl/jobs.py:624 cmpltmpl/jobs.py:772
 #: cmpltmpl/lngroupinfo.py:365
 msgid "Action"
 msgstr "Akce"
-msgstr ""
+msgstr "Дія"
 
 msgid "Show Wordsketch"
 msgstr "Zobraz word sketch"
-msgstr ""
+msgstr "Показати шкіц слова"
 
 #: cmpltmpl/load_all_wseval.py:211
 msgid "Complete"
 msgstr "Kompletní"
-msgstr ""
+msgstr "Повний"     # nocontext
 
 #: cmpltmpl/load_all_wseval.py:230
 msgid "Min. score"
@@ -2397,7 +2398,7 @@ msgstr "Переклад не знайдено."
 #: cmpltmpl/thes.py:356
 msgid "Clustering"
 msgstr "Shlukování"
-msgstr ""
+msgstr "Групування"
 
 #: cmpltmpl/view.py:1055 cmpltmpl/view.py:1083 cmpltmpl/view.py:2009
 #: cmpltmpl/view.py:2064 cmpltmpl/view.py:2111 cmpltmpl/view.py:2165
@@ -2410,12 +2411,12 @@ msgstr "Завантажується…"
 #: cmpltmpl/view.py:1932
 msgid "using first"
 msgstr "použito prvních"
-msgstr ""
+msgstr "взято перших"
 
 #: cmpltmpl/view.py:1898
 msgid "using random"
 msgstr "použito náhodných"
-msgstr ""
+msgstr "взято випадкових"
 
 #: cmpltmpl/view.py:1866 cmpltmpl/view.py:1913
 msgid "counting"
@@ -2429,12 +2430,12 @@ msgstr "Скинути виділення"
 
 msgid "Positional Attributes"
 msgstr "Poziční atributy"
-msgstr ""
+msgstr "Позиційні атрибути"
 
 #: cmpltmpl/wordlist_form.py:503
 msgid "collocations"
 msgstr "kolokace"
-msgstr ""
+msgstr "колокації"
 
 #: cmpltmpl/wordlist_form.py:619
 msgid "Filter options"
@@ -2454,17 +2455,17 @@ msgstr "Параметри виводу"
 
 msgid "? Help on SketchDiff"
 msgstr "? Nápověda pro SketchDiff"
-msgstr ""
+msgstr "? Довідка: шкіц-різниця"
 
 #: cmpltmpl/wsdiff.py:484
 msgid "Sketch diff for subcorpora"
 msgstr "Sketch diff pro subkorpusy"
-msgstr "Шкіц різниці підкорпусів"
+msgstr "Шкіц-різниця підкорпусів"
 
 #: cmpltmpl/wsdiff.py:492
 msgid "Sketch diff for word forms"
 msgstr "Sketch diff pro slovní tvary"
-msgstr "Шкіц різниці словоформ"
+msgstr "Шкіц-різниця словоформ"
 
 msgid "Evaluation of Word Sketch"
 msgstr "Hodnocení word sketchů"
@@ -2483,7 +2484,7 @@ msgstr ""
 #: cmpltmpl/wseval.py:408
 msgid "Concordance link"
 msgstr "Odkaz do korpusu"
-msgstr ""
+msgstr "Посилання на корпус"
 
 #: cmpltmpl/thes_form.py:280 cmpltmpl/wsketch_form.py:320
 #: cmpltmpl/wsketch_form.py:554
@@ -2529,18 +2530,18 @@ msgstr "Токенів"
 #, python-format
 msgid "%iL"
 msgstr "%iL"
-msgstr ""
+msgstr "–%i"
 
 #: conclib.py:35
 #, python-format
 msgid "%iR"
 msgstr "%iR"
-msgstr ""
+msgstr "+%i"
 
 #: pyconc.py:198
 msgid "Rel [%]"
 msgstr "Rel [%]"
-msgstr ""
+msgstr "Rel [%]"    # todo
 
 #: conclib.py:432
 msgid "Negative filter"
@@ -2565,7 +2566,7 @@ msgstr ""
 #: conclib.py:436
 msgid "Word sketch item"
 msgstr "Položka word sketche"
-msgstr ""
+msgstr "Елемент шкіцу"
 
 #: conclib.py:438 cmpltmpl/viewattrs.py:376
 msgid "GDEX"
@@ -2634,7 +2635,7 @@ msgstr "Типи запитів"
 #: cmpltmpl/document.py:1357
 msgid "match case"
 msgstr "citlivé na velikost znaků"
-msgstr ""
+msgstr "добирати регістр"
 
 msgid ""
 "Wordlist whitelists and blacklists must be plain text (.txt), encoded in "
@@ -2658,7 +2659,7 @@ msgstr ""
 #: cmpltmpl/wseval.py:422
 msgid "Sources"
 msgstr "Zdroje"
-msgstr ""
+msgstr "Джерела"    # nocontext
 
 #: cmpltmpl/wsketch.py:515
 msgid "usually in"
@@ -2668,7 +2669,7 @@ msgstr "зазвичай у"
 #: cmpltmpl/wsketch.py:526
 msgid "%, percentile"
 msgstr "%, percentil"
-msgstr ""
+msgstr "%, перцентиль"    # nocontext
 
 #: conccgi.py:860
 msgid "No char entered"
@@ -2683,7 +2684,7 @@ msgstr ""
 #: cmpltmpl/document.py:1507
 msgid "filter out empty lines"
 msgstr "vyfiltrovat prázdné řádky"
-msgstr ""
+msgstr "прибрати порожні рядки"
 
 #: cmpltmpl/viewattrs.py:301
 msgid "Show references above the concordance lines, instead of the left column"
@@ -2717,12 +2718,12 @@ msgstr "У реченні"
 #: cmpltmpl/view.py:625
 msgid "Show aligned segments"
 msgstr "Zobraz zarovnané segmenty"
-msgstr ""
+msgstr "Показати вирівняні частини"
 
 #: cmpltmpl/view.py:639
 msgid "Alignment"
 msgstr "Zarovnání"
-msgstr ""
+msgstr "Вирівняно"
 
 #: cmpltmpl/view.py:1067
 msgid "<--not translated-->"
@@ -2761,17 +2762,17 @@ msgstr "Помилка читання .info-файлу"
 #: cmpltmpl/freqs.py:454
 msgid "Using random"
 msgstr "Použito náhodných"
-msgstr ""
+msgstr "Взято випадкові"
 
 #: cmpltmpl/view.py:1677 cmpltmpl/wsketch.py:878
 msgid "Undo"
 msgstr "Zpět"
-msgstr ""
+msgstr "Скасувати"
 
 #: cmpltmpl/view.py:1953
 msgid "use random"
 msgstr "použít náhodných"
-msgstr ""
+msgstr "взяти випадкові"
 
 #: cmpltmpl/wordlist_form.py:677
 msgid "Maximum frequency"
@@ -2926,7 +2927,7 @@ msgstr ""
 
 msgid "Bilingual Word Sketch"
 msgstr "Dvojjazyčné word sketche"
-msgstr "Двомовний шкіц слоав"
+msgstr "Двомовний шкіц слова"
 
 #: cmpltmpl/viewattrs.py:509
 msgid "Checkbox for selecting lines"
@@ -3104,7 +3105,7 @@ msgstr "Знайдень на мільйон"
 #: cmpltmpl/wordlist_form.py:492
 msgid "terms"
 msgstr "termy"
-msgstr ""
+msgstr "терміни"
 
 #: cmpltmpl/wordlist_form.py:923
 msgid "Prefer"
@@ -3124,7 +3125,7 @@ msgstr "частим словам"
 #: cmpltmpl/wordlist.py:851 cmpltmpl/wordlist.py:1105
 msgid "Terms"
 msgstr "Termy"
-msgstr ""
+msgstr "Терміни"
 
 #: cmpltmpl/view.py:503 cmpltmpl/wsketch_form.py:914
 msgid "Saved"
@@ -4100,7 +4101,7 @@ msgstr "поновити зараз"
 #: cmpltmpl/jobs.py:583
 msgid "Show completed jobs"
 msgstr "Zobraz dokončené úlohy"
-msgstr "Показати зробоені задачі"
+msgstr "Показати зроблені задачі"
 
 #: cmpltmpl/jobs.py:629
 msgid "Show/hide columns"
@@ -4596,7 +4597,7 @@ msgstr ""
 #: cmpltmpl/document.py:2707
 msgid "Sketch diff"
 msgstr "Sketch rozdíl"
-msgstr "Шкіц різниці"
+msgstr "Шкіц-різниця"
 
 #: cmpltmpl/document.py:2715 cmpltmpl/store_wseval.py:91 cmpltmpl/wseval.py:91
 msgid "Word sketch evaluation"
@@ -4665,22 +4666,22 @@ msgstr "Надсилання файлу такішості"
 #: cmpltmpl/first_form.py:265
 msgid "Std. query"
 msgstr "Běžný dotaz"
-msgstr ""
+msgstr "Простий запит"
 
 #: cmpltmpl/first_form.py:243 cmpltmpl/first_form.py:370
 msgid "Error query"
 msgstr "Chybový dotaz"
-msgstr ""
+msgstr "Помильний запит"
 
 #: cmpltmpl/first_form.py:283
 msgid "? Help on error query"
 msgstr "? Nápověda k chybovému dotazu"
-msgstr ""
+msgstr "? Довідка: помильний запит"
 
 #: cmpltmpl/first_form.py:388
 msgid "Parallel query"
 msgstr "Paralelní dotaz"
-msgstr ""
+msgstr "Паралельний запит"
 
 #: cmpltmpl/freq.py:172
 msgid "? Help on frequency form"
@@ -4705,12 +4706,12 @@ msgstr "Стягнути список частот як текстовий фа�
 #: cmpltmpl/load_all_wseval.py:91
 msgid "View word sketch evaluation"
 msgstr "Zobrazit hodnocení word sketchů"
-msgstr ""
+msgstr "Показати оцінювання шкіцу"
 
 #: cmpltmpl/load_all_wseval.py:133
 msgid "View word sketch for evaluation"
 msgstr "Zobrazit word sketch pro hodnocení"
-msgstr ""
+msgstr "Показати шкіц для оцінювання"
 
 #: cmpltmpl/load_all_wseval.py:142 cmpltmpl/wseval.py:226
 msgid "Sorry, you are not allowed to evaluate word sketches on this corpus."
@@ -4830,7 +4831,7 @@ msgstr "? Довідка: параметри сортування"
 #: cmpltmpl/sort.py:280 cmpltmpl/sort.py:597
 msgid "Sort concordance"
 msgstr "Seřadit konkordanci"
-msgstr "Сортувати конкорданс"
+msgstr "Посортувати конкорданс"
 
 #: cmpltmpl/store_wseval.py:129
 msgid "Successfully stored"
@@ -4974,7 +4975,7 @@ msgstr ""
 #: cmpltmpl/wsdiff_form.py:182
 msgid "? Help on sketch diff"
 msgstr "? Nápověda k word sketchovým rozdílům"
-msgstr "? Довідка: шкіци різниць"
+msgstr "? Довідка: шкіц-різниця"
 
 #: cmpltmpl/wsdiff_form.py:527
 msgid "Show diff"
@@ -5019,7 +5020,7 @@ msgstr ""
 #: conccgi.py:1564
 msgid "Text types are limited to simple output"
 msgstr "Typy textů jsou omezeny na jednoduchý výstup"
-msgstr ""
+msgstr "Типи тексту працюють тільки з простим виводом"
 
 #: wsdiff.py:223 wsketchlib.py:372
 msgid "No word sketch available"
