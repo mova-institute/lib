@@ -291,7 +291,7 @@ msgstr "Частота"
 #: cmpltmpl/conc.py:441
 msgid "Node tags"
 msgstr "Značky (tags)"
-msgstr "Тегів"
+msgstr "Морфпозначок"
 
 #: cmpltmpl/conc.py:459
 msgid "Node forms"
@@ -1187,7 +1187,7 @@ msgstr "Показати шкіц для оцінювання"
 
 msgid "Sorry, you are not allowed to evaluate Word Sketches on this corpus."
 msgstr "Nemáte právo hodnotit word sketche v tomto korpusu"
-msgstr "На жаль, ви не маєте прав оціювати шкіци слів на цьому корпусі"
+msgstr "На жаль, ви не маєте прав оціювати шкіци слів на цьому корпусі."
 
 #: cmpltmpl/load_all_wseval.py:181
 msgid "Available records"
@@ -1418,7 +1418,7 @@ msgstr ">>"
 #: cmpltmpl/tblex.py:639
 msgid "Sorry, you are not allowed to use the tickbox lexicography"
 msgstr "Nemáte oprávnění používat tickbox lexicography"
-msgstr "У вас немає прав користуватися tickbox lexicography"
+msgstr "На жаль, у вас немає прав користуватися tickbox lexicography"
 
 #: cmpltmpl/wsketch_form.py:361
 msgid "Sort collocations"
@@ -1433,7 +1433,7 @@ msgstr "за показником"
 #: cmpltmpl/wsketch_form.py:388
 msgid "Raw frequency"
 msgstr "Frekvence"
-msgstr "Частота"
+msgstr "Частота знайдень"
 
 #: cmpltmpl/tblex.py:337
 msgid "Template"
@@ -1534,6 +1534,8 @@ msgid ""
 "(if this page is not redirected in a few seconds, please click the \"Back\" "
 "button)"
 msgstr "(pokud se stránka nepřesměruje do několika sekund, klikněte na Zpět)"
+msgstr "(якщо не відбудеться перенаправлення за кілька секунд, будь ласка, "
+"натисніть Назад)"
 
 #: cmpltmpl/document.py:705 cmpltmpl/document.py:765 cmpltmpl/document.py:803
 #: cmpltmpl/document.py:815
@@ -1582,7 +1584,7 @@ msgstr "Підрахунок частот — формуляр"
 
 msgid "Show frequencies of Node tags"
 msgstr "Zobraz frekvence značek uzlů"
-msgstr "Показати частоти тегів знайденого"
+msgstr "Показати частоти морфпозначок знайденого"
 
 msgid "Show frequencies of Node forms"
 msgstr "Zobraz frekvence tvarů uzlů"
@@ -1899,13 +1901,13 @@ msgstr "Початковий конк."
 #, python-format
 msgid "Subcorpus \"%s\" not found"
 msgstr "Subkorpus \"%s\" nenalezen"
-msgstr "Підкорпус \"%s\" не знайдено"
+msgstr "Підкорпус „%s“ не знайдено"
 
 #: wsketchlib.py:152
 #, python-format
 msgid "Lemma \"%s\" not found in the corpus"
 msgstr "Lemma \"%s\" nenalezeno v korpusu"
-msgstr "Леми \"%s\" немає в корпусі"
+msgstr "Леми „%s“ немає в корпусі"
 
 #: CGIPublisher.py:280
 msgid "You are not allowed to use this corpus."
@@ -2220,7 +2222,7 @@ msgstr "Спільні риси"
 #, python-format
 msgid "\"%s\" only patterns"
 msgstr "\"%s\" pouze vzory"
-msgstr "власні риси “%s”"
+msgstr "власні риси „%s“"
 
 #: cmpltmpl/wseval.py:414
 msgid "Commonest match"
@@ -2803,7 +2805,7 @@ msgstr ""
 #: conccgi.py:1572
 msgid "Word sketch collocations are available with raw hit counts only"
 msgstr "Kolokace z word sketchů jsou k dispozici pouze s počty výskytů"
-msgstr "Колокації в шкіцах доступні лише з простими частотами"
+msgstr "Колокації в шкіцах доступні лише з кількостями знайдень"
 
 #: conccgi.py:1654
 msgid "Doc freq"
@@ -2859,11 +2861,11 @@ msgstr "Документи"
 #: cmpltmpl/corp_info.py:396
 msgid "Tags legend"
 msgstr "Popis značek"
-msgstr "Теги"
+msgstr "Огляд позначок"
 
 msgid "tagset"
 msgstr "sada značek"
-msgstr "Тагсет"
+msgstr "система позначок"
 
 #: cmpltmpl/corp_info.py:263
 msgid "General info"
@@ -3272,7 +3274,7 @@ msgstr "форма виправлень"
 msgid "N-grams and \"rest of corpus\" can use only raw hit counts"
 msgstr ""
 "Pro n-gramy a \"zbytek korpusu\" jsou k dispozici pouze jednoduché četnosti"
-msgstr "N-грами і \"решта корпусу\" можуть вживати тільки прості частоти"
+msgstr "N-грами і „решта корпусу“ можуть вживати тільки кількості знайдень"
 
 #: conccgi.py:1553
 msgid "N-grams are not compatible with changing output attribute(s)"
@@ -3282,16 +3284,16 @@ msgstr "N-грами несумісні зі зміною показуваних
 #: conccgi.py:1557
 msgid "N-grams and \"rest of corpus\" can use only positional attributes"
 msgstr "N-gramy a \"zbytek korpusu\" pouze pro poziční atributy"
-msgstr "N-грами і \"решта корпусу\" можуть вживати тільки атрибути слова"
+msgstr "N-грами і „решта корпусу“ можуть вживати тільки атрибути слова"
 
 msgid "N-grams and \"rest of corpus\" can not be used together"
 msgstr "N-gramy a \"zbytek korpusu\" nelze kombinovat"
-msgstr "N-грами і \"решта корпусу\" не можуть вживатися разом"
+msgstr "N-грами і „решта корпусу“ не можуть вживатися разом"
 
 #: conccgi.py:1575
 msgid "Terms are available with raw hit counts only"
 msgstr "Pro termíny jsou k dispozici pouze jednoduché četnosti"
-msgstr "Терміни доступні лише з простими кількостями знайдень"
+msgstr "Терміни доступні лише разом з кількостями знайдень"
 
 #: corplib.py:365
 msgid "--nothing found--"
@@ -3403,7 +3405,7 @@ msgstr "Перекласти"
 #: cmpltmpl/wsketch.py:765
 msgid "Click on collocates to access reciprocal bilingual search"
 msgstr "Klikni na kolokaci pro opačné vícejazyčné hledání"
-msgstr "Клацніть на колоканті для оберненого домовного пошуку"
+msgstr "Натисніть на колоканті для оберненого домовного пошуку"
 
 #: cmpltmpl/wsketch.py:773
 msgid "or find"
@@ -3741,13 +3743,13 @@ msgstr "Недостатньо даних для %s"
 #, python-format
 msgid "Nothing found for \"%s\""
 msgstr "Nic nenalezeno pro \"%s\""
-msgstr "Нічого не знайдено для \"%s\""
+msgstr "Нічого не знайдено для „%s“"
 
 #: skellcgi.py:262
 #, python-format
 msgid "Similar words not available for %s"
 msgstr "Podobná slova pro %s nejsou k dispozici"
-msgstr "Подібні до \"%s\" слова недоступні"
+msgstr "Подібні до „%s“ слова недоступні"
 
 #: usercgi.py:203
 #, python-format
@@ -4719,7 +4721,7 @@ msgstr "Показати шкіц для оцінювання"
 #: cmpltmpl/load_all_wseval.py:142 cmpltmpl/wseval.py:226
 msgid "Sorry, you are not allowed to evaluate word sketches on this corpus."
 msgstr "Omlouváme se, ale nemůžete v tomto korpusu hodnotit word sketche."
-msgstr "На жаль, ви не маєте прав аналізувати шкіци слів на цьому корпусі"
+msgstr "На жаль, ви не маєте прав аналізувати шкіци слів на цьому корпусі."
 
 #: cmpltmpl/load_all_wseval.py:205
 msgid "Evaluation settings"
@@ -5100,7 +5102,7 @@ msgstr "? Довідка: двомовні шкіци слів"
 #: conccgi.py:1560
 msgid "N-grams and \"rest of corpus\" can not be usedtogether"
 msgstr "N-gramy a \"doplněk korpusu\" nelze použít zároveň"
-msgstr "N-грами і \"решта корпусу\" не можуть вживатися разом"
+msgstr "N-грами і „решта корпусу“ не можуть вживатися разом"
 
 #: corplib.py:773
 #, python-format
