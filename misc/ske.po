@@ -253,7 +253,7 @@ msgstr "Документи"
 
 #: cmpltmpl/freq.py:193 cmpltmpl/freq.py:331 cmpltmpl/freqs.py:546
 msgid "Frequency limit"
-msgstr "Найменша частота, яку показувати"
+msgstr "Не показувати частоти менші ніж"
 
 #: cmpltmpl/freq.py:161
 msgid "Multilevel frequency distribution"
@@ -513,7 +513,7 @@ msgstr "третій рівень (… врешті сортувати за)"
 
 #: cmpltmpl/sort.py:608
 msgid "Line group sort"
-msgstr "Сортувати за номерами рядків"
+msgstr "Сортувати за групами рядків"’
 
 msgid "Create Subcorpus"
 msgstr "Створити підкорпус"
@@ -808,7 +808,7 @@ msgstr "Стягнути список частот як текстовий фа�
 
 #: cmpltmpl/freqs.py:563
 msgid "Set limit"
-msgstr "Встановити ліміт"
+msgstr "Застосувати"
 
 #: cmpltmpl/patterns_form.py:371
 msgid "Compute patterns"
@@ -1924,7 +1924,7 @@ msgstr "Групування"
 #: cmpltmpl/view.py:2214 cmpltmpl/widectx.py:110 cmpltmpl/widectx.py:182
 #: cmpltmpl/widectx.py:207
 msgid "Loading..."
-msgstr "Завантажується…"
+msgstr "Вантажиться…"
 
 #: cmpltmpl/view.py:1932
 msgid "using first"
