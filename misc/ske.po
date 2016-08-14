@@ -285,7 +285,7 @@ msgid "Text Type frequency distribution"
 msgstr "Розподіл частоти по типах тексту"
 
 msgid "Word Sketch Patterns Entry Form"
-msgstr "Патрени шкіців слів — формуляр"
+msgstr "Патерни шкіців слів — формуляр"
 
 #: cmpltmpl/patterns_form.py:210 cmpltmpl/thes_form.py:202
 #: cmpltmpl/wsdiff_form.py:224 cmpltmpl/wsketch_form.py:215
@@ -341,7 +341,7 @@ msgid "Maximum number of patterns"
 msgstr "Максимальна кількість патернів"
 
 msgid "Word Sketch Patterns"
-msgstr "Патрерни шкіців слів"
+msgstr "Патерни шкіців слів"
 
 #: conclib.py:427 cmpltmpl/reduce_form.py:158
 msgid "Random sample"
@@ -912,7 +912,7 @@ msgstr "Вибраний список"
 
 #: cmpltmpl/findx.py:215
 msgid "Percentil"
-msgstr "Перцентиль"
+msgstr "Процентиль"
 
 #: cmpltmpl/findx.py:221
 msgid "Ratio"
@@ -954,7 +954,7 @@ msgid "View Word Sketch for Evaluation"
 msgstr "Показати шкіц для оцінювання"
 
 msgid "Sorry, you are not allowed to evaluate Word Sketches on this corpus."
-msgstr "На жаль, ви не маєте прав оціювати шкіци слів на цьому корпусі."
+msgstr "На жаль, ви не маєте прав оцінювати шкіци слів на цьому корпусі."
 
 #: cmpltmpl/load_all_wseval.py:181
 msgid "Available records"
@@ -1020,7 +1020,7 @@ msgstr "Всі леми"
 
 #: cmpltmpl/wordlist_form.py:386
 msgid "Word list options"
-msgstr "Пареметри словника частот"
+msgstr "Параметри словника частот"
 
 #: cmpltmpl/document.py:2299
 msgid "corpus"
@@ -1042,7 +1042,7 @@ msgstr "Шкіц слова для оцінювання"
 
 #: cmpltmpl/wseval.py:272
 msgid "Working with existing record"
-msgstr "Ви праюєте з наявним записом"
+msgstr "Ви працюєте з наявним записом"
 
 #: cmpltmpl/wseval.py:284
 msgid ""
@@ -1129,7 +1129,7 @@ msgid "Upload"
 msgstr "Викласти"
 
 msgid "Tickbox Lexicography - Select Examples"
-msgstr "Tickbox Лексикографія - Вибрати приклади"
+msgstr "Tickbox Лексикографія — Вибрати приклади"
 
 #: cmpltmpl/wsketch.py:1502
 msgid ">>"
@@ -1256,7 +1256,7 @@ msgstr "Долучити категорії без знайдень"
 
 #: cmpltmpl/view.py:758
 msgid "Sort according to the 'References' field"
-msgstr "Сорутвати за джерелами"
+msgstr "Сортувати за джерелами"
 
 #: cmpltmpl/conc.py:187
 msgid "Make a random sample from the concordance."
@@ -1321,7 +1321,7 @@ msgstr "Виправлені слова"
 
 #: cmpltmpl/document.py:2637
 msgid "Various methods for creating word lists"
-msgstr "Інструменти для сворення списків слів з частотами"
+msgstr "Інструменти для створення списків слів з частотами"
 
 msgid "Word Sketch query entry form"
 msgstr "Шкіц слова — формуляр"
@@ -1441,7 +1441,7 @@ msgstr "Шкіци слів недоступні"
 
 #: wseval.py:125
 msgid "Corrupted evaluation file"
-msgstr "Зіпсований файл оціювання"
+msgstr "Зіпсований файл оцінювання"
 
 #: wsketchlib.py:34
 msgid "WMapStream: end of stream"
@@ -1566,7 +1566,7 @@ msgid "include KWIC"
 msgstr "охопити ключові слова"
 
 msgid "See Upload progress"
-msgstr "Стежити за процесом відвантеження"
+msgstr "Стежити за процесом відвантаження"
 
 #: cmpltmpl/findx_form.py:216
 msgid "Upload new list"
@@ -1576,7 +1576,7 @@ msgid "Find X File Upload Form"
 msgstr "Знайти найтакіше — формуляр викладання файлу"
 
 msgid "Find X File Upload"
-msgstr "Надсилання файлу такішості"
+msgstr "Надсилання файлу такі́шості"
 
 msgid "? Help on Error Query"
 msgstr "? Довідка: помильні запити"
@@ -1819,7 +1819,7 @@ msgstr "Коди помилок"
 
 #: cmpltmpl/document.py:1675
 msgid "Highlighting options"
-msgstr "Підствічуються пераметри"
+msgstr "Підсвітлюються пераметри"
 
 #: cmpltmpl/document.py:1685
 msgid "Highlight error words"
@@ -1982,7 +1982,7 @@ msgstr "Доступні вибірки для оцінювання"
 
 #: cmpltmpl/wseval_form.py:182
 msgid "No evaluation sets available"
-msgstr "Немає доступних виборок оцінювання"
+msgstr "Немає доступних вибірок оцінювання"
 
 #: cmpltmpl/wseval.py:408
 msgid "Concordance link"
@@ -2036,11 +2036,11 @@ msgstr "Rel [%]"    # todo
 
 #: conclib.py:432
 msgid "Negative filter"
-msgstr "Фільр, що прибирає знайдене"
+msgstr "Фільтр, що прибирає знайдене"
 
 #: conclib.py:433
 msgid "Negative filter (excluding KWIC)"
-msgstr "Фільр, що прибирає знайдене (ігноруючи ключові слова)"
+msgstr "Фільтр, що прибирає знайдене (ігноруючи ключові слова)"
 
 #: conclib.py:434
 msgid "Positive filter"
@@ -2132,7 +2132,7 @@ msgstr "зазвичай у"
 
 #: cmpltmpl/wsketch.py:526
 msgid "%, percentile"
-msgstr "%, перцентиль"    # nocontext
+msgstr "%, процентиль"    # nocontext
 
 #: conccgi.py:860
 msgid "No char entered"
@@ -2199,7 +2199,7 @@ msgstr "Фільтр наличок"
 
 #: conclib.py:441
 msgid "Sort labels"
-msgstr "Сорутвати налички"
+msgstr "Сортувати налички"
 
 #: conclib.py:491
 msgid "Error while reading .info file"
@@ -2234,7 +2234,7 @@ msgid ""
 "You can select one or more output attributes. Please note that this option "
 "can be time-consuming."
 msgstr ""
-"Можна вибрати один або декілька показуваних атрибутів."
+"Можна вибрати один або декілька показуваних атрибутів. "
 "Ця опція може бути часовитратною."
 
 #: conccgi.py:1572
@@ -2256,7 +2256,7 @@ msgstr "Лишити тільки вибрані рядки"
 
 #: cmpltmpl/conc.py:585
 msgid "Concordance distribution overview"
-msgstr "Розподіл частот в коркордансі"
+msgstr "Розподіл частот в конкордансі"
 
 #: cmpltmpl/conc.py:597
 msgid "Visualize"
@@ -2342,7 +2342,7 @@ msgstr "Двомовний шкіц слова"
 
 #: cmpltmpl/viewattrs.py:509
 msgid "Checkbox for selecting lines"
-msgstr "Показувати прапореці для вибору рядка"
+msgstr "Показувати прапорці для вибору рядка"
 
 #: cmpltmpl/view.py:1671 cmpltmpl/wsketch.py:872
 msgid "lines assigned"
@@ -2449,7 +2449,7 @@ msgstr "результати в CSV"
 
 #: cmpltmpl/wipo.py:309
 msgid "Term candidates total count"
-msgstr "Загальна кількісь потенційних термінів"
+msgstr "Загальна кількість потенційних термінів"
 
 #: cmpltmpl/wordlist_form.py:543
 msgid "use n-grams"
@@ -2717,7 +2717,7 @@ msgstr "Перекласти"
 
 #: cmpltmpl/wsketch.py:765
 msgid "Click on collocates to access reciprocal bilingual search"
-msgstr "Натисніть на колоканті для оберненого домовного пошуку"
+msgstr "Натисніть на колоканті для оберненого двомовного пошуку"
 
 #: cmpltmpl/wsketch.py:773
 msgid "or find"
@@ -2814,7 +2814,7 @@ msgstr "Частота має бути невід’ємним цілим чис
 
 #: cmpltmpl/lngroupinfo.py:508 cmpltmpl/lngroupinfo.py:525
 msgid "Must be a real number"
-msgstr "Має бути дійстним числом"
+msgstr "Має бути дійсним числом"
 
 #: cmpltmpl/patterns_form.py:202
 msgid "Entry a lemma"
@@ -2872,7 +2872,7 @@ msgstr "Зв’яжіться з нами"
 
 #: cmpltmpl/subcorp_form.py:188
 msgid "Enter a name without any special symbols"
-msgstr "Ведіть назву без спецсимфолів"
+msgstr "Ведіть назву без спецсимволів"
 
 #: cmpltmpl/thes_form.py:291 cmpltmpl/wsketch_form.py:331
 #: cmpltmpl/wsketch_form.py:570
@@ -2893,7 +2893,7 @@ msgstr "як підказки"
 
 #: cmpltmpl/viewattrs.py:331
 msgid "Page size must be a positive integer"
-msgstr "Розмір сторіки має буту додатним цілим числом"
+msgstr "Розмір сторінки має буту додатним цілим числом"
 
 #: cmpltmpl/viewattrs.py:349
 msgid "KWIC context size must be a positive integer or zero"
@@ -2911,7 +2911,7 @@ msgstr "як підкорпус"
 
 #: cmpltmpl/view.py:1380
 msgid "Page must be a positive number"
-msgstr "Номер сторінка має бути цілим додатним чистом"
+msgstr "Номер сторінка має бути цілим додатним числом"
 
 #: cmpltmpl/view.py:1640 cmpltmpl/wsketch.py:863
 msgid "Enter a new label"
@@ -2923,7 +2923,7 @@ msgstr "попереднє"
 
 #: cmpltmpl/widectx.py:188
 msgid "next"
-msgstr "настунпне"
+msgstr "наступне"
 
 #: cmpltmpl/wordlist_form.py:636
 msgid "Regular expression"
@@ -2939,7 +2939,7 @@ msgstr "Параметр має бути дійсним числом"
 
 #: cmpltmpl/wordlist.py:764
 msgid "You can also get back to this computation through your"
-msgstr "Такоє можна повернутися до цього підрахунку через"
+msgstr "Також можна повернутися до цього підрахунку через"
 
 #: cmpltmpl/trends.py:836 cmpltmpl/wordlist.py:784
 msgid "Notify me by e-mail upon completion"
@@ -2975,7 +2975,7 @@ msgstr "Мінімальна частота має бути додатним ц�
 
 #: cmpltmpl/wsketch_form.py:602
 msgid "Number of gramrel columns"
-msgstr "Кількість cтовпчиків синтзв’язків"
+msgstr "Кількість стовпчиків синтзв’язків"
 
 #: skellcgi.py:103
 #, python-format
@@ -3078,7 +3078,7 @@ msgstr "Вийти"
 #: cmpltmpl/viewattrs.py:403
 msgid "Show GDEX scores in concordance (slow, use only for GDEX development)"
 msgstr ""
-"Показувати бали хорошості (часовитратно, викорисовуйте тільки для розробки)"
+"Показувати бали хорошості (часовитратно, використовуйте тільки для розробки)"
 
 #: cmpltmpl/wordlist_form.py:199
 msgid "Bilingual terminology"
@@ -3237,7 +3237,7 @@ msgstr "Поступ"
 
 #: cmpltmpl/jobs.py:314 cmpltmpl/jobs.py:618 cmpltmpl/jobs.py:754
 msgid "CPU priority"
-msgstr "Пріорітет"
+msgstr "Пріоритет"
 
 #: cmpltmpl/jobs.py:323 cmpltmpl/jobs.py:359
 msgid "Set to maximum"
@@ -3541,7 +3541,7 @@ msgid ""
 "The computation has failed. You may contact the developers by sending "
 "feedback or try again later. We are sorry for your inconvenience."
 msgstr ""
-"Підрахунок не вдався. Ви можете написати розробиникам або спробувати "
+"Підрахунок не вдався. Ви можете написати розробникам або спробувати "
 "пізніше. Перепрошуємо за незручності."
 
 #: cmpltmpl/trends.py:863 cmpltmpl/wordlist.py:811
@@ -3730,7 +3730,7 @@ msgstr "Показати поступ викладання"
 
 #: cmpltmpl/findx_upload_form.py:88 cmpltmpl/findx_upload_form.py:127
 msgid "Find x file upload"
-msgstr "Надсилання файлу такішості"
+msgstr "Надсилання файлу такі́шості"
 
 #: cmpltmpl/first_form.py:206 cmpltmpl/first_form.py:219
 #: cmpltmpl/first_form.py:265
@@ -3969,7 +3969,7 @@ msgstr "Зберегти потенційні двомовні терміни я
 
 #: cmpltmpl/wordlist.py:299
 msgid "Save word list/Keywords to a text file or XML"
-msgstr "Стягнути словник частот/ключслова як текстовий файл чи як XML"
+msgstr "Стягнути словник частот / ключові слова як текстовий файл чи як XML"
 
 #: cmpltmpl/wordlist.py:758
 msgid ""
@@ -4064,7 +4064,7 @@ msgstr "Ви можете стежити за статусом на"
 
 #: cmpltmpl/trends.py:812
 msgid "Once it is computed, this page will show the results."
-msgstr "Ця сторіка покаже результат після підрахунку."
+msgstr "Ця сторінка покаже результат після підрахунку."
 
 #: cmpltmpl/wordlist_form.py:593
 msgid "? Help on n-grams"
