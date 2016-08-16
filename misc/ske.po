@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-11 12:56+0100\n"
+"POT-Creation-Date: 2016-08-16 10:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,106 +17,106 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cmpltmpl/addlngrouplabel.py:123 cmpltmpl/view.py:1715
-#: cmpltmpl/wsketch.py:908
+#: cmpltmpl/addlngrouplabel.py:123 cmpltmpl/view.py:1738
+#: cmpltmpl/wsketch.py:907
 msgid "Add next"
-msgstr "Додати ще"    # nocontext
+msgstr "Додати ще"
 
-#: cmpltmpl/addlngrouplabel.py:131 cmpltmpl/document.py:1847
-#: cmpltmpl/lngroupinfo.py:216 cmpltmpl/viewattrs.py:558 cmpltmpl/view.py:1723
-#: cmpltmpl/wsketch_form.py:456 cmpltmpl/wsketch_form.py:716
-#: cmpltmpl/wsketch_form.py:756 cmpltmpl/wsketch.py:914
+#: cmpltmpl/addlngrouplabel.py:131 cmpltmpl/document.py:1851
+#: cmpltmpl/lngroupinfo.py:216 cmpltmpl/viewattrs.py:560 cmpltmpl/view.py:1746
+#: cmpltmpl/wsketch_form.py:474 cmpltmpl/wsketch_form.py:735
+#: cmpltmpl/wsketch_form.py:775 cmpltmpl/wsketch.py:913
 msgid "None"
 msgstr "Немає"
 
 msgid "Collocation form"
-msgstr "Параметри колокацій — формуляр"    # nocontext
+msgstr "Параметри колокацій — формуляр"
 
-#: cmpltmpl/coll.py:156 cmpltmpl/collx.py:379 cmpltmpl/conc.py:541
+#: cmpltmpl/coll.py:156 cmpltmpl/collx.py:379 cmpltmpl/conc.py:542
 msgid "Collocation candidates"
 msgstr "Потенційні колокації"
 
-#: cmpltmpl/coll.py:189 cmpltmpl/freq.py:236 cmpltmpl/sort.py:165
-#: cmpltmpl/sort.py:323 cmpltmpl/sort.py:419 cmpltmpl/sort.py:515
-#: cmpltmpl/trends_form.py:320
+#: cmpltmpl/coll.py:190 cmpltmpl/freq.py:237 cmpltmpl/sort.py:166
+#: cmpltmpl/sort.py:324 cmpltmpl/sort.py:420 cmpltmpl/sort.py:516
+#: cmpltmpl/trends_form.py:321
 msgid "Attribute"
 msgstr "Атрибут"
 
-#: cmpltmpl/coll.py:215
+#: cmpltmpl/coll.py:216
 msgid "In the range from"
 msgstr "В околі від"
 
-#: cmpltmpl/coll.py:231 cmpltmpl/filter_form.py:286
-#: cmpltmpl/wordlist_form.py:572
+#: cmpltmpl/coll.py:232 cmpltmpl/filter_form.py:299
+#: cmpltmpl/wordlist_form.py:573
 msgid "to"
 msgstr "до"
 
-#: cmpltmpl/coll.py:250
+#: cmpltmpl/coll.py:251
 msgid "Minimum frequency in corpus"
 msgstr "Мінімальна частота в корпусі"
 
-#: cmpltmpl/coll.py:269
+#: cmpltmpl/coll.py:270
 msgid "Minimum frequency in given range"
 msgstr "Мінімальна частота в заданому околі"
 
-#: cmpltmpl/coll.py:292
+#: cmpltmpl/coll.py:293
 msgid "Show functions"
 msgstr "Виводити бали"
 
-#: cmpltmpl/coll.py:306 cmpltmpl/coll.py:405
+#: cmpltmpl/coll.py:307 cmpltmpl/coll.py:406
 msgid "T-score"
 msgstr "T-score"
 
-#: cmpltmpl/coll.py:319 cmpltmpl/coll.py:418
+#: cmpltmpl/coll.py:320 cmpltmpl/coll.py:419
 msgid "MI"
 msgstr "MI"
 
-#: cmpltmpl/coll.py:332 cmpltmpl/coll.py:431
+#: cmpltmpl/coll.py:333 cmpltmpl/coll.py:432
 msgid "MI3"
 msgstr "MI3"
 
-#: cmpltmpl/coll.py:345 cmpltmpl/coll.py:444
+#: cmpltmpl/coll.py:346 cmpltmpl/coll.py:445
 msgid "log likelihood"
 msgstr "лог. правдоподібність"
 
-#: cmpltmpl/coll.py:358 cmpltmpl/coll.py:457
+#: cmpltmpl/coll.py:359 cmpltmpl/coll.py:458
 msgid "min. sensitivity"
 msgstr "мін. чутливість"
 
-#: cmpltmpl/coll.py:391 cmpltmpl/trends_form.py:435
+#: cmpltmpl/coll.py:392 cmpltmpl/trends_form.py:436
 msgid "Sort by"
 msgstr "Сортувати за"
 
-#: cmpltmpl/coll.py:88 cmpltmpl/collx.py:88 cmpltmpl/conc.py:552
+#: cmpltmpl/coll.py:88 cmpltmpl/collx.py:88 cmpltmpl/conc.py:553
 #: cmpltmpl/savecoll.py:163 cmpltmpl/simple_search.py:389
 msgid "Collocations"
 msgstr "Колокації"
 
 #: cmpltmpl/collx.py:184 cmpltmpl/freqs.py:255 cmpltmpl/thes.py:383
-#: cmpltmpl/view.py:399 cmpltmpl/view.py:418 cmpltmpl/wordlist.py:307
+#: cmpltmpl/view.py:401 cmpltmpl/view.py:420 cmpltmpl/wordlist.py:307
 #: cmpltmpl/wsketch.py:285
 msgid "Save"
 msgstr "Стягнути"
 
-#: cmpltmpl/concdesc.py:121 cmpltmpl/view.py:1991
+#: cmpltmpl/concdesc.py:121 cmpltmpl/view.py:2014
 msgid "Concordance description"
 msgstr "Характеристики конкордансу"
 
-#: cmpltmpl/concdesc.py:128 cmpltmpl/corp_info.py:163 cmpltmpl/document.py:402
-#: cmpltmpl/findx.py:185 cmpltmpl/jobs.py:190 cmpltmpl/jobs.py:594
-#: cmpltmpl/jobs.py:647 cmpltmpl/jobs.py:682 cmpltmpl/savecoll.py:169
-#: cmpltmpl/saveconc.py:259 cmpltmpl/savewipo.py:95
-#: cmpltmpl/selectstored.py:126 cmpltmpl/simple_search.py:255
-#: cmpltmpl/trends.py:489 cmpltmpl/wipo.py:299 cmpltmpl/wordlist.py:640
-#: cmpltmpl/wordlist.py:666 cmpltmpl/wsketch_form.py:740
+#: cmpltmpl/concdesc.py:128 cmpltmpl/document.py:398 cmpltmpl/findx.py:185
+#: cmpltmpl/jobs.py:190 cmpltmpl/jobs.py:703 cmpltmpl/jobs.py:756
+#: cmpltmpl/jobs.py:791 cmpltmpl/savecoll.py:169 cmpltmpl/saveconc.py:259
+#: cmpltmpl/savewipo.py:95 cmpltmpl/selectstored.py:126
+#: cmpltmpl/simple_search.py:255 cmpltmpl/trends.py:490 cmpltmpl/wipo.py:299
+#: cmpltmpl/wordlist.py:641 cmpltmpl/wordlist.py:667
+#: cmpltmpl/wsketch_form.py:759
 msgid "Corpus"
 msgstr "Корпус"
 
-#: cmpltmpl/concdesc.py:138 cmpltmpl/first_form.py:803
+#: cmpltmpl/concdesc.py:138 cmpltmpl/first_form.py:866
 #: cmpltmpl/savecoll.py:180 cmpltmpl/saveconc.py:270
-#: cmpltmpl/simple_search.py:266 cmpltmpl/trends_form.py:301
-#: cmpltmpl/trends.py:500 cmpltmpl/wordlist_form.py:431
-#: cmpltmpl/wordlist.py:677 cmpltmpl/wsketch_form.py:284
+#: cmpltmpl/simple_search.py:266 cmpltmpl/trends_form.py:302
+#: cmpltmpl/trends.py:501 cmpltmpl/wordlist_form.py:432
+#: cmpltmpl/wordlist.py:678 cmpltmpl/wsketch_form.py:285
 msgid "Subcorpus"
 msgstr "Підкорпус"
 
@@ -134,82 +134,82 @@ msgstr "Кількість знайдень"
 msgid "Concordance Filter"
 msgstr "Фільтр конкордансу"
 
-#: cmpltmpl/conc.py:270 cmpltmpl/filter_form.py:88 cmpltmpl/filter_form.py:207
+#: cmpltmpl/conc.py:271 cmpltmpl/filter_form.py:88 cmpltmpl/filter_form.py:208
 #: cmpltmpl/lngroupinfo.py:359
 msgid "Filter"
 msgstr "Фільтр"
 
-#: cmpltmpl/filter_form.py:218
+#: cmpltmpl/filter_form.py:219
 msgid "positive"
 msgstr "лишити знайдене"
 
-#: cmpltmpl/filter_form.py:229
+#: cmpltmpl/filter_form.py:230
 msgid "negative"
 msgstr "прибрати знайдене"
 
-#: cmpltmpl/filter_form.py:235
+#: cmpltmpl/filter_form.py:236
 msgid "Selected token"
 msgstr "Підсвітлювати токен"
 
-#: cmpltmpl/filter_form.py:246
+#: cmpltmpl/filter_form.py:247
 msgid "first"
 msgstr "перший"
 
-#: cmpltmpl/filter_form.py:257
+#: cmpltmpl/filter_form.py:258
 msgid "last"
 msgstr "останній"
 
 msgid "Search Span"
 msgstr "Діапазон пошуку"
 
-#: cmpltmpl/filter_form.py:270 cmpltmpl/wordlist_form.py:554
+#: cmpltmpl/filter_form.py:283 cmpltmpl/wordlist_form.py:555
 msgid "from"
 msgstr "від"
 
-#: conclib.py:423 conclib.py:424 conclib.py:426
+#: conclib.py:424 conclib.py:425 conclib.py:427
 msgid "Query"
 msgstr "Запит"
 
-#: cmpltmpl/document.py:1019 cmpltmpl/first_form.py:296
-#: cmpltmpl/first_form.py:462
+#: cmpltmpl/document.py:1016 cmpltmpl/first_form.py:359
+#: cmpltmpl/first_form.py:525
 msgid "Context"
 msgstr "Контекст"
 
-#: cmpltmpl/savecoll_form.py:229 cmpltmpl/saveconc_form.py:258
-#: cmpltmpl/savefreq_form.py:245 cmpltmpl/savewl_form.py:295
-#: cmpltmpl/wsketch_form.py:630 cmpltmpl/wsketch_form.py:832
+#: cmpltmpl/savecoll_form.py:229 cmpltmpl/saveconc_form.py:260
+#: cmpltmpl/savefreq_form.py:245 cmpltmpl/savewl_form.py:320
+#: cmpltmpl/wsketch_form.py:648 cmpltmpl/wsketch_form.py:851
 msgid "All"
 msgstr "Всі"
 
-#: cmpltmpl/first_form.py:615 cmpltmpl/first_form.py:778
+#: cmpltmpl/first_form.py:678 cmpltmpl/first_form.py:841
 msgid "of these items"
 msgstr "з цього"
 
-#: cmpltmpl/sort.py:205
+#: cmpltmpl/sort.py:206
 msgid "Left context"
 msgstr "Лівий контекст"
 
-#: cmpltmpl/sort.py:227
+#: cmpltmpl/sort.py:228
 msgid "Right context"
 msgstr "Правий контекст"
 
-#: cmpltmpl/first_form.py:546 cmpltmpl/first_form.py:694
-#: cmpltmpl/subcorp_info.py:111 cmpltmpl/subcorp.py:259
+#: cmpltmpl/first_form.py:609 cmpltmpl/first_form.py:757
+#: cmpltmpl/subcorp_info.py:115 cmpltmpl/subcorp.py:262
 msgid "tokens"
 msgstr "токенів"
 
-#: cmpltmpl/document.py:1176 cmpltmpl/patterns_form.py:192
-#: cmpltmpl/tblex.py:319 cmpltmpl/thes_form.py:172 cmpltmpl/thes.py:525
-#: cmpltmpl/wsdiff_form.py:204 cmpltmpl/wsketch_form.py:185
-#: cmpltmpl/wsketch_form.py:779 cmpltmpl/wsketch.py:1591
+#: cmpltmpl/document.py:1174 cmpltmpl/patterns_form.py:192
+#: cmpltmpl/tblex.py:319 cmpltmpl/thes_form.py:173 cmpltmpl/thes.py:525
+#: cmpltmpl/wsdiff_form.py:205 cmpltmpl/wsketch_form.py:186
+#: cmpltmpl/wsketch_form.py:798 cmpltmpl/wsketch.py:1583
 msgid "Lemma"
 msgstr "Лема"
 
 msgid "Word Form"
 msgstr "Словоформа"
 
-#: cmpltmpl/document.py:1203 cmpltmpl/document.py:1309
-#: cmpltmpl/first_form.py:703 cmpltmpl/wsketch.py:1599
+#: cmpltmpl/document.py:1201 cmpltmpl/document.py:1307
+#: cmpltmpl/first_form.py:766 cmpltmpl/wsketch.py:1591
 msgid "PoS"
 msgstr "Частина мови (ЧМ)"
 
@@ -224,7 +224,7 @@ msgstr "Підкорпуси"
 msgid "no subcorpus"
 msgstr "немає підкорпусів"
 
-#: cmpltmpl/document.py:500 cmpltmpl/subcorp.py:229
+#: cmpltmpl/document.py:496 cmpltmpl/subcorp.py:229
 msgid "create new"
 msgstr "створити новий"
 
@@ -232,26 +232,25 @@ msgstr "створити новий"
 msgid "Frequency list"
 msgstr "Список частот"
 
-#: pyconc.py:184 pyconc.py:271 cmpltmpl/conc.py:421
-#: cmpltmpl/freq_distrib.py:200 cmpltmpl/freq_distrib.py:248
-#: cmpltmpl/freq.py:88 cmpltmpl/savewipo.py:110 cmpltmpl/trends.py:637
-#: cmpltmpl/wipo.py:329
+#: pyconc.py:183 cmpltmpl/conc.py:422 cmpltmpl/freq_distrib.py:200
+#: cmpltmpl/freq_distrib.py:248 cmpltmpl/freq.py:88 cmpltmpl/savewipo.py:110
+#: cmpltmpl/trends.py:638 cmpltmpl/wipo.py:329
 msgid "Frequency"
 msgstr "Частота"
 
-#: cmpltmpl/conc.py:441
+#: cmpltmpl/conc.py:442
 msgid "Node tags"
 msgstr "Морфпозначок"
 
-#: cmpltmpl/conc.py:459
+#: cmpltmpl/conc.py:460
 msgid "Node forms"
 msgstr "Словоформ"
 
-#: cmpltmpl/conc.py:481
+#: cmpltmpl/conc.py:482
 msgid "Doc IDs"
 msgstr "Документи"
 
-#: cmpltmpl/freq.py:193 cmpltmpl/freq.py:331 cmpltmpl/freqs.py:546
+#: cmpltmpl/freq.py:194 cmpltmpl/freq.py:332 cmpltmpl/freqs.py:546
 msgid "Frequency limit"
 msgstr "Не показувати частоти менші ніж"
 
@@ -259,25 +258,25 @@ msgstr "Не показувати частоти менші ніж"
 msgid "Multilevel frequency distribution"
 msgstr "Кількарівневий розподіл частот"
 
-#: cmpltmpl/freq.py:212
+#: cmpltmpl/freq.py:213
 msgid "first level"
 msgstr "перший рівень"
 
-#: cmpltmpl/freq.py:256 cmpltmpl/sort.py:254 cmpltmpl/sort.py:352
-#: cmpltmpl/sort.py:449 cmpltmpl/sort.py:545
+#: cmpltmpl/freq.py:257 cmpltmpl/sort.py:255 cmpltmpl/sort.py:353
+#: cmpltmpl/sort.py:450 cmpltmpl/sort.py:546
 msgid "Ignore case"
 msgstr "Ігнорувати регістр"
 
-#: cmpltmpl/freq.py:274 cmpltmpl/sort.py:377 cmpltmpl/sort.py:473
-#: cmpltmpl/sort.py:569
+#: cmpltmpl/freq.py:275 cmpltmpl/sort.py:378 cmpltmpl/sort.py:474
+#: cmpltmpl/sort.py:570
 msgid "Position"
 msgstr "Позиція"
 
-#: cmpltmpl/freq.py:214
+#: cmpltmpl/freq.py:215
 msgid "second level"
 msgstr "другий рівень"
 
-#: cmpltmpl/freq.py:216
+#: cmpltmpl/freq.py:217
 msgid "third level"
 msgstr "третій рівень"
 
@@ -287,9 +286,9 @@ msgstr "Розподіл частоти по типах тексту"
 msgid "Word Sketch Patterns Entry Form"
 msgstr "Патерни шкіців слів — формуляр"
 
-#: cmpltmpl/patterns_form.py:210 cmpltmpl/thes_form.py:202
-#: cmpltmpl/wsdiff_form.py:224 cmpltmpl/wsketch_form.py:215
-#: cmpltmpl/wsketch_form.py:792
+#: cmpltmpl/patterns_form.py:210 cmpltmpl/thes_form.py:203
+#: cmpltmpl/wsdiff_form.py:225 cmpltmpl/wsketch_form.py:216
+#: cmpltmpl/wsketch_form.py:811
 msgid "Part of speech"
 msgstr "Частина мови"
 
@@ -305,9 +304,9 @@ msgstr "дієслово"
 msgid "adjective"
 msgstr "прикметник"
 
-#: cmpltmpl/patterns_form.py:266 cmpltmpl/trends.py:570
-#: cmpltmpl/wordlist_form.py:659 cmpltmpl/wsdiff_form.py:444
-#: cmpltmpl/wsketch_form.py:302 cmpltmpl/wsketch_form.py:578
+#: cmpltmpl/patterns_form.py:266 cmpltmpl/trends.py:571
+#: cmpltmpl/wordlist_form.py:662 cmpltmpl/wsdiff_form.py:445
+#: cmpltmpl/wsketch_form.py:303 cmpltmpl/wsketch_form.py:596
 msgid "Minimum frequency"
 msgstr "Мінімальна частота"
 
@@ -315,24 +314,24 @@ msgstr "Мінімальна частота"
 msgid "Minimum salience"
 msgstr "Мінімальний бал"
 
-#: cmpltmpl/patterns_form.py:302 cmpltmpl/thes_form.py:261
-#: cmpltmpl/wsdiff_form.py:462 cmpltmpl/wsdiff_form.py:492
-#: cmpltmpl/wsketch_form.py:338
+#: cmpltmpl/patterns_form.py:302 cmpltmpl/thes_form.py:262
+#: cmpltmpl/wsdiff_form.py:463 cmpltmpl/wsdiff_form.py:493
+#: cmpltmpl/wsketch_form.py:339
 msgid "Maximum number of items"
 msgstr "Максимальна кількість елементів"
 
-#: cmpltmpl/patterns_form.py:307 cmpltmpl/wsdiff_form.py:468
-#: cmpltmpl/wsdiff_form.py:498 cmpltmpl/wsketch_form.py:343
+#: cmpltmpl/patterns_form.py:307 cmpltmpl/wsdiff_form.py:469
+#: cmpltmpl/wsdiff_form.py:499 cmpltmpl/wsketch_form.py:344
 msgid "in a grammatical relation"
 msgstr "у синтаксичному зв’язку"
 
-#: cmpltmpl/patterns_form.py:325 cmpltmpl/thes_form.py:332
-#: cmpltmpl/wsketch_form.py:516
+#: cmpltmpl/patterns_form.py:325 cmpltmpl/thes_form.py:333
+#: cmpltmpl/wsketch_form.py:534
 msgid "Minimum similarity"
 msgstr "Мінімальна подібність"
 
-#: cmpltmpl/patterns_form.py:330 cmpltmpl/thes_form.py:342
-#: cmpltmpl/wsketch_form.py:521
+#: cmpltmpl/patterns_form.py:330 cmpltmpl/thes_form.py:343
+#: cmpltmpl/wsketch_form.py:539
 msgid "between cluster items"
 msgstr "між елементами кластерів"
 
@@ -343,15 +342,15 @@ msgstr "Максимальна кількість патернів"
 msgid "Word Sketch Patterns"
 msgstr "Патерни шкіців слів"
 
-#: conclib.py:427 cmpltmpl/reduce_form.py:158
+#: conclib.py:428 cmpltmpl/reduce_form.py:158
 msgid "Random sample"
 msgstr "Випадкова вибірка"
 
-#: cmpltmpl/reduce_form.py:189
+#: cmpltmpl/reduce_form.py:190
 msgid "Make a random sample from the concordance"
 msgstr "Вибрати випадкові рядки з конкордансу"
 
-#: cmpltmpl/reduce_form.py:196
+#: cmpltmpl/reduce_form.py:197
 msgid "Number of lines in the sample"
 msgstr "Кількість рядків у вибірці"
 
@@ -365,21 +364,21 @@ msgstr "Стрягнути потенційні колокації"
 msgid "Save collocations as"
 msgstr "Стягнути колокації як"
 
-#: cmpltmpl/savecoll_form.py:193 cmpltmpl/saveconc_form.py:222
-#: cmpltmpl/savefreq_form.py:207 cmpltmpl/savethes_form.py:196
-#: cmpltmpl/savewl_form.py:259 cmpltmpl/savews_form.py:210
+#: cmpltmpl/savecoll_form.py:193 cmpltmpl/saveconc_form.py:224
+#: cmpltmpl/savefreq_form.py:207 cmpltmpl/savethes_form.py:193
+#: cmpltmpl/savews_form.py:207
 msgid "Text"
 msgstr "Текст"
 
-#: cmpltmpl/savecoll_form.py:206 cmpltmpl/saveconc_form.py:235
-#: cmpltmpl/savefreq_form.py:220 cmpltmpl/savethes_form.py:209
-#: cmpltmpl/savewl_form.py:272 cmpltmpl/savews_form.py:223
+#: cmpltmpl/savecoll_form.py:206 cmpltmpl/saveconc_form.py:237
+#: cmpltmpl/savefreq_form.py:220 cmpltmpl/savethes_form.py:206
+#: cmpltmpl/savewl_form.py:297 cmpltmpl/savews_form.py:220
 msgid "XML"
 msgstr "XML"
 
-#: cmpltmpl/savecoll_form.py:266 cmpltmpl/saveconc_form.py:299
-#: cmpltmpl/savefreq_form.py:283 cmpltmpl/savethes_form.py:219
-#: cmpltmpl/savewl_form.py:333 cmpltmpl/savews_form.py:233
+#: cmpltmpl/savecoll_form.py:266 cmpltmpl/saveconc_form.py:301
+#: cmpltmpl/savefreq_form.py:283 cmpltmpl/savethes_form.py:216
+#: cmpltmpl/savewl_form.py:358 cmpltmpl/savews_form.py:230
 msgid "Include heading"
 msgstr "Додати заголовок"
 
@@ -389,41 +388,41 @@ msgstr "Збереження конкордансу — формуляр"
 msgid "Save Concordance"
 msgstr "Стягнути конкорданс"
 
-#: cmpltmpl/saveconc_form.py:209
+#: cmpltmpl/saveconc_form.py:211
 msgid "Save concordance as"
 msgstr "Стягнути конкорданс як"
 
-#: cmpltmpl/savecoll_form.py:216 cmpltmpl/saveconc_form.py:245
-#: cmpltmpl/savefreq_form.py:232 cmpltmpl/savewl_form.py:282
+#: cmpltmpl/savecoll_form.py:216 cmpltmpl/saveconc_form.py:247
+#: cmpltmpl/savefreq_form.py:232 cmpltmpl/savewl_form.py:307
 msgid "Save pages"
 msgstr "Взяти сторінки"
 
-#: cmpltmpl/savecoll_form.py:246 cmpltmpl/saveconc_form.py:278
-#: cmpltmpl/savefreq_form.py:262 cmpltmpl/savewl_form.py:312
+#: cmpltmpl/savecoll_form.py:246 cmpltmpl/saveconc_form.py:280
+#: cmpltmpl/savefreq_form.py:262 cmpltmpl/savewl_form.py:337
 msgid "Only page"
 msgstr "Тільки сторінку"
 
-#: cmpltmpl/saveconc_form.py:307
+#: cmpltmpl/saveconc_form.py:309
 msgid "Number lines"
 msgstr "Пронумерувати рядки"
 
-#: cmpltmpl/saveconc_form.py:324
+#: cmpltmpl/saveconc_form.py:326
 msgid "Align KWIC"
 msgstr "Зцентрувати знайдене"
 
-#: cmpltmpl/savecoll_form.py:275 cmpltmpl/saveconc_form.py:332
-#: cmpltmpl/savefreq_form.py:294 cmpltmpl/savewl_form.py:343
+#: cmpltmpl/savecoll_form.py:275 cmpltmpl/saveconc_form.py:334
+#: cmpltmpl/savefreq_form.py:294 cmpltmpl/savewl_form.py:368
 msgid "Maximum number of lines"
 msgstr "Рядків щонайбільше"
 
 msgid "Store Concordance"
 msgstr "Зберегти конкорданс"
 
-#: cmpltmpl/saveconc_form.py:379
+#: cmpltmpl/saveconc_form.py:381
 msgid "Concordance stored"
 msgstr "Конкорданс збережено"
 
-#: cmpltmpl/saveconc_form.py:398
+#: cmpltmpl/saveconc_form.py:400
 msgid "Concordance name"
 msgstr "Назва конкордансу"
 
@@ -449,14 +448,14 @@ msgstr "Стягнути ключові слова"
 msgid "Save Word List"
 msgstr "Стягнути словник частот"
 
-#: cmpltmpl/savewl_form.py:245
+#: cmpltmpl/savewl_form.py:242
 msgid "Save word list as"
 msgstr "Укласти словник як"
 
 msgid "Save Word Sketch"
 msgstr "Стягнути шкіц слова"
 
-#: cmpltmpl/savews_form.py:193
+#: cmpltmpl/savews_form.py:190
 msgid "Save word sketch as"
 msgstr "Стягнути шкіц слова як"
 
@@ -477,43 +476,43 @@ msgstr "Параметри сортування — формуляр"
 msgid "Simple Sort"
 msgstr "Просте сортування"
 
-#: cmpltmpl/sort.py:194
+#: cmpltmpl/sort.py:195
 msgid "Sort key"
 msgstr "Ключ сортування"
 
-#: conclib.py:31 cmpltmpl/sort.py:216 cmpltmpl/view.py:741
-#: cmpltmpl/view.py:1820
+#: conclib.py:31 cmpltmpl/sort.py:217 cmpltmpl/view.py:748
+#: cmpltmpl/view.py:1843
 msgid "Node"
 msgstr "Ключові слова"
 
-#: cmpltmpl/sort.py:235
+#: cmpltmpl/sort.py:236
 msgid "Number of tokens to sort"
 msgstr "Сортованих токенів"
 
-#: cmpltmpl/sort.py:265 cmpltmpl/sort.py:364 cmpltmpl/sort.py:460
-#: cmpltmpl/sort.py:556
+#: cmpltmpl/sort.py:266 cmpltmpl/sort.py:365 cmpltmpl/sort.py:461
+#: cmpltmpl/sort.py:557
 msgid "Backward"
 msgstr "За спаданням"
 
-#: cmpltmpl/sort.py:289
+#: cmpltmpl/sort.py:290
 msgid "Multilevel sort"
 msgstr "Кількарівневе сортування"
 
-#: cmpltmpl/sort.py:314
+#: cmpltmpl/sort.py:315
 msgid "first level (Sort by ...)"
 msgstr "перший рівень (Сортувати за…)"
 
-#: cmpltmpl/sort.py:410
+#: cmpltmpl/sort.py:411
 msgid "second level (... then sort by ...)"
 msgstr "другий рівень (… потім за…)"
 
-#: cmpltmpl/sort.py:507
+#: cmpltmpl/sort.py:508
 msgid "third level (... finally sort by)"
 msgstr "третій рівень (… врешті сортувати за)"
 
-#: cmpltmpl/sort.py:608
+#: cmpltmpl/sort.py:609
 msgid "Line group sort"
-msgstr "Сортувати за групами рядків"’
+msgstr "Сортувати за групами рядків"
 
 msgid "Create Subcorpus"
 msgstr "Створити підкорпус"
@@ -522,7 +521,7 @@ msgstr "Створити підкорпус"
 msgid "New subcorpus name"
 msgstr "Назва нового підкорпусу"
 
-#: cmpltmpl/subcorp_info.py:103 cmpltmpl/subcorp.py:251 cmpltmpl/view.py:1390
+#: cmpltmpl/subcorp_info.py:105 cmpltmpl/subcorp.py:252 cmpltmpl/view.py:1407
 msgid "of"
 msgstr "з"
 
@@ -533,159 +532,162 @@ msgid "Thesaurus Entry Form"
 msgstr "Параметри тезауруса — формуляр"
 
 #: cmpltmpl/patterns_form.py:126 cmpltmpl/patterns_form.py:257
-#: cmpltmpl/thes_form.py:241 cmpltmpl/thes_form.py:253
-#: cmpltmpl/trends_form.py:364 cmpltmpl/trends_form.py:376
-#: cmpltmpl/wsdiff_form.py:394 cmpltmpl/wsdiff_form.py:405
-#: cmpltmpl/wsketch_form.py:263 cmpltmpl/wsketch_form.py:275
+#: cmpltmpl/thes_form.py:242 cmpltmpl/thes_form.py:254
+#: cmpltmpl/trends_form.py:365 cmpltmpl/trends_form.py:377
+#: cmpltmpl/wsdiff_form.py:395 cmpltmpl/wsdiff_form.py:406
+#: cmpltmpl/wsketch_form.py:264 cmpltmpl/wsketch_form.py:276
 msgid "Advanced options"
 msgstr "Розширені параметри"
 
-#: cmpltmpl/thes_form.py:316
+#: cmpltmpl/thes_form.py:317
 msgid "Cluster items"
 msgstr "Елементи кластера"
 
-#: cmpltmpl/document.py:2687 cmpltmpl/thes_form.py:88
+#: cmpltmpl/document.py:3680 cmpltmpl/thes_form.py:88
 #: cmpltmpl/thes_form.py:135 cmpltmpl/thes.py:91
 msgid "Thesaurus"
 msgstr "Тезаурус"
 
-#: cmpltmpl/load_all_wseval.py:159 cmpltmpl/pcws.py:378 cmpltmpl/pcws.py:417
+#: cmpltmpl/load_all_wseval.py:159 cmpltmpl/pcws.py:388 cmpltmpl/pcws.py:427
 #: cmpltmpl/store_wseval.py:173 cmpltmpl/thes.py:472 cmpltmpl/thes.py:491
-#: cmpltmpl/wseval.py:244 cmpltmpl/wsketch.py:598 cmpltmpl/wsketch.py:712
+#: cmpltmpl/wseval.py:244 cmpltmpl/wsketch.py:597 cmpltmpl/wsketch.py:711
 msgid "freq"
 msgstr "частота"
 
-#: cmpltmpl/viewattrs.py:88 cmpltmpl/viewattrs.py:135 cmpltmpl/view.py:576
+#: cmpltmpl/viewattrs.py:88 cmpltmpl/viewattrs.py:135 cmpltmpl/view.py:583
 msgid "View options"
 msgstr "Вигляд"
 
-#: cmpltmpl/viewattrs.py:172
+#: cmpltmpl/viewattrs.py:173
 msgid "Attributes"
 msgstr "Атрибути"
 
-#: cmpltmpl/viewattrs.py:180
+#: cmpltmpl/viewattrs.py:181
 msgid "Structures"
 msgstr "Структури"
 
-#: cmpltmpl/viewattrs.py:187 cmpltmpl/view.py:773
+#: cmpltmpl/viewattrs.py:188 cmpltmpl/view.py:780
 msgid "References"
 msgstr "Джерела"
 
-#: cmpltmpl/viewattrs.py:216
+#: cmpltmpl/viewattrs.py:217
 msgid "Display attributes"
 msgstr "Показувати атрибути"
 
-#: cmpltmpl/viewattrs.py:227
+#: cmpltmpl/viewattrs.py:228
 msgid "For each token"
 msgstr "Для кожного токена"
 
-#: cmpltmpl/viewattrs.py:238
+#: cmpltmpl/viewattrs.py:239
 msgid "KWIC tokens only"
 msgstr "тільки для знайдень"
 
-#: cmpltmpl/viewattrs.py:320
+#: cmpltmpl/viewattrs.py:321
 msgid "Page size (number of lines)"
 msgstr "Рядків на сторінку"
 
 msgid "KWIC Context size (number of characters)"
 msgstr "Ширина контексту обабіч ключових слів (кількість знаків)"
 
-#: cmpltmpl/document.py:2631 cmpltmpl/simple_search.py:88 cmpltmpl/view.py:100
+#: cmpltmpl/simple_search.py:88 cmpltmpl/view.py:100
 msgid "Concordance"
 msgstr "Конкорданс"
 
-#: cmpltmpl/conc.py:199 cmpltmpl/reduce_form.py:88
+#: cmpltmpl/conc.py:200 cmpltmpl/reduce_form.py:88
 msgid "Sample"
 msgstr "Вибірка"
 
-#: cmpltmpl/view.py:705 cmpltmpl/view.py:1812
+#: cmpltmpl/view.py:712 cmpltmpl/view.py:1835
 msgid "Left"
 msgstr "Ліворуч"
 
-#: cmpltmpl/view.py:723 cmpltmpl/view.py:1828
+#: cmpltmpl/view.py:730 cmpltmpl/view.py:1851
 msgid "Right"
 msgstr "Праворуч"
 
-#: conclib.py:428 cmpltmpl/sort.py:88 cmpltmpl/view.py:686
-#: cmpltmpl/view.py:1591 cmpltmpl/view.py:1807
+#: conclib.py:429 cmpltmpl/sort.py:88 cmpltmpl/view.py:693
+#: cmpltmpl/view.py:1614 cmpltmpl/view.py:1830
 msgid "Sort"
 msgstr "Сортування"
 
-#: cmpltmpl/wseval.py:379
+#: cmpltmpl/wseval.py:376
 msgid "Collocation"
 msgstr "Колокація"
 
-#: cmpltmpl/lngroupinfo.py:313 cmpltmpl/view.py:1561 cmpltmpl/wsketch.py:817
+#: cmpltmpl/lngroupinfo.py:313 cmpltmpl/view.py:1584 cmpltmpl/wsketch.py:816
 msgid "Annotating"
 msgstr "Розмічування"
 
-#: cmpltmpl/view.py:1633
+#: cmpltmpl/view.py:1656
 msgid "New pattern"
 msgstr "Новий патерн"
 
-#: cmpltmpl/view.py:1647
+#: cmpltmpl/view.py:1670
 msgid "Number globally"
 msgstr "Кількість загалом"
 
-#: cmpltmpl/view.py:1655
+#: cmpltmpl/view.py:1678
 msgid "Number selected"
 msgstr "Рядків вибрано"
 
-#: cmpltmpl/view.py:1576 cmpltmpl/wsketch.py:832
+#: cmpltmpl/view.py:1599 cmpltmpl/wsketch.py:831
 msgid "Info"
 msgstr "Відомості"
 
-#: cmpltmpl/lngroupinfo.py:331 cmpltmpl/view.py:1606 cmpltmpl/wsketch.py:847
+#: cmpltmpl/lngroupinfo.py:331 cmpltmpl/view.py:1629 cmpltmpl/wsketch.py:846
 msgid "Finish"
 msgstr "Закінчити"
 
-#: cmpltmpl/collx.py:226 cmpltmpl/trends.py:240 cmpltmpl/view.py:1335
+#: cmpltmpl/collx.py:226 cmpltmpl/jobs.py:490 cmpltmpl/trends.py:240
+#: cmpltmpl/view.py:1345
 msgid "First"
 msgstr "Перша"
 
-#: cmpltmpl/collx.py:238 cmpltmpl/trends.py:258 cmpltmpl/view.py:1350
+#: cmpltmpl/collx.py:238 cmpltmpl/jobs.py:508 cmpltmpl/trends.py:258
+#: cmpltmpl/view.py:1363
 msgid "Previous"
 msgstr "Попередня"
 
-#: cmpltmpl/collx.py:290 cmpltmpl/freqs.py:361 cmpltmpl/view.py:1369
+#: cmpltmpl/collx.py:290 cmpltmpl/freqs.py:361 cmpltmpl/view.py:1382
 #: cmpltmpl/wordlist.py:532
 msgid "Page"
 msgstr "Сторінка"
 
-#: cmpltmpl/collx.py:327 cmpltmpl/trends.py:252 cmpltmpl/view.py:1426
+#: cmpltmpl/collx.py:327 cmpltmpl/jobs.py:502 cmpltmpl/trends.py:252
+#: cmpltmpl/view.py:1446
 msgid "Next"
 msgstr "Наступна"
 
-#: cmpltmpl/conc.py:212 cmpltmpl/trends.py:246 cmpltmpl/view.py:1441
+#: cmpltmpl/conc.py:213 cmpltmpl/jobs.py:496 cmpltmpl/trends.py:246
+#: cmpltmpl/view.py:1464
 msgid "Last"
 msgstr "Остання"
 
-#: cmpltmpl/wordlist.py:700
+#: cmpltmpl/wordlist.py:712
 msgid "Reference corpus"
 msgstr "Опорний корпус"
 
-#: cmpltmpl/wordlist.py:711
+#: cmpltmpl/wordlist.py:723
 msgid "Reference subcorpus"
 msgstr "Опорний підкорпус"
 
-#: cmpltmpl/document.py:2645 cmpltmpl/wordlist_form.py:88
-#: cmpltmpl/wordlist.py:88 cmpltmpl/wordlist.py:660
+#: cmpltmpl/document.py:3622 cmpltmpl/wordlist_form.py:88
+#: cmpltmpl/wordlist.py:88 cmpltmpl/wordlist.py:661
 msgid "Word list"
 msgstr "Словник частот"
 
-#: cmpltmpl/wordlist_form.py:832
+#: cmpltmpl/wordlist_form.py:835
 msgid "Keywords"
 msgstr "Ключові слова"
 
-#: cmpltmpl/wordlist.py:746
 msgid ""
 "Subcorpora operations need more preprocessing. It will take a while, please "
 "wait."
 msgstr ""
 "Для дій з підкопусами потрібне додаткове передоброблення. Зачекайте, будь "
-msgstr "ласка."
+"ласка."
 
-#: cmpltmpl/wordlist.py:752
+#: cmpltmpl/wordlist.py:764
 msgid ""
 "Once the list has been computed, it will be stored, so will be immediately "
 "available next time."
@@ -698,24 +700,24 @@ msgstr ""
 "Можна закрити це вікно. Повторний запит словника частот з того ж підкорпусу "
 "покаже статус підрахунку."
 
-#: conccgi.py:1654 cmpltmpl/findx.py:231 cmpltmpl/savewipo.py:115
-#: cmpltmpl/thes.py:537 cmpltmpl/trends.py:645 cmpltmpl/trends.py:655
-#: cmpltmpl/wipo.py:335 cmpltmpl/wseval.py:393
+#: conccgi.py:1664 cmpltmpl/findx.py:231 cmpltmpl/savewipo.py:115
+#: cmpltmpl/thes.py:537 cmpltmpl/trends.py:646 cmpltmpl/trends.py:656
+#: cmpltmpl/wipo.py:335 cmpltmpl/wseval.py:390
 msgid "Freq"
 msgstr "Частота"
 
-#: conccgi.py:1654 cmpltmpl/wordlist_form.py:801
+#: conccgi.py:1664 cmpltmpl/wordlist_form.py:804
 msgid "ARF"
 msgstr "ARF"
 
 #: cmpltmpl/savewipo.py:124 cmpltmpl/thes.py:531 cmpltmpl/wipo.py:346
-#: cmpltmpl/wordlist.py:1170 cmpltmpl/wseval.py:401
-#: cmpltmpl/wsketch_form.py:377
+#: cmpltmpl/wordlist.py:860 cmpltmpl/wordlist.py:1192 cmpltmpl/wseval.py:398
+#: cmpltmpl/wsketch_form.py:378
 msgid "Score"
 msgstr "Бал"
 
-#: cmpltmpl/collx.py:505 cmpltmpl/document.py:854 cmpltmpl/findx.py:304
-#: cmpltmpl/pcws.py:492 cmpltmpl/wordlist.py:1474
+#: cmpltmpl/collx.py:509 cmpltmpl/document.py:851 cmpltmpl/findx.py:304
+#: cmpltmpl/pcws.py:502 cmpltmpl/wordlist.py:1493
 msgid "Nothing found."
 msgstr "Нічого не знайдено."
 
@@ -728,27 +730,27 @@ msgstr "Шкіц слова"
 msgid "Word Sketch Differences Entry Form"
 msgstr "Шкіц-різниця — формуляр"
 
-#: cmpltmpl/wsdiff_form.py:275
+#: cmpltmpl/wsdiff_form.py:276
 msgid "Second lemma"
 msgstr "Друга лема"
 
-#: cmpltmpl/wsdiff_form.py:413
+#: cmpltmpl/wsdiff_form.py:414
 msgid "Separate blocks"
 msgstr "Групування"
 
-#: cmpltmpl/wsdiff_form.py:425
+#: cmpltmpl/wsdiff_form.py:426
 msgid "all in one block"
 msgstr "одним блоком"
 
-#: cmpltmpl/wsdiff_form.py:437
+#: cmpltmpl/wsdiff_form.py:438
 msgid "common/exclusive blocks"
 msgstr "розділяти на спільне та власне"
 
-#: cmpltmpl/wsdiff_form.py:474
+#: cmpltmpl/wsdiff_form.py:475
 msgid "of the common block"
 msgstr "в блоці спільного"
 
-#: cmpltmpl/wsdiff_form.py:504
+#: cmpltmpl/wsdiff_form.py:505
 msgid "of the exclusive block"
 msgstr "в блоках власного"
 
@@ -766,23 +768,23 @@ msgstr "Словник частот"
 msgid "Sketch-Diff"
 msgstr "Шкіц-різниця"
 
-#: cmpltmpl/document.py:1212 cmpltmpl/document.py:1318
+#: cmpltmpl/document.py:1210 cmpltmpl/document.py:1316
 msgid "unspecified"
 msgstr "будь-яка"
 
-#: cmpltmpl/document.py:1249
+#: cmpltmpl/document.py:1247
 msgid "Phrase"
 msgstr "Фраза"
 
-#: cmpltmpl/document.py:1159 cmpltmpl/document.py:1410
+#: cmpltmpl/document.py:1157 cmpltmpl/document.py:1408
 msgid "CQL"
 msgstr "CQL"
 
-#: cmpltmpl/document.py:1442
+#: cmpltmpl/document.py:1440
 msgid "Default attribute"
 msgstr "Автоматичний атрибут"
 
-#: cmpltmpl/document.py:1483
+#: cmpltmpl/document.py:1481
 msgid "Tagset summary"
 msgstr "Система позначок"
 
@@ -796,7 +798,7 @@ msgstr "Стягнути потенційні колокації як текст
 msgid "Filter Concordance"
 msgstr "Пофільтрувати конкорданс"
 
-#: cmpltmpl/document.py:966 cmpltmpl/first_form.py:837
+#: cmpltmpl/document.py:963 cmpltmpl/first_form.py:900
 msgid "Make Concordance"
 msgstr "Побудувати конкорданс"
 
@@ -839,27 +841,27 @@ msgstr "Стягнути тезаурус у текстовий файл чи XM
 msgid "Change View Options"
 msgstr "Змінити налаштування вигляду"
 
-#: cmpltmpl/view.py:693
+#: cmpltmpl/view.py:700
 msgid "Sort to left"
 msgstr "Сортувати за словами ліворуч знайденого"
 
-#: cmpltmpl/view.py:729
+#: cmpltmpl/view.py:736
 msgid "Sort by node word"
 msgstr "Сортувати за знайденим"
 
-#: cmpltmpl/view.py:711
+#: cmpltmpl/view.py:718
 msgid "Sort to right"
 msgstr "Сортувати за словами праворуч знайденого"
 
-#: cmpltmpl/view.py:675
+#: cmpltmpl/view.py:682
 msgid "Complex sorting options"
 msgstr "Комплексні параметри сортування"
 
-#: cmpltmpl/view.py:375
+#: cmpltmpl/view.py:377
 msgid "Save concordance to a text file or xml"
 msgstr "Стягнути конкорданс у текстовий файл чи XML"
 
-#: cmpltmpl/collx.py:307 cmpltmpl/freqs.py:373 cmpltmpl/view.py:1403
+#: cmpltmpl/collx.py:307 cmpltmpl/freqs.py:373 cmpltmpl/view.py:1420
 #: cmpltmpl/wordlist.py:549
 msgid "Go"
 msgstr "Перейти"
@@ -880,26 +882,24 @@ msgstr "Показати відмінності"
 msgid "Save word sketch to a text file or XML"
 msgstr "Стягнути шкіц слова у текстовий файл чи XML"
 
-#: cmpltmpl/document.py:2620
 msgid "New query entry form"
 msgstr "Новий запит — формуляр"
 
-#: cmpltmpl/document.py:2693
 msgid "Word sketch difference"
 msgstr "Різниця шкіців слів"
 
-#: cmpltmpl/conc.py:139
+#: cmpltmpl/conc.py:140
 msgid "View current concordance"
 msgstr "Повернутися до поточного конкордансу"
 
 msgid "Corpus Query Language"
 msgstr "Corpus Query Language (Корпусових запитів мова, CQL)"
 
-#: cmpltmpl/wsdiff.py:295 cmpltmpl/wsketch.py:1167
+#: cmpltmpl/wsdiff.py:295 cmpltmpl/wsketch.py:1163
 msgid "overall frequency"
 msgstr "загальна частота"
 
-#: cmpltmpl/wsdiff.py:304 cmpltmpl/wsketch.py:1190
+#: cmpltmpl/wsdiff.py:304 cmpltmpl/wsketch.py:1186
 msgid "overall score"
 msgstr "загальний бал"
 
@@ -919,7 +919,7 @@ msgid "Ratio"
 msgstr "Відношення"
 
 #: cmpltmpl/findx.py:267 cmpltmpl/lngroupinfo.py:445
-#: cmpltmpl/wsketch_form.py:899
+#: cmpltmpl/wsketch_form.py:918
 msgid "Show word sketch"
 msgstr "Показати шкіц слова"
 
@@ -927,7 +927,7 @@ msgstr "Показати шкіц слова"
 msgid "Show concordances"
 msgstr "Показати конкорданс"
 
-#: cmpltmpl/first_form.py:843
+#: cmpltmpl/first_form.py:906
 msgid "Clear All"
 msgstr "Очистити"
 
@@ -935,7 +935,7 @@ msgstr "Очистити"
 msgid "Automatically annotated"
 msgstr "Автоматично розмічений"
 
-#: cmpltmpl/lngroupinfo.py:480 cmpltmpl/view.py:1766
+#: cmpltmpl/lngroupinfo.py:480 cmpltmpl/view.py:1789
 msgid "hits"
 msgstr "знайдень"
 
@@ -989,8 +989,8 @@ msgstr "Збережено"
 msgid "The following word sketch evaluation was successfully stored"
 msgstr "Нижчеподану оцінку шкіца збережено"
 
-#: cmpltmpl/document.py:1098 cmpltmpl/store_wseval.py:145
-#: cmpltmpl/wsdiff_form.py:266
+#: cmpltmpl/document.py:1096 cmpltmpl/store_wseval.py:145
+#: cmpltmpl/wsdiff_form.py:267
 msgid "lemma"
 msgstr "лема"
 
@@ -1002,11 +1002,11 @@ msgstr "назва файлу"
 msgid "Next Evaluation"
 msgstr "Наступне оцінювання"
 
-#: cmpltmpl/viewattrs.py:461
+#: cmpltmpl/viewattrs.py:463
 msgid "Icon for one-click sentence copying"
 msgstr "Показувати іконки копіювання речень"
 
-#: cmpltmpl/viewattrs.py:410
+#: cmpltmpl/viewattrs.py:412
 msgid "Number of lines to be sorted"
 msgstr "Кількість сортованих рядків"
 
@@ -1022,7 +1022,6 @@ msgstr "Всі леми"
 msgid "Word list options"
 msgstr "Параметри словника частот"
 
-#: cmpltmpl/document.py:2299
 msgid "corpus"
 msgstr "корпус"
 
@@ -1030,7 +1029,6 @@ msgstr "корпус"
 msgid "Existing lists"
 msgstr "Наявні списки"
 
-#: cmpltmpl/skell.py:796
 msgid "or"
 msgstr "або"
 
@@ -1049,11 +1047,11 @@ msgid ""
 "Warning: Another evaluation record for this lemma was found in the database."
 msgstr "Увага: в базі знайдений інша оцінка шкіца цієї леми."
 
-#: cmpltmpl/wseval.py:432
+#: cmpltmpl/wseval.py:429
 msgid "Good"
 msgstr "Добре"
 
-#: cmpltmpl/wseval.py:438
+#: cmpltmpl/wseval.py:435
 msgid "Bad"
 msgstr "Погано"
 
@@ -1061,14 +1059,14 @@ msgstr "Погано"
 msgid "Gramrel"
 msgstr "Синтзв’язок"
 
-#: cmpltmpl/wseval.py:385
+#: cmpltmpl/wseval.py:382
 msgid "Rating"
 msgstr "Оцінка"
 
 msgid "Store Word Sketch Evaluation"
 msgstr "Зберегти оцінку шкіца слова"
 
-#: cmpltmpl/wsketch_form.py:501
+#: cmpltmpl/wsketch_form.py:519
 msgid "Cluster collocations"
 msgstr "Групувати колокації"
 
@@ -1076,32 +1074,32 @@ msgstr "Групувати колокації"
 msgid "Switch between clustered and unclustered word sketches"
 msgstr "Перемкнути між кластеризованими і некластеризованими шкіцами слів"
 
-#: cmpltmpl/pcws.py:285 cmpltmpl/wsketch.py:411
+#: cmpltmpl/pcws.py:295 cmpltmpl/wsketch.py:411
 msgid "Display more data (decreases limits and increases number of items)"
 msgstr "Показати більше даних, послабивши критерії"
 
-#: cmpltmpl/pcws.py:302 cmpltmpl/wsketch.py:428
+#: cmpltmpl/pcws.py:312 cmpltmpl/wsketch.py:428
 msgid "Display less data (increases limits and decreases number of items)"
 msgstr "Показати менше даних, посиливши критерії"
 
-#: cmpltmpl/wsketch.py:856
+#: cmpltmpl/wsketch.py:855
 msgid "New label"
 msgstr "Нове наличко"
 
-#: cmpltmpl/wsketch.py:1275
+#: cmpltmpl/wsketch.py:1270
 msgid "word frequency"
 msgstr "частота слова"
 
-#: cmpltmpl/wsketch.py:1303
+#: cmpltmpl/wsketch.py:1295
 msgid "cluster frequency"
 msgstr "частота кластера"
 
-#: cmpltmpl/wsketch.py:971 cmpltmpl/wsketch.py:1318 cmpltmpl/wsketch.py:1475
-#: cmpltmpl/wsketch.py:1554
+#: cmpltmpl/wsketch.py:970 cmpltmpl/wsketch.py:1310 cmpltmpl/wsketch.py:1458
+#: cmpltmpl/wsketch.py:1539
 msgid "score"
 msgstr "бал"
 
-#: cmpltmpl/trends_form.py:482 cmpltmpl/trends.py:445 cmpltmpl/wsketch.py:956
+#: cmpltmpl/trends_form.py:483 cmpltmpl/trends.py:445 cmpltmpl/wsketch.py:955
 msgid "frequency"
 msgstr "частота"
 
@@ -1112,7 +1110,7 @@ msgstr "Зберегти параметри"
 msgid "no lists available"
 msgstr "жодного"
 
-#: cmpltmpl/findx_upload_form.py:163
+#: cmpltmpl/findx_upload_form.py:160
 msgid ""
 "Building uploaded histograms in progress (reload the page to show current "
 "status)"
@@ -1120,34 +1118,34 @@ msgstr ""
 "Будуються гістограми з викладеного файлу (поновіть сторінку щоб отримати "
 "поточний статус)"
 
-#: cmpltmpl/findx_upload_form.py:174
+#: cmpltmpl/findx_upload_form.py:171
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: cmpltmpl/findx_upload_form.py:225
+#: cmpltmpl/findx_upload_form.py:219
 msgid "Upload"
 msgstr "Викласти"
 
 msgid "Tickbox Lexicography - Select Examples"
 msgstr "Tickbox Лексикографія — Вибрати приклади"
 
-#: cmpltmpl/wsketch.py:1502
+#: cmpltmpl/wsketch.py:1492
 msgid ">>"
 msgstr ">>"
 
-#: cmpltmpl/tblex.py:639
+#: cmpltmpl/tblex.py:633
 msgid "Sorry, you are not allowed to use the tickbox lexicography"
 msgstr "На жаль, у вас немає прав користуватися tickbox lexicography"
 
-#: cmpltmpl/wsketch_form.py:361
+#: cmpltmpl/wsketch_form.py:362
 msgid "Sort collocations"
 msgstr "Посортувати колокації"
 
-#: cmpltmpl/wsketch_form.py:366
+#: cmpltmpl/wsketch_form.py:367
 msgid "according to"
 msgstr "за показником"
 
-#: cmpltmpl/wsketch_form.py:388
+#: cmpltmpl/wsketch_form.py:389
 msgid "Raw frequency"
 msgstr "Частота знайдень"
 
@@ -1155,7 +1153,7 @@ msgstr "Частота знайдень"
 msgid "Template"
 msgstr "Взірець"
 
-#: cmpltmpl/tblex.py:615 cmpltmpl/tblex.py:623
+#: cmpltmpl/tblex.py:609 cmpltmpl/tblex.py:617
 msgid "Copy to clipboard"
 msgstr "Скопіювати в буфер"
 
@@ -1174,15 +1172,15 @@ msgstr "Наступна >"
 msgid "Tickbox Lexicography template"
 msgstr "Взірець для tickbox лексикографії"
 
-#: cmpltmpl/wsketch_form.py:480
+#: cmpltmpl/wsketch_form.py:498
 msgid "Examples per collocate"
 msgstr "Приклади на колоканта"
 
-#: cmpltmpl/findx_upload_form.py:200
+#: cmpltmpl/findx_upload_form.py:194
 msgid "Building histograms can be time-consuming on bigger corpora"
 msgstr "Побудова гістограм часовитратна на великих корпусах"
 
-#: cmpltmpl/findx_upload_form.py:218
+#: cmpltmpl/findx_upload_form.py:212
 msgid "Send me an e-mail when finished"
 msgstr "Надіслати листа як завершиться"
 
@@ -1190,17 +1188,17 @@ msgstr "Надіслати листа як завершиться"
 msgid "Cluster"
 msgstr "Групувати"
 
-#: cmpltmpl/viewattrs.py:477
+#: cmpltmpl/viewattrs.py:479
 msgid "Allow multiple lines selection"
 msgstr "Дозволити копіювати по декілька рядків"
 
-#: cmpltmpl/viewattrs.py:551
+#: cmpltmpl/viewattrs.py:553
 msgid "XML template for one-click copying"
 msgstr "XML-форматувати скопійовані речення за шаблоном"
 
 #: cmpltmpl/load_all_wseval.py:170
 msgid "Evaluation set"
-msgstr "Evaluation-вибірка"    # todo
+msgstr "Evaluation-вибірка"
 
 #: cmpltmpl/store_wseval.py:153
 msgid "testing set"
@@ -1210,7 +1208,7 @@ msgstr "контрольна вибірка"
 msgid "Sorry, creating user subcorpora is not available in the open version"
 msgstr "Створення користувацьких підкорпусів недоступне у відкритій версії"
 
-#: cmpltmpl/viewattrs.py:371
+#: cmpltmpl/viewattrs.py:372
 msgid "Sort good dictionary examples"
 msgstr "Підіймати нагору хороші приклади для словника"
 
@@ -1230,39 +1228,40 @@ msgstr "записування в журнал…"
 msgid ""
 "(if this page is not redirected in a few seconds, please click the \"Back\" "
 "button)"
-msgstr "(якщо не відбудеться перенаправлення за кілька секунд, будь ласка, "
-"натисніть Назад)"
+msgstr ""
+"(якщо не відбудеться перенаправлення за кілька секунд, будь ласка, натисніть "
+"Назад)"
 
-#: cmpltmpl/document.py:705 cmpltmpl/document.py:765 cmpltmpl/document.py:803
-#: cmpltmpl/document.py:815
+#: cmpltmpl/document.py:702 cmpltmpl/document.py:762 cmpltmpl/document.py:800
+#: cmpltmpl/document.py:812
 msgid "Select All"
 msgstr "Вибрати все"
 
-#: cmpltmpl/wordlist_form.py:450
+#: cmpltmpl/wordlist_form.py:451
 msgid "Search attribute"
 msgstr "Шукати атрибут"
 
-#: cmpltmpl/wsketch.py:661
+#: cmpltmpl/wsketch.py:660
 msgid "displaying only"
-msgstr "показано тільки"    # nocontext
+msgstr "показано тільки"
 
-#: cmpltmpl/wsketch.py:676
+#: cmpltmpl/wsketch.py:675
 msgid "whole word sketch"
-msgstr "цілий шкіц слова"    # nocontext
+msgstr "цілий шкіц слова"
 
-#: cmpltmpl/freq.py:350
+#: cmpltmpl/freq.py:351
 msgid "Include categories with no hits"
 msgstr "Долучити категорії без знайдень"
 
-#: cmpltmpl/view.py:758
+#: cmpltmpl/view.py:765
 msgid "Sort according to the 'References' field"
 msgstr "Сортувати за джерелами"
 
-#: cmpltmpl/conc.py:187
+#: cmpltmpl/conc.py:188
 msgid "Make a random sample from the concordance."
 msgstr "Вибрати випадкові рядки з конкордансу"
 
-#: cmpltmpl/conc.py:258
+#: cmpltmpl/conc.py:259
 msgid "Make a query on the current concordance."
 msgstr "Шукати в поточному конкордансі"
 
@@ -1291,7 +1290,7 @@ msgstr "Аналіз патернів в корпусі"
 msgid "Annotate"
 msgstr "Розмічувати"
 
-#: cmpltmpl/document.py:670
+#: cmpltmpl/document.py:667
 msgid "hide/show"
 msgstr "сховати/показати"
 
@@ -1306,27 +1305,25 @@ msgstr "Конкорданс: параметри фільтру"
 #: cmpltmpl/wsdiff.py:137 cmpltmpl/wsdiff.py:181 cmpltmpl/wsketch.py:214
 #: cmpltmpl/wsketch.py:225
 msgid "Change options"
-msgstr "Змінити параметри"    # overflow
+msgstr "Змінити параметри"
 
 msgid "Error Code"
 msgstr "Код помилки"
 
-#: cmpltmpl/document.py:1636
+#: cmpltmpl/document.py:1640
 msgid "Incorrect word(s)"
 msgstr "Неправильні слова"
 
-#: cmpltmpl/document.py:1651
+#: cmpltmpl/document.py:1655
 msgid "Corrected word(s)"
 msgstr "Виправлені слова"
 
-#: cmpltmpl/document.py:2637
 msgid "Various methods for creating word lists"
 msgstr "Інструменти для створення списків слів з частотами"
 
 msgid "Word Sketch query entry form"
 msgstr "Шкіц слова — формуляр"
 
-#: cmpltmpl/document.py:2673
 msgid "Thesaurus query entry form"
 msgstr "Тезаурус — формуляр"
 
@@ -1337,15 +1334,15 @@ msgstr "Шкіц-оцінювання"
 msgid "Select stored concordance"
 msgstr "Вибрати збережений конкорданс"
 
-#: usercgi.py:154 cmpltmpl/document.py:2941
+#: usercgi.py:167 cmpltmpl/document.py:4006
 msgid "Selected options successfully saved"
 msgstr "Вибрані параметри збережено"
 
-#: cmpltmpl/skell.py:103 cmpltmpl/skell.py:319 cmpltmpl/skell.py:354
+#: cmpltmpl/skell.py:106 cmpltmpl/skell.py:363
 msgid "Sketch Engine"
 msgstr "Sketch Engine"
 
-#: cmpltmpl/view.py:562
+#: cmpltmpl/view.py:569
 msgid "Concordance view settings"
 msgstr "Налаштування вигляду конкордансу"
 
@@ -1364,11 +1361,11 @@ msgstr "Підрахувати частоти всіх словоформ"
 msgid "Compute a list of all lemmas"
 msgstr "Підрахувати частоти всіх лем"
 
-#: cmpltmpl/document.py:489
+#: cmpltmpl/document.py:485
 msgid "info"
 msgstr "відомості"
 
-#: cmpltmpl/document.py:710 cmpltmpl/document.py:770 cmpltmpl/document.py:820
+#: cmpltmpl/document.py:707 cmpltmpl/document.py:767 cmpltmpl/document.py:817
 msgid "Deselect All"
 msgstr "Девибрати все"
 
@@ -1376,7 +1373,7 @@ msgstr "Девибрати все"
 msgid "Show available records"
 msgstr "Показати доступні записи"
 
-#: cmpltmpl/wordlist_form.py:820
+#: cmpltmpl/wordlist_form.py:823
 msgid "Simple"
 msgstr "Простий"
 
@@ -1393,46 +1390,46 @@ msgstr ">> Докладніше"
 msgid "other"
 msgstr "інше"
 
-#: conccgi.py:508 cmpltmpl/trends.py:265
+#: conccgi.py:524 cmpltmpl/trends.py:265
 msgid "Empty result"
 msgstr "Жодних знайдень"
 
-#: conccgi.py:829
+#: conccgi.py:834
 msgid "Undefined lemma PoS"
 msgstr "Неозначена ЧМ леми"
 
-#: conccgi.py:838 conccgi.py:857
+#: conccgi.py:843 conccgi.py:862
 msgid "Undefined word form PoS"
 msgstr "Неозначена ЧМ словоформи"
 
-#: conccgi.py:786 conccgi.py:1050
+#: conccgi.py:802 conccgi.py:1055
 msgid "No query entered."
 msgstr "Жодного запиту."
 
 msgid "Select Positive or Negative filter type"
 msgstr "Виберіть фільтр, що лишає або прибирає знайдене"
 
-#: conccgi.py:1270
+#: conccgi.py:1275
 msgid "No text type selected"
 msgstr "Не вибрано тип тексту"
 
-#: conccgi.py:1804
+#: conccgi.py:1816
 msgid "No output attribute specified"
 msgstr "Не задано виходовий атрибут"
 
-#: conccgi.py:1933
+#: conccgi.py:1945
 msgid "No subcorpus name specified!"
 msgstr "Не задано назву підкорпусу!"
 
-#: conccgi.py:1966
+#: conccgi.py:1975
 msgid "Nothing specified!"
 msgstr "Нічого не задано!"
 
-#: conccgi.py:1981
+#: conccgi.py:1990
 msgid "Empty subcorpus!"
 msgstr "Порожній підкорпус!"
 
-#: pyconc.py:60
+#: pyconc.py:59
 msgid "Unknown action"
 msgstr "Невідома дія"
 
@@ -1447,15 +1444,14 @@ msgstr "Зіпсований файл оцінювання"
 msgid "WMapStream: end of stream"
 msgstr "WMapStream: кінець потоку"
 
-#: wsketchcgi.py:412 wsketchlib.py:162 wsketchlib.py:481
+#: wsketchcgi.py:416 wsketchlib.py:160
 msgid "Insufficient data for"
 msgstr "Недостатньо даних для"
 
-#: wsketchlib.py:463
 msgid "Insufficient data for id"
 msgstr "Недостатньо даних для ідентифікації"
 
-#: conccgi.py:1840
+#: conccgi.py:1852
 msgid "No meta-information to create a subcorpus."
 msgstr "Жодної мета-інформації щоб створити підкопрус"
 
@@ -1474,11 +1470,11 @@ msgstr "? Довідка: головне меню"
 msgid "? Help on View Options"
 msgstr "? Довідка: налаштування вигляду"
 
-#: cmpltmpl/view.py:780
+#: cmpltmpl/view.py:787
 msgid "Randomize ordering of lines"
 msgstr "Перемішати рядки в конкордансі"
 
-#: conclib.py:429 cmpltmpl/view.py:791
+#: conclib.py:430 cmpltmpl/view.py:798
 msgid "Shuffle"
 msgstr "Потасувати"
 
@@ -1509,59 +1505,59 @@ msgstr "? Довідка: параметри списку частот"
 msgid "? Help on Collocations"
 msgstr "? Довідка: колокації"
 
-#: cmpltmpl/conc.py:647
+#: cmpltmpl/conc.py:650
 msgid "Take me to the original concordance"
 msgstr "Повернутися до початкового конкордансу"
 
 msgid "Original Conc."
 msgstr "Початковий конк."
 
-#: corplib.py:68
+#: corplib.py:70
 #, python-format
 msgid "Subcorpus \"%s\" not found"
 msgstr "Підкорпус „%s“ не знайдено"
 
-#: wsketchlib.py:152
+#: theslib.py:34 wsketchlib.py:150
 #, python-format
 msgid "Lemma \"%s\" not found in the corpus"
 msgstr "Леми „%s“ немає в корпусі"
 
-#: CGIPublisher.py:280
+#: CGIPublisher.py:277
 msgid "You are not allowed to use this corpus."
 msgstr "Ви не маєте прав користуватися цим корпусом."
 
-#: conccgi.py:1128
+#: conccgi.py:1133
 msgid "Empty list"
 msgstr "Пустий список"
 
 msgid "Text types are limited to Simple output"
 msgstr "Типи тексту працюють тільки з простим виводом"
 
-#: conccgi.py:1566
+#: conccgi.py:1573
 msgid "ARF cannot be used with text types"
 msgstr "ARF не може використовуватися з типами тексту"
 
-#: cmpltmpl/coll.py:371 cmpltmpl/coll.py:470
+#: cmpltmpl/coll.py:372 cmpltmpl/coll.py:471
 msgid "logDice"
 msgstr "logDice"
 
-#: cmpltmpl/coll.py:384 cmpltmpl/coll.py:483
+#: cmpltmpl/coll.py:385 cmpltmpl/coll.py:484
 msgid "MI.log_f"
 msgstr "MI.log_f"
 
-#: cmpltmpl/document.py:467
+#: cmpltmpl/document.py:463
 msgid "None (whole corpus)"
 msgstr "Жодного (цілий корпус)"
 
-#: cmpltmpl/document.py:1374
+#: cmpltmpl/document.py:1372
 msgid "Character"
 msgstr "Символ"
 
-#: cmpltmpl/document.py:1858
+#: cmpltmpl/document.py:1862
 msgid "default"
-msgstr "типово"    # nocontext
+msgstr "типово"
 
-#: cmpltmpl/filter_form.py:304
+#: cmpltmpl/filter_form.py:317
 msgid "include KWIC"
 msgstr "охопити ключові слова"
 
@@ -1581,66 +1577,66 @@ msgstr "Надсилання файлу такі́шості"
 msgid "? Help on Error Query"
 msgstr "? Довідка: помильні запити"
 
-#: cmpltmpl/first_form.py:472
+#: cmpltmpl/first_form.py:535
 msgid "Lemma filter"
 msgstr "Фільтр лем"
 
-#: cmpltmpl/first_form.py:480
+#: cmpltmpl/first_form.py:543
 msgid "Word form filter"
 msgstr "Фільтр словоформ"
 
-#: cmpltmpl/first_form.py:489 cmpltmpl/first_form.py:637
+#: cmpltmpl/first_form.py:552 cmpltmpl/first_form.py:700
 msgid "Window"
 msgstr "Окіл"
 
-#: cmpltmpl/first_form.py:503 cmpltmpl/first_form.py:651
+#: cmpltmpl/first_form.py:566 cmpltmpl/first_form.py:714
 msgid "left"
 msgstr "ліворуч"
 
-#: cmpltmpl/first_form.py:516 cmpltmpl/first_form.py:664
+#: cmpltmpl/first_form.py:579 cmpltmpl/first_form.py:727
 msgid "right"
 msgstr "праворуч"
 
-#: cmpltmpl/first_form.py:529 cmpltmpl/first_form.py:677
+#: cmpltmpl/first_form.py:592 cmpltmpl/first_form.py:740
 msgid "both"
 msgstr "обабіч"
 
-#: cmpltmpl/first_form.py:557
+#: cmpltmpl/first_form.py:620
 msgid "Lemma(s)"
 msgstr "Леми"
 
-#: cmpltmpl/first_form.py:565
+#: cmpltmpl/first_form.py:628
 msgid "Word form(s)"
 msgstr "Словоформи"
 
-#: cmpltmpl/first_form.py:582 cmpltmpl/first_form.py:745
-#: cmpltmpl/wsketch_form.py:233
+#: cmpltmpl/first_form.py:645 cmpltmpl/first_form.py:808
+#: cmpltmpl/wsketch_form.py:234
 msgid "all"
 msgstr "все"
 
-#: cmpltmpl/first_form.py:595 cmpltmpl/first_form.py:758
+#: cmpltmpl/first_form.py:658 cmpltmpl/first_form.py:821
 msgid "any"
 msgstr "будь-яке"
 
-#: cmpltmpl/first_form.py:608 cmpltmpl/first_form.py:771
+#: cmpltmpl/first_form.py:671 cmpltmpl/first_form.py:834
 msgid "none"
 msgstr "жодне"
 
-#: cmpltmpl/first_form.py:629
+#: cmpltmpl/first_form.py:692
 msgid "PoS filter"
 msgstr "Фільтр частин мови"
 
 msgid "Find X entry form"
 msgstr "Форма пошуку найтакішого"
 
-#: cmpltmpl/document.py:2751
+#: cmpltmpl/document.py:3760
 msgid "CPA"
-msgstr "CPA"    # todo
+msgstr "CPA"
 
 msgid "Interface language"
 msgstr "Мова інтерфейсу"
 
-#: cmpltmpl/tblex.py:383
+#: cmpltmpl/tblex.py:380
 msgid "Alternative GDEX configuration"
 msgstr "Альтернативна конфігурація хороших прикладів для словника"
 
@@ -1648,121 +1644,121 @@ msgstr "Альтернативна конфігурація хороших пр�
 msgid "Switch between clustered and unclustered thesaurus"
 msgstr "Перемкнути між кластеризованим і некластеризованим тезаурусом"
 
-#: cmpltmpl/viewattrs.py:431
+#: cmpltmpl/viewattrs.py:433
 msgid "GDEX configuration for current corpus"
 msgstr "Конфігурація хороших прикладів для словника для поточного корпусу"
 
-#: cmpltmpl/view.py:1456
+#: cmpltmpl/view.py:1479
 msgid "Concordance is sorted. Jump to"
 msgstr "Конкорданс відсортовано. Перейти до"
 
-#: cmpltmpl/thes.py:511 cmpltmpl/view.py:1776 cmpltmpl/view.py:1888
-#: cmpltmpl/view.py:1982 cmpltmpl/wsketch.py:618 cmpltmpl/wsketch.py:732
+#: cmpltmpl/thes.py:511 cmpltmpl/view.py:1799 cmpltmpl/view.py:1911
+#: cmpltmpl/view.py:2005 cmpltmpl/wsketch.py:617 cmpltmpl/wsketch.py:731
 msgid "per million"
 msgstr "на мільйон"
 
 msgid "Filter wordlist by"
 msgstr "Вибрати слова"
 
-#: cmpltmpl/wordlist_form.py:701
+#: cmpltmpl/wordlist_form.py:704
 msgid "Whitelist"
 msgstr "Білий список"
 
-#: cmpltmpl/wordlist_form.py:715
+#: cmpltmpl/wordlist_form.py:718
 msgid "Blacklist"
 msgstr "Чорний список"
 
-#: cmpltmpl/wordlist_form.py:729
+#: cmpltmpl/wordlist_form.py:732
 msgid "format"
 msgstr "формат"
 
-#: cmpltmpl/wordlist_form.py:750
+#: cmpltmpl/wordlist_form.py:753
 msgid "Include non-words"
 msgstr "Занести не-слова"
 
-#: cmpltmpl/wordlist_form.py:767
+#: cmpltmpl/wordlist_form.py:770
 msgid "Frequency figures"
 msgstr "Показувані частоти"
 
-#: conccgi.py:1888
+#: conccgi.py:1900
 msgid "Word counts"
 msgstr "Кількість слів"
 
-#: conccgi.py:1879 cmpltmpl/wordlist_form.py:790
+#: conccgi.py:1891 cmpltmpl/wordlist_form.py:793
 msgid "Document counts"
 msgstr "Кількість документів"
 
-#: cmpltmpl/wordlist_form.py:809
+#: cmpltmpl/wordlist_form.py:812
 msgid "Output type"
 msgstr "Тип виводу"
 
-#: cmpltmpl/wordlist_form.py:839
+#: cmpltmpl/wordlist_form.py:842
 msgid "Reference (sub)corpus"
 msgstr "Опорний (під)корпус"
 
-#: cmpltmpl/trends.py:505 cmpltmpl/wordlist_form.py:897
+#: cmpltmpl/trends.py:506 cmpltmpl/wordlist_form.py:900
 msgid "whole corpus"
 msgstr "цілий корпус"
 
-#: cmpltmpl/wsdiff_form.py:250
+#: cmpltmpl/wsdiff_form.py:251
 msgid "Sketch diff by"
-msgstr "Порівнюване"    # agreement hack
+msgstr "Порівнюване"
 
-#: cmpltmpl/document.py:2324 cmpltmpl/wsdiff_form.py:300
+#: cmpltmpl/wsdiff_form.py:301
 msgid "subcorpus"
 msgstr "підкорпус"
 
-#: cmpltmpl/wsdiff_form.py:310
+#: cmpltmpl/wsdiff_form.py:311
 msgid "First subcorpus"
 msgstr "Перший підкорпус"
 
-#: cmpltmpl/wsdiff_form.py:329
+#: cmpltmpl/wsdiff_form.py:330
 msgid "Second subcorpus"
 msgstr "Другий підкорпус"
 
-#: cmpltmpl/wsdiff_form.py:355
+#: cmpltmpl/wsdiff_form.py:356
 msgid "word form"
 msgstr "словоформа"
 
-#: cmpltmpl/wsdiff_form.py:365
+#: cmpltmpl/wsdiff_form.py:366
 msgid "First word form"
 msgstr "Перша словоформа"
 
-#: cmpltmpl/wsdiff_form.py:377
+#: cmpltmpl/wsdiff_form.py:378
 msgid "Second word form"
 msgstr "Друга словоформа"
 
 #: cmpltmpl/wsdiff.py:245
 msgid "overall frequency for the first"
-msgstr "загальна частота: перша"    # agreement hack
+msgstr "загальна частота: перша"
 
 #: cmpltmpl/wsdiff.py:257
 msgid "overall frequency for the second"
-msgstr "загальна частота: друга"    # agreement hack
+msgstr "загальна частота: друга"
 
 #: cmpltmpl/wsdiff.py:269
 msgid "overall score for the first"
-msgstr "загальний бал: перша"    # agreement hack
+msgstr "загальний бал: перша"
 
 #: cmpltmpl/wsdiff.py:281
 msgid "overall score for the second"
-msgstr "загальний бал: друга"    # agreement hack
+msgstr "загальний бал: друга"
 
 #: cmpltmpl/wsdiff.py:333
 msgid "frequency for the first"
-msgstr "частота: перша"    # agreement hack
+msgstr "частота: перша"
 
 #: cmpltmpl/wsdiff.py:369
 msgid "frequency for the second"
-msgstr "частота: друга"    # agreement hack
+msgstr "частота: друга"
 
 #: cmpltmpl/wsdiff.py:405
 msgid "score for the first"
-msgstr "бал: перша"    # agreement hack
+msgstr "бал: перша"
 
 #: cmpltmpl/wsdiff.py:419
 msgid "score for the second"
-msgstr "бал: друга"    # agreement hack
+msgstr "бал: друга"
 
 #: cmpltmpl/wsdiff.py:513
 msgid "freqs"
@@ -1777,31 +1773,31 @@ msgstr "Спільні риси"
 msgid "\"%s\" only patterns"
 msgstr "власні риси „%s“"
 
-#: cmpltmpl/wseval.py:414
+#: cmpltmpl/wseval.py:411
 msgid "Commonest match"
-msgstr "Найспільніше"    # nocontext
+msgstr "Найспільніше"
 
-#: cmpltmpl/wsketch_form.py:539
+#: cmpltmpl/wsketch_form.py:557
 msgid "Structure word sketch by gramrels"
 msgstr "Групувати шкіц слова за синтзв’язками"
 
-#: cmpltmpl/wsketch_form.py:623 cmpltmpl/wsketch_form.py:825
+#: cmpltmpl/wsketch_form.py:641 cmpltmpl/wsketch_form.py:844
 msgid "Select gramrels:"
 msgstr "Вибрати синтзв’язки:"
 
-#: cmpltmpl/pcws.py:296 cmpltmpl/wipo.py:399 cmpltmpl/wsketch.py:422
+#: cmpltmpl/pcws.py:306 cmpltmpl/wipo.py:399 cmpltmpl/wsketch.py:422
 msgid "More data"
 msgstr "Детальніше"
 
-#: cmpltmpl/pcws.py:313 cmpltmpl/wsketch.py:439
+#: cmpltmpl/pcws.py:323 cmpltmpl/wsketch.py:439
 msgid "Less data"
 msgstr "Стисліше"
 
-#: wsketchcgi.py:107
+#: wsketchcgi.py:109
 msgid "This corpus does not have sketches"
 msgstr "У цьому корпусі немає шкіців"
 
-#: wsketchlib.py:151
+#: theslib.py:33 wsketchlib.py:149
 msgid "No lemma entered"
 msgstr "Не задана лема"
 
@@ -1813,36 +1809,36 @@ msgstr "Востаннє змінено"
 msgid "Annotation"
 msgstr "Розмічування"
 
-#: cmpltmpl/document.py:1669
+#: cmpltmpl/document.py:1673
 msgid "Error codes"
 msgstr "Коди помилок"
 
-#: cmpltmpl/document.py:1675
+#: cmpltmpl/document.py:1679
 msgid "Highlighting options"
 msgstr "Підсвітлюються пераметри"
 
-#: cmpltmpl/document.py:1685
+#: cmpltmpl/document.py:1689
 msgid "Highlight error words"
 msgstr "Підсвітлювати неправильні слова"
 
-#: cmpltmpl/document.py:1687
+#: cmpltmpl/document.py:1691
 msgid "Highlight corrected words"
 msgstr "Підсвітлювати виправлені слова"
 
-#: cmpltmpl/document.py:1689
+#: cmpltmpl/document.py:1693
 msgid "Highlight both"
 msgstr "Підсвітлювати обидва"
 
-#: cmpltmpl/document.py:1691
+#: cmpltmpl/document.py:1695
 msgid "Highlight query result"
 msgstr "Підсвітлювати знайдене"
 
-#: cmpltmpl/jobs.py:224 cmpltmpl/jobs.py:604 cmpltmpl/jobs.py:651
-#: cmpltmpl/jobs.py:712
+#: cmpltmpl/jobs.py:224 cmpltmpl/jobs.py:713 cmpltmpl/jobs.py:760
+#: cmpltmpl/jobs.py:821
 msgid "User"
 msgstr "Користувач"
 
-#: cmpltmpl/document.py:2911
+#: cmpltmpl/document.py:3963
 msgid "Menu position"
 msgstr "Переставити меню"
 
@@ -1858,15 +1854,15 @@ msgstr "Простий запит"
 msgid "Parallel Query"
 msgstr "Паралельний запит"
 
-#: cmpltmpl/first_form.py:418
+#: cmpltmpl/first_form.py:481
 msgid "Contains"
 msgstr "Містить"
 
-#: cmpltmpl/first_form.py:424
+#: cmpltmpl/first_form.py:487
 msgid "Does NOT contain"
 msgstr "Не містить"
 
-#: cmpltmpl/freq.py:218
+#: cmpltmpl/freq.py:219
 msgid "fourth level"
 msgstr "четвертий рівень"
 
@@ -1874,8 +1870,8 @@ msgstr "четвертий рівень"
 msgid "Using first"
 msgstr "Взято перші"
 
-#: cmpltmpl/freqs.py:462 cmpltmpl/freqs.py:478 cmpltmpl/view.py:1920
-#: cmpltmpl/view.py:1941
+#: cmpltmpl/freqs.py:462 cmpltmpl/freqs.py:478 cmpltmpl/view.py:1943
+#: cmpltmpl/view.py:1964
 msgid "lines only"
 msgstr "рядків"
 
@@ -1895,7 +1891,7 @@ msgstr "Наличко"
 msgid "Occurs"
 msgstr "Трапляється"
 
-#: cmpltmpl/jobs.py:392 cmpltmpl/jobs.py:624 cmpltmpl/jobs.py:772
+#: cmpltmpl/jobs.py:392 cmpltmpl/jobs.py:733 cmpltmpl/jobs.py:881
 #: cmpltmpl/lngroupinfo.py:365
 msgid "Action"
 msgstr "Дія"
@@ -1905,13 +1901,13 @@ msgstr "Показати шкіц слова"
 
 #: cmpltmpl/load_all_wseval.py:211
 msgid "Complete"
-msgstr "Повний"     # nocontext
+msgstr "Повний"
 
 #: cmpltmpl/load_all_wseval.py:230
 msgid "Min. score"
 msgstr "Мін. бал"
 
-#: cmpltmpl/pcws.py:452
+#: cmpltmpl/pcws.py:462
 msgid "No translation was found."
 msgstr "Переклад не знайдено."
 
@@ -1919,46 +1915,46 @@ msgstr "Переклад не знайдено."
 msgid "Clustering"
 msgstr "Групування"
 
-#: cmpltmpl/view.py:1055 cmpltmpl/view.py:1083 cmpltmpl/view.py:2009
-#: cmpltmpl/view.py:2064 cmpltmpl/view.py:2111 cmpltmpl/view.py:2165
-#: cmpltmpl/view.py:2214 cmpltmpl/widectx.py:110 cmpltmpl/widectx.py:182
-#: cmpltmpl/widectx.py:207
+#: cmpltmpl/jobs.py:465 cmpltmpl/view.py:1062 cmpltmpl/view.py:1090
+#: cmpltmpl/view.py:2032 cmpltmpl/view.py:2087 cmpltmpl/view.py:2134
+#: cmpltmpl/view.py:2188 cmpltmpl/view.py:2237 cmpltmpl/widectx.py:110
+#: cmpltmpl/widectx.py:182 cmpltmpl/widectx.py:207
 msgid "Loading..."
 msgstr "Вантажиться…"
 
-#: cmpltmpl/view.py:1932
+#: cmpltmpl/view.py:1955
 msgid "using first"
 msgstr "взято перших"
 
-#: cmpltmpl/view.py:1898
+#: cmpltmpl/view.py:1921
 msgid "using random"
 msgstr "взято випадкових"
 
-#: cmpltmpl/view.py:1866 cmpltmpl/view.py:1913
+#: cmpltmpl/view.py:1889 cmpltmpl/view.py:1936
 msgid "counting"
 msgstr "триває лічба…"
 
-#: cmpltmpl/view.py:1663
+#: cmpltmpl/view.py:1686
 msgid "Clear selection"
 msgstr "Скинути виділення"
 
 msgid "Positional Attributes"
 msgstr "Позиційні атрибути"
 
-#: cmpltmpl/wordlist_form.py:503
+#: cmpltmpl/wordlist_form.py:504
 msgid "collocations"
 msgstr "колокації"
 
-#: cmpltmpl/wordlist_form.py:619
+#: cmpltmpl/wordlist_form.py:621
 msgid "Filter options"
 msgstr "Параметри фільтрування"
 
-#: cmpltmpl/findx_upload_form.py:193 cmpltmpl/wordlist_form.py:708
-#: cmpltmpl/wordlist_form.py:722
+#: cmpltmpl/findx_upload_form.py:187 cmpltmpl/wordlist_form.py:711
+#: cmpltmpl/wordlist_form.py:725
 msgid "Clear"
 msgstr "Скинути"
 
-#: cmpltmpl/wordlist_form.py:760
+#: cmpltmpl/wordlist_form.py:763
 msgid "Output options"
 msgstr "Параметри виводу"
 
@@ -1984,12 +1980,12 @@ msgstr "Доступні вибірки для оцінювання"
 msgid "No evaluation sets available"
 msgstr "Немає доступних вибірок оцінювання"
 
-#: cmpltmpl/wseval.py:408
+#: cmpltmpl/wseval.py:405
 msgid "Concordance link"
 msgstr "Посилання на корпус"
 
-#: cmpltmpl/thes_form.py:280 cmpltmpl/wsketch_form.py:320
-#: cmpltmpl/wsketch_form.py:554
+#: cmpltmpl/thes_form.py:281 cmpltmpl/wsketch_form.py:321
+#: cmpltmpl/wsketch_form.py:572
 msgid "Minimum score"
 msgstr "Мінімальний бал"
 
@@ -2000,23 +1996,23 @@ msgstr "Перемкнути між сортуванням за частотою
 msgid "Sorting"
 msgstr "Сортування"
 
-#: cmpltmpl/pcws.py:268 cmpltmpl/wsketch.py:396
+#: cmpltmpl/pcws.py:278 cmpltmpl/wsketch.py:396
 msgid "Switch between flat list and gramrel tables"
 msgstr "Перемкнути між простим списком і таблицями синтзв’язків"
 
-#: cmpltmpl/pcws.py:279
+#: cmpltmpl/pcws.py:289
 msgid "Gramrels"
 msgstr "Синтзв’зки"
 
-#: conccgi.py:644 conclib.py:550
+#: conccgi.py:660 conclib.py:554
 msgid "Token number"
 msgstr "Номер токена"
 
-#: conccgi.py:652
+#: conccgi.py:668
 msgid "Document number"
 msgstr "Номер документа"
 
-#: conccgi.py:1880 cmpltmpl/corp_info.py:211
+#: conccgi.py:1892 cmpltmpl/corp_info.py:203
 msgid "Tokens"
 msgstr "Токенів"
 
@@ -2030,59 +2026,59 @@ msgstr "–%i"
 msgid "%iR"
 msgstr "+%i"
 
-#: pyconc.py:198
+#: pyconc.py:197
 msgid "Rel [%]"
-msgstr "Rel [%]"    # todo
+msgstr "Rel [%]"
 
-#: conclib.py:432
+#: conclib.py:433
 msgid "Negative filter"
 msgstr "Фільтр, що прибирає знайдене"
 
-#: conclib.py:433
+#: conclib.py:434
 msgid "Negative filter (excluding KWIC)"
 msgstr "Фільтр, що прибирає знайдене (ігноруючи ключові слова)"
 
-#: conclib.py:434
+#: conclib.py:435
 msgid "Positive filter"
 msgstr "Фільтр, що лишає знайдене"
 
-#: conclib.py:435
+#: conclib.py:436
 msgid "Positive filter (excluding KWIC)"
 msgstr "Лишати знайдене (ігноруючи ключові слова)"
 
-#: conclib.py:436
+#: conclib.py:437
 msgid "Word sketch item"
 msgstr "Елемент шкіца"
 
-#: conclib.py:438 cmpltmpl/viewattrs.py:376
+#: conclib.py:439 cmpltmpl/viewattrs.py:377
 msgid "GDEX"
 msgstr "Хороші приклади для словника"
 
-#: conclib.py:439
+#: conclib.py:440
 msgid "Switch KWIC"
 msgstr "Перемкнути на ключові слова в контексті"
 
-#: cmpltmpl/document.py:930
+#: cmpltmpl/document.py:927
 msgid "Simple query"
 msgstr "Простий запит"
 
-#: cmpltmpl/document.py:1065
+#: cmpltmpl/document.py:1063
 msgid "Query type"
 msgstr "Тип запиту"
 
-#: cmpltmpl/document.py:1081
+#: cmpltmpl/document.py:1079
 msgid "simple"
 msgstr "простий"
 
-#: cmpltmpl/document.py:1114
+#: cmpltmpl/document.py:1112
 msgid "phrase"
 msgstr "фраза"
 
-#: cmpltmpl/document.py:1129
+#: cmpltmpl/document.py:1127
 msgid "word"
 msgstr "слово"
 
-#: cmpltmpl/document.py:1144
+#: cmpltmpl/document.py:1142
 msgid "character"
 msgstr "символ"
 
@@ -2094,18 +2090,18 @@ msgstr "Мінімальне відношення (%)"
 msgid "Minimum freq."
 msgstr "Мінімальна частота"
 
-#: cmpltmpl/wordlist_form.py:631
+#: cmpltmpl/wordlist_form.py:633
 msgid "Regular expression pattern"
 msgstr "Схема регулярного виразу"
 
 msgid "&lt; Concordance"
 msgstr "&lt; Конкорданс"
 
-#: cmpltmpl/document.py:981 cmpltmpl/document.py:1012
+#: cmpltmpl/document.py:978 cmpltmpl/document.py:1009
 msgid "Query types"
 msgstr "Типи запитів"
 
-#: cmpltmpl/document.py:1357
+#: cmpltmpl/document.py:1355
 msgid "match case"
 msgstr "добирати регістр"
 
@@ -2116,92 +2112,91 @@ msgid ""
 "list should be a list of lemmas. We use exact matching, not regular-"
 "expression matching, for file input."
 msgstr ""
-"Чорні та білі списки для словника частот мають лежати у текстовому файлі "
-"(.txt), закодованому в UTF-8, по одному елементу на рядок. Елементи мають "
+"Чорні та білі списки для словника частот мають лежати у текстовому файлі (."
+"txt), закодованому в UTF-8, по одному елементу на рядок. Елементи мають "
 "відповідати вибраному атрибутові, тобто якщо вибрано лему — це має бути "
 "список лем. Використовується точний пошук, не пошук за регулярним виразом."
 
-
-#: cmpltmpl/wseval.py:422
+#: cmpltmpl/wseval.py:419
 msgid "Sources"
-msgstr "Джерела"    # nocontext
+msgstr "Джерела"
 
-#: cmpltmpl/wsketch.py:515
+#: cmpltmpl/wsketch.py:514
 msgid "usually in"
 msgstr "зазвичай у"
 
-#: cmpltmpl/wsketch.py:526
+#: cmpltmpl/wsketch.py:525
 msgid "%, percentile"
-msgstr "%, процентиль"    # nocontext
+msgstr "%, процентиль"
 
-#: conccgi.py:860
+#: conccgi.py:865
 msgid "No char entered"
 msgstr "Не задано знаку"
 
-#: conccgi.py:1033
+#: conccgi.py:1038
 msgid "Please specify positive filter to switch"
 msgstr "Для перемикання означте фільтр, що лишає знайдене"
 
-#: cmpltmpl/document.py:1507
+#: cmpltmpl/document.py:1511
 msgid "filter out empty lines"
 msgstr "прибрати порожні рядки"
 
-#: cmpltmpl/viewattrs.py:301
+#: cmpltmpl/viewattrs.py:302
 msgid "Show references above the concordance lines, instead of the left column"
 msgstr "Показувати джерела над рядком, а не у лівому стовпчику"
 
-#: cmpltmpl/viewattrs.py:306
+#: cmpltmpl/viewattrs.py:307
 msgid "References up"
 msgstr "Підіймати джерела"
 
 msgid "Key Words In Context"
 msgstr "Ключові слова в контексті"
 
-#: cmpltmpl/view.py:425 cmpltmpl/view.py:597
+#: cmpltmpl/view.py:604
 msgid "KWIC"
 msgstr "Ключові слова"
 
-#: cmpltmpl/view.py:603
+#: cmpltmpl/view.py:610
 msgid "Show sentences"
 msgstr "Показувати знайдене в реченнях"
 
-#: cmpltmpl/view.py:617
+#: cmpltmpl/view.py:624
 msgid "Sentence"
 msgstr "У реченні"
 
-#: cmpltmpl/view.py:625
+#: cmpltmpl/view.py:632
 msgid "Show aligned segments"
 msgstr "Показати вирівняні частини"
 
-#: cmpltmpl/view.py:639
+#: cmpltmpl/view.py:646
 msgid "Alignment"
 msgstr "Вирівняно"
 
-#: cmpltmpl/view.py:1067
+#: cmpltmpl/view.py:1074
 msgid "<--not translated-->"
 msgstr "<--не перекладено-->"
 
-#: cmpltmpl/conc.py:505 cmpltmpl/document.py:990 cmpltmpl/document.py:1026
-#: cmpltmpl/filter_form.py:326 cmpltmpl/first_form.py:304
-#: cmpltmpl/first_form.py:794 cmpltmpl/simple_search.py:469
-#: cmpltmpl/wordlist_form.py:364 cmpltmpl/wordlist_form.py:511
+#: cmpltmpl/conc.py:506 cmpltmpl/document.py:987 cmpltmpl/document.py:1023
+#: cmpltmpl/filter_form.py:339 cmpltmpl/first_form.py:367
+#: cmpltmpl/first_form.py:857 cmpltmpl/simple_search.py:469
+#: cmpltmpl/wordlist_form.py:364 cmpltmpl/wordlist_form.py:512
 msgid "Text types"
 msgstr "Типи текстів"
 
-#: conccgi.py:1665 conccgi.py:1710
+#: conccgi.py:1675 conccgi.py:1720
 #, python-format
 msgid "You are allowed to see only %s items."
 msgstr "Ви можете бачити тільки %s елементів."
 
-#: conclib.py:425 cmpltmpl/view.py:1841
+#: conclib.py:426 cmpltmpl/view.py:1864
 msgid "Label filter"
 msgstr "Фільтр наличок"
 
-#: conclib.py:441
+#: conclib.py:442
 msgid "Sort labels"
 msgstr "Сортувати налички"
 
-#: conclib.py:491
+#: conclib.py:495
 msgid "Error while reading .info file"
 msgstr "Помилка читання .info-файлу"
 
@@ -2209,112 +2204,112 @@ msgstr "Помилка читання .info-файлу"
 msgid "Using random"
 msgstr "Взято випадкові"
 
-#: cmpltmpl/view.py:1677 cmpltmpl/wsketch.py:878
+#: cmpltmpl/view.py:1700 cmpltmpl/wsketch.py:877
 msgid "Undo"
 msgstr "Скасувати"
 
-#: cmpltmpl/view.py:1953
+#: cmpltmpl/view.py:1976
 msgid "use random"
 msgstr "взяти випадкові"
 
-#: cmpltmpl/wordlist_form.py:677
+#: cmpltmpl/wordlist_form.py:680
 msgid "Maximum frequency"
 msgstr "Максимальна частота"
 
-#: cmpltmpl/wordlist_form.py:694
+#: cmpltmpl/wordlist_form.py:697
 msgid "(0 = no maximum frequency)"
 msgstr "(0 = без обмежень зверху)"
 
-#: cmpltmpl/wordlist_form.py:964
+#: cmpltmpl/wordlist_form.py:980
 msgid "Change output attribute(s)"
 msgstr "Змінити показувані атрибут(и)"
 
-#: cmpltmpl/wordlist_form.py:1001
+#: cmpltmpl/wordlist_form.py:1017
 msgid ""
 "You can select one or more output attributes. Please note that this option "
 "can be time-consuming."
 msgstr ""
-"Можна вибрати один або декілька показуваних атрибутів. "
-"Ця опція може бути часовитратною."
+"Можна вибрати один або декілька показуваних атрибутів. Ця опція може бути "
+"часовитратною."
 
-#: conccgi.py:1572
+#: conccgi.py:1579
 msgid "Word sketch collocations are available with raw hit counts only"
 msgstr "Колокації в шкіцах доступні лише з кількостями знайдень"
 
-#: conccgi.py:1654
+#: conccgi.py:1664
 msgid "Doc freq"
 msgstr "Част. док."
 
-#: conccgi.py:2155 conccgi.py:2178 conccgi.py:2245 conccgi.py:2269
-#: conccgi.py:2318 conccgi.py:2388
+#: conccgi.py:2165 conccgi.py:2188 conccgi.py:2255 conccgi.py:2279
+#: conccgi.py:2328 conccgi.py:2398
 msgid "Annotation locked by user"
 msgstr "Анотування замкнуте користувачем"
 
-#: cmpltmpl/conc.py:344
+#: cmpltmpl/conc.py:345
 msgid "Filter selected lines"
 msgstr "Лишити тільки вибрані рядки"
 
-#: cmpltmpl/conc.py:585
+#: cmpltmpl/conc.py:586
 msgid "Concordance distribution overview"
 msgstr "Розподіл частот в конкордансі"
 
-#: cmpltmpl/conc.py:597
+#: cmpltmpl/conc.py:598
 msgid "Visualize"
 msgstr "Гістограма"
 
-#: cmpltmpl/corp_info.py:203
+#: cmpltmpl/corp_info.py:195
 msgid "Counts"
 msgstr "Кількості"
 
-#: cmpltmpl/corp_info.py:220
+#: cmpltmpl/corp_info.py:212
 msgid "Words"
 msgstr "Слів"
 
-#: cmpltmpl/corp_info.py:229
+#: cmpltmpl/corp_info.py:226
 msgid "Sentences"
 msgstr "Речень"
 
-#: cmpltmpl/corp_info.py:238
+#: cmpltmpl/corp_info.py:237
 msgid "Paragraphs"
 msgstr "Абзаців"
 
-#: cmpltmpl/corp_info.py:247
+#: cmpltmpl/corp_info.py:248
 msgid "Documents"
 msgstr "Документи"
 
-#: cmpltmpl/corp_info.py:396
+#: cmpltmpl/corp_info.py:404
 msgid "Tags legend"
 msgstr "Огляд позначок"
 
 msgid "tagset"
 msgstr "система позначок"
 
-#: cmpltmpl/corp_info.py:263
+#: cmpltmpl/corp_info.py:265
 msgid "General info"
 msgstr "Загальна інформація"
 
-#: cmpltmpl/corp_info.py:293 cmpltmpl/wsketch_form.py:705
+#: cmpltmpl/corp_info.py:295 cmpltmpl/wsketch_form.py:724
 msgid "Language"
 msgstr "Мова"
 
-#: cmpltmpl/corp_info.py:303
+#: cmpltmpl/corp_info.py:305
 msgid "Encoding"
 msgstr "Кодування"
 
-#: cmpltmpl/corp_info.py:312
+#: cmpltmpl/corp_info.py:314
 msgid "Compiled"
 msgstr "Скомпільовано"
 
-#: cmpltmpl/corp_info.py:333 cmpltmpl/jobs.py:196 cmpltmpl/jobs.py:596
-#: cmpltmpl/jobs.py:649 cmpltmpl/jobs.py:688
+#: cmpltmpl/corp_info.py:335 cmpltmpl/jobs.py:196 cmpltmpl/jobs.py:705
+#: cmpltmpl/jobs.py:758 cmpltmpl/jobs.py:797
 msgid "Description"
 msgstr "Специфікація"
 
-#: cmpltmpl/corp_info.py:368
+#: cmpltmpl/corp_info.py:370
 msgid "Lexicon sizes"
 msgstr "Розміри лексикону"
 
-#: cmpltmpl/corp_info.py:422
+#: cmpltmpl/corp_info.py:430
 msgid "Lempos suffixes"
 msgstr "Lempos-закінчення"
 
@@ -2340,59 +2335,59 @@ msgstr "Статистика розмічування"
 msgid "Bilingual Word Sketch"
 msgstr "Двомовний шкіц слова"
 
-#: cmpltmpl/viewattrs.py:509
+#: cmpltmpl/viewattrs.py:511
 msgid "Checkbox for selecting lines"
 msgstr "Показувати прапорці для вибору рядка"
 
-#: cmpltmpl/view.py:1671 cmpltmpl/wsketch.py:872
+#: cmpltmpl/view.py:1694 cmpltmpl/wsketch.py:871
 msgid "lines assigned"
 msgstr "рядків вирівняно"
 
-#: cmpltmpl/wordlist_form.py:779
+#: cmpltmpl/wordlist_form.py:782
 msgid "Hit counts"
 msgstr "Кількість знайдень"
 
-#: cmpltmpl/wordlist.py:735
+#: cmpltmpl/wordlist.py:747
 msgid "Switch focus and reference (sub)corpus"
 msgstr "Поміняти поточний і опорний (під)корпуси"
 
-#: cmpltmpl/wordlist.py:840
+#: cmpltmpl/wordlist.py:852
 msgid "Word sketch collocations"
 msgstr "Колокації зі шкіца"
 
-#: cmpltmpl/wordlist.py:1120
+#: cmpltmpl/wordlist.py:1141
 msgid "-grams"
 msgstr "-грами"
 
-#: cmpltmpl/savewipo.py:119 cmpltmpl/wipo.py:339 cmpltmpl/wordlist.py:1135
-#: cmpltmpl/wordlist.py:1163
+#: cmpltmpl/savewipo.py:119 cmpltmpl/wipo.py:339 cmpltmpl/wordlist.py:1156
+#: cmpltmpl/wordlist.py:1185
 msgid "/mill"
 msgstr "/млн."
 
-#: conccgi.py:2210
+#: conccgi.py:2220
 msgid "You must specify corpus, entry and username"
-msgstr "Ви маєте задати корпус, анотацію та ім’я користувача"    # nocontext
+msgstr "Ви маєте задати корпус, анотацію та ім’я користувача"
 
-#: conccgi.py:2326
+#: conccgi.py:2336
 msgid "Label not found"
 msgstr "Наличко не знайдене"
 
-#: conccgi.py:2398 conccgi.py:2419
+#: conccgi.py:2408 conccgi.py:2429
 msgid "Error while renaming labels"
 msgstr "Помилка перейменування наличок"
 
-#: conclib.py:489
+#: conclib.py:493
 msgid "Empty .info file"
 msgstr "Пустий .info-файл"
 
-#: cmpltmpl/corp_info.py:88 cmpltmpl/document.py:2808
+#: cmpltmpl/corp_info.py:88 cmpltmpl/document.py:3842
 msgid "Corpus info"
 msgstr "Про корпус"
 
 msgid "Position in corpus"
 msgstr "Місце в корпусі"
 
-#: cmpltmpl/document.py:3081 cmpltmpl/document.py:3093
+#: cmpltmpl/document.py:4146 cmpltmpl/document.py:4158
 msgid "WARNING"
 msgstr "УВАГА"
 
@@ -2407,12 +2402,12 @@ msgstr "Перерисувати"
 msgid "Extracted Terms"
 msgstr "Витягнені терміни"
 
-#: conclib.py:437 cmpltmpl/savewipo.py:105 cmpltmpl/wipo.py:322
+#: conclib.py:438 cmpltmpl/savewipo.py:105 cmpltmpl/wipo.py:322
 msgid "Term"
 msgstr "Термін"
 
-#: cmpltmpl/document.py:2667 cmpltmpl/skell.py:403
-#: cmpltmpl/wordlist_form.py:480 cmpltmpl/wsketch_form.py:88
+#: cmpltmpl/document.py:3652 cmpltmpl/skell.py:412
+#: cmpltmpl/wordlist_form.py:481 cmpltmpl/wsketch_form.py:88
 #: cmpltmpl/wsketch_form.py:148 cmpltmpl/wsketch.py:92
 msgid "Word sketch"
 msgstr "Шкіц слова"
@@ -2423,11 +2418,11 @@ msgstr "Слово"
 msgid "Do not use Flash for copying to clipboard"
 msgstr "Не вживати Флеш для записування в буфер"
 
-#: cmpltmpl/viewattrs.py:525
+#: cmpltmpl/viewattrs.py:527
 msgid "Show line numbers"
 msgstr "Нумерувати рядки "
 
-#: cmpltmpl/view.py:1551
+#: cmpltmpl/view.py:1574
 msgid "Wait for page reload"
 msgstr "Зачекайте доки сторінка поновиться"
 
@@ -2451,19 +2446,19 @@ msgstr "результати в CSV"
 msgid "Term candidates total count"
 msgstr "Загальна кількість потенційних термінів"
 
-#: cmpltmpl/wordlist_form.py:543
+#: cmpltmpl/wordlist_form.py:544
 msgid "use n-grams"
 msgstr "вживати N-грами"
 
-#: cmpltmpl/wordlist_form.py:548
+#: cmpltmpl/wordlist_form.py:549
 msgid "Value of n:"
 msgstr "Значення N:"
 
-#: cmpltmpl/wsketch_form.py:559
+#: cmpltmpl/wsketch_form.py:577
 msgid "for unary relations"
 msgstr "для унарних зв’язків"
 
-#: wsketchcgi.py:404
+#: wsketchcgi.py:408
 msgid "Insufficient data for multiword sketch of"
 msgstr "Недостатньо даних для багатослівного шкіца"
 
@@ -2474,196 +2469,192 @@ msgstr "Місце в корпусі"
 msgid "English Language Learning"
 msgstr "Вивчення англійської"
 
-#: cmpltmpl/skell.py:489
+#: cmpltmpl/skell.py:509
 msgid "hits per million"
 msgstr "Знайдень на мільйон"
 
-#: cmpltmpl/wordlist_form.py:492
+#: cmpltmpl/wordlist_form.py:493
 msgid "terms"
 msgstr "терміни"
 
-#: cmpltmpl/wordlist_form.py:923
+#: cmpltmpl/wordlist_form.py:926
 msgid "Prefer"
 msgstr "Давати перевагу"
 
-#: cmpltmpl/wordlist_form.py:929
+#: cmpltmpl/wordlist_form.py:932
 msgid "rare words"
 msgstr "рідким словам"
 
-#: cmpltmpl/wordlist_form.py:936
+#: cmpltmpl/wordlist_form.py:939
 msgid "common words"
 msgstr "частим словам"
 
-#: cmpltmpl/wordlist.py:851 cmpltmpl/wordlist.py:1105
+#: cmpltmpl/skell.py:337 cmpltmpl/wordlist.py:868 cmpltmpl/wordlist.py:1126
 msgid "Terms"
 msgstr "Терміни"
 
-#: cmpltmpl/view.py:503 cmpltmpl/wsketch_form.py:914
+#: cmpltmpl/view.py:510 cmpltmpl/wsketch_form.py:933
 msgid "Saved"
 msgstr "Збережено"
 
-#: cmpltmpl/document.py:2309 cmpltmpl/document.py:2797
 msgid "Corpus info page for"
 msgstr "Сторінка з відомостями про корпус"
 
 msgid "Corpus Info"
 msgstr "Про корпус"
 
-#: cmpltmpl/document.py:2443 cmpltmpl/document.py:2448
+#: cmpltmpl/document.py:3373
 msgid "Print this page"
 msgstr "Друкувати цю сторінку"
 
-#: cmpltmpl/document.py:2465
+#: cmpltmpl/document.py:3390
 msgid "Get short permanent link"
 msgstr "Створити коротке стале посилання"
 
-#: cmpltmpl/document.py:2470
 msgid "Permalink"
 msgstr "Стале посилання"
 
-#: cmpltmpl/viewattrs.py:542
+#: cmpltmpl/viewattrs.py:544
 msgid "Shorten long references"
 msgstr "Скорочувати довгі джерела"
 
-#: conclib.py:430
+#: conclib.py:431
 msgid "Subparts filter"
 msgstr "Фільтр перетинів"
 
-#: conclib.py:431 cmpltmpl/conc.py:321
+#: conclib.py:432 cmpltmpl/conc.py:322
 msgid "Filter all but first hit in document"
 msgstr "Залишити тільки перше знайдення на документ"
 
-#: wsketchlib.py:387 cmpltmpl/wsketch.py:1203
+#: wsketchlib.py:380 cmpltmpl/wsketch.py:1199
 msgid "unary rels"
 msgstr "унарні зв’язки"
 
-#: cmpltmpl/conc.py:277
+#: cmpltmpl/conc.py:278
 msgid "Filter lines with subpart matches"
 msgstr "Прибрати знайдення, що перетинаються з іншими знайденнями"
 
-#: cmpltmpl/conc.py:336
+#: cmpltmpl/conc.py:337
 msgid "1st hit in doc"
 msgstr "1-e в документі"
 
-#: cmpltmpl/conc.py:356
+#: cmpltmpl/conc.py:357
 msgid "Selected lines"
 msgstr "Вибрані рядки"
 
-#: cmpltmpl/collx.py:452 cmpltmpl/freqs.py:643 cmpltmpl/lngroupinfo.py:402
+#: cmpltmpl/collx.py:452 cmpltmpl/freqs.py:644 cmpltmpl/lngroupinfo.py:402
 msgid "P"
-msgstr "✓"    # todo: взяти/прибрати
+msgstr "✓"
 
-#: cmpltmpl/collx.py:469 cmpltmpl/collx.py:477 cmpltmpl/freqs.py:658
-#: cmpltmpl/freqs.py:665 cmpltmpl/lngroupinfo.py:423
+#: cmpltmpl/collx.py:469 cmpltmpl/collx.py:477 cmpltmpl/freqs.py:659
+#: cmpltmpl/freqs.py:666 cmpltmpl/lngroupinfo.py:423
 msgid "N"
 msgstr "✗"
 
-#: cmpltmpl/conc.py:289
+#: cmpltmpl/conc.py:290
 msgid "Overlaps"
 msgstr "Без перетинів"
 
-#: cmpltmpl/document.py:3062
+#: cmpltmpl/document.py:4127
 msgid "Lexical Computing logo"
-msgstr "Лого Lexical Computing"
+msgstr "Логотип Lexical Computing"
 
-#: cmpltmpl/first_form.py:453
+#: cmpltmpl/first_form.py:516
 msgid "Corpus documentation"
 msgstr "Документація корпусу"
 
-#: cmpltmpl/skell.py:936
+#: cmpltmpl/skell.py:1072
 msgid "Lexical Computing Ltd."
 msgstr "Lexical Computing Ltd."
 
 #: cmpltmpl/wipo.py:166
 msgid "Remove single"
-msgstr "Прибрати один"    # nocontext
+msgstr "Прибрати один"
 
 #: cmpltmpl/wipo.py:177
 msgid "Add single"
-msgstr "Додати один"    # nocontext
+msgstr "Додати один"
 
-#: cmpltmpl/wseval.py:554
+#: cmpltmpl/wseval.py:551
 msgid "Show concordance"
 msgstr "Показати конкорданс"
 
-#: cmpltmpl/wsketch.py:1246 cmpltmpl/wsketch.py:1403
+#: cmpltmpl/wsketch.py:1242 cmpltmpl/wsketch.py:1391
 msgid "Show multiword sketch"
 msgstr "Показати багатослівний шкіц"
 
-#: conccgi.py:1091 conccgi.py:1094 conccgi.py:1096 conccgi.py:1098
-#: cmpltmpl/document.py:1553
+#: conccgi.py:1096 conccgi.py:1099 conccgi.py:1101 conccgi.py:1103
+#: cmpltmpl/document.py:1557
 msgid "Error code"
 msgstr "Код помилки"
 
-#: conccgi.py:1092 conccgi.py:1100
+#: conccgi.py:1097 conccgi.py:1105
 msgid "Error form"
 msgstr "Помильна форма"
 
-#: conccgi.py:1093
+#: conccgi.py:1098
 msgid "Correction form"
 msgstr "Форма виправлень"
 
-#: conccgi.py:1094 conccgi.py:1098
+#: conccgi.py:1099 conccgi.py:1103
 msgid "error form"
 msgstr "помильна форма"
 
-#: conccgi.py:1096 conccgi.py:1098 conccgi.py:1100
+#: conccgi.py:1101 conccgi.py:1103 conccgi.py:1105
 msgid "correction form"
 msgstr "форма виправлень"
 
-#: conccgi.py:1550
+#: conccgi.py:1557
 msgid "N-grams and \"rest of corpus\" can use only raw hit counts"
 msgstr "N-грами і „решта корпусу“ можуть вживати тільки кількості знайдень"
 
-#: conccgi.py:1553
+#: conccgi.py:1560
 msgid "N-grams are not compatible with changing output attribute(s)"
 msgstr "N-грами несумісні зі зміною показуваних атрибутів"
 
-#: conccgi.py:1557
+#: conccgi.py:1564
 msgid "N-grams and \"rest of corpus\" can use only positional attributes"
 msgstr "N-грами і „решта корпусу“ можуть вживати тільки атрибути слова"
 
 msgid "N-grams and \"rest of corpus\" can not be used together"
 msgstr "N-грами і „решта корпусу“ не можуть вживатися разом"
 
-#: conccgi.py:1575
+#: conccgi.py:1585
 msgid "Terms are available with raw hit counts only"
 msgstr "Терміни доступні лише разом з кількостями знайдень"
 
-#: corplib.py:365
+#: corplib.py:390
 msgid "--nothing found--"
 msgstr "--нічого не знайдено--"
 
-#: cmpltmpl/concdesc.py:149 cmpltmpl/document.py:2335 cmpltmpl/wordlist.py:688
-#: cmpltmpl/wordlist.py:1082
+#: cmpltmpl/concdesc.py:149 cmpltmpl/document.py:3342 cmpltmpl/wordlist.py:689
+#: cmpltmpl/wordlist.py:1103
 msgid "-- the rest of the corpus"
 msgstr "-- решта корпусу"
 
-#: cmpltmpl/conc.py:298
+#: cmpltmpl/conc.py:299
 msgid "Filter definition candidates"
 msgstr "Фільтрувати потенційні означення"
 
-#: cmpltmpl/conc.py:313
+#: cmpltmpl/conc.py:314
 msgid "Definitions"
 msgstr "Означення"
 
-#: cmpltmpl/conc.py:362
+#: cmpltmpl/conc.py:363
 msgid "Filter unselected lines"
 msgstr "Прибрати вибрані рядки"
 
-#: cmpltmpl/conc.py:374
+#: cmpltmpl/conc.py:375
 msgid "Unselected"
 msgstr "Невибране"
 
-#: cmpltmpl/corp_info.py:171
 msgid "statistics and info"
 msgstr "статистика та інформація"
 
-#: cmpltmpl/corp_info.py:492
+#: cmpltmpl/corp_info.py:500
 msgid "Structures and attributes"
 msgstr "Структури з атрибутами"
 
-#: cmpltmpl/corp_info.py:503
 msgid "Click to see attributes"
 msgstr "Показати атрибути"
 
@@ -2677,37 +2668,37 @@ msgstr "значення"
 msgid "Top error lists"
 msgstr "Списки найпоширеніших помилок"
 
-#: cmpltmpl/thes_form.py:211 cmpltmpl/wsketch_form.py:224
+#: cmpltmpl/thes_form.py:212 cmpltmpl/wsketch_form.py:225
 msgid "auto"
 msgstr "auto"
 
-#: cmpltmpl/thes.py:443 cmpltmpl/wsketch.py:566
+#: cmpltmpl/thes.py:443 cmpltmpl/wsketch.py:565
 msgid "Alternative PoS"
 msgstr "Інші ЧМ"
 
 msgid "Save & Change Options"
 msgstr "Зберегти і застосувати налаштування"
 
-#: cmpltmpl/wordlist_form.py:906
+#: cmpltmpl/wordlist_form.py:909
 msgid "the rest of the corpus"
 msgstr "решта корпусу"
 
 msgid "Concordance for word sketch not available"
 msgstr "Конкорданс для шкіца слова недоступний"
 
-#: skellcgi.py:250
+#: skellcgi.py:290
 msgid "Thesaurus not available for multiword queries"
 msgstr "Тезаурус недоступний для багатослівних запитів"
 
-#: wsketchcgi.py:290
+#: wsketchcgi.py:293
 msgid "No translation found for"
 msgstr "Не знайдено перекладу для"
 
-#: cmpltmpl/pcws.py:430 cmpltmpl/wsketch.py:742
+#: cmpltmpl/pcws.py:440 cmpltmpl/wsketch.py:741
 msgid "Use another candidate translation"
 msgstr "Вибрати інший переклад-претендент"
 
-#: cmpltmpl/wsketch_form.py:815
+#: cmpltmpl/wsketch_form.py:834
 msgid "No corpora available"
 msgstr "Жоден корпус не доступний"
 
@@ -2715,92 +2706,90 @@ msgstr "Жоден корпус не доступний"
 msgid "Translate"
 msgstr "Перекласти"
 
-#: cmpltmpl/wsketch.py:765
+#: cmpltmpl/wsketch.py:764
 msgid "Click on collocates to access reciprocal bilingual search"
 msgstr "Натисніть на колоканті для оберненого двомовного пошуку"
 
-#: cmpltmpl/wsketch.py:773
+#: cmpltmpl/wsketch.py:772
 msgid "or find"
 msgstr "або власноруч шукайте"
 
-#: cmpltmpl/wsketch.py:805
+#: cmpltmpl/wsketch.py:804
 msgid "translated collocations"
 msgstr "переклади колокацій"
 
-#: skellcgi.py:59 skellcgi.py:90 skellcgi.py:211 skellcgi.py:252
+#: skellcgi.py:84 skellcgi.py:115 skellcgi.py:251 skellcgi.py:292
 msgid "Empty query"
 msgstr "Пустий запит"
 
-#: skellcgi.py:264
+#: skellcgi.py:304
 msgid "No salient entries for this query"
-msgstr "Жодної доступної колокації"    # todo
+msgstr "Жодної доступної колокації"
 
-#: wsketchlib.py:407
+#: wsketchlib.py:400
 msgid "Constructions"
 msgstr "Конструкції"
 
-#: cmpltmpl/coll.py:225 cmpltmpl/coll.py:241
+#: cmpltmpl/coll.py:226 cmpltmpl/coll.py:242
 msgid "Enter an integer"
 msgstr "Введіть ціле число"
 
-#: cmpltmpl/coll.py:261 cmpltmpl/coll.py:280 cmpltmpl/findx_form.py:259
-#: cmpltmpl/patterns_form.py:277 cmpltmpl/wordlist_form.py:670
+#: cmpltmpl/coll.py:262 cmpltmpl/coll.py:281 cmpltmpl/findx_form.py:259
+#: cmpltmpl/patterns_form.py:277 cmpltmpl/wordlist_form.py:673
 msgid "Minimum frequency must be a positive integer or zero"
 msgstr "Мінімальна частота має бути цілим невід’ємним числом"
 
 #: cmpltmpl/collx.py:301 cmpltmpl/savecoll_form.py:256
-#: cmpltmpl/savefreq_form.py:272 cmpltmpl/savewl_form.py:323
+#: cmpltmpl/savefreq_form.py:272 cmpltmpl/savewl_form.py:348
 #: cmpltmpl/wordlist.py:543
 msgid "Page must be a positive integer"
 msgstr "Номер сторінки має бути цілим додатним числом"
 
-#: cmpltmpl/cpa_form.py:189 cmpltmpl/thes_form.py:192
-#: cmpltmpl/wsketch_form.py:205
+#: cmpltmpl/cpa_form.py:189 cmpltmpl/thes_form.py:193
+#: cmpltmpl/wsketch_form.py:206
 msgid "Enter a query"
 msgstr "Введіть запит"
 
 msgid "? Help on Concordance Query"
 msgstr "? Довідка: конкорданс"
 
-#: cmpltmpl/document.py:2152 cmpltmpl/skell.py:228
+#: cmpltmpl/document.py:3135 cmpltmpl/skell.py:233
 msgid "Feedback form"
 msgstr "Зв’язок"
 
-#: cmpltmpl/document.py:2575
+#: cmpltmpl/document.py:3539
 msgid ""
 "Please update your bookmarks. This corpus version is now obsolete. Go to the"
 msgstr ""
 "Оновіть, будь ласка, закладки. Ця версія корпусу застаріла. Перейдіть на"
 
-#: cmpltmpl/document.py:2584
+#: cmpltmpl/document.py:3548
 msgid "up-to-date version"
 msgstr "поточну версію"
 
-#: cmpltmpl/document.py:2590
+#: cmpltmpl/document.py:3554
 msgid "See"
-msgstr "Дивитись"    # nocontext
+msgstr "Дивитись"
 
-#: cmpltmpl/document.py:2598
+#: cmpltmpl/document.py:3562
 msgid "what's new"
 msgstr "що нового"
 
-#: cmpltmpl/document.py:2831
 msgid "List my currently running background jobs"
 msgstr "Показати поточні серверні задачі"
 
-#: cmpltmpl/document.py:2839 cmpltmpl/jobs.py:98
+#: cmpltmpl/document.py:3882 cmpltmpl/jobs.py:98
 msgid "My jobs"
 msgstr "Серверні задачі"
 
-#: cmpltmpl/document.py:2847
 msgid "List all currently running background jobs"
 msgstr "Показати всі поточні серверні задачі"
 
-#: cmpltmpl/document.py:2855 cmpltmpl/jobs.py:91
+#: cmpltmpl/document.py:3906 cmpltmpl/jobs.py:91
 msgid "All jobs"
 msgstr "Всі задачі"
 
-#: cmpltmpl/filter_form.py:280 cmpltmpl/filter_form.py:296
+#: cmpltmpl/filter_form.py:293 cmpltmpl/filter_form.py:309
 msgid "Must be an integer"
 msgstr "Має бути цілим числом"
 
@@ -2808,7 +2797,7 @@ msgstr "Має бути цілим числом"
 msgid "Minimum ratio must be between 0 and 100"
 msgstr "Мінімальне відношення має бути між 0 і 100"
 
-#: cmpltmpl/freq.py:204 cmpltmpl/freq.py:342 cmpltmpl/freqs.py:557
+#: cmpltmpl/freq.py:205 cmpltmpl/freq.py:343 cmpltmpl/freqs.py:557
 msgid "Must be a positive integer or zero"
 msgstr "Частота має бути невід’ємним цілим числом"
 
@@ -2828,45 +2817,44 @@ msgstr "Мінімальна вирізненість має бути дійсн
 msgid "Maximum number must be an integer"
 msgstr "Максимальна кількість має бути додатним цілим числом"
 
-#: cmpltmpl/patterns_form.py:341 cmpltmpl/thes_form.py:353
-#: cmpltmpl/wsketch_form.py:532
+#: cmpltmpl/patterns_form.py:341 cmpltmpl/thes_form.py:354
+#: cmpltmpl/wsketch_form.py:550
 msgid "Minimum similarity must be a real number"
 msgstr "Мінімальна подібність має бути дійсним числом"
 
 #: cmpltmpl/patterns_form.py:359 cmpltmpl/savecoll_form.py:285
-#: cmpltmpl/savefreq_form.py:304 cmpltmpl/savewl_form.py:354
-#: cmpltmpl/thes_form.py:272 cmpltmpl/wsdiff_form.py:485
-#: cmpltmpl/wsdiff_form.py:516 cmpltmpl/wsketch_form.py:354
+#: cmpltmpl/savefreq_form.py:304 cmpltmpl/savewl_form.py:379
+#: cmpltmpl/thes_form.py:273 cmpltmpl/wsdiff_form.py:486
+#: cmpltmpl/wsdiff_form.py:517 cmpltmpl/wsketch_form.py:355
 msgid "Maximum number must be a positive integer"
 msgstr "Максимальна кількість має бути додатним числом"
 
-#: cmpltmpl/reduce_form.py:206 cmpltmpl/saveconc_form.py:289
-#: cmpltmpl/saveconc_form.py:344 cmpltmpl/sort.py:245 cmpltmpl/wipo.py:272
-#: cmpltmpl/wsketch_form.py:491 cmpltmpl/wsketch_form.py:613
+#: cmpltmpl/reduce_form.py:207 cmpltmpl/saveconc_form.py:291
+#: cmpltmpl/saveconc_form.py:346 cmpltmpl/sort.py:246 cmpltmpl/wipo.py:272
+#: cmpltmpl/wsketch_form.py:509 cmpltmpl/wsketch_form.py:631
 msgid "Must be a positive integer"
 msgstr "Має бути додатним числом"
 
-#: cmpltmpl/saveconc_form.py:349
+#: cmpltmpl/saveconc_form.py:351
 msgid "(max. 100,000)"
 msgstr "(макс. 100 000)"
 
-#: cmpltmpl/saveconc_form.py:408
+#: cmpltmpl/saveconc_form.py:410
 msgid "Enter a name"
 msgstr "Введіть назву"
 
-#: cmpltmpl/skell.py:390
+#: cmpltmpl/skell.py:399
 msgid "Examples"
 msgstr "Приклади"
 
-#: cmpltmpl/skell.py:416
+#: cmpltmpl/document.py:3666 cmpltmpl/skell.py:425
 msgid "Similar words"
 msgstr "Подібні слова"
 
-#: cmpltmpl/skell.py:950
+#: cmpltmpl/skell.py:1086
 msgid "Ad free version"
 msgstr "Версія без реклами"
 
-#: cmpltmpl/skell.py:327
 msgid "Contact us"
 msgstr "Зв’яжіться з нами"
 
@@ -2874,8 +2862,8 @@ msgstr "Зв’яжіться з нами"
 msgid "Enter a name without any special symbols"
 msgstr "Ведіть назву без спецсимволів"
 
-#: cmpltmpl/thes_form.py:291 cmpltmpl/wsketch_form.py:331
-#: cmpltmpl/wsketch_form.py:570
+#: cmpltmpl/thes_form.py:292 cmpltmpl/wsketch_form.py:332
+#: cmpltmpl/wsketch_form.py:588
 msgid "Minimum score must be a real number"
 msgstr "Мінімальний бал має бути дійсним числом"
 
@@ -2887,19 +2875,19 @@ msgstr "Нічого не знайдено"
 msgid "Back to form"
 msgstr "Назад до форми"
 
-#: cmpltmpl/viewattrs.py:251
+#: cmpltmpl/viewattrs.py:252
 msgid "as tooltips"
 msgstr "як підказки"
 
-#: cmpltmpl/viewattrs.py:331
+#: cmpltmpl/viewattrs.py:332
 msgid "Page size must be a positive integer"
 msgstr "Розмір сторінки має буту додатним цілим числом"
 
-#: cmpltmpl/viewattrs.py:349
+#: cmpltmpl/viewattrs.py:350
 msgid "KWIC context size must be a positive integer or zero"
 msgstr "Ширина контексту має бути невід’ємним цілим числом"
 
-#: cmpltmpl/viewattrs.py:422
+#: cmpltmpl/viewattrs.py:424
 msgid "Number of lines must be a positive integer"
 msgstr "Кількість рядків має бути додатним цілим числом"
 
@@ -2909,11 +2897,11 @@ msgstr "Зберегти конкорданс як підкорпус"
 msgid "as subcorpus"
 msgstr "як підкорпус"
 
-#: cmpltmpl/view.py:1380
+#: cmpltmpl/view.py:1393
 msgid "Page must be a positive number"
 msgstr "Номер сторінка має бути цілим додатним числом"
 
-#: cmpltmpl/view.py:1640 cmpltmpl/wsketch.py:863
+#: cmpltmpl/view.py:1663 cmpltmpl/wsketch.py:862
 msgid "Enter a new label"
 msgstr "Задайте нове наличко"
 
@@ -2925,157 +2913,156 @@ msgstr "попереднє"
 msgid "next"
 msgstr "наступне"
 
-#: cmpltmpl/wordlist_form.py:636
+#: cmpltmpl/wordlist_form.py:638
 msgid "Regular expression"
 msgstr "Регулярний вираз"
 
-#: cmpltmpl/wordlist_form.py:688
+#: cmpltmpl/wordlist_form.py:691
 msgid "Maximum frequency must be a positive integer or zero"
 msgstr "Максимальна частота має бути цілим невід’ємним числом"
 
-#: cmpltmpl/wordlist_form.py:943
+#: cmpltmpl/wordlist_form.py:946
 msgid "Parameter must be a real number"
 msgstr "Параметр має бути дійсним числом"
 
-#: cmpltmpl/wordlist.py:764
+#: cmpltmpl/wordlist.py:776
 msgid "You can also get back to this computation through your"
 msgstr "Також можна повернутися до цього підрахунку через"
 
-#: cmpltmpl/trends.py:836 cmpltmpl/wordlist.py:784
+#: cmpltmpl/trends.py:837 cmpltmpl/wordlist.py:796
 msgid "Notify me by e-mail upon completion"
 msgstr "Надіслати листа як закінчено"
 
-#: cmpltmpl/trends.py:843 cmpltmpl/wordlist.py:791
+#: cmpltmpl/trends.py:844 cmpltmpl/wordlist.py:803
 msgid "Estimated time to complete:"
 msgstr "Приблизний час завершення"
 
-#: cmpltmpl/wsdiff_form.py:214
+#: cmpltmpl/wsdiff_form.py:215
 msgid "Enter a lemma"
 msgstr "Введіть лему"
 
-#: cmpltmpl/wsdiff_form.py:285
+#: cmpltmpl/wsdiff_form.py:286
 msgid "Enter a second lemma"
 msgstr "Введіть другу лему"
 
-#: cmpltmpl/wsdiff_form.py:455
+#: cmpltmpl/wsdiff_form.py:456
 msgid "Minimum frequency must be a positive integer, zero or 'auto'"
 msgstr "Мінімальна частота має бути невід’ємним цілим числом або „auto“"
 
-#: cmpltmpl/wsketch_form.py:313
+#: cmpltmpl/wsketch_form.py:314
 msgid "Minimum frequency must be a positive integer or 'auto'"
 msgstr "Мінімальна частота має бути додатним цілим числом або „auto“"
 
-#: cmpltmpl/wsketch_form.py:583
+#: cmpltmpl/wsketch_form.py:601
 msgid "for multiword word sketch links"
 msgstr "для багатослівних шкіців"
 
-#: cmpltmpl/wsketch_form.py:594
+#: cmpltmpl/wsketch_form.py:612
 msgid "Minimum frequency must be a positive integer"
 msgstr "Мінімальна частота має бути додатним цілим числом"
 
-#: cmpltmpl/wsketch_form.py:602
+#: cmpltmpl/wsketch_form.py:620
 msgid "Number of gramrel columns"
 msgstr "Кількість стовпчиків синтзв’язків"
 
-#: skellcgi.py:103
+#: skellcgi.py:127
 #, python-format
 msgid "Word sketch not available for %s"
 msgstr "Шкіц не доступний для %s"
 
-#: skellcgi.py:105
+#: skellcgi.py:129
 #, python-format
 msgid "Insufficient data for %s"
 msgstr "Недостатньо даних для %s"
 
-#: skellcgi.py:206
+#: skellcgi.py:246
 #, python-format
 msgid "Nothing found for \"%s\""
 msgstr "Нічого не знайдено для „%s“"
 
-#: skellcgi.py:262
+#: skellcgi.py:302
 #, python-format
 msgid "Similar words not available for %s"
 msgstr "Подібні до „%s“ слова недоступні"
 
-#: usercgi.py:203
+#: usercgi.py:220
 #, python-format
 msgid "Your feedback has been sent to %s. Thank you for your time!"
 msgstr "Ваше звернення надіслане до %s. Дякуємо за ваш час!"
 
-#: cmpltmpl/document.py:956
+#: cmpltmpl/document.py:953
 msgid "You may use * and ? wildcards."
 msgstr "Можна вживати * та ?"
 
-#: cmpltmpl/document.py:1431
 msgid "You may use regular expressions in CQL."
 msgstr "В CQL можна вживати регулярні вирази"
 
-#: cmpltmpl/freqs.py:753
+#: cmpltmpl/freqs.py:754
 msgid "Max. 5,000 items are allowed, due to efficiency reasons"
 msgstr "З міркувань продуктивності дозволено 5000 елементів щонайбільше"
 
-#: cmpltmpl/viewattrs.py:355
+#: cmpltmpl/viewattrs.py:356
 msgid "Including positional attributes"
 msgstr "Залічуючи атрибути"
 
-#: corplib.py:880
+#: corplib.py:911
 msgid "Aligned corpus not specified"
 msgstr "Паралельного корпусу не вказано"
 
-#: corplib.py:883
+#: corplib.py:914
 msgid "No bilingual terminology for"
 msgstr "Немає двомовної термінології для"
 
-#: usercgi.py:149
+#: usercgi.py:162
 #, python-format
 msgid "Options have been reset for %s"
 msgstr "Параметри повернуті для %s"
 
-#: wsketchlib.py:255
+#: wsketchlib.py:253
 #, python-format
 msgid "(%(wrd)s filtered by %(fwords)s)"
-msgstr "(%(wrd) пофільтровано %(fwords))"    # nocontext
+msgstr "(%(wrd) пофільтровано %(fwords))"
 
 msgid "Please, provide a detailed description of the issue"
 msgstr "Будь ласка, детально опишіть проблему чи поставте питання"
 
-#: cmpltmpl/document.py:2292 cmpltmpl/skell.py:253
+#: cmpltmpl/skell.py:263
 msgid "Send feedback"
 msgstr "Надіслати"
 
-#: cmpltmpl/document.py:2405
+#: cmpltmpl/document.py:3307
 msgid "Search in corpora"
 msgstr "Шукати в корпусах"
 
-#: cmpltmpl/document.py:2477
+#: cmpltmpl/document.py:3440
 msgid "Reset user settings and purge cookies"
 msgstr "Вернути типові налаштування і стерти cookie"
 
-#: cmpltmpl/document.py:2483
+#: cmpltmpl/document.py:3446
 msgid "Reset settings"
 msgstr "Вернути налаштування"
 
-#: cmpltmpl/document.py:2495
+#: cmpltmpl/document.py:3458
 msgid "User profile"
 msgstr "Мій профіль"
 
-#: cmpltmpl/document.py:2504
+#: cmpltmpl/document.py:3467
 msgid "Change password"
 msgstr "Змінити пароль"
 
-#: cmpltmpl/document.py:2515
+#: cmpltmpl/document.py:3478
 msgid "Register"
 msgstr "Зареєструватися"
 
-#: cmpltmpl/document.py:2524
+#: cmpltmpl/document.py:3487
 msgid "Log in"
 msgstr "Увійти"
 
-#: cmpltmpl/document.py:2535
+#: cmpltmpl/document.py:3498
 msgid "Log out"
 msgstr "Вийти"
 
-#: cmpltmpl/viewattrs.py:403
+#: cmpltmpl/viewattrs.py:405
 msgid "Show GDEX scores in concordance (slow, use only for GDEX development)"
 msgstr ""
 "Показувати бали хорошості (часовитратно, використовуйте тільки для розробки)"
@@ -3102,140 +3089,141 @@ msgstr ""
 "Зауважте, що точність витягування сильно залежить від розміру паралельного "
 "корпусу."
 
-#: cmpltmpl/wordlist.py:649
+#: cmpltmpl/wordlist.py:650
 msgid "aligned corpus"
 msgstr "паралельний корпус"
 
-#: cmpltmpl/wordlist.py:1370
+#: cmpltmpl/wordlist.py:1392
 msgid "L1 term"
 msgstr "Термін мови 1"
 
-#: cmpltmpl/wordlist.py:1376
+#: cmpltmpl/wordlist.py:1398
 msgid "L2 term"
 msgstr "Термін мови 2"
 
 msgid "Logdice"
 msgstr "Logdice"
 
-#: cmpltmpl/wordlist.py:1388
+#: cmpltmpl/wordlist.py:1410
 msgid "Co-freq"
 msgstr "Co-freq"
 
-#: cmpltmpl/wordlist.py:1394
+#: cmpltmpl/wordlist.py:1416
 msgid "L1 freq"
 msgstr "Частота мови 1"
 
-#: cmpltmpl/wordlist.py:1400
+#: cmpltmpl/wordlist.py:1422
 msgid "L2 freq"
 msgstr "Частота мови 2"
 
-#: cmpltmpl/document.py:3076
+#: cmpltmpl/document.py:4141
 #, python-format
 msgid ""
 "You are using Manatee version %(mv)s but using version %(rv)s.X is required."
 msgstr "Ви використовуєте Manatee версії %(mv)s, але потрібна версія %(rv)s.X"
 
-#: cmpltmpl/document.py:3088
+#: cmpltmpl/document.py:4153
 #, python-format
 msgid ""
 "You are using Manatee version %(mv)s but at least version %(rv)s is required."
-msgstr "Ви використовуєте Manatee версії %(mv)s, але потрібна щонайменше версія %(rv)s.X"
+msgstr ""
+"Ви використовуєте Manatee версії %(mv)s, але потрібна щонайменше версія "
+"%(rv)s.X"
 
-#: cmpltmpl/corp_info.py:583
+#: cmpltmpl/corp_info.py:670
 msgid "Corpus sanity report"
 msgstr "Звіт про стан корпусу"
 
-#: cmpltmpl/document.py:2079
+#: cmpltmpl/document.py:3047
 msgid "Search in"
 msgstr "Шукати у"
 
+#: cmpltmpl/document.py:3600
 msgid "Search"
 msgstr "Пошук"
 
-#: cmpltmpl/document.py:2174
+#: cmpltmpl/document.py:3157
 msgid "Please, provide a detailed description of the issue."
 msgstr "Будь ласка, детально опишіть проблему чи поставте питання."
 
-#: cmpltmpl/document.py:2180
+#: cmpltmpl/document.py:3163
 msgid "Corpus, settings, query and your username are sent automatically."
 msgstr "Корпус, налаштування, запит і ваше ім’я долучаться автоматично."
 
-#: cmpltmpl/document.py:2345
 msgid "Logged in user"
 msgstr "Поточний користувач"
 
-#: conccgi.py:1961
+#: conccgi.py:1970
 msgid "Subcorpus saved."
 msgstr "Підкорпус збережено."
 
-#: conccgi.py:1963
+#: conccgi.py:1972
 msgid "Nothing saved: empty subcorpus!"
 msgstr "Не збережено: пустий підкорпус!"
 
-#: cmpltmpl/corp_info.py:448
+#: cmpltmpl/corp_info.py:456
 msgid "Aligned structure counts"
 msgstr "Кількість вирівняних структур"
 
-#: cmpltmpl/corp_info.py:454
+#: cmpltmpl/corp_info.py:462
 msgid "Aligned corpus"
 msgstr "Паралельний корпус"
 
-#: cmpltmpl/corp_info.py:459
+#: cmpltmpl/corp_info.py:467
 msgid "L1"
 msgstr "Мова 1"
 
-#: cmpltmpl/corp_info.py:464
+#: cmpltmpl/corp_info.py:472
 msgid "L2"
 msgstr "Мова 2"
 
-#: cmpltmpl/document.py:2781 cmpltmpl/document.py:2789
-#: cmpltmpl/trends_form.py:88 cmpltmpl/trends_form.py:232
-#: cmpltmpl/trends.py:88
+#: cmpltmpl/document.py:3814 cmpltmpl/trends_form.py:88
+#: cmpltmpl/trends_form.py:232 cmpltmpl/trends.py:88
 msgid "Trends"
 msgstr "Тренди"
 
-#: cmpltmpl/jobs.py:184 cmpltmpl/jobs.py:592 cmpltmpl/jobs.py:645
-#: cmpltmpl/jobs.py:676
+#: cmpltmpl/jobs.py:184 cmpltmpl/jobs.py:701 cmpltmpl/jobs.py:754
+#: cmpltmpl/jobs.py:785
 msgid "ID"
 msgstr "Ідентифікатор"
 
-#: cmpltmpl/jobs.py:206 cmpltmpl/jobs.py:598 cmpltmpl/jobs.py:694
+#: cmpltmpl/jobs.py:206 cmpltmpl/jobs.py:707 cmpltmpl/jobs.py:803
 msgid "Command"
 msgstr "Команда"
 
-#: cmpltmpl/jobs.py:218 cmpltmpl/jobs.py:602 cmpltmpl/jobs.py:706
+#: cmpltmpl/jobs.py:218 cmpltmpl/jobs.py:711 cmpltmpl/jobs.py:815
 msgid "PID"
 msgstr "Ідентифікатор процесу"
 
-#: cmpltmpl/jobs.py:235 cmpltmpl/jobs.py:606 cmpltmpl/jobs.py:653
-#: cmpltmpl/jobs.py:718
+#: cmpltmpl/jobs.py:235 cmpltmpl/jobs.py:715 cmpltmpl/jobs.py:762
+#: cmpltmpl/jobs.py:827
 msgid "Started"
 msgstr "Запущено"
 
-#: cmpltmpl/jobs.py:245 cmpltmpl/jobs.py:608 cmpltmpl/jobs.py:655
-#: cmpltmpl/jobs.py:724
+#: cmpltmpl/jobs.py:245 cmpltmpl/jobs.py:717 cmpltmpl/jobs.py:764
+#: cmpltmpl/jobs.py:833
 msgid "Estimation"
 msgstr "Приблизний час"
 
-#: cmpltmpl/jobs.py:253 cmpltmpl/jobs.py:271 cmpltmpl/jobs.py:610
-#: cmpltmpl/jobs.py:657 cmpltmpl/jobs.py:730
+#: cmpltmpl/jobs.py:253 cmpltmpl/jobs.py:271 cmpltmpl/jobs.py:719
+#: cmpltmpl/jobs.py:766 cmpltmpl/jobs.py:839
 msgid "Status"
 msgstr "Статус"
 
-#: cmpltmpl/jobs.py:282 cmpltmpl/jobs.py:612 cmpltmpl/jobs.py:736
+#: cmpltmpl/jobs.py:282 cmpltmpl/jobs.py:721 cmpltmpl/jobs.py:845
 msgid "CPU"
 msgstr "Процесор"
 
-#: cmpltmpl/jobs.py:293 cmpltmpl/jobs.py:614 cmpltmpl/jobs.py:742
+#: cmpltmpl/jobs.py:293 cmpltmpl/jobs.py:723 cmpltmpl/jobs.py:851
 msgid "MEM"
 msgstr "Пам’ять"
 
-#: cmpltmpl/jobs.py:304 cmpltmpl/jobs.py:616 cmpltmpl/jobs.py:659
-#: cmpltmpl/jobs.py:748
+#: cmpltmpl/jobs.py:304 cmpltmpl/jobs.py:725 cmpltmpl/jobs.py:768
+#: cmpltmpl/jobs.py:857
 msgid "Progress"
 msgstr "Поступ"
 
-#: cmpltmpl/jobs.py:314 cmpltmpl/jobs.py:618 cmpltmpl/jobs.py:754
+#: cmpltmpl/jobs.py:314 cmpltmpl/jobs.py:727 cmpltmpl/jobs.py:863
 msgid "CPU priority"
 msgstr "Пріоритет"
 
@@ -3255,96 +3243,96 @@ msgstr "Понизити на ступінь"
 msgid "Set to minimum"
 msgstr "Поставити мінімум"
 
-#: cmpltmpl/jobs.py:350 cmpltmpl/jobs.py:620 cmpltmpl/jobs.py:760
+#: cmpltmpl/jobs.py:350 cmpltmpl/jobs.py:729 cmpltmpl/jobs.py:869
 msgid "IO priority"
 msgstr "Пріорітет вводу/виводу"
 
-#: cmpltmpl/jobs.py:386 cmpltmpl/jobs.py:622 cmpltmpl/jobs.py:766
+#: cmpltmpl/jobs.py:386 cmpltmpl/jobs.py:731 cmpltmpl/jobs.py:875
 msgid "Cgroup"
 msgstr "Cgroup"
 
-#: cmpltmpl/jobs.py:550
+#: cmpltmpl/jobs.py:646
 msgid "All background jobs"
 msgstr "Усі серверні задачі"
 
-#: cmpltmpl/jobs.py:558
+#: cmpltmpl/jobs.py:654
 msgid "My background jobs"
 msgstr "Серверні задачі"
 
-#: cmpltmpl/jobs.py:567
+#: cmpltmpl/jobs.py:676
 msgid "Auto-reload every 10 seconds"
 msgstr "Поновлювати що 10 секунд"
 
-#: cmpltmpl/jobs.py:574
+#: cmpltmpl/jobs.py:683
 msgid "reload now"
 msgstr "поновити зараз"
 
-#: cmpltmpl/jobs.py:583
+#: cmpltmpl/jobs.py:692
 msgid "Show completed jobs"
 msgstr "Показати зроблені задачі"
 
-#: cmpltmpl/jobs.py:629
+#: cmpltmpl/jobs.py:738
 msgid "Show/hide columns"
 msgstr "Показати/сховати стовпчики"
 
-#: cmpltmpl/skell.py:343
+#: cmpltmpl/skell.py:431
 msgid "More features"
 msgstr "Більше функцій"
 
-#: cmpltmpl/trends_form.py:268
+#: cmpltmpl/trends_form.py:269
 msgid "Period"
 msgstr "Період"
 
-#: cmpltmpl/trends_form.py:385 cmpltmpl/trends.py:512
+#: cmpltmpl/trends_form.py:386 cmpltmpl/trends.py:513
 msgid "Method"
 msgstr "Метод"
 
-#: conccgi.py:2750 cmpltmpl/trends.py:520
+#: conccgi.py:2762 cmpltmpl/trends.py:521
 msgid "Mann-Kendall, Theil-Sen (all)"
 msgstr "Ман-Кендал, Тайл-Сен"
 
-#: conccgi.py:2752 cmpltmpl/trends.py:536
+#: conccgi.py:2764 cmpltmpl/trends.py:537
 msgid "Linear regression (all)"
 msgstr "Лінійна регресія"
 
-#: conccgi.py:2753 cmpltmpl/trends.py:544
+#: conccgi.py:2765 cmpltmpl/trends.py:545
 msgid "Linear regression (non zero)"
-msgstr "Лінійна регресія (ненульова)"   # doubts
+msgstr "Лінійна регресія (ненульова)"
 
-#: cmpltmpl/trends.py:553
+#: cmpltmpl/trends.py:554
 msgid "Weighted linear regression"
 msgstr "Зважена лінійна регресія"
 
-#: cmpltmpl/trends_form.py:423
+#: cmpltmpl/trends_form.py:424
 msgid "Enter a float number"
 msgstr "Введіть дійсне число"
 
-#: cmpltmpl/trends_form.py:452 cmpltmpl/trends.py:450 cmpltmpl/trends.py:619
-#: cmpltmpl/trends.py:629
+#: cmpltmpl/trends_form.py:453 cmpltmpl/trends.py:450 cmpltmpl/trends.py:620
+#: cmpltmpl/trends.py:630
 msgid "p-value"
 msgstr "P-значення"
 
-#: cmpltmpl/trends_form.py:491
+#: cmpltmpl/trends_form.py:492
 msgid "Minimum overall frequency"
 msgstr "Мінімальна загальна частота"
 
-#: cmpltmpl/trends_form.py:502
+#: cmpltmpl/trends_form.py:503
 msgid "Enter a positive integer"
 msgstr "Введіть додатне ціле число"
 
-#: cmpltmpl/trends_form.py:509
+#: cmpltmpl/trends_form.py:510
 msgid "Regular expression filter"
 msgstr "Регулярний вираз — фільтр"
 
-#: cmpltmpl/trends_form.py:522
+#: cmpltmpl/trends_form.py:523
 msgid "Filter non words"
 msgstr "Тільки слова"
 
-#: cmpltmpl/trends_form.py:541
+#: cmpltmpl/trends_form.py:542
 msgid "Filter capitalized"
 msgstr "Пропускати слова з великої літери"
 
-#: cmpltmpl/trends_form.py:563
+#: cmpltmpl/trends_form.py:564
 msgid "Compute trends"
 msgstr "Підрахувати тренди"
 
@@ -3356,49 +3344,49 @@ msgstr "Показано _START_&ndash;_END_ / _TOTAL_ рядків."
 msgid "Show _MENU_ items"
 msgstr "Показувати _MENU_ рядків"
 
-#: cmpltmpl/trends.py:593 cmpltmpl/trends.py:603
+#: cmpltmpl/trends.py:594 cmpltmpl/trends.py:604
 msgid "Trend"
 msgstr "Тренд"
 
-#: cmpltmpl/trends.py:611
+#: cmpltmpl/trends.py:612
 msgid "Statistical significance"
 msgstr "Статистична значущість"
 
-#: cmpltmpl/trends.py:663 cmpltmpl/trends.py:668
+#: cmpltmpl/trends.py:664 cmpltmpl/trends.py:669
 msgid "Graph"
 msgstr "Крива"
 
 msgid "Data not available."
 msgstr "Дані недоступні"
 
-#: cmpltmpl/view.py:409
+#: cmpltmpl/view.py:411
 msgid "Subcorpus name"
 msgstr "Назва підкорпусу"
 
-#: cmpltmpl/view.py:442
+#: cmpltmpl/view.py:445
 msgid "structures"
 msgstr "структури"
 
-#: cmpltmpl/view.py:479
+#: cmpltmpl/view.py:485
 msgid "Enter subcorpus name"
 msgstr "Введіть назву підкорпусу"
 
-#: cmpltmpl/view.py:511
+#: cmpltmpl/view.py:518
 msgid "Failed to save the subcorpus"
 msgstr "Не вдалося зберегти підкорпус"
 
 msgid "? Help"
 msgstr "? Довідка"
 
-#: cmpltmpl/trends_form.py:241
+#: cmpltmpl/trends_form.py:242
 msgid "? Help on Trends"
 msgstr "? Довідка: тренди"
 
-#: cmpltmpl/trends_form.py:416 cmpltmpl/trends.py:561
+#: cmpltmpl/trends_form.py:417 cmpltmpl/trends.py:562
 msgid "Maximum p-value"
 msgstr "Максимальна стат. значущість"
 
-#: cmpltmpl/trends_form.py:467 cmpltmpl/trends.py:440
+#: cmpltmpl/trends_form.py:468 cmpltmpl/trends.py:440
 msgid "trend"
 msgstr "трендом"
 
@@ -3410,15 +3398,15 @@ msgstr "Перші"
 msgid "trends sorted by"
 msgstr "трендів сортовані за"
 
-#: cmpltmpl/trends.py:686
+#: cmpltmpl/trends.py:687
 msgid "Show frequency distribution on text type"
 msgstr "Показати розподіл частот для типу тексту"
 
-#: cmpltmpl/trends.py:752
+#: cmpltmpl/trends.py:753
 msgid "Show (subcorpus) concordance"
 msgstr "Показати конкорданс (підкорпусу)"
 
-#: conccgi.py:1808
+#: conccgi.py:1820
 msgid ""
 "You must specify either a regular expression or a file to get the multilevel "
 "wordlist"
@@ -3426,133 +3414,135 @@ msgstr ""
 "Потрібно задати або регулярний вираз, або файл щоб отримати кількарівневий "
 "словник частот"
 
-#: cmpltmpl/collx.py:541
+#: cmpltmpl/collx.py:545
 msgid "Change settings and try again"
 msgstr "Змініть параметри і спробуйте знову"
 
-#: cmpltmpl/corp_info.py:324
+#: cmpltmpl/corp_info.py:326
 msgid "Tagset"
 msgstr "Позначки"
 
-#: cmpltmpl/corp_info.py:275
+#: cmpltmpl/corp_info.py:277
 msgid "Corpus description"
 msgstr "Опис корпусу"
 
-#: cmpltmpl/corp_info.py:284
+#: cmpltmpl/corp_info.py:286
 msgid "Document"
 msgstr "перейти"
 
-#: cmpltmpl/corp_info.py:352
+#: cmpltmpl/corp_info.py:354
 msgid "Definition"
 msgstr "Означення"
 
-#: cmpltmpl/document.py:2189 cmpltmpl/skell.py:246
+#: cmpltmpl/document.py:3172 cmpltmpl/skell.py:256
 msgid "Email:"
 msgstr "Email:"
 
-#: cmpltmpl/document.py:2261
+#: cmpltmpl/document.py:3244
 msgid "Sketch Engine homepage"
 msgstr "Титульна сторінка Sketch Engine"
 
 msgid "System menu icon"
 msgstr "Іконка системового меню"
 
-#: cmpltmpl/document.py:2816
+#: cmpltmpl/document.py:3850
 msgid "Manage my corpus"
 msgstr "Управляти моїм корпусом"
 
-#: cmpltmpl/document.py:2824
+#: cmpltmpl/document.py:3858
 msgid "Manage corpus"
 msgstr "Керувати корпусом"
 
-#: cmpltmpl/document.py:2614
+#: cmpltmpl/document.py:3578
 msgid "Home"
 msgstr "Титульна"
 
-#: cmpltmpl/document.py:2870
+#: cmpltmpl/document.py:3922
 msgid "User guide"
 msgstr "Інструкція"
 
-#: cmpltmpl/document.py:2957
+#: cmpltmpl/document.py:4022
 msgid "Selected subcorpus is obsolete and needs to be rebuilt."
 msgstr "Вибраний корпус застарів і потребує перебудови"
 
-#: cmpltmpl/document.py:2972
+#: cmpltmpl/document.py:4037
 msgid "Rebuild"
 msgstr "Перебудувати"
 
-#: cmpltmpl/document.py:2979
+#: cmpltmpl/document.py:4044
 msgid "Done."
 msgstr "Готово."
 
-#: cmpltmpl/document.py:2985
+#: cmpltmpl/document.py:4050
 msgid "Reload this window."
 msgstr "Поновити це вікно"
 
-#: cmpltmpl/document.py:2992
+#: cmpltmpl/document.py:4057
 msgid "Failed, please, send us feedback."
 msgstr "Невдача. Напишіть нам, будь ласка."
 
-#: cmpltmpl/document.py:3027
+#: cmpltmpl/document.py:4092
 msgid "Remove it and rebuild it manually."
 msgstr "Прибрати і перебудувати руками"
 
-#: cmpltmpl/document.py:3042
+#: cmpltmpl/document.py:4107
 msgid "This action may take several minutes for large corpora, please wait."
-msgstr "Для великих корпусів ця дія може забрати декілька хвилин. Будь ласка, зачекайте."
+msgstr ""
+"Для великих корпусів ця дія може забрати декілька хвилин. Будь ласка, "
+"зачекайте."
 
 #: cmpltmpl/first_form.py:89
 msgid "Search corpus"
 msgstr "Пошук в корпусі"
 
-#: cmpltmpl/jobs.py:212 cmpltmpl/jobs.py:600 cmpltmpl/jobs.py:700
+#: cmpltmpl/jobs.py:212 cmpltmpl/jobs.py:709 cmpltmpl/jobs.py:809
 msgid "Server"
 msgstr "Сервер"
 
-#: cmpltmpl/skell.py:337
+#: cmpltmpl/skell.py:352
 msgid "Feedback"
 msgstr "Зв’язок"
 
-#: cmpltmpl/skell.py:560
+#: cmpltmpl/skell.py:585 cmpltmpl/skell.py:830
 msgid "switch to"
 msgstr "перемкнути на"
 
 msgid "Thesaurus Entry"
 msgstr "Тезаурус"
 
-#: cmpltmpl/thes_form.py:299
+#: cmpltmpl/thes_form.py:300
 msgid "Headword in word cloud"
 msgstr "Заголовне слово у хмарці слів"
 
-#: cmpltmpl/view.py:2284
+#: cmpltmpl/view.py:2318
 msgid "Loading translation candidates for KWIC, please wait."
 msgstr "Завантажуються потенційні переклади ключових слів, зачекайте."
 
-#: cmpltmpl/wordlist_form.py:851
+#: cmpltmpl/wordlist_form.py:854
 msgid "Compatible corpora"
 msgstr "Сумісні корпуси"
 
-#: cmpltmpl/wordlist_form.py:873
+#: cmpltmpl/wordlist_form.py:876
 msgid "Other corpora"
 msgstr "Інші корпуси"
 
-#: cmpltmpl/trends.py:857 cmpltmpl/wordlist.py:805
+#: cmpltmpl/trends.py:858 cmpltmpl/wordlist.py:817
 msgid ""
 "The computation has failed. You may contact the developers by sending "
 "feedback or try again later. We are sorry for your inconvenience."
 msgstr ""
-"Підрахунок не вдався. Ви можете написати розробникам або спробувати "
-"пізніше. Перепрошуємо за незручності."
+"Підрахунок не вдався. Ви можете написати розробникам або спробувати пізніше. "
+"Перепрошуємо за незручності."
 
-#: cmpltmpl/trends.py:863 cmpltmpl/wordlist.py:811
+#: cmpltmpl/trends.py:864 cmpltmpl/wordlist.py:823
 msgid "Failed"
 msgstr "Невдача"
 
-#: cmpltmpl/wordlist.py:1146
+#: cmpltmpl/wordlist.py:1168
 msgid "? Normalized frequency per million"
 msgstr "? Нормалізована частота на мільйон"
 
-#: cmpltmpl/wsketch_form.py:397
+#: cmpltmpl/wsketch_form.py:398
 msgid "Show lemma coverage"
 msgstr "Показувати покриття леми"
 
@@ -3576,120 +3566,117 @@ msgstr "Сховати зв’язки"
 msgid "Show gramrels"
 msgstr "Показати зв’язки"
 
-#: cmpltmpl/wsketch.py:626
+#: cmpltmpl/wsketch.py:625
 msgid "Word sketch coverage for the current lemma + pos"
 msgstr "Покриття шкіца для поточних леми+ЧМ"
 
-#: cmpltmpl/wsketch.py:631
+#: cmpltmpl/wsketch.py:630
 msgid "Coverage:"
 msgstr "Покриття"
 
-#: conclib.py:349
+#: conclib.py:350
 msgid "Cannot fetch result: server port missing"
 msgstr "Неможливо стягнути результат: відсутній порт сервера"
 
-#: cmpltmpl/coll.py:167
+#: cmpltmpl/coll.py:168
 msgid "? Help on collocations"
 msgstr "? Довідка: колокації"
 
-#: cmpltmpl/coll.py:495
+#: cmpltmpl/coll.py:496
 msgid "Make candidate list"
 msgstr "Побудувати список претендентів"
 
-#: cmpltmpl/coll.py:503 cmpltmpl/thes_form.py:372 cmpltmpl/wsdiff_form.py:535
-#: cmpltmpl/wsketch_form.py:907
+#: cmpltmpl/coll.py:504 cmpltmpl/thes_form.py:373 cmpltmpl/wsdiff_form.py:536
+#: cmpltmpl/wsketch_form.py:926
 msgid "Save options"
 msgstr "Зберегти параметри"
 
-#: cmpltmpl/conc.py:102
+#: cmpltmpl/conc.py:103
 msgid "? Help on concordance"
 msgstr "? Довідка: конкорданс"
 
 msgid "&lt; concordance"
 msgstr "&lt; конкорданс"
 
-#: cmpltmpl/conc.py:410
+#: cmpltmpl/conc.py:411
 msgid "Compute frequencies"
 msgstr "Підрахувати частоти"
 
-#: cmpltmpl/conc.py:430
+#: cmpltmpl/conc.py:431
 msgid "Show frequencies of node tags"
 msgstr "Показати частоти морфологічних позначок"
 
-#: cmpltmpl/conc.py:448
+#: cmpltmpl/conc.py:449
 msgid "Show frequencies of node forms"
 msgstr "Показати частоти словоформ"
 
-#: cmpltmpl/conc.py:467
+#: cmpltmpl/conc.py:468
 msgid "Show frequencies of document IDs"
 msgstr "Показати частоти по документах"
 
-#: cmpltmpl/conc.py:489
+#: cmpltmpl/conc.py:490
 msgid "Show frequencies of text types"
 msgstr "Показати частоти по типах тексту"
 
-#: cmpltmpl/conc.py:655
+#: cmpltmpl/conc.py:658
 msgid "Original conc."
 msgstr "Початковий конк."
 
-#: cmpltmpl/corp_info.py:343
+#: cmpltmpl/corp_info.py:345
 msgid "Word sketch grammar"
 msgstr "Граматика шкіців"
 
-#: cmpltmpl/corp_info.py:531
+#: cmpltmpl/corp_info.py:548
 msgid "Show full word list for this structure attribute"
-msgstr "Показати список частот для цього"    # todo
+msgstr "Показати список частот для цього"
 
-#: cmpltmpl/corp_info.py:541
+#: cmpltmpl/corp_info.py:565
 msgid "Number of distinct values of the structure attribute"
 msgstr "Кількість унікальних значень атрибуту структури"
 
-#: cmpltmpl/corp_info.py:561
+#: cmpltmpl/corp_info.py:628
 msgid "Registry"
 msgstr "Реєстр"
 
-#: cmpltmpl/corp_info.py:566
 msgid "Corpus definition file"
 msgstr "Означувальний файл корпусу"
 
-#: cmpltmpl/cpa_form.py:88 cmpltmpl/cpa_form.py:176 cmpltmpl/document.py:2737
+#: cmpltmpl/cpa_form.py:88 cmpltmpl/cpa_form.py:176 cmpltmpl/document.py:3746
 msgid "Corpus pattern analysis"
 msgstr "Аналіз патернів корпусу"
 
-#: cmpltmpl/document.py:1038
 msgid "? Help on concordance query"
 msgstr "? Довідка"
 
-#: cmpltmpl/document.py:1281 cmpltmpl/thes_form.py:180
-#: cmpltmpl/wsketch_form.py:193
+#: cmpltmpl/document.py:1279 cmpltmpl/thes_form.py:181
+#: cmpltmpl/wsketch_form.py:194
 msgid "Word form"
 msgstr "Словоформа"
 
-#: cmpltmpl/document.py:1405
+#: cmpltmpl/document.py:1403
 msgid "Corpus query language"
 msgstr "Корпусових запитів мова"
 
-#: cmpltmpl/document.py:1566
+#: cmpltmpl/document.py:1570
 msgid "Correction code"
 msgstr "Код виправлення"
 
-#: cmpltmpl/document.py:2653
 msgid "Word sketch query entry form"
 msgstr "Шкіц слова — формуляр"
 
-#: cmpltmpl/document.py:2707
+#: cmpltmpl/document.py:3708
 msgid "Sketch diff"
 msgstr "Шкіц-різниця"
 
-#: cmpltmpl/document.py:2715 cmpltmpl/store_wseval.py:91 cmpltmpl/wseval.py:91
+#: cmpltmpl/document.py:3716 cmpltmpl/store_wseval.py:91 cmpltmpl/wseval.py:91
 msgid "Word sketch evaluation"
 msgstr "Оцінювання шкіца слова"
 
-#: cmpltmpl/document.py:2729
+#: cmpltmpl/document.py:3730
 msgid "Sketch eval"
 msgstr "Оцінювання шкіца"
 
-#: cmpltmpl/document.py:2759 cmpltmpl/document.py:2773
+#: cmpltmpl/document.py:3776 cmpltmpl/document.py:3790
 #: cmpltmpl/patterns2.py:91 cmpltmpl/patterns_form.py:88
 #: cmpltmpl/patterns_form.py:174 cmpltmpl/patterns.py:91
 msgid "Word sketch patterns"
@@ -3699,15 +3686,15 @@ msgstr "Патерни шкіців слів"
 msgid "Concordance filter"
 msgstr "Фільтр конкордансу"
 
-#: cmpltmpl/filter_form.py:174
+#: cmpltmpl/filter_form.py:175
 msgid "? Help on filter form"
 msgstr "? Довідка: параметри фільтрування"
 
-#: cmpltmpl/filter_form.py:263
+#: cmpltmpl/filter_form.py:276
 msgid "Search span"
 msgstr "Діапазон пошуку"
 
-#: cmpltmpl/filter_form.py:346
+#: cmpltmpl/filter_form.py:359
 msgid "Filter concordance"
 msgstr "Відфільтрувати конкорданс"
 
@@ -3732,32 +3719,32 @@ msgstr "Показати поступ викладання"
 msgid "Find x file upload"
 msgstr "Надсилання файлу такі́шості"
 
-#: cmpltmpl/first_form.py:206 cmpltmpl/first_form.py:219
-#: cmpltmpl/first_form.py:265
+#: cmpltmpl/first_form.py:268 cmpltmpl/first_form.py:281
+#: cmpltmpl/first_form.py:327
 msgid "Std. query"
 msgstr "Простий запит"
 
-#: cmpltmpl/first_form.py:243 cmpltmpl/first_form.py:370
+#: cmpltmpl/first_form.py:305 cmpltmpl/first_form.py:433
 msgid "Error query"
 msgstr "Помильний запит"
 
-#: cmpltmpl/first_form.py:283
+#: cmpltmpl/first_form.py:346
 msgid "? Help on error query"
 msgstr "? Довідка: помильний запит"
 
-#: cmpltmpl/first_form.py:388
+#: cmpltmpl/first_form.py:451
 msgid "Parallel query"
 msgstr "Паралельний запит"
 
-#: cmpltmpl/freq.py:172
+#: cmpltmpl/freq.py:173
 msgid "? Help on frequency form"
 msgstr "? Довідка: параметри списку частот"
 
-#: cmpltmpl/freq.py:303 cmpltmpl/freq.py:376
+#: cmpltmpl/freq.py:304 cmpltmpl/freq.py:377
 msgid "Make frequency list"
 msgstr "Створити список частот"
 
-#: cmpltmpl/freq.py:314
+#: cmpltmpl/freq.py:315
 msgid "Text type frequency distribution"
 msgstr "Розподіл частот по типах тексту"
 
@@ -3781,15 +3768,15 @@ msgstr "На жаль, ви не маєте прав аналізувати шк
 msgid "Evaluation settings"
 msgstr "Параметри аналізу"
 
-#: cmpltmpl/pcws.py:88 cmpltmpl/wsketch_form.py:683
+#: cmpltmpl/pcws.py:88 cmpltmpl/wsketch_form.py:701
 msgid "Bilingual word sketch"
 msgstr "Двомовний шкіц слова"
 
-#: cmpltmpl/reduce_form.py:169
+#: cmpltmpl/reduce_form.py:170
 msgid "? Help on sample form"
 msgstr "? Довідка: параметри вибірки"
 
-#: cmpltmpl/reduce_form.py:215
+#: cmpltmpl/reduce_form.py:216
 msgid "Create sample"
 msgstr "Вибрати"
 
@@ -3802,19 +3789,19 @@ msgid "Save collocation candidates"
 msgstr "Стягнути потенційні колокації"
 
 #: cmpltmpl/saveconc_form.py:88 cmpltmpl/saveconc_form.py:165
-#: cmpltmpl/saveconc_form.py:359
+#: cmpltmpl/saveconc_form.py:361
 msgid "Save concordance"
 msgstr "Стягнути конкорданс"
 
-#: cmpltmpl/saveconc_form.py:176
+#: cmpltmpl/saveconc_form.py:177
 msgid "? Help on saving conc."
 msgstr "? Довідка: збереження конкордансу"
 
-#: cmpltmpl/saveconc_form.py:371
+#: cmpltmpl/saveconc_form.py:373
 msgid "Store concordance"
 msgstr "Зберегти конкорданс"
 
-#: cmpltmpl/saveconc_form.py:415
+#: cmpltmpl/saveconc_form.py:417
 msgid "Store concordance for annotation"
 msgstr "Зберегти конкорданс для розмічування"
 
@@ -3824,11 +3811,11 @@ msgid "Save frequency list"
 msgstr "Стягнути список частот"
 
 #: cmpltmpl/savethes_form.py:91 cmpltmpl/savethes_form.py:135
-#: cmpltmpl/savethes_form.py:231
+#: cmpltmpl/savethes_form.py:228
 msgid "Save thesaurus"
 msgstr "Стягнути тезаурус"
 
-#: cmpltmpl/savethes_form.py:179
+#: cmpltmpl/savethes_form.py:176
 msgid "Save thesaurus as"
 msgstr "Стягнути тезаурус як"
 
@@ -3837,7 +3824,7 @@ msgid "Extracted terms"
 msgstr "Витягнені терміни"
 
 #: cmpltmpl/savewl_form.py:88 cmpltmpl/savewl_form.py:141
-#: cmpltmpl/savewl_form.py:364
+#: cmpltmpl/savewl_form.py:389
 msgid "Save word list"
 msgstr "Стягнути словник"
 
@@ -3846,7 +3833,7 @@ msgid "Save keywords"
 msgstr "Стягнути ключові слова"
 
 #: cmpltmpl/savews_form.py:88 cmpltmpl/savews_form.py:134
-#: cmpltmpl/savews_form.py:245
+#: cmpltmpl/savews_form.py:242
 msgid "Save word sketch"
 msgstr "Стягнути шкіц слова"
 
@@ -3854,7 +3841,7 @@ msgstr "Стягнути шкіц слова"
 msgid "Last stored concordances"
 msgstr "Останні збережені конкорданси"
 
-#: cmpltmpl/skell.py:98
+#: cmpltmpl/skell.py:101
 msgid "English language learning"
 msgstr "Вивчення англійської"
 
@@ -3862,11 +3849,11 @@ msgstr "Вивчення англійської"
 msgid "Simple sort"
 msgstr "Просте сортування"
 
-#: cmpltmpl/sort.py:143
+#: cmpltmpl/sort.py:144
 msgid "? Help on sort form"
 msgstr "? Довідка: параметри сортування"
 
-#: cmpltmpl/sort.py:280 cmpltmpl/sort.py:597
+#: cmpltmpl/sort.py:281 cmpltmpl/sort.py:598
 msgid "Sort concordance"
 msgstr "Посортувати конкорданс"
 
@@ -3882,7 +3869,7 @@ msgstr "Створити підкорпус"
 msgid "Subcorpus information"
 msgstr "Відомості про підкорпус"
 
-#: cmpltmpl/subcorp.py:275
+#: cmpltmpl/subcorp.py:278
 msgid "Delete selected"
 msgstr "Знищити вибране"
 
@@ -3890,47 +3877,47 @@ msgstr "Знищити вибране"
 msgid "Tickbox lexicography - select examples"
 msgstr "Tickbox лексикографія — вибрати приклади"
 
-#: cmpltmpl/thes_form.py:146
+#: cmpltmpl/thes_form.py:147
 msgid "? Help on thesaurus"
 msgstr "? Довідка: тезаурус"
 
-#: cmpltmpl/thes_form.py:364
+#: cmpltmpl/thes_form.py:365
 msgid "Show similar words"
 msgstr "Показати схожі слова"
 
-#: cmpltmpl/trends_form.py:572
+#: cmpltmpl/trends_form.py:573
 msgid "Data for diachronic analysis is not available"
 msgstr "Дані для діахронічного аналізу недоступні"
 
-#: cmpltmpl/trends.py:477
+#: cmpltmpl/trends.py:478
 msgid "? Help on trends"
 msgstr "? Довідка: тренди"
 
-#: cmpltmpl/viewattrs.py:146
+#: cmpltmpl/viewattrs.py:147
 msgid "? Help on view options"
 msgstr "? Довідка: налаштування вигляду"
 
-#: cmpltmpl/viewattrs.py:337
+#: cmpltmpl/viewattrs.py:338
 msgid "KWIC context size (number of characters)"
 msgstr "Ширина контексту обабіч ключових слів (кількість знаків)"
 
-#: cmpltmpl/viewattrs.py:493
+#: cmpltmpl/viewattrs.py:495
 msgid "Do not use flash for copying to clipboard"
 msgstr "Не вживати Флеш для записування в буфер"
 
-#: cmpltmpl/viewattrs.py:592
+#: cmpltmpl/viewattrs.py:594
 msgid "Change view options"
 msgstr "Налаштувати вигляд конкордансу"
 
-#: cmpltmpl/viewattrs.py:600
+#: cmpltmpl/viewattrs.py:602
 msgid "Save & change options"
 msgstr "Зберегти і застосувати налаштування"
 
-#: cmpltmpl/view.py:583
+#: cmpltmpl/view.py:590
 msgid "Key words in context"
 msgstr "Ключові слова в контексті"
 
-#: cmpltmpl/wordlist_form.py:397
+#: cmpltmpl/wordlist_form.py:398
 msgid "? Help on word lists"
 msgstr "? Довідка: словники частот"
 
@@ -3938,15 +3925,15 @@ msgstr "? Довідка: словники частот"
 msgid "Find x entry form"
 msgstr "Форма пошуку найтакішого"
 
-#: cmpltmpl/wordlist_form.py:457
+#: cmpltmpl/wordlist_form.py:458
 msgid "Positional attributes"
 msgstr "Позиційні атрибути"
 
-#: cmpltmpl/wordlist_form.py:626
+#: cmpltmpl/wordlist_form.py:628
 msgid "Filter word list by"
 msgstr "Фільтрувати словник за"
 
-#: cmpltmpl/wordlist_form.py:736
+#: cmpltmpl/wordlist_form.py:739
 msgid ""
 "Word list whitelists and blacklists must be plain text (.txt), encoded in "
 "UTF-8, with one item per line.  The items must correspond to the selected "
@@ -3954,12 +3941,12 @@ msgid ""
 "list should be a list of lemmas. We use exact matching, not regular-"
 "expression matching, for file input."
 msgstr ""
-"Чорні та білі списки для словника частот мають лежати у текстовому файлі "
-"(.txt), закодованому в UTF-8, по одному елементу на рядок. Елементи мають "
+"Чорні та білі списки для словника частот мають лежати у текстовому файлі (."
+"txt), закодованому в UTF-8, по одному елементу на рядок. Елементи мають "
 "відповідати вибраному атрибутові, тобто якщо вибрано лему — це має бути "
 "список лем. Використовується точний пошук, не пошук за регулярним виразом."
 
-#: cmpltmpl/wordlist_form.py:1013
+#: cmpltmpl/wordlist_form.py:1029
 msgid "Make word list"
 msgstr "Побудувати частотний словник"
 
@@ -3971,7 +3958,6 @@ msgstr "Зберегти потенційні двомовні терміни я
 msgid "Save word list/Keywords to a text file or XML"
 msgstr "Стягнути словник частот / ключові слова як текстовий файл чи як XML"
 
-#: cmpltmpl/wordlist.py:758
 msgid ""
 "You can close this window. Repeating word list or keywords queries on the "
 "same subcorpus will show you progress of the computation."
@@ -3983,11 +3969,11 @@ msgstr ""
 msgid "Word sketch differences"
 msgstr "Шкіц-різниця між словами"
 
-#: cmpltmpl/wsdiff_form.py:182
+#: cmpltmpl/wsdiff_form.py:183
 msgid "? Help on sketch diff"
 msgstr "? Довідка: шкіц-різниця"
 
-#: cmpltmpl/wsdiff_form.py:527
+#: cmpltmpl/wsdiff_form.py:528
 msgid "Show diff"
 msgstr "Показати відмінності"
 
@@ -3999,175 +3985,174 @@ msgstr "Шкіц для оцінювання"
 msgid "Evaluation of word sketch"
 msgstr "Оцінювання шкіца слова"
 
-#: cmpltmpl/wseval.py:634
+#: cmpltmpl/wseval.py:631
 msgid "Store word sketch evaluation"
 msgstr "Зберегти оцінку шкіца"
 
-#: cmpltmpl/wsketch_form.py:159
+#: cmpltmpl/wsketch_form.py:160
 msgid "? Help on word sketches"
 msgstr "? Довідка: шкіци слів"
 
-#: cmpltmpl/wsketch_form.py:416
+#: cmpltmpl/wsketch_form.py:434
 msgid "Use tickbox lexicography"
 msgstr "Використовувати tickbox лексикографію"
 
-#: cmpltmpl/wsketch_form.py:448
+#: cmpltmpl/wsketch_form.py:466
 msgid "Tickbox lexicography template"
 msgstr "Взірець для tickbox лексикографії"
 
-#: conccgi.py:1041
+#: conccgi.py:1046
 msgid "Select positive or negative filter type"
 msgstr "Виберіть фільтр, що лишає або прибирає знайдене"
 
-#: conccgi.py:1564
+#: conccgi.py:1571
 msgid "Text types are limited to simple output"
 msgstr "Типи тексту працюють тільки з простим виводом"
 
-#: wsdiff.py:223 wsketchlib.py:372
+#: wsdiff.py:223 wsketchlib.py:365
 msgid "No word sketch available"
 msgstr "Немає доступного шкіца слова"
 
-#: conccgi.py:2751 cmpltmpl/trends.py:528
+#: conccgi.py:2763 cmpltmpl/trends.py:529
 msgid "Mann-Kendall, Theil-Sen (non zero)"
 msgstr "Ман-Кендал, Тайл-Сен (ненульовий)"
 
-#: conccgi.py:2803
+#: conccgi.py:2815
 msgid "No data available for these parameters"
 msgstr "Жодних даних для цих параметрів"
 
-#: conclib.py:440
+#: conclib.py:441
 msgid "Filter by aligned corpus"
 msgstr "Фільтрувати паралельним корпусом"
 
-#: corplib.py:746
+#: corplib.py:774
 #, python-format
 msgid "Trends computation (%s)"
 msgstr "Підрахунок трендів (%s)"
 
-#: corplib.py:756
+#: corplib.py:784
 #, python-format
 msgid "Norms computation (%s)"
 msgstr "Підрахунок норм (%s)"
 
-#: cmpltmpl/document.py:509
+#: cmpltmpl/document.py:506
 msgid "? Help on creating a subcorpus"
 msgstr "? Довідка: створення підкорпусу"
 
-#: cmpltmpl/trends.py:797
+#: cmpltmpl/trends.py:798
 msgid ""
 "The data was not available and is currently being computed. Please, wait."
-msgstr "Дані недоступні і зараз підраховуються. Будь ласка, зачекайте."    # todo
+msgstr "Дані недоступні і зараз підраховуються. Будь ласка, зачекайте."
 
-#: cmpltmpl/trends.py:803
+#: cmpltmpl/trends.py:804
 msgid "You may check the status of the process on"
 msgstr "Ви можете стежити за статусом на"
 
-#: cmpltmpl/trends.py:812
+#: cmpltmpl/trends.py:813
 msgid "Once it is computed, this page will show the results."
 msgstr "Ця сторінка покаже результат після підрахунку."
 
-#: cmpltmpl/wordlist_form.py:593
+#: cmpltmpl/wordlist_form.py:595
 msgid "? Help on n-grams"
 msgstr "? Довідка: N-грами"
 
-#: cmpltmpl/wordlist_form.py:649
+#: cmpltmpl/wordlist_form.py:652
 msgid "? Help on regular expressions"
 msgstr "? Довідка: регулярні вирази"
 
-#: cmpltmpl/wsketch_form.py:692
+#: cmpltmpl/wsketch_form.py:711
 msgid "? Help on bilingual word sketches"
 msgstr "? Довідка: двомовні шкіци слів"
 
-#: conccgi.py:1560
+#: conccgi.py:1567
 msgid "N-grams and \"rest of corpus\" can not be usedtogether"
 msgstr "N-грами і „решта корпусу“ не можуть вживатися разом"
 
-#: corplib.py:773
 #, python-format
 msgid "Freqs computation (%s)"
 msgstr "Підрахунок частот (%s)"
 
-#: cmpltmpl/conc.py:153
+#: cmpltmpl/conc.py:154
 msgid "concordance"
 msgstr "конкорданс"
 
-#: cmpltmpl/corp_info.py:180
+#: cmpltmpl/corp_info.py:171
 msgid "? Help on corpus info page"
 msgstr "? Довідка: сторінка про корпус"
 
-#: cmpltmpl/document.py:2273
+#: cmpltmpl/document.py:3256
 msgid "Sketch Engine logo"
 msgstr "Лого Sketch Engine"
 
-#: cmpltmpl/document.py:2354
+#: cmpltmpl/document.py:3402
 msgid "System menu"
 msgstr "Системове меню"
 
-#: cmpltmpl/document.py:2544
+#: cmpltmpl/document.py:3507
 msgid "Change interface language"
 msgstr "Змінити мову інтерфейсу"
 
-#: cmpltmpl/document.py:2865
+#: cmpltmpl/document.py:3917 cmpltmpl/skell.py:346
 msgid "Documentation"
 msgstr "Документація"
 
-#: cmpltmpl/trends.py:818
+#: cmpltmpl/trends.py:819
 msgid "The page will be reloaded automatically."
 msgstr "Сторінка поновиться автоматично."
 
-#: cmpltmpl/viewattrs.py:385
+#: cmpltmpl/viewattrs.py:387
 msgid "? Help on GDEX"
 msgstr "? Довідка: хороші приклади для словника"
 
-#: cmpltmpl/view.py:452 cmpltmpl/view.py:463
+#: cmpltmpl/view.py:455 cmpltmpl/view.py:469
 msgid "Make subcorpus"
 msgstr "Створити підкорп."
 
-#: cmpltmpl/wordlist_form.py:211 cmpltmpl/wordlist.py:630
+#: cmpltmpl/wordlist_form.py:211 cmpltmpl/wordlist.py:631
 msgid "? Help on bilingual terminology extraction"
 msgstr "? Довідка: витягування двомовної термінології"
 
-#: cmpltmpl/wordlist_form.py:610
+#: cmpltmpl/wordlist_form.py:612
 msgid "hide/nest sub-n-grams"
 msgstr "сховати/вкласти під-N-грами"
 
-#: cmpltmpl/wordlist.py:873
+#: cmpltmpl/wordlist.py:890
 msgid "n-grams"
 msgstr "N-грами"
 
-#: cmpltmpl/wordlist.py:1034
+#: cmpltmpl/wordlist.py:1055
 msgid "Displaying first"
 msgstr "Показано перші"
 
-#: cmpltmpl/wordlist.py:1042
+#: cmpltmpl/wordlist.py:1063
 msgid "items"
 msgstr "елементів"
 
-#: cmpltmpl/wordlist.py:1054
+#: cmpltmpl/wordlist.py:1075
 msgid "Show more"
 msgstr "Показати більше"
 
-#: cmpltmpl/wordlist.py:1382
+#: cmpltmpl/wordlist.py:1404
 msgid "LogDice"
 msgstr "LogDice"
 
-#: cmpltmpl/wordlist.py:1493
+#: cmpltmpl/wordlist.py:1512
 msgid "More details"
 msgstr "Детальніше"
 
-#: pyconc.py:273
+#: pyconc.py:272
 msgid "Cooccurrence count"
 msgstr "Кількість співтраплянь"
 
-#: pyconc.py:275
+#: pyconc.py:274
 msgid "Candidate count"
 msgstr "Кількість претендентів"
 
-#: cmpltmpl/corp_info.py:504
+#: cmpltmpl/corp_info.py:521
 msgid "The number of structures"
 msgstr "Кількість структур"
 
-#: cmpltmpl/jobs.py:568
+#: cmpltmpl/jobs.py:665
 msgid "? Help on my jobs"
 msgstr "? Довідка: серверні задачі"
 
@@ -4210,6 +4195,259 @@ msgstr "Докладніше"
 msgid "Empty result for"
 msgstr "Жодних знайдень для"
 
-#: cmpltmpl/wordlist_form.py:956
+#: cmpltmpl/wordlist_form.py:960
 msgid "Help on simple math parameter"
 msgstr "Довідка: проста математика"
+
+#: conccgi.py:1582
+msgid "Word sketch collocations are available for the whole corpus only"
+msgstr ""
+
+#: theslib.py:40
+msgid "No thesaurus items for"
+msgstr ""
+
+#: cmpltmpl/corp_info.py:585
+msgid "Grammar relations"
+msgstr ""
+
+#: cmpltmpl/corp_info.py:594
+msgid "Name"
+msgstr ""
+
+#: cmpltmpl/corp_info.py:600
+msgid "Count"
+msgstr ""
+
+#: cmpltmpl/corp_info.py:633
+msgid "Corpus definition: dump"
+msgstr ""
+
+#: cmpltmpl/corp_info.py:649
+msgid "Registry file"
+msgstr ""
+
+#: cmpltmpl/corp_info.py:654
+msgid "Corpus definition: source"
+msgstr ""
+
+#: cmpltmpl/document.py:1036
+msgid "How to search in corpus"
+msgstr ""
+
+#: cmpltmpl/document.py:1429
+msgid "You may use special symbols and regular expressions in CQL."
+msgstr ""
+
+#: cmpltmpl/document.py:1487
+msgid "CQL builder"
+msgstr ""
+
+#: cmpltmpl/document.py:1977
+msgid "Information about corpora is being loaded. Please wait..."
+msgstr ""
+
+#: cmpltmpl/document.py:1988
+msgid "Advanced mode:"
+msgstr ""
+
+#: cmpltmpl/document.py:2050
+msgid "Add global Condition"
+msgstr ""
+
+#: cmpltmpl/document.py:2396
+msgid "Aligned:"
+msgstr ""
+
+#: cmpltmpl/document.py:2405
+msgid "Corpus:"
+msgstr ""
+
+#: cmpltmpl/document.py:2780
+msgid "Within cannot be on the first or last position."
+msgstr ""
+
+#: cmpltmpl/document.py:2786
+msgid "Within cannot be on immediately followed or preceded by containing."
+msgstr ""
+
+#: cmpltmpl/document.py:2792
+msgid "Within cannot be immediately followed or preceded by another within."
+msgstr ""
+
+#: cmpltmpl/document.py:2798
+msgid "Within cannot immediately followed by beginning of structure."
+msgstr ""
+
+#: cmpltmpl/document.py:2804
+msgid "Within cannot be immidiatly preceded or followed by invalid query."
+msgstr ""
+
+#: cmpltmpl/document.py:2810
+msgid "Containing cannot be on the first or last position."
+msgstr ""
+
+#: cmpltmpl/document.py:2816
+msgid "Containing cannot be on immediately followed or preceded by within."
+msgstr ""
+
+#: cmpltmpl/document.py:2822
+msgid ""
+"Containing cannot be immediately followed or preceded by another containing."
+msgstr ""
+
+#: cmpltmpl/document.py:2828
+msgid "Containing cannot be immidiatly preceded or followed by invalid query."
+msgstr ""
+
+#: cmpltmpl/document.py:2834
+msgid "n has to be positive integer smaller then k."
+msgstr ""
+
+#: cmpltmpl/document.py:2840
+msgid "k has to be positive integer bigger then n."
+msgstr ""
+
+#: cmpltmpl/document.py:2846
+msgid "Number has to be empty or positive integer."
+msgstr ""
+
+#: cmpltmpl/document.py:2852 cmpltmpl/document.py:2888
+msgid "Position has to be positive integer."
+msgstr ""
+
+#: cmpltmpl/document.py:2858
+msgid "Seek has to be positive integer."
+msgstr ""
+
+#: cmpltmpl/document.py:2864 cmpltmpl/document.py:2870
+msgid "Context has to be integer."
+msgstr ""
+
+#: cmpltmpl/document.py:2876 cmpltmpl/document.py:2882
+msgid "Coll. number has to be positive integer."
+msgstr ""
+
+#: cmpltmpl/document.py:2894
+msgid "Value has to be positive integer."
+msgstr ""
+
+#: cmpltmpl/document.py:3118
+msgid "For full functionality of Sketch Engine it is necessary to"
+msgstr ""
+
+#: cmpltmpl/document.py:3124
+msgid "enable JavaScript"
+msgstr ""
+
+#: cmpltmpl/document.py:3322 cmpltmpl/document.py:3831
+msgid "Information about"
+msgstr ""
+
+#: cmpltmpl/document.py:3366
+msgid "Send us feedback"
+msgstr ""
+
+#: cmpltmpl/document.py:3589
+msgid "Search this corpus"
+msgstr ""
+
+#: cmpltmpl/document.py:3614
+msgid "Various methods for creating lists of words, lemmas etc."
+msgstr ""
+
+#: cmpltmpl/document.py:3638
+msgid "Important co-occurring words"
+msgstr ""
+
+#: cmpltmpl/document.py:3694
+msgid "How words differ in their contexts and behaviour"
+msgstr ""
+
+#: cmpltmpl/document.py:3806
+msgid "Trending words"
+msgstr ""
+
+#: cmpltmpl/document.py:3874
+msgid "My currently running background jobs"
+msgstr ""
+
+#: cmpltmpl/document.py:3898
+msgid "All currently running background jobs"
+msgstr ""
+
+#: cmpltmpl/jobs.py:435
+msgid "No data available in table"
+msgstr ""
+
+#: cmpltmpl/jobs.py:441
+msgid "Showing _START_ to _END_ of _TOTAL_ entries"
+msgstr ""
+
+#: cmpltmpl/jobs.py:447
+msgid "Showing 0 to 0 of 0 entries"
+msgstr ""
+
+#: cmpltmpl/jobs.py:453
+msgid "(filtered from _MAX_ total entries)"
+msgstr ""
+
+#: cmpltmpl/jobs.py:459
+msgid "Show _MENU_ entries"
+msgstr ""
+
+#: cmpltmpl/jobs.py:471
+msgid "Processing..."
+msgstr ""
+
+#: cmpltmpl/jobs.py:477
+msgid "Search:"
+msgstr ""
+
+#: cmpltmpl/jobs.py:483
+msgid "No matching records found"
+msgstr ""
+
+#: cmpltmpl/jobs.py:516
+msgid ": activate to sort column ascending"
+msgstr ""
+
+#: cmpltmpl/jobs.py:522
+msgid ": activate to sort column descending"
+msgstr ""
+
+#: cmpltmpl/savewl_form.py:250
+msgid "Comma-separated values"
+msgstr ""
+
+#: cmpltmpl/savewl_form.py:263
+msgid "CSV"
+msgstr ""
+
+#: cmpltmpl/savewl_form.py:270
+msgid "Tabulator-separated values"
+msgstr ""
+
+#: cmpltmpl/savewl_form.py:283
+msgid "TSV"
+msgstr ""
+
+#: cmpltmpl/wordlist.py:698
+msgid "Total number of items"
+msgstr ""
+
+#: cmpltmpl/wordlist.py:758
+msgid ""
+"Some corpora and subcorpora operations need more preprocessing. It will take "
+"a while, please wait."
+msgstr ""
+
+#: cmpltmpl/wordlist.py:770
+msgid ""
+"You can close this window. Repeating word list or keywords queries on the "
+"same (sub)corpus will show you progress of the computation."
+msgstr ""
+
+#: cmpltmpl/wsketch_form.py:415
+msgid "Show longest-commonest match"
+msgstr ""
