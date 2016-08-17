@@ -69,6 +69,7 @@ export enum Case {
   instrumental,
   locative,
   vocative,
+  accusativeOld,
   // other non-ukr
 }
 export enum RequiredCase {
@@ -217,6 +218,7 @@ export const FEATURE_TABLE = [
   { featStr: 'case', feat: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
   { featStr: 'case', feat: Case, vesum: Case.dative, vesumStr: 'v_dav', mte: 'd' },
   { featStr: 'case', feat: Case, vesum: Case.accusative, vesumStr: 'v_zna', mte: 'a' },
+  { featStr: 'case', feat: Case, vesum: Case.accusativeOld, vesumStr: 'v_znao', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.instrumental, vesumStr: 'v_oru', mte: 'i' },
   { featStr: 'case', feat: Case, vesum: Case.locative, vesumStr: 'v_mis', mte: 'l' },
   { featStr: 'case', feat: Case, vesum: Case.vocative, vesumStr: 'v_kly', mte: 'v' },
@@ -452,7 +454,7 @@ export const FEATURE_ORDER = {
 };
 
 for (let pos of Object.keys(FEATURE_ORDER)) {
-  FEATURE_ORDER[pos].push(ParadigmOmonym, Colloquial, Rarity, Bad, Oddness);
+  FEATURE_ORDER[pos].push(ParadigmOmonym, Colloquial, Rarity, Bad, Oddness, Auto);
 }
 
 const POSWISE_COMPARATORS = {};
@@ -649,6 +651,13 @@ export class MorphTag {
       && ret.features.pos !== Pos.cardinalNumeral && ret.features.ordinalNumeral === undefined) {
       ret.features.number = undefined;
     }
+
+    return ret;
+  }
+
+  clone() {
+    let ret = MorphTag.fromVesum(this.toVesum());
+    ret.lemma = this.lemma;
 
     return ret;
   }
@@ -875,6 +884,7 @@ export class MorphTag {
   isPossessive() { return this.features.possessiveness === Possessiveness.yes; }
   isInanimate() { return this.features.animacy === Animacy.inanimate; }
   isComparable() { return this.features.degree !== undefined; }
+  isPresent() { return this.features.tense === Tense.present; }
   isPerfect() { return this.features.aspect === Aspect.perfect; }
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isActive() { return this.features.voice === Voice.active; }
@@ -888,14 +898,21 @@ export class MorphTag {
   isParticiple() { return this.features.participle !== undefined; }
   isBacteria() { return this.features.animacy === Animacy.bacteria; }
 
+  isPlural() { return this.features.number === Numberr.plural; }
+  isNominative() { return this.features.case === Case.nominative; }
+
   hasNumber() { return this.features.number !== undefined; }
   hasGender() { return this.features.gender !== undefined; }
 
   isBad() { return this.features.bad === Bad.yes; }
 
+  setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this; }
+  setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this; }
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this; }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this; }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this; }
+
+  setCase(value: Case) { this.features.case = value; return this; }
 
   canBeKharkivSty() {
     return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber());

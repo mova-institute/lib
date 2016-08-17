@@ -1,7 +1,7 @@
 import { findAllIndexes } from '../../algo';
 import { Dictionary } from '../dictionary/dictionary';
 import { IMorphInterp } from '../interfaces';
-import { MorphTag } from '../morph_tag';
+import { MorphTag, Case } from '../morph_tag';
 import { FOREIGN_CHAR_RE, LETTER_UK } from '../static';
 
 import { HashSet } from '../../data_structures';
@@ -28,14 +28,19 @@ const PREFIX_SPECS = [
     prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphTag) => x.isVerb() && x.isImperfect(),
-    postprocess: (x: MorphTag) => x.setIsPerfect(),
+    postprocess: (x: MorphTag) => {
+      x.setIsPerfect();
+      if (x.isPresent()) {
+        x.setIsFuture();
+      }
+    },
   },
-  {
-    prefixes: ['за'],
-    pretest: (x: string) => x.length > 4,
-    test: (x: MorphTag) => x.isVerb(),
-    postprocess: (x: MorphTag) => x.setIsPerfect(),
-  },
+  // {
+  //   prefixes: ['за'],
+  //   pretest: (x: string) => x.length > 4,
+  //   test: (x: MorphTag) => x.isVerb(),
+  //   postprocess: (x: MorphTag) => x.setIsPerfect(),
+  // },
 ];
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,18 +71,22 @@ export class MorphAnalyzer {
   tag(token: string, nextToken?: string) {
     token = token.replace(/́/g, '');  // kill emphasis
 
+    // Arabic numerals
     if (/^\d+[½]?$/.test(token)) {
       return [MorphTag.fromVesumStr('numr', token)];
     }
 
+    // Roman numerals
     if (/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(token)) {
       return [MorphTag.fromVesumStr('numr:roman', token)];
     }
 
+    // symbols
     if (/^[@#$%*]$/.test(token)) {
       return [MorphTag.fromVesumStr('sym', token)];
     }
 
+    // foreign
     if (FOREIGN_CHAR_RE.test(token)) {
       return [MorphTag.fromVesumStr('x:foreign', token)];
     }
@@ -88,15 +97,12 @@ export class MorphAnalyzer {
       lookupees.push(...lookupees.map(x => x + '.'));
     }
 
-    let ret = new HashSet(MorphTag.hash,
+    let res = new HashSet(MorphTag.hash,
       wu(lookupees).map(x => this.lookup(x)).flatten() as Iterable<MorphTag>);
 
-    // ret.addAll(this.fromMisspelledG(lookupees));
-    ret.addAll(this.fromPrefixes(lowercase, ret));
-
     // try одробив is the same as відробив
-    if (!ret.size && lowercase.startsWith('од') && lowercase.length > 4) {
-      ret.addAll(this.lookup('від' + lowercase.substr(2))
+    if (!res.size && lowercase.startsWith('од') && lowercase.length > 4) {
+      res.addAll(this.lookup('від' + lowercase.substr(2))
         .filter(x => x.isVerb())
         .map(x => {
           x.lemma = 'од' + x.lemma.substr(3);
@@ -105,12 +111,18 @@ export class MorphAnalyzer {
         }));
     }
 
+    // try prefixes
+    if (!res.size) {
+      res.addAll(this.fromPrefixes(lowercase, res));
+    }
+
+    // guess невідомосиній from невідо- and синій
     let oIndex = lowercase.indexOf('о');
     if (oIndex > 2) {
       let left = lowercase.substring(0, oIndex + 1);
       if (this.lookup(left).some(x => x.isBeforeadj())) {
         let right = lowercase.substr(oIndex + 1);
-        ret.addAll(this.lookup(right).filter(x => x.isAdjective()).map(x => {
+        res.addAll(this.lookup(right).filter(x => x.isAdjective()).map(x => {
           x.lemma = left + x.lemma;
           x.setIsAuto();
           return x;
@@ -121,7 +133,7 @@ export class MorphAnalyzer {
     let match = lowercase.match(new RegExp(String.raw`^(\d+)-?([${LETTER_UK}]+)$`));
     if (match) {
       let suffix = match[2];
-      ret.addAll(wu(this.numeralMap)
+      res.addAll(wu(this.numeralMap)
         .filter(x => x.form.endsWith(suffix))
         .map(x => wu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma)))
         .flatten()
@@ -137,7 +149,15 @@ export class MorphAnalyzer {
       // }
     }
 
-    return [...ret].filter(x => nextToken === '-' || !x.isBeforeadj());
+    // postprocess
+    for (let interp of res) {
+      // add old accusative, e.g. додати в друзі
+      if (interp.isNoun() && interp.isPlural() && interp.isNominative()) {
+        res.add(interp.clone().setIsAuto().setCase(Case.accusativeOld));
+      }
+    }
+
+    return [...res].filter(x => nextToken === '-' || !x.isBeforeadj());
   }
 
   private lookupRaw(token: string) {
@@ -152,8 +172,10 @@ export class MorphAnalyzer {
   }
 
   private lookup(token: string) {
-    return this.lookupRaw(token).map(
-      x => MorphTag.fromVesumStr(x.flags, x.lemma, x.lemmaFlags));
+    return this.lookupRaw(token)
+      .map(x => MorphTag.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+    // .map(x => expandParsedInterp(x))
+    // .flatten() as Wu.WuIterable<MorphTag>
   }
 
   private isCompoundAdjective(token: string) {
@@ -241,6 +263,14 @@ function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: s
       : ['anim', 'inanim'];
     yield* suffixes.map(x => flags + ':&noun:' + x);
   }
+}
+
+//------------------------------------------------------------------------------
+function expandParsedInterp(interp: MorphTag) {
+  // if (interp.isNoun() && interp.isPlural() && interp.isNominative) {
+  return [interp, interp.clone().setIsAuto().setIsOdd()];
+  // }
+  // return [interp];
 }
 
 //------------------------------------------------------------------------------
