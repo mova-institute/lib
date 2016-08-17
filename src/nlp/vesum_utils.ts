@@ -234,6 +234,17 @@ export function test(fileStr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function presentTagsForDisamb(interps: IMorphInterp[]) {
+  let mainTags = new Array<IMorphInterp>()
+  let auxTags = new Array<IMorphInterp>()
+  interps.forEach(x => (isAdditionalTag(x.flags) ? auxTags : mainTags).push(x));
+  return {
+    main: presentTagsForDisambOneBlock(mainTags),
+    aux: presentTagsForDisambOneBlock(auxTags),
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function presentTagsForDisambOneBlock(interps: IMorphInterp[]) {
   let splitted = interps.map((x, index) => ({ index, lemma: x.lemma, flags: x.flags.split(':') }));
   let sorted = stableSort(splitted, (a, b) => compareTags(MorphTag.fromVesum(a.flags), MorphTag.fromVesum(b.flags)));
 
@@ -260,6 +271,7 @@ export function presentTagsForDisamb(interps: IMorphInterp[]) {
       flags: x,
       lemma: sorted[shift + i].lemma,
       index: sorted[shift + i].index,
+      flagsStr: interps[sorted[shift + i].index].flags,
     })));
     shift += posAgg.length;
   }
@@ -379,4 +391,9 @@ export function* gatherXps(fileStrs: Iterable<string>) {
 
     yield `${word} ${flags}    ${comments.join(', ')}`;
   }
+}
+
+//------------------------------------------------------------------------------
+function isAdditionalTag(flags: string) {
+  return flags.includes('&noun');
 }
