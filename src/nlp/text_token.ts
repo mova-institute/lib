@@ -43,6 +43,10 @@ export class TextToken {
     this.elem.removeAttribute(TextToken.DISAMB_ATTR);
   }
 
+  getNumDisambedInterps() {
+    return this.getDisambIndexes().length
+  }
+
   getDefiniteInterps() {
     return this.getAllInterps().filter(x => x.flags !== TextToken.FLAGS_X);
   }
