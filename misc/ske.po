@@ -333,7 +333,7 @@ msgstr "Мінімальна подібність"
 #: cmpltmpl/patterns_form.py:330 cmpltmpl/thes_form.py:343
 #: cmpltmpl/wsketch_form.py:539
 msgid "between cluster items"
-msgstr "між елементами кластерів"
+msgstr "між елементами груп"
 
 #: cmpltmpl/patterns_form.py:348
 msgid "Maximum number of patterns"
@@ -504,11 +504,11 @@ msgstr "перший рівень (Сортувати за…)"
 
 #: cmpltmpl/sort.py:411
 msgid "second level (... then sort by ...)"
-msgstr "другий рівень (… потім за…)"
+msgstr "другий рівень (…потім за…)"
 
 #: cmpltmpl/sort.py:508
 msgid "third level (... finally sort by)"
-msgstr "третій рівень (… врешті сортувати за)"
+msgstr "третій рівень (…врешті сортувати за)"
 
 #: cmpltmpl/sort.py:609
 msgid "Line group sort"
@@ -541,7 +541,7 @@ msgstr "Експертні параметри"
 
 #: cmpltmpl/thes_form.py:317
 msgid "Cluster items"
-msgstr "Елементи кластера"
+msgstr "Групувати елементи"
 
 #: cmpltmpl/document.py:3680 cmpltmpl/thes_form.py:88
 #: cmpltmpl/thes_form.py:135 cmpltmpl/thes.py:91
@@ -576,7 +576,7 @@ msgstr "Показувати атрибути"
 
 #: cmpltmpl/viewattrs.py:228
 msgid "For each token"
-msgstr "Для кожного токена"
+msgstr "для кожного токена"
 
 #: cmpltmpl/viewattrs.py:239
 msgid "KWIC tokens only"
@@ -1210,7 +1210,7 @@ msgstr "Створення користувацьких підкорпусів �
 
 #: cmpltmpl/viewattrs.py:372
 msgid "Sort good dictionary examples"
-msgstr "Підіймати нагору хороші приклади для словника"
+msgstr "Сортувати за балом GDEX"
 
 #: cmpltmpl/wsdiff.py:88
 msgid "WS Diff for"
@@ -1856,11 +1856,11 @@ msgstr "Паралельний запит"
 
 #: cmpltmpl/first_form.py:481
 msgid "Contains"
-msgstr "Містить"
+msgstr "містить"
 
 #: cmpltmpl/first_form.py:487
 msgid "Does NOT contain"
-msgstr "Не містить"
+msgstr "не містить"
 
 #: cmpltmpl/freq.py:219
 msgid "fourth level"
@@ -1932,7 +1932,7 @@ msgstr "взято випадкових"
 
 #: cmpltmpl/view.py:1889 cmpltmpl/view.py:1936
 msgid "counting"
-msgstr "триває лічба…"
+msgstr "триває лічба"
 
 #: cmpltmpl/view.py:1686
 msgid "Clear selection"
@@ -2032,19 +2032,19 @@ msgstr "Rel [%]"
 
 #: conclib.py:433
 msgid "Negative filter"
-msgstr "Фільтр, що прибирає знайдене"
+msgstr "Прибирати знайдене"
 
 #: conclib.py:434
 msgid "Negative filter (excluding KWIC)"
-msgstr "Фільтр, що прибирає знайдене (ігноруючи ключові слова)"
+msgstr "Прибрати знайдене (ігноруючи ключові слова)"
 
 #: conclib.py:435
 msgid "Positive filter"
-msgstr "Фільтр, що лишає знайдене"
+msgstr "Лишити тільки знайдене"
 
 #: conclib.py:436
 msgid "Positive filter (excluding KWIC)"
-msgstr "Лишати знайдене (ігноруючи ключові слова)"
+msgstr "Лишити тільки знайдене (ігноруючи ключові слова)"
 
 #: conclib.py:437
 msgid "Word sketch item"
@@ -2907,11 +2907,11 @@ msgstr "Задайте нове наличко"
 
 #: cmpltmpl/widectx.py:115
 msgid "previous"
-msgstr "попереднє"
+msgstr "ширше"
 
 #: cmpltmpl/widectx.py:188
 msgid "next"
-msgstr "наступне"
+msgstr "ширше"
 
 #: cmpltmpl/wordlist_form.py:638
 msgid "Regular expression"
@@ -3512,7 +3512,7 @@ msgstr "Тезаурус"
 
 #: cmpltmpl/thes_form.py:300
 msgid "Headword in word cloud"
-msgstr "Заголовне слово у хмарці слів"
+msgstr "Показувати загловне слово у хмарці"
 
 #: cmpltmpl/view.py:2318
 msgid "Loading translation candidates for KWIC, please wait."
@@ -3696,7 +3696,7 @@ msgstr "Діапазон пошуку"
 
 #: cmpltmpl/filter_form.py:359
 msgid "Filter concordance"
-msgstr "Відфільтрувати конкорданс"
+msgstr "Пофільтрувати конкорданс"
 
 #: cmpltmpl/findx_form.py:88 cmpltmpl/findx_form.py:270 cmpltmpl/findx.py:88
 #: cmpltmpl/findx.py:178 cmpltmpl/wordlist_form.py:191
@@ -3975,7 +3975,7 @@ msgstr "? Довідка: шкіц-різниця"
 
 #: cmpltmpl/wsdiff_form.py:528
 msgid "Show diff"
-msgstr "Показати відмінності"
+msgstr "Показати різниці"
 
 #: cmpltmpl/wseval_form.py:89 cmpltmpl/wseval.py:217
 msgid "Word sketch for evaluation"
@@ -4410,11 +4410,11 @@ msgstr "Жодних знайдень"
 
 #: cmpltmpl/jobs.py:516
 msgid ": activate to sort column ascending"
-msgstr ": активуйте щоб відсорувати стовпчик за зростанням"
+msgstr ": активуйте щоб посорувати стовпчик за зростанням"
 
 #: cmpltmpl/jobs.py:522
 msgid ": activate to sort column descending"
-msgstr ": активуйте щоб відсорувати стовпчик за спаданням"
+msgstr ": активуйте щоб посорувати стовпчик за спаданням"
 
 #: cmpltmpl/savewl_form.py:250
 msgid "Comma-separated values"
