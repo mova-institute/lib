@@ -85,7 +85,7 @@ msgstr "мін. чутливість"
 
 #: cmpltmpl/coll.py:392 cmpltmpl/trends_form.py:436
 msgid "Sort by"
-msgstr "Сортувати за"
+msgstr "Сортування"
 
 #: cmpltmpl/coll.py:88 cmpltmpl/collx.py:88 cmpltmpl/conc.py:553
 #: cmpltmpl/savecoll.py:163 cmpltmpl/simple_search.py:389
@@ -240,11 +240,11 @@ msgstr "Частота"
 
 #: cmpltmpl/conc.py:442
 msgid "Node tags"
-msgstr "Морфпозначок"
+msgstr "Морфпозначки"
 
 #: cmpltmpl/conc.py:460
 msgid "Node forms"
-msgstr "Словоформ"
+msgstr "Словоформи"
 
 #: cmpltmpl/conc.py:482
 msgid "Doc IDs"
@@ -252,7 +252,7 @@ msgstr "Документи"
 
 #: cmpltmpl/freq.py:194 cmpltmpl/freq.py:332 cmpltmpl/freqs.py:546
 msgid "Frequency limit"
-msgstr "Не показувати частоти менші ніж"
+msgstr "Не показувати частоти менші від"
 
 #: cmpltmpl/freq.py:161
 msgid "Multilevel frequency distribution"
@@ -1674,7 +1674,7 @@ msgstr "формат"
 
 #: cmpltmpl/wordlist_form.py:753
 msgid "Include non-words"
-msgstr "Занести не-слова"
+msgstr "Внести не-слова"
 
 #: cmpltmpl/wordlist_form.py:770
 msgid "Frequency figures"
@@ -1920,7 +1920,7 @@ msgstr "Групування"
 #: cmpltmpl/view.py:2188 cmpltmpl/view.py:2237 cmpltmpl/widectx.py:110
 #: cmpltmpl/widectx.py:182 cmpltmpl/widectx.py:207
 msgid "Loading..."
-msgstr "Вантажиться…"
+msgstr "Стягування…"
 
 #: cmpltmpl/view.py:1955
 msgid "using first"
@@ -2303,7 +2303,7 @@ msgstr "Збудовано"
 #: cmpltmpl/corp_info.py:335 cmpltmpl/jobs.py:196 cmpltmpl/jobs.py:705
 #: cmpltmpl/jobs.py:758 cmpltmpl/jobs.py:797
 msgid "Description"
-msgstr "Специфікація"
+msgstr "Опис"
 
 #: cmpltmpl/corp_info.py:370
 msgid "Lexicon sizes"
@@ -2353,7 +2353,7 @@ msgstr "Поміняти поточний і опорний (під)корпус
 
 #: cmpltmpl/wordlist.py:852
 msgid "Word sketch collocations"
-msgstr "Колокації зі шкіца"
+msgstr "Колокації шкіца"
 
 #: cmpltmpl/wordlist.py:1141
 msgid "-grams"
@@ -3322,7 +3322,7 @@ msgstr "Введіть додатне ціле число"
 
 #: cmpltmpl/trends_form.py:510
 msgid "Regular expression filter"
-msgstr "Регулярний вираз — фільтр"
+msgstr "Регулярний вираз-фільтр"
 
 #: cmpltmpl/trends_form.py:523
 msgid "Filter non words"
@@ -3384,7 +3384,7 @@ msgstr "? Довідка: тренди"
 
 #: cmpltmpl/trends_form.py:417 cmpltmpl/trends.py:562
 msgid "Maximum p-value"
-msgstr "Макс. стат. значущість"
+msgstr "Максимальне P-значення"
 
 #: cmpltmpl/trends_form.py:468 cmpltmpl/trends.py:440
 msgid "trend"
@@ -3931,7 +3931,7 @@ msgstr "Позиційні атрибути"
 
 #: cmpltmpl/wordlist_form.py:628
 msgid "Filter word list by"
-msgstr "Фільтрувати словник за"
+msgstr "Фільтрувати словник"
 
 #: cmpltmpl/wordlist_form.py:739
 msgid ""
@@ -3941,7 +3941,7 @@ msgid ""
 "list should be a list of lemmas. We use exact matching, not regular-"
 "expression matching, for file input."
 msgstr ""
-"Чорні та білі списки для словника частот мають лежати у текстовому файлі (."
+"Чорні та білі списки мають лежати у текстовому файлі (."
 "txt), закодованому в UTF-8, по одному елементу на рядок. Елементи мають "
 "відповідати вибраному атрибутові, тобто якщо вибрано лему — це має бути "
 "список лем. Використовується точний пошук, не пошук за регулярним виразом."
@@ -4205,7 +4205,7 @@ msgstr "Колокації в шкіцах доступні лише для ці
 
 #: theslib.py:40
 msgid "No thesaurus items for"
-msgstr "Жодних слів в тезаурусі для"
+msgstr "Пустий тезаурус для"
 
 #: cmpltmpl/corp_info.py:585
 msgid "Grammar relations"
@@ -4410,11 +4410,11 @@ msgstr "Жодних знайдень"
 
 #: cmpltmpl/jobs.py:516
 msgid ": activate to sort column ascending"
-msgstr ": активувати щоб відсорувати стовпчик за зростанням"
+msgstr ": активуйте щоб відсорувати стовпчик за зростанням"
 
 #: cmpltmpl/jobs.py:522
 msgid ": activate to sort column descending"
-msgstr ": активувати щоб відсорувати стовпчик за спаданням"
+msgstr ": активуйте щоб відсорувати стовпчик за спаданням"
 
 #: cmpltmpl/savewl_form.py:250
 msgid "Comma-separated values"
