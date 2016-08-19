@@ -1,9 +1,5 @@
-*FREQLISTATTRS word word_lc lemma
+*FREQLISTATTRS token token_lc lemma lemma_lc tag dicttag
 
-=рік1929
-  year_created
-  year_created="1929"
-
-#=знята_омонімія
-#  disamb
-#  disamb="hands"
+=довіра
+  -CQL-
+  <doc year_created="1[0-8]*|19[0-2][0-9]" />
