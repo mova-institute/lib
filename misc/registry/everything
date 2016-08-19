@@ -15,7 +15,7 @@ LOCALE "uk_UA.UTF-8"
 NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*"
 
 
-ATTRIBUTE token {
+ATTRIBUTE word {
   LABEL "токен"
 }
 ATTRIBUTE lemma {
@@ -33,7 +33,7 @@ ATTRIBUTE dicttag {
   MULTIVALUE yes
   MULTISEP "|"
 }
-ATTRIBUTE token_lc {
+ATTRIBUTE lc {
   LABEL "токен (малі літери)"
   MULTIVALUE yes
   MULTISEP "|"
@@ -67,7 +67,7 @@ STRUCTURE doc {
   ATTRIBUTE title {
     LABEL "назва"
   }
-  ATTRIBUTE "year_created" {
+  ATTRIBUTE year_created {
     LABEL "рік написання"
     NUMERIC yes
   }
@@ -76,9 +76,12 @@ STRUCTURE doc {
 		MULTIVALUE yes
 		MULTISEP "|"
 	}
-  ATTRIBUTE disamb {
-
-  }
+#  ATTRIBUTE comment {
+#    LABEL "коментар"
+#  }
+#  ATTRIBUTE disamb {
+#
+#  }
   ATTRIBUTE wordcount {
     LABEL "кількість слів"
   }
@@ -97,7 +100,8 @@ HARDCUT "2000"
 #MAXCONTEXT "100"
 #MAXDETAIL
 
-#DEFAULTATTR
+DEFAULTATTR word
+DOCSTRUCTURE doc
 #FREQTTATTRS
 #FULLREF
 #STRUCTCTX
