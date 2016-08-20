@@ -15,26 +15,15 @@ LOCALE "uk_UA.UTF-8"
 NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*"
 
 
+
+################################################################################
+
 ATTRIBUTE word {
-  LABEL "токен"
+  LABEL "слово"
 }
-ATTRIBUTE lemma {
-  LABEL "лема"
-  MULTIVALUE yes
-  MULTISEP  "|"
-}
-ATTRIBUTE tag {
-  LABEL "морфмітка"
-  MULTIVALUE yes
-  MULTISEP "|"
-}
-ATTRIBUTE dicttag {
-  LABEL "морфмітка (службова)"
-  MULTIVALUE yes
-  MULTISEP "|"
-}
+
 ATTRIBUTE lc {
-  LABEL "токен (малі літери)"
+  LABEL "слово (мал. літерами)"
   MULTIVALUE yes
   MULTISEP "|"
   DYNAMIC utf8lowercase
@@ -45,8 +34,15 @@ ATTRIBUTE lc {
   TYPE index
   TRANSQUERY yes
 }
+
+ATTRIBUTE lemma {
+  LABEL "лема"
+  MULTIVALUE yes
+  MULTISEP  "|"
+}
+
 ATTRIBUTE  lemma_lc  {
-  LABEL "лема (малі літери)"
+  LABEL "лема (мал. літерами)"
   MULTIVALUE yes
   MULTISEP "|"
   DYNAMIC utf8lowercase
@@ -58,7 +54,20 @@ ATTRIBUTE  lemma_lc  {
   TRANSQUERY yes
 }
 
+ATTRIBUTE tag {
+  LABEL "морфмітка"
+  MULTIVALUE yes
+  MULTISEP "|"
+}
 
+ATTRIBUTE tag_internal {
+  LABEL "морфмітка (службова)"
+  MULTIVALUE yes
+  MULTISEP "|"
+}
+
+
+################################################################################
 
 STRUCTURE doc {
   ATTRIBUTE id {
@@ -75,36 +84,52 @@ STRUCTURE doc {
     LABEL "автор"
 		MULTIVALUE yes
 		MULTISEP "|"
+    MAXLISTSIZE "300"
 	}
-#  ATTRIBUTE comment {
-#    LABEL "коментар"
-#  }
-#  ATTRIBUTE disamb {
-#
-#  }
+  ATTRIBUTE text_type {
+    LABEL "тип тексту"
+		MULTIVALUE yes
+    MULTISEP "|"
+    HIERARCHICAL "::"
+  }
+  ATTRIBUTE comment {
+    LABEL "коментар"
+  }
+# ATTRIBUTE disamb
   ATTRIBUTE wordcount {
     LABEL "кількість слів"
   }
 }
-#STRUCTURE p
+#STRUCTURE p {
+#  DISPLAYTAG no
+#  DISPLAYEND "¶"
+#}
 STRUCTURE s
 STRUCTURE g {
   DISPLAYTAG "0"
   DISPLAYBEGIN "_EMPTY_"
 }
 
+
+################################################################################
+
 SHORTREF "=doc.id"
 
 HARDCUT "2000"
-#MAXKWIC "100"
-#MAXCONTEXT "100"
-#MAXDETAIL
+MAXKWIC "100"
+MAXCONTEXT "100"
+MAXDETAIL "100"
 
-DEFAULTATTR word
 DOCSTRUCTURE doc
-#FREQTTATTRS
+DEFAULTATTR word
 #FULLREF
-#STRUCTCTX
+STRUCTCTX yes    # test
 #WRAPDETAIL
 
+# todo ATTRDOC, ATTRDOCLABEL,
+
+FULLREF "doc.id,doc.title,doc.author,doc.year_created,doc.text_type,doc.comment,doc.wordcount"
+STRUCTATTRLIST "doc.id,doc.title,doc.author,doc.year_created,doc.text_type"
+SUBCORPATTRS "doc.id|doc.title,doc.author|doc.year_created,doc.text_type"
+#FREQTTATTRS ""
 WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,займенник,P.*,прислівник,R.*,прийменник,S.*,сполучник,C.*,числівник,M.*,частка,Q.*,вигук,I.*,скорочення,Y.*,розділовий,U.*,залишок,X.*"
