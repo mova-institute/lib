@@ -103,8 +103,8 @@ export function* zip<T>(...iterables: Iterable<T>[]) {
   let iterators = iterables.map(x => x[Symbol.iterator]());
 
   for (let state = iterators.map(x => x.next());
-       state.every(x => !x.done);
-       state = iterators.map(x => x.next())) {
+    state.every(x => !x.done);
+    state = iterators.map(x => x.next())) {
 
     yield state.map(x => x.value);
   }
@@ -116,8 +116,8 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
   let iterators = iterables.map(x => x[Symbol.iterator]());
 
   for (let state = iterators.map(x => x.next());
-       state.some(x => !x.done);
-       state = iterators.map(x => x.next())) {
+    state.some(x => !x.done);
+    state = iterators.map(x => x.next())) {
 
     yield state.map(x => x.done ? undefined : x.value);
   }
@@ -140,3 +140,23 @@ export function mixin(...baseCtors: any[]) {
 /*export function strlen(str: string) {
   return countGenerated(str[Symbol.iterator]());
 }*/
+
+////////////////////////////////////////////////////////////////////////////////
+export function createObject2(keys: string[], values: any[]) {
+  let ret = {};
+  let i = 0;
+  for (let key of keys) {
+    ret[key] = values[i++];
+  }
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function createObject(keyvaluePairs: any[][]) {
+  let ret = {};
+  for (let [key, value] of keyvaluePairs) {
+    ret[key] = value;
+  }
+
+  return ret;
+}

@@ -100,10 +100,13 @@ STRUCTURE doc {
     LABEL "кількість слів"
   }
 }
-#STRUCTURE p {
-#  DISPLAYTAG no
-#  DISPLAYEND "¶"
+#structure div {
+#  LABEL "розділ"
 #}
+STRUCTURE p {
+  DISPLAYTAG no
+  DISPLAYEND "¶"
+}
 STRUCTURE s
 STRUCTURE g {
   DISPLAYTAG "0"

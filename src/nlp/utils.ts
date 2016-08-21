@@ -3,7 +3,7 @@ import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements
 import * as xmlutils from '../xml/utils';
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elementNames from './common_elements';
-import { r } from '../lang';
+import { r, createObject } from '../lang';
 import { unique } from '../algo';
 import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
@@ -579,33 +579,23 @@ export function normalizeCorpusText(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const MULTISEP = '|';
-export function* tei2nosketch(root: AbstractElement, docMeta: any = {}) {
-  // if (!docMeta.id) {
-  //   docMeta.id = getTeiDocName(root.document());
-  //   if (!docMeta.id) {
-  //     throw new Error(`Document has no TEI title`);
-  //   }
-  // }
-  if (!docMeta.filename) {
-    throw new Error(`docMeta has no filename`);
-  }
-  let meta = xmlutils.keyvalue2attributes(docMeta);
-  let specialDisambed = docMeta.disambed;  // todo
+const teiStructuresToCopy = createObject(['s', 'p', 'l', 'lg'].map(x => [nameNs(NS.tei, x), x]));
 
-  yield `<doc ${meta}>`;
-
+export function* tei2nosketch(root: AbstractElement, meta: any = {}) {
+  yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`;
 
   let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
   for (let { node, entering } of elements) {
     let e = node.asElement();
+    let elName = e.name();
     if (entering) {
-      if (specialDisambed && e.name() === elementNames.W) {
+      if (meta.disambed && e.name() === elementNames.W) {
         let mte = e.attribute('ana');
         let lemma = e.attribute('lemma');
         yield nosketchLine(e.text().trim(), lemma, mte, 'xx');
         continue;
       }
-      switch (e.name()) {
+      switch (elName) {
         case elementNames.W_: {
           let interps = $t(e).disambedOrDefiniteInterps();
           let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
@@ -621,19 +611,21 @@ export function* tei2nosketch(root: AbstractElement, docMeta: any = {}) {
         case elementNames.G:
           yield '<g/>';
           break;
-        case elementNames.S:
-          yield '<s>';
+        default: {
+          if (elName in teiStructuresToCopy) {
+            yield `<${teiStructuresToCopy[elName]}>`
+          }
           break;
-        default:
-          break;
+        }
       }
     } else {
-      switch (e.name()) {
-        case elementNames.S:
-          yield '</s>';
+      switch (elName) {
+        default: {
+          if (elName in teiStructuresToCopy) {
+            yield `</${teiStructuresToCopy[elName]}>`
+          }
           break;
-        default:
-          break;
+        }
       }
     }
   }
@@ -672,9 +664,15 @@ export function processMiTeiDocument(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function looksLikeMiTei(value: string) {
+  return /^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(value);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// todo: kill
 export function tagText(value: string, analyzer: MorphAnalyzer, docCreator: DocCreator) {
   value = xmlutils.removeProcessingInstructions(value);
-  if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(value)) {
+  if (!looksLikeMiTei(value)) {
     value = xmlutils.encloseInRootNs(value);
   }
 
@@ -683,4 +681,23 @@ export function tagText(value: string, analyzer: MorphAnalyzer, docCreator: DocC
   morphInterpret(doc.root(), analyzer);
 
   return doc.serialize(true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function preprocessForTaggingGeneric(value: string, docCreator: DocCreator, isXml: boolean) {
+  if (isXml) {
+    value = xmlutils.removeProcessingInstructions(value)
+    if (looksLikeMiTei(value)) {
+      let ret = docCreator(value).root()
+      processMiTeiDocument(ret)
+      return ret
+    }
+  }
+  value = normalizeCorpusTextString(value)
+  if (!isXml) {
+    value = xmlutils.escape(value)
+  }
+  value = xmlutils.encloseInRootNs(value)
+
+  return docCreator(value).root()
 }
