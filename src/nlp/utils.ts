@@ -4,7 +4,7 @@ import * as xmlutils from '../xml/utils';
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elementNames from './common_elements';
 import { r, createObject } from '../lang';
-import { unique } from '../algo';
+import { uniqueSmall as unique } from '../algo';
 import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
@@ -535,13 +535,14 @@ export function fixLatinGlyphMisspell(value: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextString(value: string) {
   let ret = value
+    // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
     .replace(new RegExp(r`([${WORDCHAR}${RIGHT_GLUE_PUNC}])\.{3}([^\.])?`, 'g'), '$1…$2')
     .replace(/(^|\s)[\-–] /g, '$1— ')
     // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
     .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
-    .replace(new RegExp(r`(?=[${WORDCHAR}])'(?=[${WORDCHAR}])'`, 'g'), '’')
+    .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
     .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${LETTER_UK}\w])`, 'g'), '$1“$2')
     .replace(new RegExp(r`([${LETTER_UK}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
   ret = fixLatinGlyphMisspell(ret)
@@ -579,23 +580,24 @@ export function normalizeCorpusText(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const MULTISEP = '|';
-const teiStructuresToCopy = createObject(['s', 'p', 'l', 'lg'].map(x => [nameNs(NS.tei, x), x]));
-
+const teiStructuresToCopy = createObject(['s', 'p', 'l', 'lg'].map(x => [x, x]));
+// todo: fix namespace problem
 export function* tei2nosketch(root: AbstractElement, meta: any = {}) {
   yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`;
 
   let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
   for (let { node, entering } of elements) {
     let e = node.asElement();
-    let elName = e.name();
+    let elName = e.localName();
     if (entering) {
-      if (meta.disambed && e.name() === elementNames.W) {
-        let mte = e.attribute('ana');
-        let lemma = e.attribute('lemma');
-        yield nosketchLine(e.text().trim(), lemma, mte, 'xx');
-        continue;
-      }
+      // if (meta.disambed && e.name() === elementNames.W) {
+      //   let mte = e.attribute('ana');
+      //   let lemma = e.attribute('lemma');
+      //   yield nosketchLine(e.text().trim(), lemma, mte, 'xx');
+      //   continue;
+      // }
       switch (elName) {
+        case 'w_':
         case elementNames.W_: {
           let interps = $t(e).disambedOrDefiniteInterps();
           let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
@@ -605,9 +607,11 @@ export function* tei2nosketch(root: AbstractElement, meta: any = {}) {
             unique(mteTags).join(MULTISEP), unique(vesumFlagss).join(MULTISEP));
           break;
         }
+        case 'pc':
         case elementNames.PC:  // todo
           yield nosketchLine(e.text(), e.text(), 'U', 'punct');
           break;
+        case 'g':
         case elementNames.G:
           yield '<g/>';
           break;

@@ -60,7 +60,7 @@ ATTRIBUTE tag {
   MULTISEP "|"
 }
 
-ATTRIBUTE tag_internal {
+ATTRIBUTE tag2 {
   LABEL "морфмітка (службова)"
   MULTIVALUE yes
   MULTISEP "|"

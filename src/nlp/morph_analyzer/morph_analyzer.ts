@@ -8,12 +8,26 @@ import { HashSet } from '../../data_structures';
 
 const wu: Wu.WuStatic = require('wu');
 
-
+const foreignPrefixes = [
+  'екс-',
+  'віце-',
+  'телерадіо',
+  'теле',
+  'радіо',
+  'аеро',
+  'гео',
+  'ізо',
+  'мета',
+  'етно',
+  'квазі',
+  'вібро',
+  'бензо',
+];
 
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
   {
-    prefixes: ['екс-', 'віце-', 'телерадіо', 'теле', 'радіо'],
+    prefixes: foreignPrefixes,
     test: (x: MorphTag) => x.isNoun() || x.isAdjective(),
   },
   {
@@ -21,7 +35,7 @@ const PREFIX_SPECS = [
     test: (x: MorphTag) => x.isAdjective() && x.isComparable(),
   },
   {
-    prefixes: ['не'],
+    prefixes: ['не', 'між'],
     test: (x: MorphTag) => x.isAdjective(),
   },
   {

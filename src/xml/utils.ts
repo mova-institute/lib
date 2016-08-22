@@ -101,8 +101,10 @@ export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function keyvalue2attributes(value: any) {
-  return Object.keys(value).map(x => `${x}="${escape(value[x])}"`).join(' ');
+export function keyvalue2attributes(obj: any) {
+  return Object.keys(obj)
+    .filter(x => !!x.trim().length)
+    .map(x => `${x}="${escape(obj[x])}"`).join(' ');
 }
 
 ////////////////////////////////////////////////////////////////////////////////

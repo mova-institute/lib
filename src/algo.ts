@@ -140,6 +140,11 @@ export function unique<T>(array: T[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function uniqueSmall(array: any[]) {
+  return array.filter((x, i) => array.indexOf(x) === i);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function* findAllIndexes<T>(iterable: Iterable<T>, predicate: (value: T) => boolean) {
   let i = 0;
   for (let value of iterable) {
