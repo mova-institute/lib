@@ -603,8 +603,11 @@ export function* tei2nosketch(root: AbstractElement, meta: any = {}) {
           let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
           let vesumFlagss = interps.map(x => x.flags);
           let lemmas = interps.map(x => x.lemma);
-          yield nosketchLine($t(e).text(), unique(lemmas).join(MULTISEP),
-            unique(mteTags).join(MULTISEP), unique(vesumFlagss).join(MULTISEP));
+          lemmas = unique(lemmas);
+          mteTags = unique(mteTags);
+          // vesumFlagss = unique(vesumFlagss);
+          yield nosketchLine($t(e).text(),
+            lemmas.join(MULTISEP), mteTags.join(MULTISEP), vesumFlagss.join(MULTISEP));
           break;
         }
         case 'pc':

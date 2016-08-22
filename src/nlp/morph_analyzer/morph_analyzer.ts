@@ -2,7 +2,7 @@ import { findAllIndexes } from '../../algo';
 import { Dictionary } from '../dictionary/dictionary';
 import { IMorphInterp } from '../interfaces';
 import { MorphTag, Case } from '../morph_tag';
-import { FOREIGN_CHAR_RE, LETTER_UK } from '../static';
+import { FOREIGN_CHAR_RE, LETTER_UK, WCHAR_UK_UPPERCASE } from '../static';
 
 import { HashSet } from '../../data_structures';
 
@@ -105,7 +105,7 @@ export class MorphAnalyzer {
       return [MorphTag.fromVesumStr('x:foreign', token)];
     }
 
-    let lookupees = originalAndLowercase(token);
+    let lookupees = varyLetterCases(token);
     let lowercase = lookupees[0];
     if (nextToken === '.') {
       lookupees.push(...lookupees.map(x => x + '.'));
@@ -131,70 +131,77 @@ export class MorphAnalyzer {
     }
 
     // guess невідомосиній from невідо- and синій
-    let oIndex = lowercase.indexOf('о');
-    if (oIndex > 2) {
-      let left = lowercase.substring(0, oIndex + 1);
-      if (this.lookup(left).some(x => x.isBeforeadj())) {
-        let right = lowercase.substr(oIndex + 1);
-        res.addAll(this.lookup(right).filter(x => x.isAdjective()).map(x => {
-          x.lemma = left + x.lemma;
-          x.setIsAuto();
-          return x;
-        }));
+    if (!res.size) {
+      let oIndex = lowercase.indexOf('о');
+      if (oIndex > 2) {
+        let left = lowercase.substring(0, oIndex + 1);
+        if (this.lookup(left).some(x => x.isBeforeadj())) {
+          let right = lowercase.substr(oIndex + 1);
+          res.addAll(this.lookup(right).filter(x => x.isAdjective()).map(x => {
+            x.lemma = left + x.lemma;
+            x.setIsAuto();
+            return x;
+          }));
+        }
       }
     }
 
-    let match = lowercase.match(new RegExp(String.raw`^(\d+)-?([${LETTER_UK}]+)$`));
-    if (match) {
-      let suffix = match[2];
-      res.addAll(wu(this.numeralMap)
-        .filter(x => x.form.endsWith(suffix))
-        .map(x => wu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma)))
-        .flatten()
-        .map(x => MorphTag.fromVesumStr(x, 'todo'))  // todo
-      );
+    // let match = lowercase.match(new RegExp(String.raw`^(\d+)-?([${LETTER_UK}]+)$`));
+    // if (match) {
+    //   let suffix = match[2];
+    //   res.addAll(wu(this.numeralMap)
+    //     .filter(x => x.form.endsWith(suffix))
+    //     .map(x => wu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma)))
+    //     .flatten()
+    //     .map(x => MorphTag.fromVesumStr(x, 'todo'))  // todo
+    //   );
 
-      // let n = Number.parseInt(match[1]);
-      // if (!(n % 10) && suffix === 'ті') {
-      //   ret.addAll(this.lookup('десяті')
-      //     .filter(x => x.isNoSingular() && x.isInanimate())
-      //     .map(x => (x.lemma = lowercase) && x)
-      //   );
-      // }
-    }
+    //   // let n = Number.parseInt(match[1]);
+    //   // if (!(n % 10) && suffix === 'ті') {
+    //   //   ret.addAll(this.lookup('десяті')
+    //   //     .filter(x => x.isNoSingular() && x.isInanimate())
+    //   //     .map(x => (x.lemma = lowercase) && x)
+    //   //   );
+    //   // }
+    // }
 
-    // postprocess
+
+    // filter and postprocess
+    let ret = new Array<MorphTag>();
     for (let interp of res) {
+      if (nextToken !== '-' && interp.isBeforeadj()) {
+        continue
+      }
+
+      ret.push(interp)
+
       // add old accusative, e.g. додати в друзі
       if (interp.isNoun() && interp.isPlural() && interp.isNominative()) {
-        res.add(interp.clone().setIsAuto().setCase(Case.accusativeOld));
+        ret.push(interp.clone().setIsAuto().setCase(Case.accusativeOld));
       }
     }
 
-    return [...res].filter(x => nextToken === '-' || !x.isBeforeadj());
+    return ret;
   }
 
   private lookupRaw(token: string) {
-    return this.dictionary.lookup(token)
-      .map(x => wu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
+    let ret = this.dictionary.lookup(token)
+    if (this.expandAdjectivesAsNouns) {
+      ret = ret.map(x => wu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
         .map(flags => ({ flags, lemma: x.lemma })))
-      .flatten() as Wu.WuIterable<{
-        lemma: string;
-        flags: string;
-        lemmaFlags: string;
-      }>;
+        .flatten()
+    }
+    return ret
   }
 
   private lookup(token: string) {
     return this.lookupRaw(token)
       .map(x => MorphTag.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
-    // .map(x => expandParsedInterp(x))
-    // .flatten() as Wu.WuIterable<MorphTag>
   }
 
   private isCompoundAdjective(token: string) {
     if (token.includes('-')) {
-      for (let tok of originalAndLowercase(token)) {
+      for (let tok of varyLetterCases(token)) {
         let [last, ...prevs] = tok.split('-').reverse();
         return this.lookup(last).some(x => x.isAdjective())
           && prevs.every(x => this.lookup(x).some(xx => xx.isBeforeadj()));
@@ -254,11 +261,15 @@ export class MorphAnalyzer {
 
 
 //------------------------------------------------------------------------------
-function originalAndLowercase(value: string) {
+const allUkUppercaseWchar = new RegExp(`^[${WCHAR_UK_UPPERCASE}]+$`)
+function varyLetterCases(value: string) {
   let lowercase = value.toLowerCase();
   let ret = [lowercase];
   if (lowercase !== value) {
     ret.push(value);
+    if (value.length > 1 && allUkUppercaseWchar.test(value)) {
+      ret.push(capitalizeFirst(lowercase));
+    }
   }
 
   return ret;
@@ -285,6 +296,11 @@ function expandParsedInterp(interp: MorphTag) {
   return [interp, interp.clone().setIsAuto().setIsOdd()];
   // }
   // return [interp];
+}
+
+//------------------------------------------------------------------------------
+function capitalizeFirst(value: string) {
+  return value.charAt(0).toLocaleUpperCase() + value.slice(1);
 }
 
 //------------------------------------------------------------------------------

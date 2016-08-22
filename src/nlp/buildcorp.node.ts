@@ -1,4 +1,8 @@
-// time node lib/nlp/buildcorp.node.js --workspace ~/Downloads/buildcorp --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/parallel/**/*.xml' --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/ulif/**/*.{xml,txt}' --meta ~/Downloads/buildcorp/meta1.tsv --meta ~/Downloads/buildcorp/meta2.tsv
+
+  // time node lib/nlp/buildcorp.node.js --workspace ~/Downloads/buildcorp
+  //   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/parallel/**/*.xml'
+  //   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/ulif/**/*.{xml,txt}'
+  //   --meta ~/Downloads/buildcorp/meta1.tsv --meta ~/Downloads/buildcorp/meta2.tsv
 
 import * as path from 'path'
 import * as fs from 'fs'
@@ -26,6 +30,7 @@ interface Args {
   input: string[]
   workspace: string
   meta?: string[]
+  skipvert: boolean
 }
 
 function normalizeArgs(args) {
@@ -91,43 +96,54 @@ function prepareDocMeta(meta) {
   return meta
 }
 
-const textTypeTree = {
-  'автореферат': ['наука'],
-  'стаття': ['публіцистика'],
-  'науково-популярний': ['наука'],
-}
+
 
 function createTextTypeAttribute(value: string) {
-  let res = new Array<string>();
-  value.split('|').forEach(type => {
+  // todo: wut? try moving it to global scope
+  const textTypeTree = {
+    'автореферат': ['наука'],
+    'стаття': ['публіцистика'],
+    'науково-популярний': ['наука'],
+  }
 
-    let leafAddress = textTypeTree[type];
+  let res = new Array<string>()
+  for (let type of value.split('|')) {
+    let leafAddress = textTypeTree[type]
     if (leafAddress) {
       for (let i of leafAddress.keys()) {
-        let typePath = leafAddress.slice(0, i + 1).join('::');
+        let typePath = leafAddress.slice(0, i + 1).join('::')
         res.push(typePath)
       }
-      res.push([...leafAddress, value].join('::'));
+      res.push([...leafAddress, value].join('::'))
     } else {
-      res.push(type);
+      res.push(type)
     }
-  });
+  }
   return res.join('|');
 }
 
 function createVerticalFile(workspacePath: string) {
-  const basebasename = 'corpus.vertical.txt'
-  let filePath = path.join(workspacePath, basebasename)
+  let filePath = path.join(workspacePath, 'corpus.vertical.txt')
 
   for (let i = 1; fs.existsSync(filePath); ++i) {
-    filePath = path.join(workspacePath, i + '.' + basebasename)
+    filePath = path.join(workspacePath, `corpus.${i}.vertical.txt`)
   }
   mkdirp.sync(workspacePath)
   return fs.openSync(filePath, 'w')
 }
 
+// function handleInterrupt(isDoingIo: boolean) {
+//   console.log(`cauugt, ${isDoingIo}`)
+//   process.exit()
+// }
+
 function buildCorpus(params: Args) {
   normalizeArgs(args)
+  let isDoingIo = false
+
+  // process.on('exit', () => handleInterrupt(isDoingIo))
+  // process.on('SIGINT', () => handleInterrupt(isDoingIo))
+  // process.on('uncaughtException', () => handleInterrupt(isDoingIo))
 
   let metaTable = prepareMetadataFiles(args.meta)
   let verticalFile = createVerticalFile(params.workspace)
@@ -141,47 +157,61 @@ function buildCorpus(params: Args) {
   let taggedDir = path.join(params.workspace, 'tagged')
   mkdirp.sync(taggedDir)
   for (let [i, filePath] of inputFiles.entries()) {
-    let basename = path.basename(filePath)
-    let id = trimExtension(basename)
+    try {
+      let basename = path.basename(filePath)
+      let id = trimExtension(basename)
 
-    if (idRegistry.has(id)) {
-      console.error(`WARNING: id "${id}" used already, skipping ${filePath}`)
-      continue
+      if (idRegistry.has(id)) {
+        console.error(`WARNING: id "${id}" used already, skipping ${filePath}`)
+        continue
+      }
+
+      let dest = path.join(taggedDir, id + '.xml')
+      let root
+      process.stdout.write(`${countOf(i, inputFiles.length)} ${id}:`)
+      if (fs.existsSync(dest)) {
+        if (args.skipvert) {
+          process.stdout.write(` tagged already, skipping xml and vertical\n`)
+          continue
+        }
+        process.stdout.write(` tagged already, reading from xml`)
+        root = filename2lxmlRootSync(dest)
+      } else {
+        process.stdout.write(` preprocessing`)
+        let body = fs.readFileSync(filePath, 'utf8')
+        let isXml = path.extname(basename) === '.xml'
+        root = nlpUtils.preprocessForTaggingGeneric(body, docCreator, isXml)
+
+        process.stdout.write(`; tokenizing`)
+        nlpUtils.tokenizeTei(root, morphAnalyzer)
+
+        process.stdout.write(`; tagging`)
+        nlpUtils.morphInterpret(root, morphAnalyzer)
+
+        process.stdout.write(`; writing xml`)
+        fs.writeFileSync(dest, root.document().serialize(true), 'utf8')
+      }
+
+      process.stdout.write(`; creating vertical`)
+      let meta = metaTable && metaTable.get(id)
+      if (!meta) {
+        process.stdout.write(`: 😮  no meta`)
+        meta = { filename: id }
+      } else {
+        prepareDocMeta(meta)
+      }
+      let verticalLines = [...nlpUtils.tei2nosketch(root, meta)].join('\n')
+      fs.writeSync(verticalFile, verticalLines)
+
+      process.stdout.write('\n')
+    } catch (e) {
+      process.stdout.write('\n')
+      if (e.message.startsWith('PCDATA invalid Char value')) {
+        process.stdout.write(` ❌  ${e.message}`)
+        continue
+      }
+      process.stdout.write(` ⚡️❌  ${e.message}`)
+      //throw e
     }
-
-    let dest = path.join(taggedDir, id + '.xml')
-    let root
-    process.stdout.write(`${countOf(i, inputFiles.length)} ${id}:`)
-    if (fs.existsSync(dest)) {
-      process.stdout.write(` tagged already, reading from xml`)
-      root = filename2lxmlRootSync(dest)
-    } else {
-      process.stdout.write(` preprocessing`)
-      let body = fs.readFileSync(filePath, 'utf8')
-      let isXml = path.extname(basename) === '.xml'
-      root = nlpUtils.preprocessForTaggingGeneric(body, docCreator, isXml)
-
-      process.stdout.write(`; tokenizing`)
-      nlpUtils.tokenizeTei(root, morphAnalyzer)
-
-      process.stdout.write(`; tagging`)
-      nlpUtils.morphInterpret(root, morphAnalyzer)
-
-      process.stdout.write(`; writing xml`)
-      fs.writeFileSync(dest, root.document().serialize(true), 'utf8')
-    }
-
-    process.stdout.write(`; creating vertical`)
-    let meta = metaTable && metaTable.get(id)
-    if (!meta) {
-      process.stdout.write(`: 😮  no meta`)
-      meta = { filename: id }
-    } else {
-      prepareDocMeta(meta)
-    }
-    let verticalLines = [...nlpUtils.tei2nosketch(root, meta)].join('\n')
-    fs.writeSync(verticalFile, verticalLines)
-
-    process.stdout.write('\n')
   }
 }
