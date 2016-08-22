@@ -1,6 +1,5 @@
 import { iterateDictCorpVizLines } from './nlp/vesum_utils';
 import { MorphTag, mapVesumFlag } from './nlp/morph_tag';
-import { rysin2multext } from './nlp/rysin2mulext';
 import { isValidMteTag } from './nlp/mte_utils';
 
 //const debug = require('debug')('testo');
@@ -70,10 +69,10 @@ export function testMte2Vesum(fileStr: string) {
     let vesum2;
     let mte2;
     try {
-      mte1 = rysin2multext(lemma, lemmaTag, form, tag)[0];
+      // mte1 = rysin2multext(lemma, lemmaTag, form, tag)[0];
       fromMte = MorphTag.fromMte(mte1);
       vesum2 = fromMte.toVesumStr();
-      mte2 = rysin2multext(lemma, lemmaTag, form, vesum2)[0];
+      // mte2 = rysin2multext(lemma, lemmaTag, form, vesum2)[0];
       if (mte1 !== mte2) {
         // throw new Error(`${tag} !== ${toMte}`);
         console.error(`${tag}\n${vesum2}\n${mte1}\n${mte2}   for ${form} ${vesum2}\n`);
@@ -103,7 +102,7 @@ export function testConverter(fileStr: string) {
     let reMte;
     try {
       try {
-        mte = rysin2multext(lemma, lemmaTag, form, tag)[0];
+        // mte = rysin2multext(lemma, lemmaTag, form, tag)[0];
       }
       catch (e) {
         console.error(e);
@@ -116,7 +115,7 @@ export function testConverter(fileStr: string) {
       if (mte) {
         fromMte = MorphTag.fromMte(mte);
         vesumBack = fromMte.toVesum().join(':');
-        reMte = rysin2multext(lemma, lemmaTag, form, vesumBack)[0];
+        // reMte = rysin2multext(lemma, lemmaTag, form, vesumBack)[0];
         if (mte !== reMte) {
           throw new Error(`${mte} !== ${reMte}`);
         }
