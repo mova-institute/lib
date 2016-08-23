@@ -1,5 +1,5 @@
 import { filename2lxmlRootSync } from '../utils.node'
-import { tei2nosketch } from './utils'
+import { interpretedTeiDoc2sketchVertical } from './utils'
 
 import * as fs from 'fs'
 import * as path from 'path';
@@ -20,7 +20,7 @@ function main() {
     let root = filename2lxmlRootSync(sourcePath)
 
     console.log(`processing ${i + 1} of ${sourcePaths.length} "${basename}"`);
-    for (let line of tei2nosketch(root)) {
+    for (let line of interpretedTeiDoc2sketchVertical(root)) {
       fs.appendFileSync(dest as any, line + '\n', 'utf8');
     }
   }

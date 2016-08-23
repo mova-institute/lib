@@ -1,5 +1,5 @@
-import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements
-  , traverseDepthGen } from '../xml/utils';
+import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements,
+  traverseDepthGen } from '../xml/utils';
 import * as xmlutils from '../xml/utils';
 import { W, W_, PC, SE, P } from './common_elements';
 import * as elementNames from './common_elements';
@@ -11,7 +11,7 @@ import { $t } from './text_token';
 import { IMorphInterp } from './interfaces';
 import { MorphTag, compareTags } from './morph_tag';
 import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static';
-import { $d, MiTeiDocument } from './mi_tei_document';
+import { $d } from './mi_tei_document';
 
 const wu: Wu.WuStatic = require('wu');
 
@@ -244,6 +244,63 @@ export function isRegularizedFlowElement(el: AbstractElement) {
 
   return ret;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// export function morphInterpret2(root: AbstractElement, analyzer: MorphAnalyzer, mte = false) {
+//   for (let {el, unamb, interps} of genMorphInterps(root, analyzer, mte)) {
+//     console.log(el.name())
+//     let w = tagWord(el, interps);
+//     if (unamb) {
+//       w.setAttribute('disamb', 0);
+//     }
+//   }
+// }
+
+////////////////////////////////////////////////////////////////////////////////
+// export function* genMorphInterps(root: AbstractElement, analyzer: MorphAnalyzer, mte = false) {
+//   let tagFunction = mte ? tagOrXMte : tagOrXVesum;
+
+//   let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)];
+//   if (!subroots.length) {
+//     subroots = [root];
+//   }
+
+//   for (let subroot of subroots) {
+//     let iterator = traverseDepthGen(subroot);
+//     let pointer = iterator.next();
+//     while (!pointer.done) {
+//       // console.log('erato')
+//       if (!pointer.value.node.isElement()) {
+//         continue;
+//       }
+//       let el = pointer.value.node.asElement();
+//       let name = el.name();
+//       if (name === W_ || !isRegularizedFlowElement(el)) {
+//         pointer = iterator.next('skip');
+//         continue;
+//       }
+
+//       if (name === W || name === 'w') {  // hack, todo
+//         let lang = el.lang();
+//         if (lang && lang !== 'uk') {
+//           yield { el, unamb: true, interps: [{ lemma: el.text(), flags: 'x:foreign' }] };
+//         }
+//         else {
+//           let next = el.nextElementSiblings()
+//             .find(x => x.localName() === 'pc' || x.localName === 'w');
+//           yield {
+//             el,
+//             unamb: false,
+//             interps: tagFunction(analyzer, el.text(), next && next.text()),
+//           }
+//         }
+//       }
+//       pointer = iterator.next();
+//     }
+//   }
+
+//   return root;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, mte = false) {
@@ -582,65 +639,89 @@ export function normalizeCorpusText(root: AbstractElement) {
 const MULTISEP = '|';
 const teiStructuresToCopy = createObject(['s', 'p', 'l', 'lg'].map(x => [x, x]));
 // todo: fix namespace problem
-export function* tei2nosketch(root: AbstractElement, meta: any = {}) {
-  yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`;
-
-  let elements = wu(traverseDepthGen(root)).filter(x => x.node.isElement());
-  for (let { node, entering } of elements) {
-    let e = node.asElement();
-    let elName = e.localName();
-    if (entering) {
-      // if (meta.disambed && e.name() === elementNames.W) {
-      //   let mte = e.attribute('ana');
-      //   let lemma = e.attribute('lemma');
-      //   yield nosketchLine(e.text().trim(), lemma, mte, 'xx');
-      //   continue;
-      // }
-      switch (elName) {
-        case 'w_':
-        case elementNames.W_: {
-          let interps = $t(e).disambedOrDefiniteInterps();
-          let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
-          let vesumFlagss = interps.map(x => x.flags);
-          let lemmas = interps.map(x => x.lemma);
-          lemmas = unique(lemmas);
-          mteTags = unique(mteTags);
-          // vesumFlagss = unique(vesumFlagss);
-          yield nosketchLine($t(e).text(),
-            lemmas.join(MULTISEP), mteTags.join(MULTISEP), vesumFlagss.join(MULTISEP));
-          break;
-        }
-        case 'pc':
-        case elementNames.PC:  // todo
-          yield nosketchLine(e.text(), e.text(), 'U', 'punct');
-          break;
-        case 'g':
-        case elementNames.G:
-          yield '<g/>';
-          break;
-        default: {
-          if (elName in teiStructuresToCopy) {
-            yield `<${teiStructuresToCopy[elName]}>`
-          }
-          break;
-        }
+function element2sketchVertical(el: AbstractElement, entering: boolean) {
+  let elName = el.localName();
+  if (entering) {
+    // if (meta.disambed && e.name() === elementNames.W) {
+    //   let mte = e.attribute('ana');
+    //   let lemma = e.attribute('lemma');
+    //   yield nosketchLine(e.text().trim(), lemma, mte, 'xx');
+    //   continue;
+    // }
+    switch (elName) {
+      case 'w_':
+      case elementNames.W_: {
+        let interps = $t(el).disambedOrDefiniteInterps();
+        let mteTags = interps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
+        let vesumFlagss = interps.map(x => x.flags);
+        let lemmas = interps.map(x => x.lemma);
+        lemmas = unique(lemmas);
+        mteTags = unique(mteTags);
+        // vesumFlagss = unique(vesumFlagss);
+        return sketchLine($t(el).text(),
+          lemmas.join(MULTISEP), mteTags.join(MULTISEP), vesumFlagss.join(MULTISEP));
       }
-    } else {
-      switch (elName) {
-        default: {
-          if (elName in teiStructuresToCopy) {
-            yield `</${teiStructuresToCopy[elName]}>`
-          }
-          break;
+      case 'pc':
+      case elementNames.PC:  // todo
+        return sketchLine(el.text(), el.text(), 'U', 'punct');
+      case 'g':
+      case elementNames.G:
+        return '<g/>';
+      default: {
+        if (elName in teiStructuresToCopy) {
+          return `<${teiStructuresToCopy[elName]}>`
         }
+        break;
+      }
+    }
+  } else {
+    switch (elName) {
+      default: {
+        if (elName in teiStructuresToCopy) {
+          return `</${teiStructuresToCopy[elName]}>`
+        }
+        break;
       }
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// export function* tokenizedTeiDoc2sketchVertical(
+//   root: AbstractElement, analyzer: MorphAnalyzer, meta: any = {}) {
+
+//   yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`;
+
+//   let words = root.evaluateElements('//tei:w', NS);
+//   let current = words.next().value;
+//   for (let next of words) {
+//     let interps = analyzer.tag(current.text(), next.text());
+//   }
+
+//   yield `</doc>`;
+// }
+
+////////////////////////////////////////////////////////////////////////////////
+export function* interpretedTeiDoc2sketchVertical(root: AbstractElement, meta: any = {}) {
+  yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`;
+
+  let elements = wu(traverseDepthGen(root))
+    .filter(x => x.node.isElement())
+    .map(x => ({
+      el: x.node.asElement(), entering: x.entering
+    }));
+  for (let {el, entering} of elements) {
+    let line = element2sketchVertical(el, entering);
+    if (line) {
+      yield line;
+    }
+  }
+
   yield `</doc>`;
 }
 
 //------------------------------------------------------------------------------
-function nosketchLine(token: string, lemma: string, mteTag: string, vesumTag: string) {
+function sketchLine(token: string, lemma: string, mteTag: string, vesumTag: string) {
   return `${token}\t${lemma}\t${mteTag}\t${vesumTag}`;
 }
 

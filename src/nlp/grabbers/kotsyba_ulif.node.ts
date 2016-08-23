@@ -1,6 +1,6 @@
 import * as xmlUtils from '../../xml/utils';
 import { string2lxmlRoot } from '../../utils.node';
-import { tokenizeTei, morphInterpret, tei2nosketch, normalizeCorpusTextString } from '../utils';
+import { tokenizeTei, morphInterpret, interpretedTeiDoc2sketchVertical, normalizeCorpusTextString } from '../utils';
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node';
 
 // import { AllHtmlEntities } from 'html-entities';
@@ -57,7 +57,7 @@ function kotsybaUltif2DirtyTei(filename: string, destDir: string,
     fs.writeFileSync(destPath, body, 'utf8');
 
     if (corpusFile !== undefined) {
-      for (let line of tei2nosketch(root)) {
+      for (let line of interpretedTeiDoc2sketchVertical(root)) {
         fs.appendFileSync(corpusFile as any, line + '\n', 'utf8');
       }
     }

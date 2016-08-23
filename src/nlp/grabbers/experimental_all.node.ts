@@ -92,7 +92,7 @@ function verticalizeDir(dir: string, verticalFile: number) {
     if (!basename) {
       throw new Error(`no basename`);
     }
-    for (let line of nlpUtils.tei2nosketch(root, { filename: basename })) {
+    for (let line of nlpUtils.interpretedTeiDoc2sketchVertical(root, { filename: basename })) {
       buf.push(line + '\n')
     }
     fs.appendFileSync(verticalFile as any, buf.join(''), 'utf8');

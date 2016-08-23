@@ -1,8 +1,8 @@
 
-  // time node lib/nlp/buildcorp.node.js --workspace ~/Downloads/buildcorp
-  //   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/parallel/**/*.xml'
-  //   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/ulif/**/*.{xml,txt}'
-  //   --meta ~/Downloads/buildcorp/meta1.tsv --meta ~/Downloads/buildcorp/meta2.tsv
+// time node lib/nlp/buildcorp.node.js --workspace ~/Downloads/buildcorp
+//   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/parallel/**/*.xml'
+//   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/ulif/**/*.{xml,txt}'
+//   --meta ~/Downloads/buildcorp/meta1.tsv --meta ~/Downloads/buildcorp/meta2.tsv
 
 import * as path from 'path'
 import * as fs from 'fs'
@@ -18,7 +18,9 @@ import { createObject2, arrayed } from '../lang'
 const wu: Wu.WuStatic = require('wu')
 const globSync = require('glob').sync
 const mkdirp = require('mkdirp')
-const args: Args = require('minimist')(process.argv.slice(2))
+const args: Args = require('minimist')(process.argv.slice(2), {
+  boolean: ['xml', 'novert'],
+})
 
 
 
@@ -30,7 +32,8 @@ interface Args {
   input: string[]
   workspace: string
   meta?: string[]
-  skipvert: boolean
+  xml: boolean
+  novert: boolean
 }
 
 function normalizeArgs(args) {
@@ -123,11 +126,12 @@ function createTextTypeAttribute(value: string) {
 }
 
 function createVerticalFile(workspacePath: string) {
-  let filePath = path.join(workspacePath, 'corpus.vertical.txt')
+  let filePath
+  let i = 1
+  do {
+    filePath = path.join(workspacePath, `corpus.${i++}.vertical.txt`);
+  } while (fs.existsSync(filePath))
 
-  for (let i = 1; fs.existsSync(filePath); ++i) {
-    filePath = path.join(workspacePath, `corpus.${i}.vertical.txt`)
-  }
   mkdirp.sync(workspacePath)
   return fs.openSync(filePath, 'w')
 }
@@ -139,7 +143,7 @@ function createVerticalFile(workspacePath: string) {
 
 function buildCorpus(params: Args) {
   normalizeArgs(args)
-  let isDoingIo = false
+  // let isDoingIo = false
 
   // process.on('exit', () => handleInterrupt(isDoingIo))
   // process.on('SIGINT', () => handleInterrupt(isDoingIo))
@@ -170,7 +174,7 @@ function buildCorpus(params: Args) {
       let root
       process.stdout.write(`${countOf(i, inputFiles.length)} ${id}:`)
       if (fs.existsSync(dest)) {
-        if (args.skipvert) {
+        if (args.novert) {
           process.stdout.write(` tagged already, skipping xml and vertical\n`)
           continue
         }
@@ -185,23 +189,32 @@ function buildCorpus(params: Args) {
         process.stdout.write(`; tokenizing`)
         nlpUtils.tokenizeTei(root, morphAnalyzer)
 
-        process.stdout.write(`; tagging`)
-        nlpUtils.morphInterpret(root, morphAnalyzer)
+        if (args.xml) {
+          process.stdout.write(`; tagging`)
+          nlpUtils.morphInterpret(root, morphAnalyzer)
 
-        process.stdout.write(`; writing xml`)
-        fs.writeFileSync(dest, root.document().serialize(true), 'utf8')
+          process.stdout.write(`; writing xml`)
+          fs.writeFileSync(dest, root.document().serialize(true), 'utf8')
+        }
       }
 
-      process.stdout.write(`; creating vertical`)
-      let meta = metaTable && metaTable.get(id)
-      if (!meta) {
-        process.stdout.write(`: 😮  no meta`)
-        meta = { filename: id }
-      } else {
-        prepareDocMeta(meta)
+      if (!args.novert) {
+        process.stdout.write(`; creating vertical`)
+        let meta = metaTable && metaTable.get(id)
+        if (!meta) {
+          process.stdout.write(`: 😮  no meta`)
+          meta = { filename: id }
+        } else {
+          prepareDocMeta(meta)
+        }
+        let verticalLines: string[]
+        if (args.xml) {
+          verticalLines = [...nlpUtils.interpretedTeiDoc2sketchVertical(root, meta)]
+        } else {
+          // verticalLines = [...nlpUtils.tokenizedTeiDoc2sketchVertical(root, meta)]
+        }
+        fs.writeSync(verticalFile, verticalLines.join('\n'))
       }
-      let verticalLines = [...nlpUtils.tei2nosketch(root, meta)].join('\n')
-      fs.writeSync(verticalFile, verticalLines)
 
       process.stdout.write('\n')
     } catch (e) {
