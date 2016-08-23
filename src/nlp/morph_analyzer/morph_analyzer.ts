@@ -68,6 +68,7 @@ export class MorphAnalyzer {
 
   setExpandAdjectivesAsNouns(value: boolean) {
     this.expandAdjectivesAsNouns = value;
+    return this;
   }
 
   hasAnyCase(token: string) {

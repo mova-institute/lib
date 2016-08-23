@@ -1,11 +1,6 @@
-
-// time node lib/nlp/buildcorp.node.js --workspace ~/Downloads/buildcorp
-//   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/parallel/**/*.xml'
-//   --input '/Users/msklvsk/Developer/mova-institute/corpus-text/text/ulif/**/*.{xml,txt}'
-//   --meta ~/Downloads/buildcorp/meta1.tsv --meta ~/Downloads/buildcorp/meta2.tsv
-
 import * as path from 'path'
 import * as fs from 'fs'
+import * as readline from 'readline'
 
 import * as nlpUtils from '../nlp/utils'
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
@@ -34,13 +29,14 @@ interface Args {
   meta?: string[]
   xml: boolean
   novert: boolean
+  vertfile: string
 }
 
-function normalizeArgs(args) {
-  args.workspace = Array.isArray(args.workspace) ?
-    args.workspace[args.workspace.length - 1] : args.workspace
-  args.input = arrayed(args.input)
-  args.meta = arrayed(args.meta)
+function normalizeArgs(params) {
+  params.workspace = Array.isArray(params.workspace) ?
+    params.workspace[params.workspace.length - 1] : params.workspace
+  params.input = arrayed(params.input)
+  params.meta = arrayed(params.meta)
 }
 
 function trimExtension(filename: string) {
@@ -125,15 +121,19 @@ function createTextTypeAttribute(value: string) {
   return res.join('|');
 }
 
-function createVerticalFile(workspacePath: string) {
-  let filePath
-  let i = 1
-  do {
-    filePath = path.join(workspacePath, `corpus.${i++}.vertical.txt`);
-  } while (fs.existsSync(filePath))
+function createVerticalFile(params: Args) {
+  if (params.vertfile) {
+    return fs.openSync(params.vertfile, 'a')
+  } else {
+    let filePath
+    let i = 1
+    do {
+      filePath = path.join(params.workspace, `corpus.${i++}.vertical.txt`)
+    } while (fs.existsSync(filePath))
 
-  mkdirp.sync(workspacePath)
-  return fs.openSync(filePath, 'w')
+    mkdirp.sync(params.workspace)
+    return fs.openSync(filePath, 'w')
+  }
 }
 
 // function handleInterrupt(isDoingIo: boolean) {
@@ -141,20 +141,37 @@ function createVerticalFile(workspacePath: string) {
 //   process.exit()
 // }
 
-function buildCorpus(params: Args) {
+function readIdsFromVertical(filePath: string) {
+  return new Promise<string[]>((resolve) => {
+    let res = new Array<string>()
+    readline.createInterface({ input: fs.createReadStream(filePath) })
+      .on('line', (line: string) => {
+        let match = line.match(/^<doc(?: filename="([^"]+)"/)
+        if (match) {
+          res.push(match[1])
+        }
+      }).on('close', () => resolve(res))
+  })
+}
+
+async function buildCorpus(params: Args) {
   normalizeArgs(args)
   // let isDoingIo = false
 
-  // process.on('exit', () => handleInterrupt(isDoingIo))
-  // process.on('SIGINT', () => handleInterrupt(isDoingIo))
-  // process.on('uncaughtException', () => handleInterrupt(isDoingIo))
+
+  // read already generated ids
+  let skipIdSet = new Set<string>()
+  if (params.vertfile) {
+    process.stdout.write(`reading ids from "${params.vertfile}"`)
+    skipIdSet = new Set(await readIdsFromVertical(params.vertfile))
+    process.stdout.write(`, ${skipIdSet.size} read\n`)
+  }
 
   let metaTable = prepareMetadataFiles(args.meta)
-  let verticalFile = createVerticalFile(params.workspace)
-
+  let verticalFile = createVerticalFile(params)
+  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false)
   let idRegistry = new Set<string>()
-  let morphAnalyzer = createMorphAnalyzerSync()
-  morphAnalyzer.setExpandAdjectivesAsNouns(false)
+
 
   let inputFiles: string[] = wu(args.input).map(x => globSync(x)).flatten().toArray()
   inputFiles = unique(inputFiles)
@@ -178,6 +195,10 @@ function buildCorpus(params: Args) {
           process.stdout.write(` tagged already, skipping xml and vertical\n`)
           continue
         }
+        if (skipIdSet.has(id)) {
+          process.stdout.write(` already present in vertical, skipping\n`)
+          continue
+        }
         process.stdout.write(` tagged already, reading from xml`)
         root = filename2lxmlRootSync(dest)
       } else {
@@ -187,11 +208,11 @@ function buildCorpus(params: Args) {
         root = nlpUtils.preprocessForTaggingGeneric(body, docCreator, isXml)
 
         process.stdout.write(`; tokenizing`)
-        nlpUtils.tokenizeTei(root, morphAnalyzer)
+        nlpUtils.tokenizeTei(root, analyzer)
 
         if (args.xml) {
           process.stdout.write(`; tagging`)
-          nlpUtils.morphInterpret(root, morphAnalyzer)
+          nlpUtils.morphInterpret(root, analyzer)
 
           process.stdout.write(`; writing xml`)
           fs.writeFileSync(dest, root.document().serialize(true), 'utf8')
@@ -203,28 +224,22 @@ function buildCorpus(params: Args) {
         let meta = metaTable && metaTable.get(id)
         if (!meta) {
           process.stdout.write(`: 😮  no meta`)
-          meta = { filename: id }
+          meta = {}
         } else {
           prepareDocMeta(meta)
         }
-        let verticalLines: string[]
+        meta.filename = id
         if (args.xml) {
-          verticalLines = [...nlpUtils.interpretedTeiDoc2sketchVertical(root, meta)]
+          var verticalLines = [...nlpUtils.interpretedTeiDoc2sketchVertical(root, meta)]
         } else {
-          // verticalLines = [...nlpUtils.tokenizedTeiDoc2sketchVertical(root, meta)]
+          verticalLines = [...nlpUtils.tokenizedTeiDoc2sketchVertical(root, analyzer, meta)]
         }
-        fs.writeSync(verticalFile, verticalLines.join('\n'))
+        fs.writeSync(verticalFile, verticalLines.join('\n') + '\n')
       }
 
       process.stdout.write('\n')
     } catch (e) {
-      process.stdout.write('\n')
-      if (e.message.startsWith('PCDATA invalid Char value')) {
-        process.stdout.write(` ❌  ${e.message}`)
-        continue
-      }
-      process.stdout.write(` ⚡️❌  ${e.message}`)
-      //throw e
+      process.stdout.write(`\n ⚡️⚡️ ❌  ${e.message}`)
     }
   }
 }

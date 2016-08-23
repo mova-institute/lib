@@ -174,23 +174,23 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
-// export function* traverseDepthGen2(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
-//   let directive = yield { node, entering: true };
-//   if (directive === 'stop') {
-//     return false;
-//   }
-//   if (directive !== 'skip' && node.isElement()) {
-//     for (let curNode = node.asElement().firstChild(), next = curNode && curNode.nextSibling();
-//       curNode;
-//       curNode = next, next = next && next.nextSibling()) {
+export function* traverseDepthGen2(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
+  let directive = yield { node, entering: true };
+  if (directive === 'stop') {
+    return false;
+  }
+  if (directive !== 'skip' && node.isElement()) {
+    for (let curNode = node.asElement().firstChild(), next = curNode && curNode.nextSibling();
+      curNode;
+      curNode = next, next = next && next.nextSibling()) {
 
-//       if ((yield* traverseDepthGen(curNode)) === false) {
-//         return false;
-//       }
-//     }
-//   }
-//   yield { node, entering: false }
-// }
+      if ((yield* traverseDepthGen2(curNode)) === false) {
+        return false;
+      }
+    }
+  }
+  yield { node, entering: false }
+}
 
 export function* traverseDepthGen(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
   yield { node, entering: true }

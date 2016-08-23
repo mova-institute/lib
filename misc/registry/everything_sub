@@ -1,4 +1,4 @@
-*FREQLISTATTRS word lc lemma lemma_lc tag dicttag
+*FREQLISTATTRS word lc lemma lemma_lc tag tag2
 
 =до30ті
   -CQL-
