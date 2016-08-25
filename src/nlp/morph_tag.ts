@@ -502,6 +502,7 @@ export class MorphTag {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
     'nv', 'alt', 'v-u', 'dimin', 'mock', 'foreign',
+    'n2adj',
   ]);
 
 
@@ -743,7 +744,7 @@ export class MorphTag {
       let type = tryMap2Mte(NounType, this.features.nounType) || 'c';
       let gender = tryMap2Mte(Gender, this.features.gender);
       if (!gender) {
-        if (this.isNoSingular() || this.isBad()) {
+        if (this.isNoSingular() || this.isBad() || (this.isN2Adj() && this.isPlural())) {
           gender = '-';
         } else if (lemmaTag) {
           gender = map2mteOrDash(Gender, lemmaTag.features.gender);
@@ -879,6 +880,7 @@ export class MorphTag {
   isPreposition() { return this.features.pos === Pos.preposition; }
 
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
+  isN2Adj() { return this.otherFlags.has('n2adj'); }
 
   isPronoun() { return this.features.pronoun !== undefined; }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes; }
@@ -904,6 +906,7 @@ export class MorphTag {
   hasNumber() { return this.features.number !== undefined; }
   hasGender() { return this.features.gender !== undefined; }
 
+  isProper() { return this.features.nounType === NounType.proper; }
   isBad() { return this.features.bad === Bad.yes; }
 
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this; }

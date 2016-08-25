@@ -22,6 +22,11 @@ const foreignPrefixes = [
   'квазі',
   'вібро',
   'бензо',
+  'динаміко',
+  'космо',
+  'мульти',
+  'міні',
+  'максі',
 ];
 
 //------------------------------------------------------------------------------
@@ -60,6 +65,7 @@ const PREFIX_SPECS = [
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
   expandAdjectivesAsNouns = true;
+  keepN2adj = false;
   numeralMap: Array<{ form: string, flags: string, lemma: string }>;
 
   constructor(private dictionary: Dictionary) {
@@ -68,6 +74,11 @@ export class MorphAnalyzer {
 
   setExpandAdjectivesAsNouns(value: boolean) {
     this.expandAdjectivesAsNouns = value;
+    return this;
+  }
+
+  setKeepN2adj(value: boolean) {
+    this.keepN2adj = value;
     return this;
   }
 
@@ -97,7 +108,7 @@ export class MorphAnalyzer {
     }
 
     // symbols
-    if (/^[@#$%*]$/.test(token)) {
+    if (/^[@#$%*§©+×÷=<>♥]$/.test(token)) {
       return [MorphTag.fromVesumStr('sym', token)];
     }
 
@@ -171,6 +182,9 @@ export class MorphAnalyzer {
     let ret = new Array<MorphTag>();
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
+        continue
+      }
+      if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
         continue
       }
 

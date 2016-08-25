@@ -169,7 +169,7 @@ async function buildCorpus(params: Args) {
 
   let metaTable = prepareMetadataFiles(args.meta)
   let verticalFile = createVerticalFile(params)
-  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false)
+  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
   let idRegistry = new Set<string>()
 
 
