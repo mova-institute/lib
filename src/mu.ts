@@ -73,9 +73,9 @@ export class Mu<T> implements Iterable<T> {
     return mu((function* () {
       for (let x of thiss) {
         if (typeof x !== 'string' && isIterable(x)) {
-          yield* (shallow ? x : mu(x as any).flatten());
+          yield* (shallow ? x : mu(x as any).flatten())
         } else {
-          yield x;
+          yield x
         }
       }
     })())
@@ -136,6 +136,14 @@ export class Mu<T> implements Iterable<T> {
         return x
       }
     }
+  }
+
+  length() {
+    let ret = 0
+    while (!this.next().done) {
+      ++ret
+    }
+    return ret
   }
 
   toArray() {
