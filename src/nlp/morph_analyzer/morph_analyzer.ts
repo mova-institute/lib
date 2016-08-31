@@ -1,5 +1,5 @@
 import { Dictionary } from '../dictionary/dictionary';
-import { MorphTag, Case } from '../morph_tag';
+import { MorphInterp, Case } from '../morph_tag';
 import { FOREIGN_CHAR_RE, LETTER_UK, WCHAR_UK_UPPERCASE } from '../static';
 
 import { HashSet } from '../../data_structures';
@@ -31,21 +31,21 @@ const foreignPrefixes = [
 const PREFIX_SPECS = [
   {
     prefixesRegex: new RegExp(`^(${foreignPrefixes.join('|')})`),
-    test: (x: MorphTag) => x.isNoun() || x.isAdjective(),
+    test: (x: MorphInterp) => x.isNoun() || x.isAdjective(),
   },
   {
     prefixes: ['пре'],
-    test: (x: MorphTag) => x.isAdjective() && x.isComparable(),
+    test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
     prefixes: ['не', 'між'],
-    test: (x: MorphTag) => x.isAdjective(),
+    test: (x: MorphInterp) => x.isAdjective(),
   },
   {
     prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у'],
     pretest: (x: string) => x.length > 4,
-    test: (x: MorphTag) => x.isVerb() && x.isImperfect(),
-    postprocess: (x: MorphTag) => {
+    test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
+    postprocess: (x: MorphInterp) => {
       x.setIsPerfect();
       if (x.isPresent()) {
         x.setIsFuture();
@@ -97,22 +97,22 @@ export class MorphAnalyzer {
 
     // Arabic numerals
     if (/^\d+[½]?$/.test(token)) {
-      return [MorphTag.fromVesumStr('numr', token)];
+      return [MorphInterp.fromVesumStr('numr', token)];
     }
 
     // Roman numerals
     if (/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(token)) {
-      return [MorphTag.fromVesumStr('numr:roman', token)];
+      return [MorphInterp.fromVesumStr('numr:roman', token)];
     }
 
     // symbols
     if (/^[@#$%*§©+×÷=<>♥]$/.test(token)) {
-      return [MorphTag.fromVesumStr('sym', token)];
+      return [MorphInterp.fromVesumStr('sym', token)];
     }
 
     // foreign
     if (FOREIGN_CHAR_RE.test(token)) {
-      return [MorphTag.fromVesumStr('x:foreign', token)];
+      return [MorphInterp.fromVesumStr('x:foreign', token)];
     }
 
     let lookupees = varyLetterCases(token);
@@ -121,8 +121,8 @@ export class MorphAnalyzer {
       lookupees.push(...lookupees.map(x => x + '.'));
     }
 
-    let res = new HashSet(MorphTag.hash,
-      wu(lookupees).map(x => this.lookup(x)).flatten() as Iterable<MorphTag>);
+    let res = new HashSet(MorphInterp.hash,
+      wu(lookupees).map(x => this.lookup(x)).flatten() as Iterable<MorphInterp>);
 
     // try одробив is the same as відробив
     if (!res.size && lowercase.startsWith('од') && lowercase.length > 4) {
@@ -177,7 +177,7 @@ export class MorphAnalyzer {
 
 
     // filter and postprocess
-    let ret = new Array<MorphTag>();
+    let ret = new Array<MorphInterp>();
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
         continue
@@ -200,7 +200,7 @@ export class MorphAnalyzer {
   tagOrX(token: string, nextToken?: string) {
     let ret = this.tag(token, nextToken);
     if (!ret.length) {
-      ret = [MorphTag.fromVesumStr('x', token)];
+      ret = [MorphInterp.fromVesumStr('x', token)];
     }
     return ret;
   }
@@ -217,7 +217,7 @@ export class MorphAnalyzer {
 
   private lookup(token: string) {
     return this.lookupRaw(token)
-      .map(x => MorphTag.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+      .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
   }
 
   private isCompoundAdjective(token: string) {
@@ -324,7 +324,7 @@ function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: s
 }
 
 //------------------------------------------------------------------------------
-function expandParsedInterp(interp: MorphTag) {
+function expandParsedInterp(interp: MorphInterp) {
   // if (interp.isNoun() && interp.isPlural() && interp.isNominative) {
   return [interp, interp.clone().setIsAuto().setIsOdd()];
   // }

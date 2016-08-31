@@ -8,8 +8,8 @@ import { uniqueSmall as unique } from '../algo';
 import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi';
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer';
 import { $t } from './text_token';
-import { IMorphInterp } from './interfaces';
-import { MorphTag, compareTags } from './morph_tag';
+import { IStringMorphInterp } from './interfaces';
+import { MorphInterp, compareTags } from './morph_tag';
 import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static';
 import { $d } from './mi_tei_document';
 import { miu, Miu } from '../miu';
@@ -207,7 +207,7 @@ export function elementFromToken(token: string, document: AbstractDocument) {
 }
 
 //------------------------------------------------------------------------------
-function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterable<IMorphInterp>) {
+function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterable<IStringMorphInterp>) {
   let doc = miw.document();
   for (let morphTag of morphTags) {
     let w = doc.createElement('w');
@@ -221,7 +221,7 @@ function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterab
 }
 
 //------------------------------------------------------------------------------
-function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
+function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
   let miw = fillInterpElement(el.document().createElement('w_', NS.mi), el.text(), morphTags);
   el.replace(miw);
   return miw;
@@ -513,7 +513,7 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
     for (let w of miw.elementChildren()) {
       let mte = w.attribute('ana');
       // console.log(`mte: ${mte}`);
-      let vesum = MorphTag.fromMte(mte, w.text()).toVesumStr();
+      let vesum = MorphInterp.fromMte(mte, w.text()).toVesumStr();
       // console.log(`vesum: ${vesum}`);
 
       w.setAttribute('ana', vesum);
@@ -546,7 +546,7 @@ export function sortInterps(root: AbstractElement) {
         return ret;
       }
 
-      return compareTags(MorphTag.fromVesumStr(a.attribute('ana')), MorphTag.fromVesumStr(b.attribute('ana')));
+      return compareTags(MorphInterp.fromVesumStr(a.attribute('ana')), MorphInterp.fromVesumStr(b.attribute('ana')));
       // return a.attribute('ana').localeCompare(b.attribute('ana'));
     });
 
@@ -676,7 +676,7 @@ export function normalizeCorpusText(root: AbstractElement) {
 const MULTISEP = '|';
 const teiStructuresToCopy = createObject(['s', 'p', 'l', 'lg', 'div'].map(x => [x, x]));
 // todo: fix namespace problem
-function element2sketchVertical(el: AbstractElement, entering: boolean, interps?: MorphTag[]) {
+function element2sketchVertical(el: AbstractElement, entering: boolean, interps?: MorphInterp[]) {
   let elName = el.localName();
   if (entering) {
     switch (elName) {
@@ -691,7 +691,7 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
       case 'w_':
       case elementNames.W_: {
         let wInterps = $t(el).disambedOrDefiniteInterps();
-        let mteTags = wInterps.map(x => MorphTag.fromVesumStr(x.flags, x.lemma).toMte());
+        let mteTags = wInterps.map(x => MorphInterp.fromVesumStr(x.flags, x.lemma).toMte());
         let vesumFlagss = wInterps.map(x => x.flags);
         let lemmas = wInterps.map(x => x.lemma);
         lemmas = unique(lemmas);

@@ -1,5 +1,5 @@
 import { WordDawgPayload } from './word_dawg_payload';
-import { IMorphInterp } from '../interfaces';
+import { IStringMorphInterp } from '../interfaces';
 import { HashSet } from '../../data_structures';
 
 import { MapDawg } from 'dawgjs/map_dawg';
@@ -24,7 +24,7 @@ export class Dictionary {
   }
 
   lookupVariants(words: Iterable<string>) {
-    return new HashSet(IMorphInterp.hash, wu.chain(...wu(words).map(x => this.lookup(x))));
+    return new HashSet(IStringMorphInterp.hash, wu.chain(...wu(words).map(x => this.lookup(x))));
   }
 
   lookupLexemesByLemma(lemma: string) {

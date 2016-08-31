@@ -500,7 +500,7 @@ export class Features {
 
 ////////////////////////////////////////////////////////////////////////////////
 // represents a single unambiguous morphological interpretation
-export class MorphTag {
+export class MorphInterp {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
     'nv', 'alt', 'v-u', 'dimin', 'mock', 'foreign',
@@ -512,13 +512,13 @@ export class MorphTag {
   features = new Features();
   private otherFlags = new Set<string>();
 
-  static hash(value: MorphTag) {
+  static hash(value: MorphInterp) {
     return value.toVesumStr() + (value.lemma ? ` ${value.lemma}` : '');
   }
 
   static isValidVesumStr(value: string) {  // todo
     try {
-      MorphTag.fromVesumStr(value);
+      MorphInterp.fromVesumStr(value);
       return true;
     }
     catch (e) {
@@ -527,7 +527,7 @@ export class MorphTag {
   }
 
   static fromVesum(flags: string[], lemma?: string, lemmaFlags?: string[]) {
-    let ret = new MorphTag();
+    let ret = new MorphInterp();
 
     for (let flag of flags) {
       let row = tryMapVesumFlag(flag);
@@ -535,7 +535,7 @@ export class MorphTag {
         ret.features[row.featStr] = row.vesum;
       }
       else {
-        if (MorphTag.otherFlagsAllowed.has(flag)) {
+        if (MorphInterp.otherFlagsAllowed.has(flag)) {
           ret.otherFlags.add(flag);
         }
         else {
@@ -545,7 +545,7 @@ export class MorphTag {
     }
 
     if (lemmaFlags) {
-      let lemmaTag = MorphTag.fromVesum(lemmaFlags);
+      let lemmaTag = MorphInterp.fromVesum(lemmaFlags);
 
       // gender for plural
       if (ret.features.pos === Pos.noun) {
@@ -573,11 +573,11 @@ export class MorphTag {
   }
 
   static fromVesumStr(flags: string, lemma?: string, lemmaFlags?: string) {
-    return MorphTag.fromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'));
+    return MorphInterp.fromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'));
   }
 
   static fromMte(tag: string, form?: string) {
-    let ret = new MorphTag();
+    let ret = new MorphInterp();
 
     let flags = [...tag];
     ret.fromMte(flags);  // read all injections
@@ -659,7 +659,7 @@ export class MorphTag {
   }
 
   clone() {
-    let ret = MorphTag.fromVesum(this.toVesum());
+    let ret = MorphInterp.fromVesum(this.toVesum());
     ret.lemma = this.lemma;
 
     return ret;
@@ -702,7 +702,7 @@ export class MorphTag {
     };
   }
 
-  toMte(lemma = this.lemma, lemmaTag?: MorphTag) {
+  toMte(lemma = this.lemma, lemmaTag?: MorphInterp) {
     if (lemma === 'незважаючи' && this.isPreposition()) {
       return 'Vmpgp';
     }
@@ -843,11 +843,11 @@ export class MorphTag {
     throw new Error(`Cannot convert ${this.toVesumStr()} to MTE`);
   }
 
-  equals(other: MorphTag) {
+  equals(other: MorphInterp) {
     return this.toVesumStr() === other.toVesumStr();
   }
 
-  grammaticallyEquals(other: MorphTag) {
+  grammaticallyEquals(other: MorphInterp) {
     // todo
   }
 
@@ -1108,7 +1108,7 @@ const featureCompareOrder = new Set([
   OrdinalNumeral,
   Animacy,
 ]);
-export function compareTags(a: MorphTag, b: MorphTag) {
+export function compareTags(a: MorphInterp, b: MorphInterp) {
   if (a.lemma && b.lemma) {
     let res = a.lemma.localeCompare(b.lemma);
     if (res) {

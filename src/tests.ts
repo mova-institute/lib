@@ -1,5 +1,5 @@
 import { iterateDictCorpVizLines } from './nlp/vesum_utils';
-import { MorphTag, mapVesumFlag } from './nlp/morph_tag';
+import { MorphInterp, mapVesumFlag } from './nlp/morph_tag';
 import { isValidMteTag } from './nlp/mte_utils';
 
 //const debug = require('debug')('testo');
@@ -33,8 +33,8 @@ export function testMorphTag2Mte(fileStr: string) {
   let lines = fileStr.split('\n');
   for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
     try {
-      var morphTag = MorphTag.fromVesumStr(tag, lemma);
-      var lemmaMorphTag = MorphTag.fromVesumStr(lemmaTag, lemma);
+      var morphTag = MorphInterp.fromVesumStr(tag, lemma);
+      var lemmaMorphTag = MorphInterp.fromVesumStr(lemmaTag, lemma);
       var mte1 = morphTag.toMte(lemma, lemmaMorphTag);
       if (!isValidMteTag(mte1)) {
         console.log(`${form}\t${mte1}\t\t\t${tag}`);
@@ -70,7 +70,7 @@ export function testMte2Vesum(fileStr: string) {
     let mte2;
     try {
       // mte1 = rysin2multext(lemma, lemmaTag, form, tag)[0];
-      fromMte = MorphTag.fromMte(mte1);
+      fromMte = MorphInterp.fromMte(mte1);
       vesum2 = fromMte.toVesumStr();
       // mte2 = rysin2multext(lemma, lemmaTag, form, vesum2)[0];
       if (mte1 !== mte2) {
@@ -113,7 +113,7 @@ export function testConverter(fileStr: string) {
       }
 
       if (mte) {
-        fromMte = MorphTag.fromMte(mte);
+        fromMte = MorphInterp.fromMte(mte);
         vesumBack = fromMte.toVesum().join(':');
         // reMte = rysin2multext(lemma, lemmaTag, form, vesumBack)[0];
         if (mte !== reMte) {
@@ -133,7 +133,7 @@ export function testFlagSorter(fileStr: string) {
   let lines = fileStr.split('\n');
   for (let { form, tag, lemma, lemmaTag, isLemma, lineNum } of iterateDictCorpVizLines(lines)) {
     try {
-      let internal = MorphTag.fromVesumStr(tag);
+      let internal = MorphInterp.fromVesumStr(tag);
       let backVesum = internal.toVesumStr();
       if (tag !== backVesum && !tag.includes(':xp') && !tag.includes('adj:')) {
         console.log({ form, befor: tag, after: backVesum, internal, lineNum });

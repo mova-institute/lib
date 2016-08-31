@@ -1,7 +1,7 @@
-import { tryMapVesumFlag, tryMapVesumFlagToFeature, MorphTag, FEATURE_ORDER,
+import { tryMapVesumFlag, tryMapVesumFlagToFeature, MorphInterp, FEATURE_ORDER,
   RequiredCase, PronominalType, ConjunctionType, compareTags, Voice, Aspect } from './morph_tag';
 import { groupTableBy, arr2indexMap, combinations, stableSort, unique } from '../algo';
-import { IMorphInterp } from './interfaces';
+import { IStringMorphInterp } from './interfaces';
 
 const wu: Wu.WuStatic = require('wu');
 
@@ -168,7 +168,7 @@ export function domesticateDictCorpViz(fileStr: string) {
     .map(x => x.replace(/'/g, '’'));
 
   return wu(iterateDictCorpVizLines(expandDictCorpViz(lines))).map(x => {
-    let tag = MorphTag.fromVesumStr(x.tag, x.lemma, x.lemmaTag).toVesumStr();
+    let tag = MorphInterp.fromVesumStr(x.tag, x.lemma, x.lemmaTag).toVesumStr();
     return (x.isLemma ? '' : NONLEMMA_PADDING) + x.form + ' ' + tag;
   });
 }
@@ -228,14 +228,14 @@ export function domesticateDictCorpViz(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {
   for (let { lemmaTag, tag } of iterateDictCorpVizLines(fileStr.split('\n'))) {
-    MorphTag.fromVesumStr(tag, undefined, lemmaTag);
+    MorphInterp.fromVesumStr(tag, undefined, lemmaTag);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function presentTagsForDisamb(interps: IMorphInterp[]) {
-  let mainTags = new Array<IMorphInterp>()
-  let auxTags = new Array<IMorphInterp>()
+export function presentTagsForDisamb(interps: IStringMorphInterp[]) {
+  let mainTags = new Array<IStringMorphInterp>()
+  let auxTags = new Array<IStringMorphInterp>()
   interps.forEach(x => (isAdditionalTag(x.flags) ? auxTags : mainTags).push(x));
   return {
     main: presentTagsForDisambOneBlock(mainTags),
@@ -244,9 +244,9 @@ export function presentTagsForDisamb(interps: IMorphInterp[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function presentTagsForDisambOneBlock(interps: IMorphInterp[]) {
+export function presentTagsForDisambOneBlock(interps: IStringMorphInterp[]) {
   let splitted = interps.map((x, index) => ({ index, lemma: x.lemma, flags: x.flags.split(':') }));
-  let sorted = stableSort(splitted, (a, b) => compareTags(MorphTag.fromVesum(a.flags), MorphTag.fromVesum(b.flags)));
+  let sorted = stableSort(splitted, (a, b) => compareTags(MorphInterp.fromVesum(a.flags), MorphInterp.fromVesum(b.flags)));
 
   let aligned = alignTagList(sorted.map(x => x.flags));
   let flags = aligned.map(x => x.map(xx => new Array<{ content: string, isMarked: boolean }>()));

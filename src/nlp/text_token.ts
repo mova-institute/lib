@@ -3,7 +3,7 @@ import { W, W_, P, L, SE, PC } from './common_elements';
 import { ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl } from './utils';
 import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils';
 import { wrappedOrNull } from '../lang';
-import { IMorphInterp } from './interfaces';
+import { IStringMorphInterp } from './interfaces';
 import { unique } from '../algo';
 
 
@@ -73,7 +73,7 @@ export class TextToken {
     return this.getAllInterps().some(x => x.flags === flags && (lemma === undefined || x.lemma === lemma));
   }
 
-  hasAllInterps(tags: IMorphInterp[]) {
+  hasAllInterps(tags: IStringMorphInterp[]) {
     // return tags this.getAllInterps().some(x => x.flags === flags && (lemma === undefined || x.lemma === lemma));
   }
 
@@ -102,7 +102,7 @@ export class TextToken {
     return this.getDisambedInterpElems().map(x => x.attribute(TextToken.LEMMA_ATTR));
   }
 
-  interpAs(tags: IMorphInterp[]) {
+  interpAs(tags: IStringMorphInterp[]) {
     this.setDisambIndexes(tags.map(x => this.assureHasInterp(x.flags, x.lemma)));
   }
 

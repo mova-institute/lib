@@ -1,15 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
-export abstract class IMorphInterp {
+export abstract class IStringMorphInterp {
   flags: string;
   lemma: string;
 
-  static hash(value: IMorphInterp) {
+  static hash(value: IStringMorphInterp) {
     return value.flags + ' ' + value.lemma;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class StringMorphInterp implements IMorphInterp {
+export class StringMorphInterp implements IStringMorphInterp {
   constructor(public flags: string, public lemma: string) {
   }
 
