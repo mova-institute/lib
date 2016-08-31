@@ -1,6 +1,4 @@
-import { findAllIndexes } from '../../algo';
 import { Dictionary } from '../dictionary/dictionary';
-import { IMorphInterp } from '../interfaces';
 import { MorphTag, Case } from '../morph_tag';
 import { FOREIGN_CHAR_RE, LETTER_UK, WCHAR_UK_UPPERCASE } from '../static';
 
