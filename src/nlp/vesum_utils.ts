@@ -92,48 +92,48 @@ export function* iterateDictCorpVizLines(lines: Iterable<string>) {
 //   }
 // }
 
-function* chunkLexemes(lines: Iterable<string>) {
-  let accum = new Array<string>();
-  for (let line of lines) {
-    if (!line.startsWith(NONLEMMA_PADDING) && accum.length) {
-      yield accum;
-      accum = [];
-    }
-    accum.push(line);
-  }
-  if (accum.length) {
-    yield accum;
-  }
-}
+// function* chunkLexemes(lines: Iterable<string>) {
+//   let accum = new Array<string>();
+//   for (let line of lines) {
+//     if (!line.startsWith(NONLEMMA_PADDING) && accum.length) {
+//       yield accum;
+//       accum = [];
+//     }
+//     accum.push(line);
+//   }
+//   if (accum.length) {
+//     yield accum;
+//   }
+// }
 
-////////////////////////////////////////////////////////////////////////////////
-let expandableFlags = [
-  /:pers|:refl|:dem|:int|:rel|:neg|:ind|:gen|:emph/g,
-  /:rv_rod|:rv_dav|:rv_zna|:rv_oru|:rv_mis/g,
-  /:subord|:coord/g,
-];
-export function* expandDictCorpViz(lines: Iterable<string>) {
-  lines = wu(lines).map(x => {
-    let beforeadj = x.match(/^.* adj:beforeadj/);
-    if (beforeadj) {
-      return beforeadj[0];
-    }
-    return x.replace('&_adjp', '&adjp');
-  });
-  lexemeLoop:
-  for (let lexeme of chunkLexemes(lines)) {
-    for (let regexp of expandableFlags) {
-      let match = lexeme[0].match(regexp);
-      if (match && match.length > 1) {
-        for (let flag of match) {
-          yield* wu(lexeme).map(x => x.replace(regexp, '') + flag);
-        }
-        continue lexemeLoop;
-      }
-    }
-    yield* lexeme;
-  }
-}
+//------------------------------------------------------------------------------
+// let expandableFlags = [
+//   /:pers|:refl|:dem|:int|:rel|:neg|:ind|:gen|:emph/g,
+//   /:rv_rod|:rv_dav|:rv_zna|:rv_oru|:rv_mis/g,
+//   /:subord|:coord/g,
+// ];
+// function* expandDictCorpViz(lines: Iterable<string>) {
+//   lines = wu(lines).map(x => {
+//     let beforeadj = x.match(/^.* adj:beforeadj/);
+//     if (beforeadj) {
+//       return beforeadj[0];
+//     }
+//     return x.replace('&_adjp', '&adjp');
+//   });
+//   lexemeLoop:
+//   for (let lexeme of chunkLexemes(lines)) {
+//     for (let regexp of expandableFlags) {
+//       let match = lexeme[0].match(regexp);
+//       if (match && match.length > 1) {
+//         for (let flag of match) {
+//           yield* wu(lexeme).map(x => x.replace(regexp, '') + flag);
+//         }
+//         continue lexemeLoop;
+//       }
+//     }
+//     yield* lexeme;
+//   }
+// }
 
 //------------------------------------------------------------------------------
 // function* expandLexeme(lexeme: Wu.WuIterable<string>) {
@@ -162,16 +162,16 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function domesticateDictCorpViz(fileStr: string) {
-  let lines = wu(fileStr.split('\n'))
-    .filter(x => !/^\s*$/.test(x))
-    .map(x => x.replace(/'/g, '’'));
+// export function domesticateDictCorpViz(fileStr: string) {
+//   let lines = wu(fileStr.split('\n'))
+//     .filter(x => !/^\s*$/.test(x))
+//     .map(x => x.replace(/'/g, '’'));
 
-  return wu(iterateDictCorpVizLines(expandDictCorpViz(lines))).map(x => {
-    let tag = MorphInterp.fromVesumStr(x.tag, x.lemma, x.lemmaTag).toVesumStr();
-    return (x.isLemma ? '' : NONLEMMA_PADDING) + x.form + ' ' + tag;
-  });
-}
+//   return wu(iterateDictCorpVizLines(expandDictCorpViz(lines))).map(x => {
+//     let tag = MorphInterp.fromVesumStr(x.tag, x.lemma, x.lemmaTag).toVesumStr();
+//     return (x.isLemma ? '' : NONLEMMA_PADDING) + x.form + ' ' + tag;
+//   });
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 // export function expandDictCorpViz(lines: Iterable<string>) {

@@ -1,9 +1,10 @@
+import { miu, Miu } from '../../miu';
+
 import { WordDawgPayload } from './word_dawg_payload';
 import { IStringMorphInterp } from '../interfaces';
 import { HashSet } from '../../data_structures';
 
 import { MapDawg } from 'dawgjs/map_dawg';
-const wu: Wu.WuStatic = require('wu');
 
 
 
@@ -20,15 +21,15 @@ export class Dictionary {
   }
 
   lookup(word: string) {
-    return wu(this.words.getArray(word)).map(x => this.buildInterp(word, x));
+    return miu(this.words.getArray(word)).map(x => this.buildInterp(word, x));
   }
 
   lookupVariants(words: Iterable<string>) {
-    return new HashSet(IStringMorphInterp.hash, wu.chain(...wu(words).map(x => this.lookup(x))));
+    return new HashSet(IStringMorphInterp.hash, Miu.chain(...miu(words).map(x => this.lookup(x))));
   }
 
   lookupLexemesByLemma(lemma: string) {
-    return wu(this.words.getArray(lemma))
+    return miu(this.words.getArray(lemma))
       .filter(x => x.indexInPradigm === 0)
       .map(x => this.buildLexeme(x.paradigmId, lemma));
   }

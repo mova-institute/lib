@@ -10,17 +10,19 @@ function isIterable(thing) {
   return typeof thing[Symbol.iterator] === 'function'
 }
 
-export class Miu<T> {
+export class Miu<T> implements Iterable<T> {
   iterator: Iterator<T>
 
-  static *chain<TT>(...iterables: (Iterable<TT> | TT)[]) {
-    for (let it of iterables) {
-      if (isIterable(it)) {
-        yield* (it as Iterable<TT>)
-      } else {
-        yield it
+  static chain<T>(...iterables: (Iterable<T> | T)[]) {
+    return miu((function* () {
+      for (let it of iterables) {
+        if (isIterable(it)) {
+          yield* (it as Iterable<T>)
+        } else {
+          yield it as T
+        }
       }
-    }
+    })())
   }
 
   constructor(iterable: Iterable<T>) {
@@ -31,9 +33,9 @@ export class Miu<T> {
     return this.iterator.next()
   }
 
-  // chain<TT>(...iterables: (Iterable<TT> | TT)[]) {
-  //   return Miu.chain(this, ...iterables)
-  // }
+  chain<TT>(...iterables: (Iterable<TT> | TT)[]) {
+    return Miu.chain<TT>(this as any, ...iterables)    // todo
+  }
 
   forEach(fn: (x: T) => any) {
     for (let x of this) {
@@ -63,6 +65,19 @@ export class Miu<T> {
         }
       }
       seen.clear()
+    })())
+  }
+
+  flatten(shallow = false) {
+    const thiss = this
+    return miu((function* () {
+      for (let x of thiss) {
+        if (typeof x !== 'string' && isIterable(x)) {
+          yield* (shallow ? x : miu(x as any).flatten());
+        } else {
+          yield x;
+        }
+      }
     })())
   }
 
