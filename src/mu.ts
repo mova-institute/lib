@@ -1,7 +1,7 @@
 // todo: really, thiss?
 
-export function miu<T>(iterable: Iterable<T>) {
-  return new Miu(iterable)
+export function mu<T>(iterable: Iterable<T>) {
+  return new Mu(iterable)
 }
 
 export type Predicate<T> = (x: T) => boolean
@@ -10,11 +10,11 @@ function isIterable(thing) {
   return typeof thing[Symbol.iterator] === 'function'
 }
 
-export class Miu<T> implements Iterable<T> {
+export class Mu<T> implements Iterable<T> {
   iterator: Iterator<T>
 
   static chain<T>(...iterables: (Iterable<T> | T)[]) {
-    return miu((function* () {
+    return mu((function* () {
       for (let it of iterables) {
         if (isIterable(it)) {
           yield* (it as Iterable<T>)
@@ -34,7 +34,7 @@ export class Miu<T> implements Iterable<T> {
   }
 
   chain<TT>(...iterables: (Iterable<TT> | TT)[]) {
-    return Miu.chain<TT>(this as any, ...iterables)    // todo
+    return Mu.chain<TT>(this as any, ...iterables)    // todo
   }
 
   forEach(fn: (x: T) => any) {
@@ -45,7 +45,7 @@ export class Miu<T> implements Iterable<T> {
 
   filter(fn: Predicate<T>) {
     const thiss = this
-    return miu((function* () {
+    return mu((function* () {
       for (let x of thiss) {
         if (fn(x)) {
           yield x
@@ -57,7 +57,7 @@ export class Miu<T> implements Iterable<T> {
   unique() {
     const thiss = this
     const seen = new Set()
-    return miu((function* () {
+    return mu((function* () {
       for (let x of thiss) {
         if (!seen.has(x)) {
           yield x
@@ -70,10 +70,10 @@ export class Miu<T> implements Iterable<T> {
 
   flatten(shallow = false) {
     const thiss = this
-    return miu((function* () {
+    return mu((function* () {
       for (let x of thiss) {
         if (typeof x !== 'string' && isIterable(x)) {
-          yield* (shallow ? x : miu(x as any).flatten());
+          yield* (shallow ? x : mu(x as any).flatten());
         } else {
           yield x;
         }
@@ -83,7 +83,7 @@ export class Miu<T> implements Iterable<T> {
 
   map<MT>(fn: (x: T) => MT) {
     const thiss = this
-    return miu((function* () {
+    return mu((function* () {
       for (let x of thiss) {
         yield fn(x)
       }
@@ -93,7 +93,7 @@ export class Miu<T> implements Iterable<T> {
   /*
     map() {
       const thiss = this
-      return miu((function* () {
+      return mu((function* () {
       })())
     }
   */

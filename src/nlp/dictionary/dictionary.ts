@@ -1,4 +1,4 @@
-import { miu, Miu } from '../../miu';
+import { mu, Mu } from '../../mu';
 
 import { WordDawgPayload } from './word_dawg_payload';
 import { IStringMorphInterp } from '../interfaces';
@@ -21,15 +21,15 @@ export class Dictionary {
   }
 
   lookup(word: string) {
-    return miu(this.words.getArray(word)).map(x => this.buildInterp(word, x));
+    return mu(this.words.getArray(word)).map(x => this.buildInterp(word, x));
   }
 
   lookupVariants(words: Iterable<string>) {
-    return new HashSet(IStringMorphInterp.hash, Miu.chain(...miu(words).map(x => this.lookup(x))));
+    return new HashSet(IStringMorphInterp.hash, Mu.chain(...mu(words).map(x => this.lookup(x))));
   }
 
   lookupLexemesByLemma(lemma: string) {
-    return miu(this.words.getArray(lemma))
+    return mu(this.words.getArray(lemma))
       .filter(x => x.indexInPradigm === 0)
       .map(x => this.buildLexeme(x.paradigmId, lemma));
   }

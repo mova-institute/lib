@@ -12,7 +12,7 @@ import { IStringMorphInterp } from './interfaces';
 import { MorphInterp, compareTags } from './morph_tag';
 import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static';
 import { $d } from './mi_tei_document';
-import { miu, Miu } from '../miu';
+import { mu, Mu } from '../mu';
 
 const wu: Wu.WuStatic = require('wu');
 
@@ -308,7 +308,7 @@ export function iterateCorpusTokens(root: AbstractElement) {
     subroots = [root];
   }
 
-  return miu((function* () {
+  return mu((function* () {
     for (let subroot of subroots) {
       let iterator = traverseDepthGen2(subroot);
       let pointer = iterator.next();

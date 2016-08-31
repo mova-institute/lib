@@ -1,4 +1,4 @@
-import { miu } from '../../miu';
+import { mu } from '../../mu';
 import { Dictionary } from '../dictionary/dictionary';
 import { MorphInterp, Case } from '../morph_tag';
 import { FOREIGN_CHAR_RE, LETTER_UK, WCHAR_UK_UPPERCASE } from '../static';
@@ -124,7 +124,7 @@ export class MorphAnalyzer {
     }
 
     let res = new HashSet(MorphInterp.hash,
-      miu(lookupees).map(x => this.lookup(x)).flatten() as Iterable<MorphInterp>);
+      mu(lookupees).map(x => this.lookup(x)).flatten() as Iterable<MorphInterp>);
 
     // try одробив is the same as відробив
     if (!res.size && lowercase.startsWith('од') && lowercase.length > 4) {
@@ -161,9 +161,9 @@ export class MorphAnalyzer {
     // let match = lowercase.match(new RegExp(String.raw`^(\d+)-?([${LETTER_UK}]+)$`));
     // if (match) {
     //   let suffix = match[2];
-    //   res.addAll(miu(this.numeralMap)
+    //   res.addAll(mu(this.numeralMap)
     //     .filter(x => x.form.endsWith(suffix))
-    //     .map(x => miu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma)))
+    //     .map(x => mu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma)))
     //     .flatten()
     //     .map(x => MorphTag.fromVesumStr(x, 'todo'))  // todo
     //   );
@@ -210,7 +210,7 @@ export class MorphAnalyzer {
   private lookupRaw(token: string) {
     let ret = this.dictionary.lookup(token)
     if (this.expandAdjectivesAsNouns) {
-      ret = ret.map(x => miu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
+      ret = ret.map(x => mu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
         .map(flags => ({ flags, lemma: x.lemma })))
         .flatten()
     }
@@ -238,7 +238,7 @@ export class MorphAnalyzer {
   //     let indexes = [...findAllIndexes(lookupee, x => x.toLocaleLowerCase() === 'ґ')];
   //     if (indexes.length) {
   //       for (let interp of this.lookup(replaceG(lookupee))) {
-  //         let lemmaConvertable = miu.zip(indexes, findAllIndexes(interp.lemma, x => x.toLocaleLowerCase() === 'ґ'))
+  //         let lemmaConvertable = mu.zip(indexes, findAllIndexes(interp.lemma, x => x.toLocaleLowerCase() === 'ґ'))
   //           .every(([a, b]) => a === b);
   //         if (lemmaConvertable) {
   //           interp.lemma = replaceG(interp.lemma);
@@ -283,7 +283,7 @@ export class MorphAnalyzer {
   }
 
   private buildNumeralMap() {
-    this.numeralMap = miu(['один', 'два', 'три', 'другий', 'третій'])
+    this.numeralMap = mu(['один', 'два', 'три', 'другий', 'третій'])
       .map(x => this.dictionary.lookupLexemesByLemma(x))
       // .map(x => x.)
       .flatten()
