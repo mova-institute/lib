@@ -176,7 +176,9 @@ async function buildCorpus(params: Args) {
   let inputFiles: string[] = wu(args.input).map(x => globSync(x)).flatten().toArray()
   inputFiles = unique(inputFiles)
   let taggedDir = path.join(params.workspace, 'tagged')
-  mkdirp.sync(taggedDir)
+  if (params.xml) {
+    mkdirp.sync(taggedDir)
+  }
   for (let [i, filePath] of inputFiles.entries()) {
     try {
       let basename = path.basename(filePath)
@@ -234,6 +236,7 @@ async function buildCorpus(params: Args) {
         } else {
           verticalLines = [...nlpUtils.tokenizedTeiDoc2sketchVertical(root, analyzer, meta)]
         }
+        process.stdout.write(`: writing`)
         fs.writeSync(verticalFile, verticalLines.join('\n') + '\n')
       }
 

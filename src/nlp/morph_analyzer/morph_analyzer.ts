@@ -32,7 +32,7 @@ const foreignPrefixes = [
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
   {
-    prefixes: foreignPrefixes,
+    prefixesRegex: new RegExp(`^(${foreignPrefixes.join('|')})`),
     test: (x: MorphTag) => x.isNoun() || x.isAdjective(),
   },
   {
@@ -192,10 +192,18 @@ export class MorphAnalyzer {
 
       // add old accusative, e.g. додати в друзі
       if (interp.isNoun() && interp.isPlural() && interp.isNominative()) {
-        ret.push(interp.clone().setIsAuto().setCase(Case.accusativeOld));
+        ret.push(interp.clone().setCase(Case.accusativeOld));
       }
     }
 
+    return ret;
+  }
+
+  tagOrX(token: string, nextToken?: string) {
+    let ret = this.tag(token, nextToken);
+    if (!ret.length) {
+      ret = [MorphTag.fromVesumStr('x', token)];
+    }
     return ret;
   }
 
@@ -242,19 +250,31 @@ export class MorphAnalyzer {
   // }
 
   private *fromPrefixes(lowercase: string, fromDict: HashSet<any>) {
-    for (let { prefixes, pretest, test, postprocess } of PREFIX_SPECS as any) {
-      for (let prefix of prefixes) {
-        if (lowercase.startsWith(prefix) && (!pretest || pretest(lowercase))) {
-          for (let interp of this.lookup(lowercase.substr(prefix.length))) {
-            if (!test || test(interp)) {
-              interp.lemma = prefix + interp.lemma;
-              if (postprocess) {
-                postprocess(interp);
-              }
-              if (!fromDict.has(interp)) {
-                interp.setIsAuto();
-                yield interp;
-              }
+    for (let { prefixes, prefixesRegex, pretest, test, postprocess } of PREFIX_SPECS as any) {
+      if (pretest && !pretest(lowercase)) {
+        continue;
+      }
+
+      let matchedPrefixes = [];
+      if (prefixesRegex) {
+        let match = lowercase.match(prefixesRegex);
+        if (match) {
+          matchedPrefixes = [match[1]];
+        }
+      } else {
+        matchedPrefixes = prefixes.filter(x => lowercase.startsWith(x));
+      }
+
+      for (let prefix of matchedPrefixes) {
+        for (let interp of this.lookup(lowercase.substr(prefix.length))) {
+          if (!test || test(interp)) {
+            interp.lemma = prefix + interp.lemma;
+            if (postprocess) {
+              postprocess(interp);
+            }
+            if (!fromDict.has(interp)) {
+              interp.setIsAuto();
+              yield interp;
             }
           }
         }

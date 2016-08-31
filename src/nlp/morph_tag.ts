@@ -70,6 +70,7 @@ export enum Case {
   locative,
   vocative,
   accusativeOld,
+  accusativeGenitive,
   // other non-ukr
 }
 export enum RequiredCase {
@@ -219,6 +220,7 @@ export const FEATURE_TABLE = [
   { featStr: 'case', feat: Case, vesum: Case.dative, vesumStr: 'v_dav', mte: 'd' },
   { featStr: 'case', feat: Case, vesum: Case.accusative, vesumStr: 'v_zna', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.accusativeOld, vesumStr: 'v_znao', mte: 'a' },
+  { featStr: 'case', feat: Case, vesum: Case.accusativeGenitive, vesumStr: 'v_zna-2', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.instrumental, vesumStr: 'v_oru', mte: 'i' },
   { featStr: 'case', feat: Case, vesum: Case.locative, vesumStr: 'v_mis', mte: 'l' },
   { featStr: 'case', feat: Case, vesum: Case.vocative, vesumStr: 'v_kly', mte: 'v' },
@@ -879,6 +881,8 @@ export class MorphTag {
   isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral; }
   isPreposition() { return this.features.pos === Pos.preposition; }
 
+  isAccusative() { return this.features.case === Case.accusative; }
+
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
   isN2Adj() { return this.otherFlags.has('n2adj'); }
 
@@ -902,6 +906,8 @@ export class MorphTag {
 
   isPlural() { return this.features.number === Numberr.plural; }
   isNominative() { return this.features.case === Case.nominative; }
+
+  isMasculine() { return this.features.gender === Gender.masculine; }
 
   hasNumber() { return this.features.number !== undefined; }
   hasGender() { return this.features.gender !== undefined; }

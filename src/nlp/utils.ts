@@ -229,20 +229,17 @@ function tagWord(el: AbstractElement, morphTags: Iterable<IMorphInterp>) {
 
 //------------------------------------------------------------------------------
 function tagOrXVesum(analyzer: MorphAnalyzer, token: string, nextToken?: string) {
-  let ret = [...analyzer.tag(token, nextToken)].map(x => x.toVesumStrMorphInterp());
-  return ret.length ? ret : [{ lemma: token, flags: 'x' }];
+  return analyzer.tagOrX(token, nextToken).map(x => x.toVesumStrMorphInterp());
 }
 
 //------------------------------------------------------------------------------
 function tagOrXMte(analyzer: MorphAnalyzer, token: string, nextToken?: string) {
-  let ret = [...analyzer.tag(token, nextToken)].map(x => x.toMteMorphInterp());
-  return ret.length ? ret : [{ lemma: token, flags: 'x' }];
+  return analyzer.tagOrX(token, nextToken).map(x => x.toMteMorphInterp());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isRegularizedFlowElement(el: AbstractElement) {
   let ret = !(el.name() === elementNames.teiOrig && el.parent() && el.parent().name() === elementNames.teiChoice);
-
   return ret;
 }
 
@@ -683,14 +680,14 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
   let elName = el.localName();
   if (entering) {
     switch (elName) {
-      // case 'w':
-      // case elementNames.W: {
-      //   let mteTags = unique(interps.map(x => x.toMte()));
-      //   let vesumFlagss = interps.map(x => x.toVesumStr());
-      //   let lemmas = unique(interps.map(x => x.lemma));
-      //   return sketchLine(el.text(),
-      //     lemmas.join(MULTISEP), mteTags.join(MULTISEP), vesumFlagss.join(MULTISEP));
-      // }
+      case 'w':
+      case elementNames.W: {
+        let mteTags = unique(interps.map(x => x.toMte()));
+        let vesumFlagss = interps.map(x => x.toVesumStr());
+        let lemmas = unique(interps.map(x => x.lemma));
+        return sketchLine(el.text(),
+          lemmas.join(MULTISEP), mteTags.join(MULTISEP), vesumFlagss.join(MULTISEP));
+      }
       case 'w_':
       case elementNames.W_: {
         let wInterps = $t(el).disambedOrDefiniteInterps();
@@ -729,19 +726,18 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenizedTeiDoc2sketchVertical(root: AbstractElement,
-  analyzer: MorphAnalyzer, meta: any = {}) {
+export function* tokenizedTeiDoc2sketchVertical(
+  root: AbstractElement, analyzer: MorphAnalyzer, meta: any = {}) {
 
   yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`;
 
   for (let {el, entering} of iterateCorpusTokens(root)) {
     let interps;
     if (el.localName() === 'w'/* && !meta.disambed*/) {
-      interps = analyzer.tag(el.text(), findNextToken(el));
+      interps = analyzer.tagOrX(el.text(), findNextToken(el));
     }
     let line = element2sketchVertical(el, entering, interps);
     if (line) {
-      // console.log(line)
       yield line;
     }
   }
