@@ -10,7 +10,7 @@ import * as tmp from 'tmp'
 tmp.setGracefulCleanup()
 ////////////////////////////////////////////////////////////////////////////////
 export function ugtag2mi(input, output) {
-  ;(async () => {
+; (async () => {
     try {
       let root = await stream2lxmlRoot(input)
       output.write(root.document().serialize())

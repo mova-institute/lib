@@ -59,7 +59,7 @@
     // "no-var-keyword": true,
     "no-var-requires": false,
     "object-literal-sort-keys": false,
-    "one-line": [false],
+    "one-line": ["check-else"],
     "quotemark": [true, "single", "avoid-escape"],
     "radix": true,
     "semicolon": [false, "never"],
@@ -110,11 +110,6 @@
 
     "one-variable-per-declaration": false,
 
-    "no-switch-case-fall-through": false,
-    "no-unreachable": false,
-
-
-
     "no-single-line-block-comment": true,
     "no-unnecessary-field-initialization": true,
     "no-typeof-undefined": true,
@@ -134,14 +129,6 @@
     "no-exec-script": true,
     "no-function-constructor-with-string-args": true,
     "no-function-expression": false,
-    "no-http-string": [
-      true,
-      "http://www.w3.org/XML/1998/namespace",
-      "http://www.w3.org/1999/xhtml",
-      "http://www.tei-c.org/ns/1.0",
-      "http://mova.institute/ns/corpora/0.1",
-      "http://dict-api.tip.net.pl"
-    ],
     "no-increment-decrement": false,
     "no-invalid-regexp": true,
     "no-for-in": true,
