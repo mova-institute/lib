@@ -1,40 +1,40 @@
-import { adoptMorphDisambs } from '../nlp/utils';
-import { markWordwiseDiffStr } from '../nlp/utils.node';
-import { encloseInRootNs, removeRoot, removeXmlns } from '../xml/utils';
-import { string2lxmlRoot } from '../utils.node';
-import * as business from './business';
+import { adoptMorphDisambs } from '../nlp/utils'
+import { markWordwiseDiffStr } from '../nlp/utils.node'
+import { encloseInRootNs, removeRoot, removeXmlns } from '../xml/utils'
+import { string2lxmlRoot } from '../utils.node'
+import * as business from './business'
 
-import { LibxmljsDocument } from 'xmlapi-libxmljs';
-import { AbstractElement } from 'xmlapi';
+import { LibxmljsDocument } from 'xmlapi-libxmljs'
+import { AbstractElement } from 'xmlapi'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markConflicts(taskType: string, mine: string, theirs: string) {
   if (taskType === 'annotate') {
-    let res: any = markWordwiseDiffStr(encloseInRootNs(mine), encloseInRootNs(theirs));
-    res.marked = removeXmlns(removeRoot(res.marked.document().serialize()));
-    return res;
+    let res: any = markWordwiseDiffStr(encloseInRootNs(mine), encloseInRootNs(theirs))
+    res.marked = removeXmlns(removeRoot(res.marked.document().serialize()))
+    return res
   }
 
-  throw new Error('Not implemented: markConflicts');
+  throw new Error('Not implemented: markConflicts')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markResolveConflicts(hisName: string, hisStr: string, herName: string, herStr: string) {
-  let his = string2lxmlRoot(encloseInRootNs(hisStr));
-  let her = string2lxmlRoot(encloseInRootNs(herStr));
+  let his = string2lxmlRoot(encloseInRootNs(hisStr))
+  let her = string2lxmlRoot(encloseInRootNs(herStr))
 
-  let numDiffs = business.markResolveConflicts(hisName, his, herName, her);
+  let numDiffs = business.markResolveConflicts(hisName, his, herName, her)
   return {
     numDiffs,
     markedStr: removeXmlns(removeRoot(his.document().serialize())),
     markedDoc: his.document(),
-  };
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function adoptMorphDisambsStr(destRoot: AbstractElement, sourceRootStr: string) {
-  let sourceRoot = string2lxmlRoot(encloseInRootNs(sourceRootStr));
-  return adoptMorphDisambs(destRoot, sourceRoot);
+  let sourceRoot = string2lxmlRoot(encloseInRootNs(sourceRootStr))
+  return adoptMorphDisambs(destRoot, sourceRoot)
 }

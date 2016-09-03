@@ -1,4 +1,4 @@
 ////////////////////////////////////////////////////////////////////////////////
 export function startsWithCapital(str: string) {
-  return str && str.charAt(0).toLowerCase() !== str.charAt(0);
+  return str && str.charAt(0).toLowerCase() !== str.charAt(0)
 }

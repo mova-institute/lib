@@ -3,33 +3,33 @@ const VANILLA_MTE_TAGS = ['Nc-pan', 'Nc-pay', 'Nc-pdn', 'Nc-pdy', 'Nc-pgn', 'Nc-
 const MI_MTE_TAGS = [
   'Ab',  // beforeadj
   'Vm-p',  // predic (temp)
-];
+]
 
-const allMteTags = new Set([...VANILLA_MTE_TAGS, ...MI_MTE_TAGS]);
+const allMteTags = new Set([...VANILLA_MTE_TAGS, ...MI_MTE_TAGS])
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isValidMteTag(tag: string) {
   if (allMteTags.has(tag)) {
-    return true;
+    return true
   }
-  let arr = [...tag];
+  let arr = [...tag]
   if (tag.startsWith('A')) {
-    arr[5] = 'n';  // try vocative
+    arr[5] = 'n'  // try vocative
     if (tag.startsWith('App')) {
-      arr[2] = arr[3] = '-';  // try MTE bug
+      arr[2] = arr[3] = '-'  // try MTE bug
     }
   } else if (tag.startsWith('M')) {
-    arr[5] = 'n';  // try vocative
+    arr[5] = 'n'  // try vocative
   } else if (tag.startsWith('Pi---')) {
-    arr[5] = '-';
+    arr[5] = '-'
   } else if (tag.startsWith('P')) {
-    arr[2] = '-';  // we have more possesive words that mte had
+    arr[2] = '-'  // we have more possesive words that mte had
   }
 
   if (allMteTags.has(arr.join(''))) {
-    return true;
+    return true
   }
 
-  return false;
+  return false
 }

@@ -1,5 +1,5 @@
-import { join } from 'path';
+import { join } from 'path'
 
 export function getLibRootRelative(...path: string[]) {
-  return join(__dirname, ...path);
+  return join(__dirname, ...path)
 }

@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import { join } from 'path';
+import * as fs from 'fs'
+import { join } from 'path'
 
 let adjs = `
 
@@ -783,30 +783,30 @@ let adjs = `
 хрещений
 щипаний
 їдений
-`.trim().split('\n').map(x => x.trim());
+`.trim().split('\n').map(x => x.trim())
 
-const DICT_PATH = join(__dirname, '../../../../spell-uk/src/Dictionary/base.lst');
+const DICT_PATH = join(__dirname, '../../../../spell-uk/src/Dictionary/base.lst')
 
-let dict = fs.readFileSync(DICT_PATH, 'utf-8').split('\n');
+let dict = fs.readFileSync(DICT_PATH, 'utf-8').split('\n')
 
 for (let adj of adjs) {
-  let done = false;
+  let done = false
   for (let i = 0; i < dict.length; ++i) {
-    let line = dict[i];
+    let line = dict[i]
     if (line.startsWith(adj + '/')) {
       if (done === true) {
-        console.log('Already have:::::::: ', line);
+        console.log('Already have:::::::: ', line)
       }
-      let lineArr = line.split(' ');
-      lineArr[1] += ':&adj';
-      line = lineArr.join(' ');
-      dict[i] = line;
-      done = true;
+      let lineArr = line.split(' ')
+      lineArr[1] += ':&adj'
+      line = lineArr.join(' ')
+      dict[i] = line
+      done = true
     }
   }
   if (!done) {
-    throw new Error('No match for ' + adj);
+    throw new Error('No match for ' + adj)
   }
 }
 
-fs.writeFileSync(DICT_PATH, dict.join('\n'), 'utf8');
+fs.writeFileSync(DICT_PATH, dict.join('\n'), 'utf8')

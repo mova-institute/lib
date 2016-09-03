@@ -1,33 +1,33 @@
-import { Readable } from 'stream';
+import { Readable } from 'stream'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
   return new Promise((resolve, reject) => {
 
     let waitUntilNBytes = () => {
-      let buf = istream.read(n);
+      let buf = istream.read(n)
       if (buf) {
-        resolve(buf);
+        resolve(buf)
       }
       else {
-        istream.once('readable', waitUntilNBytes);
+        istream.once('readable', waitUntilNBytes)
       }
-    };
+    }
 
-    waitUntilNBytes();
-    reject();  // todo
-    throw new Error('should never happen');
-  });
+    waitUntilNBytes()
+    reject()  // todo
+    throw new Error('should never happen')
+  })
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function readTillEnd(istream: Readable): Promise<string> {
-  let ret = '';
+  let ret = ''
 
   return new Promise((resolve, reject) => {
 
     istream.on('data', chunk => ret += chunk)
-      .on('end', () => resolve(ret));
+      .on('end', () => resolve(ret))
 
-  });
+  })
 }

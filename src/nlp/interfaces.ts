@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 export abstract class IStringMorphInterp {
-  flags: string;
-  lemma: string;
+  flags: string
+  lemma: string
 
   static hash(value: IStringMorphInterp) {
-    return value.flags + ' ' + value.lemma;
+    return value.flags + ' ' + value.lemma
   }
 }
 
@@ -14,6 +14,6 @@ export class StringMorphInterp implements IStringMorphInterp {
   }
 
   hash() {
-    return this.flags + ' ' + this.lemma;
+    return this.flags + ' ' + this.lemma
   }
 }

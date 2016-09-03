@@ -1,42 +1,42 @@
-import { markWordwiseDiff, normalizeCorpusText } from './utils';
-import { string2lxmlRoot } from '../utils.node';
-import { LibxmljsElement } from 'xmlapi-libxmljs';
-import { AllHtmlEntities } from 'html-entities';
+import { markWordwiseDiff, normalizeCorpusText } from './utils'
+import { string2lxmlRoot } from '../utils.node'
+import { LibxmljsElement } from 'xmlapi-libxmljs'
+import { AllHtmlEntities } from 'html-entities'
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markWordwiseDiffStr(mineStr: string, theirsStr: string) {
-  let mine = string2lxmlRoot(mineStr);
+  let mine = string2lxmlRoot(mineStr)
   return {
     marked: mine,
     numDiffs: markWordwiseDiff(mine, string2lxmlRoot(theirsStr)),
-  };
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextTxt(xmlstr: string) {
   xmlstr = normalizeEntities(xmlstr)
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
-    .replace(/&nbsp;/g, ' ');
-  let root = string2lxmlRoot(xmlstr);
+    .replace(/&nbsp;/g, ' ')
+  let root = string2lxmlRoot(xmlstr)
 
-  return normalizeCorpusText(root);
+  return normalizeCorpusText(root)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const entities = new AllHtmlEntities();
-const mustEscapeInText = new Set(['lt', 'amp']);
+const entities = new AllHtmlEntities()
+const mustEscapeInText = new Set(['lt', 'amp'])
 export function normalizeEntities(text: string) {  // todo: wait for libxmljs issues resolved
   text = text.replace(/&(\w+);/g, (match, p1) => {
     if (mustEscapeInText.has(p1)) {
-      return match;
+      return match
     }
-    let decoded = entities.decode(match);
+    let decoded = entities.decode(match)
     if (/^\s$/.test(decoded)) {  // todo: wait for unicode
-      return '';
+      return ''
     }
-    return decoded;
-  });
+    return decoded
+  })
 
-  return text;
+  return text
 }

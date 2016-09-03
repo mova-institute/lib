@@ -16,75 +16,75 @@ enum Definiteness { short, full }
 
 
 interface IAspectInflectable {
-  aspect: Aspect;
+  aspect: Aspect
 }
 interface ICaseInflectable {
-  case: Case;
+  case: Case
 }
 interface INumberInflectable {
-  number: Numberr;
+  number: Numberr
 }
 interface ITenseInflectable {
-  tense: Tense;
+  tense: Tense
 }
 interface IMoodInflectable {
-  mood: Mood;
+  mood: Mood
 }
 interface IPersonInflectable {
-  person: Person;
+  person: Person
 }
 interface IGenderInflectable {
-  gender: Gender;
+  gender: Gender
 }
 interface IDegreeInflectable {
-  degree: Degree;
+  degree: Degree
 }
 interface IDefinitenessInflectable {
-  definiteness: Definiteness;
+  definiteness: Definiteness
 }
 interface IAnimacyInflectable {
-  animacy: Animacy;  //?
+  animacy: Animacy  //?
 }
 
 
 class Token {
-  repr: string;
+  repr: string
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 class Noun extends Token implements ICaseInflectable, INumberInflectable {
-  case: Case;
-  number: Numberr;
+  case: Case
+  number: Numberr
 
-  type_: NounType;
-  gender_: Gender;
-  animacy_: Animacy;
+  type_: NounType
+  gender_: Gender
+  animacy_: Animacy
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 class Verb extends Token implements IAspectInflectable, IMoodInflectable, ITenseInflectable,
                                     IPersonInflectable, INumberInflectable, IGenderInflectable {
-  aspect: Aspect;
-  mood: Mood;
-  tense: Tense;
-  person: Person;
-  number: Numberr;
-  gender: Gender;
+  aspect: Aspect
+  mood: Mood
+  tense: Tense
+  person: Person
+  number: Numberr
+  gender: Gender
 
 
-  type_: VerbType;
+  type_: VerbType
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 class Adjective extends Token implements IDegreeInflectable, IGenderInflectable, INumberInflectable,
                                          ICaseInflectable, IDefinitenessInflectable, IAnimacyInflectable {
-  degree: Degree;
-  gender: Gender;
-  number: Numberr;
-  case: Case;
-  definiteness: Definiteness;
-  animacy: Animacy;
+  degree: Degree
+  gender: Gender
+  number: Numberr
+  case: Case
+  definiteness: Definiteness
+  animacy: Animacy
 
 }
 */

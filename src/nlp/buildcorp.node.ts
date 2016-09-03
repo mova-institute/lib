@@ -118,7 +118,7 @@ function createTextTypeAttribute(value: string) {
       res.push(type)
     }
   }
-  return res.join('|');
+  return res.join('|')
 }
 
 function createVerticalFile(params: Args) {

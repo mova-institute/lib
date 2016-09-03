@@ -1,92 +1,92 @@
-import { iterateDictCorpVizLines } from './nlp/vesum_utils';
-import { MorphInterp, mapVesumFlag } from './nlp/morph_tag';
-import { isValidMteTag } from './nlp/mte_utils';
+import { iterateDictCorpVizLines } from './nlp/vesum_utils'
+import { MorphInterp, mapVesumFlag } from './nlp/morph_tag'
+import { isValidMteTag } from './nlp/mte_utils'
 
-//const debug = require('debug')('testo');
+//const debug = require('debug')('testo')
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function findDuplicateFeatures(fileStr: string) {
-  let ret = new Set<string>();
+  let ret = new Set<string>()
 
-  let skip = new Set(['&_adjp', '&_numr', 'v-u', 'dimin']);
+  let skip = new Set(['&_adjp', '&_numr', 'v-u', 'dimin'])
   for (let { tag } of iterateDictCorpVizLines(fileStr.split('\n'))) {
-    let features = new Set<string>();
+    let features = new Set<string>()
     for (let flag of tag.split(':')) {
       if (skip.has(flag)) {
-        continue;
+        continue
       }
-      let feature = mapVesumFlag(flag).featStr;
+      let feature = mapVesumFlag(flag).featStr
       if (features.has(feature)) {
-        ret.add(feature);
+        ret.add(feature)
       }
-      features.add(feature);
+      features.add(feature)
     }
   }
 
-  console.log(ret);
-  return ret;
+  console.log(ret)
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function testMorphTag2Mte(fileStr: string) {
-  let lines = fileStr.split('\n');
+  let lines = fileStr.split('\n')
   for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
     try {
-      var morphTag = MorphInterp.fromVesumStr(tag, lemma);
-      var lemmaMorphTag = MorphInterp.fromVesumStr(lemmaTag, lemma);
-      var mte1 = morphTag.toMte(lemma, lemmaMorphTag);
+      var morphTag = MorphInterp.fromVesumStr(tag, lemma)
+      var lemmaMorphTag = MorphInterp.fromVesumStr(lemmaTag, lemma)
+      var mte1 = morphTag.toMte(lemma, lemmaMorphTag)
       if (!isValidMteTag(mte1)) {
-        console.log(`${form}\t${mte1}\t\t\t${tag}`);
+        console.log(`${form}\t${mte1}\t\t\t${tag}`)
       }
 
-      // var morphTagBack = MorphTag.fromMte(mte1);
-      // var mte2 = morphTagBack.toMte();
+      // var morphTagBack = MorphTag.fromMte(mte1)
+      // var mte2 = morphTagBack.toMte()
       // if (mte1 !== mte2) {
-      //   console.error(`Error: "${mte1}" !== "${mte2}"`);
+      //   console.error(`Error: "${mte1}" !== "${mte2}"`)
       // }
-      morphTag = mte1 = undefined;
+      morphTag = mte1 = undefined
     } catch (e) {
       console.error({form, tag, mte1/*, mte2*/})
-      console.error(e.message);
+      console.error(e.message)
     }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function testMte2Vesum(fileStr: string) {
-  let lines = fileStr.split('\n');
+  let lines = fileStr.split('\n')
   for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
     if (
       tag.includes('insert')
       || tag.includes('predic')
       || tag.includes('bad')) {
-      continue;
+      continue
     }
 
-    let mte1;
-    let fromMte;
-    let vesum2;
-    let mte2;
+    let mte1
+    let fromMte
+    let vesum2
+    let mte2
     try {
-      // mte1 = rysin2multext(lemma, lemmaTag, form, tag)[0];
-      fromMte = MorphInterp.fromMte(mte1);
-      vesum2 = fromMte.toVesumStr();
-      // mte2 = rysin2multext(lemma, lemmaTag, form, vesum2)[0];
+      // mte1 = rysin2multext(lemma, lemmaTag, form, tag)[0]
+      fromMte = MorphInterp.fromMte(mte1)
+      vesum2 = fromMte.toVesumStr()
+      // mte2 = rysin2multext(lemma, lemmaTag, form, vesum2)[0]
       if (mte1 !== mte2) {
-        // throw new Error(`${tag} !== ${toMte}`);
-        console.error(`${tag}\n${vesum2}\n${mte1}\n${mte2}   for ${form} ${vesum2}\n`);
+        // throw new Error(`${tag} !== ${toMte}`)
+        console.error(`${tag}\n${vesum2}\n${mte1}\n${mte2}   for ${form} ${vesum2}\n`)
       }
-      mte1 = fromMte = vesum2 = mte2 = null;
+      mte1 = fromMte = vesum2 = mte2 = null
     }
     catch (e) {
-      console.error({ form, tag, mte1, vesum2, mte2, lineNum });
+      console.error({ form, tag, mte1, vesum2, mte2, lineNum })
       if (e.message.startsWith('Unma')) {
-        throw e;
-        //continue;
+        throw e
+        //continue
       }
       else {
-        throw e;
+        throw e
       }
     }
   }
@@ -94,55 +94,55 @@ export function testMte2Vesum(fileStr: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function testConverter(fileStr: string) {
-  let lines = fileStr.split('\n');
+  let lines = fileStr.split('\n')
   for (let { form, tag, lemma, lemmaTag, isLemma, lineNum } of iterateDictCorpVizLines(lines)) {
-    let mte;
-    let fromMte;
-    let vesumBack;
-    let reMte;
+    let mte
+    let fromMte
+    let vesumBack
+    let reMte
     try {
       try {
-        // mte = rysin2multext(lemma, lemmaTag, form, tag)[0];
+        // mte = rysin2multext(lemma, lemmaTag, form, tag)[0]
       }
       catch (e) {
-        console.error(e);
+        console.error(e)
         if (e.message.startsWith('Unma')) {
-          console.error({ form, tag, lemma, lemmaTag, isLemma, mte, lineNum });
+          console.error({ form, tag, lemma, lemmaTag, isLemma, mte, lineNum })
         }
-        continue;
+        continue
       }
 
       if (mte) {
-        fromMte = MorphInterp.fromMte(mte);
-        vesumBack = fromMte.toVesum().join(':');
-        // reMte = rysin2multext(lemma, lemmaTag, form, vesumBack)[0];
+        fromMte = MorphInterp.fromMte(mte)
+        vesumBack = fromMte.toVesum().join(':')
+        // reMte = rysin2multext(lemma, lemmaTag, form, vesumBack)[0]
         if (mte !== reMte) {
-          throw new Error(`${mte} !== ${reMte}`);
+          throw new Error(`${mte} !== ${reMte}`)
         }
       }
     }
     catch (e) {
-      console.error({ form, tag, lemma, lemmaTag, isLemma, mte, vesumBack, reMte, fromMte, lineNum });
-      throw e;
+      console.error({ form, tag, lemma, lemmaTag, isLemma, mte, vesumBack, reMte, fromMte, lineNum })
+      throw e
     }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function testFlagSorter(fileStr: string) {
-  let lines = fileStr.split('\n');
+  let lines = fileStr.split('\n')
   for (let { form, tag, lemma, lemmaTag, isLemma, lineNum } of iterateDictCorpVizLines(lines)) {
     try {
-      let internal = MorphInterp.fromVesumStr(tag);
-      let backVesum = internal.toVesumStr();
+      let internal = MorphInterp.fromVesumStr(tag)
+      let backVesum = internal.toVesumStr()
       if (tag !== backVesum && !tag.includes(':xp') && !tag.includes('adj:')) {
-        console.log({ form, befor: tag, after: backVesum, internal, lineNum });
-        console.log('===========================');
+        console.log({ form, befor: tag, after: backVesum, internal, lineNum })
+        console.log('===========================')
       }
     }
     catch (e) {
-      console.error({ form, tag, lemma, lemmaTag, isLemma, lineNum });
-      throw e;
+      console.error({ form, tag, lemma, lemmaTag, isLemma, lineNum })
+      throw e
     }
   }
 }
@@ -163,10 +163,10 @@ class A {
 
 class B extends A {
   constructor(protected a: Derived) {
-    super(a);
-    a.do();
+    super(a)
+    a.do()
   }
 }
 
 
-let b = new B(new Derived());
+let b = new B(new Derived())

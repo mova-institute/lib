@@ -1,14 +1,14 @@
-// import {INode, IElement, IDocument} from 'xmlapi';
-// import {LibxmljsDocument, LibxmljsElement, LibxmlNode} from 'xmlapi-libxmljs';
+// import {INode, IElement, IDocument} from 'xmlapi'
+// import {LibxmljsDocument, LibxmljsElement, LibxmlNode} from 'xmlapi-libxmljs'
 // import {readFileSync} from 'fs'
 // import {dirname} from 'path'
 // import * as libxmljs from 'libxmljs'
-const libxmljs = require('libxmljs');
+const libxmljs = require('libxmljs')
 // import {traverseDepth} from '../xml/utils'
-// import {PgClient} from '../postrges';
-// import {parseXmlString} from 'libxmljs';
-import { ClientConfig } from 'pg';
-// import {sleep} from '../lang';
+// import {PgClient} from '../postrges'
+// import {parseXmlString} from 'libxmljs'
+import { ClientConfig } from 'pg'
+// import {sleep} from '../lang'
 
 export const config: ClientConfig = {
   host: 'localhost',
@@ -16,34 +16,34 @@ export const config: ClientConfig = {
   database: 'mi_dev',
   user: 'annotator',
   password: '@nn0t@t0zh3',
-};
+}
 
 
-main();
+main()
 
 
 
 async function main() {
 
-  // let root = libxmljs.parseXmlString('<x> a>b </x>');
-  // console.log(root.toString());
+  // let root = libxmljs.parseXmlString('<x> a>b </x>')
+  // console.log(root.toString())
 
   // // try {
   // //   PgClient.transaction(config, async (client) => {
-  // //     client.call('popo');
-  // //     let res = await client.call('get_task', 24, 847);
-  // //     console.log('call done', res.docName);
-  // //   });
+  // //     client.call('popo')
+  // //     let res = await client.call('get_task', 24, 847)
+  // //     console.log('call done', res.docName)
+  // //   })
 
-  // //   console.log('done');
+  // //   console.log('done')
   // // }
   // // catch (e) {
-  // //   console.error('catched in main');
-  // //   console.error(e);
+  // //   console.error('catched in main')
+  // //   console.error(e)
   // // }
-  // // let doc = new LibxmljsDocument(libxmljs.parseXml('<root></root>'));
+  // // let doc = new LibxmljsDocument(libxmljs.parseXml('<root></root>'))
   // // let smo =
-  // // doc.documentElement.appendChild(doc.createElement('shmo'));
-  // // console.log(doc.serialize());
+  // // doc.documentElement.appendChild(doc.createElement('shmo'))
+  // // console.log(doc.serialize())
 
 }

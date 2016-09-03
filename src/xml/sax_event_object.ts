@@ -1,7 +1,7 @@
-import { namePrefixed, libxmlSaxAttrs, escape } from '../xml/utils';
+import { namePrefixed, libxmlSaxAttrs, escape } from '../xml/utils'
 
 export class SaxEventObject {
-  private attrsMapCache: Map<string, string> = null;
+  private attrsMapCache: Map<string, string> = null
 
   constructor(public type: string,
               public el: string,
@@ -14,37 +14,37 @@ export class SaxEventObject {
   }
 
   toString() {
-    return `${this.type}-${this.el}-${this.text || ''}`;
+    return `${this.type}-${this.el}-${this.text || ''}`
   }
 
   attrs() {
     if (!this.attrsMapCache) {
-      this.attrsMapCache = libxmlSaxAttrs(this.attrsNs);
+      this.attrsMapCache = libxmlSaxAttrs(this.attrsNs)
     }
 
-    return this.attrsMapCache;
+    return this.attrsMapCache
   }
 
   serialize() {
     if (this.type === 'end') {
-      return `</${namePrefixed(this.prefix, this.elem) }>`;
+      return `</${namePrefixed(this.prefix, this.elem) }>`
     }
 
     if (this.type === 'start') {
-      let ret = `<${namePrefixed(this.prefix, this.elem) }`;
+      let ret = `<${namePrefixed(this.prefix, this.elem) }`
       for (let [key, prefix, value] of this.attrsNs) {
-        ret += ` ${namePrefixed(prefix, key)}="${escape(value)}"`;
+        ret += ` ${namePrefixed(prefix, key)}="${escape(value)}"`
       }
       for (let [prefix, uri] of this.ns) {
-        ret += ' xmlns';
+        ret += ' xmlns'
         if (prefix) {
-          ret += ':' + prefix;
+          ret += ':' + prefix
         }
-        ret += `="${uri}"`;
+        ret += `="${uri}"`
       }
-      ret += '>' + escape(this.text);
+      ret += '>' + escape(this.text)
 
-      return ret;
+      return ret
     }
   }
 }
