@@ -4,7 +4,6 @@ const fs = require('fs');
 
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
-const tslint = require('gulp-tslint');
 const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const del = require('del');
@@ -27,15 +26,6 @@ gulp.task('typescript', [], () => {
   let tsResult = tsProject.src().pipe(ts(tsProject));
   tsResult.dts.pipe(gulp.dest(dest));
   return tsResult.js.pipe(gulp.dest(dest));
-});
-
-////////////////////////////////////////////////////////////////////////////////
-gulp.task('lint', [], () => {
-  return tsProject.src()
-    .pipe(tslint())
-    .pipe(tslint.report('verbose', {
-      emitError: false,
-    }));
 });
 
 ////////////////////////////////////////////////////////////////////////////////

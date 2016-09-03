@@ -4,6 +4,15 @@
     "node_modules/tslint-eslint-rules/dist/rules"
   ],
   "rules": {
+
+    "object-literal-shorthand": true,
+    "adjacent-overload-signatures": true,
+    "object-literal-key-quotes": [true, "as-needed"],
+    // "no-for-in-array": true,
+    "no-unsafe-finally": true,
+    "no-mergeable-namespace": true,
+    "linebreak-style": [true, "LF"],
+    "new-parens": true,
     "no-invalid-this": true,
     "use-isnan": true,
 
@@ -105,6 +114,10 @@
     "no-unreachable": false,
 
 
+
+    "no-single-line-block-comment": true,
+    "no-unnecessary-field-initialization": true,
+    "no-typeof-undefined": true,
     "chai-vague-errors": true,
     "export-name": false,
     "missing-optional-annotation": true,
