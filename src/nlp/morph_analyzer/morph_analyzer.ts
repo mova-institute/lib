@@ -64,7 +64,7 @@ const PREFIX_SPECS = [
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
-  expandAdjectivesAsNouns = true
+  expandAdjectivesAsNouns = false
   keepN2adj = false
   numeralMap: Array<{ form: string, flags: string, lemma: string }>
 
@@ -72,7 +72,7 @@ export class MorphAnalyzer {
     this.buildNumeralMap()
   }
 
-  setExpandAdjectivesAsNouns(value: boolean) {
+  setExpandAdjectivesAsNouns(value = true) {
     this.expandAdjectivesAsNouns = value
     return this
   }

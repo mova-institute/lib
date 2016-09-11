@@ -37,6 +37,16 @@ export class Mu<T> implements Iterable<T> {
     return Mu.chain<TT>(this as any, ...iterables)    // todo
   }
 
+  enumerate() {
+    let i = 0
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        yield [i++, x]
+      }
+    })())
+  }
+
   forEach(fn: (x: T) => any) {
     for (let x of this) {
       fn(x)

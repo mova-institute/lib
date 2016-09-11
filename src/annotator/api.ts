@@ -14,6 +14,7 @@ import { getLibRootRelative } from '../path.node'
 
 // const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve'])
 let morph = createMorphAnalyzerSync(getLibRootRelative('../data/dict/vesum'))
+  .setExpandAdjectivesAsNouns()
 
 const COOKIE_CONFIG = {
   maxAge: 1000 * 3600 * 24 * 100,

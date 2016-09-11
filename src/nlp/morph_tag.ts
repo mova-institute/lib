@@ -1,3 +1,5 @@
+// todo: kill predic, isert
+
 import { indexTableByColumns, overflowNegative } from '../algo'
 import { isOddball, compare, zipLongest } from '../lang'
 
@@ -220,7 +222,7 @@ export const FEATURE_TABLE = [
   { featStr: 'case', feat: Case, vesum: Case.dative, vesumStr: 'v_dav', mte: 'd' },
   { featStr: 'case', feat: Case, vesum: Case.accusative, vesumStr: 'v_zna', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.accusativeOld, vesumStr: 'v_znao', mte: 'a' },
-  { featStr: 'case', feat: Case, vesum: Case.accusativeGenitive, vesumStr: 'v_zna-2', mte: 'a' },
+  { featStr: 'case', feat: Case, vesum: Case.accusativeGenitive, vesumStr: 'v_znar', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.instrumental, vesumStr: 'v_oru', mte: 'i' },
   { featStr: 'case', feat: Case, vesum: Case.locative, vesumStr: 'v_mis', mte: 'l' },
   { featStr: 'case', feat: Case, vesum: Case.vocative, vesumStr: 'v_kly', mte: 'v' },
@@ -334,17 +336,17 @@ export const FEATURE_TABLE = [
 ]
 
 export const MTE_FEATURES = {
-  'N': [Pos.noun, NounType, Gender, Numberr, Case, Animacy],  // todo: common gender
-  'V': [undefined, VerbType, Aspect, Mood, Tense, Person, Numberr, Gender],
-  'A': [Pos.adjective, undefined, Degree, Gender, Numberr, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
-  'P': [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, Numberr, Case, undefined],
-  'R': [Pos.adverb, Degree],
-  'S': [Pos.preposition, undefined, undefined, RequiredCase],
-  'C': [Pos.conjunction, ConjunctionType, undefined],
-  'M': [Pos.cardinalNumeral, NumeralForm, undefined, Gender, Numberr, Case, RequiredAnimacy],
-  'Q': [Pos.particle],
-  'I': [Pos.interjection],
-  'X': [Pos.x],
+  N: [Pos.noun, NounType, Gender, Numberr, Case, Animacy],  // todo: common gender
+  V: [undefined, VerbType, Aspect, Mood, Tense, Person, Numberr, Gender],
+  A: [Pos.adjective, undefined, Degree, Gender, Numberr, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
+  P: [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, Numberr, Case, undefined],
+  R: [Pos.adverb, Degree],
+  S: [Pos.preposition, undefined, undefined, RequiredCase],
+  C: [Pos.conjunction, ConjunctionType, undefined],
+  M: [Pos.cardinalNumeral, NumeralForm, undefined, Gender, Numberr, Case, RequiredAnimacy],
+  Q: [Pos.particle],
+  I: [Pos.interjection],
+  X: [Pos.x],
 }
 
 
@@ -504,7 +506,7 @@ export class MorphInterp {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
     'nv', 'alt', 'v-u', 'dimin', 'mock', 'foreign',
-    'n2adj',
+    'n2adj', 'inst',
   ])
 
 
