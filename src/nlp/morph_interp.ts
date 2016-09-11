@@ -185,9 +185,12 @@ export enum ParadigmOmonym { xp1, xp2, xp3, xp4, xp5, xp6, xp7, xp8, xp9 }
 export enum SemanticOmohnym { }
 export enum Auto { yes }
 export enum Oddness { yes }
+export enum N2adjness { yes }
 
 
 export const FEATURE_TABLE = [
+
+  { featStr: 'n2adjness', feat: NumeralForm, vesum: N2adjness.yes, vesumStr: 'n2adj' },
 
   { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.digit, vesumStr: 'digit', mte: 'd' },  // todo: not vesum?
   { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.roman, vesumStr: 'roman', mte: 'r' },  // todo: not vesum?
@@ -541,7 +544,7 @@ export class MorphInterp {
           ret.otherFlags.add(flag)
         }
         else {
-          throw new Error(`Unknow flag "${flag}" in tag "${flags.join(':')}"`)
+          throw new Error(`Unknown flag "${flag}" in tag "${flags.join(':')}"`)
         }
       }
     }
@@ -849,17 +852,17 @@ export class MorphInterp {
     return this.toVesumStr() === other.toVesumStr()
   }
 
-  grammaticallyEquals(other: MorphInterp) {
-    // todo
-  }
+  // grammaticallyEquals(other: MorphInterp) {
+  //   // todo
+  // }
 
   getFeatures() {
     let others = [...this.otherFlags].map(x => {
-      let row = mapVesumFlag(x)
+      let row = tryMapVesumFlag(x)
       return {
-        featureName: row.featStr,
-        feature: row.feat,
-        value: row.vesum || row.mi,
+        featureName: row && row.featStr,
+        feature: row && row.feat,
+        value: row && row.vesum || row.mi,
       }
     })
 
