@@ -1,5 +1,5 @@
 import { tryMapVesumFlag, tryMapVesumFlagToFeature, MorphInterp, FEATURE_ORDER,
-  RequiredCase, PronominalType, ConjunctionType, compareTags, Voice, Aspect } from './morph_tag';
+  RequiredCase, PronominalType, ConjunctionType, compareTags, Voice, Aspect } from './morph_interp';
 import { groupTableBy, arr2indexMap, combinations, stableSort, unique } from '../algo';
 import { IStringMorphInterp } from './interfaces';
 

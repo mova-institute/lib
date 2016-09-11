@@ -1,6 +1,6 @@
 import { mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
-import { MorphInterp, Case } from '../morph_tag'
+import { MorphInterp, Case } from '../morph_interp'
 import { FOREIGN_CHAR_RE, LETTER_UK, WCHAR_UK_UPPERCASE } from '../static'
 
 import { HashSet } from '../../data_structures'

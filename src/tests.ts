@@ -1,5 +1,5 @@
 import { iterateDictCorpVizLines } from './nlp/vesum_utils'
-import { MorphInterp, mapVesumFlag } from './nlp/morph_tag'
+import { MorphInterp, mapVesumFlag } from './nlp/morph_interp'
 import { isValidMteTag } from './nlp/mte_utils'
 
 //const debug = require('debug')('testo')
