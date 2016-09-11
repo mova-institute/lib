@@ -4,6 +4,8 @@ import { MorphInterp, Case } from '../morph_interp'
 import { FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE } from '../static'
 
 import { HashSet } from '../../data_structures'
+import * as algo from '../../algo'
+import { replaceCaseAware } from '../../string_utils'
 
 
 
@@ -47,20 +49,23 @@ const PREFIX_SPECS = [
     prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
-    postprocess: (x: MorphInterp) => {
-      x.setIsPerfect()
-      if (x.isPresent()) {
-        x.setIsFuture()
-      }
-    },
+    postprocess: postrpocessPerfPrefixedVerb,
   },
-  // {
-  //   prefixes: ['за'],
-  //   pretest: (x: string) => x.length > 4,
-  //   test: (x: MorphTag) => x.isVerb(),
-  //   postprocess: (x: MorphTag) => x.setIsPerfect(),
-  // },
+  {
+    prefixes: ['за'],
+    pretest: (x: string) => x.length > 4,
+    test: (x: MorphInterp) => x.isVerb(),
+    postprocess: postrpocessPerfPrefixedVerb,
+  },
 ]
+
+//------------------------------------------------------------------------------
+function postrpocessPerfPrefixedVerb(x: MorphInterp) {
+  x.setIsPerfect()
+  if (x.isPresent()) {
+    x.setIsFuture()
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
@@ -154,6 +159,23 @@ export class MorphAnalyzer {
             x.setIsAuto()
             return x
           }))
+        }
+      }
+    }
+
+    // try ґ→г
+    if (!res.size) {
+      for (let lookupee of lookupees) {
+        let noG = lookupee.replace(/ґ/g, 'г').replace(/Ґ/g, 'Г')
+        let diffs = algo.findStringDiffIndexes(lookupee, noG)
+        if (diffs.length) {
+          res.addAll(this.lookup(noG)
+            .filter(interp => diffs.every(i => /г/gi.test(interp.lemma.charAt(i))))
+            .map(x => {
+              x.lemma = replaceCaseAware(x.lemma, /г/gi, 'ґ')
+              return x.setIsAuto()
+            })
+          )
         }
       }
     }

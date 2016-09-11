@@ -52,7 +52,7 @@ export function groupTableBy<T>(table: T[], groupProp: string | number | symbol)
 
   for (let row of table) {
     let cell = row[groupProp]
-    ;(ret.get(cell) || ret.set(cell, []).get(cell)).push(row)
+      ;(ret.get(cell) || ret.set(cell, []).get(cell)).push(row)
   }
 
   return ret
@@ -116,7 +116,7 @@ export function shuffle(array: any[]) {
   let m = array.length
   while (m) {
     let i = Math.floor(Math.random() * m--)
-    ;[array[m], array[i]] = [array[i], array[m]]
+      ;[array[m], array[i]] = [array[i], array[m]]
   }
 
   return array
@@ -155,4 +155,16 @@ export function* findAllIndexes<T>(iterable: Iterable<T>, predicate: (value: T) 
       yield i++
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findStringDiffIndexes(str1: string, str2: string) {
+  let maxLen = Math.max(str1.length, str2.length)
+  let ret = new Array<number>()
+  for (let i = 0; i < maxLen; ++i) {
+    if (str1.charCodeAt(i) !== str2.charCodeAt(i)) {
+      ret.push(i)
+    }
+  }
+  return ret
 }
