@@ -1,7 +1,7 @@
 import { mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp, Case } from '../morph_interp'
-import { FOREIGN_CHAR_RE, LETTER_UK, WCHAR_UK_UPPERCASE } from '../static'
+import { FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE } from '../static'
 
 import { HashSet } from '../../data_structures'
 
@@ -77,7 +77,7 @@ export class MorphAnalyzer {
     return this
   }
 
-  setKeepN2adj(value: boolean) {
+  setKeepN2adj(value = true) {
     this.keepN2adj = value
     return this
   }

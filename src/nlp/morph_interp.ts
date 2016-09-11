@@ -56,7 +56,7 @@ export enum RequiredAnimacy {
   animate,
   inanimate,
 }
-export enum Numberr {
+export enum MorphNumber {
   singular,
   plural,
   // dual,
@@ -299,8 +299,8 @@ export const FEATURE_TABLE = [
   { featStr: 'gender', feat: Gender, vesum: Gender.feminine, vesumStr: 'f', mte: 'f' },
   { featStr: 'gender', feat: Gender, vesum: Gender.neuter, vesumStr: 'n', mte: 'n' },
 
-  { featStr: 'number', feat: Numberr, vesum: Numberr.plural, vesumStr: 'p', mte: 'p' },
-  { featStr: 'number', feat: Numberr, vesum: Numberr.singular, vesumStr: 's', mte: 's' },
+  { featStr: 'number', feat: MorphNumber, vesum: MorphNumber.plural, vesumStr: 'p', mte: 'p' },
+  { featStr: 'number', feat: MorphNumber, vesum: MorphNumber.singular, vesumStr: 's', mte: 's' },
 
   { featStr: 'person', feat: Person, vesum: Person.first, vesumStr: '1', mte: '1' },
   { featStr: 'person', feat: Person, vesum: Person.second, vesumStr: '2', mte: '2' },
@@ -339,14 +339,14 @@ export const FEATURE_TABLE = [
 ]
 
 export const MTE_FEATURES = {
-  N: [Pos.noun, NounType, Gender, Numberr, Case, Animacy],  // todo: common gender
-  V: [undefined, VerbType, Aspect, Mood, Tense, Person, Numberr, Gender],
-  A: [Pos.adjective, undefined, Degree, Gender, Numberr, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
-  P: [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, Numberr, Case, undefined],
+  N: [Pos.noun, NounType, Gender, MorphNumber, Case, Animacy],  // todo: common gender
+  V: [undefined, VerbType, Aspect, Mood, Tense, Person, MorphNumber, Gender],
+  A: [Pos.adjective, undefined, Degree, Gender, MorphNumber, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
+  P: [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, MorphNumber, Case, undefined],
   R: [Pos.adverb, Degree],
   S: [Pos.preposition, undefined, undefined, RequiredCase],
   C: [Pos.conjunction, ConjunctionType, undefined],
-  M: [Pos.cardinalNumeral, NumeralForm, undefined, Gender, Numberr, Case, RequiredAnimacy],
+  M: [Pos.cardinalNumeral, NumeralForm, undefined, Gender, MorphNumber, Case, RequiredAnimacy],
   Q: [Pos.particle],
   I: [Pos.interjection],
   X: [Pos.x],
@@ -376,7 +376,7 @@ export const FEATURE_ORDER = {
   [Pos.noun]: [
     Pos,
     Animacy,
-    Numberr,
+    MorphNumber,
     Gender,
     Case,
     CaseInflectability,
@@ -392,7 +392,7 @@ export const FEATURE_ORDER = {
     Pos,
     Beforeadj,
     Gender,
-    Numberr,
+    MorphNumber,
     Case,
     RequiredAnimacy,
     Variant,
@@ -416,7 +416,7 @@ export const FEATURE_ORDER = {
     Aspect,
     Tense,
     Mood,
-    Numberr,
+    MorphNumber,
     Person,
     Gender,
     Dimin,
@@ -425,7 +425,7 @@ export const FEATURE_ORDER = {
   [Pos.cardinalNumeral]: [
     Pos,
     Gender,
-    Numberr,
+    MorphNumber,
     Case,
     CaseInflectability,
     Pronoun,
@@ -476,7 +476,7 @@ export class Features {
   adjectiveAsNoun: AdjectiveAsNoun
   case: Case
   requiredCase: RequiredCase
-  number: Numberr
+  number: MorphNumber
   aspect: Aspect
   tense: Tense
   mood: Mood
@@ -554,7 +554,7 @@ export class MorphInterp {
 
       // gender for plural
       if (ret.features.pos === Pos.noun) {
-        if (ret.features.number === Numberr.plural && !isOddball(lemmaTag.features.gender)) {
+        if (ret.features.number === MorphNumber.plural && !isOddball(lemmaTag.features.gender)) {
           ret.features.gender = lemmaTag.features.gender
         }
       }
@@ -655,7 +655,7 @@ export class MorphInterp {
     }
 
     // kill redundant info
-    if (!isOddball(ret.features.gender) && ret.features.number === Numberr.singular
+    if (!isOddball(ret.features.gender) && ret.features.number === MorphNumber.singular
       && ret.features.pos !== Pos.cardinalNumeral && ret.features.ordinalNumeral === undefined) {
       ret.features.number = undefined
     }
@@ -724,11 +724,11 @@ export class MorphInterp {
       let form = tryMap2Mte(NumeralForm, this.features.numeralForm) || 'l'
       let type = this.isCardinalNumeral() ? 'c' : 'o'
       let gender = map2mteOrDash(Gender, this.features.gender)
-      let number_ = tryMap2Mte(Numberr, this.getNumber())
-      let case_ = map2mteOrDash(Case, this.features.case)
+      let morphNumber = tryMap2Mte(MorphNumber, this.getNumber())
+      let morphCase = map2mteOrDash(Case, this.features.case)
       let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
 
-      return trimTrailingDash('M' + form + type + gender + number_ + case_ + requiredAnimacy)
+      return trimTrailingDash('M' + form + type + gender + morphNumber + morphCase + requiredAnimacy)
     }
 
     if (this.isPronoun()) {
@@ -740,11 +740,11 @@ export class MorphInterp {
       if (!animacy) {
         animacy = map2mteOrDash(Animacy, this.features.animacy)
       }
-      let number_ = map2mteOrDash(Numberr, this.getNumber())
-      let case_ = map2mteOrDash(Case, this.features.case)
+      let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
+      let morphCase = map2mteOrDash(Case, this.features.case)
       let syntacticType = map2mte(Pos, this.features.pos).toLowerCase()
 
-      return 'P' + type + possessiveness + person + gender + animacy + number_ + case_ + syntacticType
+      return 'P' + type + possessiveness + person + gender + animacy + morphNumber + morphCase + syntacticType
     }
 
     if (this.isNoun() /*|| this.isAdjectiveAsNoun()*/) {
@@ -759,8 +759,8 @@ export class MorphInterp {
           throw new Error(`No gender info for ${this.toVesumStr()} ${lemma}`)
         }
       }
-      let number_ = map2mte(Numberr, this.getNumber())
-      let case_ = map2mteOrDash(Case, this.features.case)
+      let morphNumber = map2mte(MorphNumber, this.getNumber())
+      let morphCase = map2mteOrDash(Case, this.features.case)
       let animacy = tryMap2Mte(Animacy, this.features.animacy)
       if (!animacy) {
         if (this.isBacteria()) {
@@ -770,7 +770,7 @@ export class MorphInterp {
         }
       }
 
-      return 'N' + type + gender + number_ + case_ + animacy
+      return 'N' + type + gender + morphNumber + morphCase + animacy
     }
 
     if (this.isVerb() || this.isTransgressive()) {
@@ -782,10 +782,10 @@ export class MorphInterp {
       let verbForm = this.isTransgressive() ? 'g' : tryMap2Mte(Mood, this.features.mood) || 'i'
       let tense = map2mteOrDash(Tense, this.features.tense)
       let person = map2mteOrDash(Person, this.features.person)
-      let number_ = map2mteOrDash(Numberr, this.getNumber())
+      let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
       let gender = tryMap2Mte(Gender, this.features.gender)
 
-      return trimTrailingDash('V' + type + aspect + verbForm + tense + person + number_ + gender)
+      return trimTrailingDash('V' + type + aspect + verbForm + tense + person + morphNumber + gender)
     }
 
     switch (this.features.pos) {
@@ -793,14 +793,14 @@ export class MorphInterp {
         let type = this.isParticiple() ? 'p' : (this.isComparable() ? 'f' : 'o')
         let degree = this.isParticiple() ? '-' : map2mteOrDash(Degree, this.features.degree)
         let gender = map2mteOrDash(Gender, this.features.gender)
-        let number_ = map2mte(Numberr, this.getNumber())
-        let case_ = map2mteOrDash(Case, this.features.case)
+        let morphNumber = map2mte(MorphNumber, this.getNumber())
+        let morphCase = map2mteOrDash(Case, this.features.case)
         let definiteness = tryMap2Mte(Variant, this.features.variant)
           || defaultMteDefiniteness(this.features.gender, this.features.number, this.features.case,
             this.features.requiredAnimacy)
         if (!this.isParticiple()) {
           let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
-          return 'A' + type + degree + gender + number_ + case_ + definiteness + requiredAnimacy
+          return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy
         }
         let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy)
         let aspect = tryMap2Mte(Aspect, this.features.aspect)
@@ -810,7 +810,7 @@ export class MorphInterp {
           tense = 'p'
         }
 
-        return 'A' + type + degree + gender + number_ + case_ + definiteness + requiredAnimacy + aspect + voice + tense
+        return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy + aspect + voice + tense
       }
       case Pos.preposition: {
         if (!lemma) {
@@ -900,7 +900,7 @@ export class MorphInterp {
   isImperfect() { return this.features.aspect === Aspect.imperfect; }
   isActive() { return this.features.voice === Voice.active; }
   isFeminine() { return this.features.gender === Gender.feminine; }
-  isSingular() { return this.features.number === Numberr.singular; }  // todo: tantum?
+  isSingular() { return this.features.number === MorphNumber.singular; }  // todo: tantum?
   isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular; }  // todo: tantum?
   isBeforeadj() { return this.features.beforeadj === Beforeadj.yes; }
   isOdd() { return this.features.oddness === Oddness.yes; }
@@ -909,7 +909,7 @@ export class MorphInterp {
   isParticiple() { return this.features.participle !== undefined; }
   isBacteria() { return this.features.animacy === Animacy.bacteria; }
 
-  isPlural() { return this.features.number === Numberr.plural; }
+  isPlural() { return this.features.number === MorphNumber.plural; }
   isNominative() { return this.features.case === Case.nominative; }
 
   isMasculine() { return this.features.gender === Gender.masculine; }
@@ -937,7 +937,7 @@ export class MorphInterp {
       return this.features.number
     }
     if (this.hasGender()) {
-      return Numberr.singular  // tocheck
+      return MorphNumber.singular  // tocheck
     }
   }
 
@@ -997,10 +997,10 @@ function map2mte(feature, value) {
 }
 
 //------------------------------------------------------------------------------
-function defaultMteDefiniteness(gender: Gender, number_: Number, case_: Case, requiredAnimacy: RequiredAnimacy) {  // todo: загалний
+function defaultMteDefiniteness(gender: Gender, morphNumber: Number, morphCase: Case, requiredAnimacy: RequiredAnimacy) {  // todo: загалний
   if ((gender === Gender.feminine || gender === Gender.neuter
-    || (number_ === Numberr.plural && requiredAnimacy !== RequiredAnimacy.animate))
-    && (case_ === Case.nominative || case_ === Case.accusative)) {
+    || (morphNumber === MorphNumber.plural && requiredAnimacy !== RequiredAnimacy.animate))
+    && (morphCase === Case.nominative || morphCase === Case.accusative)) {
 
     return 's'
   }
