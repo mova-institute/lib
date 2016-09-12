@@ -494,6 +494,7 @@ export class Features {
   numeralForm: NumeralForm
   conjunctionType: ConjunctionType
   nounType: NounType
+  nameType: NameType
   auto: Auto
   beforeadj: Beforeadj
   paradigmOmonym: ParadigmOmonym
@@ -927,6 +928,14 @@ export class MorphInterp {
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this; }
 
   setCase(value: Case) { this.features.case = value; return this; }
+
+
+  unproper() {
+    this.features.nounType = NounType.common
+    this.features.nameType = undefined    // todo
+    return this
+  }
+
 
   canBeKharkivSty() {
     return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber())

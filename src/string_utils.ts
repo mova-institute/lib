@@ -1,4 +1,24 @@
 ////////////////////////////////////////////////////////////////////////////////
+export function titlecase(str: string, splitter = /[\s\-]\S/g) {
+  let chars = [...str]
+  if (chars.length) {
+    chars[0] = chars[0].toUpperCase()
+  }
+  regexMatchIndexes(str, splitter).forEach(i => chars[i + 1] = chars[i + 1].toUpperCase())
+  return chars.join('')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function regexMatchIndexes(str: string, regex: RegExp) {
+  let ret = new Array<number>()
+  let match: RegExpExecArray
+  while (match = regex.exec(str)) {
+    ret.push(match.index)
+  }
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 /** replaceCaseAware('ГагаГа', /г/ig, 'ґ') === 'ҐаґаҐа' */
 export function replaceCaseAware(str: string, substr: string | RegExp, newSubStr: string) {
   return str.replace(substr as any, (match) => {  // todo

@@ -1,11 +1,11 @@
-import { mu } from '../../mu'
+import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp, Case } from '../morph_interp'
 import { FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE } from '../static'
 
 import { HashSet } from '../../data_structures'
 import * as algo from '../../algo'
-import { replaceCaseAware } from '../../string_utils'
+import * as stringUtils from '../../string_utils'
 
 
 
@@ -29,6 +29,8 @@ const foreignPrefixes = [
   'мульти',
   'міні',
   'максі',
+  'бібліо',
+  'фіз',
 ]
 
 //------------------------------------------------------------------------------
@@ -42,11 +44,11 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
-    prefixes: ['не', 'між'],
+    prefixes: ['не', 'між', 'недо', 'поза', 'по'],
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у'],
+    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у', 'пере'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -165,18 +167,23 @@ export class MorphAnalyzer {
 
     // try ґ→г
     if (!res.size) {
-      for (let lookupee of lookupees) {
-        let noG = lookupee.replace(/ґ/g, 'г').replace(/Ґ/g, 'Г')
-        let diffs = algo.findStringDiffIndexes(lookupee, noG)
-        if (diffs.length) {
-          res.addAll(this.lookup(noG)
-            .filter(interp => diffs.every(i => /г/gi.test(interp.lemma.charAt(i))))
-            .map(x => {
-              x.lemma = replaceCaseAware(x.lemma, /г/gi, 'ґ')
-              return x.setIsAuto()
-            })
-          )
-        }
+      res.addAll(this.fromGH(lookupees))
+    }
+
+    // ірод from Ірод
+    if (!res.size) {
+      let titlecase = stringUtils.titlecase(lowercase)
+      res.addAll(this.lookup(titlecase).map(x => x.unproper().setIsAuto()))
+      // try ґ→г
+      if (!res.size) {
+        res.addAll(this.fromGH([titlecase]))
+      }
+    }
+
+    // річчя
+    if (!res.size) {
+      if (lowercase.endsWith('річчя')) {
+        res.addAll(this.lookup('дворіччя').map(x => x.setIsAuto()))
       }
     }
 
@@ -255,22 +262,6 @@ export class MorphAnalyzer {
     return false
   }
 
-  // private *fromMisspelledG(lookupees: string[]) {
-  //   for (let lookupee of lookupees) {
-  //     let indexes = [...findAllIndexes(lookupee, x => x.toLocaleLowerCase() === 'ґ')]
-  //     if (indexes.length) {
-  //       for (let interp of this.lookup(replaceG(lookupee))) {
-  //         let lemmaConvertable = mu.zip(indexes, findAllIndexes(interp.lemma, x => x.toLocaleLowerCase() === 'ґ'))
-  //           .every(([a, b]) => a === b)
-  //         if (lemmaConvertable) {
-  //           interp.lemma = replaceG(interp.lemma)
-  //           yield interp
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
   private *fromPrefixes(lowercase: string, fromDict: HashSet<any>) {
     for (let { prefixes, prefixesRegex, pretest, test, postprocess } of PREFIX_SPECS as any) {
       if (pretest && !pretest(lowercase)) {
@@ -302,6 +293,25 @@ export class MorphAnalyzer {
         }
       }
     }
+  }
+
+  private fromGH(lookupees: Iterable<string>) {
+    let ret = mu<MorphInterp>()
+    for (let lookupee of lookupees) {
+      let fricativized = lookupee.replace(/ґ/g, 'г').replace(/Ґ/g, 'Г')
+      let diffs = algo.findStringDiffIndexes(lookupee, fricativized)
+      if (diffs.length) {
+        ret = ret.chain(this.lookup(fricativized)
+          .filter(interp => diffs.every(i => /г/gi.test(interp.lemma.charAt(i))))
+          .map(x => {
+            let chars = [...x.lemma]
+            diffs.forEach(i => chars[i] = stringUtils.replaceCaseAware(chars[i], /г/gi, 'ґ'))
+            x.lemma = chars.join('')
+            return x.setIsAuto()
+          }))
+      }
+    }
+    return ret
   }
 
   private buildNumeralMap() {

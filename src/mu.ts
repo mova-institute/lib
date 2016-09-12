@@ -1,6 +1,6 @@
 // todo: really, thiss?
 
-export function mu<T>(iterable: Iterable<T>) {
+export function mu<T>(iterable: Iterable<T> = []) {
   return new Mu(iterable)
 }
 
@@ -33,7 +33,7 @@ export class Mu<T> implements Iterable<T> {
     return this.iterator.next()
   }
 
-  chain<TT>(...iterables: (Iterable<TT> | TT)[]) {
+  chain<TT>(...iterables: (Iterable<TT> | TT)[]) {    // todo: append to this and return this
     return Mu.chain<TT>(this as any, ...iterables)    // todo
   }
 
