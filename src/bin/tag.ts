@@ -42,9 +42,13 @@ ioArgsPlain(async (input, outputFromIoargs) => {
     morphInterpret(root, tagger)
   }
   if (args.unknown) {
-    let unknowns = new Set(root.evaluateElements('//mi:w_[w[@ana="x"]]', NS).map(x => $t(x).text()))
-    const collator = new Intl.Collator('uk-UA')
-    for (let unknown of [...unknowns].sort(collator.compare)) {
+    // todo use mu
+    let unknowns = [...new Set(root.evaluateElements('//mi:w_[w[@ana="x"]]', NS).map(x => $t(x).text()))]
+    if (args.sort) {
+      const collator = new Intl.Collator('uk-UA')
+      unknowns.sort(collator.compare)
+    }
+    for (let unknown of unknowns) {
       output.write(unknown + '\n')
     }
   }
