@@ -182,7 +182,7 @@ export enum Dimin { yes }
 export enum Beforeadj { yes }
 export enum Possessiveness { yes }
 export enum ParadigmOmonym { xp1, xp2, xp3, xp4, xp5, xp6, xp7, xp8, xp9 }
-export enum SemanticOmohnym { }
+export enum SemanticOmonym { }
 export enum Auto { yes }
 export enum Oddness { yes }
 export enum N2adjness { yes }
@@ -448,7 +448,7 @@ export const FEATURE_ORDER = {
     Alternativity,
     NumberTantum,
     ParadigmOmonym,
-    SemanticOmohnym,
+    SemanticOmonym,
     NameType,
     Possessiveness,
     Pronoun,
@@ -502,6 +502,7 @@ export class Features {
   abbreviation: Abbreviation
   oddness: Oddness
   bad: Bad
+  n2adjness: N2adjness
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -510,7 +511,7 @@ export class MorphInterp {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
     'nv', 'alt', 'v-u', 'dimin', 'mock', 'foreign',
-    'n2adj', 'inst',
+    'inst',
   ])
 
 
@@ -890,7 +891,7 @@ export class MorphInterp {
   isAccusative() { return this.features.case === Case.accusative; }
 
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
-  isN2Adj() { return this.otherFlags.has('n2adj'); }
+  isN2Adj() { return this.features.n2adjness === N2adjness.yes }
 
   isPronoun() { return this.features.pronoun !== undefined; }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes; }
@@ -1063,8 +1064,8 @@ export function tryMapVesumFlag(value: string) {
   let match = /^x[v](\d+)$/.exec(value)
   if (match) {
     return {
-      featStr: value.charAt(1) === 'p' ? 'paradigmOmohnym' : 'semanticOmohnym',
-      feat: value.charAt(1) === 'p' ? ParadigmOmonym : SemanticOmohnym,
+      featStr: value.charAt(1) === 'p' ? 'paradigmOmonym' : 'semanticOmonym',
+      feat: value.charAt(1) === 'p' ? ParadigmOmonym : SemanticOmonym,
       vesum: Number.parseInt(match[1]),
       vesumStr: value,
     }
@@ -1094,10 +1095,10 @@ export function tryMapVesumFlagToFeature(value: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function mapVesumFeatureValue(featureName: string, value) {
-  if (featureName === 'paradigmOmohnym') {
+  if (featureName === 'paradigmOmonym') {
     return 'xp' + value
   }
-  if (featureName === 'semanticOmohnym') {
+  if (featureName === 'semanticOmonym') {
     return 'xv' + value
   }
 
