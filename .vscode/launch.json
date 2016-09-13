@@ -95,7 +95,7 @@
 			"env": {
 				"NODE_ENV": "development"
 			},
-			"externalConsole": false,
+      "console": "internalConsole",
 			"sourceMaps": true,
 			"outDir": "${workspaceRoot}/lib"
 		},
@@ -120,7 +120,7 @@
 			"env": {
 				"NODE_ENV": "development"
 			},
-			"externalConsole": false,
+      "console": "internalConsole",
 			"sourceMaps": true,
 			"outDir": "${workspaceRoot}/lib"
 		},
