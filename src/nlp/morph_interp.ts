@@ -511,7 +511,7 @@ export class MorphInterp {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
     'nv', 'alt', 'v-u', 'dimin', 'mock', 'foreign',
-    'inst',
+    'instant',
   ])
 
 
@@ -1096,10 +1096,10 @@ export function tryMapVesumFlagToFeature(value: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function mapVesumFeatureValue(featureName: string, value) {
   if (featureName === 'paradigmOmonym') {
-    return 'xp' + value
+    return 'xp' + (value + 1)
   }
   if (featureName === 'semanticOmonym') {
-    return 'xv' + value
+    return 'xv' + (value + 1)
   }
 
   let featMap = MAP_VESUM_FEAT_STR.get(featureName)
