@@ -315,7 +315,7 @@ export const FEATURE_TABLE = [
 
   { featStr: 'abbreviation', feat: Abbreviation, vesum: Abbreviation.yes, vesumStr: 'abbr' },
 
-  { featStr: 'vuAlternatibe', feat: VuAlternativity, vesum: VuAlternativity.yes, vesumStr: 'v-u' },
+  { featStr: 'vuAlternative', feat: VuAlternativity, vesum: VuAlternativity.yes, vesumStr: 'v-u' },
 
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
 
