@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "sourceMap": false,
+    "outDir": "lib",
+    "declaration": false,
+    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "noFallthroughCasesInSwitch": true,
+    "pretty": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    // "strictNullChecks": true,
+    // "noImplicitAny": true,
+    // "noImplicitThis": true,
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

@@ -10,7 +10,6 @@
     "dist/": true,
 		"lib/**/*.{js,map,d.ts}": true,
 		"lib5/**/*.{js,map,d.ts}": true,
-		"typings": true,
 		"**/__pycache__": true,
 		".idea": true
 	},

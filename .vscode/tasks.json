@@ -2,7 +2,7 @@
   "version": "0.1.0",
   "command": "node_modules/typescript/bin/tsc",
   "isShellCommand": true,
-  "args": ["-p", "src", "-w"],
+  "args": [],
   "suppressTaskName": true,
   "tasks": [
     {

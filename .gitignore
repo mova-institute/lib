@@ -1,6 +1,5 @@
 node_modules/
 npm-debug.log
-typings/
 lib/*
 lib5/*
 !lib5/package.json
