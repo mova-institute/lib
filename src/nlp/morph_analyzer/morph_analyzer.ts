@@ -7,11 +7,20 @@ import { HashSet } from '../../data_structures'
 import * as algo from '../../algo'
 import * as stringUtils from '../../string_utils'
 
+/*
+
+
+
+
+
+*/
 
 
 
 const foreignPrefixes = [
   'аеро',
+  'анти',
+  'архі',
   'бензо',
   'бібліо',
   'вібро',
@@ -22,24 +31,26 @@ const foreignPrefixes = [
   'етно',
   'ізо',
   'квазі',
+  'контр',
   'космо',
   'максі',
   'мега',
   'мета',
   'міні',
-  'міні',
   'мульти',
   'радіо',
+  'супер',
   'теле',
   'телерадіо',
   'ультра',
   'фіз',
 ]
 
+
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
   {
-    prefixesRegex: new RegExp(`^(${foreignPrefixes.join('|')})`),
+    prefixesRegex: new RegExp(`^(${foreignPrefixes.join('|')})+`, 'g'),
     test: (x: MorphInterp) => x.isNoun() || x.isAdjective(),
   },
   {
@@ -51,7 +62,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у', 'пере'],
+    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у', 'пере', 'ви', 'на'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -275,7 +286,7 @@ export class MorphAnalyzer {
       if (prefixesRegex) {
         let match = lowercase.match(prefixesRegex)
         if (match) {
-          matchedPrefixes = [match[1]]
+          matchedPrefixes = [match[0]]
         }
       } else {
         matchedPrefixes = prefixes.filter(x => lowercase.startsWith(x))
