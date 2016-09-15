@@ -4,7 +4,7 @@ import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
 import { r, createObject } from '../lang'
-import { uniqueSmall as unique } from '../algo'
+import { uniqueSmall as unique, uniqueJson } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
@@ -228,13 +228,14 @@ function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
 }
 
 //------------------------------------------------------------------------------
-function tagOrXVesum(analyzer: MorphAnalyzer, token: string, nextToken?: string) {
-  return analyzer.tagOrX(token, nextToken).map(x => x.toVesumStrMorphInterp())
+function tagOrXVesum(interps: MorphInterp[]) {
+  return interps.map(x => x.toVesumStrMorphInterp())
 }
 
 //------------------------------------------------------------------------------
-function tagOrXMte(analyzer: MorphAnalyzer, token: string, nextToken?: string) {
-  return analyzer.tagOrX(token, nextToken).map(x => x.toMteMorphInterp())
+function tagOrXMte(interps: MorphInterp[]) {
+  let res = interps.map(x => x.toMteMorphInterp())
+  return uniqueJson(res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -364,7 +365,7 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
         }
         else {
           let next = findNextToken(el)
-          tagWord(el, tagFunction(analyzer, el.text(), next && next.text()))
+          tagWord(el, tagFunction(analyzer.tagOrX(el.text(), next && next.text())))
         }
       }
     })
@@ -384,7 +385,7 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     } else {
       token.elem.clear()
       token.clearDisamb()
-      fillInterpElement(token.elem, form, tagOrXVesum(analyzer, form))
+      fillInterpElement(token.elem, form, tagOrXVesum(analyzer.tagOrX(form)))
       interps.forEach(x => {
         if (token.hasInterp(x.flags, x.lemma)) {
           token.alsoInterpAs(x.flags, x.lemma)
@@ -748,15 +749,18 @@ export function* tokenizedTeiDoc2sketchVertical(
 ////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVertical(root: AbstractElement, meta: any = {}) {
   yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`
+  yield* interpretedTeiDoc2sketchVerticalTokens(root)
+  yield `</doc>`
+}
 
+////////////////////////////////////////////////////////////////////////////////
+export function* interpretedTeiDoc2sketchVerticalTokens(root: AbstractElement) {
   for (let {el, entering} of iterateCorpusTokens(root)) {
     let line = element2sketchVertical(el, entering)
     if (line) {
       yield line
     }
   }
-
-  yield `</doc>`
 }
 
 //------------------------------------------------------------------------------

@@ -1,18 +1,37 @@
+#!/usr/bin/env node
+
 import { ioArgsPlain } from '../cli_utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { readTillEnd } from '../stream_utils.node'
-import { tokenizeTei, morphInterpret, enumerateWords } from '../nlp/utils'
+import { tokenizeTei, morphInterpret, enumerateWords, interpretedTeiDoc2sketchVerticalTokens } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { string2lxmlRoot } from '../utils.node'
 import { encloseInRootNsIf, NS } from '../xml/utils'
 import * as xmlutils from '../xml/utils'
 import { createReadStream, readFileSync } from 'fs'
 import { getLibRootRelative } from '../path.node'
+import { mu } from '../mu'
+import * as minimist from 'minimist'
 
-const args = require('minimist')(process.argv.slice(2), {
-  boolean: ['n', 'numerate', 'tokenize'],
+
+
+interface Args extends minimist.ParsedArgs {
+  t?: string
+  text?: string
+  dict?: string
+  n?: boolean
+  numerate?: boolean
+  tokenize?: boolean
+  count?: boolean
+  unknown?: boolean
+  sort?: boolean
+  vertical?: boolean
+  mte?: boolean
+}
+
+const args: Args = minimist(process.argv.slice(2), {
+  boolean: ['n', 'numerate', 'tokenize', 'mte', 'vertical', 'xml'],
 })
-
 
 ioArgsPlain(async (input, outputFromIoargs) => {
   let inputStr = args.t || args.text
@@ -23,7 +42,6 @@ ioArgsPlain(async (input, outputFromIoargs) => {
   else {
     output = outputFromIoargs
     inputStr = await readTillEnd(input)
-    // inputStr = readFileSync(args._[0], 'utf8')
   }
 
   inputStr = xmlutils.removeProcessingInstructions(inputStr)
@@ -32,14 +50,14 @@ ioArgsPlain(async (input, outputFromIoargs) => {
   }
 
 
-  let dictName = args.d || args.dict || 'vesum'
+  let dictName = args.dict || 'vesum'
   let dictDir = getLibRootRelative('../data/dict', dictName)
   let tagger = createMorphAnalyzerSync(dictDir)
 
   let root = string2lxmlRoot(inputStr)
   tokenizeTei(root, tagger)
   if (!args.tokenize) {
-    morphInterpret(root, tagger)
+    morphInterpret(root, tagger, args.mte)
   }
   if (args.unknown) {
     // todo use mu
@@ -53,13 +71,17 @@ ioArgsPlain(async (input, outputFromIoargs) => {
     }
   }
   else if (args.count) {
-    output.write([...root.evaluateElements('//mi:w_', NS)].length + '\n')
+    output.write([...root.evaluateElements('//mi:w_', NS)].length)
   }
   else {
     if (args.n || args.numerate) {
       enumerateWords(root)
     }
-    output.write(root.document().serialize(true))
+    if (args.vertical) {
+      // mu(interpretedTeiDoc2sketchVerticalTokens(root)).forEach(x => output.write(x + '\n'))
+    } else {
+      output.write(root.document().serialize(true))
+    }
   }
 
   output.write('\n')

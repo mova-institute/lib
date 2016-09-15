@@ -1,30 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-export class JsonCompareSet<T> {
-  private map = new Map<string, T>()
-
-  constructor(iterable?: Iterable<T>) {
-    //super(iterable)  // todo
-  }
-
-  add(value: T) {
-    this.map.set(JSON.stringify(value), value)
-    return this
-  }
-
-  keys() {
-    return this.map.values()
-  }
-
-  values() {
-    return this.map.values()
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export class HashSet<T> /*implements Set<T>*/ {
   protected map = new Map<string, T>()
 
-  constructor(protected hasher: (value: T) => string, source?: Iterable<T>) {
+  constructor(protected hasher: (value: T) => string = JSON.stringify, source?: Iterable<T>) {
     if (source) {
       for (let value of source) {
         this.add(value)
