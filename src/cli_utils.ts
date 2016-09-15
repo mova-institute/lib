@@ -48,7 +48,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function ioArgsPlain(f: (input, output) => any) {
-  let [filename1, filename2] = minimist(process.argv.slice(2))._
+export function ioArgsPlain(f: (input, output) => any, args = minimist(process.argv.slice(2))._) {
+  let [filename1, filename2] = args
   ioArgs(filename1, filename2, f)
 }

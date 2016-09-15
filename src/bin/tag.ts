@@ -85,4 +85,4 @@ ioArgsPlain(async (input, outputFromIoargs) => {
   }
 
   output.write('\n')
-})
+}, args._)
