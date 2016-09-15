@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-COMMAND="npm i -g git+https://bitbucket.org/mova-institute/mi-lib-dist.git"
-echo calling $COMMAND
-${COMMAND}
