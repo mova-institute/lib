@@ -3,7 +3,7 @@
     "target": "es6",
     "sourceMap": false,
     "outDir": "lib",
-    "declaration": false,
+    "declaration": true,
     "module": "commonjs",
     "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true,
