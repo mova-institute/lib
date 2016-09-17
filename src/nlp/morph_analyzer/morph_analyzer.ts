@@ -201,24 +201,17 @@ export class MorphAnalyzer {
       }
     }
 
-    // let match = lowercase.match(new RegExp(String.raw`^(\d+)-?([${LETTER_UK}]+)$`))
-    // if (match) {
-    //   let suffix = match[2]
-    //   res.addAll(mu(this.numeralMap)
-    //     .filter(x => x.form.endsWith(suffix))
-    //     .map(x => mu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma)))
-    //     .flatten()
-    //     .map(x => MorphTag.fromVesumStr(x, 'todo'))  // todo
-    //   )
+    if (lowercase.startsWith('по-')) {
+      let right = lowercase.substr(3)
+      let rightRes = this.lookup(right)
+        .filter(x => x.isAdjective() && x.isMasculine() && x.isDative())
+      if (!rightRes.empty() || lowercase.endsWith('ськи') || lowercase.endsWith('цьки')) {
+        res.add(MorphInterp.fromVesumStr('adv').setLemma(lowercase))
+      }
+    }
 
-    //   // let n = Number.parseInt(match[1])
-    //   // if (!(n % 10) && suffix === 'ті') {
-    //   //   ret.addAll(this.lookup('десяті')
-    //   //     .filter(x => x.isNoSingular() && x.isInanimate())
-    //   //     .map(x => (x.lemma = lowercase) && x)
-    //   //   )
-    //   // }
-    // }
+
+
 
 
     // filter and postprocess
