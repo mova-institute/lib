@@ -385,9 +385,10 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     } else {
       token.elem.clear()
       token.clearDisamb()
-      fillInterpElement(token.elem, form, tagOrXVesum(analyzer.tagOrX(form)))
+      let next = token.nextToken() && token.nextToken().text()
+      fillInterpElement(token.elem, form, tagOrXVesum(analyzer.tagOrX(form, next)))
       interps.forEach(x => {
-        if (token.hasInterp(x.flags, x.lemma)) {
+        if (true /*token.hasInterp(x.flags, x.lemma)*/) {  // todo
           token.alsoInterpAs(x.flags, x.lemma)
         }
       })

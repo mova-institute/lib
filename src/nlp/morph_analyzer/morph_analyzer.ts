@@ -201,6 +201,7 @@ export class MorphAnalyzer {
       }
     }
 
+    // по-*ськи, по-*:v_dav
     if (lowercase.startsWith('по-')) {
       let right = lowercase.substr(3)
       let rightRes = this.lookup(right)
