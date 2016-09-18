@@ -25,6 +25,6 @@ export function writeCompiledDict(path: string, compiledDict: CompiledDict) {
   }
   closeSync(f)
 
-  execSync(join(__dirname, '../../dawg_creator.py ') + path)
+  execSync(join(__dirname, '../../create_dawg.py ') + path)
   unlinkSync(path + '/words.dawg.json')
 }
