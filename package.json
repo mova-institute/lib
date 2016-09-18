@@ -39,6 +39,7 @@
     "typescript": "^2.0.0"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.34",
     "body-parser": "1.15.1",
     "camelcase": "3.0.0",
     "cookie-parser": "1.4.3",
@@ -50,6 +51,7 @@
     "glob": "7.0.5",
     "html-entities": "1.2.0",
     "libxmljs": "0.18.0",
+    "lodash": "^4.15.0",
     "minimist": "1.2.0",
     "mkdirp": "0.5.1",
     "node-fetch": "^1.5.3",
