@@ -133,12 +133,12 @@ export enum Reflexivity {
 
 ///// Lexical /////
 export enum PronominalType {
+  relative,
+  indefinite,
+  interrogative,
   personal,
   demonstrative,
-  indefinite,
   possessive,
-  interrogative,
-  relative,
   reflexive,
   negative,
   general,
@@ -881,6 +881,11 @@ export class MorphInterp {
     return ret
   }
 
+  setLemma(lemma: string) {
+    this.lemma = lemma
+    return this
+  }
+
   isNoun() { return this.features.pos === Pos.noun; }
   isVerb() { return this.features.pos === Pos.verb; }
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
@@ -888,6 +893,7 @@ export class MorphInterp {
   isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral; }
   isPreposition() { return this.features.pos === Pos.preposition; }
 
+  isDative() { return this.features.case === Case.dative; }
   isAccusative() { return this.features.case === Case.accusative; }
 
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
