@@ -1,4 +1,5 @@
 // todo: kill predic, isert
+// todo: split to files
 
 import { indexTableByColumns, overflowNegative } from '../algo'
 import { isOddball, compare, zipLongest } from '../lang'
@@ -707,6 +708,10 @@ export class MorphInterp {
       lemma: this.lemma,
       flags: this.toMte(),
     }
+  }
+
+  toUd() {
+
   }
 
   toMte(lemma = this.lemma, lemmaTag?: MorphInterp) {
