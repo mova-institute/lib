@@ -31,6 +31,7 @@ interface Args extends minimist.ParsedArgs {
 
 const args: Args = minimist(process.argv.slice(2), {
   boolean: ['n', 'numerate', 'tokenize', 'mte', 'vertical', 'xml'],
+  string: ['t', 'text'],
 })
 
 ioArgsPlain(async (input, outputFromIoargs) => {
