@@ -4187,11 +4187,11 @@ msgstr "версія:"
 msgid "Terms of use"
 msgstr "Умови користування"
 
-#: cmpltmpl/skell.py:487
+#: cmpltmpl/skell.py:495
 msgid "Learn more"
 msgstr "Докладніше"
 
-#: cmpltmpl/skell.py:552
+#: cmpltmpl/skell.py:560
 msgid "Empty result for"
 msgstr "Жодних знайдень для"
 
@@ -4199,13 +4199,45 @@ msgstr "Жодних знайдень для"
 msgid "Help on simple math parameter"
 msgstr "Довідка: проста математика"
 
-#: conccgi.py:1582
+#: conccgi.py:1594
 msgid "Word sketch collocations are available for the whole corpus only"
 msgstr "Колокації в шкіцах доступні лише для цілого корпусу"
+
+#: conccgi.py:1813
+msgid "Multilevel lists are limited to Word counts frequencies"
+msgstr ""
+
+#: conccgi.py:1815
+msgid "Word sketch collocations are not compatible "
+msgstr ""
+
+#: conccgi.py:1816
+msgid "with Multilevel wordlist"
+msgstr ""
+
+#: corplib.py:795
+msgid "average reduced frequency"
+msgstr ""
+
+#: corplib.py:797
+msgid "document frequency"
+msgstr ""
 
 #: theslib.py:40
 msgid "No thesaurus items for"
 msgstr "Пустий тезаурус для"
+
+#: cmpltmpl/collx.py:399 cmpltmpl/wordlist.py:758
+msgid ""
+"Some corpora and subcorpora operations need more preprocessing. It will take "
+"a while, please wait."
+msgstr ""
+
+#: cmpltmpl/collx.py:411
+msgid ""
+"You can close this window. Repeating the collocation query on the same "
+"(sub)corpus will show you progress of the computation."
+msgstr ""
 
 #: cmpltmpl/corp_info.py:585
 msgid "Grammar relations"
@@ -4215,19 +4247,15 @@ msgstr "Синтаксичні зв’язки"
 msgid "Name"
 msgstr "Зв’язок"
 
-#: cmpltmpl/corp_info.py:600
-msgid "Count"
-msgstr "Кількість"
-
-#: cmpltmpl/corp_info.py:633
+#: cmpltmpl/corp_info.py:651
 msgid "Corpus definition: dump"
 msgstr "Означення корпусу: злите"
 
-#: cmpltmpl/corp_info.py:649
+#: cmpltmpl/corp_info.py:667
 msgid "Registry file"
 msgstr "Файл реєстру"
 
-#: cmpltmpl/corp_info.py:654
+#: cmpltmpl/corp_info.py:672
 msgid "Corpus definition: source"
 msgstr "Означення корпусу: першоджерело"
 
@@ -4280,7 +4308,7 @@ msgid "Within cannot immediately followed by beginning of structure."
 msgstr "Після within не може йти початок структури."
 
 #: cmpltmpl/document.py:2804
-msgid "Within cannot be immidiatly preceded or followed by invalid query."
+msgid "Within cannot be immediately preceded or followed by invalid query."
 msgstr "Обабіч within не може стояти неправильний запит."
 
 #: cmpltmpl/document.py:2810
@@ -4297,7 +4325,7 @@ msgid ""
 msgstr "Два containing не можуть йти один за одним."
 
 #: cmpltmpl/document.py:2828
-msgid "Containing cannot be immidiatly preceded or followed by invalid query."
+msgid "Containing cannot be immediately preceded or followed by invalid query."
 msgstr "Обабіч containing не може стояти неправильний запит."
 
 #: cmpltmpl/document.py:2834
@@ -4340,39 +4368,43 @@ msgstr "Для повної функційності Sketch Engine’а необ
 msgid "enable JavaScript"
 msgstr "увімкнути JavaScript"
 
-#: cmpltmpl/document.py:3322 cmpltmpl/document.py:3831
+#: cmpltmpl/document.py:3195
+msgid "Close"
+msgstr ""
+
+#: cmpltmpl/document.py:3335 cmpltmpl/document.py:3844
 msgid "Information about"
 msgstr "Відомості про"
 
-#: cmpltmpl/document.py:3366
+#: cmpltmpl/document.py:3379
 msgid "Send us feedback"
 msgstr "Написати розробникам"
 
-#: cmpltmpl/document.py:3589
+#: cmpltmpl/document.py:3602
 msgid "Search this corpus"
 msgstr "Шукати в цьому корпусі"
 
-#: cmpltmpl/document.py:3614
+#: cmpltmpl/document.py:3627
 msgid "Various methods for creating lists of words, lemmas etc."
 msgstr "Інструменти для створення списків слів, лем, позначок тощо"
 
-#: cmpltmpl/document.py:3638
+#: cmpltmpl/document.py:3651
 msgid "Important co-occurring words"
 msgstr "Портрет поведінки слова, його співтраплянь з іншими словами"
 
-#: cmpltmpl/document.py:3694
+#: cmpltmpl/document.py:3707
 msgid "How words differ in their contexts and behaviour"
 msgstr "Як слова різняться своїми контекстами і поведінкою"
 
-#: cmpltmpl/document.py:3806
+#: cmpltmpl/document.py:3819
 msgid "Trending words"
 msgstr "Діахронний аналіз слів (пошук тенденцій в частоті вживання)"
 
-#: cmpltmpl/document.py:3874
+#: cmpltmpl/document.py:3887
 msgid "My currently running background jobs"
 msgstr "Мої поточні задачі на сервері"
 
-#: cmpltmpl/document.py:3898
+#: cmpltmpl/document.py:3911
 msgid "All currently running background jobs"
 msgstr "Всі поточні задачі на сервері"
 
@@ -4435,14 +4467,6 @@ msgstr "TSV"
 #: cmpltmpl/wordlist.py:698
 msgid "Total number of items"
 msgstr "Всього елементів"
-
-#: cmpltmpl/wordlist.py:758
-msgid ""
-"Some corpora and subcorpora operations need more preprocessing. It will take "
-"a while, please wait."
-msgstr ""
-"Для деяких дій з (під)копусами потрібне додаткове передоброблення. Зачекайте, будь "
-"ласка."
 
 #: cmpltmpl/wordlist.py:770
 msgid ""
