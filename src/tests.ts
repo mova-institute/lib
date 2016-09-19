@@ -31,7 +31,7 @@ export function findDuplicateFeatures(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testMorphTag2Mte(fileStr: string) {
   let lines = fileStr.split('\n')
-  for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
+  for (let { form, tag, lemma, lemmaTag, lineIndex } of iterateDictCorpVizLines(lines)) {
     try {
       var morphTag = MorphInterp.fromVesumStr(tag, lemma)
       var lemmaMorphTag = MorphInterp.fromVesumStr(lemmaTag, lemma)
@@ -56,7 +56,7 @@ export function testMorphTag2Mte(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testMte2Vesum(fileStr: string) {
   let lines = fileStr.split('\n')
-  for (let { form, tag, lemma, lemmaTag, lineNum } of iterateDictCorpVizLines(lines)) {
+  for (let { form, tag, lemma, lemmaTag, lineIndex } of iterateDictCorpVizLines(lines)) {
     if (
       tag.includes('insert')
       || tag.includes('predic')
@@ -80,7 +80,7 @@ export function testMte2Vesum(fileStr: string) {
       mte1 = fromMte = vesum2 = mte2 = null
     }
     catch (e) {
-      console.error({ form, tag, mte1, vesum2, mte2, lineNum })
+      console.error({ form, tag, mte1, vesum2, mte2, lineIndex })
       if (e.message.startsWith('Unma')) {
         throw e
         //continue
@@ -95,7 +95,7 @@ export function testMte2Vesum(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testConverter(fileStr: string) {
   let lines = fileStr.split('\n')
-  for (let { form, tag, lemma, lemmaTag, isLemma, lineNum } of iterateDictCorpVizLines(lines)) {
+  for (let { form, tag, lemma, lemmaTag, isLemma, lineIndex } of iterateDictCorpVizLines(lines)) {
     let mte
     let fromMte
     let vesumBack
@@ -107,7 +107,7 @@ export function testConverter(fileStr: string) {
       catch (e) {
         console.error(e)
         if (e.message.startsWith('Unma')) {
-          console.error({ form, tag, lemma, lemmaTag, isLemma, mte, lineNum })
+          console.error({ form, tag, lemma, lemmaTag, isLemma, mte, lineIndex })
         }
         continue
       }
@@ -122,7 +122,7 @@ export function testConverter(fileStr: string) {
       }
     }
     catch (e) {
-      console.error({ form, tag, lemma, lemmaTag, isLemma, mte, vesumBack, reMte, fromMte, lineNum })
+      console.error({ form, tag, lemma, lemmaTag, isLemma, mte, vesumBack, reMte, fromMte, lineIndex })
       throw e
     }
   }
@@ -131,17 +131,17 @@ export function testConverter(fileStr: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function testFlagSorter(fileStr: string) {
   let lines = fileStr.split('\n')
-  for (let { form, tag, lemma, lemmaTag, isLemma, lineNum } of iterateDictCorpVizLines(lines)) {
+  for (let { form, tag, lemma, lemmaTag, isLemma, lineIndex } of iterateDictCorpVizLines(lines)) {
     try {
       let internal = MorphInterp.fromVesumStr(tag)
       let backVesum = internal.toVesumStr()
       if (tag !== backVesum && !tag.includes(':xp') && !tag.includes('adj:')) {
-        console.log({ form, befor: tag, after: backVesum, internal, lineNum })
+        console.log({ form, befor: tag, after: backVesum, internal, lineIndex })
         console.log('===========================')
       }
     }
     catch (e) {
-      console.error({ form, tag, lemma, lemmaTag, isLemma, lineNum })
+      console.error({ form, tag, lemma, lemmaTag, isLemma, lineIndex })
       throw e
     }
   }

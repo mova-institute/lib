@@ -41,11 +41,11 @@ const NONLEMMA_PADDING = '  ';
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* iterateDictCorpVizLines(lines: Iterable<string>) {
-  let lineNum = -1;
+  let lineIndex = -1;
   let lemma;
   let lemmaTag;
   for (let line of lines) {
-    ++lineNum;
+    ++lineIndex;
     let isLemma = !line.startsWith(' ');
     let l = line.trim();
     if (l) {
@@ -55,7 +55,7 @@ export function* iterateDictCorpVizLines(lines: Iterable<string>) {
         lemma = form;
         lemmaTag = tag;
       }
-      yield { form, tag, lemma, lemmaTag, isLemma, line, lineNum };
+      yield { form, tag, lemma, lemmaTag, isLemma, line, lineIndex };
     }
   }
 }
