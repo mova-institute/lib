@@ -9,7 +9,8 @@
     "data/dict/vesum"
   ],
   "bin": {
-    "mitag": "lib/bin/tag.js"
+    "mitag": "lib/bin/tag.js",
+    "vesum2mte": "lib/bin/misc/vesum2mte.js"
   },
   "scripts": {},
   "author": "mova.institute",
