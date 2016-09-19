@@ -886,55 +886,55 @@ export class MorphInterp {
     return this
   }
 
-  isNoun() { return this.features.pos === Pos.noun; }
-  isVerb() { return this.features.pos === Pos.verb; }
-  isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes; }
-  isTransgressive() { return this.features.pos === Pos.transgressive; }
-  isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral; }
-  isPreposition() { return this.features.pos === Pos.preposition; }
+  isNoun() { return this.features.pos === Pos.noun }
+  isVerb() { return this.features.pos === Pos.verb }
+  isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes }
+  isTransgressive() { return this.features.pos === Pos.transgressive }
+  isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
+  isPreposition() { return this.features.pos === Pos.preposition }
 
-  isDative() { return this.features.case === Case.dative; }
-  isAccusative() { return this.features.case === Case.accusative; }
+  isDative() { return this.features.case === Case.dative }
+  isAccusative() { return this.features.case === Case.accusative }
 
-  isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes; }
+  isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
   isN2Adj() { return this.features.n2adjness === N2adjness.yes }
 
-  isPronoun() { return this.features.pronoun !== undefined; }
-  isPossessive() { return this.features.possessiveness === Possessiveness.yes; }
-  isInanimate() { return this.features.animacy === Animacy.inanimate; }
-  isComparable() { return this.features.degree !== undefined; }
-  isPresent() { return this.features.tense === Tense.present; }
-  isPerfect() { return this.features.aspect === Aspect.perfect; }
-  isImperfect() { return this.features.aspect === Aspect.imperfect; }
-  isActive() { return this.features.voice === Voice.active; }
-  isFeminine() { return this.features.gender === Gender.feminine; }
-  isSingular() { return this.features.number === MorphNumber.singular; }  // todo: tantum?
-  isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular; }  // todo: tantum?
-  isBeforeadj() { return this.features.beforeadj === Beforeadj.yes; }
-  isOdd() { return this.features.oddness === Oddness.yes; }
-  isAbbreviation() { return this.features.abbreviation === Abbreviation.yes; }
-  isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes; }
-  isParticiple() { return this.features.participle !== undefined; }
-  isBacteria() { return this.features.animacy === Animacy.bacteria; }
+  isPronoun() { return this.features.pronoun !== undefined }
+  isPossessive() { return this.features.possessiveness === Possessiveness.yes }
+  isInanimate() { return this.features.animacy === Animacy.inanimate }
+  isComparable() { return this.features.degree !== undefined }
+  isPresent() { return this.features.tense === Tense.present }
+  isPerfect() { return this.features.aspect === Aspect.perfect }
+  isImperfect() { return this.features.aspect === Aspect.imperfect }
+  isActive() { return this.features.voice === Voice.active }
+  isFeminine() { return this.features.gender === Gender.feminine }
+  isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
+  isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?
+  isBeforeadj() { return this.features.beforeadj === Beforeadj.yes }
+  isOdd() { return this.features.oddness === Oddness.yes }
+  isAbbreviation() { return this.features.abbreviation === Abbreviation.yes }
+  isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
+  isParticiple() { return this.features.participle !== undefined }
+  isBacteria() { return this.features.animacy === Animacy.bacteria }
 
-  isPlural() { return this.features.number === MorphNumber.plural; }
-  isNominative() { return this.features.case === Case.nominative; }
+  isPlural() { return this.features.number === MorphNumber.plural }
+  isNominative() { return this.features.case === Case.nominative }
 
-  isMasculine() { return this.features.gender === Gender.masculine; }
+  isMasculine() { return this.features.gender === Gender.masculine }
 
-  hasNumber() { return this.features.number !== undefined; }
-  hasGender() { return this.features.gender !== undefined; }
+  hasNumber() { return this.features.number !== undefined }
+  hasGender() { return this.features.gender !== undefined }
 
-  isProper() { return this.features.nounType === NounType.proper; }
-  isBad() { return this.features.bad === Bad.yes; }
+  isProper() { return this.features.nounType === NounType.proper }
+  isBad() { return this.features.bad === Bad.yes }
 
-  setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this; }
-  setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this; }
-  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this; }
-  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this; }
-  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this; }
+  setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
+  setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
+  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
+  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
+  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
 
-  setCase(value: Case) { this.features.case = value; return this; }
+  setCase(value: Case) { this.features.case = value; return this }
 
 
   unproper() {
