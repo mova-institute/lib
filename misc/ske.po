@@ -4205,23 +4205,23 @@ msgstr "Колокації в шкіцах доступні лише для ці
 
 #: conccgi.py:1813
 msgid "Multilevel lists are limited to Word counts frequencies"
-msgstr ""
+msgstr "Кількарівневі словники будуться тільки для частот слів"
 
 #: conccgi.py:1815
 msgid "Word sketch collocations are not compatible "
-msgstr ""
+msgstr "Колокації шкіців несумісні"
 
 #: conccgi.py:1816
 msgid "with Multilevel wordlist"
-msgstr ""
+msgstr "з кількарівневими словниками частот"
 
 #: corplib.py:795
 msgid "average reduced frequency"
-msgstr ""
+msgstr "середня зведена частота"
 
 #: corplib.py:797
 msgid "document frequency"
-msgstr ""
+msgstr "частота по документах"
 
 #: theslib.py:40
 msgid "No thesaurus items for"
@@ -4232,12 +4232,16 @@ msgid ""
 "Some corpora and subcorpora operations need more preprocessing. It will take "
 "a while, please wait."
 msgstr ""
+"Для деяких дій з корпусами та підкорпусами потрібне додаткове "
+"передоброблення. Це забере котрийсь час. Зачекайте, будь ласка."
 
 #: cmpltmpl/collx.py:411
 msgid ""
 "You can close this window. Repeating the collocation query on the same "
 "(sub)corpus will show you progress of the computation."
 msgstr ""
+"Це вікно можна закрити. Повторний запит колокацій з того ж "
+"(під)корпусу покаже статус підрахунку."
 
 #: cmpltmpl/corp_info.py:585
 msgid "Grammar relations"
@@ -4370,7 +4374,7 @@ msgstr "увімкнути JavaScript"
 
 #: cmpltmpl/document.py:3195
 msgid "Close"
-msgstr ""
+msgstr "Закрити"
 
 #: cmpltmpl/document.py:3335 cmpltmpl/document.py:3844
 msgid "Information about"
@@ -4473,7 +4477,7 @@ msgid ""
 "You can close this window. Repeating word list or keywords queries on the "
 "same (sub)corpus will show you progress of the computation."
 msgstr ""
-"Можна закрити це вікно. Повторний запит словника частот з того ж "
+"Це вікно можна закрити. Повторний запит словника частот з того ж "
 "(під)корпусу покаже статус підрахунку."
 
 #: cmpltmpl/wsketch_form.py:415
