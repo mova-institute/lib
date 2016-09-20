@@ -28,6 +28,8 @@ main()
 function main() {
 
   let arr = [
+    'adj:n:v_naz:poss:&pron:refl',
+    'adj:f:v_naz:uncontr:&adjp:perf:pasv',
     'adv:&pron:dem',
     'noun:anim:p:f:fname',
     'noun:anim:s:v_oru:&pron:pers:2',
@@ -40,5 +42,5 @@ function main() {
     'conj:subord',
   ]
 
-  arr.forEach(x => console.log(`${x}  --->  ${toUdString(MorphInterp.fromVesumStr(x))}`))
+  arr.forEach(x => console.log(`${x}\t${toUdString(MorphInterp.fromVesumStr(x))}`))
 }

@@ -5,6 +5,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, VerbForm, VerbNegativity, VerbType, Voice, VuAlternativity,
+  booleanFeatures,
 } from './morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from './morph_interp'
@@ -244,7 +245,7 @@ export class UdFlags {
   Number: UdNumber
 }
 
-
+//------------------------------------------------------------------------------
 function mapFeatureValue2Ud(featureName, value) {
   let feature = featureName2objMap.get(featureName)
   if (!feature) {
@@ -252,11 +253,15 @@ function mapFeatureValue2Ud(featureName, value) {
   }
   let udFeatureName = featureObj2nameMapUd.get(feature)
   if (udFeatureName) {
-    let udFeatureMap = map.get(feature)
-    if (udFeatureMap) {
-      let retValue = udFeatureMap.get(value)
-      if (retValue) {
-        return [udFeatureName, retValue]
+    if (booleanFeatures.find(x => x === feature)) {
+      return [udFeatureName, 'Yes']
+    } else {
+      let udFeatureMap = map.get(feature)
+      if (udFeatureMap) {
+        let retValue = udFeatureMap.get(value)
+        if (retValue) {
+          return [udFeatureName, retValue]
+        }
       }
     }
   }

@@ -33,6 +33,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Mood, 'mood'],
   [Voice, 'voice'],
   [Degree, 'degree'],
+  [Variant, 'variant'],
   [Pronoun, 'pronoun'],
   [Participle, 'participle'],
   [OrdinalNumeral, 'ordinalNumeral'],
