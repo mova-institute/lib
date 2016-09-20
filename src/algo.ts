@@ -1,6 +1,15 @@
 import { lexCompare } from './lang'
 import { HashSet } from './data_structures'  // todo remove dep
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+export function flipMap<K, V>(map: Map<K, V>) {
+  let ret = new Map<V, K>()
+  map.forEach((v, k) => ret.set(v, k))
+  return ret
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function uniqValuedMap2array(map) {
   return Object.keys(map).sort((a, b) => {

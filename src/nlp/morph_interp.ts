@@ -1,197 +1,68 @@
 // todo: kill predic, isert
 // todo: split to files
 
-import { indexTableByColumns, overflowNegative } from '../algo'
+import { indexTableByColumns, overflowNegative, flipMap } from '../algo'
 import { isOddball, compare, zipLongest } from '../lang'
-
-export enum Pos {
-  adverb,
-  conjunction,
-  particle,
-  preposition,
-  predicative,  // todo
-  interjection,
-  transgressive,
-  cardinalNumeral,
-  verb,
-  noun,
-  adjective,
-  sym,
-  error,
-  x,
-}
-
-export enum Pronoun {
-  yes,
-}
-export enum Participle {
-  yes,
-}
-export enum OrdinalNumeral {
-  yes,
-  maybe,
-}
-export enum AdjectiveAsNoun {
-  yes,
-}
+import {
+  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
+  Aspect, Auto, Bad, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
+  Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
+  Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
+  PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
+  Slang, Tense, Variant, VerbForm, VerbNegativity, VerbType, Voice, VuAlternativity,
+} from './morph_features'
 
 
-///// Nominal /////
+export const featureObj2nameMap = new Map<any, string>([
+  [Pos, 'pos'],
+  [N2adjness, 'n2adjness'],
+  [NumeralForm, 'numeralForm'],
+  [NounType, 'nounType'],
+  [VerbType, 'verbType'],
+  [Rarity, 'rarity'],
+  [Colloquial, 'colloquial'],
+  [Slang, 'slang'],
+  [Bad, 'bad'],
+  [NameType, 'nameType'],
+  [Animacy, 'animacy'],
+  [RequiredAnimacy, 'requiredAnimacy'],
+  [Case, 'case'],
+  [RequiredCase, 'requiredCase'],
+  [Aspect, 'aspect'],
+  [Tense, 'tense'],
+  [Mood, 'mood'],
+  [Voice, 'voice'],
+  [Degree, 'degree'],
+  [Pronoun, 'pronoun'],
+  [Participle, 'participle'],
+  [OrdinalNumeral, 'ordinalNumeral'],
+  [AdjectiveAsNoun, 'adjectiveAsNoun'],
+  [Gender, 'gender'],
+  [MorphNumber, 'number'],
+  [Person, 'person'],
+  [NumberTantum, 'numberTantum'],
+  [CaseInflectability, 'caseInflectability'],
+  [Alternativity, 'alternative'],
+  [Abbreviation, 'abbreviation'],
+  [VuAlternativity, 'vuAlternative'],
+  [Dimin, 'dimin'],
+  [Possessiveness, 'possessiveness'],
+  [Auto, 'auto'],
+  [Beforeadj, 'beforeadj'],
+  [Oddness, 'oddness'],
+  [ParadigmOmonym, 'paradigmOmonym'],
+  [PronominalType, 'pronominalType'],
+])
+export const featureName2objMap = flipMap(featureObj2nameMap)
 
-export enum NounType {
-  common,
-  proper,
-}
-export enum Gender {
-  masculine,
-  feminine,
-  neuter,
-  // common,
-}
-export enum Animacy {
-  animate,
-  inanimate,
-  bacteria,  // ?
-}
-export enum RequiredAnimacy {
-  animate,
-  inanimate,
-}
-export enum MorphNumber {
-  singular,
-  plural,
-  // dual,
-  // pluraleTantum,
-  // singulareTantum  // людств
-}
-export enum Case {
-  nominative,
-  genitive,
-  dative,
-  accusative,
-  instrumental,
-  locative,
-  vocative,
-  accusativeOld,
-  accusativeGenitive,
-  // other non-ukr
-}
-export enum RequiredCase {
-  // nominative,
-  genitive,
-  dative,
-  accusative,
-  instrumental,
-  locative,
-}
-export enum Degree {
-  positive,
-  comparative,
-  superlative,
-  // absoluteSuperlative  // non-ukr?
-}
+/*
 
-///// Verbal /////
-export enum VerbForm {
-  participle,  // дієприкм
-  transgressive,  // дієприсл
-}
-export enum Mood {
-  indicative,
-  imperative,
-  infinitive,
-  impersonal,
-}
-export enum Tense {
-  past,
-  present,
-  future,
-}
-export enum Aspect {
-  imperfect,
-  perfect,
-}
-export enum Voice {
-  active,
-  passive,
-}
-export enum Person {
-  first,
-  second,
-  third,
-}
-export enum VerbNegative {
-  positive,
-  negative,
-}  // todo
-export enum VerbType {
-  main,
-  auxilary,
-}
-export enum Reflexivity {
-  yes,
-}
 
-///// Lexical /////
-export enum PronominalType {
-  relative,
-  indefinite,
-  interrogative,
-  personal,
-  demonstrative,
-  possessive,
-  reflexive,
-  negative,
-  general,
-  emphatic,
-  definitive,  // todo
-}
-export enum NumeralForm {
-  digit,
-  roman,
-  letter,
-}
-export enum Variant {
-  short,
-  full,
-}
-export enum Rarity {
-  archaic,
-  rare,
-}
-export enum Slang {
-  yes,
-}
-export enum Colloquial {
-  yes,
-}
-export enum Bad {
-  yes,
-}
-export enum ConjunctionType {
-  subordinating,
-  coordinating,
-}
-export enum NumberTantum { noPlural, noSingular }
-export enum NameType { first, last, patronym }
-
-export enum CaseInflectability { no }
-export enum Alternativity { yes }
-export enum VuAlternativity { yes }
-export enum Abbreviation { yes }
-export enum Dimin { yes }
-export enum Beforeadj { yes }
-export enum Possessiveness { yes }
-export enum ParadigmOmonym { xp1, xp2, xp3, xp4, xp5, xp6, xp7, xp8, xp9 }
-export enum SemanticOmonym { }
-export enum Auto { yes }
-export enum Oddness { yes }
-export enum N2adjness { yes }
-
+*/
 
 export const FEATURE_TABLE = [
 
-  { featStr: 'n2adjness', feat: NumeralForm, vesum: N2adjness.yes, vesumStr: 'n2adj' },
+  { featStr: 'n2adjness', feat: N2adjness, vesum: N2adjness.yes, vesumStr: 'n2adj' },
 
   { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.digit, vesumStr: 'digit', mte: 'd' },  // todo: not vesum?
   { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.roman, vesumStr: 'roman', mte: 'r' },  // todo: not vesum?
@@ -897,6 +768,8 @@ export class MorphInterp {
   isTransgressive() { return this.features.pos === Pos.transgressive }
   isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
   isPreposition() { return this.features.pos === Pos.preposition }
+  isConjunction() { return this.features.pos === Pos.conjunction }
+  isPronoun() { return this.features.pronoun !== undefined }
 
   isDative() { return this.features.case === Case.dative }
   isAccusative() { return this.features.case === Case.accusative }
@@ -904,7 +777,6 @@ export class MorphInterp {
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
   isN2Adj() { return this.features.n2adjness === N2adjness.yes }
 
-  isPronoun() { return this.features.pronoun !== undefined }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
   isComparable() { return this.features.degree !== undefined }
@@ -921,6 +793,7 @@ export class MorphInterp {
   isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
   isParticiple() { return this.features.participle !== undefined }
   isBacteria() { return this.features.animacy === Animacy.bacteria }
+  isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
 
   isPlural() { return this.features.number === MorphNumber.plural }
   isNominative() { return this.features.case === Case.nominative }

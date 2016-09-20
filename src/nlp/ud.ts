@@ -1,5 +1,164 @@
-import { MorphInterp } from './morph_interp'
+import {
+  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
+  Aspect, Auto, Bad, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
+  Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
+  Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
+  PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
+  Slang, Tense, Variant, VerbForm, VerbNegativity, VerbType, Voice, VuAlternativity,
+} from './morph_features'
 
+import { MorphInterp, featureName2objMap, featureObj2nameMap } from './morph_interp'
+
+
+export const featureObj2nameMapUd = new Map<any, string>([
+  [Pos, 'POS'],
+  // [N2adjness, 'n2adjness'],
+  // [NumeralForm, 'numeralForm'],
+  // [NounType, 'nounType'],
+  // [VerbType, 'verbType'],
+  // [Rarity, 'rarity'],
+  // [Colloquial, 'colloquial'],
+  // [Slang, 'slang'],
+  // [Bad, 'bad'],
+  // [NameType, 'nameType'],
+  [Animacy, 'Animacy'],
+  // [RequiredAnimacy, 'requiredAnimacy'],
+  [Case, 'Case'],
+  // [RequiredCase, 'requiredCase'],
+  [Aspect, 'Aspect'],
+  [Tense, 'Tense'],
+  // [Mood, 'Mood'],
+  [Voice, 'Voice'],
+  [Degree, 'Degree'],
+  // [Pronoun, 'pronoun'],
+  // [Participle, 'participle'],
+  // [OrdinalNumeral, 'ordinalNumeral'],
+  // [AdjectiveAsNoun, 'adjectiveAsNoun'],
+  [Gender, 'Gender'],
+  [MorphNumber, 'Number'],
+  [Person, 'Person'],
+  // [NumberTantum, 'numberTantum'],
+  // [CaseInflectability, 'caseInflectability'],
+  // [Alternativity, 'alternative'],
+  // [Abbreviation, 'abbreviation'],
+  // [VuAlternativity, 'vuAlternative'],
+  // [Dimin, 'dimin'],
+  [Possessiveness, 'Poss'],
+  // [Auto, 'auto'],
+  // [Beforeadj, 'beforeadj'],
+  // [Oddness, 'oddness'],
+  // [ParadigmOmonym, 'paradigmOmonym'],
+  [PronominalType, 'PronType'],
+])
+
+const posMap = new Map<Pos, UdPos>([
+  [Pos.noun, 'NOUN'],  // caution
+  [Pos.adjective, 'ADJ'],
+  [Pos.interjection, 'INTJ'],
+  [Pos.verb, 'VERB'],
+  [Pos.adverb, 'ADV'],
+  [Pos.x, 'X'],
+  [Pos.sym, 'SYM'],
+  [Pos.particle, 'PART'],
+  // [Pos, ''],
+  // [Pos, ''],
+])
+
+const caseMap = new Map<Case, UdCase>([
+  [Case.nominative, 'Nom'],
+  [Case.genitive, 'Gen'],
+  [Case.dative, 'Dat'],
+  [Case.accusative, 'Acc'],
+  [Case.instrumental, 'Ins'],
+  [Case.locative, 'Loc'],
+  [Case.vocative, 'Voc'],
+])
+
+const numberMap = new Map<Number, UdNumber>([
+  [MorphNumber.singular, 'Sing'],
+  [MorphNumber.plural, 'Plur'],
+])
+
+const animacyMap = new Map<Animacy, UdAnimacy>([
+  [Animacy.animate, 'Anim'],
+  [Animacy.inanimate, 'Inan'],
+  // todo: bacteria
+])
+
+const aspectMap = new Map<Aspect, UdAspect>([
+  [Aspect.imperfect, 'Imp'],
+  [Aspect.perfect, 'Perf'],
+])
+
+const tenseMap = new Map<Tense, UdTense>([
+  [Tense.past, 'Past'],
+  [Tense.present, 'Pres'],
+  [Tense.future, 'Fut'],
+])
+
+const genderMap = new Map<Gender, UdGender>([
+  [Gender.feminine, 'Fem'],
+  [Gender.masculine, 'Masc'],
+  [Gender.neuter, 'Neut'],
+])
+
+// const moodMap: [Mood, UdMood][] = [
+//   [Mood.infinitive, ''],
+//   [Mood.indicative, ''],
+//   [Mood.imperative, ''],
+//   [Mood.impersonal, ''],
+// ]
+
+const voiceMap = new Map<Voice, UdVoice>([
+  [Voice.active, 'Act'],
+  [Voice.passive, 'Pass'],
+])
+
+const degreeMap = new Map<Degree, UdDegree>([
+  [Degree.positive, 'Pos'],
+  [Degree.comparative, 'Cmp'],
+  [Degree.superlative, 'Sup'],
+])
+
+const personMap = new Map<Person, UdPerson>([
+  [Person.first, '1'],
+  [Person.second, '2'],
+  [Person.third, '3'],
+])
+
+const promonialTypeMap = new Map<PronominalType, UdPronType>([
+  [PronominalType.personal, 'Prs'],
+  [PronominalType.interrogative, 'Int'],
+  [PronominalType.relative, 'Rel'],
+  [PronominalType.demonstrative, 'Dem'],
+  [PronominalType.general, 'Tot'],
+  [PronominalType.negative, 'Neg'],
+  [PronominalType.indefinite, 'Ind'],
+
+  // [PronominalType.definitive, ''],
+  // [PronominalType.emphatic, ''],
+  // [PronominalType.reflexive, ''],
+])
+
+/*
+const Map: [][] = [
+  [, ''],
+]
+*/
+
+const map = new Map<any, any>([
+  [Pos, posMap],
+  [PronominalType, promonialTypeMap],
+  [Animacy, animacyMap],
+  [Case, caseMap],
+  [Aspect, aspectMap],
+  [Tense, tenseMap],
+  [Voice, voiceMap],
+  [Degree, degreeMap],
+  [Gender, genderMap],
+  [Person, personMap],
+  [MorphNumber, numberMap],
+])
 
 export type UdPos =
   'ADJ' |
@@ -50,6 +209,8 @@ export type UdGender =
   'Neut' |
   'Com'
 
+export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
+
 export type UdAnimacy =
   'Anim' |
   'Nhum' |
@@ -67,6 +228,11 @@ export type UdCase =
 
 
 export type UdDegree = 'Pos' | 'Cmp' | 'Sup'
+export type UdTense = 'Past' | 'Pres' | 'Fut'
+export type UdPerson = '1' | '2' | '3'
+// export type UdMood = 'Ind' | 'Imp'
+export type UdVoice = 'Act' | 'Pass'
+
 
 export class UdFlags {
   POS: UdPos
@@ -74,14 +240,75 @@ export class UdFlags {
   Case: UdCase
   Degree: UdDegree
   Gender: UdGender
+  Poss: boolean
+  Number: UdNumber
+}
+
+
+function mapFeatureValue2Ud(featureName, value) {
+  let feature = featureName2objMap.get(featureName)
+  if (!feature) {
+    throw new Error(`Unknown feature: ${feature}`)
+  }
+  let udFeatureName = featureObj2nameMapUd.get(feature)
+  if (udFeatureName) {
+    let udFeatureMap = map.get(feature)
+    if (udFeatureMap) {
+      let retValue = udFeatureMap.get(value)
+      if (retValue) {
+        return [udFeatureName, retValue]
+      }
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toUd(interp: MorphInterp) {
-  let ret = new UdFlags()
+  let pos
+  let features = new UdFlags()
 
-  if (interp.isNoun() && interp.isProper()) {
-    ret.POS = 'PROPN'
+  if (interp.isConjunction()) {
+    return interp.isSubordinating()
+      ? { pos: 'SCONJ', features }
+      : { pos: 'CONJ', features }
   }
 
+  for (let featureName of Object.keys(interp.features)) {
+    let keyvalue = mapFeatureValue2Ud(featureName, interp.features[featureName])
+    if (keyvalue) {
+      features[keyvalue[0]] = keyvalue[1]
+    }
+  }
+
+
+  if (interp.isNoun()) {
+    if (interp.isProper()) {
+      pos = 'PROPN'
+    } else if (interp.isPronoun()) {
+      pos = 'PRON'
+    }
+  }
+
+  // if (interp.isNoSingular()) {
+  //   features.Number = 'Ptan'
+  // }
+
+  return { pos: pos || features.POS, features }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function ud2string(ud) {
+  let ret = ud.pos + '  '
+  ret += Object.keys(ud.features)
+    .filter(x => x !== 'POS')  // todo
+    .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
+    .map(key => `${key}=${ud.features[key]}`)
+    .join('|')
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function toUdString(interp: MorphInterp) {
+  return ud2string(toUd(interp))
 }

@@ -1,6 +1,7 @@
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
-import { MorphInterp, Case } from '../morph_interp'
+import { MorphInterp } from '../morph_interp'
+import { Case } from '../morph_features'
 import { FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE } from '../static'
 
 import { HashSet } from '../../data_structures'

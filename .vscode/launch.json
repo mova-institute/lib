@@ -32,13 +32,9 @@
 			"name": "tests",
 			"type": "node",
 			"request": "launch",
-			"program": "${workspaceRoot}/src/bin/do.ts",
+			"program": "${workspaceRoot}/src/bin/test.ts",
 			"stopOnEntry": false,
-			"args": [
-        "tests",
-        "testMorphTag2Mte",
-        "../dict/out/dict_corp_vis.txt"
-      ],
+			"args": [],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
 			"runtimeExecutable": null,
@@ -48,7 +44,7 @@
 			"env": {
 				"NODE_ENV": "development"
 			},
-			"externalConsole": false,
+      "console": "internalConsole",
 			"sourceMaps": true,
 			"outDir": "${workspaceRoot}/lib"
 		},

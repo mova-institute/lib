@@ -3,47 +3,42 @@
 // import {readFileSync} from 'fs'
 // import {dirname} from 'path'
 // import * as libxmljs from 'libxmljs'
-const libxmljs = require('libxmljs')
+// const libxmljs = require('libxmljs')
 // import {traverseDepth} from '../xml/utils'
 // import {PgClient} from '../postrges'
 // import {parseXmlString} from 'libxmljs'
-import { ClientConfig } from 'pg'
+// import { ClientConfig } from 'pg'
 // import {sleep} from '../lang'
+import { toUdString } from '../nlp/ud'
+import { MorphInterp } from '../nlp/morph_interp'
 
-export const config: ClientConfig = {
-  host: 'localhost',
-  port: 5433,
-  database: 'mi_dev',
-  user: 'annotator',
-  password: '@nn0t@t0zh3',
-}
+// export const config: ClientConfig = {
+//   host: 'localhost',
+//   port: 5433,
+//   database: 'mi_dev',
+//   user: 'annotator',
+//   password: '@nn0t@t0zh3',
+// }
 
 
 main()
 
 
 
-async function main() {
+function main() {
 
-  // let root = libxmljs.parseXmlString('<x> a>b </x>')
-  // console.log(root.toString())
+  let arr = [
+    'adv:&pron:dem',
+    'noun:anim:p:f:fname',
+    'noun:anim:s:v_oru:&pron:pers:2',
+    'part',
+    'intj',
+    'sym',
+    'x',
+    'adv:super',
+    'conj:coord',
+    'conj:subord',
+  ]
 
-  // // try {
-  // //   PgClient.transaction(config, async (client) => {
-  // //     client.call('popo')
-  // //     let res = await client.call('get_task', 24, 847)
-  // //     console.log('call done', res.docName)
-  // //   })
-
-  // //   console.log('done')
-  // // }
-  // // catch (e) {
-  // //   console.error('catched in main')
-  // //   console.error(e)
-  // // }
-  // // let doc = new LibxmljsDocument(libxmljs.parseXml('<root></root>'))
-  // // let smo =
-  // // doc.documentElement.appendChild(doc.createElement('shmo'))
-  // // console.log(doc.serialize())
-
+  arr.forEach(x => console.log(`${x}  --->  ${toUdString(MorphInterp.fromVesumStr(x))}`))
 }
