@@ -443,7 +443,8 @@ export class MorphInterp {
         ret.features.tense = Tense.present
       }
       else {
-        throw new Error(`Unexpected adverb "${lemma}" flection`)
+        // mte-tagged texts made me comment this out
+        // throw new Error(`Unexpected adverb "${lemma}" flection`)
       }
     }
 
