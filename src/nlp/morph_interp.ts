@@ -222,6 +222,7 @@ export const MTE_FEATURES = {
   M: [Pos.cardinalNumeral, NumeralForm, undefined, Gender, MorphNumber, Case, RequiredAnimacy],
   Q: [Pos.particle],
   I: [Pos.interjection],
+  Y: [undefined],
   X: [Pos.x],
 }
 
@@ -514,6 +515,11 @@ export class MorphInterp {
         else if (flags[2] === 'c') {
           ret.features.pos = Pos.cardinalNumeral
         }
+        break
+
+      case 'Y':
+        ret.features.pos = Pos.x
+        ret.features.abbreviation = Abbreviation.yes
         break
 
       case 'N':
@@ -849,9 +855,9 @@ export class MorphInterp {
       if (feature && mteFlag !== '-') {
         let row = MAP_MTE.get(feature).get(mteFlag)
         if (row) {
-          if (!(row.featStr in this.features)) {
-            throw new Error(`${row.featStr} not in this`)
-          }
+          // if (!(row.featStr in this.features)) {
+          //   throw new Error(`${row.featStr} not in this`)
+          // }
           this.features[row.featStr] = ('vesum' in row) ? row.vesum : row.mi
           if (this.features[row.featStr] === undefined) {
             throw new Error(`Cannot map ${mteFlags.join('')}`)
