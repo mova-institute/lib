@@ -357,7 +357,7 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
     traverseDepthEl(subroot, el => {
 
       let name = el.name()
-      if (name === W_ || !isRegularizedFlowElement(el)) {
+      if (name === W_ || !isRegularizedFlowElement(el) || el.attribute('ana')) {
         return 'skip'
       }
 
