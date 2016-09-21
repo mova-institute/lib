@@ -51,14 +51,15 @@
 
 
     {
-			"name": "Tagger",
+			"name": "tagger",
 			"type": "node",
 			"request": "launch",
 			"program": "${workspaceRoot}/src/bin/tag.ts",
 			"stopOnEntry": false,
 			"args": [
         "-t",
-        "жовто-блакитний німецько-фашистський"
+        "у діда баба",
+        "--conllu"
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
@@ -69,7 +70,7 @@
 			"env": {
 				"NODE_ENV": "development"
 			},
-			"externalConsole": false,
+      "console": "internalConsole",
 			"sourceMaps": true,
 			"outDir": "${workspaceRoot}/lib"
 		},

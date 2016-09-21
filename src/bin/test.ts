@@ -9,7 +9,7 @@
 // import {parseXmlString} from 'libxmljs'
 // import { ClientConfig } from 'pg'
 // import {sleep} from '../lang'
-import { toUdString } from '../nlp/ud'
+import { toUdString } from '../nlp/ud/tagset'
 import { MorphInterp } from '../nlp/morph_interp'
 
 // export const config: ClientConfig = {

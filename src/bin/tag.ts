@@ -3,7 +3,10 @@
 import { ioArgsPlain } from '../cli_utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { readTillEnd } from '../stream_utils.node'
-import { tokenizeTei, morphInterpret, enumerateWords, interpretedTeiDoc2sketchVerticalTokens } from '../nlp/utils'
+import {
+  tokenizeTei, morphInterpret, enumerateWords, interpretedTeiDoc2sketchVerticalTokens,
+  tei2tokenStream,
+} from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { string2lxmlRoot } from '../utils.node'
 import { encloseInRootNsIf, NS } from '../xml/utils'
@@ -12,6 +15,7 @@ import { createReadStream, readFileSync } from 'fs'
 import { getLibRootRelative } from '../path.node'
 import { mu } from '../mu'
 import * as minimist from 'minimist'
+import { tokenStream2conllu } from '../nlp/ud/utils'
 
 
 
@@ -27,10 +31,11 @@ interface Args extends minimist.ParsedArgs {
   sort?: boolean
   vertical?: boolean
   mte?: boolean
+  conllu?: boolean
 }
 
 const args: Args = minimist(process.argv.slice(2), {
-  boolean: ['n', 'numerate', 'tokenize', 'mte', 'vertical', 'xml'],
+  boolean: ['n', 'numerate', 'tokenize', 'mte', 'vertical', 'xml', 'conllu'],
   string: ['t', 'text'],
 })
 
@@ -78,8 +83,11 @@ ioArgsPlain(async (input, outputFromIoargs) => {
     if (args.n || args.numerate) {
       enumerateWords(root)
     }
-    if (args.vertical) {
-      // mu(interpretedTeiDoc2sketchVerticalTokens(root)).forEach(x => output.write(x + '\n'))
+    if (args.conllu) {
+      let tokenStream = mu(tei2tokenStream(root)).window(2)
+      for (let line of tokenStream2conllu(tokenStream as any)) {
+        output.write(line + '\n')
+      }
     } else {
       output.write(root.document().serialize(true))
     }

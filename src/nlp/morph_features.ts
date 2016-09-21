@@ -13,6 +13,7 @@ export enum Pos {
   sym,
   error,
   x,
+  punct,  // todo
 }
 
 export enum Pronoun {

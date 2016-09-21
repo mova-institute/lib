@@ -53,13 +53,11 @@ export const featureObj2nameMap = new Map<any, string>([
   [Oddness, 'oddness'],
   [ParadigmOmonym, 'paradigmOmonym'],
   [PronominalType, 'pronominalType'],
+  [Reflexivity, 'reflexivity'],
 ])
 export const featureName2objMap = flipMap(featureObj2nameMap)
 
-/*
 
-
-*/
 
 export const FEATURE_TABLE = [
 
@@ -91,7 +89,7 @@ export const FEATURE_TABLE = [
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
 
-  { featStr: 'reflexive', feat: Reflexivity, vesum: Reflexivity.yes, vesumStr: 'rev' },  // ?
+  { featStr: 'reflexivity', feat: Reflexivity, vesum: Reflexivity.yes, vesumStr: 'rev' },  // ?
 
   { featStr: 'case', feat: Case, vesum: Case.nominative, vesumStr: 'v_naz', mte: 'n' },
   { featStr: 'case', feat: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
@@ -161,6 +159,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.sym, vesumStr: 'sym' },
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
+  { featStr: 'pos', feat: Pos, vesum: Pos.punct, vesumStr: 'punct' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
   { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
@@ -363,7 +362,7 @@ export class Features {
   variant: Variant
   pronominalType: PronominalType
   numberTantum: NumberTantum
-  reflexive: Reflexivity
+  reflexivity: Reflexivity
   verbType: VerbType
   numeralForm: NumeralForm
   conjunctionType: ConjunctionType
@@ -466,7 +465,7 @@ export class MorphInterp {
     switch (flags[0]) {  // then tweak what's left
       case 'V': {
         if (form && (form.endsWith('ся') || form.endsWith('сь'))) {
-          ret.features.reflexive = Reflexivity.yes
+          ret.features.reflexivity = Reflexivity.yes
         }
         ret.features.pos = flags[3] === 'g' ? Pos.transgressive : Pos.verb
         break

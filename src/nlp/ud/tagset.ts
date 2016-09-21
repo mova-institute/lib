@@ -6,9 +6,9 @@ import {
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, VerbForm, VerbNegativity, VerbType, Voice, VuAlternativity,
   booleanFeatures,
-} from './morph_features'
+} from '../morph_features'
 
-import { MorphInterp, featureName2objMap, featureObj2nameMap } from './morph_interp'
+import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
 
 
 export const featureObj2nameMapUd = new Map<any, string>([
@@ -61,7 +61,8 @@ const posMap = new Map<Pos, UdPos>([
   [Pos.x, 'X'],
   [Pos.sym, 'SYM'],
   [Pos.particle, 'PART'],
-  // [Pos, ''],
+  [Pos.punct, 'PUNCT'],
+  [Pos.preposition, 'ADP'],
   // [Pos, ''],
 ])
 
@@ -249,7 +250,7 @@ export class UdFlags {
 function mapFeatureValue2Ud(featureName, value) {
   let feature = featureName2objMap.get(featureName)
   if (!feature) {
-    throw new Error(`Unknown feature: ${feature}`)
+    throw new Error(`Unknown feature: ${featureName}`)
   }
   let udFeatureName = featureObj2nameMapUd.get(feature)
   if (udFeatureName) {
@@ -281,10 +282,13 @@ export function toUd(interp: MorphInterp) {
   for (let featureName of Object.keys(interp.features)) {
     let keyvalue = mapFeatureValue2Ud(featureName, interp.features[featureName])
     if (keyvalue) {
-      features[keyvalue[0]] = keyvalue[1]
+      if (keyvalue[0] === 'POS') {
+        pos = keyvalue[1]
+      } else {
+        features[keyvalue[0]] = keyvalue[1]
+      }
     }
   }
-
 
   if (interp.isNoun()) {
     if (interp.isProper()) {
@@ -298,22 +302,18 @@ export function toUd(interp: MorphInterp) {
   //   features.Number = 'Ptan'
   // }
 
-  return { pos: pos || features.POS, features }
+  return { pos, features }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function ud2string(ud) {
-  let ret = ud.pos + '  '
-  ret += Object.keys(ud.features)
-    .filter(x => x !== 'POS')  // todo
+export function udFeatures2conlluString(features) {
+  return Object.keys(features)
     .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
-    .map(key => `${key}=${ud.features[key]}`)
+    .map(key => `${key}=${features[key]}`)
     .join('|')
-
-  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toUdString(interp: MorphInterp) {
-  return ud2string(toUd(interp))
+  return udFeatures2conlluString(toUd(interp).features)
 }

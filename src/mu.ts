@@ -47,6 +47,38 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
+  window(n: number) {
+    let buf = [...this.take(n - 1)]
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        buf.push(x)
+        yield [...buf]
+        buf.shift()
+      }
+      while (buf.length) {
+        yield [...buf]
+        buf.shift()
+      }
+    })())
+  }
+
+  take(n: number) {
+    const thiss = this
+    return mu((function* () {
+      if (n < 1) {
+        return
+      }
+      let i = 0
+      for (let x of thiss) {
+        yield x
+        if (++i >= n) {
+          break
+        }
+      }
+    })())
+  }
+
   forEach(fn: (x: T) => any) {
     for (let x of this) {
       fn(x)
@@ -162,6 +194,10 @@ export class Mu<T> implements Iterable<T> {
         return x
       }
     }
+  }
+
+  first() {
+    return this.nth(0)
   }
 
   length() {

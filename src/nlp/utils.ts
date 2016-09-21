@@ -1,5 +1,7 @@
-import { NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements,
-  traverseDepthGen, traverseDepthGen2 } from '../xml/utils'
+import {
+  NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements,
+  traverseDepthGen, traverseDepthGen2,
+} from '../xml/utils'
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
@@ -13,6 +15,7 @@ import { MorphInterp, compareTags } from './morph_interp'
 import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
+import { Token, TokenType, Structure } from './token'
 
 const wu: Wu.WuStatic = require('wu')
 
@@ -833,4 +836,67 @@ export function preprocessForTaggingGeneric(value: string, docCreator: DocCreato
   value = xmlutils.encloseInRootNs(value)
 
   return docCreator(value).root()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function oldMteDisamb2vesum(root: AbstractElement) {
+  for (let w of root.evaluateElements('//tei:w', NS)) {
+    let form = w.text()
+    let mte = w.attribute('ana')
+    let vesum = MorphInterp.fromMte(mte, form).toVesumStr()
+    w.setAttribute('ana', vesum)
+  }
+}
+
+const structureElementName2type = new Map<string, Structure>([
+  ['div', 'div'],
+  ['p', 'paragraph'],
+  ['lg', 'stanza'],
+  ['l', 'line'],
+  ['s', 'sentence'],
+  // ['', ''],
+])
+
+export function* tei2tokenStream(root: AbstractElement) {
+  for (let {el, entering} of iterateCorpusTokens(root)) {
+    let name = el.localName()
+
+    let structureType = structureElementName2type.get(name)
+    if (structureType) {
+      yield Token.structure(structureType, !entering)
+      continue
+    }
+
+    if (entering) {
+      switch (name) {
+        case 'w_': {
+          let t = $t(el)
+          let interps = t.disambedOrDefiniteInterps()
+          if (interps.length) {
+            yield new Token().setForm(t.text())
+              .addInterps(interps.map(x => MorphInterp.fromVesumStr(x.flags, x.lemma)))
+          } else {
+            yield new Token().setForm(t.text()).addInterp(MorphInterp.fromVesumStr('x', t.text()))
+          }
+          continue
+        }
+        case 'w':
+          // console.log(`logg: ${el.attribute('ana')} ${el.attribute('lemma')}`)
+          yield new Token().setForm(el.text()).addInterp(
+            MorphInterp.fromVesumStr(el.attribute('ana'), el.attribute('lemma')))
+          continue
+        case 'pc':
+          yield new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text()))
+          continue
+        case 'se':
+          yield Token.structure('sentence', true)
+          continue
+        case 'g':
+          yield Token.glue()
+          continue
+        default:
+          continue
+      }
+    }
+  }
 }
