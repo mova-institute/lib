@@ -120,6 +120,7 @@ const degreeMap = new Map<Degree, UdDegree>([
   [Degree.positive, 'Pos'],
   [Degree.comparative, 'Cmp'],
   [Degree.superlative, 'Sup'],
+  [Degree.absolute, 'Abs'],
 ])
 
 const personMap = new Map<Person, UdPerson>([
@@ -229,7 +230,7 @@ export type UdCase =
   'Voc'
 
 
-export type UdDegree = 'Pos' | 'Cmp' | 'Sup'
+export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
 export type UdTense = 'Past' | 'Pres' | 'Fut'
 export type UdPerson = '1' | '2' | '3'
 // export type UdMood = 'Ind' | 'Imp'

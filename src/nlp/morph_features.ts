@@ -83,7 +83,7 @@ export enum Degree {
   positive,
   comparative,
   superlative,
-  // absoluteSuperlative  // non-ukr?
+  absolute,
 }
 
 ///// Verbal /////
