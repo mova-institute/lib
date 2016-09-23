@@ -224,7 +224,7 @@ export class MorphAnalyzer {
       }
     }
 
-    // річчя
+    // *річчя
     if (!res.size) {
       if (lowercase.endsWith('річчя')) {
         res.addAll(this.lookup('дворіччя').map(x => x.setIsAuto()))
