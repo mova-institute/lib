@@ -93,6 +93,12 @@
 |`s`|singular|однина (якщо без роду: я `noun:anim:s:v_naz:&pron:pers:1`)|
 |`p`|plural|множина|
 
+||істотовість знахідного||
+|---|---|---|
+|*(без позначки)*|звичайний знахідний / не знахідний|писати довгий `adj:m:v_zna:rinanim:compb` лист `noun:inanim:m:v_zna`, пасти білих `adj:p:v_zna:ranim` коней `noun:anim:p:m:v_zna`|
+|`animish`|наістотнений|писати довгого `adj:m:v_zna:ranim:compb` листа `noun:inanim:m:v_zna:animish`|
+|`inanimish`|знеістотнений|пасти білі `adj:p:v_zna:rinanim:compb` коні `noun:anim:p:m:v_zna:inanimish`|
+
 <a name="verb"></a>
 &nbsp;
 
@@ -153,7 +159,7 @@
 
 #### риси лексеми
 
-|||ступінь порівняння|
+|||ступінь порівняння||
 |---|---|---|---|
 |*(без позначки)*|прикментник не якісний||
 |`compb`|compare base|базовий|тупий|
