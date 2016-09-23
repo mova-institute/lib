@@ -163,7 +163,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.sym, vesumStr: 'sym' },
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.punct, vesumStr: 'punct' },
+  { featStr: 'pos', feat: Pos, vesum: Pos.punct, vesumStr: 'punct', mte: 'U' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
   { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
@@ -732,6 +732,8 @@ export class MorphInterp {
         return 'X'
       case Pos.predicative:  // todo
         return 'Vm-p'
+      case Pos.punct:
+        return 'U'
 
       default:
         break

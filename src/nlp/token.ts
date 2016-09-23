@@ -25,6 +25,12 @@ export class Token {
     return new Token().setType('glue')
   }
 
+  static word(form: string, interps: MorphInterp[]) {
+    let ret = new Token().setForm(form)
+    ret.interps = interps
+    return ret
+  }
+
   setType(type: TokenType) {
     this.type = type
     return this
@@ -51,5 +57,14 @@ export class Token {
 
   firstInterp() {
     return this.interps[0]
+  }
+
+  formRepesentation() {
+    if (this.form) {
+      return this.form
+    }
+    if (this.isGlue()) {
+      return '<g/>'
+    }
   }
 }

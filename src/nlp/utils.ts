@@ -16,6 +16,7 @@ import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
 import { Token, TokenType, Structure } from './token'
+import * as _ from 'lodash'
 
 const wu: Wu.WuStatic = require('wu')
 
@@ -155,6 +156,43 @@ export function* tokenizeUk(val: string, analyzer: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
+  return mu((function* () {
+    for (let {token, glue} of tokenizeUk(val, analyzer)) {
+      if (ANY_PUNC_OR_DASH_RE.test(token)) {  // todo
+        yield Token.word(token, [MorphInterp.fromVesumStr('punct').setLemma(token)])
+        continue
+      }
+      yield Token.word(token, analyzer.tagOrX(token))
+      if (glue) {
+        yield Token.glue()
+      }
+    }
+  })())
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
+  let tagSerializer = mte
+    ? (x: MorphInterp) => x.toMte()
+    : (x: MorphInterp) => x.toVesumStr()
+
+  return stream.map(token => {
+    if (token.isGlue()) {
+      return '<g/>'
+    }
+    let ret = token.formRepesentation() + ' '
+    let interps = token.interps.map(x => `${x.lemma}[${tagSerializer(x)}]`)
+    if (mte) {
+      interps = _.uniq(interps)
+    }
+    ret += interps.join('|')
+
+    return ret
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
 const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se'])
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
@@ -246,63 +284,6 @@ export function isRegularizedFlowElement(el: AbstractElement) {
   let ret = !(el.name() === elementNames.teiOrig && el.parent() && el.parent().name() === elementNames.teiChoice)
   return ret
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// export function morphInterpret2(root: AbstractElement, analyzer: MorphAnalyzer, mte = false) {
-//   for (let {el, unamb, interps} of genMorphInterps(root, analyzer, mte)) {
-//     console.log(el.name())
-//     let w = tagWord(el, interps)
-//     if (unamb) {
-//       w.setAttribute('disamb', 0)
-//     }
-//   }
-// }
-
-////////////////////////////////////////////////////////////////////////////////
-// export function* genMorphInterps(root: AbstractElement, analyzer: MorphAnalyzer, mte = false) {
-//   let tagFunction = mte ? tagOrXMte : tagOrXVesum
-
-//   let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)]
-//   if (!subroots.length) {
-//     subroots = [root]
-//   }
-
-//   for (let subroot of subroots) {
-//     let iterator = traverseDepthGen(subroot)
-//     let pointer = iterator.next()
-//     while (!pointer.done) {
-//       // console.log('erato')
-//       if (!pointer.value.node.isElement()) {
-//         continue
-//       }
-//       let el = pointer.value.node.asElement()
-//       let name = el.name()
-//       if (name === W_ || !isRegularizedFlowElement(el)) {
-//         pointer = iterator.next('skip')
-//         continue
-//       }
-
-//       if (name === W || name === 'w') {  // hack, todo
-//         let lang = el.lang()
-//         if (lang && lang !== 'uk') {
-//           yield { el, unamb: true, interps: [{ lemma: el.text(), flags: 'x:foreign' }] }
-//         }
-//         else {
-//           let next = el.nextElementSiblings()
-//             .find(x => x.localName() === 'pc' || x.localName === 'w')
-//           yield {
-//             el,
-//             unamb: false,
-//             interps: tagFunction(analyzer, el.text(), next && next.text()),
-//           }
-//         }
-//       }
-//       pointer = iterator.next()
-//     }
-//   }
-
-//   return root
-// }
 
 const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g'])
 ////////////////////////////////////////////////////////////////////////////////
