@@ -237,12 +237,21 @@ export class MorphAnalyzer {
       let rightRes = this.lookup(right)
         .filter(x => x.isAdjective() && x.isMasculine() && x.isDative())
       if (!rightRes.empty() || lowercase.endsWith('ськи') || lowercase.endsWith('цьки')) {
-        res.add(MorphInterp.fromVesumStr('adv').setLemma(lowercase))
+        res.add(MorphInterp.fromVesumStr('adv').setLemma(lowercase).setIsAuto())
       }
     }
 
 
-
+    // let toadd = new Array<MorphInterp>()
+    // for (let interp of res) {
+    //   if (interp.isGenitive()) {
+    //     let candidate = interp.clone().setCase(Case.accusative)
+    //     if (!res.has(candidate)) {
+    //       toadd.push(candidate.setIsAnimish())
+    //     }
+    //   }
+    // }
+    // res.addAll(toadd)
 
 
     // filter and postprocess
@@ -258,7 +267,7 @@ export class MorphAnalyzer {
       ret.push(interp)
 
       // add old accusative, e.g. додати в друзі
-      if (interp.isNoun() && interp.isPlural() && interp.isNominative()) {
+      if (interp.isNominative() && interp.isPlural()) {
         ret.push(interp.clone().setCase(Case.accusativeOld))
       }
     }

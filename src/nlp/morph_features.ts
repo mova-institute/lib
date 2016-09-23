@@ -48,6 +48,10 @@ export enum Animacy {
   inanimate,
   bacteria,  // ?
 }
+export enum Pseudoanimacy {
+  animate,
+  inanimate,
+}
 export enum RequiredAnimacy {
   animate,
   inanimate,
@@ -68,7 +72,7 @@ export enum Case {
   locative,
   vocative,
   accusativeOld,
-  accusativeGenitive,
+  // accusativeGenitive,
   // other non-ukr
 }
 export enum RequiredCase {

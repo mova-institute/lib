@@ -4,7 +4,7 @@
 import { indexTableByColumns, overflowNegative, flipMap } from '../algo'
 import { isOddball, compare, zipLongest } from '../lang'
 import {
-  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
+  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, Pseudoanimacy,
   Aspect, Auto, Bad, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
@@ -25,6 +25,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Bad, 'bad'],
   [NameType, 'nameType'],
   [Animacy, 'animacy'],
+  [Pseudoanimacy, 'pseudoanimacy'],
   [RequiredAnimacy, 'requiredAnimacy'],
   [Case, 'case'],
   [RequiredCase, 'requiredCase'],
@@ -86,8 +87,11 @@ export const FEATURE_TABLE = [
   { featStr: 'animacy', feat: Animacy, vesum: Animacy.inanimate, vesumStr: 'inanim', mte: 'n' },
   { featStr: 'animacy', feat: Animacy, vesum: Animacy.bacteria, vesumStr: 'unanim' },
 
-  { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
-  { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: Animacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
+  { featStr: 'pseudoanimacy', feat: Pseudoanimacy, vesum: Pseudoanimacy.animate, vesumStr: 'animish' },
+  { featStr: 'pseudoanimacy', feat: Pseudoanimacy, vesum: Pseudoanimacy.inanimate, vesumStr: 'inanimish' },
+
+  { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
+  { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
 
   { featStr: 'reflexivity', feat: Reflexivity, vesum: Reflexivity.yes, vesumStr: 'rev' },  // ?
 
@@ -96,7 +100,6 @@ export const FEATURE_TABLE = [
   { featStr: 'case', feat: Case, vesum: Case.dative, vesumStr: 'v_dav', mte: 'd' },
   { featStr: 'case', feat: Case, vesum: Case.accusative, vesumStr: 'v_zna', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.accusativeOld, vesumStr: 'v_znao', mte: 'a' },
-  { featStr: 'case', feat: Case, vesum: Case.accusativeGenitive, vesumStr: 'v_znar', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.instrumental, vesumStr: 'v_oru', mte: 'i' },
   { featStr: 'case', feat: Case, vesum: Case.locative, vesumStr: 'v_mis', mte: 'l' },
   { featStr: 'case', feat: Case, vesum: Case.vocative, vesumStr: 'v_kly', mte: 'v' },
@@ -253,6 +256,7 @@ export const FEATURE_ORDER = {
     MorphNumber,
     Gender,
     Case,
+    Pseudoanimacy,
     CaseInflectability,
     NumberTantum,
     Alternativity,
@@ -317,6 +321,7 @@ export const FEATURE_ORDER = {
     Degree,
     ConjunctionType,
     Case, RequiredCase,
+    Pseudoanimacy,
     RequiredAnimacy,
     CaseInflectability,
     Alternativity,
@@ -357,6 +362,7 @@ export class Features {
   person: Person
   voice: Voice
   animacy: Animacy
+  pseudoanimacy: Pseudoanimacy
   requiredAnimacy: RequiredAnimacy
   gender: Gender
   degree: Degree
@@ -805,6 +811,7 @@ export class MorphInterp {
 
   isPlural() { return this.features.number === MorphNumber.plural }
   isNominative() { return this.features.case === Case.nominative }
+  isGenitive() { return this.features.case === Case.genitive }
 
   isMasculine() { return this.features.gender === Gender.masculine }
 
@@ -819,6 +826,7 @@ export class MorphInterp {
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
+  setIsAnimish(value = true) { this.features.pseudoanimacy = value ? Pseudoanimacy.animate : Pseudoanimacy.inanimate; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
 
