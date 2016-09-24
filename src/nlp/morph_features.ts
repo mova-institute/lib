@@ -71,8 +71,6 @@ export enum Case {
   instrumental,
   locative,
   vocative,
-  accusativeOld,
-  // accusativeGenitive,
   // other non-ukr
 }
 export enum RequiredCase {

@@ -99,7 +99,6 @@ export const FEATURE_TABLE = [
   { featStr: 'case', feat: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
   { featStr: 'case', feat: Case, vesum: Case.dative, vesumStr: 'v_dav', mte: 'd' },
   { featStr: 'case', feat: Case, vesum: Case.accusative, vesumStr: 'v_zna', mte: 'a' },
-  { featStr: 'case', feat: Case, vesum: Case.accusativeOld, vesumStr: 'v_znao', mte: 'a' },
   { featStr: 'case', feat: Case, vesum: Case.instrumental, vesumStr: 'v_oru', mte: 'i' },
   { featStr: 'case', feat: Case, vesum: Case.locative, vesumStr: 'v_mis', mte: 'l' },
   { featStr: 'case', feat: Case, vesum: Case.vocative, vesumStr: 'v_kly', mte: 'v' },
@@ -828,7 +827,7 @@ export class MorphInterp {
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
-  setIsAnimish(value = true) { this.features.pseudoanimacy = value ? Pseudoanimacy.animate : Pseudoanimacy.inanimate; return this }
+  setPseudoanimacy(value = true) { this.features.pseudoanimacy = value ? Pseudoanimacy.animate : Pseudoanimacy.inanimate; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
 
