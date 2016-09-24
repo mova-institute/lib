@@ -63,6 +63,7 @@ const posMap = new Map<Pos, UdPos>([
   [Pos.particle, 'PART'],
   [Pos.punct, 'PUNCT'],
   [Pos.preposition, 'ADP'],
+  [Pos.cardinalNumeral, 'NUM'],
   // [Pos, ''],
 ])
 
@@ -245,6 +246,7 @@ export class UdFlags {
   Gender: UdGender
   Poss: boolean
   Number: UdNumber
+  NumType: UdNumType
 }
 
 //------------------------------------------------------------------------------
@@ -271,15 +273,17 @@ function mapFeatureValue2Ud(featureName, value) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toUd(interp: MorphInterp) {
-  let pos
+  let pos: UdPos
   let features = new UdFlags()
 
+  // special-treat conjunctions
   if (interp.isConjunction()) {
     return interp.isSubordinating()
       ? { pos: 'SCONJ', features }
       : { pos: 'CONJ', features }
   }
 
+  // auto-map pos and features
   for (let featureName of Object.keys(interp.features)) {
     let keyvalue = mapFeatureValue2Ud(featureName, interp.features[featureName])
     if (keyvalue) {
@@ -297,11 +301,17 @@ export function toUd(interp: MorphInterp) {
     } else if (interp.isPronoun()) {
       pos = 'PRON'
     }
+  } else if (interp.isPronoun()) {
+    if (interp.isAdjective()) {
+      pos = 'DET'
+    }
   }
 
-  // if (interp.isNoSingular()) {
-  //   features.Number = 'Ptan'
-  // }
+  if (interp.isCardinalNumeral()) {
+    features.NumType = 'Card'
+  } else if (interp.isOrdinalNumeral()) {
+    features.NumType = 'Ord'
+  }
 
   return { pos, features }
 }
