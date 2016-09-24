@@ -44,3 +44,27 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
 function sentenceIdLine(id: number) {
   return `# sent_id ${id}`
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function* tokenStream2brat(stream: Iterable<Token>) {
+  let offset = 0
+  let t = 1
+  let a = 1
+  for (let token of stream) {
+    let {pos, features} = toUd(token.firstInterp())
+    let rightOffset = offset + token.form.length
+    let tId = `T${t++}`
+
+    yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
+
+    for (let feature of Object.keys(features)) {
+      let toyield = `A${a++}\t${feature} ${tId}`
+      let value = features[feature]
+      if (value && value !== true) {
+        toyield += ` ${value}`
+      }
+      yield toyield
+    }
+    offset = rightOffset + 1    // account for space
+  }
+}
