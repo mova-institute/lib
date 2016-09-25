@@ -271,6 +271,7 @@ export const FEATURE_ORDER = {
     Gender,
     MorphNumber,
     Case,
+    Pseudoanimacy,
     RequiredAnimacy,
     Variant,
     Degree,
@@ -821,6 +822,10 @@ export class MorphInterp {
 
   isProper() { return this.features.nounType === NounType.proper }
   isBad() { return this.features.bad === Bad.yes }
+
+  isNounish() {
+    return this.isNoun() || this.isAdjectiveAsNoun()
+  }
 
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
   setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }

@@ -17,10 +17,6 @@ export const featureObj2nameMapUd = new Map<any, string>([
   // [NumeralForm, 'numeralForm'],
   // [NounType, 'nounType'],
   // [VerbType, 'verbType'],
-  // [Rarity, 'rarity'],
-  // [Colloquial, 'colloquial'],
-  // [Slang, 'slang'],
-  // [Bad, 'bad'],
   // [NameType, 'nameType'],
   [Animacy, 'Animacy'],
   // [RequiredAnimacy, 'requiredAnimacy'],
@@ -40,16 +36,20 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Person, 'Person'],
   // [NumberTantum, 'numberTantum'],
   // [CaseInflectability, 'caseInflectability'],
-  // [Alternativity, 'alternative'],
-  // [Abbreviation, 'abbreviation'],
-  // [VuAlternativity, 'vuAlternative'],
+  [Abbreviation, 'Abbr'],
   // [Dimin, 'dimin'],
   [Possessiveness, 'Poss'],
-  // [Auto, 'auto'],
   // [Beforeadj, 'beforeadj'],
-  // [Oddness, 'oddness'],
-  // [ParadigmOmonym, 'paradigmOmonym'],
   [PronominalType, 'PronType'],
+  // [VuAlternativity, 'vuAlternative'],
+  // [ParadigmOmonym, 'paradigmOmonym'],
+  // [Rarity, 'rarity'],
+  // [Colloquial, 'colloquial'],
+  // [Alternativity, 'alternative'],
+  // [Slang, 'slang'],
+  // [Bad, 'bad'],
+  // [Auto, 'auto'],
+  // [Oddness, 'oddness'],
 ])
 
 const posMap = new Map<Pos, UdPos>([
@@ -295,11 +295,13 @@ export function toUd(interp: MorphInterp) {
     }
   }
 
-  if (interp.isNoun()) {
+  if (interp.isNounish()) {
     if (interp.isProper()) {
       pos = 'PROPN'
     } else if (interp.isPronoun()) {
       pos = 'PRON'
+    } else {
+      pos = 'NOUN'
     }
   } else if (interp.isPronoun()) {
     if (interp.isAdjective()) {

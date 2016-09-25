@@ -185,4 +185,4 @@ export enum Auto { yes }
 export enum Oddness { yes }
 export enum N2adjness { yes }
 
-export const booleanFeatures = [Possessiveness, Reflexivity]
+export const booleanFeatures = [Possessiveness, Reflexivity, Abbreviation]

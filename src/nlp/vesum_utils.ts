@@ -395,5 +395,5 @@ export function* gatherXps(fileStrs: Iterable<string>) {
 
 //------------------------------------------------------------------------------
 function isAdditionalTag(flags: string) {
-  return /:&noun|:v_znao|:v_znar/.test(flags)
+  return /:&noun|:v_znao|:v_znar|:(in)?animish/.test(flags)
 }
