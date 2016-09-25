@@ -15,7 +15,7 @@ import { createReadStream, readFileSync } from 'fs'
 import { getLibRootRelative } from '../path.node'
 import { mu } from '../mu'
 import * as minimist from 'minimist'
-import { tokenStream2conllu } from '../nlp/ud/utils'
+import { tokenStream2conllu, tokenStream2brat } from '../nlp/ud/utils'
 
 
 
@@ -97,6 +97,7 @@ ioArgsPlain(async (input, outputFromIoargs) => {
     output.write('\n')
   } else {
     let tokens = string2tokenStream(inputStr, analyzer)
+    // mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
     tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
   }
 }, args._)
