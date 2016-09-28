@@ -335,7 +335,7 @@ export function toUd(interp: MorphInterp) {
   } else if (interp.isAdjective()) {
     if (interp.isParticiple()) {
       if (!features.Voice) {
-        throw new Error('no voice for participle')
+        throw new Error(`No voice for participle`)
       }
     }
   }
