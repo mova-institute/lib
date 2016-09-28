@@ -21,10 +21,10 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Animacy, 'Animacy'],
   // [RequiredAnimacy, 'requiredAnimacy'],
   [Case, 'Case'],
-  // [RequiredCase, 'requiredCase'],
+  [RequiredCase, 'Case'],
   [Aspect, 'Aspect'],
   [Tense, 'Tense'],
-  // [Mood, 'Mood'],
+  [Mood, 'Mood'],
   [Voice, 'Voice'],
   [Degree, 'Degree'],
   // [Pronoun, 'pronoun'],
@@ -77,6 +77,14 @@ const caseMap = new Map<Case, UdCase>([
   [Case.vocative, 'Voc'],
 ])
 
+const requiredCaseMap = new Map<RequiredCase, UdCase>([
+  [RequiredCase.genitive, 'Gen'],
+  [RequiredCase.dative, 'Dat'],
+  [RequiredCase.accusative, 'Acc'],
+  [RequiredCase.instrumental, 'Ins'],
+  [RequiredCase.locative, 'Loc'],
+])
+
 const numberMap = new Map<Number, UdNumber>([
   [MorphNumber.singular, 'Sing'],
   [MorphNumber.plural, 'Plur'],
@@ -99,18 +107,17 @@ const tenseMap = new Map<Tense, UdTense>([
   [Tense.future, 'Fut'],
 ])
 
+const moodMap = new Map<Mood, UdMood>([
+  [Mood.indicative, 'Ind'],
+  [Mood.imperative, 'Imp'],
+  // [Tense.future, 'Fut'],
+])
+
 const genderMap = new Map<Gender, UdGender>([
   [Gender.feminine, 'Fem'],
   [Gender.masculine, 'Masc'],
   [Gender.neuter, 'Neut'],
 ])
-
-// const moodMap: [Mood, UdMood][] = [
-//   [Mood.infinitive, ''],
-//   [Mood.indicative, ''],
-//   [Mood.imperative, ''],
-//   [Mood.impersonal, ''],
-// ]
 
 const voiceMap = new Map<Voice, UdVoice>([
   [Voice.active, 'Act'],
@@ -155,8 +162,10 @@ const map = new Map<any, any>([
   [PronominalType, promonialTypeMap],
   [Animacy, animacyMap],
   [Case, caseMap],
+  [RequiredCase, requiredCaseMap],
   [Aspect, aspectMap],
   [Tense, tenseMap],
+  [Mood, moodMap],
   [Voice, voiceMap],
   [Degree, degreeMap],
   [Gender, genderMap],
@@ -234,13 +243,16 @@ export type UdCase =
 export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
 export type UdTense = 'Past' | 'Pres' | 'Fut'
 export type UdPerson = '1' | '2' | '3'
-// export type UdMood = 'Ind' | 'Imp'
+export type UdMood = 'Ind' | 'Imp'
 export type UdVoice = 'Act' | 'Pass'
 
 
+/* tslint:disable:variable-name */
 export class UdFlags {
   POS: UdPos
   Aspect: UdAspect
+  Mood: UdMood
+  Voice: UdVoice
   Case: UdCase
   Degree: UdDegree
   Gender: UdGender
@@ -248,6 +260,7 @@ export class UdFlags {
   Number: UdNumber
   NumType: UdNumType
 }
+/* tslint:enable:variable-name */
 
 //------------------------------------------------------------------------------
 function mapFeatureValue2Ud(featureName, value) {
@@ -313,6 +326,18 @@ export function toUd(interp: MorphInterp) {
     features.NumType = 'Card'
   } else if (interp.isOrdinalNumeral()) {
     features.NumType = 'Ord'
+  }
+
+  if (interp.isVerb()) {
+    if (interp.isIndicative()) {
+      features.Mood = 'Ind'
+    }
+  } else if (interp.isAdjective()) {
+    if (interp.isParticiple()) {
+      if (!features.Voice) {
+        throw new Error('no voice for participle')
+      }
+    }
   }
 
   return { pos, features }

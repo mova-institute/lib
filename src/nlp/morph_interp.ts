@@ -800,6 +800,7 @@ export class MorphInterp {
   isPresent() { return this.features.tense === Tense.present }
   isPerfect() { return this.features.aspect === Aspect.perfect }
   isImperfect() { return this.features.aspect === Aspect.imperfect }
+  isIndicative() { return this.features.mood === undefined || this.features.mood === Mood.indicative }
   isActive() { return this.features.voice === Voice.active }
   isFeminine() { return this.features.gender === Gender.feminine }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
