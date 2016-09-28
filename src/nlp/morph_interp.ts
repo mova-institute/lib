@@ -786,6 +786,7 @@ export class MorphInterp {
   isPreposition() { return this.features.pos === Pos.preposition }
   isConjunction() { return this.features.pos === Pos.conjunction }
   isPronoun() { return this.features.pronoun !== undefined }
+  isX() { return this.features.pos === Pos.x }
 
   isDative() { return this.features.case === Case.dative }
   isAccusative() { return this.features.case === Case.accusative }
