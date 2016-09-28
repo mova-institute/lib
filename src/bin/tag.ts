@@ -5,7 +5,7 @@ import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, enumerateWords, interpretedTeiDoc2sketchVerticalTokens,
-  tei2tokenStream, string2tokenStream, tokenStream2plainVertical
+  tei2tokenStream, string2tokenStream, tokenStream2plainVertical, tokenizeUk,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { string2lxmlRoot } from '../utils.node'
@@ -37,7 +37,7 @@ interface Args extends minimist.ParsedArgs {
 
 
 const args: Args = minimist(process.argv.slice(2), {
-  boolean: ['n', 'numerate', 'tokenize', 'mte', 'vertical', 'xml', 'conllu'],
+  boolean: ['n', 'numerate', 'tokenize', 'mte', 'vertical', 'xml', 'conllu', 'count'],
   string: ['t', 'text'],
 })
 
@@ -78,9 +78,6 @@ ioArgsPlain(async (input, outputFromIoargs) => {
         output.write(unknown + '\n')
       }
     }
-    else if (args.count) {
-      output.write([...root.evaluateElements('//mi:w_', NS)].length)
-    }
     else {
       if (args.n || args.numerate) {
         enumerateWords(root)
@@ -96,9 +93,22 @@ ioArgsPlain(async (input, outputFromIoargs) => {
     }
     output.write('\n')
   } else {
-    let tokens = string2tokenStream(inputStr, analyzer)
-    // mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
-    tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
+    if (args.count) {
+      let len = mu(tokenizeUk(inputStr, analyzer)).length()
+      output.write(len.toString() + '\n')
+    } else if (args.unknown) {
+      let tokens = string2tokenStream(inputStr, analyzer)
+        .filter(x => x.isWord() && x.firstInterp().isX())
+        .map(x => x.form)
+        .unique()
+        .toArray()
+        .sort()
+      tokens.forEach(x => output.write(x + '\n'))
+    } else {
+      let tokens = string2tokenStream(inputStr, analyzer)
+      // mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
+      tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
+    }
   }
 }, args._)
 
