@@ -489,7 +489,7 @@ export class MorphInterp {
             ret.features.variant = Variant.short
           }
         }
-        else if (flags[6] === 'f') {
+        else if (flags[6] === 'f' && 'na'.includes(flags[5])) {
           ret.features.variant = Variant.full
         }
         break
@@ -794,6 +794,7 @@ export class MorphInterp {
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
   isN2Adj() { return this.features.n2adjness === N2adjness.yes }
 
+  isAnimate() { return this.features.animacy === Animacy.animate }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
   isComparable() { return this.features.degree !== undefined }
