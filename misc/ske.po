@@ -145,7 +145,7 @@ msgstr "лишити знайдене"
 
 #: cmpltmpl/filter_form.py:230
 msgid "negative"
-msgstr "прибрати знайдене"
+msgstr "вилучити знайдене"
 
 #: cmpltmpl/filter_form.py:236
 msgid "Selected token"
@@ -1559,7 +1559,7 @@ msgstr "типово"
 
 #: cmpltmpl/filter_form.py:317
 msgid "include KWIC"
-msgstr "охопити ключові слова"
+msgstr "охоплювати ключові слова"
 
 msgid "See Upload progress"
 msgstr "Стежити за процесом відвантаження"
@@ -2103,7 +2103,7 @@ msgstr "Типи запитів"
 
 #: cmpltmpl/document.py:1355
 msgid "match case"
-msgstr "добирати регістр"
+msgstr "допасовувати великі/малі літери"
 
 msgid ""
 "Wordlist whitelists and blacklists must be plain text (.txt), encoded in "
