@@ -159,14 +159,14 @@ export function* tokenizeUk(val: string, analyzer: MorphAnalyzer) {
 export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
   return mu((function* () {
     for (let {token, glue} of tokenizeUk(val, analyzer)) {
+      if (glue) {
+        yield Token.glue()
+      }
       if (ANY_PUNC_OR_DASH_RE.test(token)) {  // todo
         yield Token.word(token, [MorphInterp.fromVesumStr('punct').setLemma(token)])
         continue
       }
       yield Token.word(token, analyzer.tagOrX(token))
-      if (glue) {
-        yield Token.glue()
-      }
     }
   })())
 }
@@ -709,6 +709,39 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
       }
     }
   }
+}
+
+const structureNameToSketchTag = new Map<Structure, string>([
+  ['div', 'div'],
+  ['paragraph', 'p'],
+  ['sentence', 's'],
+  ['stanza', 'lg'],
+  ['line', 'l'],
+])
+////////////////////////////////////////////////////////////////////////////////
+export function token2sketchVertical(token: Token) {
+  if (token.isWord()) {
+    let mteTags = unique(token.interps.map(x => x.toMte())).join(MULTISEP)
+    let mivesumFlagss = token.interps.map(x => x.toVesumStr()).join(MULTISEP)
+    let lemmas = unique(token.interps.map(x => x.lemma)).join(MULTISEP)
+    return sketchLine(token.form, lemmas, mteTags, mivesumFlagss)
+  }
+  if (token.isGlue()) {
+    return '<g/>'
+  }
+  if (token.isStructure()) {
+    let ret = '<'
+    if (token.isClosing()) {
+      ret += '/'
+    }
+    let tagName = structureNameToSketchTag.get(token.getStructureName())
+    if (!tagName) {
+      throw new Error('Unknown structure')
+    }
+    ret += `${tagName}>`
+    return ret
+  }
+  console.log(token)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

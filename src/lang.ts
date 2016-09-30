@@ -1,8 +1,28 @@
 export const r = String.raw
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function matchAll(str: string, re: RegExp) {
+  let ret: RegExpExecArray[] = []
+
+  let match: RegExpExecArray
+  while (match = re.exec(str)) {
+    ret.push(match)
+  }
+
+  return ret
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 export function arrayed(value: any | any[]) {
-  return Array.isArray(value) ? value : [value]
+  if (Array.isArray(value)) {
+    return value
+  }
+  if (value === undefined) {
+    return []
+  }
+  return [value]
 }
 
 ////////////////////////////////////////////////////////////////////////////////

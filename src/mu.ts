@@ -47,6 +47,24 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
+  chunk(n: number) {
+    let buf: T[] = []
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        if (buf.length >= n) {
+          yield buf
+          buf = []
+        } else {
+          buf.push(x)
+        }
+      }
+      if (buf.length) {
+        yield buf
+      }
+    })())
+  }
+
   window(n: number) {
     let buf = [...this.take(n - 1)]
     const thiss = this

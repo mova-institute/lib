@@ -24,6 +24,8 @@
     "@types/glob": "^5.0.29",
     "@types/html-entities": "^1.2.14",
     "@types/minimist": "^1.1.28",
+    "@types/mkdirp": "^0.3.29",
+    "@types/node-fetch": "0.0.4",
     "@types/pg": "0.0.31",
     "@types/request": "0.0.30",
     "@types/tmp": "0.0.30",

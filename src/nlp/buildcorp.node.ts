@@ -1,25 +1,34 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import * as readline from 'readline'
+import { execSync } from 'child_process'
+import * as minimist from 'minimist'
 
-import * as nlpUtils from '../nlp/utils'
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
+import * as nlpUtils from '../nlp/utils'
 import { createMorphAnalyzerSync } from './morph_analyzer/factories.node'
+import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { filename2lxmlRootSync } from '../utils.node'
 import { indexTableByColumns, unique } from '../algo'
 import { createObject2, arrayed } from '../lang'
+import { mu } from '../mu'
+import { getLibRootRelative } from '../path.node'
+import { keyvalue2attributes } from '../xml/utils'
 
-
-const wu: Wu.WuStatic = require('wu')
 const globSync = require('glob').sync
 const mkdirp = require('mkdirp')
-const args: Args = require('minimist')(process.argv.slice(2), {
+const args = minimist(process.argv.slice(2), {
   boolean: ['xml', 'novert'],
+  string: [],
+  alias: {
+    'workspace': ['ws'],
+  },
 })
 
 
 
-buildCorpus(args)
+buildCorpus(args as any)
+// buildCorpus2(args)
 
 
 
@@ -167,13 +176,15 @@ async function buildCorpus(params: Args) {
     process.stdout.write(`, ${skipIdSet.size} read\n`)
   }
 
-  let metaTable = prepareMetadataFiles(args.meta)
+  // console.log(params.meta)
+  let metaTable = prepareMetadataFiles(params.meta)
   let verticalFile = createVerticalFile(params)
   let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
   let idRegistry = new Set<string>()
 
-
-  let inputFiles: string[] = wu(args.input).map(x => globSync(x)).flatten().toArray()
+  // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer, verticalFile)
+  // return
+  let inputFiles: string[] = mu(params.input).map(x => globSync(x)).flatten().toArray()
   inputFiles = unique(inputFiles)
   let taggedDir = path.join(params.workspace, 'tagged')
   if (params.xml) {
@@ -193,7 +204,7 @@ async function buildCorpus(params: Args) {
       let root
       process.stdout.write(`${countOf(i, inputFiles.length)} ${id}:`)
       if (fs.existsSync(dest)) {
-        if (args.novert) {
+        if (params.novert) {
           process.stdout.write(` tagged already, skipping xml and vertical\n`)
           continue
         }
@@ -212,7 +223,7 @@ async function buildCorpus(params: Args) {
         process.stdout.write(`; tokenizing`)
         nlpUtils.tokenizeTei(root, analyzer)
 
-        if (args.xml) {
+        if (params.xml) {
           process.stdout.write(`; tagging`)
           nlpUtils.morphInterpret(root, analyzer)
 
@@ -221,7 +232,7 @@ async function buildCorpus(params: Args) {
         }
       }
 
-      if (!args.novert) {
+      if (!params.novert) {
         process.stdout.write(`; creating vertical`)
         let meta = metaTable && metaTable.get(id)
         if (!meta) {
@@ -231,7 +242,7 @@ async function buildCorpus(params: Args) {
           prepareDocMeta(meta)
         }
         meta.filename = id
-        if (args.xml) {
+        if (params.xml) {
           var verticalLines = [...nlpUtils.interpretedTeiDoc2sketchVertical(root, meta)]
         } else {
           verticalLines = [...nlpUtils.tokenizedTeiDoc2sketchVertical(root, analyzer, meta)]
@@ -244,5 +255,41 @@ async function buildCorpus(params: Args) {
     } catch (e) {
       process.stdout.write(`\n ⚡️⚡️ ❌  ${e.message}`)
     }
+  }
+}
+
+
+function buildCorpus2(args: minimist.ParsedArgs) {
+  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
+
+  const djangoScriptPath = '/Users/msklvsk/Developer/mova-institute/dbgui/get_all_texts.py'
+
+  // let metadata = JSON.parse(execSync(djangoScriptPath, { encoding: 'utf8' }))
+
+  // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer)
+}
+
+function kontrakty(folderPath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+  let files = globSync(folderPath + '*.txt')
+  for (let file of files) {
+    console.log(`processsing ${path.basename(file)}…`)
+    let year = Number.parseInt(path.basename(file).replace(/\.txt$/, ''))
+    let contents = fs.readFileSync(file, 'utf8')
+    contents = nlpUtils.normalizeCorpusTextString(contents)
+
+    let stream = nlpUtils.string2tokenStream(contents, analyzer)
+      .map(x => nlpUtils.token2sketchVertical(x))
+      .chunk(10000)
+
+    let meta = {
+      publisher: 'Галицькі контракти',
+      title: `Контракти ${year}`,
+      year_created: year,
+      text_type: 'публіцистика',
+
+    }
+    fs.writeSync(verticalFile, `<doc ${keyvalue2attributes(meta)}>\n`)
+    stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
+    fs.writeSync(verticalFile, `</doc>\n`)
   }
 }
