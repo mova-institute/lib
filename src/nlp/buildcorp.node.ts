@@ -1,8 +1,11 @@
 import * as path from 'path'
+import { basename } from 'path'
 import * as fs from 'fs'
+import { WriteStream, createWriteStream } from 'fs'
 import * as readline from 'readline'
 import { execSync } from 'child_process'
 import * as minimist from 'minimist'
+import { parseHtmlString } from 'libxmljs'
 
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
 import * as nlpUtils from '../nlp/utils'
@@ -14,6 +17,8 @@ import { createObject2, arrayed } from '../lang'
 import { mu } from '../mu'
 import { getLibRootRelative } from '../path.node'
 import { keyvalue2attributes } from '../xml/utils'
+import { parseUmolodaArticle } from './parsers/umoloda'
+
 
 const globSync = require('glob').sync
 const mkdirp = require('mkdirp')
@@ -55,6 +60,10 @@ function trimExtension(filename: string) {
 
 function docCreator(xmlstr: string) {
   return LibxmljsDocument.parse(xmlstr)
+}
+
+function htmlDocCreator(html: string) {
+  return new LibxmljsDocument(parseHtmlString(html))
 }
 
 function numDigits(integer: number) {
@@ -145,11 +154,6 @@ function createVerticalFile(params: Args) {
   }
 }
 
-// function handleInterrupt(isDoingIo: boolean) {
-//   console.log(`cauugt, ${isDoingIo}`)
-//   process.exit()
-// }
-
 function readIdsFromVertical(filePath: string) {
   return new Promise<string[]>((resolve) => {
     let res = new Array<string>()
@@ -183,6 +187,7 @@ async function buildCorpus(params: Args) {
   let idRegistry = new Set<string>()
 
   // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer, verticalFile)
+  // umoloda(params.workspace, analyzer, verticalFile)
   // return
   let inputFiles: string[] = mu(params.input).map(x => globSync(x)).flatten().toArray()
   inputFiles = unique(inputFiles)
@@ -269,6 +274,46 @@ function buildCorpus2(args: minimist.ParsedArgs) {
   // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer)
 }
 
+//------------------------------------------------------------------------------
+function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+  let articlePathsGLob = workspacePath + 'umoloda/fetched_articles/*.html'
+  let articlePaths = globSync(articlePathsGLob).sort(umolodaFilenameComparator)
+  for (let path of articlePaths) {
+    let [a, b, c] = trimExtension(basename(path)).split('_')
+    console.log(`processing umoloda article ${a}_${b}_${c}`)
+
+    let html = fs.readFileSync(path, 'utf8')
+    let { title, author, paragraphs, date } = parseUmolodaArticle(html, htmlDocCreator)
+
+    if (!paragraphs.length) {  // some empty articles happen
+      continue
+    }
+
+    date = date.split('.').reverse().join('–')
+    let meta = {
+      publisher: 'Україна молода',
+      proofread: '+',
+      href: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
+      author,
+      title,
+      date,
+      text_type: 'публіцистика::стаття',
+    }
+
+    fs.writeSync(verticalFile, `<doc ${keyvalue2attributes(meta)}>\n`)
+    for (let p of paragraphs) {
+      fs.writeSync(verticalFile, '<p>\n')
+      let stream = nlpUtils.string2tokenStream(p, analyzer)
+        .map(x => nlpUtils.token2sketchVertical(x))
+        .chunk(10000)
+      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
+      fs.writeSync(verticalFile, '</p>\n')
+    }
+    fs.writeSync(verticalFile, `</doc>\n`)
+  }
+}
+
+//------------------------------------------------------------------------------
 function kontrakty(folderPath: string, analyzer: MorphAnalyzer, verticalFile: number) {
   let files = globSync(folderPath + '*.txt')
   for (let file of files) {
@@ -286,10 +331,15 @@ function kontrakty(folderPath: string, analyzer: MorphAnalyzer, verticalFile: nu
       title: `Контракти ${year}`,
       year_created: year,
       text_type: 'публіцистика',
-
     }
     fs.writeSync(verticalFile, `<doc ${keyvalue2attributes(meta)}>\n`)
     stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
     fs.writeSync(verticalFile, `</doc>\n`)
   }
+}
+
+//------------------------------------------------------------------------------
+function umolodaFilenameComparator(a: string, b: string) {
+  return Number(trimExtension(basename(a)).split('_')[2]) -
+    Number(trimExtension(basename(b)).split('_')[2])
 }

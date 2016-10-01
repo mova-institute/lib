@@ -1,13 +1,58 @@
+import * as nlpUtils from '../../nlp/utils'
+import { removeTags } from '../../xml/utils'
+import { DocCreator } from 'xmlapi'
+import { capitalize } from 'lodash'
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
-export function parseUmolodaArticle(html: string) {
-  let title = betweenTags(html, 'h1', 'class="titleMain"') || betweenTags(html, 'title')
-  let date = betweenTags(html, 'span', 'class="date"')
+export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
+  let root = htmlDocCreator(html).root()
+
+  let title = 'УМ'
+  let titleEl = root.evaluateElement('//h1[@class="titleMain"]')
+  if (titleEl) {
+    title = titleEl.serialize()
+    title = 'УМ: ' + removeTags(title).trim()
+  }
+
+  let date = ''
+  let dateEl = root.evaluateElement('//span[@class="date"]')
+  if (dateEl) {
+    date = dateEl.text().trim()
+  }
+  if (date === '01.01.1970') {
+    date = ''
+  }
+
   let author = betweenTags(html, 'a', 'class="authorName"')
-  let content = withTags(html, 'p', 'class="content"')
+  author = author.split(/\s/).map(x => capitalize(x))/*.reverse()*/.join(' ')
+
+  let contentEl = root.evaluateElement('//p[@class="content"]')
+  if (contentEl && contentEl.text().trim()) {
+    var content = contentEl && contentEl.serialize()
+  } else {
+    html = contentEl.parent().serialize()
+    let textMatch = html.match(/<p class="content">([\s\S]*<\/p>)/)
+    if (textMatch && textMatch[1]) {
+      content = textMatch[1]
+    }
+  }
+  content = removeTags(content)
+  content = nlpUtils.normalizeCorpusTextString(content)
+  let paragraphs = content.split(/[\n\r]+/).filter(x => x.trim())
+
+  return { title, date, author, paragraphs }
 }
 
+//------------------------------------------------------------------------------
+function paragraphByNewline(text: string) {
+  return `<p>${text.replace(/[\n\r]+/g, '</p>\n<p>')}</p>`
+}
+
+//------------------------------------------------------------------------------
 function matchTag(html: string, tagName: string, includeTags: boolean, attributes = '') {
-  let re = new RegExp(`<${tagName}[^>]*\s${attributes}>([^>]*)</${tagName}>`)
+  let re = new RegExp(String.raw`<${tagName}[^>]*${attributes}[^>]*>([^>]*)</${tagName}>`)
   let match = html.match(re)
   let i = includeTags ? 0 : 1
   if (match && match[i]) {
@@ -16,10 +61,12 @@ function matchTag(html: string, tagName: string, includeTags: boolean, attribute
   return ''
 }
 
+//------------------------------------------------------------------------------
 function betweenTags(html: string, tagName: string, attributes = '') {
   return matchTag(html, tagName, false, attributes)
 }
 
+//------------------------------------------------------------------------------
 function withTags(html: string, tagName: string, attributes = '') {
   return matchTag(html, tagName, true, attributes)
 }

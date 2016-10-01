@@ -7,7 +7,7 @@ import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
 import { r, createObject } from '../lang'
 import { uniqueSmall as unique, uniqueJson } from '../algo'
-import { AbstractNode, AbstractElement, AbstractDocument } from 'xmlapi'
+import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
@@ -20,8 +20,6 @@ import * as _ from 'lodash'
 
 const wu: Wu.WuStatic = require('wu')
 
-
-export type DocCreator = (xmlstr: string) => AbstractDocument
 
 
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([

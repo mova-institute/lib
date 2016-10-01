@@ -4,8 +4,8 @@ INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
-PATH "/srv/corpora/manatee/everything"
-SUBCDEF "/srv/corpora/registry/everything_sub"
+PATH "/srv/corpora/manatee/everything.0"
+SUBCDEF "/srv/corpora/registry/everything.0.sub"
 VERTICAL "/srv/corpora/vertical/everything.vertical.txt"
 
 
@@ -76,9 +76,15 @@ STRUCTURE doc {
   ATTRIBUTE title {
     LABEL "назва"
   }
+  ATTRIBUTE href {
+    LABEL "посилання"
+  }
   ATTRIBUTE year_created {
     LABEL "рік написання"
     NUMERIC yes
+  }
+  ATTRIBUTE date {
+    LABEL "дата"
   }
   ATTRIBUTE author {
     LABEL "автор"
@@ -95,6 +101,9 @@ STRUCTURE doc {
   ATTRIBUTE comment {
     LABEL "коментар"
   }
+  ATTRIBUTE proofread {
+    LABEL "вичитано"
+  }
 # ATTRIBUTE disamb
   ATTRIBUTE wordcount {
     LABEL "кількість слів"
@@ -104,9 +113,9 @@ STRUCTURE doc {
 #  LABEL "розділ"
 #}
 STRUCTURE p {
-  DISPLAYTAG 0
+  #DISPLAYTAG 0
   #DISPLAYBEGIN "_EMPTY_"
-  DISPLAYEND "❡"
+  #DISPLAYEND "❡"
 }
 STRUCTURE s
 STRUCTURE g {
@@ -132,7 +141,7 @@ DEFAULTATTR word
 
 # todo ATTRDOC, ATTRDOCLABEL,
 
-FULLREF "doc.id,doc.title,doc.author,doc.year_created,doc.text_type,doc.comment,doc.wordcount"
+FULLREF "doc.id,doc.title,doc.date,doc.author,doc.year_created,doc.href,doc.text_type,doc.comment,doc.wordcount"
 STRUCTATTRLIST "doc.id,doc.title,doc.author,doc.year_created,doc.text_type"
 SUBCORPATTRS "doc.id|doc.title,doc.author|doc.year_created,doc.text_type"
 #FREQTTATTRS ""

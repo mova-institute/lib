@@ -23,6 +23,7 @@
     "@types/express-jwt": "0.0.32",
     "@types/glob": "^5.0.29",
     "@types/html-entities": "^1.2.14",
+    "@types/libxmljs": "^0.14.29",
     "@types/minimist": "^1.1.28",
     "@types/mkdirp": "^0.3.29",
     "@types/node-fetch": "0.0.4",

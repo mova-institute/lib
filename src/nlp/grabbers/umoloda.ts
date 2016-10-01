@@ -1,12 +1,11 @@
-import * as fs from 'fs'
 import * as path from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
-import * as fetch from 'node-fetch'
 import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FolderSavedMap } from '../../folder_saved_map.node'
 import { matchAll, sleep } from '../../lang';
+import { fetchText } from './utils'
 
 
 interface Args {
@@ -16,22 +15,21 @@ interface Args {
 
 const articleHrefRe = new RegExp(String.raw`<a\s.*href="/number/(\d+)/(\d+)/(\d+)/"`, 'g')
 
-const args: Args = minimist(process.argv.slice(2), {
-  boolean: [],
-  string: [],
-  alias: {
-    'workspace': ['ws'],
-  },
-  default: {
-    'seed': 3055,
-  },
-}) as any
+if (require.main === module) {
+  const args: Args = minimist(process.argv.slice(2), {
+    alias: {
+      'workspace': ['ws'],
+    },
+    default: {
+      'seed': 3055,
+    },
+  }) as any
+
+  main(args)
+}
 
 
-main()
-
-
-async function main() {
+async function main(args: Args) {
   try {
     let fetchedArticlesDir = path.join(args.workspace, 'fetched_articles')
     mkdirpSync(fetchedArticlesDir)
@@ -59,13 +57,4 @@ async function main() {
   } catch (e) {
     console.error(e)
   }
-}
-
-async function fetchText(href: string) {
-  let res = await fetch(href, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Safari/602.1.50',
-    },
-  })
-  return res.text()
 }
