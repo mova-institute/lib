@@ -18,6 +18,7 @@ import { mu } from '../mu'
 import { getLibRootRelative } from '../path.node'
 import { keyvalue2attributes } from '../xml/utils'
 import { parseUmolodaArticle } from './parsers/umoloda'
+import { parseDztArticle } from './parsers/dzt'
 
 
 const globSync = require('glob').sync
@@ -188,6 +189,7 @@ async function buildCorpus(params: Args) {
 
   // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer, verticalFile)
   // umoloda(params.workspace, analyzer, verticalFile)
+  // dzt(params.workspace, analyzer, verticalFile)
   // return
   let inputFiles: string[] = mu(params.input).map(x => globSync(x)).flatten().toArray()
   inputFiles = unique(inputFiles)
@@ -297,6 +299,44 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
       author,
       title,
       date,
+      text_type: 'публіцистика::стаття',
+    }
+
+    fs.writeSync(verticalFile, `<doc ${keyvalue2attributes(meta)}>\n`)
+    for (let p of paragraphs) {
+      fs.writeSync(verticalFile, '<p>\n')
+      let stream = nlpUtils.string2tokenStream(p, analyzer)
+        .map(x => nlpUtils.token2sketchVertical(x))
+        .chunk(10000)
+      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
+      fs.writeSync(verticalFile, '</p>\n')
+    }
+    fs.writeSync(verticalFile, `</doc>\n`)
+  }
+}
+
+//------------------------------------------------------------------------------
+function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+  let articlePathsGLob = workspacePath + 'dzt/fetched_articles/**/*.html'
+  let articlePaths = globSync(articlePathsGLob)  // todo: sort by date
+
+  for (let path of articlePaths) {
+    console.log(`processing dzt article ${trimExtension(basename(path))}`)
+
+    let html = fs.readFileSync(path, 'utf8')
+    let { title, author, paragraphs, datetime, url } = parseDztArticle(html, htmlDocCreator)
+
+    if (!paragraphs.length) {  // some empty articles happen
+      continue
+    }
+
+    let meta = {
+      publisher: 'Дзеркало тижня',
+      proofread: '+',
+      href: url,
+      author,
+      title,
+      date: datetime,
       text_type: 'публіцистика::стаття',
     }
 

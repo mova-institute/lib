@@ -31,13 +31,13 @@ if (require.main === module) {
 
 async function main(args: Args) {
   try {
-    let fetchedArticlesDir = path.join(args.workspace, 'fetched_articles')
+    let fetchedArticlesDir = path.join(args.workspace, 'umoloda/fetched_articles')
     mkdirpSync(fetchedArticlesDir)
-    let numbersRegistry = new FileSavedSet(path.join(args.workspace, 'fully_fetched_numbers.txt'))
+    let numbersRegistry = new FileSavedSet<number>(path.join(args.workspace, 'umoloda/fully_fetched_numbers.txt'))
     let articleRegistry = new FolderSavedMap(fetchedArticlesDir)
     let curNumber = args.seed + 1
     while (--curNumber) {
-      if (numbersRegistry.has(curNumber.toString())) {
+      if (numbersRegistry.has(curNumber)) {
         continue
       }
       console.log(`fetching №${curNumber}`)
@@ -52,7 +52,7 @@ async function main(args: Args) {
           // await sleep(400)
         }
       }
-      numbersRegistry.add(curNumber.toString())
+      numbersRegistry.add(curNumber)
     }
   } catch (e) {
     console.error(e)

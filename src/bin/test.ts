@@ -14,6 +14,8 @@ import { toUdString } from '../nlp/ud/tagset'
 import { MorphInterp } from '../nlp/morph_interp'
 import * as glob from 'glob'
 import { parseUmolodaArticle } from '../nlp/parsers/umoloda'
+import { parseDztArticle } from '../nlp/parsers/dzt'
+import { fetchText } from '../nlp/grabbers/utils'
 
 // export const config: ClientConfig = {
 //   host: 'localhost',
@@ -23,28 +25,28 @@ import { parseUmolodaArticle } from '../nlp/parsers/umoloda'
 //   password: '@nn0t@t0zh3',
 // }
 
-let s = fs.createWriteStream('/Users/msklvsk/Downloads/doo.txt')
-let fl = s.write('doodle'.repeat(100000))
-// s.end()
-console.log(fl)
-console.log(s.bytesWritten)
-process.exit(0)
+// let s = fs.createWriteStream('/Users/msklvsk/Downloads/doo.txt')
+// let fl = s.write('doodle'.repeat(100000))
+// // s.end()
+// console.log(fl)
+// console.log(s.bytesWritten)
+// process.exit(0)
 
 
 main()
 
-
 function main() {
 
-  let articles = glob.sync('/Users/msklvsk/Developer/mova-institute/workspace/umoloda/fetched_articles/*.html').reverse()
+  let articles = glob.sync('/Users/msklvsk/Developer/mova-institute/workspace/dzt/fetched_articles/**/*.html')
 
   for (let article of articles) {
     let content = readFileSync(article, 'utf8')
-    let a = parseUmolodaArticle(content, htmlDocCreator)
-    if (!a.paragraphs.length) {
-      console.log(a)
-      console.log(article)
-    }
+    let a = parseDztArticle(content, htmlDocCreator)
+    console.log(a)
+    // if (!a.paragraphs.length) {
+    //   console.log(a)
+    //   console.log(article)
+    // }
     // a.content = a.content.substr(0, 30)
     // if ('<p class="content"></p>\n' === a.content) {
     // console.log(article)
