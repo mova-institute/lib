@@ -267,8 +267,11 @@ export class MorphAnalyzer {
       ret.push(interp)
 
       // add inanimish accusative, e.g. додати в друзі
-      if (interp.isNoun() && interp.isNominative() && interp.isPlural() && !interp.isAnimate()) {
-        ret.push(interp.clone().setCase(Case.accusative).setPseudoanimacy(false))
+      if (interp.isNoun() && interp.isNominative() && interp.isPlural() && interp.isAnimate()) {
+        let candidate = interp.clone().setCase(Case.accusative)
+        if (!res.has(candidate) && !res.has(candidate.setPseudoanimacy(false))) {
+          ret.push(candidate)
+        }
       }
     }
 
