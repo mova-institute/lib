@@ -1,3 +1,5 @@
+import { flatten } from 'lodash'
+
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
@@ -46,6 +48,7 @@ const gluedPrefixes = [
   'етно',
   'зоо',
   'ізо',
+  'інтер',
   'квазі',
   'контр',
   'космо',
@@ -146,7 +149,7 @@ export class MorphAnalyzer {
 
   /** @token is atomic */
   tag(token: string, nextToken?: string) {
-    token = token.replace(/́/g, '')  // kill emphasis
+    token = token.replace(/́/g, '')  // kill emphasis  // todo: put it back afterwards
 
     // Arabic numerals
     if (/^\d+[½]?$/.test(token)) {
@@ -159,7 +162,7 @@ export class MorphAnalyzer {
     }
 
     // symbols
-    if (/^[@#$%*§©+×÷=<>♥]$/.test(token)) {
+    if (/^[№@#$%*§©+×÷=<>♥]$/.test(token)) {
       return [MorphInterp.fromVesumStr('sym', token)]
     }
 
@@ -168,14 +171,14 @@ export class MorphAnalyzer {
       return [MorphInterp.fromVesumStr('x:foreign', token)]
     }
 
+    // dictionary
     let lookupees = varyLetterCases(token)
     let lowercase = lookupees[0]
     if (nextToken === '.') {
       lookupees.push(...lookupees.map(x => x + '.'))
     }
 
-    let res = new HashSet(MorphInterp.hash,
-      mu(lookupees).map(x => this.lookup(x)).flatten() as Iterable<MorphInterp>)
+    let res = new HashSet(MorphInterp.hash, flatten(lookupees.map(x => this.lookup(x))))
 
     // try одробив is the same as відробив
     if (!res.size && lowercase.startsWith('од') && lowercase.length > 4) {
@@ -236,23 +239,10 @@ export class MorphAnalyzer {
       let right = lowercase.substr(3)
       let rightRes = this.lookup(right)
         .filter(x => x.isAdjective() && x.isMasculine() && x.isDative())
-      if (!rightRes.empty() || lowercase.endsWith('ськи') || lowercase.endsWith('цьки')) {
+      if (rightRes.length || lowercase.endsWith('ськи') || lowercase.endsWith('цьки')) {
         res.add(MorphInterp.fromVesumStr('adv').setLemma(lowercase).setIsAuto())
       }
     }
-
-
-    // let toadd = new Array<MorphInterp>()
-    // for (let interp of res) {
-    //   if (interp.isGenitive()) {
-    //     let candidate = interp.clone().setCase(Case.accusative)
-    //     if (!res.has(candidate)) {
-    //       toadd.push(candidate.setIsAnimish())
-    //     }
-    //   }
-    // }
-    // res.addAll(toadd)
-
 
     // filter and postprocess
     let ret = new Array<MorphInterp>()
@@ -289,9 +279,9 @@ export class MorphAnalyzer {
   private lookupRaw(token: string) {
     let ret = this.dictionary.lookup(token)
     if (this.expandAdjectivesAsNouns) {
-      ret = ret.map(x => mu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
-        .map(flags => ({ flags, lemma: x.lemma })))
-        .flatten()
+      ret = mu(ret.map(x =>
+        mu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
+          .map(flags => ({ flags, lemma: x.lemma })))).flatten()
     }
     return ret
   }

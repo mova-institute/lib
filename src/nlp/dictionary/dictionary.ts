@@ -21,7 +21,7 @@ export class Dictionary {
   }
 
   lookup(word: string) {
-    return mu(this.words.getArray(word)).map(x => this.buildInterp(word, x))
+    return this.words.getArray(word).map(x => this.buildInterp(word, x))
   }
 
   lookupVariants(words: Iterable<string>) {
