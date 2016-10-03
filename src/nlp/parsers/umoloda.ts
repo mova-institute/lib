@@ -29,8 +29,9 @@ export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
   author = author.split(/\s/).map(x => capitalize(x))/*.reverse()*/.join(' ')
 
   let contentEl = root.evaluateElement('//p[@class="content"]')
+  let content = ''
   if (contentEl && contentEl.text().trim()) {
-    var content = contentEl && contentEl.serialize()
+    content = contentEl && contentEl.serialize()
   } else {
     html = contentEl.parent().serialize()
     let textMatch = html.match(/<p class="content">([\s\S]*<\/p>)/)
@@ -40,7 +41,7 @@ export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
   }
   content = removeTags(content)
   content = nlpUtils.normalizeCorpusTextString(content)
-  let paragraphs = content.split(/[\n\r]+/).filter(x => x.trim())
+  let paragraphs = content && content.split(/[\n\r]+/).filter(x => x.trim()) || []
 
   return { title, date, author, paragraphs }
 }

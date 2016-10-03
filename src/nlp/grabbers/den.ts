@@ -108,7 +108,7 @@ async function main(args: Args) {
         + `&archive_date%5Bvalue%5D%5Byear%5D=${year}`
       try {
         await crawler.seed(seedUrl, (url, content) => {
-          let saveTo = url.match(articleSavePath)[1]
+          let saveTo = url.match(articleSavePath)![1]
           saveTo = path.join(fetchedArticlesDir, saveTo) + '.html'
           console.log(`saving to ${saveTo}`)
           mkdirpSync(path.dirname(saveTo))

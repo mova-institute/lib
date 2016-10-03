@@ -23,23 +23,23 @@ interface Args extends minimist.ParsedArgs {
   t?: string
   text?: string
   dict?: string
-  n?: boolean
-  numerate?: boolean
-  tokenize?: boolean
-  count?: boolean
-  unknown?: boolean
-  sort?: boolean
-  vertical?: boolean
-  mte?: boolean
-  conllu?: boolean
-  xml?: boolean
+  n: boolean
+  numerate: boolean
+  tokenize: boolean
+  count: boolean
+  unknown: boolean
+  sort: boolean
+  vertical: boolean
+  mte: boolean
+  conllu: boolean
+  xml: boolean
 }
 
 
 const args: Args = minimist(process.argv.slice(2), {
   boolean: ['n', 'numerate', 'tokenize', 'mte', 'vertical', 'xml', 'conllu', 'count'],
   string: ['t', 'text'],
-})
+}) as any
 
 
 ioArgsPlain(async (input, outputFromIoargs) => {

@@ -1040,7 +1040,7 @@ export function compareTags(a: MorphInterp, b: MorphInterp) {
     }
   }
   for (let feature of featureCompareOrder) {
-    let prop = FEAT_MAP_STRING.get(feature)
+    let prop = FEAT_MAP_STRING.get(feature) as string
     let res = compare(a.features[prop], b.features[prop])
     if (res) {
       return res

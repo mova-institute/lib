@@ -62,7 +62,8 @@ export function groupTableBy<T>(table: T[], groupProp: string | number | symbol)
 
   for (let row of table) {
     let cell = row[groupProp]
-      ;(ret.get(cell) || ret.set(cell, []).get(cell)).push(row)
+    let pushIn = ret.get(cell) || ret.set(cell, []).get(cell)
+    pushIn!.push(row)
   }
 
   return ret

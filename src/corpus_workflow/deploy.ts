@@ -39,7 +39,7 @@ if (require.main === module) {
 
 function main(args: Args) {
   let versionStr = execRemote2String(r`grep "^\s*corplist" ${remoteRuncgi}`)
-  versionStr = versionStr.match(/everything[_\.](\d+)/)[1]
+  versionStr = versionStr.match(/everything[_\.](\d+)/)![1]
   let n = Number(versionStr) + 1
   console.log(`creating corpus version ${n}`)
 

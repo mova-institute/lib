@@ -19,24 +19,6 @@ export function filename2lxmlRootSync(filename: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function readNBytesSync(n: number, fd: number) {
-  let buf = new Buffer(n)
-  readSync(fd, buf, 0, n, null)
-
-  return buf
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function tryStatSync(path: string): Stats {
-  try {
-    return statSync(path)
-  }
-  catch (e) {
-    return null
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function* linesSync(filename: string) {  // todo: do not buffer file
   for (let line of readFileSync(filename, 'utf8').split('\n')) {
     yield line

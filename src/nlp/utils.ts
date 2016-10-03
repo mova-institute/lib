@@ -85,7 +85,7 @@ const WORD_TAGS = new Set([W, W_])
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetween(tagA: string, textA: string, tagB: string, textB: string) {
   if (!tagA || !tagB) {
-    return null
+    return
   }
   let spaceA = !!PUNC_SPACING[textA] && PUNC_SPACING[textA][1]
   let spaceB = !!PUNC_SPACING[textB] && PUNC_SPACING[textB][0]
@@ -124,11 +124,7 @@ export function haveSpaceBetween(tagA: string, textA: string, tagB: string, text
 
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): boolean {
-  let tagA = a ? a.name() : null
-  let textA = a ? a.text() : null
-  let tagB = b ? b.name() : null
-  let textB = b ? b.text() : null
-  return haveSpaceBetween(tagA, textA, tagB, textB)
+  return haveSpaceBetween(a.name(), a.text(), b.name(), b.text())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -367,7 +363,7 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     } else {
       token.elem.clear()
       token.clearDisamb()
-      let next = token.nextToken() && token.nextToken().text()
+      let next = token.nextToken() && token.nextToken()!.text()
       fillInterpElement(token.elem, form, tagOrXVesum(analyzer.tagOrX(form, next)))
       interps.forEach(x => {
         if (true /*token.hasInterp(x.flags, x.lemma)*/) {  // todo

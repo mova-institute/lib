@@ -17,7 +17,7 @@ export function titlecase(str: string, splitter = /[\s\-]\S/g) {
 ////////////////////////////////////////////////////////////////////////////////
 export function regexMatchIndexes(str: string, regex: RegExp) {
   let ret = new Array<number>()
-  let match: RegExpExecArray
+  let match: RegExpExecArray | null
   while (match = regex.exec(str)) {
     ret.push(match.index)
   }
