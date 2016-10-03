@@ -8,9 +8,9 @@ INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
-PATH "/srv/corpora/manatee/everything.${copusVersion}"
-SUBCDEF "/srv/corpora/registry/everything.${copusVersion}.sub"
-VERTICAL "/srv/corpora/vertical/everything.vertical.txt"
+PATH "/srv/corpora/manatee/everything_${copusVersion}"
+SUBCDEF "/srv/corpora/registry/everything_${copusVersion}_sub"
+#VERTICAL "/srv/corpora/vertical/everything.vertical.txt"
 
 
 LANGUAGE "Ukrainian"

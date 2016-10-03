@@ -1,24 +1,16 @@
 import * as path from 'path'
-import { basename } from 'path'
 import * as fs from 'fs'
-import { WriteStream, createWriteStream } from 'fs'
 import * as readline from 'readline'
-import { execSync } from 'child_process'
 import * as minimist from 'minimist'
-import { parseHtmlString } from 'libxmljs'
 
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
-import * as nlpUtils from '../nlp/utils'
 import { createMorphAnalyzerSync } from './morph_analyzer/factories.node'
-import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
+import * as nlpUtils from '../nlp/utils'
 import { filename2lxmlRootSync } from '../utils.node'
 import { indexTableByColumns, unique } from '../algo'
 import { createObject2, arrayed } from '../lang'
 import { mu } from '../mu'
-import { getLibRootRelative } from '../path.node'
-import { keyvalue2attributes } from '../xml/utils'
-import { parseUmolodaArticle } from './parsers/umoloda'
-import { parseDztArticle } from './parsers/dzt'
+import {trimExtension} from '../string_utils'
 
 
 const globSync = require('glob').sync
@@ -54,17 +46,8 @@ function normalizeArgs(params) {
   params.meta = arrayed(params.meta)
 }
 
-function trimExtension(filename: string) {
-  let dotIndex = filename.lastIndexOf('.')
-  return dotIndex < 0 ? filename : filename.substr(0, dotIndex)
-}
-
 function docCreator(xmlstr: string) {
   return LibxmljsDocument.parse(xmlstr)
-}
-
-function htmlDocCreator(html: string) {
-  return new LibxmljsDocument(parseHtmlString(html))
 }
 
 function numDigits(integer: number) {
@@ -188,9 +171,9 @@ async function buildCorpus(params: Args) {
   let idRegistry = new Set<string>()
 
   // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer, verticalFile)
-  // umoloda(params.workspace, analyzer, verticalFile)
+  umoloda(params.workspace, analyzer, verticalFile)
   // dzt(params.workspace, analyzer, verticalFile)
-  // return
+  return
   let inputFiles: string[] = mu(params.input).map(x => globSync(x)).flatten().toArray()
   inputFiles = unique(inputFiles)
   let taggedDir = path.join(params.workspace, 'tagged')
@@ -274,112 +257,4 @@ function buildCorpus2(args: minimist.ParsedArgs) {
   // let metadata = JSON.parse(execSync(djangoScriptPath, { encoding: 'utf8' }))
 
   // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer)
-}
-
-//------------------------------------------------------------------------------
-function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGLob = workspacePath + 'umoloda/fetched_articles/*.html'
-  let articlePaths = globSync(articlePathsGLob).sort(umolodaFilenameComparator)
-  for (let path of articlePaths) {
-    let [a, b, c] = trimExtension(basename(path)).split('_')
-    console.log(`processing umoloda article ${a}_${b}_${c}`)
-
-    let html = fs.readFileSync(path, 'utf8')
-    let { title, author, paragraphs, date } = parseUmolodaArticle(html, htmlDocCreator)
-
-    if (!paragraphs.length) {  // some empty articles happen
-      continue
-    }
-
-    date = date.split('.').reverse().join('–')
-    let meta = {
-      publisher: 'Україна молода',
-      proofread: '+',
-      href: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
-      author,
-      title,
-      date,
-      text_type: 'публіцистика::стаття',
-    }
-
-    fs.writeSync(verticalFile, `<doc ${keyvalue2attributes(meta)}>\n`)
-    for (let p of paragraphs) {
-      fs.writeSync(verticalFile, '<p>\n')
-      let stream = nlpUtils.string2tokenStream(p, analyzer)
-        .map(x => nlpUtils.token2sketchVertical(x))
-        .chunk(10000)
-      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-      fs.writeSync(verticalFile, '</p>\n')
-    }
-    fs.writeSync(verticalFile, `</doc>\n`)
-  }
-}
-
-//------------------------------------------------------------------------------
-function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGLob = workspacePath + 'dzt/fetched_articles/**/*.html'
-  let articlePaths = globSync(articlePathsGLob)  // todo: sort by date
-
-  for (let path of articlePaths) {
-    console.log(`processing dzt article ${trimExtension(basename(path))}`)
-
-    let html = fs.readFileSync(path, 'utf8')
-    let { title, author, paragraphs, datetime, url } = parseDztArticle(html, htmlDocCreator)
-
-    if (!paragraphs.length) {  // some empty articles happen
-      continue
-    }
-
-    let meta = {
-      publisher: 'Дзеркало тижня',
-      proofread: '+',
-      href: url,
-      author,
-      title,
-      date: datetime,
-      text_type: 'публіцистика::стаття',
-    }
-
-    fs.writeSync(verticalFile, `<doc ${keyvalue2attributes(meta)}>\n`)
-    for (let p of paragraphs) {
-      fs.writeSync(verticalFile, '<p>\n')
-      let stream = nlpUtils.string2tokenStream(p, analyzer)
-        .map(x => nlpUtils.token2sketchVertical(x))
-        .chunk(10000)
-      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-      fs.writeSync(verticalFile, '</p>\n')
-    }
-    fs.writeSync(verticalFile, `</doc>\n`)
-  }
-}
-
-//------------------------------------------------------------------------------
-function kontrakty(folderPath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let files = globSync(folderPath + '*.txt')
-  for (let file of files) {
-    console.log(`processsing ${path.basename(file)}…`)
-    let year = Number.parseInt(path.basename(file).replace(/\.txt$/, ''))
-    let contents = fs.readFileSync(file, 'utf8')
-    contents = nlpUtils.normalizeCorpusTextString(contents)
-
-    let stream = nlpUtils.string2tokenStream(contents, analyzer)
-      .map(x => nlpUtils.token2sketchVertical(x))
-      .chunk(10000)
-
-    let meta = {
-      publisher: 'Галицькі контракти',
-      title: `Контракти ${year}`,
-      year_created: year,
-      text_type: 'публіцистика',
-    }
-    fs.writeSync(verticalFile, `<doc ${keyvalue2attributes(meta)}>\n`)
-    stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-    fs.writeSync(verticalFile, `</doc>\n`)
-  }
-}
-
-//------------------------------------------------------------------------------
-function umolodaFilenameComparator(a: string, b: string) {
-  return Number(trimExtension(basename(a)).split('_')[2]) -
-    Number(trimExtension(basename(b)).split('_')[2])
 }

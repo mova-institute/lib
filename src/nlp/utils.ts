@@ -746,7 +746,7 @@ export function token2sketchVertical(token: Token) {
 export function* tokenizedTeiDoc2sketchVertical(
   root: AbstractElement, analyzer: MorphAnalyzer, meta: any = {}) {
 
-  yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`
+  yield `<doc ${xmlutils.keyvalue2attributesNormalized(meta)}>`
 
   for (let {el, entering} of iterateCorpusTokens(root)) {
     let interps
@@ -764,7 +764,7 @@ export function* tokenizedTeiDoc2sketchVertical(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVertical(root: AbstractElement, meta: any = {}) {
-  yield `<doc ${xmlutils.keyvalue2attributes(meta)}>`
+  yield `<doc ${xmlutils.keyvalue2attributesNormalized(meta)}>`
   yield* interpretedTeiDoc2sketchVerticalTokens(root)
   yield `</doc>`
 }

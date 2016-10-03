@@ -1,4 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
+export function trimExtension(filename: string) {
+  let dotIndex = filename.lastIndexOf('.')
+  return dotIndex < 0 ? filename : filename.substr(0, dotIndex)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function titlecase(str: string, splitter = /[\s\-]\S/g) {
   let chars = [...str]
   if (chars.length) {

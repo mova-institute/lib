@@ -1,6 +1,6 @@
 {
   "name": "mi-lib",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -10,7 +10,8 @@
   ],
   "bin": {
     "mitag": "lib/bin/tag.js",
-    "vesum2mte": "lib/bin/misc/vesum2mte.js"
+    "vesum2mte": "lib/bin/misc/vesum2mte.js",
+    "mibuildcorp": "lib/corpus_workflow/build.js"
   },
   "scripts": {},
   "author": "mova.institute",

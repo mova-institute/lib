@@ -49,6 +49,7 @@ async function main(args: Args) {
       let hrefs = root.evaluateAttributes('//div[@class="blog-article"]//a[@itemprop="url"]/@href')
         .map(x => x.value().substr(1))
 
+      let errorOccured = false
       for (let href of hrefs) {
         try {
           let filename = `${href}.html`
@@ -59,12 +60,15 @@ async function main(args: Args) {
           let content = await fetchText(`${baseUrl}/${href}`)
           articleRegistry.set(filename, content)
         } catch (e) {
+          errorOccured = true
           console.error()
           await sleep(3000)
           continue
         }
       }
-      indexesRegistry.add(i)
+      if (!errorOccured) {
+        indexesRegistry.add(i)
+      }
     }
   } catch (e) {
     console.error(e)

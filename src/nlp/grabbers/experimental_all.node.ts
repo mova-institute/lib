@@ -119,7 +119,7 @@ const attributesToCopy = new Set([
 ])
 ////////////////////////////////////////////////////////////////////////////////
 export function updateMetadataInVertical(metaFilePath: string, inputFilePath: string, outFilePath) {
-  let rows = separatedValues2Array(metaFilePath, '\t').filter(x => !!x.filename)
+  let rows = separatedValues2Array(metaFilePath, '\t').filter(x => x.filename)
   rows.forEach(x => x.filename = killExtension(x.filename.toLowerCase()))
   let metaTable: Map<string, any> = indexTableByColumns(rows, ['filename'])
   // console.log(metaTable)
@@ -160,7 +160,7 @@ export function updateMetadataInVertical(metaFilePath: string, inputFilePath: st
         newMeta.id = formatTextId(idRegistry.get())
       }
 
-      let newLine = `<doc ${xmlUtils.keyvalue2attributes(newMeta)}>`
+      let newLine = `<doc ${xmlUtils.keyvalue2attributesNormalized(newMeta)}>`
       fs.writeSync(outFile, newLine + '\n')
     } else {
       fs.writeSync(outFile, line + '\n')
