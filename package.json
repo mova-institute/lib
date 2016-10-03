@@ -10,8 +10,9 @@
   ],
   "bin": {
     "mitag": "lib/bin/tag.js",
-    "vesum2mte": "lib/bin/misc/vesum2mte.js",
-    "mibuildcorp": "lib/corpus_workflow/build.js"
+    "mivesum2mte": "lib/bin/misc/vesum2mte.js",
+    "mibuildcorp": "lib/corpus_workflow/build.js",
+    "mibuilddict": "bin/compile-dict"
   },
   "scripts": {},
   "author": "mova.institute",

@@ -55,9 +55,8 @@ export class Mu<T> implements Iterable<T> {
         if (buf.length >= n) {
           yield buf
           buf = []
-        } else {
-          buf.push(x)
         }
+        buf.push(x)
       }
       if (buf.length) {
         yield buf

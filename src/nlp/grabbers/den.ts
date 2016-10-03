@@ -62,7 +62,7 @@ class Crawler {
 
 
 const basUrl = 'http://day.kyiv.ua'
-const monthIndexHrefRe = new RegExp(String.raw`uk/archivenewspaper?archive_date[value][month]=\d+&archive_date[value][year]=\d{4}(&page=\d+)?`, 'g')
+const monthIndexHrefRe = new RegExp(String.raw`uk/archivenewspaper?archive_date[value][month]=\d+.*[year]=\d{4}(&page=\d+)?`, 'g')
 const numberIndexHrefRe = new RegExp(String.raw`"(/uk/arhiv/no[\d\-]+(\?page=\d+)?)"`, 'g')
 const articleHrefRe = new RegExp(String.raw`"(/uk/article/[^"]+)"`, 'g')
 const articleSavePath = new RegExp(String.raw`/uk/article/(.+)`)

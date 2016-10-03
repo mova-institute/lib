@@ -170,10 +170,6 @@ async function buildCorpus(params: Args) {
   let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
   let idRegistry = new Set<string>()
 
-  // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer, verticalFile)
-  umoloda(params.workspace, analyzer, verticalFile)
-  // dzt(params.workspace, analyzer, verticalFile)
-  return
   let inputFiles: string[] = mu(params.input).map(x => globSync(x)).flatten().toArray()
   inputFiles = unique(inputFiles)
   let taggedDir = path.join(params.workspace, 'tagged')
@@ -246,15 +242,4 @@ async function buildCorpus(params: Args) {
       process.stdout.write(`\n ⚡️⚡️ ❌  ${e.message}`)
     }
   }
-}
-
-
-function buildCorpus2(args: minimist.ParsedArgs) {
-  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
-
-  const djangoScriptPath = '/Users/msklvsk/Developer/mova-institute/dbgui/get_all_texts.py'
-
-  // let metadata = JSON.parse(execSync(djangoScriptPath, { encoding: 'utf8' }))
-
-  // kontrakty('/Users/msklvsk/Downloads/KONTRAKTY/', analyzer)
 }

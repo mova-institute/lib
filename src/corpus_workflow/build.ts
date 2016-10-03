@@ -55,8 +55,8 @@ function main(args: Args) {
 
 //------------------------------------------------------------------------------
 function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGLob = workspacePath + 'umoloda/fetched_articles/*.html'
-  let articlePaths = globSync(articlePathsGLob).sort(umolodaFilenameComparator)
+  let articlePathsGlob = join(workspacePath, 'umoloda/fetched_articles/*.html')
+  let articlePaths = globSync(articlePathsGlob).sort(umolodaFilenameComparator)
   for (let path of articlePaths) {
     let [a, b, c] = trimExtension(basename(path)).split('_')
     console.log(`processing umoloda article ${a}_${b}_${c}`)
@@ -71,7 +71,7 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
     date = date.split('.').reverse().join('–')
     let meta = {
       publisher: 'Україна молода',
-      proofread: '+',
+      proofread: '✓',
       href: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
       author,
       title,
@@ -109,7 +109,7 @@ function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
 
     let meta = {
       publisher: 'Дзеркало тижня',
-      proofread: '+',
+      proofread: '✓',
       href: url,
       author,
       title,
@@ -131,8 +131,8 @@ function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
 }
 
 //------------------------------------------------------------------------------
-function kontrakty(folderPath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let files = globSync(folderPath + '*.txt')
+function kontrakty(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+  let files = globSync(join(workspacePath, 'kontrakty') + '/*.txt')
   for (let file of files) {
     console.log(`processsing ${basename(file)}…`)
     let year = Number.parseInt(basename(file).replace(/\.txt$/, ''))
@@ -171,8 +171,9 @@ function createVerticalFile(workspace: string, partName: string) {
   let filePath
   let i = 0
   do {
-    let suffix = i ? `.${i++}` : ''
+    let suffix = i ? `.${i}` : ''
     filePath = join(workspace, `${partName}${suffix}.vertical.txt`)
+    ++i
   } while (fs.existsSync(filePath))
 
   mkdirpSync(workspace)
