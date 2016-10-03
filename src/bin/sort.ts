@@ -11,5 +11,5 @@ const collator = new Intl.Collator('uk-dict-UA', {
 
 ioArgsPlain(async (input, output) => {
   let inputStr = await readTillEnd(input)
-  output.write(inputStr.split('\n').filter(x => !!x).sort(collator.compare).join('\n'))
+  output.write(inputStr.split('\n').filter(x => x).sort(collator.compare).join('\n'))
 })

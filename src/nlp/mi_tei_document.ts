@@ -49,7 +49,7 @@ export class MiTeiDocument {
   }
 
   hasTags() {
-    return !!this.getTagsString()
+    return this.getTagsString()
   }
 
   private getTagsString() {
