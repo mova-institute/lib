@@ -12,7 +12,6 @@ export class FolderSavedMap {
     mkdirpSync(directoryPath)
     globSync(`${directoryPath}/${glob}`)
       .map(x => relative(directoryPath, x))
-      // .replace(/\.[^\.]+$/, '')
       .forEach(x => this.keySet.add(x))
   }
 

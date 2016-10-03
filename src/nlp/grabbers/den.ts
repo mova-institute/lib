@@ -116,6 +116,7 @@ async function main(args: Args) {
         })
       } catch (e) {
         if (e.code === 'Z_BUF_ERROR') {
+          console.error(e)
           await sleep(10000)
           continue
         }
