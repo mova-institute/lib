@@ -2103,7 +2103,7 @@ msgstr "Типи запитів"
 
 #: cmpltmpl/document.py:1355
 msgid "match case"
-msgstr "допасовувати великі/малі літери"
+msgstr "допасувати великі/малі літери"
 
 msgid ""
 "Wordlist whitelists and blacklists must be plain text (.txt), encoded in "
