@@ -62,8 +62,8 @@ class Crawler {
 
 
 const basUrl = 'http://day.kyiv.ua'
-const monthIndexHrefRe = new RegExp(String.raw`uk/archivenewspaper?archive_date[value][month]=1?\d&archive_date[value][year]=\d{4}(&page=\d+)?`, 'g')
-const numberIndexHrefRe = new RegExp(String.raw`"(/uk/arhiv/no[\d\-]+)"`, 'g')
+const monthIndexHrefRe = new RegExp(String.raw`uk/archivenewspaper?archive_date[value][month]=\d+&archive_date[value][year]=\d{4}(&page=\d+)?`, 'g')
+const numberIndexHrefRe = new RegExp(String.raw`"(/uk/arhiv/no[\d\-]+(\?page=\d+)?)"`, 'g')
 const articleHrefRe = new RegExp(String.raw`"(/uk/article/[^"]+)"`, 'g')
 const articleSavePath = new RegExp(String.raw`/uk/article/(.+)`)
 
@@ -83,10 +83,10 @@ if (require.main === module) {
 
 async function main(args: Args) {
   try {
-    let fetchedArticlesDir = path.join(args.workspace, 'fetched_articles')
+    let fetchedArticlesDir = path.join(args.workspace, 'den/fetched_articles')
     mkdirpSync(fetchedArticlesDir)
 
-    let crawler = new Crawler(path.join(args.workspace, 'fully_fetched_urls.txt'))
+    let crawler = new Crawler(path.join(args.workspace, 'den/fully_fetched_urls.txt'))
       .setSaveLinkExtractor(content => {
         return matchAll(content, articleHrefRe).map(x => basUrl + x[1])
       })
