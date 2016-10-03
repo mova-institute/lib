@@ -1,7 +1,4 @@
-import * as nlpUtils from '../../nlp/utils'
-import { removeTags } from '../../xml/utils'
 import { DocCreator } from 'xmlapi'
-import { capitalize } from 'lodash'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 
 
