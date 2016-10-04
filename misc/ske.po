@@ -2532,7 +2532,7 @@ msgstr "унарні зв’язки"
 
 #: cmpltmpl/conc.py:278
 msgid "Filter lines with subpart matches"
-msgstr "Прибрати знайдення, що перетинаються з іншими знайденнями"
+msgstr "Відсіяти рядки зі знайденнями, які перетинаються з попередніми"
 
 #: cmpltmpl/conc.py:337
 msgid "1st hit in doc"
@@ -4442,7 +4442,7 @@ msgstr "Пошук:"
 
 #: cmpltmpl/jobs.py:483
 msgid "No matching records found"
-msgstr "Жодних знайдень"
+msgstr "Нічого не знайдено"
 
 #: cmpltmpl/jobs.py:516
 msgid ": activate to sort column ascending"
@@ -4482,4 +4482,4 @@ msgstr ""
 
 #: cmpltmpl/wsketch_form.py:415
 msgid "Show longest-commonest match"
-msgstr "Показувати найдовше-найчастіше траплення"
+msgstr "Показувати найдовше-найчастіший збіг"
