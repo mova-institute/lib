@@ -14,6 +14,7 @@ import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
 import { parseUmolodaArticle } from '../nlp/parsers/umoloda'
 import { parseDztArticle } from '../nlp/parsers/dzt'
+import { parseDenArticle } from '../nlp/parsers/den'
 import { trimExtension } from '../string_utils'
 import * as nlpUtils from '../nlp/utils'
 
@@ -30,6 +31,7 @@ const partName2function = {
   umoloda,
   dzt,
   kontrakty,
+  den,
 }
 
 if (require.main === module) {
@@ -73,6 +75,48 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
       publisher: 'Україна молода',
       proofread: '✓',
       href: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
+      author,
+      title,
+      date,
+      text_type: 'публіцистика::стаття',
+    }
+
+    fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
+    for (let p of paragraphs) {
+      fs.writeSync(verticalFile, '<p>\n')
+      let stream = nlpUtils.string2tokenStream(p, analyzer)
+        .map(x => nlpUtils.token2sketchVertical(x))
+        .chunk(10000)
+      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
+      fs.writeSync(verticalFile, '</p>\n')
+    }
+    fs.writeSync(verticalFile, `</doc>\n`)
+  }
+}
+
+//------------------------------------------------------------------------------
+function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+  let articlePathsGLob = join(workspacePath, 'den/fetched_articles/*/**/*.html')
+  let articlePaths = globSync(articlePathsGLob)
+
+  for (let path of articlePaths) {
+    console.log(`processing den article ${trimExtension(basename(path))}`)
+
+    let html = fs.readFileSync(path, 'utf8')
+    try {
+      var { author, date, paragraphs, title, url, valid} = parseDenArticle(html, htmlDocCreator)
+    } catch (e) {
+      console.error(`Error: ${e.message}`)
+      continue
+    }
+    if (!valid) {
+      continue
+    }
+
+    let meta = {
+      publisher: 'День',
+      proofread: '✓',
+      href: url,
       author,
       title,
       date,
