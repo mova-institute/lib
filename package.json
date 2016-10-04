@@ -12,6 +12,7 @@
     "mitag": "lib/bin/tag.js",
     "mivesum2mte": "lib/bin/misc/vesum2mte.js",
     "mibuildcorp": "lib/corpus_workflow/build.js",
+    "mideploycorp": "lib/corpus_workflow/deploy.js",
     "mibuilddict": "bin/compile-dict"
   },
   "scripts": {},

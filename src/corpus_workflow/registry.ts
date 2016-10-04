@@ -9,8 +9,8 @@ MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
 PATH "/srv/corpora/manatee/everything_${copusVersion}"
-SUBCDEF "/srv/corpora/registry/everything_${copusVersion}_sub"
-VERTICAL "/srv/corpora/vertical/dummy.vertical.txt"
+#SUBCDEF "/srv/corpora/registry/everything_${copusVersion}_sub"
+VERTICAL "/srv/corpora/vertical/dummy.vertical.txt"    # or else error is thrown
 
 
 LANGUAGE "Ukrainian"
@@ -95,6 +95,9 @@ STRUCTURE doc {
     MULTIVALUE yes
     MULTISEP "|"
     MAXLISTSIZE "300"
+  }
+  ATTRIBUTE publisher {
+    LABEL "видавець"
   }
   ATTRIBUTE text_type {
     LABEL "тип тексту"

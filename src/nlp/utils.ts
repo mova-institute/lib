@@ -129,17 +129,18 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
 
 ////////////////////////////////////////////////////////////////////////////////
 const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WORDCHAR}])`)
-export function* tokenizeUk(val: string, analyzer: MorphAnalyzer) {
+export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
+  let ret: { token: string, glue: boolean }[] = []
   let toks = val.trim().split(SPLIT_REGEX)
   let glue = false
   for (let i = 0; i < toks.length; ++i) {
     let token = toks[i]
     if (!/^\s*$/.test(token)) {
       if (token.includes('-') && !analyzer.canBeToken(token)) {
-        yield* token.split(/(-)/).filter(x => !!x).map(token => ({ token, glue }))
+        ret.push(...token.split(/(-)/).filter(x => x).map(token => ({ token, glue })))
       }
       else {
-        yield { token, glue }
+        ret.push({ token, glue })
       }
       glue = true
     }
@@ -147,12 +148,15 @@ export function* tokenizeUk(val: string, analyzer: MorphAnalyzer) {
       glue = false
     }
   }
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
   return mu((function* () {
-    for (let {token, glue} of tokenizeUk(val, analyzer)) {
+    let tokens = tokenizeUk(val, analyzer)
+    for (let i = 0; i < tokens.length; ++i) {
+      let {token, glue} = tokens[i]
       if (glue) {
         yield Token.glue()
       }
@@ -363,7 +367,7 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     } else {
       token.elem.clear()
       token.clearDisamb()
-      let next = token.nextToken() && token.nextToken()!.text()
+      let next = token.nextToken() && token.nextToken() !.text()
       fillInterpElement(token.elem, form, tagOrXVesum(analyzer.tagOrX(form, next)))
       interps.forEach(x => {
         if (true /*token.hasInterp(x.flags, x.lemma)*/) {  // todo
@@ -735,7 +739,7 @@ export function token2sketchVertical(token: Token) {
     ret += `${tagName}>`
     return ret
   }
-  console.log(token)
+  throw new Error('Unknown token')
 }
 
 ////////////////////////////////////////////////////////////////////////////////

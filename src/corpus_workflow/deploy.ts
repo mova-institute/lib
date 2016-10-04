@@ -1,6 +1,9 @@
+#!/usr/bin/env node
+
 import * as readline from 'readline'
 import { sync as globSync } from 'glob'
 import { join } from 'path'
+import { readFileSync, existsSync } from 'fs'
 import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 import { execSync } from 'child_process'
@@ -10,7 +13,7 @@ import { generateRegistryFile } from './registry'
 
 
 interface Args {
-  // workspace: string
+  workspace: string
   vertical: string
 }
 
@@ -24,11 +27,10 @@ const remoteRegistry = '/srv/corpora/registry/'
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     alias: {
-      // 'workspace': ['ws'],
-      // 'vertical': ['v'],
+      workspace: ['ws'],
     },
     default: {
-      vertical: './{kotsyba.vertical.txt,umoloda.vertical*,dzt.vertical*,kontrakty.vertical*}',
+      workspace: '.',
     },
   }) as any
 
@@ -36,10 +38,18 @@ if (require.main === module) {
 }
 
 
-
+//------------------------------------------------------------------------------
 function main(args: Args) {
+  if (!args.vertical && args.workspace) {
+    let settings = JSON.parse(readFileSync(join(args.workspace, 'settings.json'), 'utf8'))
+    args.vertical = settings.verticalFiles
+      .map(x => join(args.workspace, x))
+      .join(',')
+    args.vertical = `{${args.vertical}}`
+  }
+
   let versionStr = execRemote2String(r`grep "^\s*corplist" ${remoteRuncgi}`)
-  versionStr = versionStr.match(/everything_(\d+)/)![1]
+  versionStr = versionStr.match(/everything_(\d+)/) ![1]
   let n = Number(versionStr) + 1
   console.log(`creating corpus version ${n}`)
 
@@ -49,6 +59,10 @@ function main(args: Args) {
   execRemote(`cat - > ${remoteRegistry}${corpusName}_sub`, configs.subcorpus)
 
   let verticalFiles = globSync(args.vertical, { nosort: true })
+  let nonExistentFiles = verticalFiles.filter(x => !existsSync(x))
+  if (nonExistentFiles.length) {
+    throw new Error(`File(s) not found:\n${nonExistentFiles.join('\n')}`)
+  }
   console.log(`indexing a corpus from ${verticalFiles.length} files:\n${verticalFiles.join('\n')}`)
   let compileCommand = `cat ${verticalFiles.join(' ')} `
     + `| ssh -C ${remoteUser}@${remoteDomain}`
