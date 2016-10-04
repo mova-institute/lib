@@ -13,7 +13,7 @@
     "skipLibCheck": true,
     // "strictNullChecks": true,
     // "noImplicitAny": true,
-    // "noImplicitThis": true,
+    "noImplicitThis": true,
     "lib": [
       "es2017",
       "dom"
