@@ -39,7 +39,7 @@ if (require.main === module) {
 
 function main(args: Args) {
   let versionStr = execRemote2String(r`grep "^\s*corplist" ${remoteRuncgi}`)
-  versionStr = versionStr.match(/everything[_\.](\d+)/)![1]
+  versionStr = versionStr.match(/everything_(\d+)/)![1]
   let n = Number(versionStr) + 1
   console.log(`creating corpus version ${n}`)
 
@@ -65,7 +65,7 @@ function main(args: Args) {
     switch (answer.toLowerCase()) {
       case 'y':
         execRemote(`cp ${remoteRuncgi} ~`)
-        execRemote(`sed -i -E 's/everything[_\.][0-9]+/everything_${n}/g' ${remoteRuncgi}`)
+        execRemote(`sed -i -E 's/everything_[0-9]+/everything_${n}/g' ${remoteRuncgi}`)
         break
       case 'n':
         break

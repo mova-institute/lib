@@ -10,7 +10,7 @@ TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
 PATH "/srv/corpora/manatee/everything_${copusVersion}"
 SUBCDEF "/srv/corpora/registry/everything_${copusVersion}_sub"
-#VERTICAL "/srv/corpora/vertical/everything.vertical.txt"
+VERTICAL "/srv/corpora/vertical/dummy.vertical.txt"
 
 
 LANGUAGE "Ukrainian"
