@@ -24,6 +24,7 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
 
 ATTRIBUTE word {
   LABEL "слово"
+  TYPE "FD_FGD"
 }
 
 ATTRIBUTE lc {
@@ -43,6 +44,7 @@ ATTRIBUTE lemma {
   LABEL "лема"
   MULTIVALUE yes
   MULTISEP  "|"
+  TYPE "FD_FGD"
 }
 
 ATTRIBUTE  lemma_lc  {
