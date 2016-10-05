@@ -1404,7 +1404,7 @@ msgstr "Неозначена ЧМ словоформи"
 
 #: conccgi.py:802 conccgi.py:1055
 msgid "No query entered."
-msgstr "Жодного запиту."
+msgstr "Порожній запит"
 
 msgid "Select Positive or Negative filter type"
 msgstr "Виберіть фільтр, що лишає або прибирає знайдене"
@@ -2532,7 +2532,7 @@ msgstr "унарні зв’язки"
 
 #: cmpltmpl/conc.py:278
 msgid "Filter lines with subpart matches"
-msgstr "Відсіяти рядки зі знайденнями, які перетинаються з попередніми"
+msgstr "Відсіяти рядки зі знайденнями, які перетинаються зі знайденнями в попередніх рядках"
 
 #: cmpltmpl/conc.py:337
 msgid "1st hit in doc"
