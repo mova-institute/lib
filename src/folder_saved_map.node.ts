@@ -1,7 +1,7 @@
-import * as fs from 'fs'
-import { basename, join, relative, dirname } from 'path'
+import { createWriteStream } from 'fs'
+import { join, relative, dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
-import {sync as globSync} from 'glob'
+import { sync as globSync } from 'glob'
 
 
 
@@ -19,7 +19,7 @@ export class FolderSavedMap {
     if (!this.keySet.has(key)) {
       let path = join(this.directoryPath, key)
       mkdirpSync(dirname(path))
-      fs.writeFileSync(path, value)
+      createWriteStream(path).write(value)
       this.keySet.add(key)
     }
   }
