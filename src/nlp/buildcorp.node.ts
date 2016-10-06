@@ -10,7 +10,8 @@ import { filename2lxmlRootSync } from '../utils.node'
 import { indexTableByColumns, unique } from '../algo'
 import { createObject2, arrayed } from '../lang'
 import { mu } from '../mu'
-import {trimExtension} from '../string_utils'
+import { trimExtension, numDigits } from '../string_utils'
+
 
 
 const globSync = require('glob').sync
@@ -48,10 +49,6 @@ function normalizeArgs(params) {
 
 function docCreator(xmlstr: string) {
   return LibxmljsDocument.parse(xmlstr)
-}
-
-function numDigits(integer: number) {
-  return Math.floor(Math.log10(integer)) + 1
 }
 
 function zeropad(value: number, max: number) {

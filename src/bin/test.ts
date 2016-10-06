@@ -16,6 +16,7 @@ import * as glob from 'glob'
 import { parseUmolodaArticle } from '../nlp/parsers/umoloda'
 import { parseDztArticle } from '../nlp/parsers/dzt'
 import { parseDenArticle } from '../nlp/parsers/den'
+import { parseZbrucArticle } from '../nlp/parsers/zbruc'
 import { fetchText } from '../nlp/grabbers/utils'
 import { mu } from '../mu'
 import *as _ from 'lodash'
@@ -38,16 +39,21 @@ main()
 
 function main() {
 
-  let articles = glob.sync('/Users/msklvsk/Developer/mova-institute/workspace/den/fetched_articles/*/**/*.html')
+  let articles = glob.sync('/Users/msklvsk/Developer/mova-institute/workspace/zbruc/fetched_articles/**/*.html')
 
   for (let article of articles) {
     let content = readFileSync(article, 'utf8')
     try {
-      var parsed = parseDenArticle(content, htmlDocCreator)
+      var parsed = parseZbrucArticle(content, htmlDocCreator)
     } catch (e) {
+      console.error(article)
       console.error(`errr ${article} ${e.message}`)
+      continue
     }
-    let { author, date, description, paragraphs, title, url} = parsed
+    if (!parsed.isValid) {
+      console.log(parsed)
+    }
+    // let { author, date, description, paragraphs, title, url} = parsed
     // let log = Object.keys(parsed).map(x => {
     //   let ret = `${x.substr(0,5)}="`
     //   if (!parsed[x].toString().trim()) {
@@ -60,9 +66,9 @@ function main() {
     //   return ret + '"'
     // }).join(' | ')
 
-    if (!title || !paragraphs.length) {
-      console.log(parsed)
-    }
+    // if (!title || !paragraphs.length) {
+    //   console.log(parsed)
+    // }
     // let log = `${url.substr('http://day.kyiv.ua/uk/article/'.length)} ### ${title} ### ${paragraphs.length}`
     // console.log(log)
     // if (!a.paragraphs.length) {

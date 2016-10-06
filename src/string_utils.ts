@@ -51,3 +51,17 @@ export function applyUppercaseMask(str: string, mask: boolean[]) {
 export function startsWithCapital(str: string) {
   return str && str.charAt(0).toLowerCase() !== str.charAt(0)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function numDigits(integer: number) {
+  return Math.floor(Math.log10(integer)) + 1
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function zerofill(n: number, width: number) {
+  let numZeroes = width - numDigits(n)
+  if (numZeroes > 0) {
+    return '0'.repeat(numZeroes) + n
+  }
+  return n.toString()
+}
