@@ -1392,7 +1392,7 @@ msgstr "інше"
 
 #: conccgi.py:524 cmpltmpl/trends.py:265
 msgid "Empty result"
-msgstr "Жодних знайдень"
+msgstr "Нічого не знайдено"
 
 #: conccgi.py:834
 msgid "Undefined lemma PoS"
