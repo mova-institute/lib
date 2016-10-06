@@ -15,9 +15,11 @@ export class FileSavedSet<T extends Tostringable> {
   constructor(filePath: string) {
     if (fs.existsSync(filePath)) {
       fs.readFileSync(filePath, 'utf8').split('\n').forEach(x => this.set.add(x))
+      this.file = fs.openSync(filePath, 'a')
+    } else {
+      mkdirpSync(basename(filePath))
+      this.file = fs.openSync(filePath, 'w')
     }
-    mkdirpSync(basename(filePath))
-    this.file = fs.openSync(filePath, 'a')
   }
 
   add(value: T) {
