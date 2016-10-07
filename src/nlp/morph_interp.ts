@@ -794,6 +794,7 @@ export class MorphInterp {
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
   isN2Adj() { return this.features.n2adjness === N2adjness.yes }
 
+  isForeign() { return this.otherFlags.has('foreign') }
   isAnimate() { return this.features.animacy === Animacy.animate }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isInanimate() { return this.features.animacy === Animacy.inanimate }

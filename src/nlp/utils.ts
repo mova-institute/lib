@@ -16,7 +16,7 @@ import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
 import { Token, TokenType, Structure } from './token'
-import * as _ from 'lodash'
+import { uniq } from 'lodash'
 
 const wu: Wu.WuStatic = require('wu')
 
@@ -188,7 +188,7 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
     let ret = token.formRepesentation() + ' '
     let interps = token.interps.map(x => `${x.lemma}[${tagSerializer(x)}]`)
     if (mte) {
-      interps = _.uniq(interps)
+      interps = uniq(interps)
     }
     ret += interps.join('|')
 
@@ -347,14 +347,16 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
       }
 
       if (name === W || name === 'w') {  // hack, todo
+        let attributes = el.attributes().map(x => [x.nameLocal(), x.value()])
         let lang = el.lang()
         if (lang && lang !== 'uk') {
-          tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0)
+          var miw = tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0)
         }
-        else {
+        else if (!el.attribute('ana') || !el.attribute('lemma')) {
           let next = findNextToken(el)
-          tagWord(el, tagFunction(analyzer.tagOrX(el.text(), next && next.text())))
+          miw = tagWord(el, tagFunction(analyzer.tagOrX(el.text(), next && next.text())))
         }
+        attributes.forEach(x => miw.setAttribute(x[0], x[1]))
       }
     })
   }
@@ -386,12 +388,9 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
 
 ////////////////////////////////////////////////////////////////////////////////
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
-  let idGen = 0
-  traverseDepthEl(root, el => {
-    if (el.name() === W_) {
-      el.setAttribute(attributeName, (idGen++).toString())
-    }
-  })
+  let idGen = 0  // todo: switch from wu to normal forEach
+  root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)  // todo: NS bug
+    .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
 
   return idGen
 }

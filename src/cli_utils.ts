@@ -1,5 +1,7 @@
 import { createReadStream, createWriteStream, rename } from 'fs'
+import { dirname } from 'path'
 import * as tmp from 'tmp'
+import { sync as mkdirpSync } from 'mkdirp'
 
 const minimist = require('minimist')
 tmp.setGracefulCleanup()
@@ -38,7 +40,9 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
     if (res instanceof Promise) {
       await res
       if (tmpFile) {
-        await rename(tmpFile.name, filename2 || filename1)
+        let filename = filename2 || filename1
+        mkdirpSync(dirname(filename))
+        await rename(tmpFile.name, filename)
       }
     }
   }

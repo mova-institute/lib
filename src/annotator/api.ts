@@ -13,7 +13,7 @@ import { getLibRootRelative } from '../path.node'
 
 
 // const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve'])
-let morph = createMorphAnalyzerSync(getLibRootRelative('../data/dict/vesum'))
+let analyzer = createMorphAnalyzerSync(getLibRootRelative('../data/dict/vesum'))
   .setExpandAdjectivesAsNouns()
 
 const COOKIE_CONFIG = {
@@ -135,19 +135,11 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   if (root.evaluateBoolean('boolean(//mi:w[not(@n)])', NS)) {
     throw new HttpError(400, 'Not all words are numerated')
   }
-  // let root = string2lxmlRoot(req.body.content)
-  // morphInterpret(root, morph)
-  // if (root.evaluateBoolean('boolean(//mi:w[@n])', NS)) {
-  //   if (root.evaluateBoolean('boolean(//mi:w[not(@n)])', NS)) {
-  //     throw new HttpError(400)
-  //   }
-  // } else {
-  //   enumerateWords(root, 'n')
-  // }
+  morphInterpret(root, analyzer)
 
   let docId = await client.insert('document', {
     name: req.body.name,
-    content: req.body.content/*root.serialize()*/,
+    content: root.serialize(),
     createdBy: req.bag.user.id,
     projectId,
   }, 'id')
@@ -251,7 +243,7 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
     if (isReinterpNeeded(task)) {
       let root = string2lxmlRoot(task.content)
       if (task.step === 'annotate') {
-        morphReinterpret([...root.evaluateElements('//mi:w_', NS)], morph)
+        morphReinterpret([...root.evaluateElements('//mi:w_', NS)], analyzer)
       }
       task.content = root.serialize()
     }
