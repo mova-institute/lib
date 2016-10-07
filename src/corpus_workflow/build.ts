@@ -96,8 +96,8 @@ function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
   for (let path of articlePaths) {
     console.log(`processing den article ${trimExtension(basename(path))}`)
 
-    let html = fs.readFileSync(path, 'utf8')
     try {
+      let html = fs.readFileSync(path, 'utf8')
       var { author, date, paragraphs, title, url, valid} = parseDenArticle(html, htmlDocCreator)
     } catch (e) {
       console.error(`Error: ${e.message}`)
@@ -127,8 +127,8 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
     .sort((a, b) => Number(trimExtension(basename(a))) - Number(trimExtension(basename(b))))
 
   for (let path of articlePaths) {
-    let html = fs.readFileSync(path, 'utf8')
     try {
+      let html = fs.readFileSync(path, 'utf8')
       var { author, date, paragraphs, title, url, isValid} = parseTyzhdenArticle(html, htmlDocCreator)
     } catch (e) {
       console.error(`Error: ${e.stack}`)
@@ -159,8 +159,8 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: num
   let articlePaths = globSync(articlePathsGLob)
 
   for (let path of articlePaths) {
-    let html = fs.readFileSync(path, 'utf8')
     try {
+      let html = fs.readFileSync(path, 'utf8')
       var { author, date, paragraphs, title, url, isValid} = parseZbrucArticle(html, htmlDocCreator)
     } catch (e) {
       console.error(`Error: ${e.message}`)
