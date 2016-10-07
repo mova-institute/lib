@@ -54,6 +54,9 @@ export function startsWithCapital(str: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function numDigits(integer: number) {
+  if (integer === 0) {
+    return 1
+  }
   return Math.floor(Math.log10(integer)) + 1
 }
 

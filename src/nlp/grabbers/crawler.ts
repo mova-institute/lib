@@ -68,6 +68,7 @@ export class Crawler {
     }
 
     this.visited.add(urlStr)
+    console.log(`fully processed ${urlStr}`)
   }
 
   private urlCompare(a: Url, b: Url) {

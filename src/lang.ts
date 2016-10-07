@@ -1,5 +1,12 @@
 export const r = String.raw
 
+////////////////////////////////////////////////////////////////////////////////
+export function matchNth(str: string, re: RegExp, n: number) {
+  let match = str.match(re)
+  if (match) {
+    return match[n]
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function matchAll(str: string, re: RegExp) {

@@ -17,9 +17,10 @@ import { parseUmolodaArticle } from '../nlp/parsers/umoloda'
 import { parseDztArticle } from '../nlp/parsers/dzt'
 import { parseDenArticle } from '../nlp/parsers/den'
 import { parseZbrucArticle } from '../nlp/parsers/zbruc'
+import { parseTyzhdenArticle } from '../nlp/parsers/tyzhden'
 import { fetchText } from '../nlp/grabbers/utils'
 import { mu } from '../mu'
-import *as _ from 'lodash'
+import * as _ from 'lodash'
 
 
 // export const config: ClientConfig = {
@@ -39,18 +40,25 @@ main()
 
 function main() {
 
-  let articles = glob.sync('/Users/msklvsk/Developer/mova-institute/workspace/zbruc/fetched_articles/**/*.html')
-
+  let articles = glob.sync('/Users/msklvsk/Developer/mova-institute/workspace/tyzhden/html/**/*.html')
+  articles = _.shuffle(articles)
+  let i = 0
   for (let article of articles) {
+    ++i
     let content = readFileSync(article, 'utf8')
     try {
-      var parsed = parseZbrucArticle(content, htmlDocCreator)
+      var parsed = parseTyzhdenArticle(content, htmlDocCreator)
     } catch (e) {
       console.error(article)
-      console.error(`errr ${article} ${e.message}`)
+      console.error(`${e.message}\n${e.stack}`)
+      // throw e
       continue
     }
-    if (!parsed.isValid) {
+    // if (/*!(i % 1000) || */!parsed.isValid && parsed.author !== 'The Economist' && content.length > 1000) {
+    if (/*!(i % 100) &&*/ parsed.isValid && !parsed.title) {
+    // if (!(i % 100) && parsed.isValid) {
+      console.log(i)
+      console.log(article)
       console.log(parsed)
     }
     // let { author, date, description, paragraphs, title, url} = parsed

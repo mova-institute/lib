@@ -12,19 +12,20 @@ interface Args {
 
 
 const cats = [
-  'Politics',
-  'Economics',
-  'World',
-  'Society',
-  'Culture',
-  'Travel',
-  'History',
   'Auto',
-  'Warsubject',
   'Columns',
+  'Culture',
+  'Economics',
+  'History',
+  'News',
+  'Politics',
   'PressReleases',
   'PrivateUrbanStudies',
-  'News',
+  'Publication',
+  'Society',
+  'Travel',
+  'Warsubject',
+  'World',
 ]
 
 
@@ -43,12 +44,12 @@ if (require.main === module) {
 
 
 async function main(args: Args) {
-  const re = new RegExp(String.raw`^(${cats.join('|')})/\d+`)
+  const re = new RegExp(String.raw`^(${cats.join('|')})/\d+$`)
   try {
     let crawler = new Crawler(join(args.workspace, 'tyzhden'))
       .setUrlsToFollow(x => !x.endsWith('/PrintView') && !/^(Gallery|Video|Author)\b/.test(x))
       .setUrlsToSave(x => re.test(x))
-    crawler.seed(args.seed)
+    await crawler.seed(args.seed)
   } catch (e) {
     console.error(e)
   }

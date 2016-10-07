@@ -623,6 +623,7 @@ export function normalizeCorpusTextString(value: string) {
     .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
     .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${LETTER_UK}\w])`, 'g'), '$1“$2')
     .replace(new RegExp(r`([${LETTER_UK}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
+    .replace(/[\u00AD]/g, '')  // &shy
   ret = fixLatinGlyphMisspell(ret)
 
   return ret

@@ -16,6 +16,7 @@ import { parseUmolodaArticle } from '../nlp/parsers/umoloda'
 import { parseDztArticle } from '../nlp/parsers/dzt'
 import { parseDenArticle } from '../nlp/parsers/den'
 import { parseZbrucArticle } from '../nlp/parsers/zbruc'
+import { parseTyzhdenArticle } from '../nlp/parsers/tyzhden'
 import { trimExtension } from '../string_utils'
 import * as nlpUtils from '../nlp/utils'
 
@@ -34,6 +35,7 @@ const partName2function = {
   kontrakty,
   den,
   zbruc,
+  tyzhden,
 }
 
 if (require.main === module) {
@@ -82,17 +84,7 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
       date,
       text_type: 'публіцистика::стаття',
     }
-
-    fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
-    for (let p of paragraphs) {
-      fs.writeSync(verticalFile, '<p>\n')
-      let stream = nlpUtils.string2tokenStream(p, analyzer)
-        .map(x => nlpUtils.token2sketchVertical(x))
-        .chunk(10000)
-      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-      fs.writeSync(verticalFile, '</p>\n')
-    }
-    fs.writeSync(verticalFile, `</doc>\n`)
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
 }
 
@@ -124,17 +116,40 @@ function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
       date,
       text_type: 'публіцистика::стаття',
     }
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
+  }
+}
 
-    fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
-    for (let p of paragraphs) {
-      fs.writeSync(verticalFile, '<p>\n')
-      let stream = nlpUtils.string2tokenStream(p, analyzer)
-        .map(x => nlpUtils.token2sketchVertical(x))
-        .chunk(10000)
-      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-      fs.writeSync(verticalFile, '</p>\n')
+//------------------------------------------------------------------------------
+function tyzhden(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+  let articlePathsGLob = join(workspacePath, 'tyzhden/html/**/*.html')
+  let articlePaths = globSync(articlePathsGLob, { nosort: true })
+    .sort((a, b) => Number(trimExtension(basename(a))) - Number(trimExtension(basename(b))))
+
+  for (let path of articlePaths) {
+    let html = fs.readFileSync(path, 'utf8')
+    try {
+      var { author, date, paragraphs, title, url, isValid} = parseTyzhdenArticle(html, htmlDocCreator)
+    } catch (e) {
+      console.error(`Error: ${e.stack}`)
+      continue
     }
-    fs.writeSync(verticalFile, `</doc>\n`)
+    if (!isValid) {
+      continue
+    }
+    console.log(`processing tyzhden article ${url}`)
+
+    let meta = {
+      publisher: 'Тиждень',
+      proofread: '✓',
+      href: url,
+      author,
+      title,
+      date,
+      text_type: 'публіцистика::стаття',
+    }
+
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
 }
 
@@ -166,16 +181,7 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: num
       text_type: 'публіцистика::стаття',
     }
 
-    fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
-    for (let p of paragraphs) {
-      fs.writeSync(verticalFile, '<p>\n')
-      let stream = nlpUtils.string2tokenStream(p, analyzer)
-        .map(x => nlpUtils.token2sketchVertical(x))
-        .chunk(10000)
-      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-      fs.writeSync(verticalFile, '</p>\n')
-    }
-    fs.writeSync(verticalFile, `</doc>\n`)
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
 }
 
@@ -204,16 +210,7 @@ function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
       text_type: 'публіцистика::стаття',
     }
 
-    fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
-    for (let p of paragraphs) {
-      fs.writeSync(verticalFile, '<p>\n')
-      let stream = nlpUtils.string2tokenStream(p, analyzer)
-        .map(x => nlpUtils.token2sketchVertical(x))
-        .chunk(10000)
-      stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-      fs.writeSync(verticalFile, '</p>\n')
-    }
-    fs.writeSync(verticalFile, `</doc>\n`)
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
 }
 
@@ -240,6 +237,19 @@ function kontrakty(workspacePath: string, analyzer: MorphAnalyzer, verticalFile:
     stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
     fs.writeSync(verticalFile, `</doc>\n`)
   }
+}
+//------------------------------------------------------------------------------
+function writeDocMetaAndParagraphs(meta: any, paragraphs: string[], analyzer: MorphAnalyzer, verticalFile: number) {
+  fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
+  for (let p of paragraphs) {
+    fs.writeSync(verticalFile, '<p>\n')
+    let stream = nlpUtils.string2tokenStream(p, analyzer)
+      .map(x => nlpUtils.token2sketchVertical(x))
+      .chunk(10000)
+    stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
+    fs.writeSync(verticalFile, '</p>\n')
+  }
+  fs.writeSync(verticalFile, `</doc>\n`)
 }
 
 //------------------------------------------------------------------------------

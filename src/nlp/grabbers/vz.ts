@@ -23,7 +23,7 @@ if (require.main === module) {
       'lastPage': ['last-page'],
     },
     default: {
-      lastPage: 134670,
+      lastPage: 13467,
     },
   }) as any
 
