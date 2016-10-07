@@ -15,3 +15,9 @@ export const WORDCHAR_RE = new RegExp(`^[${WORDCHAR}]+$`)
 
 
 //(?:(?=\w)(?<!\w)|(?<=\w)(?!\w))
+
+const diacritics = [
+  ['і', '\u{308}', 'ї'],
+  ['и', '\u{306}', 'й'],
+  // ['', '', ''],
+]

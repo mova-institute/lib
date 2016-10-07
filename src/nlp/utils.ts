@@ -82,6 +82,12 @@ const NO_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0] &&
 
 const WORD_TAGS = new Set([W, W_])
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function normalizeDiacritics(str: string) {
+  return str.replace(/і\u{308}/gu, 'ї').replace(/и\u{306}/gu, 'й')
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetween(tagA: string, textA: string, tagB: string, textB: string) {
   if (!tagA || !tagB) {
@@ -624,8 +630,9 @@ export function normalizeCorpusTextString(value: string) {
     .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${LETTER_UK}\w])`, 'g'), '$1“$2')
     .replace(new RegExp(r`([${LETTER_UK}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
     .replace(/[\u00AD]/g, '')  // &shy
+    .replace(new RegExp(r`([${LETTER_UK}])- ([${LETTER_UK}])`, 'g'), '$1$2')  // naive hypenation
   ret = fixLatinGlyphMisspell(ret)
-
+  ret = normalizeDiacritics(ret)
   return ret
 }
 
