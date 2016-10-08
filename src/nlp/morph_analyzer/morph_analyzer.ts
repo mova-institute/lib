@@ -1,4 +1,4 @@
-import { flatten } from 'lodash'
+import * as flatten from 'lodash/flatten'
 
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
@@ -280,9 +280,12 @@ export class MorphAnalyzer {
   private lookupRaw(token: string) {
     let ret = this.dictionary.lookup(token)
     if (this.expandAdjectivesAsNouns) {
-      ret = mu(ret.map(x =>
-        mu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
-          .map(flags => ({ flags, lemma: x.lemma })))).flatten()
+      let a = ret.map(x => {
+        return mu(expandInterp(this.expandAdjectivesAsNouns, x.flags, x.lemma))
+          .map(flags => ({ flags, lemma: x.lemma }))
+          .toArray()
+      })
+      ret = flatten(a) as any
     }
     return ret
   }

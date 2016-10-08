@@ -1,5 +1,5 @@
 import { VesumLineDescriptor } from './vesum_line_descriptor'
-import { clone } from 'lodash'
+import * as clone from 'lodash/clone'
 
 
 ////////////////////////////////////////////////////////////////////////////////

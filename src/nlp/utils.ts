@@ -16,7 +16,7 @@ import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
 import { Token, TokenType, Structure } from './token'
-import { uniq } from 'lodash'
+import * as uniq from 'lodash/uniq'
 
 const wu: Wu.WuStatic = require('wu')
 
