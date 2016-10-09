@@ -70,7 +70,7 @@ function countOf(i: number, len: number) {
 }
 
 function prepareMetadataFiles(filePaths: string[]) {
-  let rows = []
+  let rows = new Array()
   for (let filePath of filePaths) {
     let fileStr = fs.readFileSync(filePath, 'utf8')
     rows.push(...separatedValues2Objects(fileStr, '\t'))

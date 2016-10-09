@@ -330,7 +330,7 @@ export class MorphAnalyzer {
         continue
       }
 
-      let matchedPrefixes = []
+      let matchedPrefixes: string[] = []
       if (prefixesRegex) {
         let match = lowercase.match(prefixesRegex)
         if (match) {

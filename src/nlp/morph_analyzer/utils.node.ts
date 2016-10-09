@@ -20,8 +20,8 @@ export function writeCompiledDict(path: string, compiledDict: CompiledDict) {
   for (let paradigm of compiledDict.paradigms) {
     let buf = new Buffer(2)
     buf.writeUInt16LE(paradigm.length / 3, 0)
-    writeSync(f, buf, 0, buf.length, null)
-    writeSync(f, new Buffer(new Uint8Array(paradigm.buffer)), 0, paradigm.byteLength, null)
+    writeSync(f, buf, 0, buf.length)
+    writeSync(f, new Buffer(new Uint8Array(paradigm.buffer)), 0, paradigm.byteLength)
   }
   closeSync(f)
 

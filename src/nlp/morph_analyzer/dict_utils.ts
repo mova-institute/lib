@@ -6,8 +6,8 @@ export const COMPARATOR = new Intl.Collator('uk-UA').compare
 
 
 // see https://github.com/Microsoft/TypeScript/issues/4233
-export const _compileDictReturn = false && compileDict(null)
-export type CompiledDict = typeof _compileDictReturn
+export const compileDictReturn = false && compileDict(null)
+export type CompiledDict = typeof compileDictReturn
 
 
 
@@ -18,7 +18,7 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
   let paradigmPopularity = new Array<number>()
 
   let paradigmIds = new JsonCompareMap<Paradigm, number>()
-  let paradigms = []
+  let paradigms = new Array()
   let suffixBag = new Set<string>()
 
   for (let lexeme of lexemes) {
@@ -87,8 +87,8 @@ export function* lexemes(lines: Array<string>) {
 
 
 
-export const _extractParadigmReturn = false && extractParadigm(null, null).paradigm
-type Paradigm = typeof _extractParadigmReturn
+export const extractParadigmReturn = false && extractParadigm([], null).paradigm
+type Paradigm = typeof extractParadigmReturn
 
 ////////////////////////////////////////////////////////////////////////////////
 function extractParadigm(lexeme: Array<[string, string]>, knownPrefixes) {

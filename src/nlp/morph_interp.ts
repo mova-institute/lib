@@ -395,7 +395,7 @@ export class MorphInterp {
   ])
 
 
-  lemma: string
+  lemma?: string
   features = new Features()
   private otherFlags = new Set<string>()
 
@@ -545,7 +545,7 @@ export class MorphInterp {
     // kill redundant info
     if (!isOddball(ret.features.gender) && ret.features.number === MorphNumber.singular
       && ret.features.pos !== Pos.cardinalNumeral && ret.features.ordinalNumeral === undefined) {
-      ret.features.number = undefined
+      delete ret.features.number
     }
 
     return ret
