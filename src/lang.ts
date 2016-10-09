@@ -1,6 +1,15 @@
 export const r = String.raw
 
 ////////////////////////////////////////////////////////////////////////////////
+export function match(str: string, re: RegExp) {
+  let ret = str.match(re)
+  if (ret) {
+    return ret as Array<string>
+  }
+  return []
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function matchNth(str: string, re: RegExp, n: number) {
   let match = str.match(re)
   if (match) {

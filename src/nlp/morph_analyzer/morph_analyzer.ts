@@ -85,14 +85,14 @@ const gluedPrefixes = [
 const PREFIX_SPECS = [
   {
     prefixesRegex: new RegExp(`^(${gluedPrefixes.join('|')})+`, 'g'),
-    test: (x: MorphInterp) => x.isNoun() || x.isAdjective(),
+    test: (x: MorphInterp) => x.isNoun() || x.isAdjective() || x.isAdverb(),
   },
   {
     prefixes: ['пре'],
     test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
-    prefixes: ['за'],
+    prefixes: ['за', 'не'],
     test: (x: MorphInterp) => x.isAdverb(),
   },
   {
@@ -100,7 +100,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у', 'пере', 'ви', 'на'],
+    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у', 'пере', 'ви', 'на', 'пови'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -236,6 +236,17 @@ export class MorphAnalyzer {
     if (!res.size) {
       if (lowercase.endsWith('річчя')) {
         res.addAll(this.lookup('дворіччя').map(x => x.setIsAuto().setLemma(lowercase)))
+      }
+    }
+
+    // Погода була *най*кепська
+    if (!res.size && /^(що|як)?най/.test(lowercase)) {
+      let match = lowercase.match(/^(що|як)?най/)
+      if (match) {
+        let toadd = this.lookup(lowercase.substr(match[0].length))
+          .filter(x => x.isAdjective())
+        toadd.forEach(x => x.setLemma(match[0] + x.lemma).setIsAuto(true).setIsAbsolute())
+        res.addAll(toadd)
       }
     }
 

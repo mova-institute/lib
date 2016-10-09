@@ -839,6 +839,7 @@ export class MorphInterp {
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
   setPseudoanimacy(value = true) { this.features.pseudoanimacy = value ? Pseudoanimacy.animate : Pseudoanimacy.inanimate; return this }
+  setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
 
