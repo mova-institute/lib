@@ -5,7 +5,7 @@ import {
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
-import { r, createObject } from '../lang'
+import { r, createObject, matchAll } from '../lang'
 import { uniqueSmall as unique, uniqueJson } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
@@ -15,6 +15,7 @@ import { MorphInterp, compareTags } from './morph_interp'
 import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
+import { startsWithCapital } from '../string_utils'
 import { Token, TokenType, Structure } from './token'
 import * as uniq from 'lodash/uniq'
 
@@ -85,7 +86,9 @@ const WORD_TAGS = new Set([W, W_])
 
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeDiacritics(str: string) {
-  return str.replace(/і\u{308}/gu, 'ї').replace(/и\u{306}/gu, 'й')
+  return str
+    .replace(/і\u{308}/gui, x => startsWithCapital(x) ? 'Ї' : 'ї')
+    .replace(/и\u{306}/gui, x => startsWithCapital(x) ? 'Й' : 'й')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -170,7 +173,8 @@ export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
         yield Token.word(token, [MorphInterp.fromVesumStr('punct').setLemma(token)])
         continue
       }
-      yield Token.word(token, analyzer.tagOrX(token))
+      let next = tokens[i + 1] && tokens[i + 1].token
+      yield Token.word(token, analyzer.tagOrX(token, next))
     }
   })())
 }
@@ -289,7 +293,7 @@ export function isRegularizedFlowElement(el: AbstractElement) {
   return ret
 }
 
-const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g'])
+const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'se'])
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement) {
   let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)]
@@ -342,26 +346,41 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
     traverseDepthEl(subroot, el => {
 
       let name = el.name()
-      if (name === W_ || !isRegularizedFlowElement(el) || el.attribute('ana')) {
+      if (name === W_ || !isRegularizedFlowElement(el)) {
         return 'skip'
       }
 
       if (name === W || name === 'w') {  // hack, todo
         let attributes = el.attributes().map(x => [x.nameLocal(), x.value()])
-        let lang = el.lang()
-        if (lang && lang !== 'uk') {
-          var miw = tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0)
+        let lemma = el.attribute('lemma')
+        let ana = el.attribute('ana')
+        if (lemma && ana) {
+          var miw = tagWord(el, [{ lemma, flags: ana }]).setAttribute('disamb', 0)
+        } else {
+          let lang = el.lang()
+          if (lang && lang !== 'uk') {
+            miw = tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0)
+          }
+          else {
+            let next = findNextToken(el)
+            miw = tagWord(el, tagFunction(analyzer.tagOrX(el.text(), next && next.text())))
+          }
         }
-        else if (!el.attribute('ana') || !el.attribute('lemma')) {
-          let next = findNextToken(el)
-          miw = tagWord(el, tagFunction(analyzer.tagOrX(el.text(), next && next.text())))
-        }
-        attributes.forEach(x => miw.setAttribute(x[0], x[1]))
+        attributes.filter(x => x[0] !== 'lemma' && x[0] !== 'ana')
+          .forEach(x => miw.setAttribute(x[0], x[1]))
       }
     })
   }
 
   return root
+}
+
+//------------------------------------------------------------------------------
+function orX(form: string, interps: MorphInterp[]) {  // todo
+  if (!interps.length) {
+    interps = [MorphInterp.fromVesumStr('x', form)]
+  }
+  return interps
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -373,15 +392,18 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     if (lang && lang !== 'uk') {
       token.onlyInterpAs('x:foreign', form)
     } else {
-      token.elem.clear()
-      token.clearDisamb()
       let next = token.nextToken() && token.nextToken() !.text()
-      fillInterpElement(token.elem, form, tagOrXVesum(analyzer.tagOrX(form, next)))
-      interps.forEach(x => {
-        if (true /*token.hasInterp(x.flags, x.lemma)*/) {  // todo
-          token.alsoInterpAs(x.flags, x.lemma)
-        }
-      })
+      let curDictInterps = analyzer.tag(form, next)
+      if (curDictInterps.length) {
+        token.elem.clear()
+        token.clearDisamb()
+        fillInterpElement(token.elem, form, tagOrXVesum(orX(form, curDictInterps)))
+        interps.forEach(x => {
+          if (true /*token.hasInterp(x.flags, x.lemma)*/) {  // todo
+            token.alsoInterpAs(x.flags, x.lemma)
+          }
+        })
+      }
     }
   }
 }
@@ -393,6 +415,24 @@ export function enumerateWords(root: AbstractElement, attributeName = 'n') {
     .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
 
   return idGen
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function newline2Paragraph(root: AbstractElement) {
+  root.evaluateNodes('.//text()').forEach(node => {
+    let text = node.text()
+    if (text.trim()) {
+      text.split(/[\r\n]+/g).forEach(x => {
+        if (x.trim()) {
+          let p = root.document().createElement('p', NS.tei)
+          // console.log(node.wrapee.parent().)
+          node.parent().appendChild(p)  // todo!!
+          p.text(x)
+        }
+      })
+      node.remove()
+    }
+  })
 }
 
 //------------------------------------------------------------------------------
@@ -616,7 +656,24 @@ export function fixLatinGlyphMisspell(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function normalizeCorpusTextString(value: string) {
+export function removeHypenation(str: string, analyzer: MorphAnalyzer) {
+  let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-]\s+([${WORDCHAR}]+|$)`, 'g')
+  return str.replace(re, (match, beforeLeft, left, right) => {
+    let dashed = left + '-' + right
+    if (analyzer.canBeToken(dashed)) {
+      return beforeLeft + dashed
+    }
+    if (analyzer.canBeToken(left + right)) {  // it's a hypen
+      return beforeLeft + left + right
+    }
+    // return beforeLeft + left + '-' + right  // it's a dash
+    return beforeLeft + dashed
+  })
+    .replace(/\u00AD/g, '')  // just kill the rest
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
   let ret = value
     // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
@@ -628,17 +685,20 @@ export function normalizeCorpusTextString(value: string) {
     .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
     .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${LETTER_UK}\w])`, 'g'), '$1“$2')
     .replace(new RegExp(r`([${LETTER_UK}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
-    .replace(/[\u00AD]/g, '')  // &shy
-    .replace(new RegExp(r`([${LETTER_UK}])- ([${LETTER_UK}])`, 'g'), '$1$2')  // naive hypenation
+  // .replace(/[\u00AD]\s*/g, '')  // &shy
+  // .replace(new RegExp(r`([${LETTER_UK}])- ([${LETTER_UK}])`, 'g'), '$1$2')  // naive hypenation
   ret = fixLatinGlyphMisspell(ret)
   ret = normalizeDiacritics(ret)
+  if (analyzer) {
+    ret = removeHypenation(ret, analyzer)
+  }
   return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 const unboxElems = new Set(['nobr', 'img'])
 const removeElems = new Set(['br'])
-export function normalizeCorpusText(root: AbstractElement) {
+export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnalyzer) {
   let doc = root.document()
   traverseDepthEl(root, el => {
     if (unboxElems.has(el.localName())) {
@@ -654,7 +714,7 @@ export function normalizeCorpusText(root: AbstractElement) {
   })
 
   for (let textNode of root.evaluateNodes('//text()', NS)) {
-    let res = normalizeCorpusTextString(textNode.text())
+    let res = normalizeCorpusTextString(textNode.text(), analyzer)
     textNode.replace(doc.createTextNode(res))
   }
 
@@ -876,6 +936,7 @@ const structureElementName2type = new Map<string, Structure>([
   // ['', ''],
 ])
 
+////////////////////////////////////////////////////////////////////////////////
 export function* tei2tokenStream(root: AbstractElement) {
   for (let {el, entering} of iterateCorpusTokens(root)) {
     let name = el.localName()

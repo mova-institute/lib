@@ -58,8 +58,7 @@
 			"stopOnEntry": false,
 			"args": [
         "-t",
-        "у діда баба",
-        "--conllu"
+        "напр."
       ],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,

@@ -8,7 +8,7 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
   let tokenIndex = 1
   let sentenceId = 1
   for (let [token, nextToken] of stream) {
-    if (tokenIndex === 1) {
+    if (tokenIndex === 1 && !token.isSentenceStart()) {
       yield sentenceIdLine(sentenceId++)
     }
     if (token.isGlue()) {
@@ -20,7 +20,7 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
     } else if (token.isWord()) {
       let interp = token.firstInterp()
       let { pos, features } = toUd(interp)
-      let misc = `miVesum=${interp.toVesumStr()}`
+      let misc = `mi=${interp.toVesumStr()}`
       if (nextToken && nextToken.isGlue()) {
         misc += '|SpaceAfter=No'
       }

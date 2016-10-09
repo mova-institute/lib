@@ -1,6 +1,6 @@
 {
   "name": "mi-lib",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "engines": {
     "node": ">=6.0.0"
   },

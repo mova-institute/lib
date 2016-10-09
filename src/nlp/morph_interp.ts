@@ -786,6 +786,7 @@ export class MorphInterp {
   isPreposition() { return this.features.pos === Pos.preposition }
   isConjunction() { return this.features.pos === Pos.conjunction }
   isPronoun() { return this.features.pronoun !== undefined }
+  isAdverb() { return this.features.pos === Pos.adverb }
   isX() { return this.features.pos === Pos.x }
 
   isDative() { return this.features.case === Case.dative }
@@ -831,6 +832,7 @@ export class MorphInterp {
     return this.isNoun() || this.isAdjectiveAsNoun()
   }
 
+  setPos(pos: Pos) { this.features.pos = pos; return this }
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
   setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }

@@ -54,7 +54,8 @@ export class Token {
   getStructureName() { return this.structure }
   isStructure() { return !!this.structure }
   isWord() { return !!this.form }
-  isSentenceEnd() { return this.structure === 'sentence' && this.closing === false }
+  isSentenceStart() { return this.structure === 'sentence' && this.closing === false }
+  isSentenceEnd() { return this.structure === 'sentence' && this.closing === true }
   isGlue() { return this.type === 'glue' }
   isClosing() { return this.closing === true }
 

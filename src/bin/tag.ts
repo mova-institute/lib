@@ -6,6 +6,7 @@ import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, enumerateWords, tei2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
+  newline2Paragraph,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { string2lxmlRoot } from '../utils.node'
@@ -33,7 +34,8 @@ interface Args extends minimist.ParsedArgs {
   conllu: boolean
   xml: boolean
   normalize: boolean
-  forAnnotation: string
+  forAnnotation: boolean
+  nl2p: boolean
 }
 
 if (require.main === module) {
@@ -48,6 +50,7 @@ if (require.main === module) {
       'count',
       'normalize',
       'forAnnotation',
+      'nl2p',
     ],
     string: [
       't',
@@ -67,7 +70,10 @@ if (require.main === module) {
 //------------------------------------------------------------------------------
 function normalizeArgs(args: Args) {
   if (args.forAnnotation) {
-    args.xml = args.numerate = args.tokenize = true
+    args.xml = args.numerate /*= args.tokenize*/ = true
+  }
+  if (args.nl2p) {
+    args.xml = true
   }
 }
 
@@ -91,12 +97,17 @@ function main(args: Args) {
     if (ifTreatAsXml(inputStr, args)) {
       inputStr = xmlutils.removeProcessingInstructions(inputStr)
       if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(inputStr)) {
-        inputStr = xmlutils.encloseInRootNs(inputStr)
+        inputStr = xmlutils.encloseInRootNs(inputStr, 'text')
+        args.normalize = args.normalize || args.forAnnotation
       }
       let root = string2lxmlRoot(inputStr)
 
       if (args.normalize) {
-        normalizeCorpusText(root)
+        normalizeCorpusText(root, analyzer)
+      }
+
+      if (args.nl2p) {
+        newline2Paragraph(root)
       }
 
       tokenizeTei(root, analyzer)
@@ -133,7 +144,7 @@ function main(args: Args) {
     } else {
       if (args.normalize) {
         // console.log('nrm==================')
-        inputStr = normalizeCorpusTextString(inputStr)
+        inputStr = normalizeCorpusTextString(inputStr, analyzer)
       }
       if (args.count) {
         let len = mu(tokenizeUk(inputStr, analyzer)).length()
@@ -144,7 +155,9 @@ function main(args: Args) {
           .map(x => x.form)
           .unique()
           .toArray()
-          .sort()
+        if (args.sort) {
+          tokens.sort()
+        }
         tokens.forEach(x => output.write(x + '\n'))
       } else {
         let tokens = string2tokenStream(inputStr, analyzer)

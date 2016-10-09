@@ -135,11 +135,11 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   if (root.evaluateBoolean('boolean(//mi:w[not(@n)])', NS)) {
     throw new HttpError(400, 'Not all words are numerated')
   }
-  morphInterpret(root, analyzer)
+  // morphInterpret(root, analyzer)
 
   let docId = await client.insert('document', {
     name: req.body.name,
-    content: root.serialize(),
+    content: req.body.content,  //root.serialize(),
     createdBy: req.bag.user.id,
     projectId,
   }, 'id')
@@ -243,7 +243,7 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
     if (isReinterpNeeded(task)) {
       let root = string2lxmlRoot(task.content)
       if (task.step === 'annotate') {
-        morphReinterpret([...root.evaluateElements('//mi:w_', NS)], analyzer)
+        morphReinterpret([...root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)], analyzer)
       }
       task.content = root.serialize()
     }

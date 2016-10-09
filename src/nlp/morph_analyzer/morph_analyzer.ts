@@ -3,7 +3,7 @@ import * as flatten from 'lodash/flatten'
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
-import { Case } from '../morph_features'
+import { Case, Pos } from '../morph_features'
 import { FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE } from '../static'
 
 import { HashSet } from '../../data_structures'
@@ -92,7 +92,11 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
-    prefixes: ['не', 'між', 'недо', 'поза', 'по'],
+    prefixes: ['за'],
+    test: (x: MorphInterp) => x.isAdverb(),
+  },
+  {
+    prefixes: ['не', 'між', 'недо', 'поза', 'по', 'пів', 'напів'],
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
@@ -102,7 +106,7 @@ const PREFIX_SPECS = [
     postprocess: postrpocessPerfPrefixedVerb,
   },
   {
-    prefixes: ['за'],
+    prefixes: ['за', 'пере'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -145,7 +149,7 @@ export class MorphAnalyzer {
     if (this.isCompoundAdjective(token)) {
       return false
     }
-    return !this.tag(token)[Symbol.iterator]().next().done
+    return !!this.tag(token).length
   }
 
   /** @token is atomic */
@@ -249,6 +253,9 @@ export class MorphAnalyzer {
     let ret = new Array<MorphInterp>()
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
+        if (!mu(res.keys()).some(x => x.isAdverb())) {
+          ret.push(MorphInterp.fromVesumStr('adv', lowercase).setIsAuto())
+        }
         continue
       }
       if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
