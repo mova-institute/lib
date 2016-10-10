@@ -683,10 +683,8 @@ export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyze
     // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
     .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
     .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
-    .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${LETTER_UK}\w])`, 'g'), '$1“$2')
-    .replace(new RegExp(r`([${LETTER_UK}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
-  // .replace(/[\u00AD]\s*/g, '')  // &shy
-  // .replace(new RegExp(r`([${LETTER_UK}])- ([${LETTER_UK}])`, 'g'), '$1$2')  // naive hypenation
+    .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${WORDCHAR}\w])`, 'g'), '$1“$2')
+    .replace(new RegExp(r`([${WORDCHAR}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
   ret = fixLatinGlyphMisspell(ret)
   ret = normalizeDiacritics(ret)
   if (analyzer) {
