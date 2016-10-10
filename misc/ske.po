@@ -2036,7 +2036,7 @@ msgstr "Прибирати знайдене"
 
 #: conclib.py:434
 msgid "Negative filter (excluding KWIC)"
-msgstr "Прибрати знайдене (ігноруючи ключові слова)"
+msgstr "Вилучити знайдене (ігноруючи ключові слова)"
 
 #: conclib.py:435
 msgid "Positive filter"
@@ -2139,7 +2139,7 @@ msgstr "Для перемикання означте фільтр, що лиша
 
 #: cmpltmpl/document.py:1511
 msgid "filter out empty lines"
-msgstr "прибрати порожні рядки"
+msgstr "вилучити порожні рядки"
 
 #: cmpltmpl/viewattrs.py:302
 msgid "Show references above the concordance lines, instead of the left column"
@@ -2569,7 +2569,7 @@ msgstr "Lexical Computing Ltd."
 
 #: cmpltmpl/wipo.py:166
 msgid "Remove single"
-msgstr "Прибрати один"
+msgstr "Вилучити один"
 
 #: cmpltmpl/wipo.py:177
 msgid "Add single"
@@ -2642,7 +2642,7 @@ msgstr "Означення"
 
 #: cmpltmpl/conc.py:363
 msgid "Filter unselected lines"
-msgstr "Прибрати вибрані рядки"
+msgstr "Вилучити вибрані рядки"
 
 #: cmpltmpl/conc.py:375
 msgid "Unselected"
@@ -3483,7 +3483,7 @@ msgstr "Невдача. Напишіть нам, будь ласка."
 
 #: cmpltmpl/document.py:4092
 msgid "Remove it and rebuild it manually."
-msgstr "Прибрати і перебудувати руками"
+msgstr "Вилучити і перебудувати руками"
 
 #: cmpltmpl/document.py:4107
 msgid "This action may take several minutes for large corpora, please wait."
