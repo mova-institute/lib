@@ -92,6 +92,10 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
+    prefixes: ['пів'],
+    test: (x: MorphInterp) => x.isNoun(),
+  },
+  {
     prefixes: ['за', 'не'],
     test: (x: MorphInterp) => x.isAdverb(),
   },
@@ -100,7 +104,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'у', 'пере', 'ви', 'на', 'пови'],
+    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'з', 'у', 'пере', 'ви', 'на', 'пови'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -167,7 +171,7 @@ export class MorphAnalyzer {
     }
 
     // symbols
-    if (/^[№@#$%*§©+×÷=<>♥]$/.test(token)) {
+    if (/^[№@#$%*§©+×÷=<>♥]|:\($/.test(token)) {
       return [MorphInterp.fromVesumStr('sym', token)]
     }
 
@@ -259,6 +263,12 @@ export class MorphAnalyzer {
         res.add(MorphInterp.fromVesumStr('adv').setLemma(lowercase).setIsAuto())
       }
     }
+
+    // дз from ДЗ
+    if (!res.size) {
+      res.addAll(this.lookup(lowercase.toUpperCase()).map(x => x.setIsAuto()))
+    }
+
 
     // filter and postprocess
     let ret = new Array<MorphInterp>()
