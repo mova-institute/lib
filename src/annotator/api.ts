@@ -153,12 +153,19 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   }
 
   let numFragments = req.body.fragments.length
-  let segments = [[0, 0]]
-  let shift = req.body.overlap ? 1 : 0
-  for (let i = 0; i < numFragments - 1; ++i) {
-    segments.push([i, i + shift])
+  let segments = []
+  if (req.body.overlap) {
+    segments.push([0, 0])
+    for (let i = 0; i < numFragments - 1; ++i) {
+      segments.push([i, i + 1])
+    }
+    segments.push([numFragments - 1, numFragments - 1])
+  } else {
+    for (let i = 0; i < numFragments; ++i) {
+      segments.push([i, i], [i, i])
+    }
   }
-  segments.push([numFragments - 1, numFragments - 1])
+
 
   for (let segment of segments) {
     let taskId = await client.insert('task', {
