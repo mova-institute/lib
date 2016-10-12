@@ -275,7 +275,7 @@ export class MorphAnalyzer {
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
         if (!mu(res.keys()).some(x => x.isAdverb())) {
-          ret.push(MorphInterp.fromVesumStr('adv', lowercase).setIsAuto())
+          // ret.push(MorphInterp.fromVesumStr('adv', lowercase).setIsAuto())
         }
         continue
       }
