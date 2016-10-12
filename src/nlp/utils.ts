@@ -435,35 +435,6 @@ export function newline2Paragraph(root: AbstractElement) {
   })
 }
 
-//------------------------------------------------------------------------------
-function normalizeForm(str: string) {
-  return cantBeLowerCase(str) ? str : str.toLowerCase()
-}
-////////////////////////////////////////////////////////////////////////////////
-export function getStats(root: AbstractElement) {
-  let wordCount = 0
-  let dictUnknownCount = 0
-  let dictUnknowns = new Set<string>()
-  traverseDepthEl(root, elem => {
-    let name = elem.name()
-    if (name === W_) {
-      ++wordCount
-      // todo: use TextToken
-      //...
-    }
-    else if (name === W && elem.attribute('ana') === 'X') {
-      dictUnknowns.add(normalizeForm(elem.text()))
-      ++dictUnknownCount
-    }
-  })
-
-  return {
-    wordCount,
-    dictUnknownCount,
-    dictUnknowns: [...dictUnknowns],
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 export function cantBeLowerCase(word: string) {
   if (word.length < 2) {

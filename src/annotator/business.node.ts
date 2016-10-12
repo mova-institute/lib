@@ -1,7 +1,7 @@
 import { adoptMorphDisambs } from '../nlp/utils'
 import { markWordwiseDiffStr } from '../nlp/utils.node'
 import { encloseInRootNs, removeRoot, removeXmlns } from '../xml/utils'
-import { string2lxmlRoot } from '../utils.node'
+import { parseXml } from '../xml/utils.node'
 import * as business from './business'
 
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
@@ -22,8 +22,8 @@ export function markConflicts(taskType: string, mine: string, theirs: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markResolveConflicts(hisName: string, hisStr: string, herName: string, herStr: string) {
-  let his = string2lxmlRoot(encloseInRootNs(hisStr))
-  let her = string2lxmlRoot(encloseInRootNs(herStr))
+  let his = parseXml(encloseInRootNs(hisStr))
+  let her = parseXml(encloseInRootNs(herStr))
 
   let numDiffs = business.markResolveConflicts(hisName, his, herName, her)
   return {
@@ -35,6 +35,6 @@ export function markResolveConflicts(hisName: string, hisStr: string, herName: s
 
 ////////////////////////////////////////////////////////////////////////////////
 export function adoptMorphDisambsStr(destRoot: AbstractElement, sourceRootStr: string) {
-  let sourceRoot = string2lxmlRoot(encloseInRootNs(sourceRootStr))
+  let sourceRoot = parseXml(encloseInRootNs(sourceRootStr))
   return adoptMorphDisambs(destRoot, sourceRoot)
 }

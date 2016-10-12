@@ -5,8 +5,8 @@ import * as minimist from 'minimist'
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FolderSavedMap } from '../../folder_saved_map.node'
 import { matchAll, sleep } from '../../lang';
-import { fetchText, parseHtml } from './utils'
-
+import { fetchText } from './utils'
+import { parseHtml } from '../../xml/utils.node'
 
 
 

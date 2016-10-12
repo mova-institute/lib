@@ -1,15 +1,15 @@
 import { markWordwiseDiff, normalizeCorpusText } from './utils'
-import { string2lxmlRoot } from '../utils.node'
+import { parseXml } from '../xml/utils.node'
 import { LibxmljsElement } from 'xmlapi-libxmljs'
 import { AllHtmlEntities } from 'html-entities'
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markWordwiseDiffStr(mineStr: string, theirsStr: string) {
-  let mine = string2lxmlRoot(mineStr)
+  let mine = parseXml(mineStr)
   return {
     marked: mine,
-    numDiffs: markWordwiseDiff(mine, string2lxmlRoot(theirsStr)),
+    numDiffs: markWordwiseDiff(mine, parseXml(theirsStr)),
   }
 }
 
@@ -18,7 +18,7 @@ export function normalizeCorpusTextTxt(xmlstr: string) {
   xmlstr = normalizeEntities(xmlstr)
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
     .replace(/&nbsp;/g, ' ')
-  let root = string2lxmlRoot(xmlstr)
+  let root = parseXml(xmlstr)
 
   return normalizeCorpusText(root)
 }

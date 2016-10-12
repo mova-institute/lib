@@ -7,7 +7,7 @@ import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './bus
 import { firstNWords, morphInterpret, morphReinterpret, enumerateWords } from '../nlp/utils'
 import { NS } from '../xml/utils'
 import * as assert from 'assert'
-import { string2lxmlRoot } from '../utils.node'
+import { parseXml } from '../xml/utils.node'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { getLibRootRelative } from '../path.node'
 
@@ -131,7 +131,7 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   if (projectId === null) {
     throw new HttpError(400)
   }
-  let root = string2lxmlRoot(req.body.content)
+  let root = parseXml(req.body.content)
   if (root.evaluateBoolean('boolean(//mi:w[not(@n)])', NS)) {
     throw new HttpError(400, 'Not all words are numerated')
   }
@@ -248,7 +248,7 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
     delete task.fragments
 
     if (isReinterpNeeded(task)) {
-      let root = string2lxmlRoot(task.content)
+      let root = parseXml(task.content)
       if (task.step === 'annotate') {
         morphReinterpret([...root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)], analyzer)
       }
@@ -352,7 +352,7 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
   if (!originalXml) {
     throw new HttpError(404)
   }
-  let docRoot = string2lxmlRoot(originalXml)
+  let docRoot = parseXml(originalXml)
   let docs = await client.call('get_document_latest_state', req.query.id)
   for (let doc of docs) {
     for (let task of doc.taskTypes) {

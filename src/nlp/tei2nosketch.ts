@@ -1,4 +1,4 @@
-import { filename2lxmlRootSync } from '../utils.node'
+import { parseXmlFileSync } from '../xml/utils.node'
 import { interpretedTeiDoc2sketchVertical } from './utils'
 
 import * as fs from 'fs'
@@ -17,7 +17,7 @@ function main() {
   let dest = fs.openSync(args.out, 'a')
   for (let [i, sourcePath] of sourcePaths.entries()) {
     let basename = path.basename(sourcePath)
-    let root = filename2lxmlRootSync(sourcePath)
+    let root = parseXmlFileSync(sourcePath)
 
     console.log(`processing ${i + 1} of ${sourcePaths.length} "${basename}"`)
     for (let line of interpretedTeiDoc2sketchVertical(root)) {

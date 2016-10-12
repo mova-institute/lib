@@ -19,8 +19,3 @@ export async function fetchText(href: string) {
   } as any)  // todo: correct types
   return res.text()
 }
-
-////////////////////////////////////////////////////////////////////////////////
-export function parseHtml(html: string) {
-  return new LibxmljsDocument(parseHtmlString(html)).root()
-}

@@ -3,11 +3,13 @@ import * as fs from 'fs'
 import * as nlpUtils from '../utils'
 import * as xmlUtils from '../../xml/utils'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
-import { filename2lxmlRootSync, linesSyncArray } from '../../utils.node'
+import { linesSyncArray } from '../../utils.node'
+import { parseXmlFileSync } from '../../xml/utils.node'
 import { indexTableByColumns } from '../../algo'
 import { createObject2, isNumber } from '../../lang'
 
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
+
 
 
 const globSync = require('glob').sync
@@ -83,7 +85,7 @@ function verticalizeDir(dir: string, verticalFile: number) {
     let basename = path.basename(filePath)
     console.log(`  ${basename} ${countOf(i, taggedFiles.length)}`)
 
-    let root = filename2lxmlRootSync(filePath)
+    let root = parseXmlFileSync(filePath)
     let textRoot = root.evaluateElement('//tei:text', xmlUtils.NS)  // temp skip header
     if (textRoot) {
       root = textRoot

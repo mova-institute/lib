@@ -1,10 +1,10 @@
-import { filename2lxmlRootSync } from '../../utils.node'
+import { parseXmlFileSync } from '../../xml/utils.node'
 import { NS } from '../../xml/utils'
 import { LibxmljsElement } from 'xmlapi-libxmljs'
 
 const args = require('minimist')(process.argv.slice(2))
 
-let doc = filename2lxmlRootSync(args._[0])
+let doc = parseXmlFileSync(args._[0])
 
 
 let words = doc.evaluateElements('//mi:w_', NS)

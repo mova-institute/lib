@@ -1,7 +1,8 @@
-import { stream2lxmlRoot, filename2lxmlRootSync } from './utils.node'
+import { parseXmlStream } from './utils.node'
 import { readTillEnd } from './stream_utils.node'
 import { dictFormLemmaTag } from './nlp/utils'
 import { traverseDocumentOrderEl } from './xml/utils'
+import { parseXmlFileSync } from './xml/utils.node'
 import { readFileSync, createWriteStream, renameSync } from 'fs'
 import { join } from 'path'
 import * as tmp from 'tmp'
@@ -10,9 +11,9 @@ import * as tmp from 'tmp'
 tmp.setGracefulCleanup()
 ////////////////////////////////////////////////////////////////////////////////
 export function ugtag2mi(input, output) {
-; (async () => {
+  ; (async () => {
     try {
-      let root = await stream2lxmlRoot(input)
+      let root = await parseXmlStream(input)
       output.write(root.document().serialize())
     }
     catch (e) {
@@ -46,7 +47,7 @@ export function ugtag2tt(args) {
 
   console.log('reading training data…')
   let tmpName
-  let root = filename2lxmlRootSync(args.train)
+  let root = parseXmlFileSync(args.train)
   let ret = createWriteStream(tmpName = tmp.tmpNameSync())
   try {
     traverseDocumentOrderEl(root, el => {
@@ -171,14 +172,14 @@ function ttWriteOther(output) {
 export async function tagsJson2ttOpenClass(input, output) {
   let tags: Array<string> = JSON.parse(await readTillEnd(input))
   let openClassTags = tags.filter(tag => tag.startsWith('N')
-  || tag.startsWith('V') || tag.startsWith('A') || tag.startsWith('R'))
+    || tag.startsWith('V') || tag.startsWith('A') || tag.startsWith('R'))
   output.write(openClassTags.join(' '))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function kotsybaDisambed2ttTraining(input, output) {
   try {
-    let root = await stream2lxmlRoot(input)
+    let root = await parseXmlStream(input)
     traverseDocumentOrderEl(root, el => {
       if (el.localName() === 'w') {
         output.write(el.text() + '\t' + el.attribute('ana') + '\n')

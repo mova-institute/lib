@@ -6,7 +6,7 @@ import * as minimist from 'minimist'
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
 import { createMorphAnalyzerSync } from './morph_analyzer/factories.node'
 import * as nlpUtils from '../nlp/utils'
-import { filename2lxmlRootSync } from '../utils.node'
+import { parseXmlFileSync } from '../xml/utils.node'
 import { indexTableByColumns, unique } from '../algo'
 import { createObject2, arrayed } from '../lang'
 import { mu } from '../mu'
@@ -196,7 +196,7 @@ async function buildCorpus(params: Args) {
           continue
         }
         process.stdout.write(` tagged already, reading from xml`)
-        root = filename2lxmlRootSync(dest)
+        root = parseXmlFileSync(dest)
       } else {
         process.stdout.write(` preprocessing`)
         let body = fs.readFileSync(filePath, 'utf8')

@@ -1,5 +1,5 @@
 import * as xmlUtils from '../../xml/utils'
-import { string2lxmlRoot } from '../../utils.node'
+import { parseXml } from '../../xml/utils.node'
 import { tokenizeTei, morphInterpret, interpretedTeiDoc2sketchVertical, normalizeCorpusTextString } from '../utils'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 
@@ -47,7 +47,7 @@ function kotsybaUltif2DirtyTei(filename: string, destDir: string,
     body = `<p>${body}</p>`
     body = teiString({ title, body, author })
     // fs.writeFileSync('problem.xml', fileString, 'utf8')
-    let root = string2lxmlRoot(body)
+    let root = parseXml(body)
     tokenizeTei(root, morphAnalyzer)
     // console.profile('morphInterpret')
     morphInterpret(root, morphAnalyzer)

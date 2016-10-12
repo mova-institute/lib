@@ -9,7 +9,7 @@ import {
   newline2Paragraph,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
-import { string2lxmlRoot } from '../utils.node'
+import { parseXml } from '../xml/utils.node'
 import { NS } from '../xml/utils'
 import * as xmlutils from '../xml/utils'
 import { createReadStream } from 'fs'
@@ -100,7 +100,7 @@ function main(args: Args) {
         inputStr = xmlutils.encloseInRootNs(inputStr, 'text')
         args.normalize = args.normalize || args.forAnnotation
       }
-      let root = string2lxmlRoot(inputStr)
+      let root = parseXml(inputStr)
 
       if (args.normalize) {
         normalizeCorpusText(root, analyzer)

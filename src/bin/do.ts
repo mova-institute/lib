@@ -1,6 +1,6 @@
 import { ioArgs } from '../cli_utils'
 import { readTillEnd } from '../stream_utils.node'
-import { string2lxmlRoot } from '../utils.node'
+import { parseXml } from '../xml/utils.node'
 
 const args = require('minimist')(process.argv.slice(2), {
   boolean: ['xml', 'inplace'],
@@ -22,7 +22,7 @@ ioArgs(filename1, filename2, async (input, output) => {
       console.log('doing')
     }
     if (args.xml) {
-      let root = string2lxmlRoot(inputStr)
+      let root = parseXml(inputStr)
       let res = func(root)
       if (typeof res === 'string') {
         output.write(res)
