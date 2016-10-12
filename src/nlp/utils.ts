@@ -659,15 +659,15 @@ export function fixLatinGlyphMisspell(value: string) {
 export function removeHypenation(str: string, analyzer: MorphAnalyzer) {
   let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-]\s+([${WORDCHAR}]+|$)`, 'g')
   return str.replace(re, (match, beforeLeft, left, right) => {
+    let together = left + right
+    if (analyzer.canBeToken(together)) {  // it's a hypen
+      return beforeLeft + left + right
+    }
     let dashed = left + '-' + right
     if (analyzer.canBeToken(dashed)) {
       return beforeLeft + dashed
     }
-    if (analyzer.canBeToken(left + right)) {  // it's a hypen
-      return beforeLeft + left + right
-    }
-    // return beforeLeft + left + '-' + right  // it's a dash
-    return beforeLeft + dashed
+    return beforeLeft + left + right
   })
     .replace(/\u00AD/g, '')  // just kill the rest
 }
