@@ -1,12 +1,14 @@
 import { join } from 'path'
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FolderSavedMap } from '../../folder_saved_map.node'
-import { fetchText } from './utils'
+import { fetchText, parseHtml } from './utils'
 import { matchAll, sleep } from '../../lang'
 import { resolve, parse, Url } from 'url'
+import { AbstractElement } from 'xmlapi'
 
 
-export type LinkExtractor = (html: string) => string[]
+// export type LinkExtractor = (html: string) => string[]
+export type LinkExtractor = (root: AbstractElement) => string[]
 export type StringPredicate = (value: string) => boolean
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,6 +19,9 @@ export class Crawler {
 
   private isUrlToSave: StringPredicate
   private isUrlToFollow: StringPredicate
+
+  private followUrlsExtractor: LinkExtractor
+  private saveUrlsExtractor: LinkExtractor
 
   constructor(workspacePath: string) {
     this.visited = new FileSavedSet(join(workspacePath, 'processed.txt'))
@@ -51,6 +56,7 @@ export class Crawler {
       return
     }
 
+
     if (this.isUrlToSave(url.path.substr(1))) {
       this.saved.set(fileishUrl, content)
       console.log(`saved ${urlStr}`)
@@ -58,12 +64,17 @@ export class Crawler {
       console.log(`fetched ${urlStr}`)
     }
 
-    let hrefs = extractHrefs(content)
+    let root = parseHtml(content)
+    let hrefToFollow = this.followUrlsExtractor(root)
       .map(x => parse(resolve(urlStr, x)))
-      .filter(x => x.hostname === url.hostname && (!this.isUrlToFollow || this.isUrlToFollow(x.pathname.substr(1))))
-      .sort(this.urlCompare.bind(this))
+      .filter(x => x.hostname === url.hostname)
 
-    for (let href of hrefs) {
+    // let hrefs = extractHrefs(content)
+    //   .map(x => parse(resolve(urlStr, x)))
+    //   .filter(x => x.hostname === url.hostname && (!this.isUrlToFollow || this.isUrlToFollow(x.pathname.substr(1))))
+    //   .sort(this.urlCompare.bind(this))
+
+    for (let href of hrefToFollow) {
       await this.seed(href.href)
     }
 
