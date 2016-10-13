@@ -17,8 +17,10 @@ import { parseDztArticle } from '../nlp/parsers/dzt'
 import { parseDenArticle } from '../nlp/parsers/den'
 import { parseZbrucArticle } from '../nlp/parsers/zbruc'
 import { parseTyzhdenArticle } from '../nlp/parsers/tyzhden'
+import { streamChtyvo } from '../nlp/parsers/chtyvo'
 import { trimExtension } from '../string_utils'
 import * as nlpUtils from '../nlp/utils'
+import { mu } from '../mu'
 
 
 
@@ -36,6 +38,7 @@ const partName2function = {
   den,
   zbruc,
   tyzhden,
+  chtyvo,
 }
 
 if (require.main === module) {
@@ -86,6 +89,14 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
     }
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
+}
+
+//------------------------------------------------------------------------------
+function chtyvo(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+  mu(streamChtyvo(join(workspacePath, 'chtyvo'), analyzer))
+    .map(x => nlpUtils.token2sketchVertical(x))
+    .chunk(10000)
+    .forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
 }
 
 //------------------------------------------------------------------------------

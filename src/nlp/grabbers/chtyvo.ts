@@ -23,15 +23,19 @@ const baseHref = 'http://chtyvo.org.ua/'
 const extensionPriority = [
   'html',
   'htm',
+  'html.zip',
   'htm.zip',
   'txt',
+  'txt.zip',
   'rtf',
   'rtf.zip',
   'doc',
   'doc.zip',
-  'pdf',
   'fb2',
   'fb2.zip',
+  'epub',
+  'epub.zip',
+  'pdf',
   'djvu',
 ]
 

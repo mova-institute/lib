@@ -1,23 +1,23 @@
 // todo: kill
 
-import { readFileSync } from 'fs'
+import { readFileSync, statSync } from 'fs'
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function existsSync(path: string) {
+  try {
+    statSync(path)
+    return true
+  } catch (e) {
+    return false
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* linesSync(filename: string) {  // todo: do not buffer file
   for (let line of readFileSync(filename, 'utf8').split('\n')) {
     yield line
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function* nonemptyLinesSync(filename: string) {
-  for (let line of linesSync(filename)) {
-    line = line.trim()
-    if (line) {
-      yield line
-    }
   }
 }
 

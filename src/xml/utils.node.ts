@@ -14,9 +14,14 @@ export function parseHtml(html: string) {
   return new LibxmljsDocument(parseHtmlString(html)).root()
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function parseXmlFileSync(path: string) {
+  let xmlstr = readFileSync(path, 'utf8')
+  return parseXml(xmlstr)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseXmlFileSync(filename: string) {
-  let xmlstr = readFileSync(filename, 'utf8')
-  return parseXml(xmlstr)
+export function parseHtmlFileSync(path: string) {
+  let xmlstr = readFileSync(path, 'utf8')
+  return new LibxmljsDocument(parseHtmlString(xmlstr)).root()
 }

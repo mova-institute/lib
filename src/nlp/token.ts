@@ -4,20 +4,22 @@ import { MorphInterp } from './morph_interp'
 
 ////////////////////////////////////////////////////////////////////////////////
 export type TokenType = 'word' | 'glue'
-export type Structure = 'div' | 'paragraph' | 'sentence' | 'stanza' | 'line'
+export type Structure = 'document' | 'div' | 'paragraph' | 'sentence' | 'stanza' | 'line'
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Token {
-  private structure: Structure
-  private closing: boolean
+  private structure?: Structure
+  private closing?: boolean
+  private structureAttributes?: any
   private type: TokenType
   form?: string
   interps = new Array<MorphInterp>()
 
-  static structure(structure: Structure, closing: boolean) {
+  static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()
     ret.structure = structure
     ret.closing = closing
+    ret.structureAttributes = attributes
     return ret
   }
 
@@ -52,6 +54,7 @@ export class Token {
   }
 
   getStructureName() { return this.structure }
+  getStructureAttributes() { return this.structureAttributes }
   isStructure() { return !!this.structure }
   isWord() { return !!this.form }
   isSentenceStart() { return this.structure === 'sentence' && this.closing === false }

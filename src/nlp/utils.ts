@@ -646,6 +646,7 @@ export function removeHypenation(str: string, analyzer: MorphAnalyzer) {
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
   let ret = value
+    .replace(/[\t\u{0}\u{200B}-\u{200F}\u{202A}-\u{202E}\u{2060}]/gu, '')  // invizibles
     // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
@@ -746,6 +747,7 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
 }
 
 const structureNameToSketchTag = new Map<Structure, string>([
+  ['document', 'doc'],
   ['div', 'div'],
   ['paragraph', 'p'],
   ['sentence', 's'],
@@ -764,16 +766,18 @@ export function token2sketchVertical(token: Token) {
     return '<g/>'
   }
   if (token.isStructure()) {
-    let ret = '<'
-    if (token.isClosing()) {
-      ret += '/'
-    }
     let tagName = structureNameToSketchTag.get(token.getStructureName())
     if (!tagName) {
       throw new Error('Unknown structure')
     }
-    ret += `${tagName}>`
-    return ret
+    if (token.isClosing()) {
+      return `</${tagName}>`
+    }
+    let attributes = token.getStructureAttributes()
+    if (attributes) {
+      return `<${tagName} ${xmlutils.keyvalue2attributesNormalized(attributes)}>`
+    }
+    return `<${tagName}>`
   }
   throw new Error('Unknown token')
 }
