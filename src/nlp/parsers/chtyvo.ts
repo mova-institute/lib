@@ -5,10 +5,13 @@ import { sync as globSync } from 'glob'
 import { decode } from 'iconv-lite'
 import { AbstractElement } from 'xmlapi'
 
+import { renameTag } from '../../xml/utils'
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString, string2tokenStream } from '../utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { Token } from '../token'
+import { DocumentStructure } from '../../corpus_workflow/registry'
+import { mu } from '../../mu'
 
 const detectCharacterEncoding = require('detect-character-encoding');
 
@@ -17,46 +20,67 @@ const detectCharacterEncoding = require('detect-character-encoding');
 ////////////////////////////////////////////////////////////////////////////////
 export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
   let metas = globSync(join(workspace, '**/*.meta.html'))
+  // let set = new Set<string>()
   for (let metaPath of metas) {
     try {
       let basePath = metaPath.slice(0, -'.meta.html'.length)
-      let txtPath = `${basePath}.txt`
-      let htmPath = `${basePath}.htm`
-      let docPath = `${basePath}.doc`
+      let format = ['txt', 'htm', 'fb2'].find(x => existsSync(`${basePath}.${x}`))
+      if (!format) {
+        // console.log(`format not supported ${basePath}`)
+        continue
+      }
+      let dataPath = `${basePath}.${format}`
 
-      console.log(`processing ${basePath}`)
+      console.log(`processing ${dataPath}`)
+
       let metaRoot = parseHtmlFileSync(metaPath)
       let meta = extractMeta(metaRoot)
       if (meta.isForeign) {
-        console.log(`skipping foreign`)
+        console.log(`foreign`)
+        continue
+      }
+      if (!meta.title) {
+        console.log(`no title`)
         continue
       }
 
-      if (/*false && */existsSync(txtPath)) {
-        let content = readFileSyncAutodetect(txtPath)
-        if (content) {
-          content = extractTextFromTxt(content)
-          content = normalizeText(content)
-          content = content.replace(/\n+/g, '\n').trim()
+      let content = readFileSyncAutodetect(dataPath)
+      if (!content) {
+        console.log(`bad encoding`)
+        continue
+      }
 
-          let paragraphs = content.split(/\s*\n\s*/)
-          yield* yieldParagraphs(paragraphs, meta, analyzer)
-        }
-      } else if (existsSync(htmPath)) {
-        let htmlstr = readFileSyncAutodetect(htmPath)
-        if (htmlstr) {
-          let root = parseHtml(htmlstr)
-          let paragraphsIt = root.evaluateElements(
-            // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
-            '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
-            .map(x => normalizeText(x.text().trim()).replace(/\n+/g, ' '))
-            .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
-          let paragraphs = [...paragraphsIt]
-          // if (!paragraphs.length) {
-          //   console.log('noparagrrrr')
-          // }
-          yield* yieldParagraphs(paragraphs, meta, analyzer)
-        }
+      if (format === 'fb2') {
+        content = renameTag('poem', 'p', content)
+        content = renameTag('stanza', 'lg type="stanza"', content)
+        content = renameTag('v', 'l', content)
+        let root = parseHtml(content)
+        mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
+        let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
+          // todo: inline verses
+          .map(x => normalizeCorpusTextString(x.text().trim()))
+          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+          .toArray()
+        // console.log(paragraphs)
+        yield* yieldParagraphs(paragraphs, meta, analyzer)
+      }
+      // else if (true) { continue }
+      else if (format === 'htm') {
+        let root = parseHtml(content)
+        let paragraphsIt = root.evaluateElements(
+          // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
+          '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
+          .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
+          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
+        let paragraphs = [...paragraphsIt]
+        yield* yieldParagraphs(paragraphs, meta, analyzer)
+      } else if (format === 'txt') {
+        content = extractTextFromTxt(content)
+        content = normalizeText(content)
+        content = content.replace(/\n+/g, '\n').trim()
+
+        let paragraphs = content.split(/\s*\n\s*/)
+        yield* yieldParagraphs(paragraphs, meta, analyzer)
       } else {
         console.log(`skipping (format not supported yet)`)
       }
@@ -66,6 +90,22 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
     }
   }
 }
+
+type chtyvoSection =
+  'Химерна' |
+  'Художня' |
+  'Історична' |
+  'Народна' |
+  'Дитяча' |
+  'Наукова' |
+  'Навчальна' |
+  'Детективи' |
+  'Пригоди' |
+  'Релігія' |
+  'Публіцистика' |
+  'Гумор' |
+  'Любовна' |
+  'Часописи'
 
 const typeMap = {
   'Химерна': '',
@@ -91,11 +131,11 @@ function extractMeta(root: AbstractElement) {
 
   let title = getTextByClassName(root, 'h1', 'book_name')
 
+  let translator = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
   let originalAutor = root.evaluateString('string(//div[@class="author_name_book"]/a/text())')
-  let author = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
-    || originalAutor
 
-  let bookType = getTextByClassName(root, 'div', 'book_type')
+
+  let documentType = getTextByClassName(root, 'div', 'book_type') as chtyvoSection
 
   let section = root.evaluateString(
     `string(//table[@class="books"]//strong[text()="Розділ:"]/parent::*/following-sibling::td/a/text())`)
@@ -104,7 +144,20 @@ function extractMeta(root: AbstractElement) {
 
   let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
 
-  return { year, author, title, bookType, section, url, text_type: section, isForeign }
+  return {
+    reference_title: title,
+    title,
+    date: year,
+    author: translator || originalAutor,
+    original_autor: translator && originalAutor || undefined,
+    // type:
+    domain: section === 'Історична' ? 'історія' : undefined,
+    disamb: 'жодного' as 'жодного',  // todo
+    documentType,
+    section,
+    url,
+    isForeign,
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -150,11 +203,12 @@ function killReferences(str: string) {
 function normalizeText(str: string) {
   let ret = normalizeCorpusTextString(str)
   ret = killReferences(ret)
-  return ret
+  return ret.trim()
 }
 
 //------------------------------------------------------------------------------
-function* yieldParagraphs(paragraphs: string[], meta: any, analyzer: MorphAnalyzer) {
+function* yieldParagraphs(paragraphs: string[], meta: DocumentStructure, analyzer: MorphAnalyzer) {
+  meta.disamb = 'жодного'
   if (paragraphs.length) {
     yield Token.structure('document', false, meta)
     for (let p of paragraphs) {
@@ -164,6 +218,11 @@ function* yieldParagraphs(paragraphs: string[], meta: any, analyzer: MorphAnalyz
     }
     yield Token.structure('document', true)
   }
+}
+
+//------------------------------------------------------------------------------
+function prepareDocumentMeta(meta) {
+
 }
 
 
@@ -201,5 +260,48 @@ function* yieldParagraphs(paragraphs: string[], meta: any, analyzer: MorphAnalyz
 Словник
 Спогади
 Стаття
+
+
+Байка
+Довідник
+Документ
+Драма
+Енциклопедія
+Есей
+Казка
+Комедія
+Нарис
+Не визначено
+Новела
+Оповідання
+П'єса
+Підручник
+Повість
+Поезія
+Поема
+Посібник
+Праця
+Роман
+Словник
+Спогади
+Стаття
+
+
+
+закон
+художня проза
+  казка
+
+поезія
+публіцистика
+
+*/
+
+
+
+
+/*
+
+find . -name "*.zip" | while read filename; do unzip -o -d "`dirname "$filename"`" "$filename"; done;
 
 */

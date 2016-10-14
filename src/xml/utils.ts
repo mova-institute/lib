@@ -25,15 +25,20 @@ export function escape(value: string) {   // todo
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function renameTag(from: string, to: string, xmlstr: string) {
+  return xmlstr.replace(new RegExp(String.raw`<\s*${from}([\s>])`, 'g'), `<${to}$1`)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function removeTags(value: string) {
   return value.replace(/<[^>]+>/g, '')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function removeElements(xmlString: string, names: string[]) {
+export function removeElements(xmlstr: string, names: string[]) {
   let namesRe = names.join('|')
   let re = new RegExp(String.raw`<\s*(${namesRe})[^>]*>[^<]*</\s*(${namesRe})\s*>`, 'g')
-  return xmlString.replace(re, '')
+  return xmlstr.replace(re, '')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -103,7 +108,7 @@ export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = 
 ////////////////////////////////////////////////////////////////////////////////
 export function keyvalue2attributesNormalized(obj: any) {
   return Object.keys(obj)
-    .filter(x => x.trim())
+    .filter(key => key.trim() && obj[key] !== undefined)
     .map(key => {
       let value = obj[key].toString().replace(/\s+/g, ' ').trim()
       value = escape(value)

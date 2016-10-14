@@ -1,4 +1,19 @@
 ////////////////////////////////////////////////////////////////////////////////
+export interface DocumentStructure {
+  reference_title: string
+  title: string
+  date?: string
+  author?: string
+  originalAuthor?: string
+  type?: string
+  domain?: string
+  disamb: 'жодного' | 'часткове-правила' | 'руками-Політехніка' | 'руками-стандарт'
+  url?: string
+  comment?: string
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFile(copusVersion: number) {
   let corpus = `
 
@@ -76,47 +91,55 @@ ATTRIBUTE tag2 {
 ################################################################################
 
 STRUCTURE doc {
-  ATTRIBUTE id {
-    LABEL "індентифікатор"
+#  ATTRIBUTE id {
+#    LABEL "індентифікатор"
+#  }
+  ATTRIBUTE reference_title {
+    LABEL "джерело"
   }
   ATTRIBUTE title {
     LABEL "назва"
   }
-  ATTRIBUTE href {
-    LABEL "посилання"
-  }
-  ATTRIBUTE year_created {
-    LABEL "рік написання"
-    NUMERIC yes
-  }
   ATTRIBUTE date {
-    LABEL "дата"
+    LABEL "дата появи"
   }
   ATTRIBUTE author {
     LABEL "автор"
     MULTIVALUE yes
     MULTISEP "|"
-    MAXLISTSIZE "300"
   }
-  ATTRIBUTE publisher {
-    LABEL "видавець"
+  ATTRIBUTE original_author {
+    LABEL "автор первотвору"
+    MULTIVALUE yes
+    MULTISEP "|"
   }
-  ATTRIBUTE text_type {
-    LABEL "тип тексту"
+  ATTRIBUTE type {
+    LABEL "тип"
     MULTIVALUE yes
     MULTISEP "|"
     HIERARCHICAL "::"
   }
-  ATTRIBUTE comment {
-    LABEL "коментар"
+  ATTRIBUTE domain {
+    LABEL "галузь"
+    MULTIVALUE yes
+    MULTISEP "|"
+    HIERARCHICAL "::"
   }
-  ATTRIBUTE proofread {
-    LABEL "вичитано"
+  ATTRIBUTE disamb {
+    LABEL "уоднозначнення"
   }
-# ATTRIBUTE disamb
   ATTRIBUTE wordcount {
     LABEL "кількість слів"
   }
+  ATTRIBUTE url {
+    LABEL "посилання"
+  }
+  ATTRIBUTE comment {
+    LABEL "коментар"
+  }
+#  ATTRIBUTE proofread {
+#    LABEL "вичитано"
+#  }
 }
 #structure div {
 #  LABEL "розділ"
@@ -126,7 +149,7 @@ STRUCTURE p {
   #DISPLAYBEGIN "_EMPTY_"
   #DISPLAYEND "❡"
 }
-STRUCTURE s
+#STRUCTURE s
 STRUCTURE g {
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
@@ -171,3 +194,26 @@ WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,за
 
   return { corpus, subcorpus }
 }
+
+
+
+/*
+
+reference_title
+title назва
+date дата
+author автор
+original_author автор первотвору
+url посилання
+disamb уоднозначнення    жодного|часткове-правила|руками-Політехніка|руками-стандарт
+text_type тип    художня проза|поезія|публіцистика|закон (НПА)||
+domain галузь спорт|економіка|мистецтво|історія|
+
+хххх    оповідання|стаття|роман|
+
+wordcount
+comment
+
+// proofread
+
+*/

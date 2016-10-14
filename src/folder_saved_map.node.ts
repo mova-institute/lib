@@ -17,10 +17,8 @@ export class FolderSavedMap {
   }
 
   set(key: string, value: string) {
-    if (!this.keySet.has(key)) {
-      createWriteStream(this.preparePath(key)).end(value)
-      this.keySet.add(key)
-    }
+    createWriteStream(this.preparePath(key)).end(value)
+    this.keySet.add(key)
   }
 
   setStream(key: string, value: Stream) {
@@ -31,6 +29,7 @@ export class FolderSavedMap {
           reject(err)
         })
         .once('end', () => {
+          this.keySet.add(key)
           resolve()
         })
         .pipe(createWriteStream(this.preparePath(key)))
