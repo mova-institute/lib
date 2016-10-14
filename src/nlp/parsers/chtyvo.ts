@@ -1,11 +1,10 @@
 import { join } from 'path'
-import { readFileSync } from 'fs'
+import { readFileSync, existsSync } from 'fs'
 
 import { sync as globSync } from 'glob'
 import { decode } from 'iconv-lite'
 import { AbstractElement } from 'xmlapi'
 
-import { existsSync } from '../../utils.node'
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString, string2tokenStream } from '../utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
@@ -53,9 +52,9 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
             .map(x => normalizeText(x.text().trim()).replace(/\n+/g, ' '))
             .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
           let paragraphs = [...paragraphsIt]
-          if (!paragraphs.length) {
-            console.log('noparagrrrr')
-          }
+          // if (!paragraphs.length) {
+          //   console.log('noparagrrrr')
+          // }
           yield* yieldParagraphs(paragraphs, meta, analyzer)
         }
       } else {
