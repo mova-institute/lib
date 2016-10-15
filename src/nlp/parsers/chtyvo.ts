@@ -10,7 +10,7 @@ import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString, string2tokenStream } from '../utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { Token } from '../token'
-import { DocumentStructure } from '../../corpus_workflow/registry'
+import { DocumentStructureAttributes } from '../../corpus_workflow/registry'
 import { mu } from '../../mu'
 
 const detectCharacterEncoding = require('detect-character-encoding');
@@ -149,8 +149,8 @@ function extractMeta(root: AbstractElement) {
     title,
     date: year,
     author: translator || originalAutor,
-    original_autor: translator && originalAutor || undefined,
-    // type:
+    original_author: translator && originalAutor || undefined,
+    type: 'невизначені' as 'невизначені',  // todo
     domain: section === 'Історична' ? 'історія' : undefined,
     disamb: 'жодного' as 'жодного',  // todo
     documentType,
@@ -189,7 +189,7 @@ function readFileSyncAutodetect(path: string) {
 //------------------------------------------------------------------------------
 function extractTextFromTxt(str: string) {
   return str.replace(/^[\s\S]{0,300}-{9,}/, '')
-    .replace(/[\s\-]*КІНЕЦЬ[\s\S]{0,400}$/, '')
+    .replace(/[\s\-]*КІНЕЦЬ[\s\S]{0,600}$/, '')
     .replace(/-{4,}[\s\S]{0,400}$/, '')
     .replace(/-{5,}[\s\S]+(Бібліографія|Примітки:)([\s\S]{0,10000}|(\[\d+\])+\s+[^\n]+(\n|$))$/, '')
 }
@@ -207,7 +207,7 @@ function normalizeText(str: string) {
 }
 
 //------------------------------------------------------------------------------
-function* yieldParagraphs(paragraphs: string[], meta: DocumentStructure, analyzer: MorphAnalyzer) {
+function* yieldParagraphs(paragraphs: string[], meta: DocumentStructureAttributes, analyzer: MorphAnalyzer) {
   meta.disamb = 'жодного'
   if (paragraphs.length) {
     yield Token.structure('document', false, meta)
@@ -282,18 +282,32 @@ function prepareDocumentMeta(meta) {
 Посібник
 Праця
 Роман
-Словник
+--Словник
 Спогади
 Стаття
 
 
 
-закон
 художня проза
   казка
-
+  справжній лист
+  решта
+  драма
 поезія
+  (поема
+  (решта
 публіцистика
+інтернет
+документалістика
+  праця
+  підр
+  посібник
+  енцик
+  спогади
+правниче
+  закон
+  угоди та інше
+невизначене
 
 */
 

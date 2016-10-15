@@ -81,7 +81,7 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
     let meta = {
       publisher: 'Україна молода',
       proofread: '✓',
-      href: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
+      url: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
       author,
       title,
       date,
@@ -121,7 +121,7 @@ function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
     let meta = {
       publisher: 'День',
       proofread: '✓',
-      href: url,
+      url,
       author,
       title,
       date,
@@ -153,7 +153,7 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
     let meta = {
       publisher: 'Тиждень',
       proofread: '✓',
-      href: url,
+      url,
       author,
       title,
       date,
@@ -185,7 +185,7 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: num
     let meta = {
       publisher: 'Збруч',
       proofread: '✓',
-      href: url,
+      url,
       author,
       title,
       date,
@@ -214,7 +214,7 @@ function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
     let meta = {
       publisher: 'Дзеркало тижня',
       proofread: '✓',
-      href: url,
+      url,
       author,
       title,
       date: datetime,

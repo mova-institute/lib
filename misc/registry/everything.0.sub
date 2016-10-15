@@ -1,5 +1,0 @@
-*FREQLISTATTRS word lc lemma lemma_lc tag tag2
-
-=до30ті
-  -CQL-
-  <doc year_created="1[0-8]*|19[0-2][0-9]" />

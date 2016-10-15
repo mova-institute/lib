@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-import * as readline from 'readline'
-import { sync as globSync } from 'glob'
-import { join } from 'path'
 import { readFileSync, existsSync } from 'fs'
-import { sync as mkdirpSync } from 'mkdirp'
-import * as minimist from 'minimist'
+import { join } from 'path'
+import * as readline from 'readline'
+
+import { sync as globSync } from 'glob'
 import { execSync } from 'child_process'
+import * as minimist from 'minimist'
+
 import { r } from '../lang'
 import { generateRegistryFile } from './registry'
 
@@ -22,6 +23,7 @@ const remoteUser = 'msklvsk'
 const remoteDomain = 'mova.institute'
 const remoteRuncgi = '/srv/www/nosketch/public/bonito/run.cgi'
 const remoteRegistry = '/srv/corpora/registry/'
+const remoteManatee = '/srv/corpora/manatee/'
 
 
 if (require.main === module) {
@@ -48,15 +50,16 @@ function main(args: Args) {
     args.vertical = `{${args.vertical}}`
   }
 
-  let versionStr = execRemote2String(r`grep "^\s*corplist" ${remoteRuncgi}`)
-  versionStr = versionStr.match(/everything_(\d+)/) ![1]
-  let n = Number(versionStr) + 1
-  console.log(`creating corpus version ${n}`)
+  // let versionStr = execRemote2String(r`grep "^\s*corplist" ${remoteRuncgi}`)
+  // versionStr = versionStr.match(/everything_(\d+)/) ![1]
+  // let n = Number(versionStr) + 1
+  console.log(`creating temp corpus`)
 
-  let configs = generateRegistryFile(n)
-  let corpusName = `everything_${n}`
-  execRemote(`cat - > ${remoteRegistry}${corpusName}`, configs.corpus)
-  execRemote(`cat - > ${remoteRegistry}${corpusName}_sub`, configs.subcorpus)
+  const tempName = 'temp'
+  const tempNameSub = `${tempName}_sub`
+  let configs = generateRegistryFile(tempName, tempNameSub)
+  execRemote(`cat - > ${remoteRegistry}${tempName}`, configs.corpus)
+  execRemote(`cat - > ${remoteRegistry}${tempNameSub}`, configs.subcorpus)
 
   let verticalFiles = globSync(args.vertical, { nosort: true })
   let nonExistentFiles = verticalFiles.filter(x => !existsSync(x))
@@ -67,7 +70,8 @@ function main(args: Args) {
   let compileCommand = `cat ${verticalFiles.join(' ')} `
     + `| ssh -C ${remoteUser}@${remoteDomain}`
     + ` 'time compilecorp --no-hashws --no-sketches --no-biterms --no-trends`
-    + ` --no-lcm --recompile-corpus --recompile-subcorpora ${corpusName} -'`
+    + ` --no-lcm --recompile-corpus ${tempName} -'`
+  // --recompile-subcorpora
   console.log(`\n${compileCommand}\n`)
   execSync(compileCommand, { stdio: [undefined, process.stdout, process.stderr] })
 
@@ -75,17 +79,18 @@ function main(args: Args) {
     input: process.stdin,
     output: process.stdout,
   })
-  const question = () => rl.question('Swith server to the new corpus? (y/n)@> ', answer => {
-    switch (answer.toLowerCase()) {
-      case 'y':
-        execRemote(`cp ${remoteRuncgi} ~`)
-        execRemote(`sed -i -E 's/everything_[0-9]+/everything_${n}/g' ${remoteRuncgi}`)
-        break
-      case 'n':
-        break
-      default:
-        return question()
+  const question = () => rl.question('Name the new corpus (¡CAUTION: it overwrites!)@> ', answer => {
+    let newName = answer.trim()
+    if (!/^[\da-z]+$/.test(answer)) {
+      console.error(r`corpus name should match /^[\da-z]+$/`)
+      return question()
     }
+    let command = `cp ${remoteRuncgi} ~`
+      + ` && mv ${remoteManatee}${tempName} ${remoteManatee}${newName}`
+      + ` && mv ${remoteRegistry}${tempName} ${remoteRegistry}${newName}`
+      + ` && mv ${remoteRegistry}${tempNameSub} ${remoteRegistry}${newName}_sub`
+    // + `&& sed -i -E 's//${}/g' ${remoteRuncgi}`
+    execRemote(command)
     rl.close()
   })
   question()

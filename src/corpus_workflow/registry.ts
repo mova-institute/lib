@@ -1,20 +1,27 @@
+
+export type Disamb = 'жодного' | 'часткове-правила' | 'руками-Політехніка' | 'руками-стандарт'
+export type Type = 'невизначені'
 ////////////////////////////////////////////////////////////////////////////////
-export interface DocumentStructure {
+export interface DocumentStructureAttributes {
   reference_title: string
   title: string
   date?: string
   author?: string
   originalAuthor?: string
-  type?: string
+  type?: Type
   domain?: string
-  disamb: 'жодного' | 'часткове-правила' | 'руками-Політехніка' | 'руками-стандарт'
+  disamb: Disamb
   url?: string
   comment?: string
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function generateRegistryFile(copusVersion: number) {
+export function generateRegistryFile(copusName: string, subcorpusName: string) {
+  if (copusName === subcorpusName && copusName.includes('/')) {
+    throw new Error()
+  }
+
   let corpus = `
 
 NAME "Усі тексти"
@@ -23,9 +30,9 @@ INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
-PATH "/srv/corpora/manatee/everything_${copusVersion}"
-#SUBCDEF "/srv/corpora/registry/everything_${copusVersion}_sub"
-VERTICAL "/srv/corpora/vertical/dummy.vertical.txt"    # or else error is thrown
+PATH "/srv/corpora/manatee/${copusName}"
+#SUBCDEF "/srv/corpora/registry/${subcorpusName}"
+VERTICAL "|echo"
 
 
 LANGUAGE "Ukrainian"
@@ -34,7 +41,8 @@ LOCALE "uk_UA.UTF-8"
 NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*"
 
 
-
+################################################################################
+#####################          Positionals        ##############################
 ################################################################################
 
 ATTRIBUTE word {
@@ -79,21 +87,22 @@ ATTRIBUTE tag {
   LABEL "морфмітка"
   MULTIVALUE yes
   MULTISEP "|"
+  TYPE "FD_FGD"
 }
 
 ATTRIBUTE tag2 {
   LABEL "морфмітка (службова)"
   MULTIVALUE yes
   MULTISEP "|"
+  TYPE "FD_FGD"
 }
 
 
 ################################################################################
+#####################          Structures        ###############################
+################################################################################
 
 STRUCTURE doc {
-#  ATTRIBUTE id {
-#    LABEL "індентифікатор"
-#  }
   ATTRIBUTE reference_title {
     LABEL "джерело"
   }
@@ -137,13 +146,7 @@ STRUCTURE doc {
   ATTRIBUTE comment {
     LABEL "коментар"
   }
-#  ATTRIBUTE proofread {
-#    LABEL "вичитано"
-#  }
 }
-#structure div {
-#  LABEL "розділ"
-#}
 STRUCTURE p {
   #DISPLAYTAG 0
   #DISPLAYBEGIN "_EMPTY_"
@@ -156,6 +159,8 @@ STRUCTURE g {
 }
 
 
+################################################################################
+########################          View        ##################################
 ################################################################################
 
 SHORTREF "=doc.id"
@@ -173,9 +178,9 @@ DEFAULTATTR word
 
 # todo ATTRDOC, ATTRDOCLABEL,
 
-FULLREF "doc.id,doc.title,doc.date,doc.author,doc.year_created,doc.href,doc.text_type,doc.comment,doc.wordcount"
-STRUCTATTRLIST "doc.id,doc.title,doc.author,doc.year_created,doc.text_type"
-SUBCORPATTRS "doc.id|doc.title,doc.author|doc.year_created,doc.text_type"
+FULLREF "doc.title,doc.date,doc.author,doc.date,doc.url,doc.type,doc.comment,doc.wordcount"
+STRUCTATTRLIST "doc.reference_title,doc.author,doc.date,doc.type"
+SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
 #FREQTTATTRS ""
 WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,займенник,P.*,прислівник,R.*,прийменник,S.*,сполучник,C.*,числівник,M.*,частка,Q.*,вигук,I.*,скорочення,Y.*,розділовий,U.*,залишок,X.*"
 
@@ -206,7 +211,8 @@ author автор
 original_author автор первотвору
 url посилання
 disamb уоднозначнення    жодного|часткове-правила|руками-Політехніка|руками-стандарт
-text_type тип    художня проза|поезія|публіцистика|закон (НПА)||
+type тип    художня проза|поезія|публіцистика|закон (НПА)||
+
 domain галузь спорт|економіка|мистецтво|історія|
 
 хххх    оповідання|стаття|роман|
