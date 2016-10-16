@@ -1,6 +1,6 @@
 import {
   NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements,
-  traverseDepthGen, traverseDepthGen2,
+  traverseDepthGen, traverseDepthGen2, keyvalue2attributesNormalized,
 } from '../xml/utils'
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
@@ -730,7 +730,8 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
         return '<g/>'
       default: {
         if (elName in teiStructuresToCopy) {
-          return `<${teiStructuresToCopy[elName]}>`
+          let attributes = keyvalue2attributesNormalized(el.attributesObj())
+          return `<${teiStructuresToCopy[elName]}${attributes.trim() ? ` ${attributes}` : ''}>`
         }
         break
       }
@@ -758,9 +759,9 @@ const structureNameToSketchTag = new Map<Structure, string>([
 ////////////////////////////////////////////////////////////////////////////////
 export function token2sketchVertical(token: Token) {
   if (token.isWord()) {
-    let mteTags = unique(token.interps.map(x => x.toMte())).join(MULTISEP)
-    let mivesumFlagss = token.interps.map(x => x.toVesumStr()).join(MULTISEP)
-    let lemmas = unique(token.interps.map(x => x.lemma)).join(MULTISEP)
+    let mteTags = unique(token.interps.map(x => x.toMte())).sort().join(MULTISEP)
+    let mivesumFlagss = token.interps.map(x => x.toVesumStr()).sort().join(MULTISEP)
+    let lemmas = unique(token.interps.map(x => x.lemma)).sort().join(MULTISEP)
     return sketchLine(token.form, lemmas, mteTags, mivesumFlagss)
   }
   if (token.isGlue()) {
@@ -776,7 +777,7 @@ export function token2sketchVertical(token: Token) {
     }
     let attributes = token.getStructureAttributes()
     if (attributes) {
-      return `<${tagName} ${xmlutils.keyvalue2attributesNormalized(attributes)}>`
+      return `<${tagName} ${keyvalue2attributesNormalized(attributes)}>`
     }
     return `<${tagName}>`
   }
