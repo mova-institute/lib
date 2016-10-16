@@ -6,7 +6,7 @@ import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, enumerateWords, tei2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
-  newline2Paragraph,
+  newline2Paragraph, interpretedTeiDoc2sketchVertical,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { parseXml } from '../xml/utils.node'
@@ -24,6 +24,7 @@ interface Args extends minimist.ParsedArgs {
   t?: string
   text?: string
   dict?: string
+  format: 'vertical' | 'xml' | 'conllu' | 'sketch'
   numerate: boolean
   tokenize: boolean
   count: boolean
@@ -44,8 +45,8 @@ if (require.main === module) {
       'numerate',
       'tokenize',
       'mte',
-      'vertical',
       'xml',
+      'vertical',
       'conllu',
       'count',
       'normalize',
@@ -59,6 +60,9 @@ if (require.main === module) {
     alias: {
       forAnnotation: ['for-annotation'],
       numerate: ['n'],
+    },
+    default: {
+      format: 'vertical',
     },
   }) as any
   normalizeArgs(args)
@@ -136,6 +140,10 @@ function main(args: Args) {
           for (let line of tokenStream2conllu(tokenStream as any)) {
             output.write(line + '\n')
           }
+        } else if (args.format === 'sketch') {
+          mu(interpretedTeiDoc2sketchVertical(root))
+            .chunk(3000)
+            .forEach(x => output.write(x.join('\n') + '\n'))
         } else {
           output.write(root.document().serialize(true))
         }
@@ -159,7 +167,10 @@ function main(args: Args) {
           tokens.sort()
         }
         tokens.forEach(x => output.write(x + '\n'))
-      } else {
+      } else if (args.format === 'sketch') {
+
+      }
+      else {
         let tokens = string2tokenStream(inputStr, analyzer)
         // mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
         tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
@@ -175,9 +186,9 @@ function ifTreatAsXml(inputStr: string, args: Args) {
   if (args.xml) {
     return true
   }
-  if (args.t || args.text || args.vertical) {
-    return false
-  }
+  // if (args.t || args.text || args.vertical) {
+  //   return false
+  // }
   if (args._.length > 1 && args._[0].endsWith('.txt')) {
     return false
   }
