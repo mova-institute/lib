@@ -554,7 +554,12 @@ export class MorphInterp {
   }
 
   clone() {
-    let ret = MorphInterp.fromVesum(this.toVesum())
+    let ret = new MorphInterp()
+    let keys = Object.keys(this.features)
+    for (let i = 0; i < keys.length; ++i) {
+      ret.features[keys[i]] = this.features[keys[i]]
+    }
+    this.otherFlags.forEach(x => ret.otherFlags.add(x))
     ret.lemma = this.lemma
 
     return ret

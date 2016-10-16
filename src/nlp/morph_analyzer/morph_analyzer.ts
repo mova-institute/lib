@@ -7,6 +7,7 @@ import { Case, Pos } from '../morph_features'
 import { FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE } from '../static'
 
 import { HashSet } from '../../data_structures'
+import { CacheMap } from '../../data_structures/cache_map'
 import * as algo from '../../algo'
 import * as stringUtils from '../../string_utils'
 
@@ -130,7 +131,9 @@ function postrpocessPerfPrefixedVerb(x: MorphInterp) {
 export class MorphAnalyzer {
   expandAdjectivesAsNouns = false
   keepN2adj = false
-  numeralMap: Array<{ form: string, flags: string, lemma: string }>
+  private numeralMap: Array<{ form: string, flags: string, lemma: string }>
+  private dictCache = new CacheMap<string, MorphInterp[]>(100000, token =>
+    this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)))
 
   constructor(private dictionary: Dictionary) {
     this.buildNumeralMap()
@@ -320,8 +323,8 @@ export class MorphAnalyzer {
   }
 
   private lookup(token: string) {
-    return this.lookupRaw(token)
-      .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+    return this.dictCache.get(token).map(x => x.clone())
+    // return this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
   }
 
   private isCompoundAdjective(token: string) {
