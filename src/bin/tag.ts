@@ -151,7 +151,6 @@ function main(args: Args) {
       output.write('\n')
     } else {
       if (args.normalize) {
-        // console.log('nrm==================')
         inputStr = normalizeCorpusTextString(inputStr, analyzer)
       }
       if (args.count) {
