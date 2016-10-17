@@ -474,6 +474,9 @@ export class MorphInterp {
 
     switch (flags[0]) {  // then tweak what's left
       case 'V': {
+        if (flags[2] === 'b') {  // treat biaspectuals as imperfect, todo
+          ret.features.aspect = Aspect.imperfect
+        }
         if (form && (form.endsWith('ся') || form.endsWith('сь'))) {
           ret.features.reflexivity = Reflexivity.yes
         }
@@ -496,7 +499,7 @@ export class MorphInterp {
         }
         break
 
-      case 'P': // todo: Referent_Type
+      case 'P': { // todo: Referent_Type
         ret.features.pronoun = Pronoun.yes
         switch (flags[8]) {
           case 'n':
@@ -514,7 +517,12 @@ export class MorphInterp {
           default:
             throw new Error(`Unknown MTE pronoun Syntactic_Type: "${flags[8]}"`)
         }
+        if (flags[1] === 's') {  // possessive
+          ret.features.possessiveness = Possessiveness.yes
+          ret.features.pronominalType = PronominalType.personal
+        }
         break
+      }
 
       case 'M':
         if (flags[2] === 'o') {
@@ -531,7 +539,15 @@ export class MorphInterp {
         ret.features.abbreviation = Abbreviation.yes
         break
 
-      case 'N':
+      case 'N':   // treat common gender as feminine, todo
+        if (flags[2] === 'c') {
+          ret.features.gender = Gender.feminine
+        }
+        if (flags[2] === '-') {
+          ret.features.numberTantum = NumberTantum.noSingular
+        }
+        break
+
       case 'R':
       case 'S':
       case 'C':
@@ -619,131 +635,142 @@ export class MorphInterp {
       return 'Ab'
     }
 
-    if (this.isCardinalNumeral() || this.isOrdinalNumeral()) {
-      let form = tryMap2Mte(NumeralForm, this.features.numeralForm) || 'l'
-      let type = this.isCardinalNumeral() ? 'c' : 'o'
-      let gender = map2mteOrDash(Gender, this.features.gender)
-      let morphNumber = tryMap2Mte(MorphNumber, this.getNumber())
-      let morphCase = map2mteOrDash(Case, this.features.case)
-      let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
-
-      return trimTrailingDash('M' + form + type + gender + morphNumber + morphCase + requiredAnimacy)
-    }
-
-    if (this.isPronoun()) {
-      let type = map2mte(PronominalType, this.features.pronominalType)
-      let possessiveness = this.isPossessive() ? 'p' : '-'
-      let person = map2mteOrDash(Person, this.features.person)
-      let gender = map2mteOrDash(Gender, this.features.gender)
-      let animacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
-      if (!animacy) {
-        animacy = map2mteOrDash(Animacy, this.features.animacy)
-      }
-      let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
-      let morphCase = map2mteOrDash(Case, this.features.case)
-      let syntacticType = map2mte(Pos, this.features.pos).toLowerCase()
-
-      return 'P' + type + possessiveness + person + gender + animacy + morphNumber + morphCase + syntacticType
-    }
-
-    if (this.isNoun() /*|| this.isAdjectiveAsNoun()*/) {
-      let type = tryMap2Mte(NounType, this.features.nounType) || 'c'
-      let gender = tryMap2Mte(Gender, this.features.gender)
-      if (!gender) {
-        if (this.isNoSingular() || this.isBad() || (this.isN2Adj() && this.isPlural())) {
-          gender = '-'
-        } else if (lemmaTag) {
-          gender = map2mteOrDash(Gender, lemmaTag.features.gender)
-        } else {
-          throw new Error(`No gender info for ${this.toVesumStr()} ${lemma}`)
-        }
-      }
-      let morphNumber = map2mte(MorphNumber, this.getNumber())
-      let morphCase = map2mteOrDash(Case, this.features.case)
-      let animacy = tryMap2Mte(Animacy, this.features.animacy)
-      if (!animacy) {
-        if (this.isBacteria()) {
-          animacy = 'y'
-        } else {
-          throw new Error('Animacy missing')
-        }
-      }
-
-      return 'N' + type + gender + morphNumber + morphCase + animacy
-    }
-
-    if (this.isVerb() || this.isTransgressive()) {
-      if (!lemma) {
-        throw new Error('No lemma provided')
-      }
-      let type = isAuxVerb(lemma) ? 'a' : 'm'
-      let aspect = map2mte(Aspect, this.features.aspect)
-      let verbForm = this.isTransgressive() ? 'g' : tryMap2Mte(Mood, this.features.mood) || 'i'
-      let tense = map2mteOrDash(Tense, this.features.tense)
-      let person = map2mteOrDash(Person, this.features.person)
-      let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
-      let gender = tryMap2Mte(Gender, this.features.gender)
-
-      return trimTrailingDash('V' + type + aspect + verbForm + tense + person + morphNumber + gender)
-    }
-
-    switch (this.features.pos) {
-      case Pos.adjective: {
-        let type = this.isParticiple() ? 'p' : (this.isComparable() ? 'f' : 'o')
-        let degree = this.isParticiple() ? '-' : map2mteOrDash(Degree, this.features.degree)
+    try {
+      if (this.isCardinalNumeral() || this.isOrdinalNumeral()) {
+        let form = tryMap2Mte(NumeralForm, this.features.numeralForm) || 'l'
+        let type = this.isCardinalNumeral() ? 'c' : 'o'
         let gender = map2mteOrDash(Gender, this.features.gender)
+        let morphNumber = tryMap2Mte(MorphNumber, this.getNumber())
+        let morphCase = map2mteOrDash(Case, this.features.case)
+        let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
+
+        return trimTrailingDash('M' + form + type + gender + morphNumber + morphCase + requiredAnimacy)
+      }
+
+      if (this.isPronoun()) {
+        console.log(this.lemma)
+        if (this.isPossessive()) {
+          var type = 'p'
+        } else {
+          type = map2mte(PronominalType, this.features.pronominalType)
+        }
+        let possessiveness = this.isPossessive() ? 'p' : '-'
+        let person = map2mteOrDash(Person, this.features.person)
+        let gender = map2mteOrDash(Gender, this.features.gender)
+        let animacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
+        if (!animacy) {
+          animacy = map2mteOrDash(Animacy, this.features.animacy)
+        }
+        let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
+        let morphCase = map2mteOrDash(Case, this.features.case)
+        let syntacticType = map2mte(Pos, this.features.pos).toLowerCase()
+
+        return 'P' + type + possessiveness + person + gender + animacy + morphNumber + morphCase + syntacticType
+      }
+
+      if (this.isNoun() /*|| this.isAdjectiveAsNoun()*/) {
+        let type = tryMap2Mte(NounType, this.features.nounType) || 'c'
+        let gender = tryMap2Mte(Gender, this.features.gender)
+        if (!gender) {
+          if (this.isNoSingular() || this.isBad() || (this.isN2Adj() && this.isPlural())) {
+            gender = '-'
+          } else if (lemmaTag) {
+            gender = map2mteOrDash(Gender, lemmaTag.features.gender)
+          } else {
+            // gender = 'c'
+            throw new Error(`No gender info for ${this.toVesumStr()} ${lemma}`)
+          }
+        }
         let morphNumber = map2mte(MorphNumber, this.getNumber())
         let morphCase = map2mteOrDash(Case, this.features.case)
-        let definiteness = tryMap2Mte(Variant, this.features.variant)
-          || defaultMteDefiniteness(this.features.gender, this.features.number, this.features.case,
-            this.features.requiredAnimacy)
-        if (!this.isParticiple()) {
-          let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
-          return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy
-        }
-        let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy)
-        let aspect = tryMap2Mte(Aspect, this.features.aspect)
-        let voice = tryMap2Mte(Voice, this.features.voice)
-        let tense = tryMap2Mte(Tense, this.features.tense)
-        if (!tense && this.isActive() && this.isImperfect()) {
-          tense = 'p'
+        let animacy = tryMap2Mte(Animacy, this.features.animacy)
+        if (!animacy) {
+          if (this.isBacteria()) {
+            animacy = 'y'
+          } else {
+            throw new Error('Animacy missing')
+          }
         }
 
-        return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy + aspect + voice + tense
+        return 'N' + type + gender + morphNumber + morphCase + animacy
       }
-      case Pos.preposition: {
+
+      if (this.isVerb() || this.isTransgressive()) {
         if (!lemma) {
           throw new Error('No lemma provided')
         }
-        let formation = lemma.includes('-') ? 'c' : 's'
-        let requiredCase = map2mte(RequiredCase, this.features.requiredCase)
-        return 'Sp' + formation + requiredCase
-      }
-      case Pos.conjunction: {
-        if (!lemma) {
-          throw new Error('No lemma provided')
-        }
-        let type = map2mte(ConjunctionType, this.features.conjunctionType)
-        let formation = lemma.includes('-') ? 'c' : 's'
-        return 'C' + type + formation
-      }
-      case Pos.adverb: {
-        return 'R' + tryMap2Mte(Degree, this.features.degree)
-      }
-      case Pos.particle:
-        return 'Q'
-      case Pos.interjection:
-        return 'I'
-      case Pos.x:
-      case Pos.sym:
-        return 'X'
-      case Pos.predicative:  // todo
-        return 'Vm-p'
-      case Pos.punct:
-        return 'U'
+        let type = isAuxVerb(lemma) ? 'a' : 'm'
+        let aspect = map2mte(Aspect, this.features.aspect)
+        let verbForm = this.isTransgressive() ? 'g' : tryMap2Mte(Mood, this.features.mood) || 'i'
+        let tense = map2mteOrDash(Tense, this.features.tense)
+        let person = map2mteOrDash(Person, this.features.person)
+        let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
+        let gender = tryMap2Mte(Gender, this.features.gender)
 
-      default:
-        break
+        return trimTrailingDash('V' + type + aspect + verbForm + tense + person + morphNumber + gender)
+      }
+
+      switch (this.features.pos) {
+        case Pos.adjective: {
+          let type = this.isParticiple() ? 'p' : (this.isComparable() ? 'f' : 'o')
+          let degree = this.isParticiple() ? '-' : map2mteOrDash(Degree, this.features.degree)
+          let gender = map2mteOrDash(Gender, this.features.gender)
+          let morphNumber = map2mte(MorphNumber, this.getNumber())
+          let morphCase = map2mteOrDash(Case, this.features.case)
+          let definiteness = tryMap2Mte(Variant, this.features.variant)
+            || defaultMteDefiniteness(this.features.gender, this.features.number, this.features.case,
+              this.features.requiredAnimacy)
+          if (!this.isParticiple()) {
+            let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
+            return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy
+          }
+          let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy)
+          let aspect = tryMap2Mte(Aspect, this.features.aspect)
+          let voice = tryMap2Mte(Voice, this.features.voice)
+          let tense = tryMap2Mte(Tense, this.features.tense)
+          if (!tense && this.isActive() && this.isImperfect()) {
+            tense = 'p'
+          }
+
+          return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy + aspect + voice + tense
+        }
+        case Pos.preposition: {
+          if (!lemma) {
+            throw new Error('No lemma provided')
+          }
+          let formation = lemma.includes('-') ? 'c' : 's'
+          let requiredCase = map2mte(RequiredCase, this.features.requiredCase)
+          return 'Sp' + formation + requiredCase
+        }
+        case Pos.conjunction: {
+          if (!lemma) {
+            throw new Error('No lemma provided')
+          }
+          let type = map2mte(ConjunctionType, this.features.conjunctionType)
+          let formation = lemma.includes('-') ? 'c' : 's'
+          return 'C' + type + formation
+        }
+        case Pos.adverb: {
+          return 'R' + tryMap2Mte(Degree, this.features.degree)
+        }
+        case Pos.particle:
+          return 'Q'
+        case Pos.interjection:
+          return 'I'
+        case Pos.x:
+        case Pos.sym:
+          return 'X'
+        case Pos.predicative:  // todo
+          return 'Vm-p'
+        case Pos.punct:
+          return 'U'
+
+        default:
+          break
+      }
+    } catch (e) {
+      console.log(`Errr in ${this.lemma} ${this.toVesumStr()}`)
+      throw e
     }
 
     throw new Error(`Cannot convert ${this.toVesumStr()} to MTE`)
