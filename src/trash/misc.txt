@@ -1,0 +1,3 @@
+  let versionStr = execRemote2String(r`grep "^\s*corplist" ${remoteRuncgi}`)
+  versionStr = versionStr.match(/everything_(\d+)/) ![1]
+  let n = Number(versionStr) + 1

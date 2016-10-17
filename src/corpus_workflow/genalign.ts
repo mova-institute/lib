@@ -24,11 +24,13 @@ if (require.main === module) {
 //------------------------------------------------------------------------------
 async function main(args: minimist.ParsedArgs) {
   try {
-    let [id2iPath, alingmentGlob] = args._
+    let [id2iGlob, alingmentGlob] = args._
     let map = new Map<string, string>()
-    for (let line of linesSync(id2iPath)) {
-      let [id, iStr] = line.split('\t')
-      map.set(id, iStr)
+    for (let id2iFile of globSync(id2iGlob)) {
+      for (let line of linesSync(id2iFile)) {
+        let [id, iStr] = line.split('\t')
+        map.set(id, iStr)
+      }
     }
     mu(buildSketchAlingmentMap(map, alingmentGlob))
       .map(x => `${x[0]}\t${x[1]}`)

@@ -759,10 +759,14 @@ const structureNameToSketchTag = new Map<Structure, string>([
 ////////////////////////////////////////////////////////////////////////////////
 export function token2sketchVertical(token: Token) {
   if (token.isWord()) {
-    let mteTags = unique(token.interps.map(x => x.toMte())).sort().join(MULTISEP)
-    let mivesumFlagss = token.interps.map(x => x.toVesumStr()).sort().join(MULTISEP)
-    let lemmas = unique(token.interps.map(x => x.lemma)).sort().join(MULTISEP)
-    return sketchLine(token.form, lemmas, mteTags, mivesumFlagss)
+    if (token.interps.length) {
+      let mteTags = unique(token.interps.map(x => x.toMte())).sort().join(MULTISEP)
+      let mivesumFlagss = token.interps.map(x => x.toVesumStr()).sort().join(MULTISEP)
+      let lemmas = unique(token.interps.map(x => x.lemma)).sort().join(MULTISEP)
+      return sketchLine(token.form, lemmas, mteTags, mivesumFlagss)
+    } else {
+      return token.form
+    }
   }
   if (token.isGlue()) {
     return '<g/>'
@@ -823,9 +827,15 @@ export function* interpretedTeiDoc2sketchVerticalTokens(root: AbstractElement) {
 
 //------------------------------------------------------------------------------
 function sketchLine(token: string, lemma: string, mteTag: string, vesumTag: string) {
-  return `${token}\t${lemma}\t${mteTag}\t${vesumTag}`
+  return tsvLine(token, lemma, mteTag, vesumTag)
 }
 
+//------------------------------------------------------------------------------
+function tsvLine(...values: string[]) {
+  return values.join('\t')
+}
+
+//------------------------------------------------------------------------------
 function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
   let doc = root.document()
   for (let textNode of root.evaluateNodes('./text()', NS)) {
@@ -935,11 +945,14 @@ export function* tei2tokenStream(root: AbstractElement) {
           }
           continue
         }
-        case 'w':
-          // console.log(`logg: ${el.attribute('ana')} ${el.attribute('lemma')}`)
-          yield new Token().setForm(el.text()).addInterp(
-            MorphInterp.fromVesumStr(el.attribute('ana'), el.attribute('lemma')))
+        case 'w': {
+          let tok = new Token().setForm(el.text())
+          if (el.attribute('ana')) {
+            tok.addInterp(MorphInterp.fromVesumStr(el.attribute('ana'), el.attribute('lemma')))
+          }
+          yield tok
           continue
+        }
         case 'pc':
           yield new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text()))
           continue

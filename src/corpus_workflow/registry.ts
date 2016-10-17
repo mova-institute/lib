@@ -16,22 +16,26 @@ export interface DocumentStructureAttributes {
 }
 
 
+export interface RegistryFileParams {
+  name: string
+  title: string
+}
 ////////////////////////////////////////////////////////////////////////////////
-export function generateRegistryFile(copusName: string, subcorpusName: string) {
-  if (copusName === subcorpusName && copusName.includes('/')) {
+export function generateRegistryFile(params: RegistryFileParams) {
+  if (params.name.includes('/')) {
     throw new Error()
   }
 
   let corpus = `
 
-NAME "Усі тексти"
+NAME "${params.title}"
 #INFO "Корпус української (випробовування)"   # todo: say mova intitute some day
 INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
-PATH "/srv/corpora/manatee/${copusName}"
-#SUBCDEF "/srv/corpora/registry/${subcorpusName}"
+PATH "/srv/corpora/manatee/${params.name}"
+#SUBCDEF "/srv/corpora/registry/${params.name}_sub"
 VERTICAL "|echo"
 
 
