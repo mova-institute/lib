@@ -1,11 +1,14 @@
 import { join } from 'path'
 import { readFileSync, existsSync } from 'fs'
+import { execSync } from 'child_process'
 
 import { sync as globSync } from 'glob'
 import { decode } from 'iconv-lite'
 import { AbstractElement } from 'xmlapi'
+import * as last from 'lodash/last'
 
-import { renameTag } from '../../xml/utils'
+import { execSync2String } from '../../child_process.node'
+import { renameTag, removeElements } from '../../xml/utils'
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString, string2tokenStream } from '../utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
@@ -17,14 +20,31 @@ const detectCharacterEncoding = require('detect-character-encoding');
 
 
 
+const docFormatBooktypes = [
+  'Байка',
+  'Драма',
+  'Есей',
+  'Казка',
+  'Комедія',
+  'Легенда/Міт',
+  'Новела',
+  'Оповідання',
+  'П\'єса',
+  'Повість',
+  'Поезія',
+  'Поема',
+  'Притча',
+  'Роман',
+  'Спогади',
+]
+
 ////////////////////////////////////////////////////////////////////////////////
 export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
   let metas = globSync(join(workspace, '**/*.meta.html'))
-  // let set = new Set<string>()
   for (let metaPath of metas) {
     try {
       let basePath = metaPath.slice(0, -'.meta.html'.length)
-      let format = ['txt', 'htm', 'fb2'].find(x => existsSync(`${basePath}.${x}`))
+      let format = ['txt', 'htm', 'fb2', 'doc'].find(x => existsSync(`${basePath}.${x}`))
       if (!format) {
         // console.log(`format not supported ${basePath}`)
         continue
@@ -41,6 +61,29 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
       }
       if (!meta.title) {
         console.log(`no title`)
+        continue
+      }
+
+      if (format === 'doc') {
+        if (!docFormatBooktypes.find(x => x === meta.documentType)) {
+          continue
+        }
+        console.log(`processing ${dataPath}`)
+        let content = execSync2String(`textutil -stdout -convert html ${dataPath}`)
+        if (hasSmashedEncoding(content)) {
+          console.log(`bad encoding`)
+          continue
+        }
+        // console.log(`${'#'.repeat(80)}\n${content.slice(-100)}${'#'.repeat(80)}\n`)
+        content = content.replace(/<head>[\s\S]*<\/head>/, '')  // needed
+        // console.log(content)
+        let root = parseHtml(content)
+        let paragraphs = mu(root.evaluateElements('//p'))
+          .map(x => (x.text().trim()))
+          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+          .toArray()
+        console.log(paragraphs.length)
+        yield* yieldParagraphs(paragraphs, meta, analyzer)
         continue
       }
 
@@ -61,7 +104,6 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
           .map(x => normalizeCorpusTextString(x.text().trim()))
           .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
           .toArray()
-        // console.log(paragraphs)
         yield* yieldParagraphs(paragraphs, meta, analyzer)
       }
       // else if (true) { continue }
@@ -123,6 +165,7 @@ const typeMap = {
   'Любовна': '',
   'Часописи': '',
 }
+
 
 //------------------------------------------------------------------------------
 function extractMeta(root: AbstractElement) {
