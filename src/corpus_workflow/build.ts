@@ -17,6 +17,7 @@ import { parseDztArticle } from '../nlp/parsers/dzt'
 import { parseDenArticle } from '../nlp/parsers/den'
 import { parseZbrucArticle } from '../nlp/parsers/zbruc'
 import { parseTyzhdenArticle } from '../nlp/parsers/tyzhden'
+import { buildMiteiVertical } from './mitei_build_utils'
 import { streamChtyvo } from '../nlp/parsers/chtyvo'
 import { trimExtension } from '../string_utils'
 import * as nlpUtils from '../nlp/utils'
@@ -27,6 +28,7 @@ import { mu } from '../mu'
 interface Args {
   workspace: string
   part: string
+  mitei?: string
 }
 
 
@@ -39,6 +41,7 @@ const partName2function = {
   zbruc,
   tyzhden,
   chtyvo,
+  mitei,
 }
 
 if (require.main === module) {
@@ -59,7 +62,7 @@ function main(args: Args) {
   let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
   let verticalFile = createVerticalFile(args.workspace, args.part)
   let func = partName2function[args.part]
-  func(args.workspace, analyzer, verticalFile)
+  func(args.workspace, analyzer, verticalFile, args)
 }
 
 //------------------------------------------------------------------------------
@@ -249,6 +252,7 @@ function kontrakty(workspacePath: string, analyzer: MorphAnalyzer, verticalFile:
     fs.writeSync(verticalFile, `</doc>\n`)
   }
 }
+
 //------------------------------------------------------------------------------
 function writeDocMetaAndParagraphs(meta: any, paragraphs: string[], analyzer: MorphAnalyzer, verticalFile: number) {
   fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
@@ -286,4 +290,9 @@ function createVerticalFile(workspace: string, partName: string) {
 
   mkdirpSync(workspace)
   return fs.openSync(filePath, 'w')
+}
+
+//------------------------------------------------------------------------------
+function mitei(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number, args: Args) {
+  buildMiteiVertical(args.mitei, analyzer, verticalFile)
 }

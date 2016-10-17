@@ -26,7 +26,7 @@ export class MiTeiDocument {
   }
 
   getTransforms() {
-    let transforms = this.root.evaluateElement('/tei:TEI/tei:teiHeader/mi:transform[1]', NS)
+    let transforms = this.root.evaluateElement('//mi:transform', NS)
     if (transforms) {
       let apply = transforms.attribute('apply')
       if (apply) {
@@ -46,6 +46,10 @@ export class MiTeiDocument {
       return tags.split(' ')
     }
     return []
+  }
+
+  getMeta() {
+    return this.root.evaluateElement('//mi:meta', NS).attributesObj()
   }
 
   hasTags() {

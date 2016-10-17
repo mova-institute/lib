@@ -810,8 +810,15 @@ export function* tokenizedTeiDoc2sketchVertical(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVertical(root: AbstractElement, meta: any = {}) {
-  yield `<doc ${xmlutils.keyvalue2attributesNormalized(meta)}>`
+  yield `<doc ${keyvalue2attributesNormalized(meta)}>`
   yield* interpretedTeiDoc2sketchVerticalTokens(root)
+  yield `</doc>`
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* interpretedTeiDoc2sketchVertical2(root: AbstractElement, meta: any = {}) {
+  yield `<doc ${keyvalue2attributesNormalized(meta)}>`
+  yield* mu(tei2tokenStream(root)).map(x => token2sketchVertical(x))
   yield `</doc>`
 }
 
@@ -854,8 +861,9 @@ function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
 const miteiTransforms = {
   normalize: normalizeCorpusText,
   paragraphBySpaceBeforeNewLine,
+  oldMteDisamb2mivesum,
 }
-export function processMiTeiDocument(root: AbstractElement) {
+export function applyMiTeiDocTransforms(root: AbstractElement) {
   let doc = $d(root)
   for (let transformName of doc.getTransforms()) {
     if (!(transformName in miteiTransforms)) {
@@ -890,7 +898,7 @@ export function preprocessForTaggingGeneric(value: string, docCreator: DocCreato
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function oldMteDisamb2vesum(root: AbstractElement) {
+export function oldMteDisamb2mivesum(root: AbstractElement) {
   for (let w of root.evaluateElements('//tei:w', NS)) {
     let form = w.text()
     let mte = w.attribute('ana')
@@ -922,6 +930,7 @@ export function* tei2tokenStream(root: AbstractElement) {
     if (entering) {
       switch (name) {
         case 'w_': {
+          // console.log('wwwwweeee-____')
           let t = $t(el)
           let interps = t.disambedOrDefiniteInterps()
           if (interps.length) {
