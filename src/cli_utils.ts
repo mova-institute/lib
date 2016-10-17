@@ -17,7 +17,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
   if (filename2) {
     input = createReadStream(filename1, 'utf8')  // todo
     tmpFile = tmp.fileSync()
-    output = createWriteStream(null, { fd: tmpFile.fd })
+    output = createWriteStream(undefined!, { fd: tmpFile.fd })
   }
   else if (filename1) {
     if (process.stdin.isTTY) {
@@ -27,7 +27,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
     else {
       input = process.stdin
       tmpFile = tmp.fileSync()
-      output = createWriteStream(null, { fd: tmpFile.fd })
+      output = createWriteStream(undefined!, { fd: tmpFile.fd })
     }
   }
   else {

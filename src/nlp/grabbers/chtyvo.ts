@@ -74,7 +74,7 @@ async function main(args: Args) {
         let root = parseHtml(metaContent)
         let dataUrls = root.evaluateAttributes('//table[@class="books"]//a/@href')
           .map(x => x.value())
-          .filter(x => x && /\/authors\/.*\./.test(x) && !x.endsWith('.djvu'))
+          .filter(x => !!x && /\/authors\/.*\./.test(x) && !x.endsWith('.djvu'))
           .map(x => parse(x))
         for (let dataUrl of [...dataUrls].sort()) {
           let filish = dataUrl.pathname.substr(1)

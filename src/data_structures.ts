@@ -86,7 +86,10 @@ export class JsonCompareMap<K, V> implements IMap<K, V> {
   }
 
   get(key: K) {
-    return this.map.get(JSON.stringify(key))[1]
+    let pair = this.map.get(JSON.stringify(key))
+    if (pair) {
+      return pair[1]
+    }
   }
 
   set(key: K, val: V) {

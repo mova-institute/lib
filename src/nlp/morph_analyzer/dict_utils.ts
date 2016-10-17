@@ -6,7 +6,7 @@ export const COMPARATOR = new Intl.Collator('uk-UA').compare
 
 
 // see https://github.com/Microsoft/TypeScript/issues/4233
-export const compileDictReturn = false && compileDict(null)
+export const compileDictReturn = false && compileDict([])
 export type CompiledDict = typeof compileDictReturn
 
 
@@ -30,10 +30,10 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
 
     if (!paradigmIds.has(paradigm)) {
       paradigmIds.set(paradigm, paradigms.push({
-          prefixes: prefixes.map(x => PARADIGM_PREFIXES.id(x)),
-          suffixes,
-          tags: paradigm.tags.map(x => allTags.id(x)),
-        }) - 1)
+        prefixes: prefixes.map(x => PARADIGM_PREFIXES.id(x)),
+        suffixes,
+        tags: paradigm.tags.map(x => allTags.id(x)),
+      }) - 1)
     }
     let paradigmId = paradigmIds.get(paradigm)
     paradigmPopularity[paradigmId] = paradigmPopularity[paradigmId] + 1 || 1

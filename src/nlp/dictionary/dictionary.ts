@@ -1,13 +1,13 @@
-import { mu, Mu } from '../../mu'
+import { MapDawg } from 'dawgjs/map_dawg'
 
 import { WordDawgPayload } from './word_dawg_payload'
 import { IStringMorphInterp } from '../interfaces'
 import { HashSet } from '../../data_structures'
-
-import { MapDawg } from 'dawgjs/map_dawg'
-
+import { mu, Mu } from '../../mu'
 
 
+
+////////////////////////////////////////////////////////////////////////////////
 export class Dictionary {
   constructor(
     private words: MapDawg<string, WordDawgPayload>,

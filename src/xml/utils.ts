@@ -256,7 +256,7 @@ export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: Abstra
 
 ////////////////////////////////////////////////////////////////////////////////
 export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
-  let ret: AbstractElement = null
+  let ret: AbstractElement | undefined
   traverseDocumentOrder(context, callbackIfElement(el => {
     if (!context.isSame(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.name()))) {
       ret = el
@@ -286,7 +286,7 @@ export function nLevelsDeep(node, n: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function callbackIfElement(cb: (el: AbstractElement) => TraverseDirective) {
+function callbackIfElement(cb?: (el: AbstractElement) => TraverseDirective) {
   return node => {
     if (cb && node.isElement()) {
       return cb(node)

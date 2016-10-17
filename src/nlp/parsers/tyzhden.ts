@@ -48,7 +48,7 @@ export function parseTyzhdenArticle(html: string, htmlDocCreator: DocCreator) {
   for (let paragraphsXapth of paragraphsXapthTries) {
     root.evaluateElements(paragraphsXapth)
       .map(x => normalize(x.text()).trim())
-      .filter(x => x && !x.startsWith('Читайте також'))
+      .filter(x => !!x && !x.startsWith('Читайте також'))
       .forEach(x => paragraphs.push(x))
     if (paragraphs.length) {
       break

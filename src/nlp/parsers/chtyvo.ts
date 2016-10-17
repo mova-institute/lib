@@ -102,7 +102,7 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
         let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
           // todo: inline verses
           .map(x => normalizeCorpusTextString(x.text().trim()))
-          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+          .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
           .toArray()
         yield* yieldParagraphs(paragraphs, meta, analyzer)
       }
@@ -113,7 +113,7 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
           // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
           '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
           .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
-          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
+          .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))
         let paragraphs = [...paragraphsIt]
         yield* yieldParagraphs(paragraphs, meta, analyzer)
       } else if (format === 'txt') {

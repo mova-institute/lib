@@ -198,7 +198,7 @@ export class MorphAnalyzer {
       res.addAll(this.lookup('від' + lowercase.substr(2))
         .filter(x => x.isVerb())
         .map(x => {
-          x.lemma = 'од' + x.lemma.substr(3)
+          x.lemma = 'од' + x.lemma!.substr(3)
           x.setIsAuto().setIsOdd()
           return x
         }))
@@ -253,7 +253,8 @@ export class MorphAnalyzer {
       if (match) {
         let toadd = this.lookup(lowercase.substr(match[0].length))
           .filter(x => x.isAdjective())
-        toadd.forEach(x => x.setLemma(match[0] + x.lemma).setIsAuto(true).setIsAbsolute())
+        // todo: remove !
+        toadd.forEach(x => x.setLemma(match![0] + x.lemma).setIsAuto(true).setIsAbsolute())
         res.addAll(toadd)
       }
     }
@@ -378,9 +379,9 @@ export class MorphAnalyzer {
       let diffs = algo.findStringDiffIndexes(lookupee, fricativized)
       if (diffs.length) {
         ret = ret.chain(this.lookup(fricativized)
-          .filter(interp => diffs.every(i => /г/gi.test(interp.lemma.charAt(i))))
+          .filter(interp => diffs.every(i => /г/gi.test(interp.lemma!.charAt(i))))
           .map(x => {
-            let chars = [...x.lemma]
+            let chars = [...x.lemma!]
             diffs.forEach(i => chars[i] = stringUtils.replaceCaseAware(chars[i], /г/gi, 'ґ'))
             x.lemma = chars.join('')
             return x.setIsAuto()

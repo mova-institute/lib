@@ -46,7 +46,7 @@ export function* buildSketchAlingmentMap(id2indexMap: Map<string, string>, aling
   for (let path of globSync(alingmentGlob)) {
     for (let line of linesSync(path)) {
       if (line.startsWith('<link ')) {
-        let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/)[1].split(';')
+        let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/) ![1].split(';')
         let indexesL = idsStrL.split(' ').map(x => id2indexMap.get(x)).filter(x => x !== undefined)
         let indexesR = idsStrR.split(' ').map(x => id2indexMap.get(x)).filter(x => x !== undefined)
         yield [indexArr2val(indexesL), indexArr2val(indexesR)]

@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    //"strictNullChecks": true,
+    // "strictNullChecks": true,
     // "noImplicitAny": true,
     "noImplicitThis": true,
     "lib": [
