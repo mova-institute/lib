@@ -851,16 +851,18 @@ function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const TEI_DOC_TRANSFORMS = {
+const miteiTransforms = {
   normalize: normalizeCorpusText,
   paragraphBySpaceBeforeNewLine,
 }
 export function processMiTeiDocument(root: AbstractElement) {
   let doc = $d(root)
-
-  doc.getTransforms().forEach(transformName => {
-    TEI_DOC_TRANSFORMS[transformName](doc.getBody())
-  })
+  for (let transformName of doc.getTransforms()) {
+    if (!(transformName in miteiTransforms)) {
+      throw new Error(`Unknown mitei transorm "${transformName}"`)
+    }
+    miteiTransforms[transformName](doc.getBody())
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -869,27 +871,12 @@ export function looksLikeMiTei(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// todo: kill
-export function tagText(value: string, analyzer: MorphAnalyzer, docCreator: DocCreator) {
-  value = xmlutils.removeProcessingInstructions(value)
-  if (!looksLikeMiTei(value)) {
-    value = xmlutils.encloseInRootNs(value)
-  }
-
-  let doc = docCreator(value)
-  tokenizeTei(doc.root(), analyzer)
-  morphInterpret(doc.root(), analyzer)
-
-  return doc.serialize(true)
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function preprocessForTaggingGeneric(value: string, docCreator: DocCreator, isXml: boolean) {
   if (isXml) {
     value = xmlutils.removeProcessingInstructions(value)
     if (looksLikeMiTei(value)) {
       let ret = docCreator(value).root()
-      processMiTeiDocument(ret)
+      // processMiTeiDocument(ret)
       return ret
     }
   }
