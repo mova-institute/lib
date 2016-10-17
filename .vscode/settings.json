@@ -1,19 +1,19 @@
 {
-	"editor.tabSize": 2,
+  "editor.tabSize": 2,
   "editor.wrappingIndent": "indent",
   "editor.detectIndentation": false,
   "editor.insertSpaces": true,
   "files.trimTrailingWhitespace": true,
-
   "files.exclude": {
-		"node_modules": true,
+    "node_modules": true,
+    "data/": true,
     "dist/": true,
-		"lib/**/*.{js,map,d.ts}": true,
-		"lib5/**/*.{js,map,d.ts}": true,
-		"**/__pycache__": true,
-		".idea": true
-	},
-
+    "lib/": true,
+    // "lib/**/*.{js,map,d.ts}": true,
+    // "lib5/**/*.{js,map,d.ts}": true,
+    "**/__pycache__": true,
+    ".idea": true
+  },
   "typescript.tsdk": "node_modules/typescript/lib",
-	"tslint.enable": true
+  "tslint.enable": true
 }
