@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { ioArgsPlain } from '../cli_utils'
 import { readTillEnd } from '../stream_utils.node'
 

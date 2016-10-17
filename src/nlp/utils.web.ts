@@ -42,7 +42,7 @@ export function textFragmentCorpusText(doc: Document) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boolean, mte = false) {
+/*export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boolean, mte = false) {
   let doc = parseXml(value)
   if (!doc || !doc.lookupNamespaceURI('mi')) {
     value = value.replace(/^\s*<\?[^>]*>/, '')
@@ -58,3 +58,4 @@ export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boo
 
   return ret
 }
+*/
