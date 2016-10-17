@@ -930,7 +930,6 @@ export function* tei2tokenStream(root: AbstractElement) {
     if (entering) {
       switch (name) {
         case 'w_': {
-          // console.log('wwwwweeee-____')
           let t = $t(el)
           let interps = t.disambedOrDefiniteInterps()
           if (interps.length) {
