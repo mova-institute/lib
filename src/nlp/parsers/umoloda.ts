@@ -9,11 +9,9 @@ import * as capitalize from 'lodash/capitalize'
 export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
   let root = htmlDocCreator(html).root()
 
-  let title = 'УМ'
-  let titleEl = root.evaluateElement('//h1[@class="titleMain"]')
-  if (titleEl) {
-    title = titleEl.serialize()
-    title = 'УМ: ' + removeTags(title).trim()
+  let title = root.evaluateString('string(//h1[@class="titleMain"])')
+  if (title) {
+    title = title.trim()
   }
 
   let date = ''
@@ -43,7 +41,13 @@ export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
   content = nlpUtils.normalizeCorpusTextString(content)
   let paragraphs = content && content.split(/[\n\r]+/).filter(x => x.trim()) || []
 
-  return { title, date, author, paragraphs }
+  return {
+    title,
+    // reference_title: title ? `УМ:${title}` : `УМ`,
+    date,
+    author,
+    paragraphs,
+  }
 }
 
 //------------------------------------------------------------------------------

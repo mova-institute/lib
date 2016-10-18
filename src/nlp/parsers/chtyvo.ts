@@ -1,4 +1,5 @@
 import { join } from 'path'
+import { parse } from 'url'
 import { readFileSync, existsSync } from 'fs'
 import { execSync } from 'child_process'
 
@@ -13,7 +14,7 @@ import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString, string2tokenStream } from '../utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { Token } from '../token'
-import { DocumentStructureAttributes } from '../../corpus_workflow/registry'
+import { CorpusDocumentAttributes } from '../../corpus_workflow/types'
 import { mu } from '../../mu'
 
 const detectCharacterEncoding = require('detect-character-encoding');
@@ -94,9 +95,9 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
       }
 
       if (format === 'fb2') {
-        content = renameTag('poem', 'p', content)
-        content = renameTag('stanza', 'lg type="stanza"', content)
-        content = renameTag('v', 'l', content)
+        // content = renameTag(content, 'poem', 'p')
+        // content = renameTag(content, 'stanza', 'lg type="stanza"')
+        // content = renameTag(content, 'v', 'l')
         let root = parseHtml(content)
         mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
         let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
@@ -168,29 +169,32 @@ const typeMap = {
 
 
 //------------------------------------------------------------------------------
-function extractMeta(root: AbstractElement) {
+function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
   let year = getTableValue(root, 'Написано')
   year = year.split(/\s/)[0]
 
   let title = getTextByClassName(root, 'h1', 'book_name')
-
+  let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
   let translator = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
   let originalAutor = root.evaluateString('string(//div[@class="author_name_book"]/a/text())')
-
-
   let documentType = getTextByClassName(root, 'div', 'book_type') as chtyvoSection
-
   let section = root.evaluateString(
     `string(//table[@class="books"]//strong[text()="Розділ:"]/parent::*/following-sibling::td/a/text())`)
+  let urlStr = root.evaluateString('string(//meta[@property="og:url"]/@content)')
 
-  let url = root.evaluateString('string(//meta[@property="og:url"]/@content)')
-
-  let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
+  if (!urlStr) {
+    throw new Error(`No url in chtyvo meta`)
+  }
+  let referenceTitle = title
+  if (!referenceTitle) {
+    let url = parse(urlStr)
+    referenceTitle = `chtyvo-${url.pathname.replace('/authors', '')}`
+  }
 
   return {
-    reference_title: title,
+    reference_title: referenceTitle,
     title,
-    date: year,
+    date: translator ? undefined : year,
     author: translator || originalAutor,
     original_author: translator && originalAutor || undefined,
     type: 'невизначені' as 'невизначені',  // todo
@@ -198,7 +202,7 @@ function extractMeta(root: AbstractElement) {
     disamb: 'жодного' as 'жодного',  // todo
     documentType,
     section,
-    url,
+    url: urlStr,
     isForeign,
   }
 }
@@ -250,7 +254,7 @@ function normalizeText(str: string) {
 }
 
 //------------------------------------------------------------------------------
-function* yieldParagraphs(paragraphs: string[], meta: DocumentStructureAttributes, analyzer: MorphAnalyzer) {
+function* yieldParagraphs(paragraphs: string[], meta: CorpusDocumentAttributes, analyzer: MorphAnalyzer) {
   meta.disamb = 'жодного'
   if (paragraphs.length) {
     yield Token.structure('document', false, meta)

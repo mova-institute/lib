@@ -2006,11 +2006,11 @@ msgstr "Синтзв’зки"
 
 #: conccgi.py:660 conclib.py:554
 msgid "Token number"
-msgstr "Номер токена"
+msgstr "номер токена"
 
 #: conccgi.py:668
 msgid "Document number"
-msgstr "Номер документа"
+msgstr "номер документа"
 
 #: conccgi.py:1892 cmpltmpl/corp_info.py:203
 msgid "Tokens"

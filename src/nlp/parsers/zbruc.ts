@@ -1,5 +1,6 @@
 import { DocCreator } from 'xmlapi'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
+import { allcaps2TitlecaseDirty } from '../../string_utils'
 import { toSortableDate } from '../../date'
 
 
@@ -19,12 +20,16 @@ export function parseZbrucArticle(html: string, htmlDocCreator: DocCreator) {
   title = normalize(title)
 
   let datetimeStr = root.evaluateString(
-    'string(//div[@class="content"]//span[@class="date-display-single"]/@content)').trim()
+    'string(//span[@class="date-display-single" and preceding::div[contains(@property, "content:encoded")]]/@content)')
+    .trim()
   let date = datetimeStr && toSortableDate(new Date(datetimeStr)) || ''
 
   let author = root.evaluateString(
     'string(//div[contains(@class, "field-name-field-author")]//text())').trim()
-  author = normalize(author)
+  if (author) {
+    author = normalize(author)
+    author = allcaps2TitlecaseDirty(author)
+  }
 
   const paragraphsXapth = '//div[contains(@property, "content:encoded")]/p'
     + '|//div[@class="content"]//div[contains(@class, "field-name-field-depeshi")]//p'

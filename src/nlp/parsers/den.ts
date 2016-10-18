@@ -22,9 +22,7 @@ const monthMap = new Map([
 export function parseDenArticle(html: string, htmlDocCreator: DocCreator) {
   let valid = true
   let root = htmlDocCreator(html).root()
-
   let url = root.evaluateString('string(/html/head/link[@rel="canonical"]/@href)').trim()
-
   let datetimeStr = root.evaluateString('string(//div[@class="node_date"]/text())').trim()
   //  ↑ '20 жовтня, 1998 - 00:00'
   let [, d, m, y] = datetimeStr.match(/^(\d+)\s+([^,]+),\s+(\d{4})/)

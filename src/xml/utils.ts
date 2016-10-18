@@ -25,7 +25,7 @@ export function escape(value: string) {   // todo
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function renameTag(from: string, to: string, xmlstr: string) {
+export function renameTag(xmlstr: string, from: string, to: string) {
   return xmlstr.replace(new RegExp(String.raw`<\s*${from}([\s>])`, 'g'), `<${to}$1`)
 }
 

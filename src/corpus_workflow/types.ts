@@ -1,0 +1,17 @@
+export type Disamb = 'жодного' | 'часткове-правила' | 'руками-Політехніка' | 'руками-стандарт'
+export type Type = 'невизначені'
+export type Domain = 'невизначені'
+
+export interface CorpusDocumentAttributes {
+  reference_title: string
+  type: Type
+  disamb: Disamb
+  domain: Domain
+
+  title?: string
+  date?: string
+  author?: string
+  original_author?: string
+  url?: string
+  comment?: string
+}

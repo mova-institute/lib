@@ -186,13 +186,12 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: num
     console.log(`processing zbruc article ${trimExtension(basename(path))}`)
 
     let meta = {
-      publisher: 'Збруч',
-      proofread: '✓',
+      reference_title: `Збруч:${title}`,
+      title,
       url,
       author,
-      title,
       date,
-      text_type: 'публіцистика::стаття',
+      text_type: 'публіцистика',
     }
 
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)

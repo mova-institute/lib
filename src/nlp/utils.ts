@@ -18,6 +18,7 @@ import { mu, Mu } from '../mu'
 import { startsWithCapital } from '../string_utils'
 import { Token, TokenType, Structure } from './token'
 import * as uniq from 'lodash/uniq'
+import * as sortedUniq from 'lodash/sortedUniq'
 
 const wu: Wu.WuStatic = require('wu')
 
@@ -704,6 +705,9 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
     switch (elName) {
       case 'w':
       case elementNames.W: {
+        if (!interps) {
+          throw new Error(`No interps`)
+        }
         let mteTags = unique(interps.map(x => x.toMte()))
         let vesumFlagss = interps.map(x => x.toVesumStr())
         let lemmas = unique(interps.map(x => x.lemma))
@@ -760,9 +764,9 @@ const structureNameToSketchTag = new Map<Structure, string>([
 export function token2sketchVertical(token: Token) {
   if (token.isWord()) {
     if (token.interps.length) {
-      let mteTags = unique(token.interps.map(x => x.toMte())).sort().join(MULTISEP)
+      let mteTags = sortedUniq(token.interps.map(x => x.toMte()).sort()).join(MULTISEP)
       let mivesumFlagss = token.interps.map(x => x.toVesumStr()).sort().join(MULTISEP)
-      let lemmas = unique(token.interps.map(x => x.lemma)).sort().join(MULTISEP)
+      let lemmas = sortedUniq(token.interps.map(x => x.lemma).sort()).join(MULTISEP)
       return sketchLine(token.form, lemmas, mteTags, mivesumFlagss)
     } else {
       return token.form

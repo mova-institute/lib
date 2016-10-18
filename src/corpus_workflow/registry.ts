@@ -1,21 +1,4 @@
-
-export type Disamb = 'жодного' | 'часткове-правила' | 'руками-Політехніка' | 'руками-стандарт'
-export type Type = 'невизначені'
-////////////////////////////////////////////////////////////////////////////////
-export interface DocumentStructureAttributes {
-  reference_title: string
-  title: string
-  date?: string
-  author?: string
-  originalAuthor?: string
-  type?: Type
-  domain?: string
-  disamb: Disamb
-  url?: string
-  comment?: string
-}
-
-
+///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
   name: string
   title: string
@@ -107,6 +90,8 @@ ATTRIBUTE tag2 {
 ################################################################################
 
 STRUCTURE doc {
+  DISPLAYEND ""
+
   ATTRIBUTE reference_title {
     LABEL "джерело"
   }
@@ -114,7 +99,7 @@ STRUCTURE doc {
     LABEL "назва"
   }
   ATTRIBUTE date {
-    LABEL "дата появи"
+    LABEL "час появи"
   }
   ATTRIBUTE author {
     LABEL "автор"
@@ -167,7 +152,7 @@ STRUCTURE g {
 ########################          View        ##################################
 ################################################################################
 
-SHORTREF "=doc.id"
+SHORTREF "=doc.reference_title"
 
 HARDCUT "2000"
 MAXKWIC "100"
@@ -182,7 +167,7 @@ DEFAULTATTR word
 
 # todo ATTRDOC, ATTRDOCLABEL,
 
-FULLREF "doc.title,doc.date,doc.author,doc.date,doc.url,doc.type,doc.comment,doc.wordcount"
+FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,doc.comment,doc.wordcount,doc.url"
 STRUCTATTRLIST "doc.reference_title,doc.author,doc.date,doc.type"
 SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
 #FREQTTATTRS ""
@@ -197,7 +182,7 @@ WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,за
 
 =до30ті
   -CQL-
-  <doc year_created="1[0-8]*|19[0-2][0-9]" />
+  <doc date="[0-9]{4}.*" & date<="1932">
 
   `.trim()
 
@@ -205,8 +190,30 @@ WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,за
 }
 
 
+const uiSettings = {
+  uilang: 'uk',
+  attrs: 'word',
+  copy_icon: '0',
+  ctxattrs: 'word',
+  gdex_enabled: '0',
+  gdexcnt: '100',
+  line_numbers: '1',
+  multiple_copy: '0',
+  pagesize: '20',
+  refs: '=doc.reference_title',
+  refs_up: '0',
+  select_lines: '1',
+  shorten_refs: '1',
+  show_gdex_scores: '0',
+  structs: 'doc,g',
+  use_noflash: '0',
+}
+
 
 /*
+
+
+
 
 reference_title
 title назва
