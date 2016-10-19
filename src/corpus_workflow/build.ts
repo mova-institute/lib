@@ -2,6 +2,7 @@
 
 import { basename, join } from 'path'
 import * as fs from 'fs'
+import { existsSync, openSync, closeSync, writeSync, createReadStream, createWriteStream } from 'fs'
 
 import { sync as globSync } from 'glob'
 import { sync as mkdirpSync } from 'mkdirp'
@@ -9,9 +10,11 @@ import { parseHtmlString } from 'libxmljs'
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
 import * as minimist from 'minimist'
 
+import { id2i } from './id2i'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
+import { parseXmlFileSync } from '../xml/utils.node'
 import { parseUmolodaArticle } from '../nlp/parsers/umoloda'
 import { parseDztArticle } from '../nlp/parsers/dzt'
 import { parseDenArticle } from '../nlp/parsers/den'
@@ -20,7 +23,12 @@ import { parseTyzhdenArticle } from '../nlp/parsers/tyzhden'
 import { buildMiteiVertical } from './mitei_build_utils'
 import { streamChtyvo } from '../nlp/parsers/chtyvo'
 import { trimExtension } from '../string_utils'
+import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
+import {
+  tokenizeTei, tei2tokenStream, token2sketchVertical, morphInterpret,
+  normalizeCorpusTextString,
+} from '../nlp/utils'
 import { mu } from '../mu'
 
 
@@ -42,6 +50,8 @@ const partName2function = {
   tyzhden,
   chtyvo,
   mitei,
+  en: buildEnglish,
+  parallel: buildUkParallelSide,
 }
 
 if (require.main === module) {
@@ -82,24 +92,114 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
 
     date = date.split('.').reverse().join('–')
     let meta = {
-      publisher: 'Україна молода',
-      proofread: '✓',
+      // publisher: 'Україна молода',
+      // proofread: '✓',
       url: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
       author,
       title,
+      reference_title: title ? `УМ:${title}` : `УМ`,
       date,
-      text_type: 'публіцистика::стаття',
+      text_type: 'публіцистика',
     }
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
 }
 
 //------------------------------------------------------------------------------
-function chtyvo(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  mu(streamChtyvo(join(workspacePath, 'chtyvo'), analyzer))
+function chtyvo(workspacePath: string, analyzer: MorphAnalyzer) {
+  console.log(`Now bulding chtyvo`)
+  let verticalDir = join(workspacePath, 'vertical', 'chtyvo')
+  if (existsSync(verticalDir)) {
+    console.log(`Skipping: ${verticalDir} exists`)
+    return
+  }
+  mkdirpSync(verticalDir)
+  let verticalFile = openSync(join(verticalDir, 'chtyvo.vertical.txt'), 'w')
+  mu(streamChtyvo(join(workspacePath, 'data', 'chtyvo'), analyzer))
     .map(x => nlpUtils.token2sketchVertical(x))
     .chunk(10000)
     .forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
+  closeSync(verticalFile)
+}
+
+//------------------------------------------------------------------------------
+async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyzer) {
+  console.log(`Now bulding Ukrainian side of parallel corpora`)
+
+  let srcFiles = globSync(join(workspacePath, 'data', 'parallel/**/*'))
+    .filter(x => x.endsWith('.uk.xml'))
+  let buildDir = join(workspacePath, 'build', 'parallel')
+  mkdirpSync(buildDir)
+  let verticalFilePath = join(buildDir, 'parallel.vertical.txt')
+  let verticalFile = openSync(verticalFilePath, 'w')
+
+  for (let path of srcFiles) {
+    console.log(`processing ${path}`)
+    let root = parseXmlFileSync(path)
+    root.evaluateNodes('//text()').forEach(
+      x => x.text(normalizeCorpusTextString(x.text(), analyzer)))
+    // normalizeCorpusText(root, analyzer)
+    tokenizeTei(root, analyzer)
+    morphInterpret(root, analyzer)
+    writeSync(verticalFile, `<doc reference_title="${basename(path).slice(0, -'.uk.xml'.length)}">\n`)
+    mu(tei2tokenStream(root))
+      .map(x => token2sketchVertical(x))
+      .chunk(3000)
+      .forEach(x => writeSync(verticalFile, x.join('\n') + '\n'))
+    writeSync(verticalFile, `</doc>\n`)
+  }
+
+  console.log(`Now bulding id2i for Ukrainian`)
+  let wstream = createWriteStream(join(buildDir, 'parallel.id2i.txt'))
+  await id2i(createReadStream(verticalFilePath), wstream)
+  wstream.close()
+}
+
+//------------------------------------------------------------------------------
+async function buildEnglish(workspacePath: string) {
+  /*
+  java -mx900m -cp 'stanford-postagger.jar:lib/*' \
+  edu.stanford.nlp.tagger.maxent.MaxentTaggerServer \
+  -port 8088 -model models/english-left3words-distsim.tagger \
+  -outputFormat xml -sentenceDelimiter newline -outputFormatOptions lemmatize
+  */
+  console.log(`Now bulding English`)
+
+  let srcFiles = globSync(join(workspacePath, 'data', 'parallel/**/*'))
+    .filter(x => x.endsWith('.en.xml'))
+  let buildDir = join(workspacePath, 'build', 'en')
+  mkdirpSync(buildDir)
+  let verticalFilePath = join(buildDir, 'en.vertical.txt')
+  if (existsSync(verticalFilePath)) {
+    console.log(`Skipping vertical file built, ${verticalFilePath}`)
+  } else {
+    let verticalFile = openSync(verticalFilePath, 'w')
+    let tagger = new StanfordTaggerClient(8088)
+
+    let lines = new Array<string>()
+    for (let path of srcFiles) {
+      console.log(`processing ${path}`)
+      lines.push(`<doc reference_title="${basename(path).slice(0, -'.en.xml'.length)}">`)
+      for (let p of parseXmlFileSync(path).evaluateElements('//p')) {
+        lines.push(`<p id="${p.attribute('id')}">`)
+        for (let s of p.evaluateElements('./s')) {
+          lines.push(`<s id="${s.attribute('id')}">`)
+          let tagged = await tagger.tag(s.text())
+          lines.push(...tagged.map(x => x.join('\t')))
+          lines.push(`</s>`)
+        }
+        lines.push(`</p>`)
+      }
+      lines.push(`</doc>`)
+      writeSync(verticalFile, lines.join('\n') + '\n')
+    }
+    closeSync(verticalFile)
+  }
+
+  console.log(`Now bulding id2i for English`)
+  let wstream = createWriteStream(join(buildDir, 'en.id2i.txt'))
+  await id2i(createReadStream(verticalFilePath), wstream)
+  wstream.close()
 }
 
 //------------------------------------------------------------------------------
@@ -122,13 +222,14 @@ function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
     }
 
     let meta = {
-      publisher: 'День',
-      proofread: '✓',
+      // publisher: 'День',
+      // proofread: '✓',
       url,
       author,
       title,
+      reference_title: `Д.: ${title}`,
       date,
-      text_type: 'публіцистика::стаття',
+      text_type: 'публіцистика',
     }
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
@@ -154,13 +255,14 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
     console.log(`processing tyzhden article ${url}`)
 
     let meta = {
-      publisher: 'Тиждень',
-      proofread: '✓',
+      // publisher: 'Тиждень',
+      // proofread: '✓',
       url,
       author,
       title,
+      reference_title: `Т.: ${title}`,
       date,
-      text_type: 'публіцистика::стаття',
+      text_type: 'публіцистика',
     }
 
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
@@ -186,7 +288,7 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: num
     console.log(`processing zbruc article ${trimExtension(basename(path))}`)
 
     let meta = {
-      reference_title: `Збруч:${title}`,
+      reference_title: `Збруч: ${title}`,
       title,
       url,
       author,
@@ -214,13 +316,14 @@ function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
     }
 
     let meta = {
-      publisher: 'Дзеркало тижня',
-      proofread: '✓',
+      // publisher: 'Дзеркало тижня',
+      // proofread: '✓',
       url,
       author,
       title,
+      reference_title: `ДТ.: ${title}`,
       date: datetime,
-      text_type: 'публіцистика::стаття',
+      text_type: 'публіцистика',
     }
 
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
@@ -241,9 +344,10 @@ function kontrakty(workspacePath: string, analyzer: MorphAnalyzer, verticalFile:
       .chunk(10000)
 
     let meta = {
-      publisher: 'Галицькі контракти',
+      // publisher: 'Галицькі контракти',
       title: `Контракти ${year}`,
-      year_created: year,
+      reference_title: `Контракти ${year}`,
+      date: year,
       text_type: 'публіцистика',
     }
     fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)

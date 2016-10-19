@@ -927,7 +927,7 @@ export function* tei2tokenStream(root: AbstractElement) {
 
     let structureType = structureElementName2type.get(name)
     if (structureType) {
-      yield Token.structure(structureType, !entering)
+      yield Token.structure(structureType, !entering, el.attributesObj())
       continue
     }
 

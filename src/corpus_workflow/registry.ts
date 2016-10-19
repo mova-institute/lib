@@ -18,7 +18,7 @@ MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
 PATH "/srv/corpora/manatee/${params.name}"
-#SUBCDEF "/srv/corpora/registry/${params.name}_sub"
+SUBCDEF "/srv/corpora/registry/${params.name}_sub"
 VERTICAL "|echo"
 
 

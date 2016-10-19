@@ -174,9 +174,15 @@ function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
   year = year.split(/\s/)[0]
 
   let title = getTextByClassName(root, 'h1', 'book_name')
+  title = normalizeCorpusTextString(title)
   let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
   let translator = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
+  translator = normalizeCorpusTextString(title.trim())
   let originalAutor = root.evaluateString('string(//div[@class="author_name_book"]/a/text())')
+  originalAutor = normalizeCorpusTextString(title.trim())
+  if (originalAutor === 'народ Український') {
+    originalAutor = 'народ'
+  }
   let documentType = getTextByClassName(root, 'div', 'book_type') as chtyvoSection
   let section = root.evaluateString(
     `string(//table[@class="books"]//strong[text()="Розділ:"]/parent::*/following-sibling::td/a/text())`)
@@ -236,7 +242,7 @@ function readFileSyncAutodetect(path: string) {
 //------------------------------------------------------------------------------
 function extractTextFromTxt(str: string) {
   return str.replace(/^[\s\S]{0,300}-{9,}/, '')
-    .replace(/[\s\-]*КІНЕЦЬ[\s\S]{0,600}$/, '')
+    .replace(/\n[\s\-]*---\s*КІНЕЦЬ[\s\S]{0,5000}$/, '')
     .replace(/-{4,}[\s\S]{0,400}$/, '')
     .replace(/-{5,}[\s\S]+(Бібліографія|Примітки:)([\s\S]{0,10000}|(\[\d+\])+\s+[^\n]+(\n|$))$/, '')
 }

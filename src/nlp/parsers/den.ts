@@ -34,7 +34,7 @@ export function parseDenArticle(html: string, htmlDocCreator: DocCreator) {
 
   let title = root.evaluateString('string(//meta[@property="og:title"]/@content)').trim()
   title = normalize(title)
-  title = 'Д.: ' + title
+  // title = 'Д.: ' + title
 
   let description = root.evaluateString('string(//meta[@name="description"]/@content)').trim()
 

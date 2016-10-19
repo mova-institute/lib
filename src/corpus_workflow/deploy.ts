@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { readFileSync, existsSync } from 'fs'
-import { join } from 'path'
+import { join, basename } from 'path'
 import * as readline from 'readline'
 
 import { sync as globSync } from 'glob'
@@ -9,32 +9,26 @@ import { execSync } from 'child_process'
 import * as minimist from 'minimist'
 import * as groupBy from 'lodash/groupBy'
 import * as entries from 'lodash/toPairs'
+import * as castArray from 'lodash/castArray'
 
-import { r } from '../lang'
+import { r, arrayed } from '../lang'
 import { generateRegistryFile } from './registry'
+import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
 
 
 
 interface Args {
-  workspace: string
-  vertical: string
+  vertical: string | string[]
+  verticalList: string
+  definition: string
+  name?: string
 }
-
-
-const remoteUser = 'msklvsk'
-const remoteDomain = 'mova.institute'
-// const remoteRuncgi = '/srv/www/nosketch/public/bonito/run.cgi'
-const remoteRegistry = '/srv/corpora/registry/'
-const remoteManatee = '/srv/corpora/manatee/'
 
 
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     alias: {
-      workspace: ['ws'],
-    },
-    default: {
-      workspace: '.',
+      verticalList: ['vert-list'],
     },
   }) as any
 
@@ -44,105 +38,170 @@ if (require.main === module) {
 
 //------------------------------------------------------------------------------
 function main(args: Args) {
-  if (!args.vertical && args.workspace) {
-    let settings = JSON.parse(readFileSync(join(args.workspace, 'settings.json'), 'utf8'))
-    args.vertical = settings.verticalFiles
-      .map(x => join(args.workspace, x))
-      .join(',')
-    args.vertical = `{${args.vertical}}`
+  const user = process.env.MI_CORP_USER
+  const hostname = process.env.MI_CORP_HOST
+  const remoteCorpora = process.env.MI_CORPORA_PATH
+
+  if (!user || !hostname || !remoteCorpora) {
+    throw new Error(`Environment variables not set`)
   }
 
-  let verticalFiles = globSync(args.vertical, { nosort: true })
-  let nonExistentFiles = verticalFiles.filter(x => !existsSync(x))
+  let definition = readFileSync(args.definition, 'utf8')
+  let verticalPaths: string[]
+  if (args.vertical) {
+    verticalPaths = arrayed(args.vertical)
+  } else {
+  }
+
+  let nonExistentFiles = verticalPaths.filter(x => !existsSync(x))
   if (nonExistentFiles.length) {
     throw new Error(`File(s) not found:\n${nonExistentFiles.join('\n')}`)
   }
 
-  let catCommand = `cat ${verticalFiles.join(' ')}`
-
-  // console.log(`building id2index map`)
-  // let id2iFilePath = join(args.workspace, 'id2i.uk.txt')
-  // execHere(`${catCommand} | mi-id2i > ${id2iFilePath}`)
-
-  // let parallelWs = join(args.workspace, 'parallel')
-  // let foreignId2iMaps = globSync(join(args.workspace, 'parallel/---.txt'))
-  // let languages = groupBy(foreignId2iMaps, path => path.match(/\.([a-z]{2})\.vertical\.txt/)[1])
-  // for (let [lang, [id2iPath]] of entries(languages)) {
-  //   console.log(`building align map for ${lang}`)
-  //   execHere(`mi-genalign "{${id2iFilePath},${parallelWs}/**/*.id2i.txt}" > `)
-  // }
+  indexCorpusRemote({
+    verticalPaths,
+    definitionTemplate: definition,
+    name: args.name,
+  }, {
+      hostname, user,
+      corporaPath: remoteCorpora,
+    })
+}
 
 
-  console.log(`creating temp corpus`)
+interface CorpusParams {
+  verticalPaths: string[]
+  definitionTemplate: string
+  alignmentPaths?: string[]
+  subcorpDefinition?: string
+  alignPath?: string
+  name?: string
+}
+
+interface RemoteParams {
+  hostname: string
+  user: string
+  corporaPath: string
+}
+
+//------------------------------------------------------------------------------
+function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
+  const upload = (path: string, content: string) =>
+    putFileSshSync(remoteParams.hostname, remoteParams.user, path, content)
+
+  const manateePath = normalizePath(`${remoteParams.corporaPath}/manatee`)
+  const registryPath = normalizePath(`${remoteParams.corporaPath}/registry`)
+  const verticalPath = normalizePath(`${remoteParams.corporaPath}/vertical`)
 
   const tempName = 'temp'
-  const tempNameSub = `${tempName}_sub`
-  putRegistryFile(tempName)
+  const tempSubcName = `${tempName}_sub`
+  const registryTempPath = `${registryPath}/${tempName}`
 
-  console.log(`indexing a corpus from ${verticalFiles.length} files:\n${verticalFiles.join('\n')}`)
+  execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user,
+    `rm -rf '${manateePath}/${tempName}'`)  // just in case
+
+  // upload temp defifnitions
+  let tempDefinition = nameCorpusInDefinition(tempName, manateePath, params.definitionTemplate)
+  if (!checkDefinitionIsSane) {
+    throw new Error(`Bad corpus definition`)
+  }
+  upload(`${registryPath}/${tempName}`, tempDefinition)
+  if (params.subcorpDefinition) {
+    upload(registryTempPath, tempDefinition)
+  }
+  if (params.alignmentPaths) {
+    for (let path of params.alignmentPaths) {
+      let filename = basename(path)
+      upload(`${verticalPath}/temp_${filename}`, readFileSync(path, 'utf8'))  // todo
+    }
+  }
+
+  // call compilecorp
+  console.log(`indexing a corpus from ${params.verticalPaths.length} files`)
+  let catCommand = `cat ${params.verticalPaths.join(' ')}`
   let compileCommand = catCommand
-    + ` | ssh -C ${remoteUser}@${remoteDomain}`
-    + ` 'time compilecorp --no-ske --recompile-corpus ${tempName} -'`
-  // --recompile-subcorpora
+    + ` | ssh -C ${remoteParams.user}@${remoteParams.hostname}`
+    + ` 'time compilecorp --no-ske`
+    + ` --recompile-corpus --recompile-subcorpora --recompile-align`
+    + ` ${tempName} -'`
   console.log(`\n${compileCommand}\n`)
-  execSync(compileCommand, { stdio: [undefined, process.stdout, process.stderr] })
+  execHere(compileCommand)
+
 
   let rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   })
-  const question = () => rl.question('Name the new corpus (¡CAUTION: it overwrites!)@> ', answer => {
-    let newName = answer.trim()
-    if (!/^[\da-z]+$/.test(answer)) {
-      console.error(r`Corpus name must match /^[\da-z]+$/`)
-      return question()
-    }
-    putRegistryFile(newName)
+
+
+  const overwrite = (name: string) => {
+    let newDefintion = nameCorpusInDefinition(name, manateePath, params.definitionTemplate)
+    upload(registryTempPath, newDefintion)
+
     let command = ``
-      + `rm -rf "${remoteManatee}${newName}" "${remoteRegistry}${tempName}"`
-      + ` && mv "${remoteManatee}${tempName}" "${remoteManatee}${newName}"`
-      + ` && mv "${remoteRegistry}${tempNameSub}" "${remoteRegistry}${newName}_sub"`
-    execRemote(command)
-    rl.close()
-  })
-  question()
+      + `rm -rf "${manateePath}/${name}"`
+      + ` && mv "${manateePath}/${tempName}" "${manateePath}/${name}"`
+      + ` && mv "${registryTempPath}" "${registryPath}/${name}"`
+    execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user, command)
+  }
+
+  if (params.name) {
+    overwrite(params.name)
+  } else {
+    const question = () => rl.question('Name the new corpus (¡CAUTION: it overwrites!)@> ', answer => {
+      let newName = answer.trim()
+      if (!/^[\da-z]+$/.test(answer)) {
+        console.error(r`Corpus name must match /^[\da-z]+$/`)
+        return question()
+      }
+      overwrite(newName)
+      rl.close()
+    })
+    question()
+  }
 }
 
 //------------------------------------------------------------------------------
-function putRegistryFile(corpusName: string) {
+function normalizePath(path: string) {
+  return path.replace(/\/{2,}/, '/')
+}
+
+//------------------------------------------------------------------------------
+function nameCorpusInDefinition(name: string, manateePath: string, definition: string) {
+  let path = normalizePath(`${manateePath}/${name}`)
+  return `PATH "${path}"\n${definition}`
+}
+
+//------------------------------------------------------------------------------
+function checkDefinitionIsSane(definition: string, remoteManatee: string) {
+  return definition && new RegExp(String.raw`\bPATH "${remoteManatee}`).test(definition)
+}
+
+//------------------------------------------------------------------------------
+function renderDefinitionTemplate(definition: string, newName: string) {
+  return definition.replace(/(^|\s+)PATH="([^"]*)"/, (match, a, b, c) => {
+
+    return ''
+  })
+}
+
+//------------------------------------------------------------------------------
+/*function putRegistryFile(corpusName: string) {
   let subcorpusName = `${corpusName}_sub`
   let {corpus, subcorpus} = generateRegistryFile({
     name: corpusName,
-    title: 'українська',
+    title: 'корпус української',
   })
   if (!corpus || !new RegExp(String.raw`\bPATH "${remoteManatee}`).test(corpus)) {
     throw new Error()
   }
   execRemote(`cat - > "${remoteRegistry}${corpusName}"`, corpus)
   execRemote(`cat - > "${remoteRegistry}${subcorpusName}"`, subcorpus)
-}
-
-//------------------------------------------------------------------------------
-function execRemote(command: string, input?: string) {
-  return execSync(`ssh -C ${remoteUser}@${remoteDomain} '${command}'`, {
-    encoding: 'utf8',
-    input,
-    stdio: [undefined, process.stdout, process.stderr],
-  })
-}
-
-//------------------------------------------------------------------------------
-function execRemote2String(command: string, input?: string) {
-  return execSync(`ssh -C ${remoteUser}@${remoteDomain} '${command}'`, {
-    encoding: 'utf8',
-    input,
-  })
-}
+}*/
 
 //------------------------------------------------------------------------------
 function execHere(command: string) {
   return execSync(command, {
-    encoding: 'utf8',
     stdio: [undefined, process.stdout, process.stderr],
   })
 }

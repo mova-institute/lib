@@ -1,0 +1,62 @@
+NAME "корпус англійської"
+INFOHREF "https://mova.institute/corpus"
+MAINTAINER "corpus@mova.institute"
+TAGSETDOC "https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html"
+
+PATH "/srv/corpora/manatee/en"
+VERTICAL "|echo"
+
+LANGUAGE "English"
+ENCODING "utf8"
+LOCALE "en_US.UTF-8"
+
+
+ATTRIBUTE word {
+  LABEL "слово"
+}
+
+ATTRIBUTE lc {
+  LABEL "слово (мал. літерами)"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR word
+  TYPE index
+  TRANSQUERY yes
+}
+
+ATTRIBUTE lemma {
+  LABEL "лема"
+}
+
+ATTRIBUTE  lemma_lc  {
+  LABEL "лема (мал. літерами)"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR lemma
+  TYPE index
+  TRANSQUERY yes
+}
+
+ATTRIBUTE tag {
+  LABEL "морфмітка"
+}
+
+STRUCTURE doc {
+  DISPLAYEND ""
+
+  ATTRIBUTE id
+  ATTRIBUTE reference_title {
+    LABEL "джерело"
+  }
+}
+STRUCTURE p {
+  ATTRIBUTE id
+  #DISPLAYTAG 0
+  #DISPLAYBEGIN "_EMPTY_"
+  #DISPLAYEND "❡"
+}
+STRUCTURE s

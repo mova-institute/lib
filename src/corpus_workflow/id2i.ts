@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --max_old_space_size=4096
 
 import { forEachLine } from '../utils.node'
 
@@ -11,19 +11,24 @@ if (require.main === module) {
 //------------------------------------------------------------------------------
 async function main() {
   try {
-    let i = 0
-    await forEachLine(process.stdin as any, line => {
-      if (isSentenceStart(line)) {
-        let id = getId(line)
-        if (id) {
-          process.stdout.write(`${id}\t${i}\n`)
-        }
-        ++i
-      }
-    })
+    await id2i(process.stdin, process.stdout)
   } catch (e) {
     console.error(e.stack)
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function id2i(input: NodeJS.ReadableStream, output: NodeJS.WritableStream) {
+  let i = 0
+  return forEachLine(input as any, line => {
+    if (isSentenceStart(line)) {
+      let id = getId(line)
+      if (id) {
+        output.write(`${id}\t${i}\n`)
+      }
+      ++i
+    }
+  })
 }
 
 //------------------------------------------------------------------------------
