@@ -51,6 +51,7 @@ function main(args: Args) {
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)
   } else {
+    verticalPaths = readFileSync(args.verticalList, 'utf8').split('\n')
   }
 
   let nonExistentFiles = verticalPaths.filter(x => !existsSync(x))
@@ -98,7 +99,7 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
   const registryTempPath = `${registryPath}/${tempName}`
 
   execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user,
-    `rm -rf '${manateePath}/${tempName}'`)  // just in case
+    `rm -rfv '${manateePath}/${tempName}'`)  // just in case
 
   // upload temp defifnitions
   let tempDefinition = nameCorpusInDefinition(tempName, manateePath, params.definitionTemplate)
@@ -122,16 +123,11 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
   let compileCommand = catCommand
     + ` | ssh -C ${remoteParams.user}@${remoteParams.hostname}`
     + ` 'time compilecorp --no-ske`
-    + ` --recompile-corpus --recompile-subcorpora --recompile-align`
+    + ` --recompile-corpus --recompile-subcorpora`
+    // + ` --recompile-align`
     + ` ${tempName} -'`
   console.log(`\n${compileCommand}\n`)
   execHere(compileCommand)
-
-
-  let rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  })
 
 
   const overwrite = (name: string) => {
@@ -139,7 +135,7 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
     upload(registryTempPath, newDefintion)
 
     let command = ``
-      + `rm -rf "${manateePath}/${name}"`
+      + `rm -rfv "${manateePath}/${name}"`
       + ` && mv "${manateePath}/${tempName}" "${manateePath}/${name}"`
       + ` && mv "${registryTempPath}" "${registryPath}/${name}"`
     execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user, command)
@@ -148,6 +144,11 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
   if (params.name) {
     overwrite(params.name)
   } else {
+    let rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    })
+
     const question = () => rl.question('Name the new corpus (¡CAUTION: it overwrites!)@> ', answer => {
       let newName = answer.trim()
       if (!/^[\da-z]+$/.test(answer)) {
@@ -169,20 +170,12 @@ function normalizePath(path: string) {
 //------------------------------------------------------------------------------
 function nameCorpusInDefinition(name: string, manateePath: string, definition: string) {
   let path = normalizePath(`${manateePath}/${name}`)
-  return `PATH "${path}"\n${definition}`
+  return definition + `PATH "${path}"\n`
 }
 
 //------------------------------------------------------------------------------
 function checkDefinitionIsSane(definition: string, remoteManatee: string) {
   return definition && new RegExp(String.raw`\bPATH "${remoteManatee}`).test(definition)
-}
-
-//------------------------------------------------------------------------------
-function renderDefinitionTemplate(definition: string, newName: string) {
-  return definition.replace(/(^|\s+)PATH="([^"]*)"/, (match, a, b, c) => {
-
-    return ''
-  })
 }
 
 //------------------------------------------------------------------------------

@@ -31,13 +31,13 @@ export function id2i(input: NodeJS.ReadableStream, output: NodeJS.WritableStream
   })
 }
 
-//------------------------------------------------------------------------------
-function isSentenceStart(line: string) {
+////////////////////////////////////////////////////////////////////////////////
+export function isSentenceStart(line: string) {
   return /^<s\b/.test(line)
 }
 
-//------------------------------------------------------------------------------
-function getId(line: string) {
+////////////////////////////////////////////////////////////////////////////////
+export function getId(line: string) {
   let match = line.match(/id="([^"]+)"/)
   if (match) {
     return match[1]

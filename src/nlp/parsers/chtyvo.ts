@@ -7,6 +7,7 @@ import { sync as globSync } from 'glob'
 import { decode } from 'iconv-lite'
 import { AbstractElement } from 'xmlapi'
 import * as last from 'lodash/last'
+import * as shuffle from 'lodash/shuffle'
 
 import { execSync2String } from '../../child_process.node'
 import { renameTag, removeElements } from '../../xml/utils'
@@ -41,7 +42,8 @@ const docFormatBooktypes = [
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
-  let metas = globSync(join(workspace, '**/*.meta.html'))
+  let metas = (globSync(join(workspace, '**/*.meta.html')))
+  metas = shuffle(metas)
   for (let metaPath of metas) {
     try {
       let basePath = metaPath.slice(0, -'.meta.html'.length)
@@ -69,7 +71,6 @@ export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
         if (!docFormatBooktypes.find(x => x === meta.documentType)) {
           continue
         }
-        console.log(`processing ${dataPath}`)
         let content = execSync2String(`textutil -stdout -convert html ${dataPath}`)
         if (hasSmashedEncoding(content)) {
           console.log(`bad encoding`)
@@ -177,9 +178,9 @@ function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
   title = normalizeCorpusTextString(title)
   let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
   let translator = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
-  translator = normalizeCorpusTextString(title.trim())
+  translator = normalizeCorpusTextString(translator.trim())
   let originalAutor = root.evaluateString('string(//div[@class="author_name_book"]/a/text())')
-  originalAutor = normalizeCorpusTextString(title.trim())
+  originalAutor = normalizeCorpusTextString(originalAutor.trim())
   if (originalAutor === 'народ Український') {
     originalAutor = 'народ'
   }

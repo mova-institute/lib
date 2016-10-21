@@ -7,7 +7,7 @@ const lineIterator = require('n-readlines')
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function forEachLine(stream: Readable, f: (line: string) => void) {
+export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => void) {
   return new Promise<void>((resolve, reject) => {
     createInterface({ input: stream })
       .on('line', f)
@@ -29,6 +29,16 @@ export function* linesSync(filename: string) {  // todo: do not buffer file
   for (let line of readFileSync(filename, 'utf8').split('\n')) {
     yield line
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function readTsvMapSync(path: string) {
+  let ret = new Map<string, string>()
+  for (let line of linesSync(path)) {
+    let [key, val] = line.split('\t')
+    ret.set(key, val)
+  }
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////

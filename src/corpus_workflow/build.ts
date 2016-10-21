@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { basename, join } from 'path'
+import { basename, join, dirname } from 'path'
 import * as fs from 'fs'
 import { existsSync, openSync, closeSync, writeSync, createReadStream, createWriteStream } from 'fs'
 
@@ -108,13 +108,12 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
 //------------------------------------------------------------------------------
 function chtyvo(workspacePath: string, analyzer: MorphAnalyzer) {
   console.log(`Now bulding chtyvo`)
-  let verticalDir = join(workspacePath, 'vertical', 'chtyvo')
-  if (existsSync(verticalDir)) {
-    console.log(`Skipping: ${verticalDir} exists`)
-    return
-  }
-  mkdirpSync(verticalDir)
-  let verticalFile = openSync(join(verticalDir, 'chtyvo.vertical.txt'), 'w')
+  let buildDir = join(workspacePath, 'build')
+  // if (existsSync(verticalDir)) {
+  //   console.log(`Skipping: ${verticalDir} exists`)
+  //   return
+  // }
+  let verticalFile = rotateAndOpen(join(buildDir, 'chtyvo.vertical.txt'))
   mu(streamChtyvo(join(workspacePath, 'data', 'chtyvo'), analyzer))
     .map(x => nlpUtils.token2sketchVertical(x))
     .chunk(10000)
@@ -131,7 +130,7 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
   let buildDir = join(workspacePath, 'build', 'parallel')
   mkdirpSync(buildDir)
   let verticalFilePath = join(buildDir, 'parallel.vertical.txt')
-  let verticalFile = openSync(verticalFilePath, 'w')
+  let verticalFile = rotateAndOpen(verticalFilePath)
 
   for (let path of srcFiles) {
     console.log(`processing ${path}`)
@@ -148,11 +147,6 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
       .forEach(x => writeSync(verticalFile, x.join('\n') + '\n'))
     writeSync(verticalFile, `</doc>\n`)
   }
-
-  console.log(`Now bulding id2i for Ukrainian`)
-  let wstream = createWriteStream(join(buildDir, 'parallel.id2i.txt'))
-  await id2i(createReadStream(verticalFilePath), wstream)
-  wstream.close()
 }
 
 //------------------------------------------------------------------------------
@@ -176,15 +170,19 @@ async function buildEnglish(workspacePath: string) {
     let verticalFile = openSync(verticalFilePath, 'w')
     let tagger = new StanfordTaggerClient(8088)
 
-    let lines = new Array<string>()
     for (let path of srcFiles) {
-      console.log(`processing ${path}`)
+      console.log(`processing ${basename(path)}`)
+      let lines = new Array<string>()
+      // console.log(`processing ${path}`)
       lines.push(`<doc reference_title="${basename(path).slice(0, -'.en.xml'.length)}">`)
       for (let p of parseXmlFileSync(path).evaluateElements('//p')) {
         lines.push(`<p id="${p.attribute('id')}">`)
+        // console.log(`### ${p.attribute('id')}`)
         for (let s of p.evaluateElements('./s')) {
+          // console.log(s.attribute('id'))
           lines.push(`<s id="${s.attribute('id')}">`)
           let tagged = await tagger.tag(s.text())
+          // console.log(tagged)
           lines.push(...tagged.map(x => x.join('\t')))
           lines.push(`</s>`)
         }
@@ -382,6 +380,24 @@ function htmlDocCreator(html: string) {
 }
 
 //------------------------------------------------------------------------------
+function rotateAndOpen(filePath: string) {
+  let dir = dirname(filePath)
+  let base = basename(filePath)
+  mkdirpSync(dir)
+  if (existsSync(filePath)) {
+    for (let i = 0; ; ++i) {
+      let newPath = join(dir, `${i}.${base}`)
+      if (!existsSync(newPath)) {
+        fs.renameSync(filePath, newPath)
+        return openSync(filePath, 'w')
+      }
+    }
+  } else {
+    return openSync(filePath, 'w')  // todo: why both?
+  }
+}
+
+//------------------------------------------------------------------------------
 function createVerticalFile(workspace: string, partName: string) {
   let filePath
   let i = 0
@@ -399,3 +415,19 @@ function createVerticalFile(workspace: string, partName: string) {
 function mitei(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number, args: Args) {
   buildMiteiVertical(args.mitei, analyzer, verticalFile)
 }
+
+/*
+
+mi-buildcorp --part en
+mi-buildcorp --part parallel
+mi-buildcorp --part chtyvo
+
+
+
+cat uk.list.txt \
+  | xargs cat \
+  | mi-genalign 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
+  | fixgaps.py \
+  | compressrng.py > uk_en.align.txt
+
+*/
