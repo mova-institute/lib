@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node  --max-old-space-size=5120
 
 import { basename, join, dirname } from 'path'
 import * as fs from 'fs'
@@ -415,19 +415,3 @@ function createVerticalFile(workspace: string, partName: string) {
 function mitei(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number, args: Args) {
   buildMiteiVertical(args.mitei, analyzer, verticalFile)
 }
-
-/*
-
-mi-buildcorp --part en
-mi-buildcorp --part parallel
-mi-buildcorp --part chtyvo
-
-
-
-cat uk.list.txt \
-  | xargs cat \
-  | mi-genalign 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
-  | fixgaps.py \
-  | compressrng.py > uk_en.align.txt
-
-*/

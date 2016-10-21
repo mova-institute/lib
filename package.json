@@ -14,7 +14,8 @@
     "mi-buildcorp": "lib/corpus_workflow/build.js",
     "mi-deploycorp": "lib/corpus_workflow/deploy.js",
     "mi-id2i": "lib/corpus_workflow/id2i.js",
-    "mi-genalign": "lib/corpus_workflow/genalign.js"
+    "mi-genalign": "lib/corpus_workflow/genalign.js",
+    "mi-compraplign": "lib/corpus_workflow/compress_align.js"
   },
   "scripts": {},
   "author": "mova.institute",

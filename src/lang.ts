@@ -196,3 +196,10 @@ export function createObject(keyvaluePairs: any[][]) {
 
   return ret
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function parseIntStrict(str: string) {
+  if (/^\d+$/.test(str)) {
+    return Number(str)
+  }
+}

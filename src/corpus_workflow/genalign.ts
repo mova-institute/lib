@@ -21,20 +21,22 @@ async function main(args: minimist.ParsedArgs) {
     let id2iR = readTsvMapSync(id2iRPath)
     console.error(`read id2iR`)
 
-    let id2id = new Map<string, string[]>()
-    let id2ids = globSync(id2idsGlob)
-    id2ids.forEach(x => readTeiMapping(id2id, x))
+    let id2ids = new Map<string, string[]>()
+    globSync(id2idsGlob).forEach(x => readTeiMapping(id2ids, x))
     console.error(`read TEI mappings`)
 
     let i = 0
     await forEachLine(process.stdin, line => {
       if (isSentenceStart(line)) {
         let idL = getId(line)
-        if (idL && id2id.has(idL)) {
-          for (let idR of id2id.get(idL)) {
+        if (idL && id2ids.has(idL) && id2ids.get(idL).length) {
+          // let idsR = id2ids.get(idL)
+          // if
+          // let idRangeR = id2id.get(idL).map(x => id2iR.get(x)).join(',')
+          // process.stdout.write(`${i}\t${idRangeR}\n`)
+          for (let idR of id2ids.get(idL)) {
             let iR = id2iR.get(idR)
             process.stdout.write(`${i}\t${iR || '-1'}\n`)
-            // throw new Error(`No index for id "${idR}" in "${id2iRPath}"`)
           }
         } else {
           process.stdout.write(`${i}\t-1\n`)

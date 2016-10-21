@@ -12,7 +12,6 @@ import * as entries from 'lodash/toPairs'
 import * as castArray from 'lodash/castArray'
 
 import { r, arrayed } from '../lang'
-import { generateRegistryFile } from './registry'
 import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
 
 
@@ -20,7 +19,9 @@ import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
 interface Args {
   vertical: string | string[]
   verticalList: string
-  definition: string
+  config: string
+  subcorpConfig?: string
+  alignmentPaths: string[]
   name?: string
 }
 
@@ -29,6 +30,7 @@ if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     alias: {
       verticalList: ['vert-list'],
+      subcorpConfig: ['subcorp-config'],
     },
   }) as any
 
@@ -46,7 +48,7 @@ function main(args: Args) {
     throw new Error(`Environment variables not set`)
   }
 
-  let definition = readFileSync(args.definition, 'utf8')
+  let config = readFileSync(args.config, 'utf8')
   let verticalPaths: string[]
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)
@@ -54,28 +56,38 @@ function main(args: Args) {
     verticalPaths = readFileSync(args.verticalList, 'utf8').split('\n')
   }
 
+  if (args.alignmentPaths) {
+    args.alignmentPaths = arrayed(args.alignmentPaths)
+  }
+
   let nonExistentFiles = verticalPaths.filter(x => !existsSync(x))
   if (nonExistentFiles.length) {
     throw new Error(`File(s) not found:\n${nonExistentFiles.join('\n')}`)
   }
 
-  indexCorpusRemote({
+  let corpusParams: CorpusParams = {
     verticalPaths,
-    definitionTemplate: definition,
+    config,
+    subcorpConfig: args.subcorpConfig && readFileSync(args.subcorpConfig, 'utf8'),
     name: args.name,
-  }, {
-      hostname, user,
-      corporaPath: remoteCorpora,
-    })
+    alignmentPaths: args.alignmentPaths,
+  }
+
+  let remoteParams: RemoteParams = {
+    hostname,
+    user,
+    corporaPath: remoteCorpora,
+  }
+
+  indexCorpusRemote(corpusParams, remoteParams)
 }
 
 
 interface CorpusParams {
   verticalPaths: string[]
-  definitionTemplate: string
+  config: string
+  subcorpConfig?: string
   alignmentPaths?: string[]
-  subcorpDefinition?: string
-  alignPath?: string
   name?: string
 }
 
@@ -87,7 +99,7 @@ interface RemoteParams {
 
 //------------------------------------------------------------------------------
 function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
-  const upload = (path: string, content: string) =>
+  const upload = (content: string, path: string) =>
     putFileSshSync(remoteParams.hostname, remoteParams.user, path, content)
 
   const manateePath = normalizePath(`${remoteParams.corporaPath}/manatee`)
@@ -95,27 +107,34 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
   const verticalPath = normalizePath(`${remoteParams.corporaPath}/vertical`)
 
   const tempName = 'temp'
-  const tempSubcName = `${tempName}_sub`
-  const registryTempPath = `${registryPath}/${tempName}`
+  const subcorpSuffix = '_sub'
+  const tempConfigPath = `${registryPath}/${tempName}`
+  const tempSubcorpConfigPath = `${tempConfigPath}${subcorpSuffix}`
 
   execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user,
     `rm -rfv '${manateePath}/${tempName}'`)  // just in case
 
-  // upload temp defifnitions
-  let tempDefinition = nameCorpusInDefinition(tempName, manateePath, params.definitionTemplate)
-  if (!checkDefinitionIsSane) {
-    throw new Error(`Bad corpus definition`)
+  // upload temp configs
+  let tempConfig = nameCorpusInConfig(tempName, manateePath, params.config)
+  if (!checkConfigIsSane) {
+    throw new Error(`Bad corpus config`)
   }
-  upload(`${registryPath}/${tempName}`, tempDefinition)
-  if (params.subcorpDefinition) {
-    upload(registryTempPath, tempDefinition)
+  if (params.subcorpConfig) {
+    tempConfig = addSubcorpToConfig(tempSubcorpConfigPath, tempConfig)
+    upload(params.subcorpConfig, tempSubcorpConfigPath)
   }
+
+  // upload alingments
   if (params.alignmentPaths) {
+    var tempAlingmentPaths = params.alignmentPaths.map(x => `${verticalPath}/temp_${basename(x)}`)
+    tempConfig = addAlingmentsPaths(tempAlingmentPaths, tempConfig)
     for (let path of params.alignmentPaths) {
       let filename = basename(path)
-      upload(`${verticalPath}/temp_${filename}`, readFileSync(path, 'utf8'))  // todo
+      upload(readFileSync(path, 'utf8'), `${verticalPath}/temp_${basename(filename)}`)  // todo
     }
   }
+
+  upload(tempConfig, `${registryPath}/${tempName}`)
 
   // call compilecorp
   console.log(`indexing a corpus from ${params.verticalPaths.length} files`)
@@ -123,21 +142,39 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
   let compileCommand = catCommand
     + ` | ssh -C ${remoteParams.user}@${remoteParams.hostname}`
     + ` 'time compilecorp --no-ske`
-    + ` --recompile-corpus --recompile-subcorpora`
-    // + ` --recompile-align`
+    + ` --recompile-corpus`
+    + ` --recompile-subcorpora`
+    + ` --recompile-align`
     + ` ${tempName} -'`
   console.log(`\n${compileCommand}\n`)
   execHere(compileCommand)
 
 
   const overwrite = (name: string) => {
-    let newDefintion = nameCorpusInDefinition(name, manateePath, params.definitionTemplate)
-    upload(registryTempPath, newDefintion)
+    let newConfig = nameCorpusInConfig(name, manateePath, params.config)
+    if (params.subcorpConfig) {
+      var newSubcorpConfigPath = `${registryPath}/${name}${subcorpSuffix}`
+      newConfig = addSubcorpToConfig(newSubcorpConfigPath, newConfig)
+    }
+    if (params.alignmentPaths) {
+      let alingmentPaths = params.alignmentPaths.map(x => `${verticalPath}/${basename(x)}`)
+      newConfig = addAlingmentsPaths(alingmentPaths, newConfig)
+    }
+
+    upload(newConfig, tempConfigPath)
 
     let command = ``
       + `rm -rfv "${manateePath}/${name}"`
       + ` && mv "${manateePath}/${tempName}" "${manateePath}/${name}"`
-      + ` && mv "${registryTempPath}" "${registryPath}/${name}"`
+      + ` && mv "${tempConfigPath}" "${registryPath}/${name}"`
+    if (params.subcorpConfig) {
+      command += ` && mv "${tempSubcorpConfigPath}" "${newSubcorpConfigPath}"`
+    }
+    if (params.alignmentPaths) {
+      command += tempAlingmentPaths.map(x =>
+        ` && mv "${x}" "${verticalPath}/${basename(x).substr('temp_'.length)}"`).join('')
+    }
+    console.log(command)
     execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user, command)
   }
 
@@ -168,29 +205,25 @@ function normalizePath(path: string) {
 }
 
 //------------------------------------------------------------------------------
-function nameCorpusInDefinition(name: string, manateePath: string, definition: string) {
+function nameCorpusInConfig(name: string, manateePath: string, config: string) {
   let path = normalizePath(`${manateePath}/${name}`)
-  return definition + `PATH "${path}"\n`
+  return config + `PATH "${path}"\n`
 }
 
 //------------------------------------------------------------------------------
-function checkDefinitionIsSane(definition: string, remoteManatee: string) {
-  return definition && new RegExp(String.raw`\bPATH "${remoteManatee}`).test(definition)
+function addSubcorpToConfig(path: string, config: string) {
+  return config + `SUBCDEF "${path}"\n`
 }
 
 //------------------------------------------------------------------------------
-/*function putRegistryFile(corpusName: string) {
-  let subcorpusName = `${corpusName}_sub`
-  let {corpus, subcorpus} = generateRegistryFile({
-    name: corpusName,
-    title: 'корпус української',
-  })
-  if (!corpus || !new RegExp(String.raw`\bPATH "${remoteManatee}`).test(corpus)) {
-    throw new Error()
-  }
-  execRemote(`cat - > "${remoteRegistry}${corpusName}"`, corpus)
-  execRemote(`cat - > "${remoteRegistry}${subcorpusName}"`, subcorpus)
-}*/
+function addAlingmentsPaths(paths: string[], config: string) {
+  return config + `ALIGNDEF "${paths.join(',')}"\n`
+}
+
+//------------------------------------------------------------------------------
+function checkConfigIsSane(config: string, remoteManatee: string) {
+  return config && new RegExp(String.raw`\bPATH "${remoteManatee}`).test(config)
+}
 
 //------------------------------------------------------------------------------
 function execHere(command: string) {
@@ -198,3 +231,58 @@ function execHere(command: string) {
     stdio: [undefined, process.stdout, process.stderr],
   })
 }
+
+
+
+/*
+
+mi-buildcorp --part en
+mi-buildcorp --part parallel
+mi-buildcorp --part chtyvo
+
+
+
+
+cat uk.list.txt \
+  | xargs cat \
+  | mi-genalign 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
+  | tee uk_id2i.txt \
+  | fixgaps.py \
+  | compressrng.py > uk_en.align.txt
+
+
+
+
+mi-deploycorp \
+  --vertical build/en/en.vertical.txt \
+  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/en \
+  --name en
+
+mi-deploycorp \
+  --verticalList uk.list.txt \
+  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
+  --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
+  --alignmentPaths uk_en.align.txt
+
+
+
+
+
+###### tests
+
+cat test.list.txt \
+  | xargs cat \
+  | mi-genalign 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
+  | fixgaps.py \
+  | compressrng.py \
+  | mi-compraplign > test_uk_en.align.txt
+
+mi-deploycorp \
+  --verticalList test.list.txt \
+  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
+  --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
+  --alignmentPaths test_uk_en.align.txt
+
+
+
+*/

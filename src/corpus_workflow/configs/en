@@ -52,6 +52,7 @@ STRUCTURE doc {
   ATTRIBUTE reference_title {
     LABEL "джерело"
   }
+  ATTRIBUTE wordcount
 }
 STRUCTURE p {
   ATTRIBUTE id
@@ -62,3 +63,5 @@ STRUCTURE p {
 STRUCTURE s {
   ATTRIBUTE id
 }
+
+ALIGNSTRUCT "s"

@@ -89,3 +89,8 @@ export function zerofill(n: number, width: number) {
   }
   return n.toString()
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function isDeceimalInt(str: string) {
+  return /^\d+$/.test(str)
+}
