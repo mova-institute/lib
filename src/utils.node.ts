@@ -16,6 +16,13 @@ export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export async function allLinesFromStdin() {
+  let ret = new Array<string>()
+  await forEachLine(process.stdin, line => ret.push(line))
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function* linesStreamSync(filename: string) {
   let it = new lineIterator(filename)
   let bytes: Buffer
@@ -32,8 +39,8 @@ export function* linesSync(filename: string) {  // todo: do not buffer file
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function readTsvMapSync(path: string) {
-  let ret = new Map<string, string>()
+export function readTsvMapSync(path: string, to?: Map<string, string>) {
+  let ret = to || new Map<string, string>()
   for (let line of linesSync(path)) {
     let [key, val] = line.split('\t')
     ret.set(key, val)
@@ -42,8 +49,8 @@ export function readTsvMapSync(path: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function linesSyncArray(filename: string) {
-  return readFileSync(filename, 'utf8').split('\n')
+export function linesSyncArray(filePath: string) {
+  return readFileSync(filePath, 'utf8').trim().split('\n')
 }
 
 ////////////////////////////////////////////////////////////////////////////////

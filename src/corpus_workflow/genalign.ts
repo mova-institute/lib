@@ -9,9 +9,28 @@ import { linesSync, readTsvMapSync, forEachLine } from '../utils.node'
 
 
 if (require.main === module) {
-  main(minimist(process.argv.slice(2)))
+  main2(minimist(process.argv.slice(2)))
 }
 
+//------------------------------------------------------------------------------
+async function main2(args: minimist.ParsedArgs) {
+  let [id2iLPath, id2idsGlob, id2iRPath] = args._
+  let id2i = readTsvMapSync(id2iLPath)
+  readTsvMapSync(id2iRPath, id2i)
+
+  for (let path of globSync(id2idsGlob)) {
+    for (let line of linesSync(path)) {
+      if (line.startsWith('<link ')) {
+        let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/)[1].split(';')
+        let indexesL = idsStrL.split(' ').map(x => id2i.get(x)).filter(x => x !== undefined)
+        let indexesR = idsStrR.split(' ').map(x => id2i.get(x)).filter(x => x !== undefined)
+        if (indexesL.length || indexesR.length) {
+          process.stdout.write(`${indexArr2val(indexesL)}\t${indexArr2val(indexesR)}\n`)
+        }
+      }
+    }
+  }
+}
 
 //------------------------------------------------------------------------------
 async function main(args: minimist.ParsedArgs) {

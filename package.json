@@ -15,6 +15,7 @@
     "mi-deploycorp": "lib/corpus_workflow/deploy.js",
     "mi-id2i": "lib/corpus_workflow/id2i.js",
     "mi-genalign": "lib/corpus_workflow/genalign.js",
+    "mi-sortalign": "lib/corpus_workflow/sortalign.js",
     "mi-compraplign": "lib/corpus_workflow/compress_align.js"
   },
   "scripts": {},

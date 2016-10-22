@@ -126,7 +126,9 @@ STRUCTURE p {
   ATTRIBUTE id
 }
 STRUCTURE s {
-  ATTRIBUTE id
+  ATTRIBUTE id {
+    LABEL "код речення"
+  }
 }
 STRUCTURE g {
   DISPLAYTAG 0
@@ -156,7 +158,7 @@ DEFAULTATTR word
 
 # todo ATTRDOC, ATTRDOCLABEL,
 
-FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,doc.comment,doc.wordcount,doc.url"
+FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,doc.comment,doc.wordcount,s.id,doc.url"
 STRUCTATTRLIST "doc.reference_title,doc.author,doc.date,doc.type"
 SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
 #FREQTTATTRS ""

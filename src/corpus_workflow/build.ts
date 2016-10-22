@@ -195,7 +195,7 @@ async function buildEnglish(workspacePath: string) {
   }
 
   console.log(`Now bulding id2i for English`)
-  let wstream = createWriteStream(join(buildDir, 'en.id2i.txt'))
+  let wstream = createWriteStream(join(buildDir, 'id2i.txt'))
   await id2i(createReadStream(verticalFilePath), wstream)
   wstream.close()
 }

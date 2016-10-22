@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+
+import { allLinesFromStdin } from '../utils.node'
+import { parseIntStrict } from '../lang'
+import { stableSort } from '../algo'
+
+
+if (require.main === module) {
+  main()
+}
+
+//------------------------------------------------------------------------------
+async function main() {
+  let lines = (await allLinesFromStdin())
+    .map(x => [x.split('\t').map(xx => parseIntStrict(xx.split(/[:,]/)[0])), x]) as [number[], string][]
+
+  stableSort(lines, (lineA, lineB) => {
+    let a = lineA[0]
+    let b = lineB[0]
+    if (a[0] !== -1 && b[0] !== -1) {
+      let ret = a[0] - b[0]
+      if (ret) {
+        return ret
+      }
+      if (a[1] !== -1 && b[1] !== -1) {
+        let ret = a[1] - b[1]
+        if (ret) {
+          return ret
+        }
+      }
+    }
+    return 0
+  })
+
+  lines.forEach(x => process.stdout.write(`${x[1]}\n`))
+}

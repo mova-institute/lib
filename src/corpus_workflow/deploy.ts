@@ -43,8 +43,9 @@ function main(args: Args) {
   const user = process.env.MI_CORP_USER
   const hostname = process.env.MI_CORP_HOST
   const remoteCorpora = process.env.MI_CORPORA_PATH
+  const bonitoDataPath = process.env.MI_BONITO_DATA_PATH
 
-  if (!user || !hostname || !remoteCorpora) {
+  if (!user || !hostname || !remoteCorpora || !bonitoDataPath) {
     throw new Error(`Environment variables not set`)
   }
 
@@ -77,6 +78,7 @@ function main(args: Args) {
     hostname,
     user,
     corporaPath: remoteCorpora,
+    bonitoDataPath,
   }
 
   indexCorpusRemote(corpusParams, remoteParams)
@@ -95,6 +97,7 @@ interface RemoteParams {
   hostname: string
   user: string
   corporaPath: string
+  bonitoDataPath: string
 }
 
 //------------------------------------------------------------------------------
@@ -167,6 +170,7 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
       + `rm -rfv "${manateePath}/${name}"`
       + ` && mv "${manateePath}/${tempName}" "${manateePath}/${name}"`
       + ` && mv "${tempConfigPath}" "${registryPath}/${name}"`
+      + ` && sudo -u www-data rm -rfv "${remoteParams.bonitoDataPath}/cache/${name}"`
     if (params.subcorpConfig) {
       command += ` && mv "${tempSubcorpConfigPath}" "${newSubcorpConfigPath}"`
     }
@@ -242,6 +246,12 @@ mi-buildcorp --part chtyvo
 
 
 
+cat uk.list.txt \
+  | xargs cat \
+  | mi-id2i \
+  > uk_id2i.txt
+
+mi-genalign < uk_id2i.txt
 
 cat uk.list.txt \
   | xargs cat \
@@ -272,17 +282,21 @@ mi-deploycorp \
 
 cat test.list.txt \
   | xargs cat \
-  | mi-genalign 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
+  | mi-id2i \
+  > test_id2i.txt
+
+mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
+  | mi-sortalign \
   | fixgaps.py \
   | compressrng.py \
-  | mi-compraplign > test_uk_en.align.txt
+  > test_uk_en.align.txt
 
 mi-deploycorp \
   --verticalList test.list.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
   --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
   --alignmentPaths test_uk_en.align.txt
-
+  --name test
 
 
 */

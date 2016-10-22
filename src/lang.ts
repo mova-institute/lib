@@ -199,7 +199,8 @@ export function createObject(keyvaluePairs: any[][]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function parseIntStrict(str: string) {
-  if (/^\d+$/.test(str)) {
+  if (/^-?\d+$/.test(str)) {
     return Number(str)
   }
+  throw new Error(`Not a number string: "${str}"`)
 }
