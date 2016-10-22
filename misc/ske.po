@@ -3516,7 +3516,7 @@ msgstr "Показувати загловне слово у хмарці"
 
 #: cmpltmpl/view.py:2318
 msgid "Loading translation candidates for KWIC, please wait."
-msgstr "Завантажуються потенційні переклади ключових слів, зачекайте."
+msgstr "Отримування потенційних перекладів, зачекайте."
 
 #: cmpltmpl/wordlist_form.py:854
 msgid "Compatible corpora"
@@ -3532,7 +3532,7 @@ msgid ""
 "feedback or try again later. We are sorry for your inconvenience."
 msgstr ""
 "Підрахунок не вдався. Ви можете написати розробникам або спробувати пізніше. "
-"Перепрошуємо за незручності."
+"Перепрошуємо за невигоди."
 
 #: cmpltmpl/trends.py:864 cmpltmpl/wordlist.py:823
 msgid "Failed"
