@@ -240,6 +240,14 @@ function execHere(command: string) {
 
 /*
 
+git pull && make clean && ./configure && make && sudo make install
+cd /usr/local/share/locale && find . -type f -name ske.mo | xargs -I{} cp --parents {}
+msgfmt misc/ske.po -o - | ssh $MI_CORP_USER@$MI_CORP_HOST "cat - > ~/ske.mo"
+sudo ln ~/ske.mo /usr/share/locale/uk_UA/LC_MESSAGES/ske.mo
+
+
+
+
 mi-buildcorp --part en
 mi-buildcorp --part parallel
 mi-buildcorp --part chtyvo
@@ -285,7 +293,13 @@ cat test.list.txt \
   | mi-id2i \
   > test_id2i.txt
 
-mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
+mi-genalign build/en/id2i.txt 'data/parallel/*.alignment.xml' test_id2i.txt \
+  | mi-sortalign \
+  | fixgaps.py \
+  | compressrng.py \
+  > test_en_uk.align.txt
+
+mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
   | mi-sortalign \
   | fixgaps.py \
   | compressrng.py \
@@ -295,7 +309,7 @@ mi-deploycorp \
   --verticalList test.list.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
   --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
-  --alignmentPaths test_uk_en.align.txt
+  --alignmentPaths test_uk_en.align.txt \
   --name test
 
 

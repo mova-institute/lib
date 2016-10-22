@@ -163,7 +163,7 @@ async function buildEnglish(workspacePath: string) {
     .filter(x => x.endsWith('.en.xml'))
   let buildDir = join(workspacePath, 'build', 'en')
   mkdirpSync(buildDir)
-  let verticalFilePath = join(buildDir, 'en.vertical.txt')
+  let verticalFilePath = join(buildDir, 'vertical.txt')
   if (existsSync(verticalFilePath)) {
     console.log(`Skipping vertical file built, ${verticalFilePath}`)
   } else {
