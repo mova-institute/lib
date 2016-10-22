@@ -253,28 +253,24 @@ mi-buildcorp --part parallel
 mi-buildcorp --part chtyvo
 
 
+mi-deploycorp \
+  --vertical build/en/vertical.txt \
+  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/en \
+  --name en
+
+
+###### uk ######
 
 cat uk.list.txt \
   | xargs cat \
   | mi-id2i \
   > uk_id2i.txt
 
-mi-genalign < uk_id2i.txt
-
-cat uk.list.txt \
-  | xargs cat \
-  | mi-genalign 'data/parallel/*.alignment.xml' build/en/en.id2i.txt \
-  | tee uk_id2i.txt \
+mi-genalign uk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
+  | mi-sortalign \
   | fixgaps.py \
-  | compressrng.py > uk_en.align.txt
-
-
-
-
-mi-deploycorp \
-  --vertical build/en/en.vertical.txt \
-  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/en \
-  --name en
+  | compressrng.py \
+  > uk_en.align.txt
 
 mi-deploycorp \
   --verticalList uk.list.txt \
@@ -288,16 +284,16 @@ mi-deploycorp \
 
 ###### tests
 
-cat test.list.txt \
-  | xargs cat \
-  | mi-id2i \
-  > test_id2i.txt
-
 mi-genalign build/en/id2i.txt 'data/parallel/*.alignment.xml' test_id2i.txt \
   | mi-sortalign \
   | fixgaps.py \
   | compressrng.py \
   > test_en_uk.align.txt
+
+cat test.list.txt \
+  | xargs cat \
+  | mi-id2i \
+  > test_id2i.txt
 
 mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
   | mi-sortalign \

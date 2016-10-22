@@ -99,7 +99,7 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
       title,
       reference_title: title ? `УМ:${title}` : `УМ`,
       date,
-      text_type: 'публіцистика',
+      type: 'публіцистика',
     }
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
@@ -129,15 +129,17 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
     .filter(x => x.endsWith('.uk.xml'))
   let buildDir = join(workspacePath, 'build', 'parallel')
   mkdirpSync(buildDir)
-  let verticalFilePath = join(buildDir, 'parallel.vertical.txt')
+  let verticalFilePath = join(buildDir, 'vertical.txt')
   let verticalFile = rotateAndOpen(verticalFilePath)
 
   for (let path of srcFiles) {
     console.log(`processing ${path}`)
     let root = parseXmlFileSync(path)
-    root.evaluateNodes('//text()').forEach(
-      x => x.text(normalizeCorpusTextString(x.text(), analyzer)))
-    // normalizeCorpusText(root, analyzer)
+    root.evaluateNodes('//text()')
+      .forEach(x => x.text(normalizeCorpusTextString(x.text(), analyzer)))
+    root.evaluateNodes('//s')
+      .filter(x => !x.text().trim())
+      .forEach(x => x.remove() && console.log('rm'))
     tokenizeTei(root, analyzer)
     morphInterpret(root, analyzer)
     writeSync(verticalFile, `<doc reference_title="${basename(path).slice(0, -'.uk.xml'.length)}">\n`)
@@ -162,37 +164,32 @@ async function buildEnglish(workspacePath: string) {
   let srcFiles = globSync(join(workspacePath, 'data', 'parallel/**/*'))
     .filter(x => x.endsWith('.en.xml'))
   let buildDir = join(workspacePath, 'build', 'en')
-  mkdirpSync(buildDir)
   let verticalFilePath = join(buildDir, 'vertical.txt')
-  if (existsSync(verticalFilePath)) {
-    console.log(`Skipping vertical file built, ${verticalFilePath}`)
-  } else {
-    let verticalFile = openSync(verticalFilePath, 'w')
-    let tagger = new StanfordTaggerClient(8088)
-
-    for (let path of srcFiles) {
-      console.log(`processing ${basename(path)}`)
-      let lines = new Array<string>()
-      // console.log(`processing ${path}`)
-      lines.push(`<doc reference_title="${basename(path).slice(0, -'.en.xml'.length)}">`)
-      for (let p of parseXmlFileSync(path).evaluateElements('//p')) {
-        lines.push(`<p id="${p.attribute('id')}">`)
-        // console.log(`### ${p.attribute('id')}`)
-        for (let s of p.evaluateElements('./s')) {
-          // console.log(s.attribute('id'))
-          lines.push(`<s id="${s.attribute('id')}">`)
-          let tagged = await tagger.tag(s.text())
-          // console.log(tagged)
-          lines.push(...tagged.map(x => x.join('\t')))
-          lines.push(`</s>`)
+  let verticalFile = rotateAndOpen(verticalFilePath)
+  let tagger = new StanfordTaggerClient(8088)
+  for (let path of srcFiles) {
+    console.log(`processing ${basename(path)}`)
+    let lines = new Array<string>()
+    lines.push(`<doc reference_title="${basename(path).slice(0, -'.en.xml'.length)}">`)
+    for (let p of parseXmlFileSync(path).evaluateElements('//p')) {
+      lines.push(`<p id="${p.attribute('id')}">`)
+      for (let s of p.evaluateElements('./s')) {
+        let text = s.text().trim()
+        if (!text) {
+          continue
         }
-        lines.push(`</p>`)
+        lines.push(`<s id="${s.attribute('id')}">`)
+        let tagged = await tagger.tag(text)
+        // console.log(tagged)
+        lines.push(...tagged.map(x => x.join('\t')))
+        lines.push(`</s>`)
       }
-      lines.push(`</doc>`)
-      writeSync(verticalFile, lines.join('\n') + '\n')
+      lines.push(`</p>`)
     }
-    closeSync(verticalFile)
+    lines.push(`</doc>`)
+    writeSync(verticalFile, lines.join('\n') + '\n')
   }
+  closeSync(verticalFile)
 
   console.log(`Now bulding id2i for English`)
   let wstream = createWriteStream(join(buildDir, 'id2i.txt'))
@@ -227,7 +224,7 @@ function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
       title,
       reference_title: `Д.: ${title}`,
       date,
-      text_type: 'публіцистика',
+      type: 'публіцистика',
     }
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
@@ -260,7 +257,7 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
       title,
       reference_title: `Т.: ${title}`,
       date,
-      text_type: 'публіцистика',
+      type: 'публіцистика',
     }
 
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
@@ -291,7 +288,7 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: num
       url,
       author,
       date,
-      text_type: 'публіцистика',
+      type: 'публіцистика',
     }
 
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
@@ -321,7 +318,7 @@ function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
       title,
       reference_title: `ДТ.: ${title}`,
       date: datetime,
-      text_type: 'публіцистика',
+      type: 'публіцистика',
     }
 
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
@@ -346,7 +343,7 @@ function kontrakty(workspacePath: string, analyzer: MorphAnalyzer, verticalFile:
       title: `Контракти ${year}`,
       reference_title: `Контракти ${year}`,
       date: year,
-      text_type: 'публіцистика',
+      type: 'публіцистика',
     }
     fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
     stream.forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))

@@ -132,7 +132,7 @@ export class MorphAnalyzer {
   expandAdjectivesAsNouns = false
   keepN2adj = false
   private numeralMap: Array<{ form: string, flags: string, lemma: string }>
-  private dictCache = new CacheMap<string, MorphInterp[]>(100000, token =>
+  private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)))
 
   constructor(private dictionary: Dictionary) {
