@@ -77,8 +77,8 @@ let PUNC_SPACING = {
   '…': [false, true],
 }
 
-const LEFT_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0]).map(x => '\\' + x).join('')
-const RIGHT_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][1]).map(x => '\\' + x).join('')
+const PUNC_GLUED_AFTER = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0]).map(x => '\\' + x).join('')
+const PUNC_GLUED_BEFORE = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][1]).map(x => '\\' + x).join('')
 const NO_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0] && PUNC_SPACING[x][1]).map(x => '\\' + x).join('')
 // console.log(NO_GLUE_PUNC)
 
@@ -651,14 +651,14 @@ export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyze
     // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
-    .replace(new RegExp(r`([${WORDCHAR}${RIGHT_GLUE_PUNC}])\.{3}([^\.])?`, 'g'), '$1…$2')
-    .replace(/(^|\s)[\-–] /g, '$1— ')
+    .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])\.{3}([^\.])?`, 'g'), '$1…$2')
+    .replace(new RegExp(r`(^|[\s${PUNC_GLUED_BEFORE}])[\-–] `, 'g'), '$1— ')
     // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
     .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
     .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
-    .replace(new RegExp(r`(^|\s)"([${RIGHT_GLUE_PUNC}${WORDCHAR}])`, 'g'), '$1“$2')
-    .replace(new RegExp(r`(^|\s),,([${RIGHT_GLUE_PUNC}${WORDCHAR}])`, 'g'), '$1„$2')
-    .replace(new RegExp(r`([${WORDCHAR}${RIGHT_GLUE_PUNC}])"(\s|[-${RIGHT_GLUE_PUNC}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
+    .replace(new RegExp(r`(^|\s)"([${PUNC_GLUED_BEFORE}${WORDCHAR}])`, 'g'), '$1“$2')
+    .replace(new RegExp(r`(^|\s),,([${PUNC_GLUED_AFTER}${WORDCHAR}])`, 'g'), '$1„$2')
+    .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])"(\s|[-${PUNC_GLUED_BEFORE}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
   ret = fixLatinGlyphMisspell(ret)
   ret = normalizeDiacritics(ret)
   if (analyzer) {
