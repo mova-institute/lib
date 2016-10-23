@@ -94,3 +94,32 @@ export function zerofill(n: number, width: number) {
 export function isDeceimalInt(str: string) {
   return /^\d+$/.test(str)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function findAllIndexes(str: string, char: string) {
+  let ret = new Array<number>()
+  for (var i = 0; i < str.length; ++i) {
+    if (str[i] === char) {
+      ret.push(i)
+    }
+  }
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function insertAtIndexes(str: string, indexes: number[], what: string) {
+  if (!indexes.length) {
+    return str
+  }
+
+  let ret = ''
+  let j = 0
+  for (let i = 0; i < str.length; ++i) {
+    ret += str[i]
+    if (j < indexes.length && i === indexes[j]) {
+      ret += what
+      ++j
+    }
+  }
+  return ret
+}

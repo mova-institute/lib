@@ -162,7 +162,10 @@ export class MorphAnalyzer {
 
   /** @token is atomic */
   tag(token: string, nextToken?: string) {
-    token = token.replace(/́/g, '')  // kill emphasis  // todo: put it back afterwards
+    token = token.replace(/\u0301/g, '')  // kill stress
+    if (!token.length) {
+      return []
+    }
 
     // Arabic numerals
     if (/^\d+[½]?$/.test(token)) {
