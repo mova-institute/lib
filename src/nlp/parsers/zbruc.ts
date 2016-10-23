@@ -33,14 +33,15 @@ export function parseZbrucArticle(html: string, htmlDocCreator: DocCreator) {
 
   const paragraphsXapth = '//div[contains(@property, "content:encoded")]/p'
     + '|//div[@class="content"]//div[contains(@class, "field-name-field-depeshi")]//p'
-  let paragraphs = [...root.evaluateElements(paragraphsXapth)
-    .filter(x => !!x.text().trim())
-    .map(x => normalize(x.text()))]
-
+  let paragraphs = root.evaluateElements(paragraphsXapth)
+    .map(x => normalize(x.text()).trim())
+    .filter(x => !!x)
+    .toArray()
   if (!paragraphs.length) {
-    paragraphs = [...root.evaluateElements('//div[contains(@class, "field-item")]//p')
-      .filter(x => !!x.text().trim())
-      .map(x => normalize(x.text()))]
+    paragraphs = root.evaluateElements('//div[contains(@class, "field-item")]//p')
+      .map(x => normalize(x.text()).trim())
+      .filter(x => !!x)
+      .toArray()
   }
 
   let isValid = !!(paragraphs.length && url)

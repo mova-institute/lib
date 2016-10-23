@@ -664,6 +664,8 @@ export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyze
   if (analyzer) {
     ret = removeHypenation(ret, analyzer)
   }
+  ret = ret.trim()
+
   return ret
 }
 
