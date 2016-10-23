@@ -3171,11 +3171,11 @@ msgstr "Паралельний корпус"
 
 #: cmpltmpl/corp_info.py:467
 msgid "L1"
-msgstr "Мова 1"
+msgstr "мова 1"
 
 #: cmpltmpl/corp_info.py:472
 msgid "L2"
-msgstr "Мова 2"
+msgstr "мова 2"
 
 #: cmpltmpl/document.py:3814 cmpltmpl/trends_form.py:88
 #: cmpltmpl/trends_form.py:232 cmpltmpl/trends.py:88
