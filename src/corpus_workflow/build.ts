@@ -69,15 +69,18 @@ if (require.main === module) {
 
 //------------------------------------------------------------------------------
 function main(args: Args) {
+  // console.log(args.part)
+  // process.exit(0)
   let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
-  let verticalFile = createVerticalFile(args.workspace, args.part)
+  // let verticalFile = createVerticalFile(args.workspace, args.part)
   let func = partName2function[args.part]
-  func(args.workspace, analyzer, verticalFile, args)
+  func(args.workspace, analyzer, args)
 }
 
 //------------------------------------------------------------------------------
-function umoloda(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGlob = join(workspacePath, 'umoloda/fetched_articles/*.html')
+function umoloda(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, `build/umoloda.vertical.txt`))
+  let articlePathsGlob = join(workspacePath, 'data/umoloda/fetched_articles/*.html')
   let articlePaths = globSync(articlePathsGlob).sort(umolodaFilenameComparator)
   for (let path of articlePaths) {
     let [a, b, c] = trimExtension(basename(path)).split('_')
@@ -198,8 +201,9 @@ async function buildEnglish(workspacePath: string) {
 }
 
 //------------------------------------------------------------------------------
-function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGLob = join(workspacePath, 'den/fetched_articles/*/**/*.html')
+function den(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, `build/den.vertical.txt`))
+  let articlePathsGLob = join(workspacePath, 'data/den/fetched_articles/*/**/*.html')
   let articlePaths = globSync(articlePathsGLob)
 
   for (let path of articlePaths) {
@@ -231,8 +235,9 @@ function den(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
 }
 
 //------------------------------------------------------------------------------
-function tyzhden(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGLob = join(workspacePath, 'tyzhden/html/**/*.html')
+function tyzhden(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'tyzhden.vertical.txt'))
+  let articlePathsGLob = join(workspacePath, 'data/tyzhden/html/**/*.html')
   let articlePaths = globSync(articlePathsGLob, { nosort: true })
     .sort((a, b) => Number(trimExtension(basename(a))) - Number(trimExtension(basename(b))))
 
@@ -265,8 +270,9 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: n
 }
 
 //------------------------------------------------------------------------------
-function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGLob = join(workspacePath, 'zbruc/fetched_articles/**/*.html')
+function zbruc(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, `build/zbruc.vertical.txt`))
+  let articlePathsGLob = join(workspacePath, 'data/zbruc/fetched_articles/**/*.html')
   let articlePaths = globSync(articlePathsGLob)
 
   for (let path of articlePaths) {
@@ -296,8 +302,9 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: num
 }
 
 //------------------------------------------------------------------------------
-function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let articlePathsGLob = join(workspacePath, 'dzt/fetched_articles/**/*.html')
+function dzt(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'dzt.vertical.txt'))
+  let articlePathsGLob = join(workspacePath, 'data/dzt/fetched_articles/**/*.html')
   let articlePaths = globSync(articlePathsGLob)  // todo: sort by date
 
   for (let path of articlePaths) {
@@ -326,8 +333,9 @@ function dzt(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: numbe
 }
 
 //------------------------------------------------------------------------------
-function kontrakty(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number) {
-  let files = globSync(join(workspacePath, 'kontrakty') + '/*.txt')
+function kontrakty(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'kontrakty.vertical.txt'))
+  let files = globSync(join(workspacePath, 'data/kontrakty') + '/*.txt')
   for (let file of files) {
     console.log(`processsing ${basename(file)}…`)
     let year = Number.parseInt(basename(file).replace(/\.txt$/, ''))

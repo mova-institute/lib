@@ -42,16 +42,17 @@ interface Args extends minimist.ParsedArgs {
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     boolean: [
-      'numerate',
-      'tokenize',
-      'mte',
-      'xml',
-      'vertical',
       'conllu',
       'count',
-      'normalize',
       'forAnnotation',
+      'mte',
       'nl2p',
+      'normalize',
+      'numerate',
+      'tokenize',
+      'unknown',
+      'vertical',
+      'xml',
     ],
     string: [
       't',

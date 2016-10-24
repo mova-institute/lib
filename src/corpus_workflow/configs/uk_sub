@@ -1,5 +1,5 @@
-*FREQLISTATTRS word lc lemma lemma_lc tag tag2
+#*FREQLISTATTRS word lc lemma lemma_lc tag tag2
 
 =до30ті
   -CQL-
-  <doc date="[0-9]{4}.*" & date<="1932">
+  <doc date="[0-9]{4}.*" & date<="1932" />

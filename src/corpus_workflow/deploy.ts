@@ -240,11 +240,16 @@ function execHere(command: string) {
 
 /*
 
+##### localization
 git pull && make clean && ./configure && make && sudo make install
 cd /usr/local/share/locale && find . -type f -name ske.mo | xargs -I{} cp --parents {}
 msgfmt misc/ske.po -o - | ssh $MI_CORP_USER@$MI_CORP_HOST "cat - > ~/ske.mo"
 sudo ln ~/ske.mo /usr/share/locale/uk_UA/LC_MESSAGES/ske.mo
 
+
+##### build
+time printf 'umoloda\nden\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt' \
+| parallel -u --use-cpus-instead-of-cores mi-buildcorp --part {}
 
 
 
@@ -261,22 +266,22 @@ mi-deploycorp \
 
 ###### uk ######
 
-cat uk.list.txt \
-  | xargs cat \
-  | mi-id2i \
-  > uk_id2i.txt
+cat uk_list.txt \
+| xargs cat \
+| mi-id2i \
+> uk_id2i.txt
 
 mi-genalign uk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
-  | mi-sortalign \
-  | fixgaps.py \
-  | compressrng.py \
-  > uk_en.align.txt
+| mi-sortalign \
+| fixgaps.py \
+| compressrng.py \
+> uk_en.align.txt
 
 mi-deploycorp \
-  --verticalList uk.list.txt \
-  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
-  --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
-  --alignmentPaths uk_en.align.txt
+--verticalList uk_list.txt \
+--config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
+--subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
+--alignmentPaths uk_en.align.txt
 
 
 
@@ -299,13 +304,13 @@ mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
   | mi-sortalign \
   | fixgaps.py \
   | compressrng.py \
-  > test_uk_en.align.txt
+  > test_uk_en.align
 
 mi-deploycorp \
   --verticalList test.list.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
   --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
-  --alignmentPaths test_uk_en.align.txt \
+  --alignmentPaths test_uk_en.align \
   --name test
 
 

@@ -51,6 +51,7 @@ const PUNC_REGS = [
   r`;`,
   r`—`,
   r`/`,
+  r`•`,
 ]
 const ANY_PUNC = PUNC_REGS.join('|')
 const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`)
