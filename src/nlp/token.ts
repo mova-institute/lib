@@ -11,7 +11,7 @@ export type Structure = 'document' | 'div' | 'paragraph' | 'sentence' | 'stanza'
 export class Token {
   private structure?: Structure
   private closing?: boolean
-  private structureAttributes?: any
+  private attributes?: any
   private type: TokenType
   form?: string
   interps = new Array<MorphInterp>()
@@ -20,7 +20,7 @@ export class Token {
     let ret = new Token()
     ret.structure = structure
     ret.closing = closing
-    ret.structureAttributes = attributes
+    ret.attributes = attributes
     return ret
   }
 
@@ -44,6 +44,11 @@ export class Token {
     return this
   }
 
+  setAttributes(attributes: any) {
+    this.attributes = attributes
+    return this
+  }
+
   addInterp(interp: MorphInterp) {
     this.interps.push(interp)
     return this
@@ -55,7 +60,7 @@ export class Token {
   }
 
   getStructureName() { return this.structure }
-  getStructureAttributes() { return this.structureAttributes }
+  getAttributes() { return this.attributes }
   isStructure() { return !!this.structure }
   isWord() { return !!this.form }
   isSentenceStart() { return this.structure === 'sentence' && this.closing === false }
@@ -84,7 +89,7 @@ export class Token {
       if (this.isClosing()) {
         return `</${tagName}>`
       }
-      let attributes = this.getStructureAttributes()
+      let attributes = this.getAttributes()
       if (attributes) {
         let attributesStr = keyvalue2attributesNormalized(attributes)
         if (attributesStr) {

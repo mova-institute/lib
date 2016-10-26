@@ -286,7 +286,7 @@ export class MorphAnalyzer {
 
     // name initials
     if (nextToken && nextToken === '.' && initialsRe.test(token)) {
-      res.add(MorphInterp.fromVesumStr('noun:nv:abbr:prop', `${token}.`))
+      res.add(MorphInterp.fromVesumStr('noun:nv:abbr:prop', `${token}.`).setIsAuto())
     }
 
     // filter and postprocess

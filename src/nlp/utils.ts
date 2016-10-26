@@ -532,18 +532,28 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
 
 ////////////////////////////////////////////////////////////////////////////////
 export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
-  // for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
-  //   let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${miwSource.attribute('n')}"]`, NS)
-  //   let tokenSource = $t(miwSource)
-  //   let { flags, lemma } = tokenSource.getDisambedInterps()
-  //   let w = miwSource.document().createElement('w').setAttributes({
-  //     ana: flags,
-  //     lemma,
-  //   })
-  //   w.text(tokenSource.text())
-  //   miwDest.replace(w)
-  // }
-  throw new Error('todo')
+  // let stream = tei2tokenStream(sourceRoot)
+  for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
+    let n = miwSource.attribute('n')
+    let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${n}"]`, NS)
+    miwDest.clear()
+    let tokenSource = $t(miwSource)
+    for (let {lemma, flags} of tokenSource.getDisambedInterps()) {
+      let w = miwSource.document().createElement('w').setAttributes({
+        ana: flags,
+        lemma,
+      })
+      w.text(tokenSource.text())
+      miwDest.appendChild(w)
+    }
+    // let tokenSource = $t(miwSource).getDisambedInterps()
+    // let tokenDest = $t(miwDest)
+    // tokenDest.also
+    // tokenSource.getDisambedInterps().forEach(({lemma, flags}) => {
+
+    // })
+
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -736,7 +746,7 @@ export function token2sketchVertical(token: Token) {
     if (token.isClosing()) {
       return `</${tagName}>`
     }
-    let attributes = token.getStructureAttributes()
+    let attributes = token.getAttributes()
     if (attributes) {
       return `<${tagName} ${keyvalue2attributesNormalized(attributes)}>`
     }
@@ -889,12 +899,15 @@ export function* tei2tokenStream(root: AbstractElement) {
         case 'w_': {
           let t = $t(el)
           let interps = t.disambedOrDefiniteInterps()
+          let tok = new Token().setAttributes(el.attributesObj())
           if (interps.length) {
-            yield new Token().setForm(t.text())
+            tok.setForm(t.text())
               .addInterps(interps.map(x => MorphInterp.fromVesumStr(x.flags, x.lemma)))
           } else {
-            yield new Token().setForm(t.text()).addInterp(MorphInterp.fromVesumStr('x', t.text()))
+            tok.setForm(t.text())
+              .addInterp(MorphInterp.fromVesumStr('x', t.text()))
           }
+          yield tok
           continue
         }
         case 'w': {

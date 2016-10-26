@@ -6,7 +6,7 @@ import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, enumerateWords, tei2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
-  newline2Paragraph, interpretedTeiDoc2sketchVertical, tokenStream2cg,
+  newline2Paragraph, interpretedTeiDoc2sketchVertical, tokenStream2cg, morphReinterpret,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { parseXml } from '../xml/utils.node'
@@ -37,6 +37,7 @@ interface Args extends minimist.ParsedArgs {
   normalize: boolean
   forAnnotation: boolean
   nl2p: boolean
+  reinterpret: boolean
 }
 
 if (require.main === module) {
@@ -53,6 +54,7 @@ if (require.main === module) {
       'unknown',
       'vertical',
       'xml',
+      'reinterpret',
     ],
     string: [
       't',
@@ -106,6 +108,15 @@ function main(args: Args) {
         args.normalize = args.normalize || args.forAnnotation
       }
       let root = parseXml(inputStr)
+
+      if (args.count) {
+        console.log(root.evaluateNumber('count(//mi:w_)', NS))
+        return
+      }
+
+      if (args.reinterpret) {
+        morphReinterpret([...root.evaluateElements('//mi:w_', NS)], analyzer)
+      }
 
       if (args.normalize) {
         normalizeCorpusText(root, analyzer)
