@@ -1,4 +1,4 @@
-#!/usr/bin/env node  --max-old-space-size=5120
+#!/usr/bin/env node  --max-old-space-size=3000
 
 import { basename, join, dirname } from 'path'
 import * as fs from 'fs'

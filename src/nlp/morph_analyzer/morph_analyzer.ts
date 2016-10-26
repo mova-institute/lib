@@ -3,8 +3,10 @@ import * as flatten from 'lodash/flatten'
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
-import { Case, Pos } from '../morph_features'
-import { FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE } from '../static'
+import { Case } from '../morph_features'
+import {
+  FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE,
+} from '../static'
 
 import { HashSet } from '../../data_structures'
 import { CacheMap } from '../../data_structures/cache_map'
@@ -165,6 +167,10 @@ export class MorphAnalyzer {
     token = token.replace(/\u0301/g, '')  // kill stress
     if (!token.length) {
       return []
+    }
+
+    if (ANY_PUNC_OR_DASH_RE.test(token)) {
+      return [MorphInterp.fromVesumStr('punct', token)]
     }
 
     // Arabic numerals

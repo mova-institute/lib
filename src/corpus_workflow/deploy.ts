@@ -7,9 +7,6 @@ import * as readline from 'readline'
 import { sync as globSync } from 'glob'
 import { execSync } from 'child_process'
 import * as minimist from 'minimist'
-import * as groupBy from 'lodash/groupBy'
-import * as entries from 'lodash/toPairs'
-import * as castArray from 'lodash/castArray'
 
 import { r, arrayed } from '../lang'
 import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
@@ -49,7 +46,8 @@ function main(args: Args) {
     throw new Error(`Environment variables not set`)
   }
 
-  let config = readFileSync(args.config, 'utf8')
+  let configPaths = arrayed(args.config)
+  let config = configPaths.map(x => readFileSync(x, 'utf8')).join('\n')
   let verticalPaths: string[]
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)
@@ -119,7 +117,7 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
 
   // upload temp configs
   let tempConfig = nameCorpusInConfig(tempName, manateePath, params.config)
-  if (!checkConfigIsSane) {
+  if (!checkConfigIsSane(tempConfig, manateePath)) {
     throw new Error(`Bad corpus config`)
   }
   if (params.subcorpConfig) {
@@ -136,7 +134,8 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
       upload(readFileSync(path, 'utf8'), `${verticalPath}/temp_${basename(filename)}`)  // todo
     }
   }
-
+  // console.log(tempConfig)
+  // process.exit(0)
   upload(tempConfig, `${registryPath}/${tempName}`)
 
   // call compilecorp
@@ -211,22 +210,22 @@ function normalizePath(path: string) {
 //------------------------------------------------------------------------------
 function nameCorpusInConfig(name: string, manateePath: string, config: string) {
   let path = normalizePath(`${manateePath}/${name}`)
-  return config + `PATH "${path}"\n`
+  return `${config}\nPATH "${path}"\n`
 }
 
 //------------------------------------------------------------------------------
 function addSubcorpToConfig(path: string, config: string) {
-  return config + `SUBCDEF "${path}"\n`
+  return `${config}\nSUBCDEF "${path}"\n`
 }
 
 //------------------------------------------------------------------------------
 function addAlingmentsPaths(paths: string[], config: string) {
-  return config + `ALIGNDEF "${paths.join(',')}"\n`
+  return `${config}\nALIGNDEF "${paths.join(',')}"\n`
 }
 
 //------------------------------------------------------------------------------
 function checkConfigIsSane(config: string, remoteManatee: string) {
-  return config && new RegExp(String.raw`\bPATH "${remoteManatee}`).test(config)
+  return config && new RegExp(String.raw`(^|\n)\s*PATH "${remoteManatee}`).test(config)
 }
 
 //------------------------------------------------------------------------------
@@ -248,7 +247,7 @@ sudo ln ~/ske.mo /usr/share/locale/uk_UA/LC_MESSAGES/ske.mo
 
 
 ##### build
-time printf 'umoloda\nden\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt' \
+time printf 'umoloda\nden\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt\nparallel' \
 | parallel -u --use-cpus-instead-of-cores mi-buildcorp --part {}
 
 
@@ -266,39 +265,29 @@ mi-deploycorp \
 
 ###### uk ######
 
-cat uk_list.txt \
-| xargs cat \
-| mi-id2i \
-> uk_id2i.txt
+###### parallel
+cat build/parallel/vertical.txt | mi-id2i > paruk_id2i.txt
 
-mi-genalign uk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
+mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
 | mi-sortalign \
 | fixgaps.py \
 | compressrng.py \
-> uk_en.align.txt
+> paruk_en.align.txt
 
 mi-deploycorp \
---verticalList uk_list.txt \
+--vertical build/parallel/vertical.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
---subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
---alignmentPaths uk_en.align.txt
+--config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
+--alignmentPaths paruk_en.align.txt
 
+###### main
 
 
 
 
 ###### tests
 
-mi-genalign build/en/id2i.txt 'data/parallel/*.alignment.xml' test_id2i.txt \
-  | mi-sortalign \
-  | fixgaps.py \
-  | compressrng.py \
-  > test_en_uk.align.txt
-
-cat test.list.txt \
-  | xargs cat \
-  | mi-id2i \
-  > test_id2i.txt
+cat test_list.txt | xargs cat | mi-id2i > test_id2i.txt
 
 mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
   | mi-sortalign \
@@ -307,11 +296,27 @@ mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
   > test_uk_en.align
 
 mi-deploycorp \
-  --verticalList test.list.txt \
+  --verticalList test_list.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
   --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
   --alignmentPaths test_uk_en.align \
   --name test
+
+
+
+
+
+cwb-encode -R ~/Developer/cwb/registry/uk -d ~/Developer/cwb/data/uk -f /Volumes/pogrib/corpworkspace/cwb.vrt -P lemma -P tag -P tag2 -c utf8 -v
+
+cwb-encode -R ~/Developer/cwb/registry/uk -d ~/Developer/cwb/data/uk -f cwb.vrt -f cwb_chtyvo.vrt -c utf8 -v && cwb-make uk && cwb-scan-corpus -f 1000 -C uk word+0 word+1 word+2 | sort -nr -k 1 > ~/Downloads/3gram.txt
+
+cwb-scan-corpus -f 4000 -C uk word+0 word+1 | sort -nr -k 1 > ~/Downloads/2gram.txt; cwb-scan-corpus -f 50 -C uk word+0 word+1 word+2 word+3 | sort -nr -k 1 > ~/Downloads/4gram.txt; cwb-scan-corpus -f 40 -C uk word+0 word+1 word+2 word+3 word+4 | sort -nr -k 1 > ~/Downloads/5gram.txt
+
+
+cwb-encode -R ~/Developer/cwb/registry/chtyvo -d ~/Developer/cwb/data/chtyvo -f cwb_chtyvo.vrt -c utf8 -v
+
+cwb-scan-corpus -C test word+0 word+1 word+2 | pcregrep '^\d{2}' | sort -nr -k 1
+
 
 
 */

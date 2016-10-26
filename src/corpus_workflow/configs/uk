@@ -4,7 +4,7 @@ INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
 
-VERTICAL "|echo"
+VERTICAL "|printf 'a\ta\ta\ta'"
 
 
 LANGUAGE "Ukrainian"
@@ -22,37 +22,11 @@ ATTRIBUTE word {
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE lc {
-  LABEL "слово (мал. літерами)"
-  MULTIVALUE yes
-  MULTISEP "|"
-  DYNAMIC utf8lowercase
-  DYNLIB internal
-  ARG1 "C"
-  FUNTYPE s
-  FROMATTR word
-  TYPE index
-  TRANSQUERY yes
-}
-
 ATTRIBUTE lemma {
   LABEL "лема"
   MULTIVALUE yes
   MULTISEP  "|"
   TYPE "FD_FGD"
-}
-
-ATTRIBUTE  lemma_lc  {
-  LABEL "лема (мал. літерами)"
-  MULTIVALUE yes
-  MULTISEP "|"
-  DYNAMIC utf8lowercase
-  DYNLIB internal
-  ARG1 "C"
-  FUNTYPE s
-  FROMATTR lemma
-  TYPE index
-  TRANSQUERY yes
 }
 
 ATTRIBUTE tag {
@@ -67,6 +41,32 @@ ATTRIBUTE tag2 {
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
+}
+
+ATTRIBUTE lc {
+  LABEL "слово (мал. літерами)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR word
+  TYPE index
+  TRANSQUERY yes
+}
+
+ATTRIBUTE lemma_lc  {
+  LABEL "лема (мал. літерами)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR lemma
+  TYPE index
+  TRANSQUERY yes
 }
 
 
@@ -134,9 +134,6 @@ STRUCTURE g {
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
 }
-
-ALIGNSTRUCT "s"
-ALIGNED "en"
 
 
 ################################################################################

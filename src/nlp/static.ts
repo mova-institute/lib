@@ -21,3 +21,55 @@ const diacritics = [
   ['и', '\u{306}', 'й'],
   // ['', '', ''],
 ]
+
+const PUNC_REGS = [
+  r`\.{4,}`,
+  r`!\.{2,}`,
+  r`\?\.{2,}`,
+  r`[!?]+`,
+  r`,`,
+  r`„`,
+  r`“`,
+  r`”`,
+  r`«`,
+  r`»`,
+  r`\(`,
+  r`\)`,
+  r`\[`,
+  r`\]`,
+  r`\.`,
+  r`…`,
+  r`:`,
+  r`;`,
+  r`—`,
+  r`/`,
+  r`•`,
+]
+export const ANY_PUNC = PUNC_REGS.join('|')
+export const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`)
+
+export const PUNC_SPACING = {
+  ',': [false, true],
+  '.': [false, true],
+  ':': [false, true],
+  ';': [false, true],
+  '-': [false, false],   // dash
+  '–': [false, false],   // n-dash
+  '—': [true, true],     // m-dash
+  '(': [true, false],
+  ')': [false, true],
+  '[': [true, false],
+  ']': [false, true],
+  '„': [true, false],
+  '“': [true, false],    // what about ukr/eng?
+  '”': [false, true],
+  '«': [true, false],
+  '»': [false, true],
+  '!': [false, true],
+  '?': [false, true],
+  '…': [false, true],
+}
+
+export const PUNC_GLUED_AFTER = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0]).map(x => '\\' + x).join('')
+export const PUNC_GLUED_BEFORE = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][1]).map(x => '\\' + x).join('')
+export const NO_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0] && PUNC_SPACING[x][1]).map(x => '\\' + x).join('')

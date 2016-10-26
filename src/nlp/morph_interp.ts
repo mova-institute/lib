@@ -332,6 +332,7 @@ export const FEATURE_ORDER = {
     SemanticOmonym,
     NameType,
     Possessiveness,
+    Abbreviation,
     Pronoun,
     Participle,
     OrdinalNumeral,

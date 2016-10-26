@@ -1,4 +1,5 @@
 import { MorphInterp } from './morph_interp'
+import { keyvalue2attributesNormalized } from '../xml/utils'
 
 
 
@@ -66,12 +67,31 @@ export class Token {
     return this.interps[0]
   }
 
-  formRepesentation() {
+  toString() {
     if (this.form) {
       return this.form
     }
     if (this.isGlue()) {
       return '<g/>'
+    }
+    if (this.isStructure()) {
+      let tagName = this.getStructureName()
+      if (!tagName) {
+        // let message = `Unknown structure`
+        // console.error()
+        // throw new Error('Unknown structure')
+      }
+      if (this.isClosing()) {
+        return `</${tagName}>`
+      }
+      let attributes = this.getStructureAttributes()
+      if (attributes) {
+        let attributesStr = keyvalue2attributesNormalized(attributes)
+        if (attributesStr) {
+          return `<${tagName} ${keyvalue2attributesNormalized(attributes)}>`
+        }
+      }
+      return `<${tagName}>`
     }
   }
 }

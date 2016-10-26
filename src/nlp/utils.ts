@@ -12,7 +12,10 @@ import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
 import { MorphInterp, compareTags } from './morph_interp'
-import { WORDCHAR_UK_RE, WORDCHAR, LETTER_UK } from './static'
+import {
+  WORDCHAR_UK_RE, WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
+  PUNC_GLUED_BEFORE, PUNC_GLUED_AFTER, NO_GLUE_PUNC,
+} from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
 import { startsWithCapital } from '../string_utils'
@@ -29,59 +32,6 @@ export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'body'),
   nameNs(NS.tei, 'text'),
 ])
-
-const PUNC_REGS = [
-  r`\.{4,}`,
-  r`!\.{2,}`,
-  r`\?\.{2,}`,
-  r`[!?]+`,
-  r`,`,
-  r`„`,
-  r`“`,
-  r`”`,
-  r`«`,
-  r`»`,
-  r`\(`,
-  r`\)`,
-  r`\[`,
-  r`\]`,
-  r`\.`,
-  r`…`,
-  r`:`,
-  r`;`,
-  r`—`,
-  r`/`,
-  r`•`,
-]
-const ANY_PUNC = PUNC_REGS.join('|')
-const ANY_PUNC_OR_DASH_RE = new RegExp(`^${ANY_PUNC}|-$`)
-
-let PUNC_SPACING = {
-  ',': [false, true],
-  '.': [false, true],
-  ':': [false, true],
-  ';': [false, true],
-  '-': [false, false],   // dash
-  '–': [false, false],   // n-dash
-  '—': [true, true],     // m-dash
-  '(': [true, false],
-  ')': [false, true],
-  '[': [true, false],
-  ']': [false, true],
-  '„': [true, false],
-  '“': [true, false],    // what about ukr/eng?
-  '”': [false, true],
-  '«': [true, false],
-  '»': [false, true],
-  '!': [false, true],
-  '?': [false, true],
-  '…': [false, true],
-}
-
-const PUNC_GLUED_AFTER = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0]).map(x => '\\' + x).join('')
-const PUNC_GLUED_BEFORE = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][1]).map(x => '\\' + x).join('')
-const NO_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0] && PUNC_SPACING[x][1]).map(x => '\\' + x).join('')
-// console.log(NO_GLUE_PUNC)
 
 const WORD_TAGS = new Set([W, W_])
 
@@ -191,7 +141,7 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
     if (token.isGlue()) {
       return '<g/>'
     }
-    let ret = token.formRepesentation() + ' '
+    let ret = token.toString() + ' '
     let interps = token.interps.map(x => `${x.lemma}[${tagSerializer(x)}]`)
     if (mte) {
       interps = uniq(interps)
@@ -967,6 +917,21 @@ export function* tei2tokenStream(root: AbstractElement) {
         default:
           continue
       }
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* tokenStream2cg(stream: Iterable<Token>) {
+  for (let tok of stream) {
+    if (tok.isWord()) {
+      yield `"<${tok.form}>"\n`
+        + tok.interps.map(x => `\t"${x.lemma}" ${x.toVesum().join(' ')}\n`).join('')
+    } else if (tok.isStructure()) {
+      // yield tok.toString()
+    } else {
+      // console.log(tok)
+      // throw new Error(`Not possible`)
     }
   }
 }

@@ -6,7 +6,7 @@ import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, enumerateWords, tei2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
-  newline2Paragraph, interpretedTeiDoc2sketchVertical,
+  newline2Paragraph, interpretedTeiDoc2sketchVertical, tokenStream2cg,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { parseXml } from '../xml/utils.node'
@@ -24,7 +24,7 @@ interface Args extends minimist.ParsedArgs {
   t?: string
   text?: string
   dict?: string
-  format: 'vertical' | 'xml' | 'conllu' | 'sketch'
+  format: 'vertical' | 'xml' | 'conllu' | 'sketch' | 'cg'
   numerate: boolean
   tokenize: boolean
   count: boolean
@@ -145,6 +145,8 @@ function main(args: Args) {
           mu(interpretedTeiDoc2sketchVertical(root))
             .chunk(3000)
             .forEach(x => output.write(x.join('\n') + '\n'))
+        } else if (args.format === 'cg') {
+          mu(tokenStream2cg(tei2tokenStream(root))).forEach(x => output.write(x + '\n'))
         } else {
           output.write(root.document().serialize(true))
         }
@@ -167,11 +169,12 @@ function main(args: Args) {
           tokens.sort()
         }
         tokens.forEach(x => output.write(x + '\n'))
-      } else if (args.format === 'sketch') {
-
       }
       else {
         let tokens = string2tokenStream(inputStr, analyzer)
+        if (args.format === 'cg') {
+          mu(tokenStream2cg(tokens)).forEach(x => output.write(x + '\n'))
+        }
         // mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
         tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
       }
