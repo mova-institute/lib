@@ -5,7 +5,7 @@ import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
 import { Case } from '../morph_features'
 import {
-  FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE,
+  FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
@@ -83,7 +83,7 @@ const gluedPrefixes = [
   'фіз',
   'фото',
 ]
-
+const initialsRe = new RegExp(`[${LETTER_UK_UPPERCASE}]`)
 
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
@@ -169,6 +169,7 @@ export class MorphAnalyzer {
       return []
     }
 
+    // punctuation
     if (ANY_PUNC_OR_DASH_RE.test(token)) {
       return [MorphInterp.fromVesumStr('punct', token)]
     }
@@ -283,6 +284,10 @@ export class MorphAnalyzer {
       res.addAll(this.lookup(lowercase.toUpperCase()).map(x => x.setIsAuto()))
     }
 
+    // name initials
+    if (nextToken && nextToken === '.' && initialsRe.test(token)) {
+      res.add(MorphInterp.fromVesumStr('noun:nv:abbr:prop', `${token}.`))
+    }
 
     // filter and postprocess
     let ret = new Array<MorphInterp>()
