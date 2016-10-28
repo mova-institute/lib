@@ -83,7 +83,7 @@ const gluedPrefixes = [
   'фіз',
   'фото',
 ]
-const initialsRe = new RegExp(`[${LETTER_UK_UPPERCASE}]`)
+const initialsRe = new RegExp(`^[${LETTER_UK_UPPERCASE}]$`)
 
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
@@ -108,7 +108,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'об', 'по', 'роз', 'за', 'з', 'у', 'пере', 'ви', 'на', 'пови'],
+    prefixes: ['обі', 'від', 'об', 'по', 'роз', 'за', 'з', 'у', 'пере', 'ви', 'на', 'пови'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -270,7 +270,7 @@ export class MorphAnalyzer {
     }
 
     // по-*ськи, по-*:v_dav
-    if (lowercase.startsWith('по-')) {
+    if (!res.size && lowercase.startsWith('по-')) {
       let right = lowercase.substr(3)
       let rightRes = this.lookup(right)
         .filter(x => x.isAdjective() && x.isMasculine() && x.isDative())
@@ -282,6 +282,27 @@ export class MorphAnalyzer {
     // дз from ДЗ
     if (!res.size) {
       res.addAll(this.lookup(lowercase.toUpperCase()).map(x => x.setIsAuto()))
+    }
+
+    // try ховаючися from ховаючись
+    if (!res.size && lowercase.endsWith('ся')) {
+      let sia = lowercase.slice(0, -1) + 'ь'
+      let advps = this.lookup(sia).filter(x => x.isTransgressive())
+      advps.forEach(x => {
+        // x.lemma = x.lemma.slice(0, -1) + 'я'
+        x.setIsAuto()
+      })
+      res.addAll(advps)
+    }
+
+    // try якнайстаранніш from якнайстаранніше
+    if (!res.size
+      && (lowercase.startsWith('най') || lowercase.startsWith('якнай'))
+      && lowercase.endsWith('іш')) {
+      let she = lowercase + 'е'
+      let interps = this.lookup(she).filter(x => x.isAdverb()).map(x => x.setIsAuto())
+      // todo: lemma?
+      res.addAll(interps)
     }
 
     // name initials
