@@ -948,3 +948,35 @@ export function* tokenStream2cg(stream: Iterable<Token>) {
     }
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function* polishXml2verticalStream(root: AbstractElement) {
+  let iterator = traverseDepthGen2(root)
+  let pointer = iterator.next()
+  while (!pointer.done) {
+    let { node, entering } = pointer.value
+    if (node.isElement()) {
+      let el = node.asElement()
+      let name = el.name()
+      // console.log(name)
+      if (entering && name === 'tok') {
+        let form = el.evaluateString('string(./orth/text())').trim()
+        let lemma = el.evaluateString('string(.//base/text())').trim()
+        let tag = el.evaluateString('string(.//ctag/text())').trim()
+        // let form = el.firstElementChild().text()
+        // console.log('form')
+        // console.log(el.firstElementChild().lastElementChild().text())
+        // let [lemma, tag] = el.firstElementChild()
+        //   .lastElementChild()
+        //   .elementChildren()
+        //   .map(x => x.text())
+        yield tsvLine(form, lemma, tag)
+        pointer = iterator.next('skip')
+        continue
+      } else if (name === 'p' || name === 's') {
+        yield xmlutils.tagStr2(name, !entering, el.attributesObj())
+      }
+    }
+    pointer = iterator.next()
+  }
+}

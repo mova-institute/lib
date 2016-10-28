@@ -18,7 +18,7 @@ interface Args {
   verticalList: string
   config: string
   subcorpConfig?: string
-  alignmentPaths: string[]
+  alignmentPath: string[]
   name?: string
 }
 
@@ -55,8 +55,8 @@ function main(args: Args) {
     verticalPaths = readFileSync(args.verticalList, 'utf8').split('\n')
   }
 
-  if (args.alignmentPaths) {
-    args.alignmentPaths = arrayed(args.alignmentPaths)
+  if (args.alignmentPath) {
+    args.alignmentPath = arrayed(args.alignmentPath)
   }
 
   let nonExistentFiles = verticalPaths.filter(x => !existsSync(x))
@@ -69,7 +69,7 @@ function main(args: Args) {
     config,
     subcorpConfig: args.subcorpConfig && readFileSync(args.subcorpConfig, 'utf8'),
     name: args.name,
-    alignmentPaths: args.alignmentPaths,
+    alignmentPaths: args.alignmentPath,
   }
 
   let remoteParams: RemoteParams = {
@@ -250,23 +250,32 @@ sudo ln ~/ske.mo /usr/share/locale/uk_UA/LC_MESSAGES/ske.mo
 time printf 'umoloda\nden\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt\nparallel' \
 | parallel -u --use-cpus-instead-of-cores mi-buildcorp --part {}
 
-
-
 mi-buildcorp --part en
 mi-buildcorp --part parallel
 mi-buildcorp --part chtyvo
 
 
+###### en ######
 mi-deploycorp \
   --vertical build/en/vertical.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/en \
   --name en
 
+###### pl ######
+mi-buildcorp --part pl
+mi-deploycorp \
+  --vertical build/pl/vertical.txt \
+  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/pl \
+  --name pl
 
 ###### uk ######
 
+
 ###### parallel
+
 cat build/parallel/vertical.txt | mi-id2i > paruk_id2i.txt
+cat build/en/vertical.txt | mi-id2i > build/en/id2i.txt
+cat build/pl/vertical.txt | mi-id2i > build/pl/id2i.txt
 
 mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
 | mi-sortalign \
@@ -274,14 +283,25 @@ mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
 | compressrng.py \
 > paruk_en.align.txt
 
+mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/pl/id2i.txt \
+| mi-sortalign \
+| fixgaps.py \
+| compressrng.py \
+> paruk_pl.align.txt
+
 mi-deploycorp \
 --vertical build/parallel/vertical.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
---alignmentPaths paruk_en.align.txt
+--alignmentPaths paruk_en.align.txt --alignmentPaths paruk_pl.align.txt
+
 
 ###### main
 
+mi-deploycorp \
+--verticalList uk_list.txt \
+--config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
+--subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub
 
 
 

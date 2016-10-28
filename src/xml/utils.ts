@@ -132,6 +132,23 @@ export function tagStr(open: boolean, prefix: string, elem: string, attrs = new 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function tagStr2(name: string, closing: boolean, attrs?: any) {
+  let res = '<'
+  if (closing) {
+    res += '/'
+  }
+  res += name
+  if (!closing && attrs) {
+    let attrStr = keyvalue2attributesNormalized(attrs)
+    if (attrStr) {
+      res += ' ' + attrStr
+    }
+  }
+  return res + '>'
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
   let ret = new Map()
   for (let [name, , , val] of attrs) {

@@ -109,11 +109,6 @@ function main(args: Args) {
       }
       let root = parseXml(inputStr)
 
-      if (args.count) {
-        console.log(root.evaluateNumber('count(//mi:w_)', NS))
-        return
-      }
-
       if (args.reinterpret) {
         morphReinterpret([...root.evaluateElements('//mi:w_', NS)], analyzer)
       }
@@ -130,6 +125,11 @@ function main(args: Args) {
 
       if (!args.tokenize) {
         morphInterpret(root, analyzer, args.mte)
+      }
+
+      if (args.count) {
+        console.log(root.evaluateNumber('count(//mi:w_)', NS))
+        return
       }
 
       if (args.unknown) {

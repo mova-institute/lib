@@ -27,7 +27,7 @@ import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
 import {
   tokenizeTei, tei2tokenStream, token2sketchVertical, morphInterpret,
-  normalizeCorpusTextString,
+  normalizeCorpusTextString, polishXml2verticalStream,
 } from '../nlp/utils'
 import { mu } from '../mu'
 
@@ -50,8 +50,9 @@ const partName2function = {
   tyzhden,
   chtyvo,
   mitei,
-  en: buildEnglish,
   parallel: buildUkParallelSide,
+  en: buildEnglish,
+  pl: buildPolish,
 }
 
 if (require.main === module) {
@@ -129,7 +130,8 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
   console.log(`Now bulding Ukrainian side of parallel corpora`)
 
   let srcFiles = globSync(join(workspacePath, 'data', 'parallel/**/*'))
-    .filter(x => x.endsWith('.uk.xml'))
+  // .filter(x => x.endsWith('.uk.xml'))
+  srcFiles = selectFilesForLang(srcFiles, 'uk')
   let buildDir = join(workspacePath, 'build', 'parallel')
   mkdirpSync(buildDir)
   let verticalFilePath = join(buildDir, 'vertical.txt')
@@ -155,6 +157,38 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
 }
 
 //------------------------------------------------------------------------------
+function selectFilesForLang(files: string[], lang: string) {
+  return files.filter(x => x.endsWith('.alignment.xml') && x.includes(`.${lang}.`))
+    .sort()
+    .map(x => x.slice(0, -'xx.alignment.xml'.length) + 'xml')
+}
+
+//------------------------------------------------------------------------------
+function buildPolish(workspacePath: string) {
+  console.log(`Now bulding Polish`)
+  let srcFiles = globSync(join(workspacePath, 'data', 'parallel/pl_tagged/**/*.xml'))
+    .filter(x => x.endsWith('.pl.xml'))
+    .sort()
+  // srcFiles = selectFilesForLang(srcFiles, 'pl')
+  let buildDir = join(workspacePath, 'build', 'pl')
+  let verticalFilePath = join(buildDir, 'vertical.txt')
+  let verticalFile = rotateAndOpen(verticalFilePath)
+  let lines = new Array<string>()
+  for (let path of srcFiles) {
+    console.log(`processing ${basename(path)}`)
+    let doc = parseXmlFileSync(path)
+    lines.push(`<doc reference_title="${basename(path).slice(0, -'.xml'.length).trim()}">`)
+    mu(polishXml2verticalStream(doc)).forEach(x => lines.push(x))
+    lines.push(`</doc>`)
+    let toWrite = lines.join('\n') + '\n'
+    toWrite = toWrite.replace(/<s[^>]*>[\s]*<\/s>/g, '')
+    writeSync(verticalFile, toWrite)
+    lines = []
+  }
+  closeSync(verticalFile)
+}
+
+//------------------------------------------------------------------------------
 async function buildEnglish(workspacePath: string) {
   /*
   java -mx900m -cp 'stanford-postagger.jar:lib/*' \
@@ -165,7 +199,8 @@ async function buildEnglish(workspacePath: string) {
   console.log(`Now bulding English`)
 
   let srcFiles = globSync(join(workspacePath, 'data', 'parallel/**/*'))
-    .filter(x => x.endsWith('.en.xml'))
+  srcFiles = selectFilesForLang(srcFiles, 'en')
+  // .filter(x => x.endsWith('.en.xml'))
   let buildDir = join(workspacePath, 'build', 'en')
   let verticalFilePath = join(buildDir, 'vertical.txt')
   let verticalFile = rotateAndOpen(verticalFilePath)
@@ -194,10 +229,10 @@ async function buildEnglish(workspacePath: string) {
   }
   closeSync(verticalFile)
 
-  console.log(`Now bulding id2i for English`)
-  let wstream = createWriteStream(join(buildDir, 'id2i.txt'))
-  await id2i(createReadStream(verticalFilePath), wstream)
-  wstream.close()
+  // console.log(`Now bulding id2i for English`)
+  // let wstream = createWriteStream(join(buildDir, 'id2i.txt'))
+  // await id2i(createReadStream(verticalFilePath), wstream)
+  // wstream.close()
 }
 
 //------------------------------------------------------------------------------

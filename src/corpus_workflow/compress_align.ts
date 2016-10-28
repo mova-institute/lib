@@ -12,8 +12,8 @@ if (require.main === module) {
 //------------------------------------------------------------------------------
 async function main() {
   try {
-    let compresserA = compresser()
-    let compresserB = compresser()
+    let compresserA = compressor()
+    let compresserB = compressor()
     await forEachLine(process.stdin, line => {
       let [l, r] = line.split('\t')
       let res = compresserA(l, r)
@@ -66,7 +66,7 @@ async function main() {
 // }
 
 //------------------------------------------------------------------------------
-function compresser() {
+function compressor() {
   let prevA: string
   let prevB: string
   let rangeStartB = ''

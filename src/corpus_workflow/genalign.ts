@@ -9,12 +9,14 @@ import { linesSync, readTsvMapSync, forEachLine } from '../utils.node'
 
 
 if (require.main === module) {
-  main2(minimist(process.argv.slice(2)))
+  let args = minimist(process.argv.slice(2))
+  // main2(args._[0], args._[1], args._[2])
+  let [id2idsGlob, id2iRPath] = args._
+  main(id2idsGlob, id2iRPath)
 }
 
 //------------------------------------------------------------------------------
-async function main2(args: minimist.ParsedArgs) {
-  let [id2iLPath, id2idsGlob, id2iRPath] = args._
+async function main2(id2iLPath: string, id2idsGlob: string, id2iRPath: string) {
   let id2i = readTsvMapSync(id2iLPath)
   readTsvMapSync(id2iRPath, id2i)
 
@@ -22,6 +24,9 @@ async function main2(args: minimist.ParsedArgs) {
     for (let line of linesSync(path)) {
       if (line.startsWith('<link ')) {
         let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/)[1].split(';')
+        if (!idsStrL.startsWith('uk')) {
+          [idsStrL, idsStrR] = [idsStrR, idsStrL]
+        }
         let indexesL = idsStrL.split(' ').map(x => id2i.get(x)).filter(x => x !== undefined)
         let indexesR = idsStrR.split(' ').map(x => id2i.get(x)).filter(x => x !== undefined)
         if (indexesL.length || indexesR.length) {
@@ -33,29 +38,36 @@ async function main2(args: minimist.ParsedArgs) {
 }
 
 //------------------------------------------------------------------------------
-async function main(args: minimist.ParsedArgs) {
+async function main(id2idsGlob: string, id2iRPath: string) {
   try {
-    let [id2idsGlob, id2iRPath] = args._
-
     let id2iR = readTsvMapSync(id2iRPath)
     console.error(`read id2iR`)
+    // console.error(id2iR)
 
     let id2ids = new Map<string, string[]>()
     globSync(id2idsGlob).forEach(x => readTeiMapping(id2ids, x))
     console.error(`read TEI mappings`)
+    // console.error(id2ids)
 
     let i = 0
     await forEachLine(process.stdin, line => {
       if (isSentenceStart(line)) {
         let idL = getId(line)
         if (idL && id2ids.has(idL) && id2ids.get(idL).length) {
+          // console.error(idL)
           // let idsR = id2ids.get(idL)
           // if
           // let idRangeR = id2id.get(idL).map(x => id2iR.get(x)).join(',')
           // process.stdout.write(`${i}\t${idRangeR}\n`)
           for (let idR of id2ids.get(idL)) {
             let iR = id2iR.get(idR)
-            process.stdout.write(`${i}\t${iR || '-1'}\n`)
+            if (!iR) {
+              process.stdout.write(`${i}\t-1\n`)
+              break
+            }
+            // console.error(idR)
+            // console.error(iR)
+            process.stdout.write(`${i}\t${iR}\n`)
           }
         } else {
           process.stdout.write(`${i}\t-1\n`)

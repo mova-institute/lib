@@ -18,18 +18,18 @@ async function main() {
     let a = lineA[0]
     let b = lineB[0]
     if (a[0] !== -1 && b[0] !== -1) {
-      let ret = a[0] - b[0]
-      if (ret) {
-        return ret
-      }
-      if (a[1] !== -1 && b[1] !== -1) {
-        let ret = a[1] - b[1]
-        if (ret) {
-          return ret
-        }
-      }
+      return a[0] - b[0]
     }
-    return 0
+    if (a[0] === -1 && b[0] === -1) {
+      return a[1] - b[1]
+    }
+    if (a[0] === -1 && b[0] !== -1) {
+      return a[1] - b[0]
+    }
+    if (a[0] !== -1 && b[0] === -1) {
+      return a[0] - b[1]
+    }
+    throw new Error()
   })
 
   lines.forEach(x => process.stdout.write(`${x[1]}\n`))

@@ -1,18 +1,27 @@
-NAME "корпус англійської"
+NAME "корпус польської"
 INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
-TAGSETDOC "https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html"
+TAGSETDOC "http://nkjp.pl/poliqarp/help/ense2.html"
 
-PATH "/srv/corpora/manatee/en"
+PATH "/srv/corpora/manatee/pl"
 VERTICAL "|printf 'a\ta\ta'"
 
-LANGUAGE "English"
+LANGUAGE "Polish"
 ENCODING "utf8"
-LOCALE "en_US.UTF-8"
+LOCALE "pl.UTF-8"
+NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]ĘęÓóŁłŚśŻżĆćŃńĄą].*"
 
 
 ATTRIBUTE word {
   LABEL "слово"
+}
+
+ATTRIBUTE lemma {
+  LABEL "лема"
+}
+
+ATTRIBUTE tag {
+  LABEL "морфмітка"
 }
 
 ATTRIBUTE lc {
@@ -26,10 +35,6 @@ ATTRIBUTE lc {
   TRANSQUERY yes
 }
 
-ATTRIBUTE lemma {
-  LABEL "лема"
-}
-
 ATTRIBUTE  lemma_lc  {
   LABEL "лема (мал. літерами)"
   DYNAMIC utf8lowercase
@@ -39,10 +44,6 @@ ATTRIBUTE  lemma_lc  {
   FROMATTR lemma
   TYPE index
   TRANSQUERY yes
-}
-
-ATTRIBUTE tag {
-  LABEL "морфмітка"
 }
 
 STRUCTURE doc {
