@@ -1,6 +1,6 @@
 {
   "name": "mi-lib",
-  "version": "0.0.13",
+  "version": "0.0.15",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -69,7 +69,7 @@
     "request": "^2.72.0",
     "tmp": "^0.0.28",
     "wu": "^2.1.0",
-    "xmlapi-libxmljs": "^0.0.3"
+    "xmlapi-libxmljs": "^0.0.6"
   },
   "optionalDependencies": {
     "detect-character-encoding": "^0.2.1"
