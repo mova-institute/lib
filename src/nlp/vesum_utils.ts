@@ -1,6 +1,6 @@
 import {
   tryMapVesumFlag, tryMapVesumFlagToFeature, MorphInterp, FEATURE_ORDER,
-  compareTags
+  compareTags,
 } from './morph_interp'
 import { groupTableBy, arr2indexMap, combinations, stableSort, uniq } from '../algo'
 import { IStringMorphInterp } from './interfaces'
