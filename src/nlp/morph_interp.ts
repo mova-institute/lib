@@ -318,6 +318,10 @@ export const FEATURE_ORDER = {
     Aspect,
     Alternativity,
   ],
+  [Pos.x]: [
+    Pos,
+    Abbreviation,
+  ],
   other: [  // todo check
     Pos,
     Degree,
