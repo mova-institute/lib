@@ -4,7 +4,7 @@ import { ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl } from './utils'
 import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils'
 import { wrappedOrNull } from '../lang'
 import { IStringMorphInterp } from './interfaces'
-import { unique } from '../algo'
+import { uniq } from '../algo'
 
 
 
@@ -316,7 +316,7 @@ export class TextToken {
   }
 
   private setDisambIndexes(value: number[]) {
-    value = unique(value)
+    value = uniq(value)
     this.elem.setAttribute(TextToken.DISAMB_ATTR, value.join(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR))
   }
 

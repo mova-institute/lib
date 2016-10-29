@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { ioArgsPlain } from '../../cli_utils'
-import { unique } from '../../algo'
+import { uniq } from '../../algo'
 import { MorphInterp } from '../../nlp/morph_interp'
 import { VesumLineDescriptor } from '../../nlp/vesum/vesum_line_descriptor'
 import { VesumLexemeIterator } from '../../nlp/vesum/vesum_lexeme_iterator'
@@ -33,6 +33,6 @@ function writeLexeme(lexeme: VesumLineDescriptor[], output) {
     ret += MorphInterp.fromVesumStr(x.tag, undefined, x.lemmaTag).setLemma(x.lemma).toMte()
     return ret
   })
-  mteLinesLexeme = unique(mteLinesLexeme)
+  mteLinesLexeme = uniq(mteLinesLexeme)
   output.write(mteLinesLexeme.join('\n') + '\n')
 }

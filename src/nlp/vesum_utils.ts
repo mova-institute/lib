@@ -1,6 +1,8 @@
-import { tryMapVesumFlag, tryMapVesumFlagToFeature, MorphInterp, FEATURE_ORDER,
-  compareTags } from './morph_interp'
-import { groupTableBy, arr2indexMap, combinations, stableSort, unique } from '../algo'
+import {
+  tryMapVesumFlag, tryMapVesumFlagToFeature, MorphInterp, FEATURE_ORDER,
+  compareTags
+} from './morph_interp'
+import { groupTableBy, arr2indexMap, combinations, stableSort, uniq } from '../algo'
 import { IStringMorphInterp } from './interfaces'
 
 const wu: Wu.WuStatic = require('wu')

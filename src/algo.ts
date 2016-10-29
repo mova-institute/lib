@@ -146,7 +146,7 @@ export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = l
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function unique<T>(array: T[]) {
+export function uniq<T>(array: T[]) {
   if (array.length === 1) {
     return array
   }
