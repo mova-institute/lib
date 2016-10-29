@@ -363,7 +363,8 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
 ////////////////////////////////////////////////////////////////////////////////
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0  // todo: switch from wu to normal forEach
-  root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)  // todo: NS bug
+  let words = root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)  // todo: NS bug
+    .toArray()
     .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
 
   return idGen
