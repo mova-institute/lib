@@ -306,8 +306,13 @@ export class MorphAnalyzer {
     }
 
     // name initials
-    if (nextToken && nextToken === '.' && initialsRe.test(token)) {
+    if (nextToken === '.' && initialsRe.test(token)) {
       res.add(MorphInterp.fromVesumStr('noun:nv:abbr:prop', `${token}.`).setIsAuto())
+    }
+
+    // one-letter abbrs
+    if (lowercase.length === 1 && nextToken === '.') {
+      res.add(MorphInterp.fromVesumStr('x:abbr', `${lowercase}.`))
     }
 
     // filter and postprocess
@@ -320,6 +325,9 @@ export class MorphAnalyzer {
         continue
       }
       if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
+        continue
+      }
+      if (token.length === 1 && interp.isAbbreviation() && !interp.isProper() && !interp.isX()) {
         continue
       }
 
@@ -359,8 +367,8 @@ export class MorphAnalyzer {
   }
 
   private lookup(token: string) {
-    return this.dictCache.get(token).map(x => x.clone())
-    // return this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+    // return this.dictCache.get(token).map(x => x.clone())
+    return this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
   }
 
   private isCompoundAdjective(token: string) {
