@@ -97,8 +97,6 @@ function main(args: Args) {
       inputStr = await readTillEnd(input)
     }
 
-
-
     const analyzer = createAnalyzer(args)
 
     if (ifTreatAsXml(inputStr, args)) {
@@ -165,9 +163,9 @@ function main(args: Args) {
           mu(tokenStream2cg(tei2tokenStream(root))).forEach(x => output.write(x + '\n'))
         } else {
           output.write(root.document().serialize(true))
+          output.write('\n')
         }
       }
-      output.write('\n')
     } else {
       if (args.normalize) {
         inputStr = normalizeCorpusTextString(inputStr, analyzer)
