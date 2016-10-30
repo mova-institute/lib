@@ -370,6 +370,11 @@
 |*(без позначки)*|не присвійний|ти `noun:anim:s:v_naz:&pron:pers:2`|
 |`poss`|присвійний|твій `adj:m:v_naz:poss:&pron:pers:2`|
 
+||прийменниковість||
+|---|---|---|
+|*(без позначки)*||її `noun:f:v_rod:&pron:pers:3`, їх `noun:p:v_rod:&pron:pers:3` |
+|`rprep`|має йти після прийменника|до неї `noun:f:v_rod:rprep:&pron:pers:3`, про них `noun:p:v_rod:rprep:&pron:pers:3`|
+
 <a name="adjp"></a>
 &nbsp;
 

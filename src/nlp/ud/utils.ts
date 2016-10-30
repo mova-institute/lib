@@ -51,26 +51,30 @@ function sentenceIdLine(id: number) {
 export function* tokenStream2bratPlaintext(stream: Iterable<Token>) {
   let sentenceStream = mu(stream).split(x => x.isSentenceEnd())
   for (let sent of sentenceStream) {
-    yield '_ ' + sent.filter(x => x.isWord()).map(x => x.form).join(' ')
+    let toyield = tokenSentence2bratPlaintext(sent)
+    if (toyield) {
+      yield toyield
+    }
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function tokenSentence2bratPlaintext(sentence: Token[]) {
+  return sentence.filter(x => x.isWord()).map(x => x.form).join(' ')
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2brat(stream: Iterable<Token>) {
-  // const rootInterp = MorphInterp.fromVesumStr('x', '_')
   let offset = 0
   let t = 1
   let a = 1
   let sentenceStream = mu(stream)
     .split(x => x.isSentenceEnd())
-  // .map(x => [new Token().setForm('_').addInterp(rootInterp), ...x])
   for (let sentence of sentenceStream) {
     for (let token of sentence) {
       if (token.isStructure()) {
         continue
       }
-      // console.error(token)
       let {pos, features} = toUd(token.firstInterp())
       let rightOffset = offset + token.form.length
       let tId = `T${t++}`

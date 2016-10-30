@@ -4,13 +4,14 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, VerbForm, VerbNegativity, VerbType, Voice, VuAlternativity,
-  booleanFeatures,
+  Slang, Tense, Variant, VerbNegativity, VerbType, Voice, VuAlternativity,
+  booleanFeatures, PrepositionRequirement,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
 
 
+export type UdBoolean = 'Yes'
 export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
 export type UdAnimacy = 'Anim' | 'Nhum' | 'Inan'
 export type UdAspect = 'Imp' | 'Perf'
@@ -20,8 +21,9 @@ export type UdTense = 'Past' | 'Pres' | 'Fut'
 export type UdPerson = '1' | '2' | '3'
 export type UdMood = 'Ind' | 'Imp'
 export type UdVoice = 'Act' | 'Pass'
-export type UdVerbForm = 'Fin' | 'Inf' | 'Impers' | 'Part'
+export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part'
 export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
+export type UdPrepositionalCase = 'Prep'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -199,8 +201,7 @@ const promonialTypeMap = new Map<PronominalType, UdPronType>([
   [PronominalType.general, 'Tot'],
   [PronominalType.negative, 'Neg'],
   [PronominalType.indefinite, 'Ind'],
-
-  // [PronominalType.emphatic, ''],
+  [PronominalType.emphatic, 'Neg'],    // temp?
   // [PronominalType.reflexive, ''],
 ])
 
@@ -242,6 +243,7 @@ export class UdFlags {
   Poss: boolean
   Number: UdNumber
   NumType: UdNumType
+  Reflex: UdBoolean
 }
 /* tslint:enable:variable-name */
 
@@ -279,6 +281,18 @@ export function toUd(interp: MorphInterp) {
       : { pos: 'CONJ', features }
   }
 
+  // special-treat reflexives
+  if (interp.isReflexive()) {
+    features.Reflex = 'Yes'
+    interp = interp.clone()
+    if (interp.lemma === 'себе' || interp.lemma === 'свій') {
+      interp.features.pronominalType = PronominalType.personal
+    } else {
+      interp.features.pronominalType = undefined
+      interp.features.pronoun = undefined
+    }
+  }
+
   // auto-map pos and features
   for (let featureName of Object.keys(interp.features)) {
     let keyvalue = mapFeatureValue2Ud(featureName, interp.features[featureName])
@@ -312,27 +326,28 @@ export function toUd(interp: MorphInterp) {
   }
 
   if (interp.isVerb()) {
-    switch (interp.features.mood) {
-      case Mood.indicative:
-        features.Mood = 'Ind'
-        features.VerbForm = 'Fin'
-        break
-      case Mood.imperative:
-        features.Mood = 'Imp'
-        features.VerbForm = 'Fin'
-        break
-      case Mood.infinitive:
-        features.VerbForm = 'Inf'
-        break
-      case Mood.impersonal:
-        features.VerbForm = 'Impers'
-        break
-      default:
-        throw new Error(`Unknown Mood: "${interp.features.mood}"`)
+    if (interp.isIndicative()) {
+      features.Mood = 'Ind'
+      features.VerbForm = 'Fin'
+    } else {
+      switch (interp.features.mood) {
+        case Mood.imperative:
+          features.Mood = 'Imp'
+          features.VerbForm = 'Fin'
+          break
+        case Mood.infinitive:
+          features.VerbForm = 'Inf'
+          break
+        case Mood.impersonal:
+          features.VerbForm = 'Imps'
+          break
+        default:
+          throw new Error(`Unknown Mood: "${interp.features.mood}"`)
+      }
     }
   } else if (interp.isTransgressive()) {
     pos = 'VERB'
-    features.VerbForm = 'Part'    // ?
+    features.VerbForm = 'Part'
   } else if (interp.isAdjective()) {
     if (interp.isParticiple()) {
       features.VerbForm = 'Part'

@@ -89,10 +89,10 @@ export enum Degree {
 }
 
 ///// Verbal /////
-export enum VerbForm {
-  participle,  // дієприкм
-  transgressive,  // дієприсл
-}
+// export enum VerbForm {
+//   participle,  // дієприкм
+//   transgressive,  // дієприсл
+// }
 export enum Mood {
   indicative,
   imperative,
@@ -184,5 +184,6 @@ export enum SemanticOmonym { }
 export enum Auto { yes }
 export enum Oddness { yes }
 export enum N2adjness { yes }
+export enum PrepositionRequirement { yes }
 
 export const booleanFeatures = [Possessiveness, Reflexivity, Abbreviation]

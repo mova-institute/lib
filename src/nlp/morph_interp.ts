@@ -9,7 +9,8 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, VerbForm, VerbNegativity, VerbType, Voice, VuAlternativity,
+  Slang, Tense, Variant, VerbNegativity, VerbType, Voice, VuAlternativity,
+  PrepositionRequirement,
 } from './morph_features'
 
 
@@ -55,6 +56,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [ParadigmOmonym, 'paradigmOmonym'],
   [PronominalType, 'pronominalType'],
   [Reflexivity, 'reflexivity'],
+  [PrepositionRequirement, 'prepositionRequirement'],
 ])
 export const featureName2objMap = flipMap(featureObj2nameMap)
 
@@ -202,6 +204,8 @@ export const FEATURE_TABLE = [
 
   { featStr: 'oddness', feat: Oddness, vesum: Oddness.yes, vesumStr: 'odd' },
 
+  { featStr: 'prepositionRequirement', feat: PrepositionRequirement, vesum: PrepositionRequirement.yes, vesumStr: 'rprep' },
+
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp3, vesumStr: 'xp3' },
@@ -337,6 +341,7 @@ export const FEATURE_ORDER = {
     NameType,
     Possessiveness,
     Abbreviation,
+    PrepositionRequirement,
     Pronoun,
     Participle,
     OrdinalNumeral,
@@ -390,6 +395,7 @@ export class Features {
   oddness: Oddness
   bad: Bad
   n2adjness: N2adjness
+  prepositionRequirement: PrepositionRequirement
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -846,6 +852,7 @@ export class MorphInterp {
   isParticiple() { return this.features.participle !== undefined }
   isBacteria() { return this.features.animacy === Animacy.bacteria }
   isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
+  isReflexive() { return this.features.pronominalType === PronominalType.reflexive }
 
   isPlural() { return this.features.number === MorphNumber.plural }
   isNominative() { return this.features.case === Case.nominative }
