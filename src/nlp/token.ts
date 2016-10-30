@@ -61,10 +61,21 @@ export class Token {
 
   getStructureName() { return this.structure }
   getAttributes() { return this.attributes }
-  isStructure() { return !!this.structure }
+  isStructure() {
+    return !!this.structure || this.isGlue()  // todo
+  }
   isWord() { return !!this.form }
-  isSentenceStart() { return this.structure === 'sentence' && this.closing === false }
-  isSentenceEnd() { return this.structure === 'sentence' && this.closing === true }
+
+  isSentenceStart() {
+    return (this.structure === 'sentence' || this.structure === 'paragraph')
+      && this.closing === false
+  }
+
+  isSentenceEnd() {
+    return (this.structure === 'sentence' || this.structure === 'paragraph')
+      && this.closing === true
+  }
+
   isGlue() { return this.type === 'glue' }
   isClosing() { return this.closing === true }
 

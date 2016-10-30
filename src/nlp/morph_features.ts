@@ -141,7 +141,7 @@ export enum PronominalType {
   negative,
   general,
   emphatic,
-  definitive,  // todo
+  // definitive,  // todo
 }
 export enum NumeralForm {
   digit,

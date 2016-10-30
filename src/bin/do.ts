@@ -5,7 +5,12 @@ import { readTillEnd } from '../stream_utils.node'
 import { parseXml } from '../xml/utils.node'
 
 const args = require('minimist')(process.argv.slice(2), {
-  boolean: ['xml', 'inplace'],
+  boolean: [
+    'xml',
+    'inplace',
+    'v',
+    'byline',
+  ],
 })
 
 let [path, funcName, filename1, filename2] = args._
@@ -19,9 +24,12 @@ let func = moduleObj[funcName]
 
 ioArgs(filename1, filename2, async (input, output) => {
   try {
-    let inputStr = await readTillEnd(input)
+    let inputStr: any = await readTillEnd(input)
     if (args.v) {
-      console.log('doing')
+      console.error('doing')
+    }
+    if (args.byline) {
+      inputStr = inputStr.split('\n')
     }
     if (args.xml) {
       let root = parseXml(inputStr)
@@ -37,7 +45,10 @@ ioArgs(filename1, filename2, async (input, output) => {
       let res = func(inputStr)
       if (typeof res === 'object' && Symbol.iterator in res) {
         for (let line of res) {
-          output.write(line + '\n')
+          output.write(line)
+          if (!args.byline) {
+            output.write('\n')
+          }
         }
       }
       else if (res) {

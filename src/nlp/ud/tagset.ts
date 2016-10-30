@@ -11,6 +11,61 @@ import {
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
 
 
+export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
+export type UdAnimacy = 'Anim' | 'Nhum' | 'Inan'
+export type UdAspect = 'Imp' | 'Perf'
+export type UdCase = 'Nom' | 'Gen' | 'Dat' | 'Acc' | 'Ins' | 'Loc' | 'Voc'
+export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
+export type UdTense = 'Past' | 'Pres' | 'Fut'
+export type UdPerson = '1' | '2' | '3'
+export type UdMood = 'Ind' | 'Imp'
+export type UdVoice = 'Act' | 'Pass'
+export type UdVerbForm = 'Fin' | 'Inf' | 'Impers' | 'Part'
+export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
+export type UdPos =
+  'ADJ' |
+  'ADP' |
+  'ADV' |
+  'AUX' |
+  'CONJ' |
+  'DET' |
+  'INTJ' |
+  'NOUN' |
+  'NUM' |
+  'PART' |
+  'PRON' |
+  'PROPN' |
+  'PUNCT' |
+  'SCONJ' |
+  'SYM' |
+  'VERB' |
+  'X'
+
+export type UdPronType =
+  'Prs' |
+  'Rcp' |
+  'Art' |
+  'Int' |
+  'Rel' |
+  'Dem' |
+  'Tot' |
+  'Neg' |
+  'Ind'
+
+export type UdNumType =
+  'Card' |
+  'Ord' |
+  'Mult' |
+  'Frac' |
+  'Sets' |
+  'Dist' |
+  'Range' |
+  'Gen'
+
+// booleans:
+// Poss reflex
+
+
 export const featureObj2nameMapUd = new Map<any, string>([
   [Pos, 'POS'],
   // [N2adjness, 'n2adjness'],
@@ -110,7 +165,6 @@ const tenseMap = new Map<Tense, UdTense>([
 const moodMap = new Map<Mood, UdMood>([
   [Mood.indicative, 'Ind'],
   [Mood.imperative, 'Imp'],
-  // [Tense.future, 'Fut'],
 ])
 
 const genderMap = new Map<Gender, UdGender>([
@@ -146,7 +200,6 @@ const promonialTypeMap = new Map<PronominalType, UdPronType>([
   [PronominalType.negative, 'Neg'],
   [PronominalType.indefinite, 'Ind'],
 
-  // [PronominalType.definitive, ''],
   // [PronominalType.emphatic, ''],
   // [PronominalType.reflexive, ''],
 ])
@@ -173,78 +226,7 @@ const map = new Map<any, any>([
   [MorphNumber, numberMap],
 ])
 
-export type UdPos =
-  'ADJ' |
-  'ADP' |
-  'ADV' |
-  'AUX' |
-  'CONJ' |
-  'DET' |
-  'INTJ' |
-  'NOUN' |
-  'NUM' |
-  'PART' |
-  'PRON' |
-  'PROPN' |
-  'PUNCT' |
-  'SCONJ' |
-  'SYM' |
-  'VERB' |
-  'X'
 
-export type UdPronType =
-  'Prs' |
-  'Rcp' |
-  'Art' |
-  'Int' |
-  'Rel' |
-  'Dem' |
-  'Tot' |
-  'Neg' |
-  'Ind'
-
-export type UdNumType =
-  'Card' |
-  'Ord' |
-  'Mult' |
-  'Frac' |
-  'Sets' |
-  'Dist' |
-  'Range' |
-  'Gen'
-
-// booleans:
-// Poss reflex
-
-export type UdGender =
-  'Masc' |
-  'Fem' |
-  'Neut' |
-  'Com'
-
-export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
-
-export type UdAnimacy =
-  'Anim' |
-  'Nhum' |
-  'Inan'
-
-export type UdAspect = 'Imp' | 'Perf'
-export type UdCase =
-  'Nom' |
-  'Gen' |
-  'Dat' |
-  'Acc' |
-  'Ins' |
-  'Loc' |
-  'Voc'
-
-
-export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
-export type UdTense = 'Past' | 'Pres' | 'Fut'
-export type UdPerson = '1' | '2' | '3'
-export type UdMood = 'Ind' | 'Imp'
-export type UdVoice = 'Act' | 'Pass'
 
 
 /* tslint:disable:variable-name */
@@ -252,6 +234,7 @@ export class UdFlags {
   POS: UdPos
   Aspect: UdAspect
   Mood: UdMood
+  VerbForm: UdVerbForm
   Voice: UdVoice
   Case: UdCase
   Degree: UdDegree
@@ -329,11 +312,30 @@ export function toUd(interp: MorphInterp) {
   }
 
   if (interp.isVerb()) {
-    if (interp.isIndicative()) {
-      features.Mood = 'Ind'
+    switch (interp.features.mood) {
+      case Mood.indicative:
+        features.Mood = 'Ind'
+        features.VerbForm = 'Fin'
+        break
+      case Mood.imperative:
+        features.Mood = 'Imp'
+        features.VerbForm = 'Fin'
+        break
+      case Mood.infinitive:
+        features.VerbForm = 'Inf'
+        break
+      case Mood.impersonal:
+        features.VerbForm = 'Impers'
+        break
+      default:
+        throw new Error(`Unknown Mood: "${interp.features.mood}"`)
     }
+  } else if (interp.isTransgressive()) {
+    pos = 'VERB'
+    features.VerbForm = 'Part'    // ?
   } else if (interp.isAdjective()) {
     if (interp.isParticiple()) {
+      features.VerbForm = 'Part'
       if (!features.Voice) {
         throw new Error(`No voice for participle`)
       }

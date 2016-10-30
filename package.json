@@ -10,6 +10,7 @@
   ],
   "bin": {
     "mitag": "lib/bin/tag.js",
+    "mi-tag": "lib/bin/tag.js",
     "mi-do": "lib/bin/do.js",
     "mi-vesum2mte": "lib/bin/misc/vesum2mte.js",
     "mi-buildcorp": "lib/corpus_workflow/build.js",

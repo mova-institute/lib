@@ -1,5 +1,7 @@
 import { Token } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
+import { mu } from '../../mu'
+import { MorphInterp } from '../morph_interp'
 
 
 
@@ -46,25 +48,77 @@ function sentenceIdLine(id: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function* tokenStream2bratPlaintext(stream: Iterable<Token>) {
+  let sentenceStream = mu(stream).split(x => x.isSentenceEnd())
+  for (let sent of sentenceStream) {
+    yield '_ ' + sent.filter(x => x.isWord()).map(x => x.form).join(' ')
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2brat(stream: Iterable<Token>) {
+  // const rootInterp = MorphInterp.fromVesumStr('x', '_')
   let offset = 0
   let t = 1
   let a = 1
-  for (let token of stream) {
-    let {pos, features} = toUd(token.firstInterp())
-    let rightOffset = offset + token.form.length
-    let tId = `T${t++}`
-
-    yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
-
-    for (let feature of Object.keys(features)) {
-      let toyield = `A${a++}\t${feature} ${tId}`
-      let value = features[feature]
-      if (value && value !== true) {
-        toyield += ` ${value}`
+  let sentenceStream = mu(stream)
+    .split(x => x.isSentenceEnd())
+  // .map(x => [new Token().setForm('_').addInterp(rootInterp), ...x])
+  for (let sentence of sentenceStream) {
+    for (let token of sentence) {
+      if (token.isStructure()) {
+        continue
       }
-      yield toyield
+      // console.error(token)
+      let {pos, features} = toUd(token.firstInterp())
+      let rightOffset = offset + token.form.length
+      let tId = `T${t++}`
+
+      yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
+
+      for (let feature of Object.keys(features)) {
+        let toyield = `A${a++}\t${feature} ${tId}`
+        let value = features[feature]
+        if (value && value !== true) {
+          toyield += ` ${value}`
+        }
+        yield toyield
+      }
+      offset = rightOffset + 1    // account for space
     }
-    offset = rightOffset + 1    // account for space
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* conll2sentenceStrem(lines: Iterable<string>) {
+  let buf: string[][] = []
+  for (let line of lines) {
+    if (/^\s*#\s*sent_id\s/.test(line) && buf.length) {
+      yield buf
+      buf = []
+    } else if (/^\s*(#|$)/.test(line)) {
+      continue
+    } else {
+      buf.push(line.split('\t').map(x => x.trim()))
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+function conlluLineArr2Obj(line: string[]) {
+  let [index, form, lemma, pos, , feat, head, deprel, misc] = line
+  return { index, form, lemma, pos, feat, head, deprel, misc }
+}
+
+//------------------------------------------------------------------------------
+function conlluLine2Obj(line: string) {
+  return conlluLineArr2Obj(line.split('\t'))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* conllu2bratPlaintext(lines: Iterable<string>) {
+  for (let sent of conll2sentenceStrem(lines)) {
+    yield sent.map(x => x[1]).join(' ') + '\n'
   }
 }

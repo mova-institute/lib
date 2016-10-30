@@ -16,7 +16,7 @@ import { createReadStream } from 'fs'
 import { getLibRootRelative } from '../path.node'
 import { mu } from '../mu'
 import * as minimist from 'minimist'
-import { tokenStream2conllu } from '../nlp/ud/utils'
+import { tokenStream2conllu, tokenStream2brat, tokenStream2bratPlaintext } from '../nlp/ud/utils'
 
 
 
@@ -24,7 +24,7 @@ interface Args extends minimist.ParsedArgs {
   t?: string
   text?: string
   dict?: string
-  format: 'vertical' | 'xml' | 'conllu' | 'sketch' | 'cg'
+  format: 'vertical' | 'xml' | 'conllu' | 'sketch' | 'cg' | 'brat' | 'brat_plaintext'
   numerate: boolean
   tokenize: boolean
   count: boolean
@@ -156,6 +156,11 @@ function main(args: Args) {
           mu(interpretedTeiDoc2sketchVertical(root))
             .chunk(3000)
             .forEach(x => output.write(x.join('\n') + '\n'))
+        } else if (args.format === 'brat') {
+          mu(tokenStream2brat(tei2tokenStream(root))).forEach(x => output.write(x + '\n'))
+        } else if (args.format === 'brat_plaintext') {
+          mu(tokenStream2bratPlaintext(tei2tokenStream(root)))  // todo: chunk
+            .forEach(x => output.write(x + '\n'))
         } else if (args.format === 'cg') {
           mu(tokenStream2cg(tei2tokenStream(root))).forEach(x => output.write(x + '\n'))
         } else {
@@ -185,9 +190,13 @@ function main(args: Args) {
         let tokens = string2tokenStream(inputStr, analyzer)
         if (args.format === 'cg') {
           mu(tokenStream2cg(tokens)).forEach(x => output.write(x + '\n'))
+        } else if (args.format === 'brat') {
+          mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
+        } else if (args.format === 'brat_plaintext') {
+          mu(tokenStream2bratPlaintext(tokens)).forEach(x => output.write(x + '\n'))
+        } else {
+          tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
         }
-        // mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
-        tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
       }
     }
   }, args._)
