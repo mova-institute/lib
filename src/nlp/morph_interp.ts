@@ -849,6 +849,7 @@ export class MorphInterp {
   isOdd() { return this.features.oddness === Oddness.yes }
   isAbbreviation() { return this.features.abbreviation === Abbreviation.yes }
   isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
+  canBeOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes || this.features.ordinalNumeral === OrdinalNumeral.maybe }
   isParticiple() { return this.features.participle !== undefined }
   isBacteria() { return this.features.animacy === Animacy.bacteria }
   isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
@@ -878,6 +879,8 @@ export class MorphInterp {
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
   setPseudoanimacy(value = true) { this.features.pseudoanimacy = value ? Pseudoanimacy.animate : Pseudoanimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
+  setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
+  setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
 

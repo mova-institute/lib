@@ -3,7 +3,7 @@ import * as flatten from 'lodash/flatten'
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
-import { Case } from '../morph_features'
+import { Case, Pos } from '../morph_features'
 import {
   FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE,
 } from '../static'
@@ -315,6 +315,26 @@ export class MorphAnalyzer {
       res.add(MorphInterp.fromVesumStr('x:abbr', `${lowercase}.`))
     }
 
+    // expand/add
+    for (let interp of res) {
+      if (interp.isNoun() && interp.canBeOrdinalNumeral()) {
+        // fix dict problem: create мільйон numr from мільйон noun
+        interp.setIsOrdinalNumeral(false)
+        let numeral = new MorphInterp()
+          .setPos(Pos.cardinalNumeral)
+          .setCase(interp.features.case)
+          .setIsPlural()
+          .setLemma(interp.lemma)
+        res.add(numeral)
+      } else if (interp.isNoun() && interp.isNominative() && interp.isPlural() && interp.isAnimate()) {
+        // add inanimish accusative, e.g. додати в друзі
+        let candidate = interp.clone().setCase(Case.accusative)
+        if (!res.has(candidate) && !res.has(candidate.setPseudoanimacy(false))) {
+          res.add(candidate)
+        }
+      }
+    }
+
     // filter and postprocess
     let ret = new Array<MorphInterp>()
     for (let interp of res) {
@@ -332,14 +352,6 @@ export class MorphAnalyzer {
       }
 
       ret.push(interp)
-
-      // add inanimish accusative, e.g. додати в друзі
-      if (interp.isNoun() && interp.isNominative() && interp.isPlural() && interp.isAnimate()) {
-        let candidate = interp.clone().setCase(Case.accusative)
-        if (!res.has(candidate) && !res.has(candidate.setPseudoanimacy(false))) {
-          ret.push(candidate)
-        }
-      }
     }
 
     return ret
