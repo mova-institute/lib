@@ -30,6 +30,7 @@ import {
   normalizeCorpusTextString, polishXml2verticalStream,
 } from '../nlp/utils'
 import { mu } from '../mu'
+import { uniq } from '../algo'
 
 
 
@@ -130,8 +131,16 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
   console.log(`Now bulding Ukrainian side of parallel corpora`)
 
   let srcFiles = globSync(join(workspacePath, 'data', 'parallel/**/*'))
+
   // .filter(x => x.endsWith('.uk.xml'))
-  srcFiles = selectFilesForLang(srcFiles, 'uk')
+  let enFiles = srcFiles.filter(
+    x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx === x.slice(0, -7) + '.en.xml'))
+  let plFiles = srcFiles.filter(
+    x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx.includes('.pl.') && xx.startsWith(x.slice(0, -7))))
+  // console.error(plFiles)
+  // return
+  // srcFiles = selectFilesForLang(srcFiles, 'uk')
+  srcFiles = uniq([...enFiles, ...plFiles])
   let buildDir = join(workspacePath, 'build', 'parallel')
   mkdirpSync(buildDir)
   let verticalFilePath = join(buildDir, 'vertical.txt')
