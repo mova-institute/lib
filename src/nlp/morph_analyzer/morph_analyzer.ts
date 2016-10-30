@@ -490,22 +490,10 @@ function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: s
 }
 
 //------------------------------------------------------------------------------
-function expandParsedInterp(interp: MorphInterp) {
-  // if (interp.isNoun() && interp.isPlural() && interp.isNominative) {
-  return [interp, interp.clone().setIsAuto().setIsOdd()]
-  // }
-  // return [interp]
-}
-
-//------------------------------------------------------------------------------
 function capitalizeFirst(value: string) {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
 
-//------------------------------------------------------------------------------
-// function replaceG(value: string) {
-//   return value.replace(/ґ/g, 'г').replace(/Ґ/g, 'Г')
-// }
 
 /*
 
