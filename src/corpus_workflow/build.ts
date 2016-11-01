@@ -2,6 +2,7 @@
 
 import { basename, join, dirname } from 'path'
 import * as fs from 'fs'
+import * as path from 'path'
 import { existsSync, openSync, closeSync, writeSync, createReadStream, createWriteStream } from 'fs'
 
 import { sync as globSync } from 'glob'
@@ -113,17 +114,24 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer) {
 //------------------------------------------------------------------------------
 function chtyvo(workspacePath: string, analyzer: MorphAnalyzer) {
   console.log(`Now bulding chtyvo`)
-  let buildDir = join(workspacePath, 'build')
-  // if (existsSync(verticalDir)) {
-  //   console.log(`Skipping: ${verticalDir} exists`)
-  //   return
-  // }
-  let verticalFile = rotateAndOpen(join(buildDir, 'chtyvo.vertical.txt'))
-  mu(streamChtyvo(join(workspacePath, 'data', 'chtyvo'), analyzer))
-    .map(x => nlpUtils.token2sketchVertical(x))
-    .chunk(10000)
-    .forEach(x => fs.writeSync(verticalFile, x.join('\n') + '\n'))
-  closeSync(verticalFile)
+  let buildDir = join(workspacePath, 'build', 'chtyvo', 'vrt')
+  let dataRootDir = join(workspacePath, 'data', 'chtyvo')
+  let metas = globSync(join(dataRootDir, '**', '*.meta.html'))
+  for (let i = 0; i < metas.length; ++i) {
+    let base = metas[i].slice(0, -'.meta.html'.length)
+    let dest = path.relative(dataRootDir, base) + '.vrt.txt'
+    dest = path.join(buildDir, dest)
+    if (fs.existsSync(dest)) {
+      continue
+    }
+    let doc = mu(streamChtyvo(base, analyzer))
+      .map(x => nlpUtils.token2sketchVertical(x))
+      .join('\n')
+    if (doc) {
+      mkdirpSync(path.dirname(dest))
+      fs.writeFileSync(dest, doc)
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -131,10 +139,11 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
   console.log(`Now bulding Ukrainian side of parallel corpora`)
 
   let srcFiles = globSync(join(workspacePath, 'data', 'parallel/**/*'))
+  // let plFiles = globSync(join(workspacePath, 'data', 'parallel/pl_tagged_renamed/*'))
 
   // .filter(x => x.endsWith('.uk.xml'))
-  let enFiles = srcFiles.filter(
-    x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx === x.slice(0, -7) + '.en.xml'))
+  let enFiles = []// srcFiles.filter(
+  // x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx === x.slice(0, -7) + '.en.xml'))
   let plFiles = srcFiles.filter(
     x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx.includes('.pl.') && xx.startsWith(x.slice(0, -7))))
   // console.error(plFiles)
@@ -175,7 +184,7 @@ function selectFilesForLang(files: string[], lang: string) {
 //------------------------------------------------------------------------------
 function buildPolish(workspacePath: string) {
   console.log(`Now bulding Polish`)
-  let srcFiles = globSync(join(workspacePath, 'data', 'parallel/pl_tagged/**/*.xml'))
+  let srcFiles = globSync(join(workspacePath, 'data', 'parallel/pl_tagged_renamed/**/*.xml'))
     .filter(x => x.endsWith('.pl.xml'))
     .sort()
   // srcFiles = selectFilesForLang(srcFiles, 'pl')

@@ -41,97 +41,93 @@ const docFormatBooktypes = [
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* streamChtyvo(workspace: string, analyzer: MorphAnalyzer) {
-  let metas = (globSync(join(workspace, '**/*.meta.html')))
-  metas = shuffle(metas)
-  for (let metaPath of metas) {
-    try {
-      let basePath = metaPath.slice(0, -'.meta.html'.length)
-      let format = ['txt', 'htm', 'fb2', 'doc'].find(x => existsSync(`${basePath}.${x}`))
-      if (!format) {
-        // console.log(`format not supported ${basePath}`)
-        continue
-      }
-      let dataPath = `${basePath}.${format}`
-
-      console.log(`processing ${dataPath}`)
-
-      let metaRoot = parseHtmlFileSync(metaPath)
-      let meta = extractMeta(metaRoot)
-      if (meta.isForeign) {
-        console.log(`foreign`)
-        continue
-      }
-      if (!meta.title) {
-        console.log(`no title`)
-        continue
-      }
-
-      if (format === 'doc') {
-        if (!docFormatBooktypes.find(x => x === meta.documentType)) {
-          continue
-        }
-        let content = execSync2String(`textutil -stdout -convert html ${dataPath}`)
-        if (hasSmashedEncoding(content)) {
-          console.log(`bad encoding`)
-          continue
-        }
-        // console.log(`${'#'.repeat(80)}\n${content.slice(-100)}${'#'.repeat(80)}\n`)
-        content = content.replace(/<head>[\s\S]*<\/head>/, '')  // needed
-        // console.log(content)
-        let root = parseHtml(content)
-        let paragraphs = mu(root.evaluateElements('//p'))
-          .map(x => (x.text().trim()))
-          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
-          .toArray()
-        console.log(paragraphs.length)
-        yield* yieldParagraphs(paragraphs, meta, analyzer)
-        continue
-      }
-
-      let content = readFileSyncAutodetect(dataPath)
-      if (!content) {
-        console.log(`bad encoding`)
-        continue
-      }
-
-      if (format === 'fb2') {
-        // content = renameTag(content, 'poem', 'p')
-        // content = renameTag(content, 'stanza', 'lg type="stanza"')
-        // content = renameTag(content, 'v', 'l')
-        let root = parseHtml(content)
-        mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
-        let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
-          // todo: inline verses
-          .map(x => normalizeCorpusTextString(x.text().trim()))
-          .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
-          .toArray()
-        yield* yieldParagraphs(paragraphs, meta, analyzer)
-      }
-      // else if (true) { continue }
-      else if (format === 'htm') {
-        let root = parseHtml(content)
-        let paragraphsIt = root.evaluateElements(
-          // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
-          '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
-          .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
-          .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))
-        let paragraphs = [...paragraphsIt]
-        yield* yieldParagraphs(paragraphs, meta, analyzer)
-      } else if (format === 'txt') {
-        content = extractTextFromTxt(content)
-        content = normalizeText(content)
-        content = content.replace(/\n+/g, '\n').trim()
-
-        let paragraphs = content.split(/\s*\n\s*/)
-        yield* yieldParagraphs(paragraphs, meta, analyzer)
-      } else {
-        console.log(`skipping (format not supported yet)`)
-      }
-    } catch (e) {
-      console.error(`errr ${metaPath}`)
-      console.error(e.stack)
+export function* streamChtyvo(basePath: string, analyzer: MorphAnalyzer) {
+  let metaPath = `${basePath}.meta.html`
+  try {
+    let format = ['txt', 'htm', 'fb2', 'doc'].find(x => existsSync(`${basePath}.${x}`))
+    if (!format) {
+      // console.log(`format not supported ${basePath}`)
+      return
     }
+    let dataPath = `${basePath}.${format}`
+
+    console.log(`processing ${dataPath}`)
+
+    let metaRoot = parseHtmlFileSync(metaPath)
+    let meta = extractMeta(metaRoot) as any
+    if (meta.isForeign) {
+      console.log(`foreign`)
+      return
+    }
+    if (!meta.title) {
+      console.log(`no title`)
+      return
+    }
+
+    if (format === 'doc') {
+      if (!docFormatBooktypes.find(x => x === meta.documentType)) {
+        return
+      }
+      let content = execSync2String(`textutil -stdout -convert html ${dataPath}`)
+      if (hasSmashedEncoding(content)) {
+        console.log(`bad encoding`)
+        return
+      }
+      // console.log(`${'#'.repeat(80)}\n${content.slice(-100)}${'#'.repeat(80)}\n`)
+      content = content.replace(/<head>[\s\S]*<\/head>/, '')  // needed
+      // console.log(content)
+      let root = parseHtml(content)
+      let paragraphs = mu(root.evaluateElements('//p'))
+        .map(x => (x.text().trim()))
+        .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+        .toArray()
+      // console.log(paragraphs.length)
+      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+      return
+    }
+
+    let content = readFileSyncAutodetect(dataPath)
+    if (!content) {
+      console.log(`bad encoding`)
+      return
+    }
+
+    if (format === 'fb2') {
+      // content = renameTag(content, 'poem', 'p')
+      // content = renameTag(content, 'stanza', 'lg type="stanza"')
+      // content = renameTag(content, 'v', 'l')
+      let root = parseHtml(content)
+      mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
+      let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
+        // todo: inline verses
+        .map(x => normalizeCorpusTextString(x.text().trim()))
+        .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+        .toArray()
+      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+    }
+    // else if (true) { continue }
+    else if (format === 'htm') {
+      let root = parseHtml(content)
+      let paragraphsIt = root.evaluateElements(
+        // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
+        '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
+        .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
+        .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))
+      let paragraphs = [...paragraphsIt]
+      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+    } else if (format === 'txt') {
+      content = extractTextFromTxt(content)
+      content = normalizeText(content)
+      content = content.replace(/\n+/g, '\n').trim()
+
+      let paragraphs = content.split(/\s*\n\s*/)
+      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+    } else {
+      console.log(`skipping (format not supported yet)`)
+    }
+  } catch (e) {
+    console.error(`errr ${metaPath}`)
+    console.error(e.stack)
   }
 }
 
@@ -261,7 +257,7 @@ function normalizeText(str: string) {
 }
 
 //------------------------------------------------------------------------------
-function* yieldParagraphs(paragraphs: string[], meta: CorpusDocumentAttributes, analyzer: MorphAnalyzer) {
+function* yieldDocOfParagraphs(paragraphs: string[], meta: CorpusDocumentAttributes, analyzer: MorphAnalyzer) {
   meta.disamb = 'жодного'
   if (paragraphs.length) {
     yield Token.structure('document', false, meta)
