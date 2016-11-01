@@ -123,3 +123,8 @@ export function* conllu2bratPlaintext(lines: Iterable<string>) {
     yield sent.map(x => x[1]).join(' ') + '\n'
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function canBeConlluLine(line: string) {
+  return !/^\s*#/.test(line) && /^([^\t]+\t){9}[^\t]+$/.test(line)
+}
