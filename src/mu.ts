@@ -243,6 +243,17 @@ export class Mu<T> implements Iterable<T> {
     return ret
   }
 
+  join(joiner = '') {
+    let ret = ''
+    for (let x of this) {
+      if (ret) {
+        ret += joiner
+      }
+      ret += x
+    }
+    return ret
+  }
+
   toArray() {
     return [...this]
   }
