@@ -22,16 +22,13 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
     } else if (token.isWord()) {
       let interp = token.firstInterp()
       let { pos, features } = toUd(interp)
-      let misc = `mi=${interp.toVesumStr()}`
-      if (nextToken && nextToken.isGlue()) {
-        misc += '|SpaceAfter=No'
-      }
+      let misc = nextToken && nextToken.isGlue() ? 'SpaceAfter=No' : '_'
       yield [
         tokenIndex++,
         token.form,
         interp.lemma,
         pos,
-        '_',
+        interp.toVesumStr(),
         udFeatures2conlluString(features),
         '_',
         '_',
@@ -95,7 +92,7 @@ export function* tokenStream2brat(stream: Iterable<Token>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conll2sentenceStrem(lines: Iterable<string>) {
+export function* conll2sentenceStream(lines: Iterable<string>) {
   let buf: string[][] = []
   for (let line of lines) {
     if (/^\s*#\s*sent_id\s/.test(line) && buf.length) {
@@ -122,7 +119,7 @@ function conlluLine2Obj(line: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* conllu2bratPlaintext(lines: Iterable<string>) {
-  for (let sent of conll2sentenceStrem(lines)) {
+  for (let sent of conll2sentenceStream(lines)) {
     yield sent.map(x => x[1]).join(' ') + '\n'
   }
 }
