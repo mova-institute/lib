@@ -379,8 +379,8 @@ export class MorphAnalyzer {
   }
 
   private lookup(token: string) {
-    // return this.dictCache.get(token).map(x => x.clone())
-    return this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+    return this.dictCache.get(token).map(x => x.clone())
+    // return this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
   }
 
   private isCompoundAdjective(token: string) {
