@@ -21,7 +21,8 @@ import { parseTyzhdenArticle } from '../nlp/parsers/tyzhden'
 import { fetchText } from '../nlp/grabbers/utils'
 import { mu } from '../mu'
 import * as _ from 'lodash'
-
+import { CatStream } from '../cat_stream'
+import { execSync, spawnSync, spawn, exec } from 'child_process'
 
 // export const config: ClientConfig = {
 //   host: 'localhost',
@@ -39,62 +40,16 @@ import * as _ from 'lodash'
 main()
 
 function main() {
-
-  let articles = glob.sync('/Users/msklvsk/Developer/mova-institute/workspace/tyzhden/html/**/*.html')
-  articles = _.shuffle(articles)
-  let i = 0
-  for (let article of articles) {
-    ++i
-    let content = readFileSync(article, 'utf8')
-    try {
-      var parsed = parseTyzhdenArticle(content, htmlDocCreator)
-    } catch (e) {
-      console.error(article)
-      console.error(`${e.message}\n${e.stack}`)
-      // throw e
-      continue
-    }
-    // if (/*!(i % 1000) || */!parsed.isValid && parsed.author !== 'The Economist' && content.length > 1000) {
-    if (/*!(i % 100) &&*/ parsed.isValid && !parsed.title) {
-    // if (!(i % 100) && parsed.isValid) {
-      console.log(i)
-      console.log(article)
-      console.log(parsed)
-    }
-    // let { author, date, description, paragraphs, title, url} = parsed
-    // let log = Object.keys(parsed).map(x => {
-    //   let ret = `${x.substr(0,5)}="`
-    //   if (!parsed[x].toString().trim()) {
-    //     ret += '##############'
-    //   } else if (x!=='paragraphs') {
-    //     ret += parsed[x].toString().substr(0, 15)
-    //   } else {
-    //     ret += `${parsed[x].length}, ${parsed[x][0].substr(0, 20).replace(/\s+/g, ' ')}`
-    //   }
-    //   return ret + '"'
-    // }).join(' | ')
-
-    // if (!title || !paragraphs.length) {
-    //   console.log(parsed)
-    // }
-    // let log = `${url.substr('http://day.kyiv.ua/uk/article/'.length)} ### ${title} ### ${paragraphs.length}`
-    // console.log(log)
-    // if (!a.paragraphs.length) {
-    //   console.log(a)
-    //   console.log(article)
-    // }
-    // a.content = a.content.substr(0, 30)
-    // if ('<p class="content"></p>\n' === a.content) {
-    // console.log(article)
-    // if (!a.title.length || ! a.date.length/* || !a.author.length*/) {
-    // console.log(article)
-    // console.log(a.content)
-    // docCreator(a.content)
-    // console.log('\n\n\n\n')
-    // }
-    // console.log(a.title)
-    // }
-  }
+  let files = glob.sync('/Users/msklvsk/Downloads/*.alignment.xml')
+  let s = new CatStream(files)
+  // let ws = fs.createWriteStream('/Users/msklvsk/Downloads/test1.txt')
+  // s.pipe(process.stdout)
+  let cp = exec('wc -l')
+  cp.on('close', (code) => {
+    console.log(`grep process exited with code ${code}`);
+  })
+  cp.stdout.pipe(process.stdout)
+  s.pipe(cp.stdin)
 }
 
 function docCreator(xmlstr: string) {

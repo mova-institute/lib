@@ -4,12 +4,13 @@ import { readFileSync, existsSync } from 'fs'
 import { join, basename } from 'path'
 import * as readline from 'readline'
 
-import { sync as globSync } from 'glob'
-import { execSync } from 'child_process'
+import { execSync, exec } from 'child_process'
 import * as minimist from 'minimist'
 
 import { r, arrayed } from '../lang'
 import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
+import { CatStream } from '../cat_stream'
+import { execPipe } from '../child_process.node'
 
 
 
@@ -99,7 +100,7 @@ interface RemoteParams {
 }
 
 //------------------------------------------------------------------------------
-function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
+async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
   const upload = (content: string, path: string) =>
     putFileSshSync(remoteParams.hostname, remoteParams.user, path, content)
 
@@ -140,17 +141,16 @@ function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
 
   // call compilecorp
   console.log(`indexing a corpus from ${params.verticalPaths.length} files`)
-  let catCommand = `cat ${params.verticalPaths.join(' ')}`
-  let compileCommand = catCommand
-    + ` | ssh -C ${remoteParams.user}@${remoteParams.hostname}`
+  let compileCommand = `ssh -C ${remoteParams.user}@${remoteParams.hostname}`
     + ` 'time compilecorp --no-ske`
     + ` --recompile-corpus`
     + ` --recompile-subcorpora`
     + ` --recompile-align`
     + ` ${tempName} -'`
+  let stream = new CatStream(params.verticalPaths)
   console.log(`\n${compileCommand}\n`)
-  execHere(compileCommand)
 
+  await execPipe(compileCommand, stream, process.stdout)
 
   const overwrite = (name: string) => {
     let newConfig = nameCorpusInConfig(name, manateePath, params.config)
@@ -228,14 +228,6 @@ function checkConfigIsSane(config: string, remoteManatee: string) {
   return config && new RegExp(String.raw`(^|\n)\s*PATH "${remoteManatee}`).test(config)
 }
 
-//------------------------------------------------------------------------------
-function execHere(command: string) {
-  return execSync(command, {
-    stdio: [undefined, process.stdout, process.stderr],
-  })
-}
-
-
 
 /*
 
@@ -271,7 +263,7 @@ mi-deploycorp \
 ###### uk ######
 
 
-###### parallel
+          ###### parallel
 
 cat build/parallel/vertical.txt | mi-id2i > paruk_id2i.txt
 cat build/en/vertical.txt | mi-id2i > build/en/id2i.txt
@@ -293,7 +285,15 @@ mi-deploycorp \
 --vertical build/parallel/vertical.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
---alignmentPaths paruk_en.align.txt --alignmentPaths paruk_pl.align.txt
+--alignmentPath paruk_en.align.txt --alignmentPath paruk_pl.align.txt
+
+mi-deploycorp \
+--vertical build/parallel/vertical.txt \
+--config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
+--config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
+--alignmentPath paruk_pl.align.txt --name paruk
+
+cat build/parallel/vertical.txt | mi-genalign 'data/parallel/*.alignment.xml' build/pl/id2i.txt
 
 
 ###### main
@@ -319,7 +319,7 @@ mi-deploycorp \
   --verticalList test_list.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
   --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
-  --alignmentPaths test_uk_en.align \
+  --alignmentPath test_uk_en.align \
   --name test
 
 
