@@ -267,6 +267,7 @@ export const FEATURE_ORDER = {
     NameType,
     Abbreviation,
     Possessiveness,
+    PrepositionRequirement,
     Pronoun,
     PronominalType,
   ],
