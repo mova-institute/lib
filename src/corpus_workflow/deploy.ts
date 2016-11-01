@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
 import { readFileSync, existsSync } from 'fs'
-import { join, basename } from 'path'
+import { basename } from 'path'
 import * as readline from 'readline'
-
-import { execSync, exec } from 'child_process'
 import * as minimist from 'minimist'
+
+import * as glob from 'glob'
 
 import { r, arrayed } from '../lang'
 import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
 import { CatStream } from '../cat_stream'
 import { execPipe } from '../child_process.node'
+import { mu } from '../mu'
 
 
 
@@ -147,9 +148,9 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
     + ` --recompile-subcorpora`
     + ` --recompile-align`
     + ` ${tempName} -'`
-  let stream = new CatStream(params.verticalPaths)
+  let verticals = mu(params.verticalPaths).map(x => glob.sync(x)).flatten()
+  let stream = new CatStream(verticals)
   console.log(`\n${compileCommand}\n`)
-
   await execPipe(compileCommand, stream, process.stdout)
 
   const overwrite = (name: string) => {
