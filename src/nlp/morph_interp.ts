@@ -84,6 +84,7 @@ export const FEATURE_TABLE = [
   { featStr: 'nameType', feat: NameType, vesum: NameType.first, vesumStr: 'fname' },
   { featStr: 'nameType', feat: NameType, vesum: NameType.last, vesumStr: 'lname' },
   { featStr: 'nameType', feat: NameType, vesum: NameType.patronym, vesumStr: 'patr' },
+  { featStr: 'nameType', feat: NameType, vesum: NameType.nick, vesumStr: 'nick' },
 
   { featStr: 'animacy', feat: Animacy, vesum: Animacy.animate, vesumStr: 'anim', mte: 'y' },
   { featStr: 'animacy', feat: Animacy, vesum: Animacy.inanimate, vesumStr: 'inanim', mte: 'n' },

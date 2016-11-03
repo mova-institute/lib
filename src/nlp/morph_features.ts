@@ -170,7 +170,7 @@ export enum ConjunctionType {
   coordinating,
 }
 export enum NumberTantum { noPlural, noSingular }
-export enum NameType { first, last, patronym }
+export enum NameType { first, last, patronym, nick }
 
 export enum CaseInflectability { no }
 export enum Alternativity { yes }

@@ -52,6 +52,7 @@
 |`fname`|first name|ім’я|Леопольд `noun:anim:m:v_naz:prop:fname`|
 |`lname`|last name|прізвище|Кравець `noun:anim:m:v_naz:prop:lname`|
 |`patr`|patronym|по батькові|Леопольдівна `noun:anim:f:v_naz:prop:patr`|
+|`nick`|nickname|прізвисько/окличка|собака Мушка `noun:anim:f:v_naz:prop:nick`|
 
 |||власність||
 |---|---|---|---|
