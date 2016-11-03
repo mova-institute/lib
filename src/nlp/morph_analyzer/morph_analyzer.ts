@@ -305,9 +305,12 @@ export class MorphAnalyzer {
       res.addAll(interps)
     }
 
-    // name initials
-    if (nextToken === '.' && initialsRe.test(token)) {
-      res.add(MorphInterp.fromVesumStr('noun:nv:abbr:prop', `${token}.`).setIsAuto())
+    // initials
+    if (initialsRe.test(token)) {
+      res.add(MorphInterp.fromVesumStr('noun:nv:prop', token))
+      if (nextToken === '.') {
+        res.add(MorphInterp.fromVesumStr('noun:anim:nv:abbr:prop', `${token}.`))
+      }
     }
 
     // one-letter abbrs
