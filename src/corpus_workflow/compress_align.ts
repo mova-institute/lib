@@ -1,115 +1,83 @@
 #!/usr/bin/env node
 
-import { isDeceimalInt } from '../string_utils'
 import { forEachLine } from '../utils.node'
 
 
 
-if (require.main === module) {
-  main()
-}
-
 //------------------------------------------------------------------------------
 async function main() {
   try {
-    let compresserA = compressor()
-    let compresserB = compressor()
+    let compressorA = new Compressor()
+    let compressorB = new Compressor()
     await forEachLine(process.stdin, line => {
       let [l, r] = line.split('\t')
-      let res = compresserA(l, r)
+      let res = compressorA.feed(l, r)
       if (res) {
         let [a, b] = res
-        res = compresserB(b, a)
+        res = compressorB.feed(b, a)
         if (res) {
           write(res[1], res[0])
         }
       }
     })
-    let res = compresserA('')
-    res = compresserB(res[1], res[0])
-    write(res[1], res[0])
-
-    // let prevL: number
-    // let prevR: number
-    // let curRangeStart: number
-    // await forEachLine(process.stdin, line => {
-    //   let [lStr, rStr] = line.split('\t')
-
-    //   if (isDeceimalInt(lStr) && isDeceimalInt(rStr)) {
-    //     let l = Number.parseInt(lStr)
-    //     let r = Number.parseInt(rStr)
-    //     if (prevL === l) {
-
-    //     }
-    //     prevL = l
-    //     prevR = r
-    //   } else if (curRangeStart === undefined) {
-    //     write(lStr, rStr)
-    //   } else {
-
-    //   }
-    // })
+    let res = compressorA.flush()
+    res = compressorB.feed(res[1], res[0])
+    if (res) {
+      write(res[1], res[0])
+    }
+    res = compressorB.flush()
+    if (res) {
+      write(res[1], res[0])
+    }
   } catch (e) {
     console.error(e.stack)
   }
 }
 
-// class Compresser {
-//   prev: string
-//   rangeStart: string
-
-//   feed(a: string, b: string) {
-//     if (!isInt(a)) {
-//     //   if (this.rangeStart)
-//     // }
-//   }
-// }
-
 //------------------------------------------------------------------------------
-function compressor() {
-  let prevA: string
-  let prevB: string
-  let rangeStartB = ''
-  return (a: string, b?: string) => {
-    // if (!a) {
-    //   return
-    // }
-    if (!a) {
-      if (rangeStartB) {
-        return [prevA, `${rangeStartB},${prevB}`]
-      }
-      return [prevA, prevB]
-    }
+class Compressor {
+  private prevA: string
+  private prevB: string
+  private rangeStartB = ''
 
+  feed(a: string, b: string) {
     let ret: [string, string]
-    if (a === prevA) {
-      if (rangeStartB === '') {
-        rangeStartB = prevB
+    if (a === this.prevA) {
+      if (this.rangeStartB === '') {
+        this.rangeStartB = this.prevB
       }
     } else {
-      if (rangeStartB === '') {
-        if (prevA && prevB) {
-          ret = [prevA, prevB]
+      if (this.rangeStartB === '') {
+        if (this.prevA && this.prevB) {
+          ret = [this.prevA, this.prevB]
         }
       } else {
-        ret = [prevA, `${rangeStartB},${prevB}`]
-        rangeStartB = ''
+        ret = [this.prevA, `${this.rangeStartB},${this.prevB}`]
+        this.rangeStartB = ''
       }
     }
-    prevA = a
-    prevB = b
+    this.prevA = a
+    this.prevB = b
     if (ret) {
       return ret
     }
   }
-}
 
-//------------------------------------------------------------------------------
-function isInt(str: string) {
-  return /^\d+$/.test(str)
+  flush() {
+    if (this.rangeStartB) {
+      return [this.prevA, `${this.rangeStartB},${this.prevB}`]
+    }
+    return [this.prevA, this.prevB]
+  }
 }
 
 //------------------------------------------------------------------------------
 function write(left: string, right: string) {
+  left = left.replace(',-1', '').replace('-1,', '')
+  right = right.replace(',-1', '').replace('-1,', '')
   process.stdout.write(`${left}\t${right}\n`)
+}
+
+if (require.main === module) {
+  main()
 }
