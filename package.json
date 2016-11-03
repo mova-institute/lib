@@ -20,6 +20,7 @@
     "mi-sortalign": "lib/corpus_workflow/sortalign.js",
     "mi-vert2plain": "lib/corpus_workflow/vert2plain.js",
     "mi-compraplign": "lib/corpus_workflow/compress_align.js",
+    "mi-globcat": "lib/bin/globcat.js",
     "mi-remorphconllu": "lib/nlp/ud/remorphconllu.js"
   },
   "scripts": {},
