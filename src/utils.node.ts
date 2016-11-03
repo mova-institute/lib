@@ -51,3 +51,12 @@ export function readTsvMapSync(path: string, to?: Map<string, string>) {
 export function linesSyncArray(filePath: string) {
   return readFileSync(filePath, 'utf8').trim().split('\n')
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function ignorePipeErrors() {
+  process.stdout.on('error', err => {
+    if (err.code === 'EPIPE') {
+      process.exit(0)
+    }
+  })
+}
