@@ -14,7 +14,7 @@ import { IStringMorphInterp } from './interfaces'
 import { MorphInterp, compareTags } from './morph_interp'
 import {
   WORDCHAR_UK_RE, WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
-  PUNC_GLUED_BEFORE, PUNC_GLUED_AFTER, NO_GLUE_PUNC,
+  PUNC_GLUED_BEFORE, PUNC_GLUED_AFTER, NO_GLUE_PUNC, WCHAR_UK,
 } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
@@ -399,7 +399,7 @@ export function cantBeLowerCase(word: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isSaneLemma(value: string) {
-  return WORDCHAR_UK_RE.test(value) || /^\d+$/.test(value)
+  return new RegExp(`^[${WCHAR_UK}]+\.?$`).test(value) || /^\d+$/.test(value)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
