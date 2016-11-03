@@ -659,11 +659,9 @@ export class MorphInterp {
     }
 
     if (this.isPronoun()) {
-      if (this.isPossessive()) {
-        var type = 'p'
-      } else {
-        type = map2mte(PronominalType, this.features.pronominalType)
-      }
+      let type = this.isPossessive()
+        ? 'p'
+        : map2mte(PronominalType, this.features.pronominalType)
       let possessiveness = this.isPossessive() ? 'p' : '-'
       let person = map2mteOrDash(Person, this.features.person)
       let gender = map2mteOrDash(Gender, this.features.gender)
@@ -687,17 +685,20 @@ export class MorphInterp {
         } else if (lemmaTag) {
           gender = map2mteOrDash(Gender, lemmaTag.features.gender)
         } else {
-          throw new Error(`No gender info for ${this.toVesumStr()} ${lemma}`)
+          gender = '-'    // todo: separate convertion from validation
+          // throw new Error(`No gender info for ${this.toVesumStr()} ${lemma}`)
         }
       }
-      let morphNumber = map2mte(MorphNumber, this.getNumber())
+      // let morphNumber = map2mte(MorphNumber, this.getNumber())
+      let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
       let morphCase = map2mteOrDash(Case, this.features.case)
       let animacy = tryMap2Mte(Animacy, this.features.animacy)
       if (!animacy) {
         if (this.isBacteria()) {
           animacy = 'y'
         } else {
-          throw new Error('Animacy missing')
+          animacy = '-'    // todo: separate convertion from validation
+          // throw new Error('Animacy missing')
         }
       }
 
