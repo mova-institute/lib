@@ -23,7 +23,10 @@ export type UdMood = 'Ind' | 'Imp'
 export type UdVoice = 'Act' | 'Pass'
 export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part'
 export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
-export type UdPrepositionalCase = 'Prep'
+export type UdForeign = UdBoolean    // todo
+export type UdNameType = 'Giv' | 'Sur' | 'Pat' | 'Oth'    // todo
+export type UdNumForm = 'Digit' | 'Roman' | 'Word'
+export type UdPrepCase = 'Npr' | 'Pre'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -63,9 +66,6 @@ export type UdNumType =
   'Dist' |
   'Range' |
   'Gen'
-
-// booleans:
-// Poss reflex
 
 
 export const featureObj2nameMapUd = new Map<any, string>([
@@ -248,6 +248,11 @@ export class UdFlags {
   Tense: UdTense
   VerbForm: UdVerbForm
   Voice: UdVoice
+  Abbr: UdBoolean
+  Foreign: UdForeign
+  NameType: UdNameType
+  NumForm: UdNumForm
+  PrepCase: UdPrepCase
 }
 /* tslint:enable:variable-name */
 
