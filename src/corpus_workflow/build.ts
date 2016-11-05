@@ -142,8 +142,8 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
   // let plFiles = globSync(join(workspacePath, 'data', 'parallel/pl_tagged_renamed/*'))
 
   // .filter(x => x.endsWith('.uk.xml'))
-  let enFiles = []// srcFiles.filter(
-  // x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx === x.slice(0, -7) + '.en.xml'))
+  let enFiles = srcFiles.filter(
+    x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx === x.slice(0, -7) + '.en.xml'))
   let plFiles = srcFiles.filter(
     x => x.endsWith('.uk.xml') && srcFiles.find(xx => xx.includes('.pl.') && xx.startsWith(x.slice(0, -7))))
   // console.error(plFiles)
