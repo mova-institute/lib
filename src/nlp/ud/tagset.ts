@@ -242,7 +242,7 @@ export class UdFlags {
   NumType: UdNumType
   Number: UdNumber
   Person: UdPerson
-  Poss: boolean
+  Poss: UdBoolean
   PronType: UdPronType
   Reflex: UdBoolean
   Tense: UdTense
