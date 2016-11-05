@@ -140,16 +140,16 @@ export function interp2udVertFeatures(interp: MorphInterp) {
     features.Aspect,
     features.Case,
     features.Degree,
-    features.Foreign,
+    features.Foreign,  // todo
     features.Gender,
     features.Mood,
-    features.NameType,
+    features.NameType,  // todo
     features.Number,
-    features.NumForm,
+    features.NumForm,  // todo
     features.NumType,
     features.Person,
     features.Poss,
-    features.PrepCase,
+    features.PrepCase,  // todo
     features.PronType,
     features.Reflex,
     features.Tense,

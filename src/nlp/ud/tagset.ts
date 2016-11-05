@@ -11,22 +11,22 @@ import {
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
 
 
-export type UdBoolean = 'Yes'
-export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
 export type UdAnimacy = 'Anim' | 'Nhum' | 'Inan'
 export type UdAspect = 'Imp' | 'Perf'
+export type UdBoolean = 'Yes'
 export type UdCase = 'Nom' | 'Gen' | 'Dat' | 'Acc' | 'Ins' | 'Loc' | 'Voc'
 export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
-export type UdTense = 'Past' | 'Pres' | 'Fut'
-export type UdPerson = '1' | '2' | '3'
-export type UdMood = 'Ind' | 'Imp'
-export type UdVoice = 'Act' | 'Pass'
-export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part'
-export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
 export type UdForeign = UdBoolean    // todo
+export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
+export type UdMood = 'Ind' | 'Imp'
 export type UdNameType = 'Giv' | 'Sur' | 'Pat' | 'Oth'    // todo
+export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
 export type UdNumForm = 'Digit' | 'Roman' | 'Word'
+export type UdPerson = '1' | '2' | '3'
 export type UdPrepCase = 'Npr' | 'Pre'
+export type UdTense = 'Past' | 'Pres' | 'Fut'
+export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part'
+export type UdVoice = 'Act' | 'Pass'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -69,44 +69,44 @@ export type UdNumType =
 
 
 export const featureObj2nameMapUd = new Map<any, string>([
-  [Pos, 'POS'],
-  // [N2adjness, 'n2adjness'],
-  // [NumeralForm, 'numeralForm'],
-  // [NounType, 'nounType'],
-  // [VerbType, 'verbType'],
-  // [NameType, 'nameType'],
+  [Abbreviation, 'Abbr'],
   [Animacy, 'Animacy'],
-  // [RequiredAnimacy, 'requiredAnimacy'],
-  [Case, 'Case'],
-  [RequiredCase, 'Case'],
   [Aspect, 'Aspect'],
-  [Tense, 'Tense'],
-  [Mood, 'Mood'],
-  [Voice, 'Voice'],
+  [Case, 'Case'],
   [Degree, 'Degree'],
-  // [Pronoun, 'pronoun'],
-  // [Participle, 'participle'],
-  // [OrdinalNumeral, 'ordinalNumeral'],
-  // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   [Gender, 'Gender'],
+  [Mood, 'Mood'],
   [MorphNumber, 'Number'],
   [Person, 'Person'],
-  // [NumberTantum, 'numberTantum'],
-  // [CaseInflectability, 'caseInflectability'],
-  [Abbreviation, 'Abbr'],
-  // [Dimin, 'dimin'],
+  [Pos, 'POS'],
   [Possessiveness, 'Poss'],
-  // [Beforeadj, 'beforeadj'],
   [PronominalType, 'PronType'],
-  // [VuAlternativity, 'vuAlternative'],
-  // [ParadigmOmonym, 'paradigmOmonym'],
-  // [Rarity, 'rarity'],
-  // [Colloquial, 'colloquial'],
+  [RequiredCase, 'Case'],
+  [Tense, 'Tense'],
+  [Voice, 'Voice'],
+  // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
-  // [Slang, 'slang'],
-  // [Bad, 'bad'],
   // [Auto, 'auto'],
+  // [Bad, 'bad'],
+  // [Beforeadj, 'beforeadj'],
+  // [CaseInflectability, 'caseInflectability'],
+  // [Colloquial, 'colloquial'],
+  // [Dimin, 'dimin'],
+  // [N2adjness, 'n2adjness'],
+  // [NameType, 'nameType'],
+  // [NounType, 'nounType'],
+  // [NumberTantum, 'numberTantum'],
+  // [NumeralForm, 'numeralForm'],
   // [Oddness, 'oddness'],
+  // [OrdinalNumeral, 'ordinalNumeral'],
+  // [ParadigmOmonym, 'paradigmOmonym'],
+  // [Participle, 'participle'],
+  // [Pronoun, 'pronoun'],
+  // [Rarity, 'rarity'],
+  // [RequiredAnimacy, 'requiredAnimacy'],
+  // [Slang, 'slang'],
+  // [VerbType, 'verbType'],
+  // [VuAlternativity, 'vuAlternative'],
 ])
 
 const posMap = new Map<Pos, UdPos>([
@@ -233,26 +233,26 @@ const map = new Map<any, any>([
 /* tslint:disable:variable-name */
 export class UdFlags {
   // POS: UdPos
+  Abbr: UdBoolean
   Animacy: UdAnimacy
   Aspect: UdAspect
   Case: UdCase
   Degree: UdDegree
+  Foreign: UdForeign
   Gender: UdGender
   Mood: UdMood
-  NumType: UdNumType
+  NameType: UdNameType
   Number: UdNumber
+  NumForm: UdNumForm
+  NumType: UdNumType
   Person: UdPerson
   Poss: UdBoolean
+  PrepCase: UdPrepCase
   PronType: UdPronType
   Reflex: UdBoolean
   Tense: UdTense
   VerbForm: UdVerbForm
   Voice: UdVoice
-  Abbr: UdBoolean
-  Foreign: UdForeign
-  NameType: UdNameType
-  NumForm: UdNumForm
-  PrepCase: UdPrepCase
 }
 /* tslint:enable:variable-name */
 
