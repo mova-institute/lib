@@ -51,6 +51,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Reflexivity, 'reflexivity'],
   [RequiredAnimacy, 'requiredAnimacy'],
   [RequiredCase, 'requiredCase'],
+  [SemanticOmonym, 'semanticOmonym'],
   [Slang, 'slang'],
   [Tense, 'tense'],
   [Variant, 'variant'],
