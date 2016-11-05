@@ -428,7 +428,7 @@ export class MorphInterp {
     }
   }
 
-  static fromVesum(flags: string[], lemma?: string, lemmaFlags?: string[]) {
+  static fromVesum(flags: string[], lemma?: string, lemmaFlags?: string[], strict = false) {
     let ret = new MorphInterp()
 
     for (let flag of flags) {
@@ -440,7 +440,7 @@ export class MorphInterp {
         if (MorphInterp.otherFlagsAllowed.has(flag)) {
           ret.otherFlags.add(flag)
         }
-        else {
+        else if (strict) {
           throw new Error(`Unknown flag "${flag}" in tag "${flags.join(':')}"`)
         }
       }
