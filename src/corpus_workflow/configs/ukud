@@ -1,0 +1,178 @@
+NAME "корпус української"
+#INFO "Корпус української (випробовування)"   # todo: say mova intitute some day
+INFOHREF "https://mova.institute/corpus"
+MAINTAINER "corpus@mova.institute"
+TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
+
+VERTICAL "|printf 'a\ta\ta\ta'"
+
+
+LANGUAGE "Ukrainian"
+ENCODING "utf8"
+LOCALE "uk_UA.UTF-8"
+NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*"
+
+
+################################################################################
+#####################          Positionals        ##############################
+################################################################################
+
+ATTRIBUTE word {
+  LABEL "слово"
+  #TYPE "FD_FGD"
+}
+
+ATTRIBUTE lemma {
+  LABEL "лема"
+  MULTIVALUE yes
+  MULTISEP  "|"
+  #TYPE "FD_FGD"
+}
+
+ATTRIBUTE tag {
+  LABEL "морфмітка"
+  MULTIVALUE yes
+  MULTISEP "|"
+  #TYPE "FD_FGD"
+}
+
+ATTRIBUTE tag2 {
+  LABEL "морфмітка (службова)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  #TYPE "FD_FGD"
+}
+
+ATTRIBUTE pos {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE animacy {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE aspect {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE case {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE degree {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE gender {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE mood {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE numtype {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE number {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE person {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE poss {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE poss {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE reflex {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE tense {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE verbform {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE voice {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE lc {
+  LABEL "слово (мал. літерами)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR word
+  TYPE index
+  TRANSQUERY yes
+}
+
+ATTRIBUTE lemma_lc  {
+  LABEL "лема (мал. літерами)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR lemma
+  TYPE index
+  TRANSQUERY yes
+}
+
+
+################################################################################
+#####################          Structures        ###############################
+################################################################################
+
+STRUCTURE doc {
+}
+STRUCTURE g {
+  DISPLAYTAG 0
+  DISPLAYBEGIN "_EMPTY_"
+}
