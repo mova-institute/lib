@@ -43,6 +43,132 @@ ATTRIBUTE tag2 {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE pos {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE abbr {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE animacy {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE aspect {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE case {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE degree {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE foreign {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE gender {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE mood {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE nametype {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE number {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE numform {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE numtype {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE person {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE poss {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE prepcase {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE prontype {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE reflex {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE tense {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE verbform {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE voice {
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE lc {
   LABEL "слово (мал. літерами)"
   MULTIVALUE yes

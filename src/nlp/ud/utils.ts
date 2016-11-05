@@ -132,18 +132,24 @@ export function canBeConlluLine(line: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function interp2udVertFeatures(interp: MorphInterp) {
   let {pos, features} = toUd(interp)
+  // CAUTION: sort this list by js comparator, not by UD site
   return [
     pos,
+    features.Abbr,
     features.Animacy,
     features.Aspect,
     features.Case,
     features.Degree,
+    features.Foreign,
     features.Gender,
     features.Mood,
+    features.NameType,
     features.Number,
+    features.NumForm,
     features.NumType,
     features.Person,
     features.Poss,
+    features.PrepCase,
     features.PronType,
     features.Reflex,
     features.Tense,
