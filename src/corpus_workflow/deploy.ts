@@ -251,14 +251,14 @@ mi-buildcorp --part chtyvo
 
 ###### en ######
 mi-deploycorp \
-  --vertical build/en/vertical.txt \
+  --vertical build/en/vrt.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/en \
   --name en
 
 ###### pl ######
 mi-buildcorp --part pl
 mi-deploycorp \
-  --vertical build/pl/vertical.txt \
+  --vertical build/pl/vrt.txt \
   --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/pl \
   --name pl
 
@@ -267,9 +267,9 @@ mi-deploycorp \
 
           ###### parallel
 
-cat build/parallel/vertical.txt | mi-id2i > paruk_id2i.txt
-cat build/en/vertical.txt | mi-id2i > build/en/id2i.txt
-cat build/pl/vertical.txt | mi-id2i > build/pl/id2i.txt
+cat build/parallel/vrt.txt | mi-id2i > paruk_id2i.txt
+cat build/en/vrt.txt | mi-id2i > build/en/id2i.txt
+cat build/pl/vrt.txt | mi-id2i > build/pl/id2i.txt
 
 mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
 | mi-sortalign \
@@ -284,22 +284,22 @@ mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/pl/id2i.txt \
 > paruk_pl.align.txt
 
 mi-deploycorp \
---vertical build/parallel/vertical.txt \
+--vertical build/parallel/vrt.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
 --alignmentPath paruk_en.align.txt --alignmentPath paruk_pl.align.txt
 
 mi-deploycorp \
---vertical build/parallel/vertical.txt \
+--vertical build/parallel/vrt.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
 --alignmentPath paruk_en.align.txt --alignmentPath paruk_pl.align.txt --name paruk
 
-cat build/parallel/vertical.txt \
+cat build/parallel/vrt.txt \
 | mi-genalign 'data/parallel/*.alignment.xml' build/pl/id2i.txt \
 | mi-compraplign | fixgaps.py | compressrng.py > paruk_pl.align.txt
 
-cat build/parallel/vertical.txt \
+cat build/parallel/vrt.txt \
 | mi-genalign 'data/parallel/*.alignment.xml' build/en/id2i.txt \
 | mi-compraplign | fixgaps.py | compressrng.py > paruk_en.align.txt
 
@@ -360,11 +360,12 @@ cwb-encode -R ~/Developer/cwb/registry/chtyvo -d ~/Developer/cwb/data/chtyvo -f 
 cwb-scan-corpus -C test word+0 word+1 word+2 | pcregrep '^\d{2}' | sort -nr -k 1
 
 
-
-mi-deploycorp \
-  --vertical build/en/kontrakty.vertical.txt \
-  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/ukud \
-  --name ukud
+time printf 'umoloda\nden\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt\nparallel' \
+| xargs mi-buildcorp --part && \
+time mi-deploycorp \
+--verticalList uk_list.txt \
+--config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
+--subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub
 
 
 */
