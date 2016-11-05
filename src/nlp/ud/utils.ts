@@ -168,8 +168,11 @@ export function mergeAmbiguityFeaturewise(arr: any[][]) {
   for (let i = 0; i < ret.length; ++i) {
     for (let j = 0; j < arr.length; ++j) {
       let v = arr[j][i]
-      if (v && ret[i].indexOf(v) === -1) {
-        ret[i].push(v.toLowerCase())
+      if (v) {
+        let lc = v.toLowerCase()
+        if (ret[i].indexOf(lc) === -1) {
+          ret[i].push(lc)
+        }
       }
     }
     ret[i] = ret[i].sort().join('|')
