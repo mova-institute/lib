@@ -57,13 +57,14 @@ function main(args: Args) {
     verticalPaths = readFileSync(args.verticalList, 'utf8').split('\n')
   }
 
-  if (args.alignmentPath) {
-    args.alignmentPath = arrayed(args.alignmentPath)
-  }
-
+  verticalPaths = mu(verticalPaths).map(x => glob.sync(x)).flatten().toArray()
   let nonExistentFiles = verticalPaths.filter(x => !existsSync(x))
   if (nonExistentFiles.length) {
     throw new Error(`File(s) not found:\n${nonExistentFiles.join('\n')}`)
+  }
+
+  if (args.alignmentPath) {
+    args.alignmentPath = arrayed(args.alignmentPath)
   }
 
   let corpusParams: CorpusParams = {
@@ -141,17 +142,17 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
   upload(tempConfig, `${registryPath}/${tempName}`)
 
   // call compilecorp
-  console.log(`indexing a corpus from ${params.verticalPaths.length} files`)
+  let verticals = mu(params.verticalPaths).map(x => glob.sync(x)).flatten().toArray()
+  console.log(`indexing a corpus from ${verticals.length} files`)
   let compileCommand = `ssh -C ${remoteParams.user}@${remoteParams.hostname}`
     + ` 'time compilecorp --no-ske`
     + ` --recompile-corpus`
     + ` --recompile-subcorpora`
     + ` --recompile-align`
     + ` ${tempName} -'`
-  let verticals = mu(params.verticalPaths).map(x => glob.sync(x)).flatten()
-  let stream = new CatStream(verticals)
   console.log(`\n${compileCommand}\n`)
-  await execPipe(compileCommand, stream, process.stdout)
+
+  await execPipe(compileCommand, new CatStream(verticals), process.stdout)
 
   const overwrite = (name: string) => {
     let newConfig = nameCorpusInConfig(name, manateePath, params.config)
@@ -292,17 +293,37 @@ mi-deploycorp \
 --vertical build/parallel/vertical.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
---alignmentPath paruk_pl.align.txt --name paruk
+--alignmentPath paruk_en.align.txt --alignmentPath paruk_pl.align.txt --name paruk
 
-cat build/parallel/vertical.txt | mi-genalign 'data/parallel/*.alignment.xml' build/pl/id2i.txt
+cat build/parallel/vertical.txt \
+| mi-genalign 'data/parallel/*.alignment.xml' build/pl/id2i.txt \
+| mi-compraplign | fixgaps.py | compressrng.py > paruk_pl.align.txt
+
+cat build/parallel/vertical.txt \
+| mi-genalign 'data/parallel/*.alignment.xml' build/en/id2i.txt \
+| mi-compraplign | fixgaps.py | compressrng.py > paruk_en.align.txt
+
 
 
 ###### main
 
+cat uk_list.txt \
+| mi-globcat \
+| mi-genalign 'data/parallel/*.alignment.xml' build/pl/id2i.txt \
+| mi-compraplign | fixgaps.py | compressrng.py > uk_pl.align.txt \
+&& say done
+
+cat uk_list.txt \
+| mi-globcat \
+| mi-genalign 'data/parallel/*.alignment.xml' build/en/id2i.txt \
+| mi-compraplign | fixgaps.py | compressrng.py > uk_en.align.txt \
+&& say done
+
 mi-deploycorp \
 --verticalList uk_list.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
---subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub
+--subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
+--alignmentPath uk_en.align.txt --alignmentPath uk_pl.align.txt
 
 
 
@@ -338,6 +359,12 @@ cwb-encode -R ~/Developer/cwb/registry/chtyvo -d ~/Developer/cwb/data/chtyvo -f 
 
 cwb-scan-corpus -C test word+0 word+1 word+2 | pcregrep '^\d{2}' | sort -nr -k 1
 
+
+
+mi-deploycorp \
+  --vertical build/en/kontrakty.vertical.txt \
+  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/ukud \
+  --name ukud
 
 
 */

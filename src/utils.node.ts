@@ -56,6 +56,7 @@ export function linesSyncArray(filePath: string) {
 export function ignorePipeErrors() {
   process.stdout.on('error', err => {
     if (err.code === 'EPIPE') {
+      //console.error(err.stack)
       process.exit(0)
     }
   })
