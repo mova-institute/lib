@@ -232,18 +232,22 @@ const map = new Map<any, any>([
 
 /* tslint:disable:variable-name */
 export class UdFlags {
-  POS: UdPos
+  // POS: UdPos
+  Animacy: UdAnimacy
   Aspect: UdAspect
-  Mood: UdMood
-  VerbForm: UdVerbForm
-  Voice: UdVoice
   Case: UdCase
   Degree: UdDegree
   Gender: UdGender
-  Poss: boolean
-  Number: UdNumber
+  Mood: UdMood
   NumType: UdNumType
+  Number: UdNumber
+  Person: UdPerson
+  Poss: boolean
+  PronType: UdPronType
   Reflex: UdBoolean
+  Tense: UdTense
+  VerbForm: UdVerbForm
+  Voice: UdVoice
 }
 /* tslint:enable:variable-name */
 

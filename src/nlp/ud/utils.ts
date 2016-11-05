@@ -128,3 +128,45 @@ export function* conllu2bratPlaintext(lines: Iterable<string>) {
 export function canBeConlluLine(line: string) {
   return !/^\s*#/.test(line) && /^([^\t]+\t){9}[^\t]+$/.test(line)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function interp2udVertFeatures(interp: MorphInterp) {
+  let {pos, features} = toUd(interp)
+  return [
+    pos,
+    features.Animacy,
+    features.Aspect,
+    features.Case,
+    features.Degree,
+    features.Gender,
+    features.Mood,
+    features.NumType,
+    features.Number,
+    features.Person,
+    features.Poss,
+    features.PronType,
+    features.Reflex,
+    features.Tense,
+    features.VerbForm,
+    features.Voice,
+  ]
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function mergeAmbiguityFeaturewise(arr: any[][]) {
+  let ret = []
+  for (let i = 0; i < arr[0].length; ++i) {
+    ret.push([])
+  }
+
+  for (let i = 0; i < ret.length; ++i) {
+    for (let j = 0; j < arr.length; ++j) {
+      let v = arr[j][i]
+      if (v && ret[i].indexOf(v) === -1) {
+        ret[i].push(v.toLowerCase())
+      }
+    }
+    ret[i] = ret[i].sort().join('|')
+  }
+  return ret
+}

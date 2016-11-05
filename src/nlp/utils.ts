@@ -20,6 +20,8 @@ import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
 import { startsWithCapital } from '../string_utils'
 import { Token, TokenType, Structure } from './token'
+import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
+
 import * as uniq from 'lodash/uniq'
 import * as sortedUniq from 'lodash/sortedUniq'
 
@@ -731,7 +733,8 @@ export function token2sketchVertical(token: Token) {
       let mteTags = sortedUniq(token.interps.map(x => x.toMte()).sort()).join(MULTISEP)
       let mivesumFlagss = token.interps.map(x => x.toVesumStr()).sort().join(MULTISEP)
       let lemmas = sortedUniq(token.interps.map(x => x.lemma).sort()).join(MULTISEP)
-      return sketchLine(token.form, lemmas, mteTags, mivesumFlagss)
+      let ud = mergeAmbiguityFeaturewise(token.interps.map(x => interp2udVertFeatures(x)))
+      return tsvLine(token.form, lemmas, mteTags, mivesumFlagss, ...ud)
     } else {
       return token.form
     }
