@@ -1,9 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --max-old-space-size=7000 --expose-gc
 
 import { basename, join, dirname } from 'path'
 import * as fs from 'fs'
 import * as path from 'path'
-import { existsSync, openSync, closeSync, writeSync, createReadStream, createWriteStream } from 'fs'
+import { existsSync, openSync, closeSync, writeSync } from 'fs'
 
 import { sync as globSync } from 'glob'
 import { sync as mkdirpSync } from 'mkdirp'
@@ -11,7 +11,6 @@ import { parseHtmlString } from 'libxmljs'
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
 import * as minimist from 'minimist'
 
-import { id2i } from './id2i'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
@@ -132,6 +131,8 @@ function chtyvo(workspacePath: string, analyzer: MorphAnalyzer) {
       fs.writeFileSync(dest, doc)
     }
   }
+  // global.gc()
+  // global.gc()
 }
 
 //------------------------------------------------------------------------------
