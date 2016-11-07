@@ -19,21 +19,20 @@ import * as minimist from 'minimist'
 import { tokenStream2conllu, tokenStream2brat, tokenStream2bratPlaintext } from '../nlp/ud/utils'
 
 
+type OutFormat = 'vertical' | 'xml' | 'conllu' | 'sketch' | 'cg' | 'brat' | 'brat_plaintext'
 
 interface Args extends minimist.ParsedArgs {
-  t?: string
+  format: OutFormat
+  f: OutFormat
   text?: string
+  t?: string
   dict?: string
-  format: 'vertical' | 'xml' | 'conllu' | 'sketch' | 'cg' | 'brat' | 'brat_plaintext'
   numerate: boolean
   tokenize: boolean
   count: boolean
   unknown: boolean
   sort: boolean
-  vertical: boolean
-  mte: boolean
-  conllu: boolean
-  xml: boolean
+  mte: boolean  // todo
   normalize: boolean
   forAnnotation: boolean
   nl2p: boolean
@@ -43,7 +42,6 @@ interface Args extends minimist.ParsedArgs {
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     boolean: [
-      'conllu',
       'count',
       'forAnnotation',
       'mte',
@@ -52,8 +50,6 @@ if (require.main === module) {
       'numerate',
       'tokenize',
       'unknown',
-      'vertical',
-      'xml',
       'reinterpret',
     ],
     string: [
@@ -63,9 +59,14 @@ if (require.main === module) {
     alias: {
       forAnnotation: ['for-annotation'],
       numerate: ['n'],
+      format: ['f'],
     },
     default: {
-      format: 'vertical',
+      format: 'cg',
+    },
+    unknown(arg: string) {
+      console.error(`Unknown parameter "${arg}"`)
+      return false
     },
   }) as any
   normalizeArgs(args)
@@ -77,16 +78,19 @@ if (require.main === module) {
 //------------------------------------------------------------------------------
 function normalizeArgs(args: Args) {
   if (args.forAnnotation) {
-    args.xml = args.numerate /*= args.tokenize*/ = true
+    args.numerate = true
+    args.format = 'xml'
   }
   if (args.nl2p) {
-    args.xml = true
+    args.format = 'xml'
   }
 }
 
 //------------------------------------------------------------------------------
 function main(args: Args) {
   ioArgsPlain(async (input, outputFromIoargs) => {
+    const analyzer = createAnalyzer(args)
+
     let inputStr = args.t || args.text
     let output
     if (inputStr) {
@@ -97,9 +101,8 @@ function main(args: Args) {
       inputStr = await readTillEnd(input)
     }
 
-    const analyzer = createAnalyzer(args)
 
-    if (ifTreatAsXml(inputStr, args)) {
+    if (outAsXml(inputStr, args)) {
       inputStr = xmlutils.removeProcessingInstructions(inputStr)
       if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(inputStr)) {
         inputStr = xmlutils.encloseInRootNs(inputStr, 'text')
@@ -145,7 +148,7 @@ function main(args: Args) {
         if (args.numerate) {
           enumerateWords(root)
         }
-        if (args.conllu) {
+        if (args.format === 'conllu') {
           let tokenStream = mu(tei2tokenStream(root)).window(2)
           for (let line of tokenStream2conllu(tokenStream as any)) {
             output.write(line + '\n')
@@ -185,7 +188,12 @@ function main(args: Args) {
         tokens.forEach(x => output.write(x + '\n'))
       }
       else {
-        let tokens = string2tokenStream(inputStr, analyzer)
+        try {
+          let root = parseXml(inputStr)
+          var tokens = mu(tei2tokenStream(root))
+        } catch (e) {
+          tokens = string2tokenStream(inputStr, analyzer)
+        }
         if (args.format === 'cg') {
           mu(tokenStream2cg(tokens)).forEach(x => output.write(x + '\n'))
         } else if (args.format === 'brat') {
@@ -203,13 +211,10 @@ function main(args: Args) {
 
 
 //------------------------------------------------------------------------------
-function ifTreatAsXml(inputStr: string, args: Args) {
-  if (args.xml) {
+function outAsXml(inputStr: string, args: Args) {
+  if (args.format === 'xml') {
     return true
   }
-  // if (args.t || args.text || args.vertical) {
-  //   return false
-  // }
   if (args._.length > 1 && args._[0].endsWith('.txt')) {
     return false
   }
