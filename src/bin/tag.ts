@@ -6,7 +6,7 @@ import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, enumerateWords, tei2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
-  newline2Paragraph, interpretedTeiDoc2sketchVertical, tokenStream2cg, morphReinterpret,
+  newline2Paragraph, tokenStream2cg, morphReinterpret,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { parseXml } from '../xml/utils.node'
@@ -102,7 +102,7 @@ function main(args: Args) {
     }
 
 
-    if (outAsXml(inputStr, args)) {
+    if (args.format === 'xml') {
       inputStr = xmlutils.removeProcessingInstructions(inputStr)
       if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(inputStr)) {
         inputStr = xmlutils.encloseInRootNs(inputStr, 'text')
@@ -148,26 +148,8 @@ function main(args: Args) {
         if (args.numerate) {
           enumerateWords(root)
         }
-        if (args.format === 'conllu') {
-          let tokenStream = mu(tei2tokenStream(root)).window(2)
-          for (let line of tokenStream2conllu(tokenStream as any)) {
-            output.write(line + '\n')
-          }
-        } else if (args.format === 'sketch') {
-          mu(interpretedTeiDoc2sketchVertical(root))
-            .chunk(3000)
-            .forEach(x => output.write(x.join('\n') + '\n'))
-        } else if (args.format === 'brat') {
-          mu(tokenStream2brat(tei2tokenStream(root))).forEach(x => output.write(x + '\n'))
-        } else if (args.format === 'brat_plaintext') {
-          mu(tokenStream2bratPlaintext(tei2tokenStream(root)))  // todo: chunk
-            .forEach(x => output.write(x + '\n'))
-        } else if (args.format === 'cg') {
-          mu(tokenStream2cg(tei2tokenStream(root))).forEach(x => output.write(x))
-        } else {
-          output.write(root.document().serialize(true))
-          output.write('\n')
-        }
+        output.write(root.document().serialize(true))
+        output.write('\n')
       }
     } else {
       if (args.normalize) {
@@ -194,8 +176,22 @@ function main(args: Args) {
         } catch (e) {
           tokens = string2tokenStream(inputStr, analyzer)
         }
+        if (args.reinterpret) {
+          tokens = tokens.window(2).map(([curr, next]) => {
+            if (curr.form) {
+              let newInterps = analyzer.tag(curr.form, next && next.form)
+                .filter(x => !curr.interps.find(xx => xx.equals(x)))
+              curr.addInterps(newInterps)
+            }
+            return curr
+          })
+        }
         if (args.format === 'cg') {
           mu(tokenStream2cg(tokens)).forEach(x => output.write(x))
+        } else if (args.format === 'conllu') {
+          for (let line of tokenStream2conllu(tokens.window(2) as any)) {
+            output.write(line + '\n')
+          }
         } else if (args.format === 'brat') {
           mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
         } else if (args.format === 'brat_plaintext') {
@@ -208,21 +204,6 @@ function main(args: Args) {
   }, args._)
 }
 
-
-
-//------------------------------------------------------------------------------
-function outAsXml(inputStr: string, args: Args) {
-  if (args.format === 'xml') {
-    return true
-  }
-  if (args._.length > 1 && args._[0].endsWith('.txt')) {
-    return false
-  }
-  if (/^<[^>]+>/.test(inputStr)) {
-    return true
-  }
-  return false
-}
 
 //------------------------------------------------------------------------------
 function createAnalyzer(args: Args) {
