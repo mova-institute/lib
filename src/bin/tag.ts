@@ -163,7 +163,7 @@ function main(args: Args) {
           mu(tokenStream2bratPlaintext(tei2tokenStream(root)))  // todo: chunk
             .forEach(x => output.write(x + '\n'))
         } else if (args.format === 'cg') {
-          mu(tokenStream2cg(tei2tokenStream(root))).forEach(x => output.write(x + '\n'))
+          mu(tokenStream2cg(tei2tokenStream(root))).forEach(x => output.write(x))
         } else {
           output.write(root.document().serialize(true))
           output.write('\n')
@@ -195,7 +195,7 @@ function main(args: Args) {
           tokens = string2tokenStream(inputStr, analyzer)
         }
         if (args.format === 'cg') {
-          mu(tokenStream2cg(tokens)).forEach(x => output.write(x + '\n'))
+          mu(tokenStream2cg(tokens)).forEach(x => output.write(x))
         } else if (args.format === 'brat') {
           mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
         } else if (args.format === 'brat_plaintext') {

@@ -945,6 +945,9 @@ export function* tokenStream2cg(stream: Iterable<Token>) {
       yield `"<${tok.form}>"\n`
         + tok.interps.map(x => `\t"${x.lemma}" ${x.toVesum().join(' ')}\n`).join('')
     } else if (tok.isStructure()) {
+      if (tok.isSentenceEnd()) {
+        yield `"<$>"\n\n`
+      }
       // yield tok.toString()
     } else {
       // console.log(tok)
