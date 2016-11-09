@@ -22,6 +22,7 @@
     "mi-compraplign": "lib/corpus_workflow/compress_align.js",
     "mi-globcat": "lib/bin/globcat.js",
     "mi-evalcg": "lib/nlp/cg/evalcg.js",
+    "mi-find-ill-interps": "lib/bin/find-ill-interps.js",
     "mi-remorphconllu": "lib/nlp/ud/remorphconllu.js"
   },
   "scripts": {},
