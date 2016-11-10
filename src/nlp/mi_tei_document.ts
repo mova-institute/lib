@@ -49,7 +49,10 @@ export class MiTeiDocument {
   }
 
   getMeta() {
-    return this.root.evaluateElement('//mi:meta', NS).attributesObj()
+    let metaEl = this.root.evaluateElement('//mi:meta', NS)
+    if (metaEl) {
+      return metaEl.attributesObj()
+    }
   }
 
   hasTags() {

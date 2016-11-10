@@ -20,11 +20,7 @@ export function buildMiteiVertical(miteiPath: string, analyzer: MorphAnalyzer, v
     let doc = $d(root)
     let meta = doc.getMeta()
 
-    if (meta.disamb === 'old') {
-      meta.disamb = 'руками-Політехніка'
-    }
-
-    if (!meta.disamb) {
+    if (!meta || !meta.disamb) {
       tokenizeTei(root, analyzer)
       morphInterpret(root, analyzer)
     }

@@ -471,6 +471,7 @@ function createVerticalFile(workspace: string, partName: string) {
 }
 
 //------------------------------------------------------------------------------
-function mitei(workspacePath: string, analyzer: MorphAnalyzer, verticalFile: number, args: Args) {
+function mitei(workspacePath: string, analyzer: MorphAnalyzer, args: Args) {
+  let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'mitei.vrt.txt'))
   buildMiteiVertical(args.mitei, analyzer, verticalFile)
 }

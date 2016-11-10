@@ -1,5 +1,9 @@
 #*FREQLISTATTRS word lc lemma lemma_lc tag tag2
-*FREQLISTATTRS lc
+*FREQLISTATTRS word lc lemma
+
+=уоднозначнене
+  -CQL-
+  <doc disamb="руками.*" />
 
 =до30ті
   -CQL-
