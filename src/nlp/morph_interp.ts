@@ -339,8 +339,6 @@ export const FEATURE_ORDER = {
     CaseInflectability,
     Alternativity,
     NumberTantum,
-    ParadigmOmonym,
-    SemanticOmonym,
     NameType,
     Possessiveness,
     Abbreviation,
@@ -355,7 +353,7 @@ export const FEATURE_ORDER = {
 }
 
 for (let pos of Object.keys(FEATURE_ORDER)) {
-  FEATURE_ORDER[pos].push(ParadigmOmonym, Colloquial, Rarity, Bad, Oddness, Auto)
+  FEATURE_ORDER[pos].push(Colloquial, Rarity, Bad, Oddness, Auto, SemanticOmonym, ParadigmOmonym)
 }
 
 const POSWISE_COMPARATORS = {}
