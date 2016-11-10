@@ -6,7 +6,8 @@ import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, enumerateWords, tei2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
-  newline2Paragraph, tokenStream2cg, morphReinterpret,
+  newline2Paragraph, tokenStream2cg, morphReinterpret, token2sketchVertical,
+  applyMiTeiDocTransforms,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
 import { parseXml } from '../xml/utils.node'
@@ -37,6 +38,7 @@ interface Args extends minimist.ParsedArgs {
   forAnnotation: boolean
   nl2p: boolean
   reinterpret: boolean
+  apply: boolean
 }
 
 if (require.main === module) {
@@ -51,6 +53,7 @@ if (require.main === module) {
       'tokenize',
       'unknown',
       'reinterpret',
+      'apply',
     ],
     string: [
       't',
@@ -172,12 +175,15 @@ function main(args: Args) {
       else {
         try {
           let root = parseXml(inputStr)
-          var tokens = mu(tei2tokenStream(root))
+          if (args.apply) {
+            applyMiTeiDocTransforms(root)
+          }
+          var tokenStream = mu(tei2tokenStream(root))
         } catch (e) {
-          tokens = string2tokenStream(inputStr, analyzer)
+          tokenStream = string2tokenStream(inputStr, analyzer)
         }
         if (args.reinterpret) {
-          tokens = tokens.window(2).map(([curr, next]) => {
+          tokenStream = tokenStream.window(2).map(([curr, next]) => {
             if (curr.form) {
               let newInterps = analyzer.tag(curr.form, next && next.form)
                 .filter(x => !curr.interps.find(xx => xx.equals(x)))
@@ -187,17 +193,22 @@ function main(args: Args) {
           })
         }
         if (args.format === 'cg') {
-          mu(tokenStream2cg(tokens)).forEach(x => output.write(x))
+          mu(tokenStream2cg(tokenStream)).forEach(x => output.write(x))
+        } else if (args.format === 'sketch') {
+          tokenStream.map(x => token2sketchVertical(x))
+            .chunk(1000)
+            .forEach(x => output.write(x.join('\n') + '\n'))
+          // .forEach(x => output.write(x + '\n'))
         } else if (args.format === 'conllu') {
-          for (let line of tokenStream2conllu(tokens.window(2) as any)) {
+          for (let line of tokenStream2conllu(tokenStream.window(2) as any)) {
             output.write(line + '\n')
           }
         } else if (args.format === 'brat') {
-          mu(tokenStream2brat(tokens)).forEach(x => output.write(x + '\n'))
+          mu(tokenStream2brat(tokenStream)).forEach(x => output.write(x + '\n'))
         } else if (args.format === 'brat_plaintext') {
-          mu(tokenStream2bratPlaintext(tokens)).forEach(x => output.write(x + '\n'))
+          mu(tokenStream2bratPlaintext(tokenStream)).forEach(x => output.write(x + '\n'))
         } else {
-          tokenStream2plainVertical(tokens, args.mte).forEach(x => output.write(x + '\n'))
+          tokenStream2plainVertical(tokenStream, args.mte).forEach(x => output.write(x + '\n'))
         }
       }
     }
