@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+import * as glob from 'glob'
+
+
+function main() {
+
+}
+
+if (require.main === module) {
+  main()
+}
