@@ -241,12 +241,18 @@ sudo ln ~/ske.mo /usr/share/locale/uk_UA/LC_MESSAGES/ske.mo
 
 
 ##### build
-time printf 'umoloda\nden\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt\nparallel' \
+time printf 'den\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt\nparallel' \
 | parallel -u --use-cpus-instead-of-cores mi-buildcorp --part {}
 
 mi-buildcorp --part en
 mi-buildcorp --part parallel
 mi-buildcorp --part chtyvo
+mi-buildcorp --part kontrakty
+mi-buildcorp --part chtyvo
+mi-buildcorp --part tyzhden
+mi-buildcorp --part zbruc
+mi-buildcorp --part dzt
+mi-buildcorp --part parallel
 
 
 ###### en ######
@@ -360,12 +366,22 @@ cwb-encode -R ~/Developer/cwb/registry/chtyvo -d ~/Developer/cwb/data/chtyvo -f 
 cwb-scan-corpus -C test word+0 word+1 word+2 | pcregrep '^\d{2}' | sort -nr -k 1
 
 
-time printf 'umoloda\nden\nkontrakty\nchtyvo\ntyzhden\nzbruc\ndzt\nparallel' \
+time printf 'den kontrakty chtyvo tyzhden zbruc dzt parallel' \
 | xargs mi-buildcorp --part && \
 time mi-deploycorp \
 --verticalList uk_list.txt \
 --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
 --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub
 
+time mi-buildcorp --part kontrakty
+time mi-buildcorp --part tyzhden
+time mi-buildcorp --part zbruc
+time mi-buildcorp --part dzt
+time mi-buildcorp --part parallel
+time mi-buildcorp --part chtyvo
+time mi-deploycorp \
+--verticalList uk_list.txt \
+--config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
+--subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub
 
 */
