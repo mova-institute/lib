@@ -30,7 +30,7 @@ function main() {
     let diffCohorts = zipLongest(goldIt, testIt)
     for (let [[gold, lineG], [test, lineT]] of diffCohorts) {
       if (gold.surface !== test.surface) {
-        throw new Error(`Logic error`)
+        throw new Error(`Logic error: "${gold.surface}" !== "${test.surface}"`)
       }
 
       let positives = test.readings.filter(x => !x.removedBy)
