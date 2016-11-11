@@ -1,3 +1,5 @@
+/* tslint:disable:no-unused-variable no-unused-imports */
+
 // import {INode, IElement, IDocument} from 'xmlapi'
 import { LibxmljsDocument, LibxmljsElement } from 'xmlapi-libxmljs'
 import { readFileSync } from 'fs'
@@ -190,6 +192,6 @@ function mapp(array: number[]) {
 
 function wrap(v) {
   return {
-    value: v
+    value: v,
   }
 }

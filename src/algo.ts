@@ -122,18 +122,6 @@ export function overflowNegative(value: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** see https://bost.ocks.org/mike/shuffle/ */
-export function shuffle(array: any[]) {
-  let m = array.length
-  while (m) {
-    let i = Math.floor(Math.random() * m--)
-      ;[array[m], array[i]] = [array[i], array[m]]
-  }
-
-  return array
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = lexCompare) {
   let indexMap = arr2indexMap(array)
   return array.sort((a, b) => {

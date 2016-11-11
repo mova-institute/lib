@@ -1,11 +1,11 @@
 import {
   NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements,
-  traverseDepthGen, traverseDepthGen2, keyvalue2attributesNormalized,
+  traverseDepthGen2, keyvalue2attributesNormalized,
 } from '../xml/utils'
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
-import { r, createObject, matchAll } from '../lang'
+import { r, createObject } from '../lang'
 import { uniqueSmall as unique, uniqueJson } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
@@ -13,7 +13,7 @@ import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
 import { MorphInterp, compareTags } from './morph_interp'
 import {
-  WORDCHAR_UK_RE, WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
+  WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
   PUNC_GLUED_BEFORE, PUNC_GLUED_AFTER, NO_GLUE_PUNC, WCHAR_UK,
 } from './static'
 import { $d } from './mi_tei_document'

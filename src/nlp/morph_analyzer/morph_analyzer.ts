@@ -1,6 +1,6 @@
 import * as flatten from 'lodash/flatten'
 
-import { mu, Mu } from '../../mu'
+import { mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
 import { Case, Pos } from '../morph_features'

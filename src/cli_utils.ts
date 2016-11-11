@@ -20,7 +20,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
     output = createWriteStream(undefined!, { fd: tmpFile.fd })
   }
   else if (filename1) {
-    if (process.stdin.isTTY) {
+    if (process.stdout.isTTY) {
       input = createReadStream(filename1, 'utf8')
       output = process.stdout
     }

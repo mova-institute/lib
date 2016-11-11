@@ -2,8 +2,8 @@ import { xmlNsResolver, encloseInRootNs } from '../xml/utils'
 import { WebapiDocument, WebapiElement } from 'xmlapi-web'
 import { xpath } from '../xml/utils.web'
 import { serializeXmlNoNs, parseXml } from '../utils.web'
-import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
-import { tokenizeTei, morphInterpret, enumerateWords, firstNWords } from './utils'
+// import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
+import { /*tokenizeTei, morphInterpret, enumerateWords, */firstNWords } from './utils'
 
 
 ////////////////////////////////////////////////////////////////////////////////

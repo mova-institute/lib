@@ -106,17 +106,6 @@ export function* conll2sentenceStream(lines: Iterable<string>) {
   }
 }
 
-//------------------------------------------------------------------------------
-function conlluLineArr2Obj(line: string[]) {
-  let [index, form, lemma, pos, , feat, head, deprel, misc] = line
-  return { index, form, lemma, pos, feat, head, deprel, misc }
-}
-
-//------------------------------------------------------------------------------
-function conlluLine2Obj(line: string) {
-  return conlluLineArr2Obj(line.split('\t'))
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 export function* conllu2bratPlaintext(lines: Iterable<string>) {
   for (let sent of conll2sentenceStream(lines)) {

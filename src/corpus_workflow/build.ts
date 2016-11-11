@@ -457,20 +457,6 @@ function rotateAndOpen(filePath: string) {
 }
 
 //------------------------------------------------------------------------------
-function createVerticalFile(workspace: string, partName: string) {
-  let filePath
-  let i = 0
-  do {
-    let suffix = i ? `.${i}` : ''
-    filePath = join(workspace, `${partName}${suffix}.vrt.txt`)
-    ++i
-  } while (fs.existsSync(filePath))
-
-  mkdirpSync(workspace)
-  return fs.openSync(filePath, 'w')
-}
-
-//------------------------------------------------------------------------------
 function mitei(workspacePath: string, analyzer: MorphAnalyzer, args: Args) {
   let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'mitei.vrt.txt'))
   buildMiteiVertical(args.mitei, analyzer, verticalFile)
