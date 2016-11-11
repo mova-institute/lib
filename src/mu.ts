@@ -213,13 +213,6 @@ export class Mu<T> implements Iterable<T> {
     return true
   }
 
-  empty() {  // todo
-    for (let x of this) {
-      return false
-    }
-    return true
-  }
-
   nth(n: number) {
     if (n < 0) {
       return
