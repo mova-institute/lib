@@ -23,7 +23,8 @@
     "mi-globcat": "lib/bin/globcat.js",
     "mi-evalcg": "lib/nlp/cg/evalcg.js",
     "mi-find-ill-interps": "lib/bin/find-ill-interps.js",
-    "mi-reserialize-tei": "lib/bin/reserialize-tei.js",
+    "mi-refresh-interps": "lib/bin/refresh-interps.js",
+    "mi-cg": "lib/bin/cg.js",
     "mi-remorphconllu": "lib/nlp/ud/remorphconllu.js"
   },
   "scripts": {},
@@ -45,6 +46,7 @@
     "@types/node-fetch": "~0.0.4",
     "@types/pg": "~0.0.31",
     "@types/request": "~0.0.30",
+    "@types/rimraf": "0.0.28",
     "@types/tmp": "~0.0.30",
     "@types/wu": "~2.1.29",
     "tslint": "^3.15.1",
@@ -72,6 +74,7 @@
     "node-fetch": "^1.5.3",
     "pg": "4.5.6",
     "request": "^2.72.0",
+    "rimraf": "^2.5.4",
     "tmp": "^0.0.28",
     "wu": "^2.1.0",
     "xmlapi-libxmljs": "^0.0.6"
