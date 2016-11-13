@@ -180,7 +180,7 @@ export enum Dimin { yes }
 export enum Beforeadj { yes }
 export enum Possessiveness { yes }
 export enum ParadigmOmonym { xp1, xp2, xp3, xp4, xp5, xp6, xp7, xp8, xp9 }
-export enum SemanticOmonym { }
+export enum SemanticOmonym { xv1, xv2, xv3, xv4, xv5, xv6, xv7, xv8, xv9 }
 export enum Auto { yes }
 export enum Oddness { yes }
 export enum N2adjness { yes }

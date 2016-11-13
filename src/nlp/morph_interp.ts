@@ -208,6 +208,7 @@ export const FEATURE_TABLE = [
 
   { featStr: 'prepositionRequirement', feat: PrepositionRequirement, vesum: PrepositionRequirement.yes, vesumStr: 'rprep' },
 
+  // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp3, vesumStr: 'xp3' },
@@ -217,6 +218,16 @@ export const FEATURE_TABLE = [
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp7, vesumStr: 'xp7' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp8, vesumStr: 'xp8' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp9, vesumStr: 'xp9' },
+
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv1, vesumStr: 'xv1' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv2, vesumStr: 'xv2' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv3, vesumStr: 'xv3' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv4, vesumStr: 'xv4' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv5, vesumStr: 'xv5' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv6, vesumStr: 'xv6' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv7, vesumStr: 'xv7' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv8, vesumStr: 'xv8' },
+  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv9, vesumStr: 'xv9' },
 ]
 
 export const MTE_FEATURES = {
@@ -1022,7 +1033,7 @@ export function tryMapVesumFlag(value: string) {
     return {
       featStr: value.charAt(1) === 'p' ? 'paradigmOmonym' : 'semanticOmonym',
       feat: value.charAt(1) === 'p' ? ParadigmOmonym : SemanticOmonym,
-      vesum: Number.parseInt(match[1]),
+      vesum: Number.parseInt(match[1]) - 1,
       vesumStr: value,
     }
   }
