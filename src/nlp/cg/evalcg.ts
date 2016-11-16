@@ -4,6 +4,7 @@ import { join } from 'path'
 import * as glob from 'glob'
 import * as path from 'path'
 import * as fs from 'fs'
+import * as intersection from 'lodash/intersection'
 
 import { linesSync } from '../../utils.node'
 import { zipLongest, last } from '../../lang'
@@ -12,8 +13,8 @@ import { zipLongest, last } from '../../lang'
 
 function main() {
   const workspace = '.'
-  const goldDir = join(workspace, 'gold')
-  const testDir = join(workspace, 'test')
+  const goldDir = join(workspace, 'data', 'golden')
+  const testDir = join(workspace, 'data', 'test')
 
   let ruleCounter = new UniqueCounter()
   let goldenPositivesTotal = 0
@@ -22,40 +23,45 @@ function main() {
   let positivesTotal = 0
   let falseNegativesTotal = 0
 
-  let goldFiles = glob.sync(join(goldDir, '*.txt')).map(x => path.basename(x))
-  for (let goldFile of goldFiles) {
+  let [goldenFiles, testFiles] = [goldDir, testDir]
+    .map(x => glob.sync(join(x, '*.txt')).map(xx => path.basename(xx)))
+  let commonFiles = intersection(goldenFiles, testFiles)
+  if (goldenFiles.length !== testFiles.length) {
+    console.error(`WARNING: numbers of golden and test files do not match`)
+  }
+  console.log(`Evaluating ${commonFiles.length} files: ${commonFiles.join(' ')}`)
+  for (let goldFile of commonFiles) {
     let goldIt = iterateCg(linesSync(join(goldDir, goldFile)))
     let testIt = iterateCg(linesSync(join(testDir, goldFile)))
     // console.log([...testIt])
     let diffCohorts = zipLongest(goldIt, testIt)
-    for (let [[gold, lineG], [test, lineT]] of diffCohorts) {
-      if (gold.surface !== test.surface) {
-        throw new Error(`Logic error: "${gold.surface}" !== "${test.surface}"`)
+    for (let [[golden, lineG], [test, lineT]] of diffCohorts) {
+      if (golden.surface !== test.surface) {
+        throw new Error(`Logic error: "${golden.surface}" !== "${test.surface}"`)
       }
 
       let positives = test.readings.filter(x => !x.removedBy)
       let negatives = test.readings.filter(x => x.removedBy)
-      let truePositives = positives.filter(x => gold.readings.find(xx => xx.equals(x)))
-      let falseNegatives = negatives.filter(x => gold.readings.find(xx => xx.equals(x)))
+      let truePositives = positives.filter(x => golden.readings.find(xx => xx.equals(x)))
+      let falseNegatives = negatives.filter(x => golden.readings.find(xx => xx.equals(x)))
 
-      if (truePositives.length + falseNegatives.length !== gold.readings.length) {
-        console.error(gold.readings)
+      if (truePositives.length + falseNegatives.length !== golden.readings.length) {
+        console.error(golden.readings)
         console.error(positives)
         console.error(negatives)
         console.error(truePositives)
         console.error(falseNegatives)
-        console.error(truePositives.length, falseNegatives.length, gold.readings.length, lineG, lineT)
+        console.error(truePositives.length, falseNegatives.length, golden.readings.length, lineG, lineT)
         process.exit()
       }
       negativesTotal += negatives.length
       positivesTotal += positives.length
-      goldenPositivesTotal += gold.readings.length
+      goldenPositivesTotal += golden.readings.length
       truePositivesTotal += truePositives.length
 
       falseNegativesTotal += falseNegatives.length
-      if (falseNegatives.length) {
-        // console.log(falseNegatives, lineG + 1, lineT + 1)
-      }
+      ruleCounter.account(...falseNegatives.map(x => x.removedBy))
+      falseNegatives.forEach(x => ruleCounter.account())
     }
   }
   let readingsTotal = negativesTotal + positivesTotal
@@ -63,18 +69,26 @@ function main() {
   let precision = truePositivesTotal / positivesTotal
   let fMeasure = 2 * precision * recall / (precision + recall)
 
+  let topBadRules = [...ruleCounter.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(x => x.join('\t'))
+    .join('\n  ')
+
   console.log(`
+  readings total:      ${readingsTotal}
   readings to leave:   ${goldenPositivesTotal}
   readings to remove:  ${readingsTotal - goldenPositivesTotal}
   readings removed:    ${negativesTotal}
   readings left:       ${positivesTotal}
-  readings total:      ${readingsTotal}
 
   true positives:      ${truePositivesTotal}
   false negatives:     ${falseNegativesTotal}
   recall %:            ${toPercent(recall)}
   precision %:         ${toPercent(precision)}
   f-measure:            ${fMeasure.toFixed(2)}
+
+Top bad rules:
+  ${topBadRules}
   `)
 }
 
@@ -82,7 +96,7 @@ function main() {
 class UniqueCounter<T> {
   private map = new Map<T, number>()
 
-  meet(...values: T[]) {
+  account(...values: T[]) {
     for (let value of values) {
       if (this.map.has(value)) {
         this.map.set(value, this.map.get(value) + 1)

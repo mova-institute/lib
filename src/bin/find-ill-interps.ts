@@ -5,6 +5,7 @@ import * as glob from 'glob'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { tei2tokenStream } from '../nlp/utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
+import { mu } from '../mu'
 
 
 
@@ -15,12 +16,15 @@ function main() {
   for (let file of files) {
     let basename = path.basename(file)
     let root = parseXmlFileSync(file)
-    for (let token of tei2tokenStream(root)) {
+    for (let [token, next] of mu(tei2tokenStream(root)).window(2)) {
       if (token.form) {
-        let newInterps = analyzer.tagOrX(token.form)
+        let newInterps = analyzer.tagOrX(token.form, next && next.form)
         let attributes = token.getAttributes()
         let n = attributes && attributes.n
         for (let interp of token.interps) {
+          if (interp.isForeign()) {
+            continue
+          }
           if (!newInterps.find(x => x.equals(interp))) {
             let message = basename
             if (n) {

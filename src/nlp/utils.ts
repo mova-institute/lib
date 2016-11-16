@@ -363,6 +363,18 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAnalyzer) {
+  // console.log([...root.evaluateElements('//mi:w_', NS)])
+  let tokens = root.evaluateElements('//mi:w_', NS).map(x => $t(x))
+  for (let token of tokens) {
+    let form = token.text()
+    // console.log(form)
+    let next = token.nextToken() && token.nextToken() !.text()
+    analyzer.tag(form, next).forEach(x => token.assureHasInterp(x.toVesumStr(), x.lemma))
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0  // todo: switch from wu to normal forEach
   let words = root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)  // todo: NS bug
