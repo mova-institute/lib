@@ -5,11 +5,6 @@ export const PARADIGM_PREFIXES = NumeratedSet.fromUniqueArray([''].sort())  // t
 export const COMPARATOR = new Intl.Collator('uk-UA').compare
 
 
-// see https://github.com/Microsoft/TypeScript/issues/4233
-export const compileDictReturn = false && compileDict([])
-export type CompiledDict = typeof compileDictReturn
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 export function compileDict(lexemes: Array<Array<[string, string]>>) {
@@ -17,7 +12,7 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
   let allWords = new Array<[string, number, number]>()
   let paradigmPopularity = new Array<number>()
 
-  let paradigmIds = new JsonCompareMap<Paradigm, number>()
+  let paradigmIds = new JsonCompareMap<any, number>()  // todo: type
   let paradigms = new Array()
   let suffixBag = new Set<string>()
 
@@ -87,9 +82,6 @@ export function* lexemes(lines: Array<string>) {
 
 
 
-export const extractParadigmReturn = false && extractParadigm([], null).paradigm
-type Paradigm = typeof extractParadigmReturn
-
 ////////////////////////////////////////////////////////////////////////////////
 function extractParadigm(lexeme: Array<[string, string]>, knownPrefixes) {
   let forms = lexeme.map(x => x[0])
@@ -106,7 +98,7 @@ function extractParadigm(lexeme: Array<[string, string]>, knownPrefixes) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function linearizeParadigm(paradigm: Paradigm) {
+function linearizeParadigm(paradigm) {  // todo: type
   let ret = new Uint16Array(3 * paradigm.prefixes.length)
   let wiew = new DataView(ret.buffer)
   let i = 0
