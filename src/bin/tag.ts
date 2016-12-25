@@ -39,6 +39,7 @@ interface Args extends minimist.ParsedArgs {
   nl2p: boolean
   reinterpret: boolean
   apply: boolean
+  expandAdjAsNoun: boolean
 }
 
 if (require.main === module) {
@@ -54,6 +55,7 @@ if (require.main === module) {
       'unknown',
       'reinterpret',
       'apply',
+      'expandAdjAsNoun',
     ],
     string: [
       't',
@@ -63,14 +65,15 @@ if (require.main === module) {
       forAnnotation: ['for-annotation'],
       numerate: ['n'],
       format: ['f'],
+      expandAdjAsNoun: ['adj-as-noun'],
     },
     default: {
       format: 'cg',
     },
-    unknown(arg: string) {
-      console.error(`Unknown parameter "${arg}"`)
-      return false
-    },
+    // unknown(arg: string) {
+    //   console.error(`Unknown parameter "${arg}"`)
+    //   return false
+    // },
   }) as any
   normalizeArgs(args)
 
@@ -93,6 +96,7 @@ function normalizeArgs(args: Args) {
 function main(args: Args) {
   ioArgsPlain(async (input, outputFromIoargs) => {
     const analyzer = createAnalyzer(args)
+      .setExpandAdjectivesAsNouns(args.expandAdjAsNoun)
 
     let inputStr = args.t || args.text
     let output

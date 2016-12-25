@@ -84,6 +84,9 @@ const gluedPrefixes = [
   'фото',
 ]
 const initialsRe = new RegExp(`^[${LETTER_UK_UPPERCASE}]$`)
+const localDictArr = [
+  // ['всі', 'adj:p:'],
+]
 
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
@@ -306,17 +309,27 @@ export class MorphAnalyzer {
     }
 
     // initials
-    if (initialsRe.test(token)) {
-      res.add(MorphInterp.fromVesumStr('noun:nv:prop', token))
-      if (nextToken === '.') {
-        res.add(MorphInterp.fromVesumStr('noun:anim:nv:abbr:prop', `${token}.`))
-      }
+    if (initialsRe.test(token) && nextToken === '.') {
+      res.add(MorphInterp.fromVesumStr('noun:anim:abbr:prop', `${token}.`))
+    }
+
+    // list items, letter names
+    if (initialsRe.test(token.toUpperCase())) {
+      res.add(MorphInterp.fromVesumStr('noun:inanim:prop', `${token}.`))
     }
 
     // one-letter abbrs
     if (lowercase.length === 1 && nextToken === '.') {
       res.add(MorphInterp.fromVesumStr('x:abbr', `${lowercase}.`))
     }
+
+    if (!res.size && (lowercase.endsWith('ся') || lowercase.endsWith('сь'))) {
+      let interps = this.lookup(lowercase.slice(0, -2))
+        .filter(x => x.isParticiple())
+        .map(x => x.setIsReflexive())
+      res.addAll(interps)
+    }
+
 
     // expand/add
     for (let interp of res) {
@@ -478,17 +491,18 @@ function varyLetterCases(value: string) {
 }
 
 //------------------------------------------------------------------------------
-const ignoreLemmas = new Set(['ввесь', 'його', 'її'])
+const ignoreLemmas = new Set(['ввесь', 'його', 'її', 'весь', 'який'])
 function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: string) {
   yield flags
-  if (expandAdjectivesAsNouns
-    && flags.includes('adj:')
-    && !ignoreLemmas.has(lemma)
-    && !flags.includes('beforeadj')) {
-    let suffixes = flags.includes(':p:')
-      ? ['anim:m', 'anim:f', 'anim:n', 'anim:ns', 'inanim:m', 'inanim:f', 'inanim:n', 'inanim:ns']
-      : ['anim', 'inanim']
-    yield* suffixes.map(x => flags + ':&noun:' + x)
+  if (expandAdjectivesAsNouns && flags.includes('adj:') && !flags.includes('beforeadj')) {
+    if (!ignoreLemmas.has(lemma)) {
+      let suffixes = flags.includes(':p:')
+        ? ['anim:m', 'anim:f', 'anim:n', 'anim:ns', 'inanim:m', 'inanim:f', 'inanim:n', 'inanim:ns']
+        : ['anim', 'inanim']
+      yield* suffixes.map(x => flags + ':&noun:' + x)
+    } else if (lemma === 'весь' && flags.includes(':p:')) {
+      yield flags + ':&noun:anim:ns'
+    }
   }
 }
 

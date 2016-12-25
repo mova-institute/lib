@@ -4,7 +4,7 @@ import { genAccessToken } from '../crypto'
 import { IReq, debug, HttpError } from './server'
 import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business'
 import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node'
-import { firstNWords, morphInterpret, morphReinterpret, enumerateWords } from '../nlp/utils'
+import { firstNWords, morphReinterpretGently, morphReinterpret, enumerateWords } from '../nlp/utils'
 import { NS } from '../xml/utils'
 import * as assert from 'assert'
 import { parseXml } from '../xml/utils.node'
@@ -251,6 +251,8 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
       let root = parseXml(task.content)
       if (task.step === 'annotate') {
         morphReinterpret([...root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)], analyzer)
+      } else {
+        morphReinterpretGently(root, analyzer)
       }
       task.content = root.serialize()
     }
@@ -354,22 +356,39 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
   }
   let docRoot = parseXml(originalXml)
   let docs = await client.call('get_document_latest_state', req.query.id)
-  for (let doc of docs) {
-    for (let task of doc.taskTypes) {
-      if (task.type[0] === 'disambiguate_morphologically') {
-        for (let fragment of task.fragments) {
-          let latestAnnotation = fragment.latestAnnotations.find(x => x.step === 'resolve')
-            || fragment.latestAnnotations.find(x => x.step === 'review')
-            || fragment.latestAnnotations.find(x => x.step === 'annotate')
-          if (fragment.isDone) {
+  res.setHeader('Content-Type', 'application/xml')
+  try {
+    for (let doc of docs) {
+      for (let task of doc.taskTypes) {
+        if (task.type[0] === 'disambiguate_morphologically') {
+          for (let fragment of task.fragments.filter(x => x.isDone)) {
+            let latestAnnotation = fragment.latestAnnotations.find(x => x.step === 'resolve')
+              || fragment.latestAnnotations.find(x => x.step === 'review')
+              || fragment.latestAnnotations.find(x => x.step === 'annotate')
             adoptMorphDisambsStr(docRoot, latestAnnotation.content)
           }
         }
       }
     }
+    return res.end(docRoot.document().serialize(true))
+  } catch (e) {  // somebody forgot --numerate
+    // let content = '<root>'
+    // for (let doc of docs) {
+    //   for (let task of doc.taskTypes) {
+    //     if (task.type[0] === 'disambiguate_morphologically') {
+    //       for (let fragment of task.fragments.filter(x => x.isDone)) {
+    //         let latestAnnotation = fragment.latestAnnotations.find(x => x.step === 'resolve')
+    //           || fragment.latestAnnotations.find(x => x.step === 'review')
+    //           || fragment.latestAnnotations.find(x => x.step === 'annotate')
+    //         content += latestAnnotation.content
+    //       }
+    //     }
+    //   }
+    //   content += '</root>'
+    //   return res.end(content)
+    // }
+    throw e
   }
-  res.setHeader('Content-Type', 'application/xml')
-  return res.end(docRoot.document().serialize(true))
 }
 
 

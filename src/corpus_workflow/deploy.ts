@@ -273,21 +273,9 @@ mi-deploycorp \
 
           ###### parallel
 
-cat build/parallel/vrt.txt | mi-id2i > paruk_id2i.txt
+cat build/parallel/vrt.txt | mi-id2i > build/parallel/id2i.txt
 cat build/en/vrt.txt | mi-id2i > build/en/id2i.txt
 cat build/pl/vrt.txt | mi-id2i > build/pl/id2i.txt
-
-mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
-| mi-sortalign \
-| fixgaps.py \
-| compressrng.py \
-> paruk_en.align.txt
-
-mi-genalign paruk_id2i.txt 'data/parallel/*.alignment.xml' build/pl/id2i.txt \
-| mi-sortalign \
-| fixgaps.py \
-| compressrng.py \
-> paruk_pl.align.txt
 
 mi-deploycorp \
 --vertical build/parallel/vrt.txt \
@@ -309,6 +297,9 @@ cat build/parallel/vrt.txt \
 | mi-genalign 'data/parallel/*.alignment.xml' build/en/id2i.txt \
 | mi-compraplign | fixgaps.py | compressrng.py > paruk_en.align.txt
 
+cat build/en/vrt.txt \
+| mi-genalign 'data/parallel/*.alignment.xml' build/parallel/id2i.txt \
+| mi-compraplign | fixgaps.py | compressrng.py > en_paruk.align.txt
 
 
 ###### main

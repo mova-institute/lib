@@ -894,6 +894,7 @@ export class MorphInterp {
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
   setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
   setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
+  setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
 
