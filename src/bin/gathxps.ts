@@ -11,7 +11,6 @@ let lines = glob.sync(args._[0])
   .map(x => readFileSync(x, 'utf8'))
   .join('\n')
   .split('\n')
-// console.error(filestrs)
 
 for (let line of gatherXps(lines)) {
   process.stdout.write(line + '\n', 'utf8')
