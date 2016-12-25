@@ -5,6 +5,7 @@ import {
 import { groupTableBy, arr2indexMap, combinations, stableSort, uniq } from '../algo'
 import { IStringMorphInterp } from './interfaces'
 
+import { mu } from '../mu'
 const wu: Wu.WuStatic = require('wu')
 
 
@@ -362,10 +363,9 @@ const paradigmExplanations = new Map([
 function xpNumber(line: string) {
   return Number.parseInt(line.match(/:xp([1-9])/)[1])
 }
-export function* gatherXps(fileStrs: Iterable<string>) {
-  let lines = wu(fileStrs)
-    .map(x => x.split('\n'))
-    .flatten()
+export function* gatherXps(lines: Iterable<string>) {
+  lines = mu(lines)
+    .map(x => x.trim())
     .filter((x: string) => /:xp[1-9]/.test(x))
     .toArray()
     .sort((a: string, b: string) =>
