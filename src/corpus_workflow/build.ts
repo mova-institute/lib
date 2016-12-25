@@ -125,7 +125,7 @@ function chtyvo(workspacePath: string, analyzer: MorphAnalyzer) {
     }
     let doc = mu(streamChtyvo(base, analyzer))
       .map(x => nlpUtils.token2sketchVertical(x))
-      .join('\n')
+      .join('\n') + '\n'
     if (doc) {
       mkdirpSync(path.dirname(dest))
       fs.writeFileSync(dest, doc)
