@@ -32,7 +32,7 @@ export type UdPos =
   'ADP' |
   'ADV' |
   'AUX' |
-  'CONJ' |
+  'CCONJ' |
   'DET' |
   'INTJ' |
   'NOUN' |
@@ -55,7 +55,8 @@ export type UdPronType =
   'Dem' |
   'Tot' |
   'Neg' |
-  'Ind'
+  'Ind' |
+  'Emp'
 
 export type UdNumType =
   'Card' |
@@ -64,8 +65,7 @@ export type UdNumType =
   'Frac' |
   'Sets' |
   'Dist' |
-  'Range' |
-  'Gen'
+  'Range'
 
 
 export const featureObj2nameMapUd = new Map<any, string>([
@@ -201,7 +201,7 @@ const promonialTypeMap = new Map<PronominalType, UdPronType>([
   [PronominalType.general, 'Tot'],
   [PronominalType.negative, 'Neg'],
   [PronominalType.indefinite, 'Ind'],
-  [PronominalType.emphatic, 'Neg'],    // temp?
+  [PronominalType.emphatic, 'Emp'],    // temp?
   // [PronominalType.reflexive, ''],
 ])
 
