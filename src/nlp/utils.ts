@@ -665,7 +665,9 @@ export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnaly
 
   for (let textNode of root.evaluateNodes('//text()', NS)) {
     let res = normalizeCorpusTextString(textNode.text(), analyzer)
-    textNode.replace(doc.createTextNode(res))
+    if (res) {
+      textNode.replace(doc.createTextNode(res))
+    }
   }
 
   // todo:
