@@ -4,8 +4,8 @@ import { genAccessToken } from '../crypto'
 import { IReq, debug, HttpError } from './server'
 import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business'
 import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node'
-import { firstNWords, morphReinterpretGently, morphReinterpret, enumerateWords } from '../nlp/utils'
-import { NS } from '../xml/utils'
+import { firstNWords, morphReinterpretGently, morphReinterpret, keepDisambedOnly } from '../nlp/utils'
+import { NS, encloseInRootNs } from '../xml/utils'
 import * as assert from 'assert'
 import { parseXml } from '../xml/utils.node'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
@@ -361,11 +361,22 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
     for (let doc of docs) {
       for (let task of doc.taskTypes) {
         if (task.type[0] === 'disambiguate_morphologically') {
-          for (let fragment of task.fragments.filter(x => x.isDone)) {
-            let latestAnnotation = fragment.latestAnnotations.find(x => x.step === 'resolve')
-              || fragment.latestAnnotations.find(x => x.step === 'review')
-              || fragment.latestAnnotations.find(x => x.step === 'annotate')
-            adoptMorphDisambsStr(docRoot, latestAnnotation.content)
+          let latestFragments = task.fragments
+            .filter(x => x.isDone)
+            .map(x => x.latestAnnotations.find(xx => xx.step === 'resolve')
+              || x.latestAnnotations.find(xx => xx.step === 'review')
+              || x.latestAnnotations.find(xx => xx.step === 'annotate'))
+            .map(x => x.content)
+          try {
+            // throw new Error('Words are not numerated')
+            latestFragments.forEach(x => adoptMorphDisambsStr(docRoot, x))
+          } catch (e) {
+            if (e.message === 'Words are not numerated') {
+              docRoot = parseXml(encloseInRootNs(latestFragments.join('\n')))
+              keepDisambedOnly(docRoot)
+            } else {
+              throw e
+            }
           }
         }
       }

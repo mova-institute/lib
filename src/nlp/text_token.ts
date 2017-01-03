@@ -116,6 +116,18 @@ export class TextToken {
     this.setDisambIndexes(disambIndexes)
   }
 
+  keepOnlyDisambed() {
+    let indexes = this.getDisambIndexes()
+    if (indexes.length) {
+      let interpElems = [...this.elem.children()]
+      for (let i = 0; i < interpElems.length; ++i) {
+        if (indexes.indexOf(i) === -1) {
+          interpElems[i].remove()
+        }
+      }
+    }
+  }
+
   // dontInterpAs(tag: IMorphInterp) {
   //   let index = this.getAllInterps().findIndex(x => x.flags === tag.flags && x.lemma === tag.lemma)
   //   if (index >= 0) {

@@ -5,7 +5,7 @@ import {
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
-import { r, createObject } from '../lang'
+import { r, createObject, parseIntStrict } from '../lang'
 import { uniqueSmall as unique, uniqueJson } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
@@ -551,6 +551,9 @@ export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: Abstrac
   for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
     let n = miwSource.attribute('n')
     let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${n}"]`, NS)
+    if (!miwDest) {
+      throw new Error('Words are not numerated')
+    }
     miwDest.clear()
     let tokenSource = $t(miwSource)
     for (let {lemma, flags} of tokenSource.getDisambedInterps()) {
@@ -569,6 +572,11 @@ export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: Abstrac
     // })
 
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function keepDisambedOnly(root: AbstractElement) {
+  root.evaluateElements('//mi:w_', NS).forEach(x => $t(x).keepOnlyDisambed())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
