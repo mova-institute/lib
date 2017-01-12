@@ -52,9 +52,9 @@
     "@types/rimraf": "0.0.28",
     "@types/tmp": "~0.0.30",
     "@types/wu": "~2.1.29",
-    "tslint": "^3.15.1",
-    "tslint-eslint-rules": "^2.1.0",
-    "tslint-microsoft-contrib": "^2.0.13",
+    "tslint": "^4.3.1",
+    "tslint-eslint-rules": "^3.2.3",
+    "tslint-microsoft-contrib": "^4.0.0",
     "typescript": "^2.0.8"
   },
   "dependencies": {
