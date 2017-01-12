@@ -5,7 +5,7 @@ import {
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
-import { r, createObject, parseIntStrict } from '../lang'
+import { r, createObject } from '../lang'
 import { uniqueSmall as unique, uniqueJson } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
@@ -22,8 +22,8 @@ import { startsWithCapital } from '../string_utils'
 import { Token, TokenType, Structure } from './token'
 import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
 
-import * as uniq from 'lodash/uniq'
-import * as sortedUniq from 'lodash/sortedUniq'
+import * as uniq from 'lodash.uniq'
+import * as sortedUniq from 'lodash.sorteduniq'
 
 const wu: Wu.WuStatic = require('wu')
 
@@ -615,6 +615,9 @@ export function fixLatinGlyphMisspell(value: string) {
 export function removeHypenation(str: string, analyzer: MorphAnalyzer) {
   let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-]\s+([${WORDCHAR}]+|$)`, 'g')
   return str.replace(re, (match, beforeLeft, left, right) => {
+    // if (right === 'і') {
+    //   return beforeLeft + left + right
+    // }
     let together = left + right
     if (analyzer.canBeToken(together)) {  // it's a hypen
       return beforeLeft + left + right

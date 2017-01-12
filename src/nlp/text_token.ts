@@ -78,7 +78,7 @@ export class TextToken {
   }
 
   getDisambedInterps() {
-    return this.getDisambedInterpElems().map(x => ({
+    return this.getDisambedInterpElems().filter(x => x).map(x => ({
       flags: x.attribute(TextToken.FLAGS_ATTR),
       lemma: x.attribute(TextToken.LEMMA_ATTR),
     }))

@@ -4,7 +4,7 @@ import { join } from 'path'
 import * as glob from 'glob'
 import * as path from 'path'
 import * as fs from 'fs'
-import * as intersection from 'lodash/intersection'
+import * as intersection from 'lodash.intersection'
 
 import { linesSync } from '../../utils.node'
 import { zipLongest, last } from '../../lang'

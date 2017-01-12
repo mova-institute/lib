@@ -1,4 +1,4 @@
-import * as flatten from 'lodash/flatten'
+import * as flatten from 'lodash.flatten'
 
 import { mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
@@ -111,7 +111,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'від', 'об', 'по', 'роз', 'за', 'з', 'у', 'пере', 'ви', 'на', 'пови'],
+    prefixes: ['обі', 'від', 'об', 'по', 'роз', 'за', 'з', 'у', 'пере', 'ви', 'на', 'пови', 'про'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -188,7 +188,7 @@ export class MorphAnalyzer {
     }
 
     // symbols
-    if (/^[№@#$%*§©+×÷=<>♥]|:\($/.test(token)) {
+    if (/^[№@#$%*§©+×÷=<>♥∙°]|:\($/.test(token)) {
       return [MorphInterp.fromVesumStr('sym', token)]
     }
 
