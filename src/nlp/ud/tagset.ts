@@ -287,7 +287,7 @@ export function toUd(interp: MorphInterp) {
   if (interp.isConjunction()) {
     return interp.isSubordinating()
       ? { pos: 'SCONJ', features }
-      : { pos: 'CONJ', features }
+      : { pos: 'CCONJ', features }
   }
 
   // special-treat reflexives
