@@ -86,6 +86,13 @@ export function* tokenStream2brat(stream: Iterable<Token>) {
         }
         yield toyield
       }
+
+      if (token.getAttributes()) {
+        let n = token.getAttributes().n
+        if (n) {
+          yield `A${a++}\tN ${tId} ${n}`
+        }
+      }
       offset = rightOffset + 1    // account for space
     }
   }
