@@ -4,7 +4,7 @@ export function mu<T>(iterable: Iterable<T> = []) {
   return new Mu(iterable)
 }
 
-export type Predicate<T> = (x: T) => boolean
+export type Predicate<T> = (x: T) => any
 
 function isIterable(thing) {
   return typeof thing[Symbol.iterator] === 'function'
@@ -42,7 +42,7 @@ export class Mu<T> implements Iterable<T> {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
-        yield [i++, x]
+        yield [i++, x] as [number, T]
       }
     })())
   }
@@ -234,6 +234,12 @@ export class Mu<T> implements Iterable<T> {
       ++ret
     }
     return ret
+  }
+
+  lengthPreserving() {
+    let arr = this.toArray()
+    this.iterator = arr[Symbol.iterator]()
+    return arr.length
   }
 
   join(joiner = '') {
