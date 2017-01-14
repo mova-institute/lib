@@ -28,9 +28,10 @@ export class Token {
     return new Token().setType('glue')
   }
 
-  static word(form: string, interps: MorphInterp[]) {
+  static word(form: string, interps: MorphInterp[], attributes?: any) {
     let ret = new Token().setForm(form)
     ret.interps = interps
+    ret.attributes = attributes
     return ret
   }
 
@@ -61,6 +62,9 @@ export class Token {
 
   getStructureName() { return this.structure }
   getAttributes() { return this.attributes }
+  getAttribute(name: string) {
+    return this.attributes[name]
+  }
   isStructure() {
     return !!this.structure || this.isGlue()  // todo
   }

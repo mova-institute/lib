@@ -91,6 +91,11 @@ export function zerofill(n: number, width: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function zerofillMax(n: number, max: number) {
+  return zerofill(n, numDigits(max))
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function isDeceimalInt(str: string) {
   return /^\d+$/.test(str)
 }

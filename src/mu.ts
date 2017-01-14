@@ -236,12 +236,6 @@ export class Mu<T> implements Iterable<T> {
     return ret
   }
 
-  lengthPreserving() {
-    let arr = this.toArray()
-    this.iterator = arr[Symbol.iterator]()
-    return arr.length
-  }
-
   join(joiner = '') {
     let ret = ''
     for (let x of this) {

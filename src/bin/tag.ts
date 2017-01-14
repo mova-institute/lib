@@ -4,7 +4,7 @@ import { ioArgsPlain } from '../cli_utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { readTillEnd } from '../stream_utils.node'
 import {
-  tokenizeTei, morphInterpret, enumerateWords, tei2tokenStream, string2tokenStream,
+  tokenizeTei, morphInterpret, numerateTokensGently, tei2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
   newline2Paragraph, tokenStream2cg, morphReinterpret, token2sketchVertical,
   applyMiTeiDocTransforms,
@@ -153,7 +153,7 @@ function main(args: Args) {
       }
       else {
         if (args.numerate) {
-          enumerateWords(root)
+          numerateTokensGently(root)
         }
         output.write(root.document().serialize(true))
         output.write('\n')

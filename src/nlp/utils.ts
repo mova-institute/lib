@@ -375,11 +375,14 @@ export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAna
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function enumerateWords(root: AbstractElement, attributeName = 'n') {
-  let idGen = 0  // todo: switch from wu to normal forEach
-  let words = root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)  // todo: NS bug
-    .toArray()
-    .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
+export function numerateTokensGently(root: AbstractElement, attributeName = 'n') {
+  let numbers = mu(root.evaluateAttributes(`//@${attributeName}`))
+    .map(x => Number.parseInt(x.value()))
+
+  let idGen = Math.max(-1, ...numbers)
+  root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]|//tei:pc', NS)  // todo: NS bug
+    .filter(x => !x.attribute(attributeName))
+    .forEach(x => x.setAttribute(attributeName, (++idGen).toString()))
 
   return idGen
 }
@@ -948,7 +951,7 @@ export function* tei2tokenStream(root: AbstractElement) {
           continue
         }
         case 'pc':
-          yield new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text()))
+          yield new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text())).setAttributes(el.attributesObj())
           continue
         case 'se':
           yield Token.structure('sentence', true)
@@ -960,6 +963,31 @@ export function* tei2tokenStream(root: AbstractElement) {
           continue
       }
     }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* splitNSentences(stream: Iterable<Token>, n: number) {
+  let i = 0
+  let buf = new Array<Token>()
+  let wasSentEnt = false
+  for (let token of stream) {
+    buf.push(token)
+    if (!wasSentEnt && token.isSentenceEnd()) {
+      if (++i >= n) {
+        yield buf
+        buf = []
+        i = 0
+      }
+      wasSentEnt = true
+    } else {
+      if (token.isWord()) {
+        wasSentEnt = false
+      }
+    }
+  }
+  if (buf.length) {
+    yield buf
   }
 }
 
