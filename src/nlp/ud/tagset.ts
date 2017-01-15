@@ -45,7 +45,6 @@ export type UdPos =
   'SYM' |
   'VERB' |
   'X'
-
 export type UdPronType =
   'Prs' |
   'Rcp' |
@@ -57,7 +56,6 @@ export type UdPronType =
   'Neg' |
   'Ind' |
   'Emp'
-
 export type UdNumType =
   'Card' |
   'Ord' |
@@ -211,7 +209,7 @@ const Map: [][] = [
 ]
 */
 
-const map = new Map<any, any>([
+const mapMap = new Map<any, any>([
   [Pos, posMap],
   [PronominalType, promonialTypeMap],
   [Animacy, animacyMap],
@@ -231,7 +229,7 @@ const map = new Map<any, any>([
 
 
 /* tslint:disable:variable-name */
-export class UdFlags {
+export class UdFeats {
   // POS: UdPos
   Abbr: UdBoolean
   Animacy: UdAnimacy
@@ -267,7 +265,7 @@ function mapFeatureValue2Ud(featureName, value) {
     if (booleanFeatures.find(x => x === feature)) {
       return [udFeatureName, 'Yes']
     } else {
-      let udFeatureMap = map.get(feature)
+      let udFeatureMap = mapMap.get(feature)
       if (udFeatureMap) {
         let retValue = udFeatureMap.get(value)
         if (retValue) {
@@ -281,7 +279,7 @@ function mapFeatureValue2Ud(featureName, value) {
 ////////////////////////////////////////////////////////////////////////////////
 export function toUd(interp: MorphInterp) {
   let pos: UdPos
-  let features = new UdFlags()
+  let features = new UdFeats()
 
   // special-treat conjunctions
   if (interp.isConjunction()) {
@@ -306,13 +304,16 @@ export function toUd(interp: MorphInterp) {
   for (let featureName of Object.keys(interp.features)) {
     let keyvalue = mapFeatureValue2Ud(featureName, interp.features[featureName])
     if (keyvalue) {
-      if (keyvalue[0] === 'POS') {
-        pos = keyvalue[1]
+      let [key, value] = keyvalue
+      if (key === 'POS') {
+        pos = value
       } else {
-        features[keyvalue[0]] = keyvalue[1]
+        features[key] = value
       }
     }
   }
+
+  // the rest of special treatements
 
   if (interp.isNounish()) {
     if (interp.isProper()) {
