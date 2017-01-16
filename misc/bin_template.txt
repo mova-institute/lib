@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 
+import { writeFileSync } from 'fs'
+import { join } from 'path'
+
 import * as glob from 'glob'
 
 
+
 function main() {
+  const args: any = require('minimist')(process.argv.slice(2))
 
 }
 
