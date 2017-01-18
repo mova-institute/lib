@@ -4,7 +4,7 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, VerbNegativity, VerbType, Voice, VuAlternativity,
+  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity,
   booleanFeatures, PrepositionRequirement,
 } from '../morph_features'
 
@@ -27,6 +27,7 @@ export type UdPrepCase = 'Npr' | 'Pre'
 export type UdTense = 'Past' | 'Pres' | 'Fut'
 export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part'
 export type UdVoice = 'Act' | 'Pass'
+export type UdPolarity = 'Pos' | 'Neg'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -82,6 +83,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [RequiredCase, 'Case'],
   [Tense, 'Tense'],
   [Voice, 'Voice'],
+  [Polarity, 'Polarity'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -203,6 +205,11 @@ const promonialTypeMap = new Map<PronominalType, UdPronType>([
   // [PronominalType.reflexive, ''],
 ])
 
+const polarityMap = new Map<Polarity, UdPolarity>([
+  [Polarity.positive, 'Pos'],
+  [Polarity.negative, 'Neg'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -223,6 +230,7 @@ const mapMap = new Map<any, any>([
   [Gender, genderMap],
   [Person, personMap],
   [MorphNumber, numberMap],
+  [Polarity, polarityMap],
 ])
 
 
@@ -333,6 +341,10 @@ export function toUd(interp: MorphInterp) {
     features.NumType = 'Card'
   } else if (interp.isOrdinalNumeral()) {
     features.NumType = 'Ord'
+  }
+
+  if (!interp.isPronoun() /*&& interp.isNegative()*/) {
+
   }
 
   if (interp.isVerb()) {

@@ -117,10 +117,10 @@ export enum Person {
   second,
   third,
 }
-export enum VerbNegativity {
+export enum Polarity {
   positive,
   negative,
-}  // todo
+}
 export enum VerbType {
   main,
   auxilary,

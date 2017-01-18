@@ -9,7 +9,7 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, VerbNegativity, VerbType, Voice, VuAlternativity,
+  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity,
   PrepositionRequirement,
 } from './morph_features'
 
@@ -58,6 +58,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [VerbType, 'verbType'],
   [Voice, 'voice'],
   [VuAlternativity, 'vuAlternative'],
+  [Polarity, 'polarity'],
 ])
 export const featureName2objMap = flipMap(featureObj2nameMap)
 
@@ -146,6 +147,8 @@ export const FEATURE_TABLE = [
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.general, vesumStr: 'gen', mte: 'g' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.emphatic, vesumStr: 'emph', mte: 'h' },
   { featStr: 'pronominalType', feat: undefined, mte: 's' },
+
+  { featStr: 'polarity', feat: Polarity, vesum: Polarity.negative, vesumStr: 'neg' },  // <-- ambig!!
 
   { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
   { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
@@ -408,6 +411,7 @@ export class Features {
   bad: Bad
   n2adjness: N2adjness
   prepositionRequirement: PrepositionRequirement
+  polarity: Polarity  // the only ambig flag (neg)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -478,6 +482,11 @@ export class MorphInterp {
         // mte-tagged texts made me comment this out:
         // throw new Error(`Unexpected adverb "${lemma}" flection`)
       }
+    }
+
+    if (ret.isPronoun() && ret.features.polarity === Polarity.negative) {
+      ret.features.pronominalType = PronominalType.negative
+      ret.features.polarity = undefined
     }
 
     ret.lemma = lemma
@@ -803,6 +812,9 @@ export class MorphInterp {
   getFeatures() {
     let others = [...this.otherFlags].map(x => {
       let row = tryMapVesumFlag(x)
+      // if (!row) {
+      //   return
+      // }
       return {
         featureName: row && row.featStr,
         feature: row && row.feat,
@@ -837,6 +849,8 @@ export class MorphInterp {
   isConjunction() { return this.features.pos === Pos.conjunction }
   isPronoun() { return this.features.pronoun !== undefined }
   isAdverb() { return this.features.pos === Pos.adverb }
+  isParticle() { return this.features.pos === Pos.particle }
+  isPunctuation() { return this.features.pos === Pos.punct }
   isX() { return this.features.pos === Pos.x }
 
   isDative() { return this.features.case === Case.dative }
