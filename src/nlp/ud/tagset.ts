@@ -84,6 +84,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Tense, 'Tense'],
   [Voice, 'Voice'],
   [Polarity, 'Polarity'],
+  [NameType, 'NameType'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -210,6 +211,12 @@ const polarityMap = new Map<Polarity, UdPolarity>([
   [Polarity.negative, 'Neg'],
 ])
 
+const nameTypeMap = new Map<NameType, UdNameType>([
+  [NameType.first, 'Giv'],
+  [NameType.last, 'Sur'],
+  [NameType.patronym, 'Pat'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -231,6 +238,7 @@ const mapMap = new Map<any, any>([
   [Person, personMap],
   [MorphNumber, numberMap],
   [Polarity, polarityMap],
+  [NameType, nameTypeMap],
 ])
 
 
