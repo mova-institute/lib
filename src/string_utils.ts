@@ -128,3 +128,8 @@ export function insertAtIndexes(str: string, indexes: number[], what: string) {
   }
   return ret
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function toPercent(nominator: number, denominator: number, aftercomma = 0) {
+  return ((nominator / denominator) * 100).toFixed(aftercomma)
+}
