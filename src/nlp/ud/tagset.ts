@@ -343,10 +343,6 @@ export function toUd(interp: MorphInterp) {
     features.NumType = 'Ord'
   }
 
-  if (!interp.isPronoun() /*&& interp.isNegative()*/) {
-
-  }
-
   if (interp.isVerb()) {
     if (interp.isIndicative()) {
       features.Mood = 'Ind'
