@@ -1040,3 +1040,24 @@ export function* polishXml2verticalStream(root: AbstractElement) {
     pointer = iterator.next()
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function adoptRelationsFromBrat(root: AbstractElement, lines: Iterable<string>) {
+  let n2element = {} as any
+  root.evaluateElements('//*[@n]')
+    .forEach(x => n2element[x.attribute('n')] = x)
+
+  let span2n = {} as any
+  for (let line of lines) {
+    if (line.includes('\tN ')) {
+      let [, , t, n] = line.split(/\s+/g)
+      span2n[t] = n
+    } else if (line.startsWith('R')) {
+      let [, relation, head, dependant] = line.split(/\s+/g)
+      let headN = span2n[head.substr('Arg1:'.length)]
+      let dependantN = span2n[dependant.substr('Arg2:'.length)]
+      // console.log(n2element)
+      n2element[dependantN].setAttribute('dep', `${headN}:${relation}`)
+    }
+  }
+}
