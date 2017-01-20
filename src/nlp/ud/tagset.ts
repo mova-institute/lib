@@ -25,7 +25,7 @@ export type UdNumForm = 'Digit' | 'Roman' | 'Word'
 export type UdPerson = '1' | '2' | '3'
 export type UdPrepCase = 'Npr' | 'Pre'
 export type UdTense = 'Past' | 'Pres' | 'Fut'
-export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part'
+export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part' | 'Conv'
 export type UdVoice = 'Act' | 'Pass'
 export type UdPolarity = 'Pos' | 'Neg'
 export type UdPos =
@@ -373,7 +373,7 @@ export function toUd(interp: MorphInterp) {
     }
   } else if (interp.isTransgressive()) {
     pos = 'VERB'
-    features.VerbForm = 'Part'
+    features.VerbForm = 'Conv'
   } else if (interp.isAdjective()) {
     if (interp.isParticiple()) {
       features.VerbForm = 'Part'
