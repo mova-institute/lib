@@ -354,6 +354,9 @@ export function toUd(interp: MorphInterp) {
 
   if (interp.isCardinalNumeral()) {
     features.NumType = 'Card'
+    if (interp.isPronoun()) {
+      pos = 'DET'
+    }
   } else if (interp.isOrdinalNumeral()) {
     features.NumType = 'Ord'
   }
