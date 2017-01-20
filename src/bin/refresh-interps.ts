@@ -19,7 +19,6 @@ function main() {
     try {
       let root = parseXmlFileSync(file)
       let words = [...root.evaluateElements('//tei:w', NS)]
-      wc += words.length
       for (let w of words) {
         let flags = w.attribute('ana')
         if (flags) {
@@ -28,8 +27,15 @@ function main() {
         }
         w.removeAttribute('disamb')
         w.removeAttribute('author')
-        w.removeAttribute('nn')
       }
+
+      words = [...root.evaluateElements('//mi:w_', NS)]
+      wc += words.length
+      for (let w of words) {
+        w.removeAttribute('nn')
+        w.removeAttribute('disamb')
+      }
+
       numerateTokensGently(root)
       fs.writeFileSync(file, root.serialize())
     } catch (e) {
