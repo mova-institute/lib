@@ -5,15 +5,16 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity,
-  booleanFeatures, PrepositionRequirement,
+  booleanFeatures, PrepositionRequirement, Foreign,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
 
 
+export type UdBoolean = 'Yes'
+
 export type UdAnimacy = 'Anim' | 'Nhum' | 'Inan'
 export type UdAspect = 'Imp' | 'Perf'
-export type UdBoolean = 'Yes'
 export type UdCase = 'Nom' | 'Gen' | 'Dat' | 'Acc' | 'Ins' | 'Loc' | 'Voc'
 export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
 export type UdForeign = UdBoolean    // todo
@@ -85,6 +86,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Voice, 'Voice'],
   [Polarity, 'Polarity'],
   [NameType, 'NameType'],
+  [Foreign, 'Foreign'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -217,6 +219,10 @@ const nameTypeMap = new Map<NameType, UdNameType>([
   [NameType.patronym, 'Pat'],
 ])
 
+const foreignMap = new Map<Foreign, UdForeign>([
+  [Foreign.yes, 'Yes'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -239,6 +245,7 @@ const mapMap = new Map<any, any>([
   [MorphNumber, numberMap],
   [Polarity, polarityMap],
   [NameType, nameTypeMap],
+  [Foreign, foreignMap],
 ])
 
 

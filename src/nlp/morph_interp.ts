@@ -9,7 +9,7 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity,
+  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity, Foreign,
   PrepositionRequirement,
 } from './morph_features'
 
@@ -59,6 +59,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Voice, 'voice'],
   [VuAlternativity, 'vuAlternative'],
   [Polarity, 'polarity'],
+  [Foreign, 'foreign'],
 ])
 export const featureName2objMap = flipMap(featureObj2nameMap)
 
@@ -210,6 +211,8 @@ export const FEATURE_TABLE = [
   { featStr: 'oddness', feat: Oddness, vesum: Oddness.yes, vesumStr: 'odd' },
 
   { featStr: 'prepositionRequirement', feat: PrepositionRequirement, vesum: PrepositionRequirement.yes, vesumStr: 'rprep' },
+
+  { featStr: 'foreign', feat: Foreign, vesum: Foreign.yes, vesumStr: 'foreign' },
 
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
@@ -412,6 +415,7 @@ export class Features {
   n2adjness: N2adjness
   prepositionRequirement: PrepositionRequirement
   polarity: Polarity  // the only ambig flag (neg)
+  foreign: Foreign
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -419,8 +423,7 @@ export class Features {
 export class MorphInterp {
   private static otherFlagsAllowed = new Set([
     'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'v-u', 'dimin', 'mock', 'foreign',
-    'instant',
+    'nv', 'alt', 'v-u', 'dimin', 'mock', 'instant',
   ])
 
 
