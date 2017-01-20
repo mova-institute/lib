@@ -18,6 +18,7 @@ export type UdAspect = 'Imp' | 'Perf'
 export type UdCase = 'Nom' | 'Gen' | 'Dat' | 'Acc' | 'Ins' | 'Loc' | 'Voc'
 export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
 export type UdForeign = UdBoolean    // todo
+export type UdHyph = UdBoolean    // todo
 export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
 export type UdMood = 'Ind' | 'Imp'
 export type UdNameType = 'Giv' | 'Sur' | 'Pat' | 'Oth'    // todo
@@ -274,6 +275,7 @@ export class UdFeats {
   Tense: UdTense
   VerbForm: UdVerbForm
   Voice: UdVoice
+  Hyph: UdHyph
 }
 /* tslint:enable:variable-name */
 
@@ -391,6 +393,8 @@ export function toUd(interp: MorphInterp) {
         throw new Error(`No voice for participle`)
       }
     }
+  } else if (interp.isBeforeadj()) {
+    features.Hyph = 'Yes'
   }
 
   return { pos, features }
