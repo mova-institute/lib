@@ -51,7 +51,7 @@ function main() {
       let results = [...Object.entries(counts)]
         .sort((a, b) => b[1] - a[1])
 
-      let percentage = toPercent(grandTotal, 20000, 0)
+      let percentage = toPercent(grandTotal, 20000, 1)
       results.push(
         ['', ''],
         ['ВСЬОГО', grandTotal],
