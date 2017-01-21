@@ -45,7 +45,7 @@
     "@types/iconv-lite": "0.0.1",
     "@types/libxmljs": "^0.14.30",
     "@types/lodash": "^4.14.34",
-    "@types/minimist": "~1.1.28",
+    "@types/minimist": "^1.2.0",
     "@types/mkdirp": "^0.3.29",
     "@types/node-fetch": "~0.0.4",
     "@types/pg": "~0.0.31",
@@ -89,7 +89,7 @@
     "pg": "4.5.6",
     "request": "^2.72.0",
     "rimraf": "^2.5.4",
-    "tmp": "^0.0.28",
+    "tmp": "^0.0.31",
     "wu": "^2.1.0",
     "xmlapi-libxmljs": "^0.0.6"
   },
