@@ -971,7 +971,7 @@ export function* tei2tokenStream(root: AbstractElement) {
         }
         let dependency = el.attribute('dep')
         if (dependency) {
-          let [head, relation] = dependency.split(':')
+          let [head, relation] = dependency.split('-')
           tok.head = parseIntStrict(head)
           tok.relation = relation
         }
@@ -1058,11 +1058,7 @@ export function* polishXml2verticalStream(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function adoptRelationsFromBrat(root: AbstractElement, lines: Iterable<string>) {
-  let n2element = {} as any
-  root.evaluateElements('//*[@n]')
-    .forEach(x => n2element[x.attribute('n')] = x)
-
+export function adoptRelationsFromBrat(n2element: any, lines: Iterable<string>) {
   let span2n = {} as any
   for (let line of lines) {
     if (line.includes('\tN ')) {
@@ -1070,10 +1066,11 @@ export function adoptRelationsFromBrat(root: AbstractElement, lines: Iterable<st
       span2n[t] = n
     } else if (line.startsWith('R')) {
       let [, relation, head, dependant] = line.split(/\s+/g)
+      relation = relation.replace('_', ':')
       let headN = span2n[head.substr('Arg1:'.length)]
       let dependantN = span2n[dependant.substr('Arg2:'.length)]
       // console.log(n2element)
-      n2element[dependantN].setAttribute('dep', `${headN}:${relation}`)
+      n2element[dependantN].setAttribute('dep', `${headN}-${relation}`)
     }
   }
 }

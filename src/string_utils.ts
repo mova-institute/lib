@@ -1,4 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
+export function firstMatch(str: string, regex: RegExp, groupIndex = 0) {
+  let match = str.match(regex)
+  if (match) {
+    return match[groupIndex]
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function allcaps2TitlecaseDirty(str: string) {
   return str.split(/\s+/).map(word => {
     if (isAllcaps(word)) {

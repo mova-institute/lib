@@ -8,30 +8,32 @@ import { toUd, udFeatures2conlluString } from './tagset'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentence(sentence: Token[]) {
-  const reportFound = (message: string, fn: (x: Token, i?: number) => boolean) => {
+  let problems = []
+
+  const reportFound = (msg: string, fn: (x: Token, i?: number) => boolean) => {
     let bads = sentence.filter(fn)
     if (bads.length) {
-
+      problems.push(msg)
     }
   }
 
   reportFound('Punct receives punct or goeswith only',
-    x => x.interp0().isPunctuation() && !['punct', 'goeswith'].includes(x.relation))
+    x => x.interp0().isPunctuation() && !['punct', 'goeswith', 'discourse'].includes(x.relation))
 
   reportFound('fixed, flat не можуть вказувати ліворуч',
     (x, i) => ['fixed', 'flat'].includes(x.relation) && x.head > i)
 
   reportFound('cc не може вказувати ліворуч',
-    (x, i) => ['cc'].includes(x.relation) && x.head > i)
+    (x, i) => ['cc'].includes(x.relation) && x.head < i)
 
   reportFound('case не може вказувати праворуч',
     (x, i) => ['case'].includes(x.relation) && x.head < i)
 
   reportFound('до б(би) йде aux',
-    x => ['б', 'би'].includes(x.form.toLowerCase()) && x.relation !== 'aux')
+    x => ['б', 'би'].includes(x.form.toLowerCase()) && !['fixed', 'aux'].includes(x.relation))
 
   reportFound('не/ні підключається advmod’ом',
-    x => ['не', 'ні'].includes(x.form.toLowerCase()) && x.relation !== 'advmod')
+    x => ['не', 'ні'].includes(x.form.toLowerCase()) && !['advmod', undefined].includes(x.relation))
 
   reportFound('до DET не йде amod',
     x => toUd(x.interp0()).pos === 'DET' && x.relation === 'amod')
@@ -47,6 +49,6 @@ export function validateSentence(sentence: Token[]) {
       x => )
 
   */
-
+  return problems
 }
 
