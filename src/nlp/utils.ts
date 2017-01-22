@@ -5,7 +5,7 @@ import {
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
-import { r, createObject, last } from '../lang'
+import { r, createObject, last, parseIntStrict } from '../lang'
 import { uniqueSmall as unique, uniqueJson } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
@@ -928,7 +928,7 @@ export function* tei2tokenStream(root: AbstractElement) {
     }
 
     if (entering) {
-      let tok
+      let tok: Token
       switch (name) {
         case 'w_': {
           let t = $t(el)
@@ -972,7 +972,7 @@ export function* tei2tokenStream(root: AbstractElement) {
         let dependency = el.attribute('dep')
         if (dependency) {
           let [head, relation] = dependency.split(':')
-          tok.head = head
+          tok.head = parseIntStrict(head)
           tok.relation = relation
         }
       }
