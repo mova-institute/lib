@@ -30,13 +30,6 @@ import { parseXml, serializeXml } from '../utils.web'
 //   mergeTrees(source, hole.startContainer, hole.endContainer)
 // }
 
-
-////////////////////////////////////////////////////////////////////////////////
-function mergeTrees(source: Node, dest: Node, destEnd: Node) {
-  //(<HTMLElement>dest).innerHTML = '<mi:w_><w lemma="loh">oooo</w></mi:w_>'
-  //console.log('mergetrees')
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 export function xpath(context: Node, query: string, type: number) {
   let doc = context.ownerDocument || <Document>context
