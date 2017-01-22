@@ -8,7 +8,7 @@ import * as minimist from 'minimist'
 import * as columnify from 'columnify'
 
 import { getLibRootRelative } from '../../path.node'
-import { toPercent } from '../../string_utils'
+// import { toPercent } from '../../string_utils'
 
 
 
@@ -51,7 +51,7 @@ function main() {
       let results = [...Object.entries(counts)]
         .sort((a, b) => b[1] - a[1])
 
-      let percentage = toPercent(grandTotal, 20000, 1)
+      let percentage = (Math.floor(grandTotal / 20000 * 100))
       results.push(
         ['', ''],
         ['ВСЬОГО', grandTotal],
