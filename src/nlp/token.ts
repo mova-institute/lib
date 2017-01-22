@@ -78,14 +78,9 @@ export class Token {
     return this.structure === 'sentence' && this.closing === true
   }
 
-  isSentenceStartOld() {
+  isSentenceStartDeprecated() {
     return (this.structure === 'sentence' || this.structure === 'paragraph')
       && this.closing === false
-  }
-
-  isSentenceEndOld() {
-    return (this.structure === 'sentence' || this.structure === 'paragraph')
-      && this.closing === true
   }
 
   isGlue() { return this.type === 'glue' }

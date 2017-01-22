@@ -250,10 +250,11 @@ export function isRegularizedFlowElement(el: AbstractElement) {
 const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'sb'])
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement) {
-  let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)]
-  if (!subroots.length) {
-    subroots = [root]
-  }
+  let subroots = [root]
+  // let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)]
+  // if (!subroots.length) {
+  //   subroots = [root]
+  // }
 
   return mu((function* () {
     for (let subroot of subroots) {
@@ -988,7 +989,7 @@ export function* splitNSentences(stream: Iterable<Token>, n: number) {
   let wasSentEnt = false
   for (let token of stream) {
     buf.push(token)
-    if (!wasSentEnt && token.isSentenceEndOld()) {
+    if (!wasSentEnt && token.isSentenceBoundary()) {
       if (++i >= n) {
         yield buf
         buf = []
@@ -1013,7 +1014,7 @@ export function* tokenStream2cg(stream: Iterable<Token>) {
       yield `"<${tok.form}>"\n`
         + tok.interps.map(x => `\t"${x.lemma}" ${x.toVesum().join(' ')}\n`).join('')
     } else if (tok.isStructure()) {
-      if (tok.isSentenceEndOld()) {
+      if (tok.isSentenceBoundary()) {
         yield `"<$>"\n\n`
       }
       // yield tok.toString()

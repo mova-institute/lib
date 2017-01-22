@@ -36,13 +36,13 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
   let tokenIndex = 1
   let sentenceId = 1
   for (let [token, nextToken] of stream) {
-    if (tokenIndex === 1 && !token.isSentenceStartOld()) {
+    if (tokenIndex === 1 && !token.isSentenceStartDeprecated()) {
       yield sentenceIdLine(sentenceId++)
     }
     if (token.isGlue()) {
       continue
     }
-    if (token.isSentenceEndOld()) {
+    if (token.isSentenceBoundary()) {
       tokenIndex = 1
       yield ''
     } else if (token.isWord()) {
@@ -72,7 +72,7 @@ function sentenceIdLine(id: number | string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2bratPlaintext(stream: Iterable<Token>) {
-  let sentenceStream = mu(stream).split(x => x.isSentenceEndOld())
+  let sentenceStream = mu(stream).split(x => x.isSentenceBoundary())
   for (let sent of sentenceStream) {
     let toyield = tokenSentence2bratPlaintext(sent)
     if (toyield) {
@@ -92,7 +92,7 @@ export function* tokenStream2brat(stream: Iterable<Token>) {
   let t = 1
   let a = 1
   let sentenceStream = mu(stream)
-    .split(x => x.isSentenceEndOld())
+    .split(x => x.isSentenceBoundary())
   for (let sentence of sentenceStream) {
     for (let token of sentence) {
       if (token.isStructure()) {
