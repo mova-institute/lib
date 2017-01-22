@@ -86,7 +86,7 @@ export class Token {
   isGlue() { return this.type === 'glue' }
   isClosing() { return this.closing === true }
 
-  firstInterp() {
+  interp0() {
     return this.interps[0]
   }
 

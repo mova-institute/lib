@@ -167,7 +167,7 @@ function main(args: Args) {
         output.write(len.toString() + '\n')
       } else if (args.unknown) {
         let tokens = string2tokenStream(inputStr, analyzer)
-          .filter(x => x.isWord() && x.firstInterp().isX() && !x.firstInterp().isForeign())
+          .filter(x => x.isWord() && x.interp0().isX() && !x.interp0().isForeign())
           .map(x => x.form)
           .unique()
           .toArray()

@@ -16,7 +16,7 @@ export function validateSentence(sentence: Token[]) {
   }
 
   reportFound('Punct receives punct or goeswith only',
-    x => x.firstInterp().isPunctuation() && !['punct', 'goeswith'].includes(x.relation))
+    x => x.interp0().isPunctuation() && !['punct', 'goeswith'].includes(x.relation))
 
   reportFound('fixed, flat не можуть вказувати ліворуч',
     (x, i) => ['fixed', 'flat'].includes(x.relation) && x.head > i)
@@ -34,7 +34,7 @@ export function validateSentence(sentence: Token[]) {
     x => ['не', 'ні'].includes(x.form.toLowerCase()) && x.relation !== 'advmod')
 
   reportFound('до DET не йде amod',
-    x => toUd(x.firstInterp()).pos === 'DET' && x.relation === 'amod')
+    x => toUd(x.interp0()).pos === 'DET' && x.relation === 'amod')
 
   if (sentence.every(x => x.relation !== 'obj')) {
     reportFound('не буває iobj без obj',

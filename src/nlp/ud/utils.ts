@@ -12,7 +12,7 @@ export function sentence2conllu(sentence: Array<Token>, id = '') {
   for (let i = 0; i < sentence.length; ++i) {
     let token = sentence[i]
     // let nextToken = sentence[i + 1]
-    let interp = token.firstInterp()
+    let interp = token.interp0()
     let { pos, features } = toUd(interp)
     let misc = token.glued ? 'SpaceAfter=No' : '_'
     lines.push([
@@ -46,7 +46,7 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
       tokenIndex = 1
       yield ''
     } else if (token.isWord()) {
-      let interp = token.firstInterp()
+      let interp = token.interp0()
       let { pos, features } = toUd(interp)
       let misc = nextToken && nextToken.isGlue() ? 'SpaceAfter=No' : '_'
       yield [
@@ -98,7 +98,7 @@ export function* tokenStream2brat(stream: Iterable<Token>) {
       if (token.isStructure()) {
         continue
       }
-      let {pos, features} = toUd(token.firstInterp())
+      let {pos, features} = toUd(token.interp0())
       let rightOffset = offset + token.form.length
       let tId = `T${t++}`
 
