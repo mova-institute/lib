@@ -882,6 +882,7 @@ export class MorphInterp {
   canBeOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes || this.features.ordinalNumeral === OrdinalNumeral.maybe }
   isParticiple() { return this.features.participle !== undefined }
   isBacteria() { return this.features.animacy === Animacy.bacteria }
+  isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
   isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
   isReflexive() { return this.features.pronominalType === PronominalType.reflexive }
 
