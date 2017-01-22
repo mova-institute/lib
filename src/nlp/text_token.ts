@@ -243,8 +243,8 @@ export class TextToken {
     })
 
     if (where.isElement() && (where as AbstractElement).name() !== SE) {
-      let se = where.document().createElement('mi:se')
-      where.insertAfter(se)
+      let sb = where.document().createElement('mi:sb')
+      where.insertAfter(sb)
     }
 
     return this

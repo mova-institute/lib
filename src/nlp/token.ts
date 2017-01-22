@@ -15,6 +15,10 @@ export class Token {
   private type: TokenType
   form?: string
   interps = new Array<MorphInterp>()
+  id: string
+  head: string
+  relation: string
+  glued: boolean
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()
@@ -63,19 +67,23 @@ export class Token {
   getStructureName() { return this.structure }
   getAttributes() { return this.attributes }
   getAttribute(name: string) {
-    return this.attributes[name]
+    return this.attributes && this.attributes[name]
   }
   isStructure() {
     return !!this.structure || this.isGlue()  // todo
   }
   isWord() { return !!this.form }
 
-  isSentenceStart() {
+  isSentenceBoundary() {
+    return this.structure === 'sentence' && this.closing === true
+  }
+
+  isSentenceStartOld() {
     return (this.structure === 'sentence' || this.structure === 'paragraph')
       && this.closing === false
   }
 
-  isSentenceEnd() {
+  isSentenceEndOld() {
     return (this.structure === 'sentence' || this.structure === 'paragraph')
       && this.closing === true
   }
@@ -85,6 +93,10 @@ export class Token {
 
   firstInterp() {
     return this.interps[0]
+  }
+
+  hasSyntax() {
+    return !!(this.head && this.relation)
   }
 
   toString() {

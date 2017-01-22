@@ -5,7 +5,7 @@ import {
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
-import { r, createObject } from '../lang'
+import { r, createObject, last } from '../lang'
 import { uniqueSmall as unique, uniqueJson } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
@@ -155,7 +155,7 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:se'])
+const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:sb'])
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
   let subroots = [...root.evaluateNodes('//tei:title|//tei:text', NS)]
@@ -247,7 +247,7 @@ export function isRegularizedFlowElement(el: AbstractElement) {
   return ret
 }
 
-const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'se'])
+const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'sb'])
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement) {
   let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)]
@@ -927,11 +927,13 @@ export function* tei2tokenStream(root: AbstractElement) {
     }
 
     if (entering) {
+      let tok
       switch (name) {
         case 'w_': {
           let t = $t(el)
           let interps = t.disambedOrDefiniteInterps()
-          let tok = new Token().setAttributes(el.attributesObj())
+          tok = new Token().setAttributes(el.attributesObj())
+
           if (interps.length) {
             tok.setForm(t.text())
               .addInterps(interps.map(x => MorphInterp.fromVesumStr(x.flags, x.lemma)))
@@ -939,22 +941,20 @@ export function* tei2tokenStream(root: AbstractElement) {
             tok.setForm(t.text())
               .addInterp(MorphInterp.fromVesumStr('x', t.text()))
           }
-          yield tok
-          continue
+          break
         }
         case 'w': {
-          let tok = new Token().setForm(el.text())
+          tok = new Token().setForm(el.text())
           if (el.attribute('ana')) {
             tok.addInterp(MorphInterp.fromVesumStr(el.attribute('ana'), el.attribute('lemma')))
           }
-          yield tok
-          continue
+          break
         }
         case 'pc':
-          yield new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text())).setAttributes(el.attributesObj())
-          continue
-        case 'se':
-          yield Token.structure('sentence', true)
+          tok = new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text())).setAttributes(el.attributesObj())
+          break
+        case 'sb':
+          yield Token.structure('sentence', true).setAttributes(el.attributesObj())
           continue
         case 'g':
           yield Token.glue()
@@ -962,6 +962,21 @@ export function* tei2tokenStream(root: AbstractElement) {
         default:
           continue
       }
+
+      if (name === 'w_' || name === 'pc') {
+        let n = el.attribute('n')
+        if (n) {
+          tok.id = n
+        }
+        let dependency = el.attribute('dep')
+        if (dependency) {
+          let [head, relation] = dependency.split(':')
+          tok.head = head
+          tok.relation = relation
+        }
+      }
+
+      yield tok
     }
   }
 }
@@ -973,7 +988,7 @@ export function* splitNSentences(stream: Iterable<Token>, n: number) {
   let wasSentEnt = false
   for (let token of stream) {
     buf.push(token)
-    if (!wasSentEnt && token.isSentenceEnd()) {
+    if (!wasSentEnt && token.isSentenceEndOld()) {
       if (++i >= n) {
         yield buf
         buf = []
@@ -998,7 +1013,7 @@ export function* tokenStream2cg(stream: Iterable<Token>) {
       yield `"<${tok.form}>"\n`
         + tok.interps.map(x => `\t"${x.lemma}" ${x.toVesum().join(' ')}\n`).join('')
     } else if (tok.isStructure()) {
-      if (tok.isSentenceEnd()) {
+      if (tok.isSentenceEndOld()) {
         yield `"<$>"\n\n`
       }
       // yield tok.toString()
@@ -1060,4 +1075,63 @@ export function adoptRelationsFromBrat(root: AbstractElement, lines: Iterable<st
       n2element[dependantN].setAttribute('dep', `${headN}:${relation}`)
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* tokenStream2plaintext(stream: Iterable<Token>) {
+  let spaceNeeded = false
+  for (let token of stream) {
+    if (token.isGlue()) {
+      spaceNeeded = false
+    }
+    if (token.isWord()) {
+      if (spaceNeeded) {
+        yield ' '
+      }
+      yield token.form
+      spaceNeeded = token.glued ? false : true
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function tokenStream2plaintextString(stream: Iterable<Token>) {
+  return mu(tokenStream2plaintext(stream)).join('')
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+export function* tokenStream2sentences(stream: Iterable<Token>) {
+  let sentenceId;
+  let tokens = new Array<Token>()
+  for (let token of stream) {
+    if (token.isSentenceBoundary()) {
+      if (tokens.length) {
+        initSyntax(tokens)
+        yield { sentenceId, tokens }
+        tokens = []
+      }
+      sentenceId = token.getAttribute('sid')
+    } else if (token.isWord()) {
+      tokens.push(token)
+    } else if (token.isGlue() && tokens.length) {
+      last(tokens).glued = true
+    }
+
+  }
+  if (tokens.length) {
+    initSyntax(tokens)
+    yield { sentenceId, tokens }
+  }
+}
+
+//------------------------------------------------------------------------------
+function initSyntax(sentence: Array<Token>) {
+  let id2i = {} as any
+  for (let i = 0; i < sentence.length; ++i) {
+    id2i[sentence[i].getAttribute('n')] = i
+  }
+  sentence.forEach(token => {
+    token.head = id2i[token.head] + 1
+  })
 }

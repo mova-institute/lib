@@ -6,18 +6,40 @@ import { parseXmlFileSync } from '../xml/utils.node'
 import { MorphInterp } from '../nlp/morph_interp'
 import { numerateTokensGently } from '../nlp/utils'
 import { NS } from '../xml/utils'
+import { mu } from '../mu'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 
 
 
 function main() {
-  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(true)
+  // let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(true)
   let globStr = process.argv[2]
   let files = glob.sync(globStr)
   let wc = 0
+
+  let maxSid = 0
+  mu(files)
+    .map(x => parseXmlFileSync(x).evaluateAttributes('//@sid').map(attr => attr.value()))
+    .flatten()
+    .forEach(x => maxSid = Math.max(maxSid, Number.parseInt(x)))
+
+  // let el = mu(files)
+  //   .map(x => [parseXmlFileSync(x).evaluateElements('//mi:sb', NS)])
+  //   .flatten()
+  //   .filter(el => !el.attribute('sid'))
+  //   .forEach(el => el.setAttribute('sid', ++maxSid))
+
+
   for (let file of files) {
     try {
       let root = parseXmlFileSync(file)
+
+      root.evaluateElements('//mi:sb', NS)
+        .flatten()
+        .filter(el => !el.attribute('sid'))
+        .forEach(el => el.setAttribute('sid', ++maxSid))
+
+
       let words = [...root.evaluateElements('//tei:w', NS)]
       for (let w of words) {
         let flags = w.attribute('ana')

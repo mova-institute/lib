@@ -145,12 +145,16 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
-  flatten(shallow = false) {
+  flatten(shallow = false): Mu<any> {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
         if (typeof x !== 'string' && isIterable(x)) {
-          yield* (shallow ? x : mu(x as any).flatten())
+          if (shallow) {
+            yield* (x as any)
+          } else {
+            yield* mu(x as any).flatten()
+          }
         } else {
           yield x
         }
@@ -211,6 +215,16 @@ export class Mu<T> implements Iterable<T> {
       }
     }
     return true
+  }
+
+  count(fn: Predicate<T>) {
+    let ret = 0
+    for (let x of this) {
+      if (fn(x)) {
+        ++ret
+      }
+    }
+    return ret
   }
 
   nth(n: number) {

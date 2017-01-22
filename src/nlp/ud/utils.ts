@@ -2,21 +2,47 @@ import { Token } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { mu } from '../../mu'
 import { MorphInterp } from '../morph_interp'
+import { tokenStream2plaintextString, tokenStream2sentences } from '../utils'
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function sentence2conllu(sentence: Array<Token>, id = '') {
+  let lines = [`# sent_id = ${id}`, `# text = ${tokenStream2plaintextString(sentence)}`]
+  for (let i = 0; i < sentence.length; ++i) {
+    let token = sentence[i]
+    // let nextToken = sentence[i + 1]
+    let interp = token.firstInterp()
+    let { pos, features } = toUd(interp)
+    let misc = token.glued ? 'SpaceAfter=No' : '_'
+    lines.push([
+      i + 1,
+      token.form,
+      interp.lemma,
+      pos,
+      '_',
+      udFeatures2conlluString(features) || '_',
+      token.head || 0,
+      token.relation || 'root',
+      '_',
+      misc,
+    ].join('\t'))
+  }
+  return lines.join('\n')
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
   let tokenIndex = 1
   let sentenceId = 1
   for (let [token, nextToken] of stream) {
-    if (tokenIndex === 1 && !token.isSentenceStart()) {
+    if (tokenIndex === 1 && !token.isSentenceStartOld()) {
       yield sentenceIdLine(sentenceId++)
     }
     if (token.isGlue()) {
       continue
     }
-    if (token.isSentenceEnd()) {
+    if (token.isSentenceEndOld()) {
       tokenIndex = 1
       yield ''
     } else if (token.isWord()) {
@@ -40,13 +66,13 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
 }
 
 //------------------------------------------------------------------------------
-function sentenceIdLine(id: number) {
-  return `# sent_id ${id}`
+function sentenceIdLine(id: number | string) {
+  return `# sent_id = ${id}`
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2bratPlaintext(stream: Iterable<Token>) {
-  let sentenceStream = mu(stream).split(x => x.isSentenceEnd())
+  let sentenceStream = mu(stream).split(x => x.isSentenceEndOld())
   for (let sent of sentenceStream) {
     let toyield = tokenSentence2bratPlaintext(sent)
     if (toyield) {
@@ -66,7 +92,7 @@ export function* tokenStream2brat(stream: Iterable<Token>) {
   let t = 1
   let a = 1
   let sentenceStream = mu(stream)
-    .split(x => x.isSentenceEnd())
+    .split(x => x.isSentenceEndOld())
   for (let sentence of sentenceStream) {
     for (let token of sentence) {
       if (token.isStructure()) {
