@@ -296,7 +296,9 @@ function alignTagList(flags: string[][]) {
         }
       }
     }
-    let pos = tryMapVesumFlag(posAgg[0][0]).vesum
+
+    let pos = tryMapVesumFlag(posAgg[0][0].toLowerCase())
+    pos = pos ? pos.vesum : ''
     let featureOrderMap = arr2indexMap((FEATURE_ORDER[pos] || FEATURE_ORDER.other).filter(x => features.has(x)))
 
     let posAligned = new Array<Array<string>>()
