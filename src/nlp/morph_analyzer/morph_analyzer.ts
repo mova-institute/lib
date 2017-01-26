@@ -5,7 +5,7 @@ import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
 import { Case, Pos } from '../morph_features'
 import {
-  FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE,
+  FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
@@ -84,6 +84,7 @@ const gluedPrefixes = [
   'фото',
 ]
 const initialsRe = new RegExp(`^[${LETTER_UK_UPPERCASE}]$`)
+const ukLowercaseRe = new RegExp(`^[${LETTER_UK_LOWERCASE}]$`)
 const localDictArr = [
   // ['всі', 'adj:p:'],
 ]
@@ -319,7 +320,7 @@ export class MorphAnalyzer {
     }
 
     // one-letter abbrs
-    if (lowercase.length === 1 && nextToken === '.') {
+    if (ukLowercaseRe.test(lowercase) && nextToken === '.' && lowercase !== 'я') {   // <–– todo
       res.add(MorphInterp.fromVesumStr('x:abbr', `${lowercase}.`))
     }
 
