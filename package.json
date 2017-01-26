@@ -10,6 +10,7 @@
   ],
   "bin": {
     "mi-2brat": "lib/bin/2brat.js",
+    "mi-adopt-brat-relations": "lib/nlp/ud/adopt_brat_relations.js",
     "mi-buildcorp": "lib/corpus_workflow/build.js",
     "mi-cg": "lib/bin/cg.js",
     "mi-compraplign": "lib/corpus_workflow/compress_align.js",

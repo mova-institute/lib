@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { writeFileSync } from 'fs'
+import * as fs from 'fs'
 // import { join } from 'path'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync } from '../../utils.node'
@@ -32,12 +32,16 @@ function main() {
   let bratFilesGrouped = groupby(allBratFiles, x => firstMatch(x, /\/([^/]+)_\d+\.ann$/, 1))
 
   for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
-    let xmlFile = bratPrefix2xmlFilename[bratName]
-    if (!xmlFile) {
-      console.error(`Skipping ${bratName} files`)
-      continue
+    let xmlFile = `${bratName}.xml`
+    if (!fs.existsSync(xmlFile)) {
+      xmlFile = bratPrefix2xmlFilename[bratName]
+      if (!xmlFile) {
+        // console.log(`dddd ${xmlFile}`)
+        console.error(`Skipping ${bratName} files`)
+        continue
+      }
+      xmlFile = xmlFiles.find(x => x.endsWith(`${xmlFile}.xml`))
     }
-    xmlFile = xmlFiles.find(x => x.endsWith(`${xmlFile}.xml`))
     let root = parseXmlFileSync(xmlFile)
 
     let n2element = {} as any
@@ -45,9 +49,9 @@ function main() {
       .forEach(x => n2element[x.attribute('n')] = x)
 
     for (let bratFile of bratFiles) {
-      adoptRelationsFromBrat(n2element, linesSync(bratFile))
+      adoptRelationsFromBrat(n2element, linesSync(bratFile), bratFile)
     }
-    writeFileSync(xmlFile, root.serialize())
+    fs.writeFileSync(xmlFile, root.serialize())
   }
 }
 

@@ -5,6 +5,7 @@ export function mu<T>(iterable: Iterable<T> = []) {
 }
 
 export type Predicate<T> = (x: T) => any
+export type PredicateWithIndex<T> = (x: T, i: number) => any
 
 function isIterable(thing) {
   return typeof thing[Symbol.iterator] === 'function'
@@ -127,6 +128,19 @@ export class Mu<T> implements Iterable<T> {
         if (fn(x)) {
           yield x
         }
+      }
+    })())
+  }
+
+  findAllIndexes(fn: PredicateWithIndex<T>) {
+    const thiss = this
+    let i = 0
+    return mu((function* () {
+      for (let x of thiss) {
+        if (fn(x, i)) {
+          yield i
+        }
+        ++i
       }
     })())
   }
