@@ -856,8 +856,12 @@ export class MorphInterp {
   isPunctuation() { return this.features.pos === Pos.punct }
   isX() { return this.features.pos === Pos.x }
 
+  isNominative() { return this.features.case === Case.nominative }
+  isGenitive() { return this.features.case === Case.genitive }
   isDative() { return this.features.case === Case.dative }
   isAccusative() { return this.features.case === Case.accusative }
+  isInstrumental() { return this.features.case === Case.instrumental }
+  isVocative() { return this.features.case === Case.vocative }
 
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
   isN2Adj() { return this.features.n2adjness === N2adjness.yes }
@@ -884,11 +888,12 @@ export class MorphInterp {
   isBacteria() { return this.features.animacy === Animacy.bacteria }
   isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
   isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
-  isReflexive() { return this.features.pronominalType === PronominalType.reflexive }
+  isReflexivePronoun() { return this.features.pronominalType === PronominalType.reflexive }
+  isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
+  isImpersonal() { return this.features.mood === Mood.impersonal }
+  isPassive() { return this.features.voice === Voice.passive }
 
   isPlural() { return this.features.number === MorphNumber.plural }
-  isNominative() { return this.features.case === Case.nominative }
-  isGenitive() { return this.features.case === Case.genitive }
 
   isMasculine() { return this.features.gender === Gender.masculine }
 

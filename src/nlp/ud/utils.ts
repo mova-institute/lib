@@ -22,7 +22,7 @@ export function sentence2conllu(sentence: Array<Token>, id = '') {
       pos,
       '_',
       udFeatures2conlluString(features) || '_',
-      token.head || 0,
+      token.head + 1 || 0,
       token.relation || 'root',
       '_',
       misc,

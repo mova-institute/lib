@@ -90,6 +90,10 @@ export class Token {
     return this.interps[0]
   }
 
+  get interp() {
+    return this.interps[0]
+  }
+
   hasSyntax() {
     return !!(this.head && this.relation)
   }
