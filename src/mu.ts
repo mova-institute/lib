@@ -65,6 +65,27 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
+  chunkByMax(n: number, lengther: (x: T) => number) {
+    let buf: T[] = []
+    let curLength = 0
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        let xLength = lengther(x)
+        if (curLength + xLength > n) {
+          yield buf
+          buf = []
+          curLength = 0
+        }
+        buf.push(x)
+        curLength += xLength
+      }
+      if (buf.length) {
+        yield buf
+      }
+    })())
+  }
+
   split(fn: Predicate<T>) {
     let buf: T[] = []
     const thiss = this
@@ -115,9 +136,20 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
-  forEach(fn: (x: T) => any) {
+  entries() {
+    const thiss = this
+    let i = 0
+    return mu((function* () {
+      for (let x of thiss) {
+        yield [i, x] as [number, T]
+      }
+    })())
+  }
+
+  forEach(fn: (x: T, i: number) => any) {
+    let i = 0
     for (let x of this) {
-      fn(x)
+      fn(x, i++)
     }
   }
 
