@@ -313,18 +313,6 @@ export function toUd(interp: MorphInterp) {
       : { pos: 'CCONJ', features }
   }
 
-  // special-treat reflexives
-  if (interp.isReflexive()) {
-    features.Reflex = 'Yes'
-    interp = interp.clone()
-    if (interp.lemma === 'себе' || interp.lemma === 'свій') {
-      interp.features.pronominalType = PronominalType.personal
-    } else {
-      interp.features.pronominalType = undefined
-      interp.features.pronoun = undefined
-    }
-  }
-
   // auto-map pos and features
   for (let featureName of Object.keys(interp.features)) {
     let keyvalue = mapFeatureValue2Ud(featureName, interp.features[featureName])
@@ -338,8 +326,19 @@ export function toUd(interp: MorphInterp) {
     }
   }
 
-  // the rest of special treatements
+  // special-treat reflexives
+  if (interp.isReflexivePronoun()) {
+    features.Reflex = 'Yes'
+    if (interp.lemma === 'себе' || interp.lemma === 'свій') {
+      features.PronType = 'Prs'
+    }
+    if (!interp.isPossessive()) {
+      pos = 'PRON'
+      features.PronType = 'Prs'
+    }
+  }
 
+  // treat nominals
   if (interp.isNounish()) {
     if (interp.isProper()) {
       pos = 'PROPN'
@@ -349,11 +348,12 @@ export function toUd(interp: MorphInterp) {
       pos = 'NOUN'
     }
   } else if (interp.isPronoun()) {
-    if (interp.isAdjective()) {
+    if (interp.isAdjective() && !interp.isReflexivePronoun()) {
       pos = 'DET'
     }
   }
 
+  // treat numerals
   if (interp.isCardinalNumeral()) {
     features.NumType = 'Card'
     if (interp.isPronoun()) {
@@ -363,6 +363,7 @@ export function toUd(interp: MorphInterp) {
     features.NumType = 'Ord'
   }
 
+  // the rest of special treatements
   if (interp.isVerb()) {
     if (interp.isIndicative()) {
       features.Mood = 'Ind'
