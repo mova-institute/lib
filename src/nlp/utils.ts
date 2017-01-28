@@ -114,6 +114,28 @@ export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
   return ret
 }
 
+//------------------------------------------------------------------------------
+const wordRe = new RegExp(`^[${WORDCHAR}]$`)
+////////////////////////////////////////////////////////////////////////////////
+export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
+  for (let chunk of val.trim().split(/\s+/g)) {
+    yield* splitNospace(val)
+  }
+}
+
+//------------------------------------------------------------------------------
+function* splitNospace(val: string) {
+  if (wordRe.test(val)) {
+    yield val
+  } else if (/^\d+$/.test(val)) {
+    yield val
+  } else if (ANY_PUNC_OR_DASH_RE.test(val)) {
+    yield val
+  } else {
+    yield val
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
   return mu((function* () {
