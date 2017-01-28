@@ -35,6 +35,7 @@ export function build4TreeTagger(args: Args) {
           interp = MorphInterp.fromVesumStr('noun:n:v_rod:&pron:pers:3', interp.lemma)
         }
         fs.writeSync(trainFile, `${tok.form}\t${interp.toMte()}\n`)
+        // fs.writeSync(trainFile, `${tok.form}\t${interp.toMte()}\t${interp.lemma}\n`)
         if (!startsWithCapital(interp.lemma)) {
           tok.form = tok.form.toLowerCase()
         }
@@ -58,6 +59,7 @@ export function build4TreeTagger(args: Args) {
         tag = el.attribute('ana')
       }
       fs.writeSync(trainFile, `${form}\t${tag}\n`)
+      // fs.writeSync(trainFile, `${form}\t${tag}\t${lemma}\n`)
       if (!startsWithCapital(lemma)) {
         form = form.toLowerCase()
       }
