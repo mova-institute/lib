@@ -11,6 +11,16 @@ const COMPLEMENTS = [...CORE_COMPLEMENTS, 'iobj']
 const SUBJECTS = ['nsubj', 'nsubj:pass', 'csubj', 'csubj:pass']
 const NOMINAL_HEAD_MODIFIERS = ['nmod', 'appos', 'amod', 'nummod', 'acl', 'det', 'case']
 const CONTINUOUS_REL = ['flat', 'fixed', 'compound', 'goeswith']
+const LEAF_RELATIONS = [
+  'cop',
+  'expl',
+  'fixed',
+  'flat:foreign',
+  'flat:name',
+  'flat',
+  'goeswith',
+  'punct',
+]
 
 const ALLOWED_RELATIONS = [
   'acl',
@@ -59,13 +69,13 @@ const ALLOWED_RELATIONS = [
   'xcomp',
 ]
 
-const rightHeadedRelations = [
+const RIGHT_HEADED_RELATIONS = [
   'case',
   'cc',
   'reparandum',
 ]
 
-const leftHeadedRelations = [
+const LEFT_HEADED_RELATIONS = [
   'appos',
   'conj',
   'dislocated',
@@ -76,6 +86,15 @@ const leftHeadedRelations = [
   // 'parataxis',
 ]
 
+const CONTINUOUS_SUBREES = [
+  'advcl',
+  'acl',
+  'ccomp',
+  'csubj',
+]
+
+
+////////////////////////////////////////////////////////////////////////////////
 export interface Problem {
   message: string
   index: number
@@ -92,11 +111,19 @@ export function validateSentence(sentence: Token[]) {
   const hasDependantWhich = (i: number, fn: (x: Token, i?: number) => any) =>
     sentence.some((xx, ii) => xx.head === i && fn(xx, ii))
 
+  // const subtree = (i: number) => {
+
+  // }
+
+  const childrenMap = sentence.map((x, i) => mu(sentence).findAllIndexes(xx => xx.head === i).toArray())
+
+
+
   reportIfNot('тільки дозволені реляції можливі',
     x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
 
-  leftHeadedRelations.forEach(rel => reportIfNot(`${rel} не може вказувати ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
-  rightHeadedRelations.forEach(rel => reportIfNot(`${rel} не може вказувати праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
+  LEFT_HEADED_RELATIONS.forEach(rel => reportIfNot(`${rel} не може вказувати ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
+  RIGHT_HEADED_RELATIONS.forEach(rel => reportIfNot(`${rel} не може вказувати праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
 
   reportIfNot('до б(би) має йти aux',
     x => ['б', 'би'].includes(x.form.toLowerCase()) && x.interp.isParticle() && !['fixed', 'aux'].includes(x.relation))
@@ -162,11 +189,15 @@ export function validateSentence(sentence: Token[]) {
 
 
 
+  LEAF_RELATIONS.forEach(leafrel => reportIfNot(`${leafrel} може вести тільки до листків`,
+    (x, i) => x.relation === leafrel && childrenMap[i].length))
 
 
+  reportIfNot(`obl може йти тільки до іменника`,
+    x => x.relation === 'obl' && !x.interp.isNounish())
 
-
-
+  reportIfNot(`obl може йти тільки від дієслова/прикметника/прислівника`,
+    x => x.relation === 'obl' && !sentence[x.head].interp.isVerb() && !sentence[x.head].interp.isAdjective() && !sentence[x.head].interp.isAdverb())
 
 
   /*
@@ -176,9 +207,16 @@ export function validateSentence(sentence: Token[]) {
 
   */
 
+
+
   //////// trash
+
   // reportIfNot(`іменники можуть модифікуватися тільки ${NOMINAL_HEAD_MODIFIERS.join(', ')}`,
   //   (x, i) => x.interp.isNounish() && sentence.some(xx => xx.head === i && !NOMINAL_HEAD_MODIFIERS.includes(xx.relation)))
+
+  // reportIfNot(`dfdfdfd`,
+  //   (x, i) => CONTINUOUS_SUBREES.includes(x.relation) && !isConinuous(getSubtree(i, childrenMap)))
+
 
 
   return problems
@@ -192,4 +230,21 @@ function isPassive(interp: MorphInterp) {
 //------------------------------------------------------------------------------
 function isIntransitiveVerb(interp: MorphInterp) {
   return interp.isVerb() && interp.isReflexiveVerb()
+}
+
+//------------------------------------------------------------------------------
+function getSubtree(i: number, childrenMap: number[][]) {
+  let ret = [i, ...childrenMap[i]]
+  childrenMap[i].forEach(x => ret.push(...getSubtree(x, childrenMap)))
+  return [...new Set(ret)].sort()
+}
+
+//------------------------------------------------------------------------------
+function isConinuous(array: Array<number>) {
+  for (let i = 1; i < array.length; ++i) {
+    if (array[i] - array[i - 1] !== 1) {
+      return false
+    }
+  }
+  return true
 }
