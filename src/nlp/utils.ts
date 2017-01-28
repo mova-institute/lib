@@ -1068,7 +1068,7 @@ export function* polishXml2verticalStream(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function adoptRelationsFromBrat(n2element: any, lines: Iterable<string>) {
+export function adoptRelationsFromBrat(n2element: any, lines: Iterable<string>, sourceId: string) {
   let span2n = {} as any
   for (let line of lines) {
     if (line.includes('\tN ')) {
@@ -1081,6 +1081,7 @@ export function adoptRelationsFromBrat(n2element: any, lines: Iterable<string>) 
       let dependantN = span2n[dependant.substr('Arg2:'.length)]
       // console.log(n2element)
       n2element[dependantN].setAttribute('dep', `${headN}-${relation}`)
+      n2element[dependantN].setAttribute('depsrc', sourceId)
     }
   }
 }
@@ -1107,7 +1108,6 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
   return mu(tokenStream2plaintext(stream)).join('')
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentences(stream: Iterable<Token>) {
   let sentenceId;
@@ -1125,8 +1125,8 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     } else if (token.isGlue() && tokens.length) {
       last(tokens).glued = true
     }
-
   }
+
   if (tokens.length) {
     initSyntax(tokens)
     yield { sentenceId, tokens }
@@ -1140,6 +1140,6 @@ function initSyntax(sentence: Array<Token>) {
     id2i[sentence[i].getAttribute('n')] = i
   }
   sentence.forEach(token => {
-    token.head = id2i[token.head] + 1
+    token.head = id2i[token.head]
   })
 }
