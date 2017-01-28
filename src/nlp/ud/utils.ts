@@ -71,10 +71,9 @@ function sentenceIdLine(id: number | string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2bratPlaintext(stream: Iterable<Token>) {
-  let sentenceStream = mu(stream).split(x => x.isSentenceBoundary())
-  for (let sent of sentenceStream) {
-    let toyield = tokenSentence2bratPlaintext(sent)
+export function* tokenStream2bratPlaintext(stream: Iterable<Token[]>) {
+  for (let sentence of stream) {
+    let toyield = tokenSentence2bratPlaintext(sentence)
     if (toyield) {
       yield toyield
     }
@@ -87,13 +86,11 @@ export function tokenSentence2bratPlaintext(sentence: Token[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2brat(stream: Iterable<Token>) {
+export function* tokenStream2brat(stream: Iterable<Token[]>) {
   let offset = 0
   let t = 1
   let a = 1
-  let sentenceStream = mu(stream)
-    .split(x => x.isSentenceBoundary())
-  for (let sentence of sentenceStream) {
+  for (let sentence of stream) {
     for (let token of sentence) {
       if (token.isStructure()) {
         continue

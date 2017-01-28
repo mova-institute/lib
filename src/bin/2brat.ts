@@ -1,21 +1,16 @@
 #!/usr/bin/env node
 
-/*
-
-mi-2brat input.xml -n 5 --prefix prefix --dest ~/Downloads/dest
-
-*/
-
 import { writeFileSync } from 'fs'
-import { join } from 'path'
+import { join, basename } from 'path'
 import * as minimist from 'minimist'
 
 import { mu } from '../mu'
 import { tokenStream2brat, tokenStream2bratPlaintext } from '../nlp/ud/utils'
-import { tei2tokenStream, splitNSentences } from '../nlp/utils'
+import { tei2tokenStream, tokenStream2sentences } from '../nlp/utils'
+import { Token } from '../nlp/token'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { parseIntStrict } from '../lang'
-import { zerofillMax } from '../string_utils'
+import { zerofillMax, trimExtension } from '../string_utils'
 
 import { sync as mkdirpSync } from 'mkdirp'
 
@@ -23,27 +18,50 @@ import { sync as mkdirpSync } from 'mkdirp'
 function main() {
   const args: any = minimist(process.argv.slice(2), {
     default: {
-      'n': 5,
+      'n': 55,
       'dest': '.',
-      'prefix': 'chunk',
     },
   })
 
-  let sentPerFile = parseIntStrict(args.n)
+  let maxWordsPerFile = parseIntStrict(args.n)
   let inputFile = args._[0]
-  console.log(`reading ${inputFile}`)
+  let base = trimExtension(basename(inputFile))
+  let dest = join(args.dest, base)
 
   let root = parseXmlFileSync(inputFile)
-  mkdirpSync(args.dest)
-  let tokenStream = mu(tei2tokenStream(root))
-  let chunks = mu(splitNSentences(tokenStream, sentPerFile)).toArray()
+  mkdirpSync(dest)
+
+  let sentenceStream = tokenStream2sentences(tei2tokenStream(root))
+  let arr = [] as Token[][]
+  for (let {tokens} of sentenceStream) {
+    // for (let i = 0; i < tokens.length; ++i) {
+    //   if (tokens[i].interp0().isPreposition()) {
+    //     for (let j = i + 1; j < tokens.length && j < i + 4; ++j) {
+    //       if (tokens[j].interp0().isAdjective()) {
+    //         continue
+    //       } else if (tokens[j].interp0().isNoun()) {
+    //         tokens[i].relation = 'case'
+    //         tokens[i].head = j
+    //       } else {
+    //         break
+    //       }
+    //     }
+    //   }
+    // }
+    arr.push(tokens)
+  }
+
+  let chunks = mu(arr)
+    .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.isWord()))
+    .toArray()
+
   for (let [i, chunk] of chunks.entries()) {
-    let filename = `${args.prefix}_${zerofillMax(i + 1, chunks.length)}`
+    let filename = `${base}_${zerofillMax(i + 1, chunks.length)}`
     let str = mu(tokenStream2brat(chunk)).join('\n')
 
-    writeFileSync(join(args.dest, `${filename}.ann`), str)
+    writeFileSync(join(dest, `${filename}.ann`), str)
     str = mu(tokenStream2bratPlaintext(chunk)).join('\n')
-    writeFileSync(join(args.dest, `${filename}.txt`), str)
+    writeFileSync(join(dest, `${filename}.txt`), str)
   }
 }
 
