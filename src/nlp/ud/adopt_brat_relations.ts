@@ -5,7 +5,7 @@ import * as fs from 'fs'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync } from '../../utils.node'
 import { firstMatch } from '../../string_utils'
-import { adoptRelationsFromBrat } from '../../nlp/utils'
+import { extractInfoFromBrat } from '../../nlp/utils'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -49,7 +49,7 @@ function main() {
       .forEach(x => n2element[x.attribute('n')] = x)
 
     for (let bratFile of bratFiles) {
-      adoptRelationsFromBrat(n2element, linesSync(bratFile), bratFile)
+      extractInfoFromBrat(n2element, linesSync(bratFile), bratFile)
     }
     fs.writeFileSync(xmlFile, root.serialize())
   }

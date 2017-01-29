@@ -61,9 +61,9 @@ function formatProblems(docName: string, sentenceId: number, tokens: Token[], pr
   let ret = `Проблеми в реченні ${sentenceId} ${href}\n`
   let repro = tokens.join(' ')
   for (let [i, {index, message}] of problems.entries()) {
-    ret += ` ${message}\n`
-    ret += `  ${repro}\n`
-    ret += `  ${' '.repeat(calculateTokenOffset(index, tokens))}${'^'.repeat(tokens[index].form.length)}\n`
+    ret += `  ${message}\n`
+    ret += `    ${repro}\n`
+    ret += `    ${' '.repeat(calculateTokenOffset(index, tokens))}${'^'.repeat(tokens[index].form.length)}\n`
   }
   ret += '\n'
   return ret

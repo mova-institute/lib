@@ -1,29 +1,9 @@
 import { Token } from '../token'
-import { toUd, udFeatures2conlluString } from './tagset'
+import { toUd } from './tagset'
 import { mu } from '../../mu'
 import { MorphInterp } from '../morph_interp'
-// import { tokenStream2plaintextString, tokenStream2sentences } from '../utils'
 
 
-
-const CORE_COMPLEMENTS = ['obj', 'xcomp', 'ccomp']
-const COMPLEMENTS = [...CORE_COMPLEMENTS, 'iobj']
-const SUBJECTS = ['nsubj', 'nsubj:pass', 'csubj', 'csubj:pass']
-const NOMINAL_HEAD_MODIFIERS = ['nmod', 'appos', 'amod', 'nummod', 'acl', 'det', 'case']
-const CONTINUOUS_REL = ['flat',
-  'fixed',
-  'compound',
-]
-const LEAF_RELATIONS = [
-  'cop',
-  'expl',
-  'fixed',
-  'flat:foreign',
-  'flat:name',
-  'flat',
-  'goeswith',
-  'punct',
-]
 
 const ALLOWED_RELATIONS = [
   'acl',
@@ -36,10 +16,11 @@ const ALLOWED_RELATIONS = [
   'case',
   'cc',
   'ccomp',
+  'compound:svc',
   'compound',
-  'conj',
   'conj:parataxis',
   'conj:repeat',
+  'conj',
   'cop',
   'csubj:pass',
   'csubj',
@@ -55,9 +36,12 @@ const ALLOWED_RELATIONS = [
   'flat',
   'goeswith',
   'iobj',
-  // 'list',
-  'mark',
+  'list',
+  'mark:iobj',
+  'mark:nsubj',
+  'mark:obj',
   'mark:obl',
+  'mark',
   'nmod',
   'nsubj:pass',
   'nsubj',
@@ -73,6 +57,57 @@ const ALLOWED_RELATIONS = [
   'root',
   'vocative',
   'xcomp',
+]
+
+const CORE_COMPLEMENTS = [
+  'obj',
+  // 'xcomp',
+  'ccomp',
+  'mark:obj',
+]
+
+const COMPLEMENTS = [
+  ...CORE_COMPLEMENTS,
+  'iobj',
+]
+
+const OBLIQUES = [
+  'obl',
+  'mark:obl',
+]
+
+const SUBJECTS = ['nsubj',
+  'nsubj:pass',
+  'csubj',
+  'csubj:pass',
+  'mark:subj',
+]
+
+const NOMINAL_HEAD_MODIFIERS = [
+  'nmod',
+  'appos',
+  'amod',
+  'nummod',
+  'acl',
+  'det',
+  'case',
+]
+
+const CONTINUOUS_REL = [
+  'flat',
+  'fixed',
+  'compound',
+]
+
+const LEAF_RELATIONS = [
+  'cop',
+  'expl',
+  'fixed',
+  'flat:foreign',
+  'flat:name',
+  'flat',
+  'goeswith',
+  'punct',
 ]
 
 const RIGHT_HEADED_RELATIONS = [
@@ -108,6 +143,14 @@ export interface Problem {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentence(sentence: Token[]) {
+
+  // sentence.forEach(x => {
+  //   if (x.head !== undefined && !sentence[x.head]) {
+  //     console.error(sentence, x.head)
+  //   }
+  // })
+
+
   let problems = new Array<Problem>()
 
   const reportIfNot = (message: string, fn: (x: Token, i?: number) => any) => {
@@ -124,6 +167,11 @@ export function validateSentence(sentence: Token[]) {
   const childrenMap = sentence.map((x, i) => mu(sentence).findAllIndexes(xx => xx.head === i).toArray())
 
 
+  // if (mu(sentence).count(x => !x.relation) > 1) {
+  //   reportIfNot(`речення недороблене: в більше ніж одне слово не входить реляція`,
+  //     x => x.relation === undefined)
+  // }
+  // return problems
 
   reportIfNot('тільки дозволені реляції можливі',
     x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
@@ -151,9 +199,6 @@ export function validateSentence(sentence: Token[]) {
   reportIfNot('до сурядного сполучника на початку речення йде cc',
     (x, i) => i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.relation))
 
-  // reportIfNot('неперехідне дієслово не може мати додатків',
-  //   (x, i) => COMPLEMENTS.includes(x.relation) && isIntransitiveVerb(sentence[x.head].interp))
-
   var predicates = new Set<number>()
   sentence.forEach((x, i) => {
     if (CORE_COMPLEMENTS.includes(x.relation)) {
@@ -179,8 +224,8 @@ export function validateSentence(sentence: Token[]) {
   reportIfNot('obj та iobj не можуть мати прийменників',
     (x, i) => ['obj', 'iobj'].includes(x.relation) && sentence.some(xx => xx.relation === 'case' && xx.head === i))
 
-  reportIfNot('',
-    x => x.relation === 'vocative' && !x.interp.isNominative() && !x.interp.isVocative())
+  reportIfNot('vocative йде тільки до іменника в кличному (називному)',
+    x => x.relation === 'vocative' && (!x.interp.isNominative() && !x.interp.isVocative() || !x.interp.isNounish()))
 
   reportIfNot('керівні числівники позначаються nummod:gov',
     x => x.relation === 'nummod' && x.interp.isCardinalNumeral() && !x.interp.isPronoun()
@@ -188,10 +233,10 @@ export function validateSentence(sentence: Token[]) {
       && sentence[x.head].interp.isGenitive())
 
   reportIfNot(`можливо тут :pass-реляція?`,
-    x => ['aux', 'csubj', 'nsubj'].includes(x.relation) && isPassive(sentence[x.head].interp))  // todo: навпаки
+    x => !x.isEllipsis && ['aux', 'csubj', 'nsubj'].includes(x.relation) && sentence[x.head] && isPassive(sentence[x.head].interp))  // todo: навпаки
 
   reportIfNot(`можливо тут :obl:agent?`,
-    (x, i) => x.relation === 'obl' && x.interp.isInstrumental() && isPassive(sentence[x.head].interp) && !hasDependantWhich(i, xx => xx.relation === 'case'))
+    (x, i) => !x.isEllipsis && x.relation === 'obl' && x.interp.isInstrumental() && isPassive(sentence[x.head].interp) && !hasDependantWhich(i, xx => xx.relation === 'case'))
 
 
 
@@ -200,10 +245,17 @@ export function validateSentence(sentence: Token[]) {
 
 
   reportIfNot(`obl може йти тільки до іменника`,
-    x => x.relation === 'obl' && !x.interp.isNounish())
+    x => OBLIQUES.includes(x.relation)
+      && !x.isEllipsis
+      && !x.interp.isNounish())
 
   reportIfNot(`obl може йти тільки від дієслова/дієприслівника/прислівника/прикметника`,
-    x => x.relation === 'obl' && !sentence[x.head].interp.isVerbial() && !sentence[x.head].interp.isAdjective() && !sentence[x.head].interp.isAdverb())
+    (x, i) => OBLIQUES.includes(x.relation)
+      && !x.isEllipsis
+      && !sentence.find(xx => xx.relation === 'cop' && xx.head === i)
+      && !sentence[x.head].interp.isVerbial()
+      && !sentence[x.head].interp.isAdjective()
+      && !sentence[x.head].interp.isAdverb())
 
 
   /*

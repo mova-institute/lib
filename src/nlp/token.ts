@@ -19,6 +19,7 @@ export class Token {
   head: number
   relation: string
   glued: boolean
+  isEllipsis: boolean
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()

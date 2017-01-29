@@ -1004,9 +1004,12 @@ export function* tei2tokenStream(root: AbstractElement) {
         let dependency = el.attribute('dep')
         if (dependency) {
           let [head, relation] = dependency.split('-')
-          tok.head = parseIntStrict(head)
+          if (head && head !== 'undefined') {
+            tok.head = parseIntStrict(head)
+          }
           tok.relation = relation
         }
+        tok.isEllipsis = el.attribute('ellipsis') === 'yes'
       }
 
       yield tok
@@ -1090,20 +1093,36 @@ export function* polishXml2verticalStream(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function adoptRelationsFromBrat(n2element: any, lines: Iterable<string>, sourceId: string) {
+export function extractInfoFromBrat(n2element: any, lines: Iterable<string>, sourceId: string) {
   let span2n = {} as any
   for (let line of lines) {
     if (line.includes('\tN ')) {
       let [, , t, n] = line.split(/\s+/g)
       span2n[t] = n
     } else if (line.startsWith('R')) {
-      let [, relation, head, dependant] = line.split(/\s+/g)
+      let [, relation, head, dependantStr] = line.split(/\s+/g)
       relation = relation.replace('_', ':')
       let headN = span2n[head.substr('Arg1:'.length)]
-      let dependantN = span2n[dependant.substr('Arg2:'.length)]
+      let dependantN = span2n[dependantStr.substr('Arg2:'.length)]
       // console.log(n2element)
-      n2element[dependantN].setAttribute('dep', `${headN}-${relation}`)
-      n2element[dependantN].setAttribute('depsrc', sourceId)
+      let dependant = n2element[dependantN]
+      if (dependant) {
+        n2element[dependantN].setAttribute('dep', `${headN}-${relation}`)
+        n2element[dependantN].setAttribute('depsrc', sourceId)
+      } else {
+        console.error(`no N for "${line}"`)
+      }
+    } else if (line.includes('\tEllipsis ')) {
+      let [, , span] = line.split(/\s+/g)
+      if (span2n[span]) {  // temp
+        n2element[span2n[span]].setAttribute('ellipsis', 'yes')
+      }
+    } else if (line.includes('\tAnnotatorNotes ')) {
+      let [, span, comment] = line.split('\t')
+      span = span.split(' ')[1]
+      if (span2n[span]) {  // temp
+        n2element[span2n[span]].setAttribute('comment', comment)
+      }
     }
   }
 }
