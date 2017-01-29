@@ -903,9 +903,8 @@ export class MorphInterp {
   isProper() { return this.features.nounType === NounType.proper }
   isBad() { return this.features.bad === Bad.yes }
 
-  isNounish() {
-    return this.isNoun() || this.isAdjectiveAsNoun()
-  }
+  isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }
+  isVerbial() { return this.isVerb() || this.isTransgressive() }
 
   setPos(pos: Pos) { this.features.pos = pos; return this }
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }

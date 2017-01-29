@@ -10,7 +10,10 @@ const CORE_COMPLEMENTS = ['obj', 'xcomp', 'ccomp']
 const COMPLEMENTS = [...CORE_COMPLEMENTS, 'iobj']
 const SUBJECTS = ['nsubj', 'nsubj:pass', 'csubj', 'csubj:pass']
 const NOMINAL_HEAD_MODIFIERS = ['nmod', 'appos', 'amod', 'nummod', 'acl', 'det', 'case']
-const CONTINUOUS_REL = ['flat', 'fixed', 'compound', 'goeswith']
+const CONTINUOUS_REL = ['flat',
+  'fixed',
+  'compound',
+]
 const LEAF_RELATIONS = [
   'cop',
   'expl',
@@ -35,6 +38,8 @@ const ALLOWED_RELATIONS = [
   'ccomp',
   'compound',
   'conj',
+  'conj:parataxis',
+  'conj:repeat',
   'cop',
   'csubj:pass',
   'csubj',
@@ -52,6 +57,7 @@ const ALLOWED_RELATIONS = [
   'iobj',
   // 'list',
   'mark',
+  'mark:obl',
   'nmod',
   'nsubj:pass',
   'nsubj',
@@ -126,7 +132,7 @@ export function validateSentence(sentence: Token[]) {
   RIGHT_HEADED_RELATIONS.forEach(rel => reportIfNot(`${rel} не може вказувати праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
 
   reportIfNot('до б(би) має йти aux',
-    x => ['б', 'би'].includes(x.form.toLowerCase()) && x.interp.isParticle() && !['fixed', 'aux'].includes(x.relation))
+    x => ['б', 'би'].includes(x.form.toLowerCase()) && x.interp.isParticle() && !['fixed', 'aux', undefined].includes(x.relation))
 
   if (sentence.every(x => x.relation !== 'obj')) {
     reportIfNot('не буває iobj без obj',
@@ -145,8 +151,8 @@ export function validateSentence(sentence: Token[]) {
   reportIfNot('до сурядного сполучника на початку речення йде cc',
     (x, i) => i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.relation))
 
-  reportIfNot('неперехідне дієслово не може мати додатків',
-    (x, i) => COMPLEMENTS.includes(x.relation) && isIntransitiveVerb(sentence[x.head].interp))
+  // reportIfNot('неперехідне дієслово не може мати додатків',
+  //   (x, i) => COMPLEMENTS.includes(x.relation) && isIntransitiveVerb(sentence[x.head].interp))
 
   var predicates = new Set<number>()
   sentence.forEach((x, i) => {
@@ -196,8 +202,8 @@ export function validateSentence(sentence: Token[]) {
   reportIfNot(`obl може йти тільки до іменника`,
     x => x.relation === 'obl' && !x.interp.isNounish())
 
-  reportIfNot(`obl може йти тільки від дієслова/прикметника/прислівника`,
-    x => x.relation === 'obl' && !sentence[x.head].interp.isVerb() && !sentence[x.head].interp.isAdjective() && !sentence[x.head].interp.isAdverb())
+  reportIfNot(`obl може йти тільки від дієслова/дієприслівника/прислівника/прикметника`,
+    x => x.relation === 'obl' && !sentence[x.head].interp.isVerbial() && !sentence[x.head].interp.isAdjective() && !sentence[x.head].interp.isAdverb())
 
 
   /*
