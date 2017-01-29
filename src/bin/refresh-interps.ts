@@ -59,7 +59,7 @@ function main() {
       }
 
       numerateTokensGently(root)
-      fs.writeFileSync(file, root.serialize())
+      fs.writeFileSync(file, root.serialize() + '\n')
     } catch (e) {
       console.error(`Error in file "${file}"`)
       throw e
