@@ -76,7 +76,8 @@ const OBLIQUES = [
   'mark:obl',
 ]
 
-const SUBJECTS = ['nsubj',
+const SUBJECTS = [
+  'nsubj',
   'nsubj:pass',
   'csubj',
   'csubj:pass',
@@ -88,9 +89,15 @@ const NOMINAL_HEAD_MODIFIERS = [
   'appos',
   'amod',
   'nummod',
+  'nummod_gov',
   'acl',
   'det',
   'case',
+  'punct',
+  'conj',
+  'cc',
+  'advmod',
+  'discourse',
 ]
 
 const CONTINUOUS_REL = [
@@ -141,6 +148,7 @@ export interface Problem {
   index: number
 }
 
+type SentencePredicate = (x: Token, i?: number) => any
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentence(sentence: Token[]) {
 
@@ -153,25 +161,43 @@ export function validateSentence(sentence: Token[]) {
 
   let problems = new Array<Problem>()
 
-  const reportIfNot = (message: string, fn: (x: Token, i?: number) => any) => {
+  const reportIfNot = (message: string, fn: SentencePredicate) => {
     problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, index })))
   }
 
-  const hasDependantWhich = (i: number, fn: (x: Token, i?: number) => any) =>
+  const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     sentence.some((xx, ii) => xx.head === i && fn(xx, ii))
 
-  // const subtree = (i: number) => {
-
-  // }
 
   const childrenMap = sentence.map((x, i) => mu(sentence).findAllIndexes(xx => xx.head === i).toArray())
 
+
+  reportIfNot(`у залежника ccomp має бути підмет`,
+    (x, i) => x.relation === 'ccomp'
+      && !sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
+
+  // return problems
+  reportIfNot(`у залежника xcomp немає підмета`,
+    (x, i) => x.relation === 'xcomp'
+      && sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
+
+
+  reportIfNot('до часток йде discourse',
+    x => x.relation
+      && !['б', 'би', 'не'].includes(x.form.toLowerCase())
+      && x.interp.isParticle()
+      && !['discourse', 'fixed'])
+
+  reportIfNot('nominal head can be modified by nmod, appos, amod, nummod, acl, det, case only',
+    (x, i) => !x.isEllipsis
+      && !sentence.some(xx => xx.head === i && xx.relation === 'cop')
+      && x.interp.isNounish()
+      && sentence.some(xx => xx.head === i && !NOMINAL_HEAD_MODIFIERS.includes(xx.relation)))
 
   // if (mu(sentence).count(x => !x.relation) > 1) {
   //   reportIfNot(`речення недороблене: в більше ніж одне слово не входить реляція`,
   //     x => x.relation === undefined)
   // }
-  // return problems
 
   reportIfNot('тільки дозволені реляції можливі',
     x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
