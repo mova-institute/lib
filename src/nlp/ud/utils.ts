@@ -9,16 +9,14 @@ import { tokenStream2plaintextString, tokenStream2sentences } from '../utils'
 ////////////////////////////////////////////////////////////////////////////////
 export function sentence2conllu(sentence: Array<Token>, id = '') {
   let lines = [`# sent_id = ${id}`, `# text = ${tokenStream2plaintextString(sentence)}`]
-  for (let i = 0; i < sentence.length; ++i) {
-    let token = sentence[i]
-    // let nextToken = sentence[i + 1]
-    let interp = token.interp0()
-    let { pos, features } = toUd(interp)
+
+  sentence.forEach((token, i) => {
+    let { pos, features } = toUd(token.interp)
     let misc = token.glued ? 'SpaceAfter=No' : '_'
     lines.push([
       i + 1,
       token.form,
-      interp.lemma,
+      token.interp.lemma,
       pos,
       '_',
       udFeatures2conlluString(features) || '_',
@@ -27,7 +25,7 @@ export function sentence2conllu(sentence: Array<Token>, id = '') {
       '_',
       misc,
     ].join('\t'))
-  }
+  })
   return lines.join('\n')
 }
 
