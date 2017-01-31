@@ -6,6 +6,7 @@ import { MorphInterp } from '../morph_interp'
 import { Case, Pos } from '../morph_features'
 import {
   FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
+  APOSTROPES_REPLACE_RE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
@@ -172,6 +173,7 @@ export class MorphAnalyzer {
     if (!token.length) {
       return []
     }
+    token = token.replace(APOSTROPES_REPLACE_RE, '’')  // normalize
 
     // punctuation
     if (ANY_PUNC_OR_DASH_RE.test(token)) {
@@ -189,7 +191,7 @@ export class MorphAnalyzer {
     }
 
     // symbols
-    if (/^[№@#$%*§©+×÷=<>♥∙°]|:\($/.test(token)) {
+    if (/^[№@#$%*§©+×÷=<>♥∙°₴❤❄]|:\($/.test(token)) {
       return [MorphInterp.fromVesumStr('sym', token)]
     }
 

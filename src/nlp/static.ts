@@ -23,8 +23,12 @@ const diacritics = [
   // ['', '', ''],
 ]
 
+export const APOSTROPES = '\'"`’'
+export const APOSTROPES_REPLACE_RE = /['"`]/g
+
+
 const PUNC_REGS = [
-  r`\.{4,}`,
+  r`\.{3,}`,
   r`!\.{2,}`,
   r`\?\.{2,}`,
   r`[!?]+`,
@@ -42,7 +46,8 @@ const PUNC_REGS = [
   r`…`,
   r`:`,
   r`;`,
-  r`—`,
+  r`—`,  // M
+  r`–`,  // N
   r`/`,
   r`•`,
 ]
