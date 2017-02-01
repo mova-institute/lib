@@ -18,7 +18,7 @@ export function sentence2conllu(sentence: Array<Token>, id = '') {
       token.form,
       token.interp.lemma,
       pos,
-      '_',
+      token.interp.toMte(),
       udFeatures2conlluString(features) || '_',
       token.head + 1 || 0,
       token.relation || 'root',

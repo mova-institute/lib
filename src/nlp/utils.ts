@@ -1151,16 +1151,18 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentences(stream: Iterable<Token>) {
-  let sentenceId;
+  let sentenceId: string;
+  let set: string;
   let tokens = new Array<Token>()
   for (let token of stream) {
     if (token.isSentenceBoundary()) {
       if (tokens.length) {
         initSyntax(tokens)
-        yield { sentenceId, tokens }
+        yield { sentenceId, tokens, set }
         tokens = []
       }
       sentenceId = token.getAttribute('sid')
+      set = token.getAttribute('set')
     } else if (token.isWord()) {
       tokens.push(token)
     } else if (token.isGlue() && tokens.length) {
@@ -1170,7 +1172,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
 
   if (tokens.length) {
     initSyntax(tokens)
-    yield { sentenceId, tokens }
+    yield { sentenceId, tokens, set }
   }
 }
 
