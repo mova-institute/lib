@@ -6,7 +6,7 @@ import { MorphInterp } from '../morph_interp'
 import { Case, Pos } from '../morph_features'
 import {
   FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
-  APOSTROPES_REPLACE_RE,
+  APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
@@ -14,14 +14,18 @@ import { CacheMap } from '../../data_structures/cache_map'
 import * as algo from '../../algo'
 import * as stringUtils from '../../string_utils'
 
-/*
 
 
 
-
-
-*/
-
+const REGEX2TAG = [
+  [URL_RE, 'sym'],
+  [SYMBOL_RE, 'sym'],
+  [FOREIGN_CHAR_RE, 'x:foreign'],
+  [ARABIC_NUMERAL_RE, 'numr'],
+  [ROMAN_NUMERAL_RE, 'numr:roman'],
+  [ANY_PUNC_OR_DASH_RE, 'punct'],
+  [URL_RE, 'sym'],
+] as [RegExp, string][]
 
 
 const gluedPrefixes = [
@@ -175,29 +179,11 @@ export class MorphAnalyzer {
     }
     token = token.replace(APOSTROPES_REPLACE_RE, '’')  // normalize
 
-    // punctuation
-    if (ANY_PUNC_OR_DASH_RE.test(token)) {
-      return [MorphInterp.fromVesumStr('punct', token)]
-    }
-
-    // Arabic numerals
-    if (/^\d+[½]?$/.test(token)) {
-      return [MorphInterp.fromVesumStr('numr', token)]
-    }
-
-    // Roman numerals
-    if (/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(token)) {
-      return [MorphInterp.fromVesumStr('numr:roman', token)]
-    }
-
-    // symbols
-    if (/^[№@#$%*§©+×÷=<>♥∙°₴❤❄]|:\($/.test(token)) {
-      return [MorphInterp.fromVesumStr('sym', token)]
-    }
-
-    // foreign
-    if (FOREIGN_CHAR_RE.test(token)) {
-      return [MorphInterp.fromVesumStr('x:foreign', token)]
+    // regexp
+    for (let [regex, tsgStr] of REGEX2TAG) {
+      if (regex.test(token)) {
+        return [MorphInterp.fromVesumStr(tsgStr, token)]
+      }
     }
 
     // dictionary

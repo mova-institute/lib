@@ -119,17 +119,13 @@ const wordRe = new RegExp(`^[${WORDCHAR}]$`)
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
   for (let chunk of val.trim().split(/\s+/g)) {
-    yield* splitNospace(val)
+    yield* splitNospace(val, analyzer)
   }
 }
 
 //------------------------------------------------------------------------------
-function* splitNospace(val: string) {
-  if (wordRe.test(val)) {
-    yield val
-  } else if (/^\d+$/.test(val)) {
-    yield val
-  } else if (ANY_PUNC_OR_DASH_RE.test(val)) {
+function* splitNospace(val: string, analyzer: MorphAnalyzer) {
+  if (analyzer.canBeToken(val)) {
     yield val
   } else {
     yield val
