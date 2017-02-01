@@ -152,13 +152,6 @@ type SentencePredicate = (x: Token, i?: number) => any
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentence(sentence: Token[]) {
 
-  // sentence.forEach(x => {
-  //   if (x.head !== undefined && !sentence[x.head]) {
-  //     console.error(sentence, x.head)
-  //   }
-  // })
-
-
   let problems = new Array<Problem>()
 
   const reportIfNot = (message: string, fn: SentencePredicate) => {
@@ -171,12 +164,16 @@ export function validateSentence(sentence: Token[]) {
 
   const childrenMap = sentence.map((x, i) => mu(sentence).findAllIndexes(xx => xx.head === i).toArray())
 
+  reportIfNot(`punct в двокрапку має йти справа`,
+    (x, i) => x.form === ':'
+      && x.interp.isPunctuation()
+      && x.head > i)
+  // return problems
 
   reportIfNot(`у залежника ccomp має бути підмет`,
     (x, i) => x.relation === 'ccomp'
       && !sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
 
-  // return problems
   reportIfNot(`у залежника xcomp немає підмета`,
     (x, i) => x.relation === 'xcomp'
       && sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
@@ -187,12 +184,6 @@ export function validateSentence(sentence: Token[]) {
       && !['б', 'би', 'не'].includes(x.form.toLowerCase())
       && x.interp.isParticle()
       && !['discourse', 'fixed'])
-
-  reportIfNot('nominal head can be modified by nmod, appos, amod, nummod, acl, det, case only',
-    (x, i) => !x.isEllipsis
-      && !sentence.some(xx => xx.head === i && xx.relation === 'cop')
-      && x.interp.isNounish()
-      && sentence.some(xx => xx.head === i && !NOMINAL_HEAD_MODIFIERS.includes(xx.relation)))
 
   // if (mu(sentence).count(x => !x.relation) > 1) {
   //   reportIfNot(`речення недороблене: в більше ніж одне слово не входить реляція`,
@@ -254,21 +245,27 @@ export function validateSentence(sentence: Token[]) {
     x => x.relation === 'vocative' && (!x.interp.isNominative() && !x.interp.isVocative() || !x.interp.isNounish()))
 
   reportIfNot('керівні числівники позначаються nummod:gov',
-    x => x.relation === 'nummod' && x.interp.isCardinalNumeral() && !x.interp.isPronoun()
+    x => x.relation === 'nummod'
+      && x.interp.isCardinalNumeral()
+      && !x.interp.isPronoun()
       && (x.interp.isNominative() || x.interp.isAccusative() /*|| /^\d+$/.test(x.form)*/)
       && sentence[x.head].interp.isGenitive())
 
   reportIfNot(`можливо тут :pass-реляція?`,
-    x => !x.isEllipsis && ['aux', 'csubj', 'nsubj'].includes(x.relation) && sentence[x.head] && isPassive(sentence[x.head].interp))  // todo: навпаки
+    x => !x.isEllipsis
+      && ['aux', 'csubj', 'nsubj'].includes(x.relation)
+      && sentence[x.head]
+      && isPassive(sentence[x.head].interp))  // todo: навпаки
 
   reportIfNot(`можливо тут :obl:agent?`,
-    (x, i) => !x.isEllipsis && x.relation === 'obl' && x.interp.isInstrumental() && isPassive(sentence[x.head].interp) && !hasDependantWhich(i, xx => xx.relation === 'case'))
-
-
+    (x, i) => !x.isEllipsis
+      && x.relation === 'obl'
+      && x.interp.isInstrumental()
+      && isPassive(sentence[x.head].interp)
+      && !hasDependantWhich(i, xx => xx.relation === 'case'))
 
   LEAF_RELATIONS.forEach(leafrel => reportIfNot(`${leafrel} може вести тільки до листків`,
     (x, i) => x.relation === leafrel && childrenMap[i].length))
-
 
   reportIfNot(`obl може йти тільки до іменника`,
     x => OBLIQUES.includes(x.relation)
@@ -301,7 +298,11 @@ export function validateSentence(sentence: Token[]) {
   // reportIfNot(`dfdfdfd`,
   //   (x, i) => CONTINUOUS_SUBREES.includes(x.relation) && !isConinuous(getSubtree(i, childrenMap)))
 
-
+  // reportIfNot('nominal head can be modified by nmod, appos, amod, nummod, acl, det, case only',
+  //   (x, i) => !x.isEllipsis
+  //     && !sentence.some(xx => xx.head === i && xx.relation === 'cop')
+  //     && x.interp.isNounish()
+  //     && sentence.some(xx => xx.head === i && !NOMINAL_HEAD_MODIFIERS.includes(xx.relation)))
 
   return problems
 }
