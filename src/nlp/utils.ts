@@ -92,14 +92,14 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
 
 ////////////////////////////////////////////////////////////////////////////////
 const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WORDCHAR}])`)
-export function tokenizeUk(val: string, analyzer: MorphAnalyzer) {
+export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
   let ret: { token: string, glue: boolean }[] = []
   let toks = val.trim().split(SPLIT_REGEX)
   let glue = false
   for (let i = 0; i < toks.length; ++i) {
     let token = toks[i]
     if (!/^\s*$/.test(token)) {
-      if (token.includes('-') && !analyzer.canBeToken(token)) {
+      if (token.includes('-') && (!analyzer || !analyzer.canBeToken(token))) {
         ret.push(...token.split(/(-)/).filter(x => x).map(token => ({ token, glue })))
       }
       else {
@@ -119,25 +119,28 @@ const wordRe = new RegExp(`^[${WORDCHAR}]$`)
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
   for (let chunk of val.trim().split(/\s+/g)) {
-    yield* splitNospace(val, analyzer)
+    if (chunk) {
+      yield* splitNospace(chunk, analyzer)
+    }
   }
 }
 
 //------------------------------------------------------------------------------
 function* splitNospace(val: string, analyzer: MorphAnalyzer) {
   if (analyzer.canBeToken(val)) {
-    yield val
+    yield [val, false] as [string, boolean]
   } else {
-    yield val
+    // console.log(val)
+    yield* tokenizeUk(val).map(({token, glue}) => [token, glue]) as [string, boolean][]
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
   return mu((function* () {
-    let tokens = tokenizeUk(val, analyzer)
+    let tokens = [...tokenizeUkNew(val, analyzer)]
     for (let i = 0; i < tokens.length; ++i) {
-      let {token, glue} = tokens[i]
+      let [token, glue] = tokens[i]
       if (glue) {
         yield Token.glue()
       }
@@ -145,7 +148,7 @@ export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
         yield Token.word(token, [MorphInterp.fromVesumStr('punct').setLemma(token)])
         continue
       }
-      let next = tokens[i + 1] && tokens[i + 1].token
+      let next = tokens[i + 1] && tokens[i + 1][0]
       yield Token.word(token, analyzer.tagOrX(token, next))
     }
   })())
@@ -191,11 +194,11 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
         let cursor = node.document().createElement('cursor')
         node.replace(cursor)
 
-        for (let tok of tokenizeUk(text, tagger)) {
-          if (tok.glue) {
-            cursor.insertBefore(doc.createElement('g', NS.mi))
+        for (let [token, glue] of tokenizeUkNew(text, tagger)) {
+          if (glue) {
+            cursor.insertBefore(doc.createElement('g'))
           }
-          cursor.insertBefore(elementFromToken(tok.token, doc))
+          cursor.insertBefore(elementFromToken(token, doc))
         }
 
         cursor.remove()
@@ -995,7 +998,7 @@ export function* tei2tokenStream(root: AbstractElement) {
       if (name === 'w_' || name === 'pc') {
         let n = el.attribute('n')
         if (n) {
-          tok.id = n
+          tok.id = parseIntStrict(n)
         }
         let dependency = el.attribute('dep')
         if (dependency) {
@@ -1089,6 +1092,37 @@ export function* polishXml2verticalStream(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function parseBratFile(lines: Iterable<string>) {
+  let tokens = {} as any
+  let counter = 0
+  for (let line of lines) {
+    let match = line.match(/^T(\d+).*\s(\S+)$/)
+    if (match) {
+      let [, id, form] = match
+      tokens[id] = { form, i: counter++ }
+      continue
+    }
+
+    match = line.match(/\tN\sT(\S+)\s(\S+)$/)
+    if (match) {
+      let [, id, n] = match
+      tokens[id].n = n
+      continue
+    }
+
+    match = line.match(/^R\d+\s(\S+)\sArg1:T(\S+)\sArg2:T(\S+)\s*$/)
+    if (match) {
+      let [, relation, headId, depId] = match
+      tokens[depId].relation = relation
+      tokens[depId].head = tokens[headId]
+      continue
+    }
+  }
+
+  return Object.values(tokens).sort((a, b) => a.i - b.i)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function extractInfoFromBrat(n2element: any, lines: Iterable<string>, sourceId: string) {
   let span2n = {} as any
   for (let line of lines) {
@@ -1146,14 +1180,13 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2sentences(stream: Iterable<Token>) {
+export function* tokenStream2sentences(stream: Iterable<Token>, ) {
   let sentenceId: string;
   let set: string;
   let tokens = new Array<Token>()
   for (let token of stream) {
     if (token.isSentenceBoundary()) {
       if (tokens.length) {
-        initSyntax(tokens)
         yield { sentenceId, tokens, set }
         tokens = []
       }
@@ -1167,18 +1200,6 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   }
 
   if (tokens.length) {
-    initSyntax(tokens)
     yield { sentenceId, tokens, set }
   }
-}
-
-//------------------------------------------------------------------------------
-function initSyntax(sentence: Array<Token>) {
-  let id2i = {} as any
-  for (let i = 0; i < sentence.length; ++i) {
-    id2i[sentence[i].getAttribute('n')] = i
-  }
-  sentence.forEach(token => {
-    token.head = id2i[token.head]
-  })
 }

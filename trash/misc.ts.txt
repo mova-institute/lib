@@ -1,0 +1,27 @@
+//------------------------------------------------------------------------------
+function adoptBratRelationsNoN() {
+  let [xmlFile, bratFilesGlob, nStr] = process.argv.slice(2)
+  let bratFiles = glob.sync(bratFilesGlob)
+  let n = Number.parseInt(nStr)
+  let root = parseXmlFileSync(xmlFile)
+  bratFiles.sort((a, b) => Number(a.match(/zerov_(\d+)\./)[1]) - Number(b.match(/zerov_(\d+)\./)[1]))
+  console.log(bratFiles)
+
+  for (let bratFile of bratFiles) {
+    let ann = parseBratFile(linesSync(bratFile))
+    let tokens = [...root.evaluateElements('//mi:w_|//tei:pc', NS)]
+    // console.log(ann)
+    // console.log(tokens)
+
+    for (let i = 0; i < ann.length; ++i) {
+      if (ann[i].relation) {
+        let headEl = tokens[n + ann[i].head.i]
+        let headN = headEl.attribute('n')
+        let dep = `${headN}-${ann[i].relation}`
+        tokens[n + ann[i].i].setAttribute('dep', dep)
+      }
+    }
+    n += ann.length
+  }
+  fs.writeFileSync(xmlFile, root.serialize() + '\n')
+}

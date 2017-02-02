@@ -38,6 +38,7 @@ function main() {
     let tokenStream = tei2tokenStream(root)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
     sentenceStream.forEach(({sentenceId, set, tokens}) => {
+      initSyntax(tokens)
 
       let hasSyntax = tokens.some(x => x.hasSyntax())
       if (!hasSyntax) {
@@ -96,4 +97,15 @@ function calculateTokenOffset(index: number, tokens: Token[]) {
 //------------------------------------------------------------------------------
 function set2filename(dir: string, setName: string) {
   return path.join(dir, `uk-ud-${setName}.conllu`)
+}
+
+//------------------------------------------------------------------------------
+function initSyntax(sentence: Array<Token>) {
+  let id2i = {} as any
+  for (let i = 0; i < sentence.length; ++i) {
+    id2i[sentence[i].getAttribute('n')] = i
+  }
+  sentence.forEach(token => {
+    token.head = id2i[token.head]
+  })
 }

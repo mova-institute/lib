@@ -15,7 +15,7 @@ export class Token {
   private type: TokenType
   form?: string
   interps = new Array<MorphInterp>()
-  id: string
+  id: number
   head: number
   relation: string
   glued: boolean

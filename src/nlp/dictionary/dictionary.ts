@@ -29,9 +29,9 @@ export class Dictionary {
   }
 
   lookupLexemesByLemma(lemma: string) {
-    return mu(this.words.getArray(lemma))
-      .filter(x => x.indexInPradigm === 0)
-      .map(x => this.buildLexeme(x.paradigmId, lemma))
+    return this.words.getArray(lemma)
+      .filter(x => x.indexInPradigm === 0)  // lemmas
+      .map(x => [...this.buildLexeme(x.paradigmId, lemma)])
   }
 
   private nthInParadigm(paradigm: Uint16Array, n: number) {

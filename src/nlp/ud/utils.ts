@@ -84,18 +84,20 @@ export function tokenSentence2bratPlaintext(sentence: Token[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2brat(stream: Iterable<Token[]>) {
+export function* tokenStream2brat(stream: Token[][]) {
   let offset = 0
   let t = 1
   let a = 1
+  let n2id = {} as any
   for (let sentence of stream) {
     for (let token of sentence) {
       if (token.isStructure()) {
         continue
       }
+      let id = t++
+      let tId = `T${id}`
       let {pos, features} = toUd(token.interp0())
       let rightOffset = offset + token.form.length
-      let tId = `T${t++}`
 
       yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
 
@@ -108,13 +110,22 @@ export function* tokenStream2brat(stream: Iterable<Token[]>) {
         yield toyield
       }
 
-      if (token.getAttributes()) {
-        let n = token.getAttributes().n
-        if (n) {
-          yield `A${a++}\tN ${tId} ${n}`
-        }
+      if (token.id !== undefined) {
+        n2id[token.id] = id
+        yield `A${a++}\tN ${tId} ${token.id}`
       }
       offset = rightOffset + 1    // account for space
+    }
+  }
+
+  let rId = 1
+  for (let sentence of stream) {
+    for (let token of sentence) {
+      if (token.relation !== undefined) {
+        let head = n2id[token.head]
+        let dependant = n2id[token.id]
+        yield `R${rId++}\t${token.relation} Arg1:T${head} Arg2:T${dependant}`
+      }
     }
   }
 }

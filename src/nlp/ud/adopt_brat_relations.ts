@@ -5,7 +5,8 @@ import * as fs from 'fs'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync } from '../../utils.node'
 import { firstMatch } from '../../string_utils'
-import { extractInfoFromBrat } from '../../nlp/utils'
+import { extractInfoFromBrat, parseBratFile } from '../../nlp/utils'
+import { NS } from '../../xml/utils'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -25,6 +26,7 @@ const bratPrefix2xmlFilename = {
   'zakon_tvaryny': 'zakon__tvaryny',
 }
 
+//------------------------------------------------------------------------------
 function main() {
   const args = minimist(process.argv.slice(2)) as any
 

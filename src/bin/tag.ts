@@ -208,7 +208,7 @@ function main(args: Args) {
             output.write(line + '\n')
           }
         } else if (args.format === 'brat') {
-          mu(tokenStream2brat(tokenStream)).forEach(x => output.write(x + '\n'))
+          mu(tokenStream2brat([[...tokenStream]])).forEach(x => output.write(x + '\n'))
         } else if (args.format === 'brat_plaintext') {
           mu(tokenStream2bratPlaintext(tokenStream)).forEach(x => output.write(x + '\n'))
         } else {

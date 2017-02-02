@@ -5,8 +5,9 @@ import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
 import { Case, Pos } from '../morph_features'
 import {
-  FOREIGN_CHAR_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
-  APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE,
+  FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
+  APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE, HASHTAG_RE,
+  EMAIL_RE, LITERAL_SMILE_RE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
@@ -19,12 +20,15 @@ import * as stringUtils from '../../string_utils'
 
 const REGEX2TAG = [
   [URL_RE, 'sym'],
+  [EMAIL_RE, 'sym'],
+  [LITERAL_SMILE_RE, 'sym'],
   [SYMBOL_RE, 'sym'],
-  [FOREIGN_CHAR_RE, 'x:foreign'],
+  [FOREIGN_RE, 'x:foreign'],
   [ARABIC_NUMERAL_RE, 'numr'],
   [ROMAN_NUMERAL_RE, 'numr:roman'],
   [ANY_PUNC_OR_DASH_RE, 'punct'],
   [URL_RE, 'sym'],
+  [HASHTAG_RE, 'x'],
 ] as [RegExp, string][]
 
 
@@ -142,7 +146,7 @@ function postrpocessPerfPrefixedVerb(x: MorphInterp) {
 export class MorphAnalyzer {
   expandAdjectivesAsNouns = false
   keepN2adj = false
-  private numeralMap: Array<{ form: string, flags: string, lemma: string }>
+  private numeralMap = new Array<{ form: string, flags: string, lemma: string }>()
   private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)))
 
@@ -177,7 +181,6 @@ export class MorphAnalyzer {
     if (!token.length) {
       return []
     }
-    token = token.replace(APOSTROPES_REPLACE_RE, '’')  // normalize
 
     // regexp
     for (let [regex, tsgStr] of REGEX2TAG) {
@@ -185,6 +188,8 @@ export class MorphAnalyzer {
         return [MorphInterp.fromVesumStr(tsgStr, token)]
       }
     }
+
+    token = token.replace(APOSTROPES_REPLACE_RE, '’')  // normalize
 
     // dictionary
     let lookupees = varyLetterCases(token)
@@ -310,6 +315,19 @@ export class MorphAnalyzer {
     // one-letter abbrs
     if (ukLowercaseRe.test(lowercase) && nextToken === '.' && lowercase !== 'я') {   // <–– todo
       res.add(MorphInterp.fromVesumStr('x:abbr', `${lowercase}.`))
+    }
+
+    // try 20-x, todo
+    {
+      let match = lowercase.match(/^(\d+)[-–—]([^\d]+)$/)
+      if (match) {
+        // console.log(match)
+        let [, digits, ending] = match
+        let interps = this.numeralMap
+          .filter(x => x.form.endsWith(ending))
+          .map(x => MorphInterp.fromVesumStr(x.flags, `${digits}-${x.lemma.slice(-ending.length)}`))
+        res.addAll(interps)
+      }
     }
 
     if (!res.size && (lowercase.endsWith('ся') || lowercase.endsWith('сь'))) {
@@ -452,13 +470,26 @@ export class MorphAnalyzer {
   }
 
   private buildNumeralMap() {
-    this.numeralMap = mu(['один', 'два', 'три', 'другий', 'третій'])
-      .map(x => this.dictionary.lookupLexemesByLemma(x))
-      // .map(x => x.)
-      .flatten()
-      .filter(x => x.flags.includes('numr'))
-      // .map(x => ({ form: x.form, flags: x.flags }))
-      .toArray()
+    let a = [
+      'перший',
+      'третій',
+      'другий',
+      'вісім',
+      'восьмий',
+      'двадцять',
+      'двадцятий',
+      'п’ять',
+    ].map(x => this.dictionary.lookupLexemesByLemma(x))
+
+    for (let numeral of a) {
+      for (let lexeme of numeral) {
+        for (let {form, flags, lemma} of lexeme) {
+          if (!flags.includes('&pron')) {
+            this.numeralMap.push({ form, flags, lemma })
+          }
+        }
+      }
+    }
   }
 }
 
