@@ -329,13 +329,7 @@ export function toUd(interp: MorphInterp) {
   // special-treat reflexives
   if (interp.isReflexivePronoun()) {
     features.Reflex = 'Yes'
-    if (interp.lemma === 'себе' || interp.lemma === 'свій') {
-      features.PronType = 'Prs'
-    }
-    if (!interp.isPossessive()) {
-      pos = 'PRON'
-      features.PronType = 'Prs'
-    }
+    features.PronType = 'Prs'
   }
 
   // treat nominals
@@ -346,10 +340,6 @@ export function toUd(interp: MorphInterp) {
       pos = 'PRON'
     } else {
       pos = 'NOUN'
-    }
-  } else if (interp.isPronoun()) {
-    if (interp.isAdjective() && !interp.isReflexivePronoun()) {
-      pos = 'DET'
     }
   }
 
@@ -388,7 +378,9 @@ export function toUd(interp: MorphInterp) {
     pos = 'VERB'
     features.VerbForm = 'Conv'
   } else if (interp.isAdjective()) {
-    if (interp.isParticiple()) {
+    if (interp.isPronoun()) {
+      pos = 'DET'
+    } else if (interp.isParticiple()) {
       features.VerbForm = 'Part'
       if (!features.Voice) {
         throw new Error(`No voice for participle`)
