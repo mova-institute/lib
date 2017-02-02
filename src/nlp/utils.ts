@@ -407,13 +407,15 @@ export function enumerateWords(root: AbstractElement, attributeName = 'n') {
 ////////////////////////////////////////////////////////////////////////////////
 export function numerateTokensGently(root: AbstractElement, attributeName = 'n') {
   let numbers = mu(root.evaluateAttributes(`//@${attributeName}`))
+    .map(x => x.value())
+    .filter(x => /^\d+$/.test(x))
+    .map(x => Number.parseInt(x))
     .toArray()
-    .map(x => Number.parseInt(x.value()))
 
   let idGen = Math.max(-1, ...numbers)
   mu(root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]|//tei:pc', NS))  // todo: NS bug
     .toArray()
-    .filter(x => !x.attribute(attributeName))
+    .filter(x => x.attribute(attributeName) === undefined || !/^\d+$/.test(x.attribute(attributeName)))
     .forEach(x => x.setAttribute(attributeName, (++idGen).toString()))
 
   return idGen

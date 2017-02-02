@@ -21,13 +21,8 @@ function main() {
   mu(files)
     .map(x => parseXmlFileSync(x).evaluateAttributes('//@sid').map(attr => attr.value()))
     .flatten()
+    .filter(x => /^\d+$/.test(x))
     .forEach(x => maxSid = Math.max(maxSid, Number.parseInt(x)))
-
-  // let el = mu(files)
-  //   .map(x => [parseXmlFileSync(x).evaluateElements('//mi:sb', NS)])
-  //   .flatten()
-  //   .filter(el => !el.attribute('sid'))
-  //   .forEach(el => el.setAttribute('sid', ++maxSid))
 
 
   for (let file of files) {
@@ -36,7 +31,7 @@ function main() {
 
       root.evaluateElements('//mi:sb', NS)
         .flatten()
-        .filter(el => !el.attribute('sid'))
+        .filter(el => el.attribute('sid') === undefined || !/^\d+$/.test(el.attribute('sid')))
         .forEach(el => el.setAttribute('sid', ++maxSid))
 
 
