@@ -3,12 +3,11 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { parseXmlFileSync } from '../../xml/utils.node'
-import { tei2tokenStream, tokenStream2sentences, tokenStream2plaintextString } from '../../nlp/utils'
+import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
 import { Token } from '../../nlp/token'
 import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
 import { validateSentence } from './validation'
-import { AbstractElement } from 'xmlapi'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -16,18 +15,20 @@ import * as mkdirp from 'mkdirp'
 
 
 
+interface Args {
+  _: string[]
+  nostand: boolean
+}
 
+//------------------------------------------------------------------------------
 function main() {
-  // const args: any = minimist(process.argv.slice(2), {
-  //   default: {
-  //     'outDir': './treebank',
-  //   },
-  //   string: [
+  let args: Args = minimist(process.argv.slice(2), {
+    boolean: [
+      'nostand',
+    ],
+  }) as any
 
-  //   ],
-  // })
-
-  let [, , globStr, outDir] = process.argv
+  let [globStr, outDir] = args._
   let roots = mu(glob.sync(globStr)).map(x => ({ root: parseXmlFileSync(x), basename: path.basename(x) }))
   mkdirp.sync(outDir)
   let openedFiles = {} as any
@@ -37,15 +38,15 @@ function main() {
   for (let {root, basename} of roots) {
     let tokenStream = tei2tokenStream(root)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
-    sentenceStream.forEach(({sentenceId, set, tokens}) => {
+    for (let {sentenceId, set, tokens} of sentenceStream) {
       initSyntax(tokens)
 
       let hasSyntax = tokens.some(x => x.hasSyntax())
       if (!hasSyntax) {
-        return
+        continue
       }
 
-      let numWords = mu(tokens).count(x => !x.interp0().isPunctuation())
+      let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
       let numRoots = mu(tokens).count(x => !x.relation)
 
       let problems = validateSentence(tokens)
@@ -57,11 +58,15 @@ function main() {
       } else {
         wordsExported += numWords
 
+        if (!args.nostand) {
+          standartizeSentence2ud20(tokens)
+        }
+
         let filename = set2filename(outDir, set || 'train')
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
         fs.writeSync(file, sentence2conllu(tokens, sentenceId) + '\n\n')
       }
-    })
+    }
   }
   console.error(`\nWords exported: ${wordsExported}\nWords kept: ${wordsKept}`)
 }
@@ -108,4 +113,18 @@ function initSyntax(sentence: Array<Token>) {
   sentence.forEach(token => {
     token.head = id2i[token.head]
   })
+}
+
+//------------------------------------------------------------------------------
+function standartizeSentence2ud20(sentence: Array<Token>) {
+  for (let token of sentence) {
+    let interp = token.interp
+
+    // set AUX
+    if (interp.isVerbial()) {
+      if (['aux', 'cop'].includes(token.relation)) {
+        token.interp.setIsAuxillary()
+      }
+    }
+  }
 }

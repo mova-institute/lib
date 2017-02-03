@@ -419,6 +419,11 @@ export function toUd(interp: MorphInterp) {
     features.Hyph = 'Yes'
   }
 
+  // set POS=AUX from VerbType feature
+  if (interp.isAuxillary()) {
+    pos = 'AUX'
+  }
+
   // stylistic treatment
   // one feature for all, so there's a priority:
   if (interp.isColloquial()) {

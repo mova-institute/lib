@@ -896,6 +896,7 @@ export class MorphInterp {
   isImpersonal() { return this.features.mood === Mood.impersonal }
   isPassive() { return this.features.voice === Voice.passive }
   isNegative() { return this.features.polarity === Polarity.negative }
+  isAuxillary() { return this.features.verbType === VerbType.auxilary }
 
   isPlural() { return this.features.number === MorphNumber.plural }
   isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
@@ -925,9 +926,9 @@ export class MorphInterp {
   setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
   setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
+  setIsAuxillary() { this.features.verbType = VerbType.auxilary; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
-
 
   unproper() {
     this.features.nounType = NounType.common
