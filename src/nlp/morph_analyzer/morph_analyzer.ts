@@ -21,13 +21,13 @@ import * as stringUtils from '../../string_utils'
 const REGEX2TAG = [
   [URL_RE, 'sym'],
   [EMAIL_RE, 'sym'],
-  [LITERAL_SMILE_RE, 'sym'],
   [SYMBOL_RE, 'sym'],
-  [FOREIGN_RE, 'x:foreign'],
+  [LITERAL_SMILE_RE, 'sym'],
   [ARABIC_NUMERAL_RE, 'numr'],
   [ROMAN_NUMERAL_RE, 'numr:roman'],
   [ANY_PUNC_OR_DASH_RE, 'punct'],
   [URL_RE, 'sym'],
+  [FOREIGN_RE, 'x:foreign'],
   [HASHTAG_RE, 'x'],
 ] as [RegExp, string][]
 
