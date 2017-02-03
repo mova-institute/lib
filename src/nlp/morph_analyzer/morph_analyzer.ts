@@ -352,7 +352,7 @@ export class MorphAnalyzer {
       } else if (interp.isNoun() && interp.isNominative() && interp.isPlural() && interp.isAnimate()) {
         // add inanimish accusative, e.g. додати в друзі
         let candidate = interp.clone().setCase(Case.accusative)
-        if (!res.has(candidate) && !res.has(candidate.setPseudoanimacy(false))) {
+        if (!res.has(candidate) && !res.has(candidate.setGrammaticalAnimacy(false))) {
           res.add(candidate)
         }
       }
@@ -367,6 +367,7 @@ export class MorphAnalyzer {
         }
         continue
       }
+
       if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
         continue
       }

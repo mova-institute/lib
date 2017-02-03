@@ -48,7 +48,7 @@ export enum Animacy {
   inanimate,
   bacteria,  // ?
 }
-export enum Pseudoanimacy {
+export enum GrammaticalAnimacy {
   animate,
   inanimate,
 }

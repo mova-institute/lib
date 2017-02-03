@@ -25,7 +25,7 @@ function main() {
           if (interp.isForeign()) {
             continue
           }
-          if (!newInterps.find(x => x.equals(interp))) {
+          if (!newInterps.find(x => x.featurewiseEquals(interp))) {
             let message = basename
             if (n) {
               message += `::${n}`

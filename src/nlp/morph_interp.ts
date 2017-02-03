@@ -4,7 +4,7 @@
 import { indexTableByColumns, overflowNegative, flipMap } from '../algo'
 import { isOddball, compare, zipLongest } from '../lang'
 import {
-  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, Pseudoanimacy,
+  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, GrammaticalAnimacy,
   Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
@@ -46,7 +46,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [PrepositionRequirement, 'prepositionRequirement'],
   [PronominalType, 'pronominalType'],
   [Pronoun, 'pronoun'],
-  [Pseudoanimacy, 'pseudoanimacy'],
+  [GrammaticalAnimacy, 'grammaticalAnimacy'],
   [Rarity, 'rarity'],
   [Reflexivity, 'reflexivity'],
   [RequiredAnimacy, 'requiredAnimacy'],
@@ -93,8 +93,8 @@ export const FEATURE_TABLE = [
   { featStr: 'animacy', feat: Animacy, vesum: Animacy.inanimate, vesumStr: 'inanim', mte: 'n' },
   { featStr: 'animacy', feat: Animacy, vesum: Animacy.bacteria, vesumStr: 'unanim' },
 
-  { featStr: 'pseudoanimacy', feat: Pseudoanimacy, vesum: Pseudoanimacy.animate, vesumStr: 'animish' },
-  { featStr: 'pseudoanimacy', feat: Pseudoanimacy, vesum: Pseudoanimacy.inanimate, vesumStr: 'inanimish' },
+  { featStr: 'grammaticalAnimacy', feat: GrammaticalAnimacy, vesum: GrammaticalAnimacy.animate, vesumStr: 'animish' },
+  { featStr: 'grammaticalAnimacy', feat: GrammaticalAnimacy, vesum: GrammaticalAnimacy.inanimate, vesumStr: 'inanimish' },
 
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
@@ -278,7 +278,7 @@ export const FEATURE_ORDER = {
     MorphNumber,
     Gender,
     Case,
-    Pseudoanimacy,
+    GrammaticalAnimacy,
     CaseInflectability,
     NumberTantum,
     Alternativity,
@@ -296,7 +296,7 @@ export const FEATURE_ORDER = {
     Gender,
     MorphNumber,
     Case,
-    Pseudoanimacy,
+    GrammaticalAnimacy,
     RequiredAnimacy,
     Variant,
     Degree,
@@ -351,7 +351,7 @@ export const FEATURE_ORDER = {
     Degree,
     ConjunctionType,
     Case, RequiredCase,
-    Pseudoanimacy,
+    GrammaticalAnimacy,
     RequiredAnimacy,
     CaseInflectability,
     Alternativity,
@@ -392,7 +392,7 @@ export class Features {
   person: Person
   voice: Voice
   animacy: Animacy
-  pseudoanimacy: Pseudoanimacy
+  grammaticalAnimacy: GrammaticalAnimacy
   requiredAnimacy: RequiredAnimacy
   gender: Gender
   degree: Degree
@@ -806,7 +806,7 @@ export class MorphInterp {
     throw new Error(`Cannot convert ${this.toVesumStr()} to MTE`)
   }
 
-  equals(other: MorphInterp) {
+  featurewiseEquals(other: MorphInterp) {
     return this.toVesumStr() === other.toVesumStr()
   }
 
@@ -895,6 +895,7 @@ export class MorphInterp {
   isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
   isImpersonal() { return this.features.mood === Mood.impersonal }
   isPassive() { return this.features.voice === Voice.passive }
+  isNegative() { return this.features.polarity === Polarity.negative }
 
   isPlural() { return this.features.number === MorphNumber.plural }
   isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
@@ -918,7 +919,7 @@ export class MorphInterp {
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
-  setPseudoanimacy(value = true) { this.features.pseudoanimacy = value ? Pseudoanimacy.animate : Pseudoanimacy.inanimate; return this }
+  setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
   setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
   setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }

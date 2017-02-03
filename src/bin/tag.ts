@@ -190,7 +190,7 @@ function main(args: Args) {
           tokenStream = tokenStream.window(2).map(([curr, next]) => {
             if (curr.form) {
               let newInterps = analyzer.tag(curr.form, next && next.form)
-                .filter(x => !curr.interps.find(xx => xx.equals(x)))
+                .filter(x => !curr.interps.find(xx => xx.featurewiseEquals(x)))
               curr.addInterps(newInterps)
             }
             return curr

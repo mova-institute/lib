@@ -77,12 +77,12 @@ function main() {
         }
         let interp = MorphInterp.fromVesumStr(interpEl.attribute('ana'), interpEl.attribute('lemma'))
         let interpsInDict = analyzer.tag(form)
-        let presentInDict = interpsInDict.some(dictInterp => dictInterp.equals(interp))
+        let presentInDict = interpsInDict.some(dictInterp => dictInterp.featurewiseEquals(interp))
         // console.log(presentInDict)
         if (!presentInDict) {
           // negativity
           let newInterp = interp.clone().setIsNegative()
-          if (interpsInDict.some(x => x.equals(newInterp))) {
+          if (interpsInDict.some(x => x.featurewiseEquals(newInterp))) {
             saveInterp(interpEl, newInterp)
           }
 
