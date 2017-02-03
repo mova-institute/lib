@@ -894,6 +894,7 @@ export class MorphInterp {
   isPassive() { return this.features.voice === Voice.passive }
 
   isPlural() { return this.features.number === MorphNumber.plural }
+  isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
 
   isMasculine() { return this.features.gender === Gender.masculine }
 
@@ -914,6 +915,7 @@ export class MorphInterp {
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
   setPseudoanimacy(value = true) { this.features.pseudoanimacy = value ? Pseudoanimacy.animate : Pseudoanimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
+  setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
   setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
   setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }

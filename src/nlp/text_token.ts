@@ -306,7 +306,7 @@ export class TextToken {
     return this.elem.elementChildren().map(x => ({
       flags: x.attribute(TextToken.FLAGS_ATTR),
       lemma: x.attribute(TextToken.LEMMA_ATTR),
-    })).toArray()
+    })).toArray() as { flags: string, lemma: string }[]
   }
 
   private toggleDisamb(index: number) {
