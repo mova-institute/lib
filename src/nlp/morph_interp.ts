@@ -845,17 +845,17 @@ export class MorphInterp {
     return this
   }
 
-  isNoun() { return this.features.pos === Pos.noun }
-  isVerb() { return this.features.pos === Pos.verb }
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes }
-  isTransgressive() { return this.features.pos === Pos.transgressive }
-  isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
-  isPreposition() { return this.features.pos === Pos.preposition }
-  isConjunction() { return this.features.pos === Pos.conjunction }
-  isPronoun() { return this.features.pronoun !== undefined }
   isAdverb() { return this.features.pos === Pos.adverb }
+  isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
+  isConjunction() { return this.features.pos === Pos.conjunction }
+  isNoun() { return this.features.pos === Pos.noun }
   isParticle() { return this.features.pos === Pos.particle }
+  isPreposition() { return this.features.pos === Pos.preposition }
+  isPronoun() { return this.features.pronoun !== undefined }
   isPunctuation() { return this.features.pos === Pos.punct }
+  isTransgressive() { return this.features.pos === Pos.transgressive }
+  isVerb() { return this.features.pos === Pos.verb }
   isX() { return this.features.pos === Pos.x }
 
   isNominative() { return this.features.case === Case.nominative }
@@ -868,40 +868,38 @@ export class MorphInterp {
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
   isN2Adj() { return this.features.n2adjness === N2adjness.yes }
 
-  isForeign() { return this.otherFlags.has('foreign') }
-  isAnimate() { return this.features.animacy === Animacy.animate }
-  isPossessive() { return this.features.possessiveness === Possessiveness.yes }
-  isInanimate() { return this.features.animacy === Animacy.inanimate }
-  isComparable() { return this.features.degree !== undefined }
-  isPresent() { return this.features.tense === Tense.present }
-  isPerfect() { return this.features.aspect === Aspect.perfect }
-  isImperfect() { return this.features.aspect === Aspect.imperfect }
-  isIndicative() { return this.features.mood === undefined || this.features.mood === Mood.indicative }
-  isActive() { return this.features.voice === Voice.active }
-  isFeminine() { return this.features.gender === Gender.feminine }
-  isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
-  isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?
-  isBeforeadj() { return this.features.beforeadj === Beforeadj.yes }
-  isOdd() { return this.features.oddness === Oddness.yes }
-  isAbbreviation() { return this.features.abbreviation === Abbreviation.yes }
-  isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
   canBeOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes || this.features.ordinalNumeral === OrdinalNumeral.maybe }
-  isParticiple() { return this.features.participle !== undefined }
-  isBacteria() { return this.features.animacy === Animacy.bacteria }
-  isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
-  isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
-  isEmphatic() { return this.features.pronominalType === PronominalType.emphatic }
-  isReflexivePronoun() { return this.features.pronominalType === PronominalType.reflexive }
-  isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
-  isImpersonal() { return this.features.mood === Mood.impersonal }
-  isPassive() { return this.features.voice === Voice.passive }
-  isNegative() { return this.features.polarity === Polarity.negative }
+  isAbbreviation() { return this.features.abbreviation === Abbreviation.yes }
+  isActive() { return this.features.voice === Voice.active }
+  isAnimate() { return this.features.animacy === Animacy.animate }
   isAuxillary() { return this.features.verbType === VerbType.auxilary }
-
+  isBacteria() { return this.features.animacy === Animacy.bacteria }
+  isBeforeadj() { return this.features.beforeadj === Beforeadj.yes }
+  isComparable() { return this.features.degree !== undefined }
+  isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
+  isEmphatic() { return this.features.pronominalType === PronominalType.emphatic }
+  isFeminine() { return this.features.gender === Gender.feminine }
+  isForeign() { return this.otherFlags.has('foreign') }
+  isImperfect() { return this.features.aspect === Aspect.imperfect }
+  isImpersonal() { return this.features.mood === Mood.impersonal }
+  isInanimate() { return this.features.animacy === Animacy.inanimate }
+  isIndicative() { return this.features.mood === undefined || this.features.mood === Mood.indicative }
+  isMasculine() { return this.features.gender === Gender.masculine }
+  isNegative() { return this.features.polarity === Polarity.negative }
+  isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?
+  isOdd() { return this.features.oddness === Oddness.yes }
+  isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
+  isParticiple() { return this.features.participle !== undefined }
+  isPassive() { return this.features.voice === Voice.passive }
+  isPerfect() { return this.features.aspect === Aspect.perfect }
   isPlural() { return this.features.number === MorphNumber.plural }
   isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
-
-  isMasculine() { return this.features.gender === Gender.masculine }
+  isPossessive() { return this.features.possessiveness === Possessiveness.yes }
+  isPresent() { return this.features.tense === Tense.present }
+  isReflexivePronoun() { return this.features.pronominalType === PronominalType.reflexive }
+  isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
+  isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
+  isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
 
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }
@@ -914,19 +912,19 @@ export class MorphInterp {
   isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }
   isVerbial() { return this.isVerb() || this.isTransgressive() }
 
-  setPos(pos: Pos) { this.features.pos = pos; return this }
-  setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
-  setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
-  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
-  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
-  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
-  setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
-  setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
-  setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
-  setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
+  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
   setIsAuxillary() { this.features.verbType = VerbType.auxilary; return this }
+  setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
+  setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
+  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
+  setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
+  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
+  setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
+  setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
+  setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
+  setPos(pos: Pos) { this.features.pos = pos; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
 
