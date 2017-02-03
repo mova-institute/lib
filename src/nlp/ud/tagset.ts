@@ -5,7 +5,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity,
-  booleanFeatures, PrepositionRequirement, Foreign,
+  booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
@@ -32,6 +32,7 @@ export type UdVoice = 'Act' | 'Pass'
 export type UdPolarity = 'Pos' | 'Neg'
 export type UdVariant = 'Short' | 'Long'
 export type UdStyle = 'Coll' | 'Rare' | 'Odd'
+export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -92,6 +93,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Foreign, 'Foreign'],
   [Variant, 'Variant'],
   [RequiredAnimacy, 'Animacy'],
+  [GrammaticalAnimacy, 'Animacy[gram]'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -230,6 +232,11 @@ const requiredAnimacyMap = new Map<RequiredAnimacy, UdAnimacy>([
   [RequiredAnimacy.inanimate, 'Inan'],
 ])
 
+const grammaticalAnimacyMap = new Map<GrammaticalAnimacy, UdAnimacy>([
+  [GrammaticalAnimacy.animate, 'Anim'],
+  [GrammaticalAnimacy.inanimate, 'Inan'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -255,6 +262,7 @@ const mapMap = new Map<any, any>([
   [Foreign, foreignMap],
   [Variant, variantMap],
   [RequiredAnimacy, requiredAnimacyMap],
+  [GrammaticalAnimacy, grammaticalAnimacyMap],
 ])
 
 
@@ -286,6 +294,7 @@ export class UdFeats {
   Variant: UdVariant
   VerbForm: UdVerbForm
   Voice: UdVoice
+  'Animacy[gram]': UdGrammaticalAnimacy
 }
 /* tslint:enable:variable-name */
 
