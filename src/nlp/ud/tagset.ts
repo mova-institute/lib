@@ -30,6 +30,7 @@ export type UdTense = 'Past' | 'Pres' | 'Fut'
 export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part' | 'Conv'
 export type UdVoice = 'Act' | 'Pass'
 export type UdPolarity = 'Pos' | 'Neg'
+export type UdVariant = 'Short' | 'Long'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -88,28 +89,22 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Polarity, 'Polarity'],
   [NameType, 'NameType'],
   [Foreign, 'Foreign'],
+  [Variant, 'Variant'],
+  [RequiredAnimacy, 'Animacy'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
   // [Bad, 'bad'],
-  // [Beforeadj, 'beforeadj'],
   // [CaseInflectability, 'caseInflectability'],
   // [Colloquial, 'colloquial'],
   // [Dimin, 'dimin'],
   // [N2adjness, 'n2adjness'],
-  // [NameType, 'nameType'],
-  // [NounType, 'nounType'],
-  // [NumberTantum, 'numberTantum'],
   // [NumeralForm, 'numeralForm'],
   // [Oddness, 'oddness'],
-  // [OrdinalNumeral, 'ordinalNumeral'],
   // [ParadigmOmonym, 'paradigmOmonym'],
-  // [Participle, 'participle'],
-  // [Pronoun, 'pronoun'],
   // [Rarity, 'rarity'],
   // [RequiredAnimacy, 'requiredAnimacy'],
   // [Slang, 'slang'],
-  // [VerbType, 'verbType'],
   // [VuAlternativity, 'vuAlternative'],
 ])
 
@@ -224,6 +219,16 @@ const foreignMap = new Map<Foreign, UdForeign>([
   [Foreign.yes, 'Yes'],
 ])
 
+const variantMap = new Map<Variant, UdVariant>([
+  [Variant.short, 'Short'],
+  [Variant.long, 'Long'],
+])
+
+const requiredAnimacyMap = new Map<RequiredAnimacy, UdAnimacy>([
+  [RequiredAnimacy.animate, 'Anim'],
+  [RequiredAnimacy.inanimate, 'Inan'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -247,6 +252,8 @@ const mapMap = new Map<any, any>([
   [Polarity, polarityMap],
   [NameType, nameTypeMap],
   [Foreign, foreignMap],
+  [Variant, variantMap],
+  [RequiredAnimacy, requiredAnimacyMap],
 ])
 
 
@@ -262,6 +269,7 @@ export class UdFeats {
   Degree: UdDegree
   Foreign: UdForeign
   Gender: UdGender
+  Hyph: UdHyph
   Mood: UdMood
   NameType: UdNameType
   Number: UdNumber
@@ -273,9 +281,9 @@ export class UdFeats {
   PronType: UdPronType
   Reflex: UdBoolean
   Tense: UdTense
+  Variant: UdVariant
   VerbForm: UdVerbForm
   Voice: UdVoice
-  Hyph: UdHyph
 }
 /* tslint:enable:variable-name */
 
@@ -303,6 +311,11 @@ function mapFeatureValue2Ud(featureName, value) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toUd(interp: MorphInterp) {
+  // throw on not supported
+  if (interp.isEmphatic()) {
+    throw new Error(`Emphatic pronoun conversion is not implemented`)
+  }
+
   let pos: UdPos
   let features = new UdFeats()
 
@@ -324,6 +337,11 @@ export function toUd(interp: MorphInterp) {
         features[key] = value
       }
     }
+  }
+
+  // encode plurale tantum in Number feature
+  if (interp.isPluraleTantum()) {
+    features.Number = 'Ptan'
   }
 
   // special-treat reflexives

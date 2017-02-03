@@ -136,7 +136,7 @@ export const FEATURE_TABLE = [
   { featStr: 'degree', feat: Degree, vesum: Degree.absolute, vesumStr: 'abs', mte: undefined },
 
   { featStr: 'variant', feat: Variant, vesum: Variant.short, vesumStr: 'short', mte: 's' },
-  { featStr: 'variant', feat: Variant, vesum: Variant.full, vesumStr: 'uncontr', mte: 'f' },
+  { featStr: 'variant', feat: Variant, vesum: Variant.long, vesumStr: 'uncontr', mte: 'f' },
 
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
@@ -530,7 +530,7 @@ export class MorphInterp {
           }
         }
         else if (flags[6] === 'f' && 'na'.includes(flags[5])) {
-          ret.features.variant = Variant.full
+          ret.features.variant = Variant.long
         }
         break
 
@@ -888,6 +888,7 @@ export class MorphInterp {
   isBacteria() { return this.features.animacy === Animacy.bacteria }
   isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
   isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
+  isEmphatic() { return this.features.pronominalType === PronominalType.emphatic }
   isReflexivePronoun() { return this.features.pronominalType === PronominalType.reflexive }
   isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
   isImpersonal() { return this.features.mood === Mood.impersonal }
