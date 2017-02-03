@@ -153,7 +153,7 @@ export enum Variant {
   long,
 }
 export enum Rarity {
-  archaic,
+  // archaic,
   rare,
 }
 export enum Slang {
@@ -162,7 +162,7 @@ export enum Slang {
 export enum Colloquial {
   yes,
 }
-export enum Bad {
+export enum Badness {
   yes,
 }
 export enum ConjunctionType {

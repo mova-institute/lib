@@ -5,7 +5,7 @@ import { indexTableByColumns, overflowNegative, flipMap } from '../algo'
 import { isOddball, compare, zipLongest } from '../lang'
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, Pseudoanimacy,
-  Aspect, Auto, Bad, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
+  Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
@@ -21,7 +21,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Animacy, 'animacy'],
   [Aspect, 'aspect'],
   [Auto, 'auto'],
-  [Bad, 'bad'],
+  [Badness, 'bad'],
   [Beforeadj, 'beforeadj'],
   [Case, 'case'],
   [CaseInflectability, 'caseInflectability'],
@@ -82,7 +82,7 @@ export const FEATURE_TABLE = [
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
   { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
   { featStr: 'slang', feat: Slang, vesum: Slang.yes, vesumStr: 'slang' },
-  { featStr: 'bad', feat: Bad, vesum: Bad.yes, vesumStr: 'bad' },
+  { featStr: 'bad', feat: Badness, vesum: Badness.yes, vesumStr: 'bad' },
 
   { featStr: 'nameType', feat: NameType, vesum: NameType.first, vesumStr: 'fname' },
   { featStr: 'nameType', feat: NameType, vesum: NameType.last, vesumStr: 'lname' },
@@ -370,7 +370,7 @@ export const FEATURE_ORDER = {
 }
 
 for (let pos of Object.keys(FEATURE_ORDER)) {
-  FEATURE_ORDER[pos].push(Colloquial, Rarity, Bad, Oddness, Auto, SemanticOmonym, ParadigmOmonym)
+  FEATURE_ORDER[pos].push(Colloquial, Rarity, Badness, Oddness, Auto, SemanticOmonym, ParadigmOmonym)
 }
 
 const POSWISE_COMPARATORS = {}
@@ -411,11 +411,13 @@ export class Features {
   possessiveness: Possessiveness
   abbreviation: Abbreviation
   oddness: Oddness
-  bad: Bad
+  badness: Badness
   n2adjness: N2adjness
   prepositionRequirement: PrepositionRequirement
   polarity: Polarity  // the only ambig flag (neg)
   foreign: Foreign
+  colloquial: Colloquial
+  rarity: Rarity
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -903,7 +905,9 @@ export class MorphInterp {
   hasGender() { return this.features.gender !== undefined }
 
   isProper() { return this.features.nounType === NounType.proper }
-  isBad() { return this.features.bad === Bad.yes }
+  isBad() { return this.features.badness === Badness.yes }
+  isColloquial() { return this.features.colloquial === Colloquial.yes }
+  isRare() { return this.features.rarity === Rarity.rare }
 
   isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }
   isVerbial() { return this.isVerb() || this.isTransgressive() }

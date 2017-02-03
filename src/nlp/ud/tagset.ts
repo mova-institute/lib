@@ -1,6 +1,6 @@
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
-  Aspect, Auto, Bad, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
+  Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
@@ -31,6 +31,7 @@ export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part' | 'Conv'
 export type UdVoice = 'Act' | 'Pass'
 export type UdPolarity = 'Pos' | 'Neg'
 export type UdVariant = 'Short' | 'Long'
+export type UdStyle = 'Coll' | 'Rare' | 'Odd'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -280,6 +281,7 @@ export class UdFeats {
   PrepCase: UdPrepCase
   PronType: UdPronType
   Reflex: UdBoolean
+  Style: UdStyle
   Tense: UdTense
   Variant: UdVariant
   VerbForm: UdVerbForm
@@ -406,6 +408,16 @@ export function toUd(interp: MorphInterp) {
     }
   } else if (interp.isBeforeadj()) {
     features.Hyph = 'Yes'
+  }
+
+  // stylistic treatment
+  // one feature for all, so there's a priority:
+  if (interp.isColloquial()) {
+    features.Style = 'Coll'
+  } else if (interp.isRare()) {
+    features.Style = 'Rare'
+  } else if (interp.isOdd()) {
+    features.Style = 'Odd'
   }
 
   return { pos, features }
