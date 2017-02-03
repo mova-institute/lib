@@ -151,6 +151,13 @@ const DET_RELATIONS = [
   'mark:obl',
 ]
 
+const NON_SCONJ_RELS = [
+  'mark:iobj',
+  'mark:nsubj',
+  'mark:obj',
+  'mark:obl',
+]
+
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Problem {
@@ -174,11 +181,19 @@ export function validateSentence(sentence: Token[]) {
 
   const childrenMap = sentence.map((x, i) => mu(sentence).findAllIndexes(xx => xx.head === i).toArray())
 
+
+  reportIfNot(`до сполучника йде тільки простий mark`,
+    (x, i) => x.relation
+      && x.interp.isSubordinative()
+      // && NON_SCONJ_RELS.includes(x.relation)
+      && x.relation.startsWith('mark:')
+  )
+  // return problems
+
   reportIfNot(`punct в двокрапку має йти справа`,
     (x, i) => x.form === ':'
       && x.interp.isPunctuation()
       && x.head < i)
-  // return problems
 
   reportIfNot(`у залежника ccomp має бути підмет`,
     (x, i) => x.relation === 'ccomp'

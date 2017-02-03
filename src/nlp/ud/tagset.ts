@@ -332,7 +332,7 @@ export function toUd(interp: MorphInterp) {
 
   // special-treat conjunctions
   if (interp.isConjunction()) {
-    return interp.isSubordinating()
+    return interp.isSubordinative()
       ? { pos: 'SCONJ', features }
       : { pos: 'CCONJ', features }
   }

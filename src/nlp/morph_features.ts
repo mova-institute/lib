@@ -166,7 +166,7 @@ export enum Badness {
   yes,
 }
 export enum ConjunctionType {
-  subordinating,
+  subordinative,
   coordinating,
 }
 export enum NumberTantum { noPlural, noSingular }

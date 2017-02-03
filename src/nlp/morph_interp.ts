@@ -152,7 +152,7 @@ export const FEATURE_TABLE = [
   { featStr: 'polarity', feat: Polarity, vesum: Polarity.negative, vesumStr: 'neg' },  // <-- ambig!!
 
   { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
-  { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinating, vesumStr: 'subord', mte: 's' },
+  { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinative, vesumStr: 'subord', mte: 's' },
 
   { featStr: 'pos', feat: Pos, vesum: Pos.noun, vesumStr: 'noun', mte: 'N' },
   { featStr: 'pos', feat: undefined, mte: 'P' },
@@ -899,7 +899,7 @@ export class MorphInterp {
   isReflexivePronoun() { return this.features.pronominalType === PronominalType.reflexive }
   isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
-  isSubordinating() { return this.features.conjunctionType === ConjunctionType.subordinating }
+  isSubordinative() { return this.features.conjunctionType === ConjunctionType.subordinative }
 
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }
