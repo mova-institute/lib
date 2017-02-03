@@ -10,7 +10,7 @@
   ],
   "bin": {
     "mi-2brat": "lib/bin/2brat.js",
-    "mi-adopt-brat-relations": "lib/nlp/ud/adopt_brat_relations.js",
+    "mi-adopt-brat-relations": "lib/nlp/ud/adopt-brat-relations.js",
     "mi-autofix-corpus": "lib/bin/autofix-corpus.js",
     "mi-build-treebank": "lib/nlp/ud/build-treebank.js",
     "mi-buildcorp": "lib/corpus_workflow/build.js",
@@ -24,7 +24,7 @@
     "mi-genalign": "lib/corpus_workflow/genalign.js",
     "mi-globcat": "lib/bin/globcat.js",
     "mi-id2i": "lib/corpus_workflow/id2i.js",
-    "mi-parse-brat-log": "lib/nlp/ud/parse_brat_log.js",
+    "mi-parse-brat-log": "lib/nlp/ud/parse-brat-log.js",
     "mi-remorphconllu": "lib/nlp/ud/remorphconllu.js",
     "mi-sort": "lib/bin/sort.js",
     "mi-sortalign": "lib/corpus_workflow/sortalign.js",
