@@ -44,21 +44,23 @@ export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
       tokenIndex = 1
       yield ''
     } else if (token.isWord()) {
-      let interp = token.interp0()
-      let { pos, features } = toUd(interp)
-      let misc = nextToken && nextToken.isGlue() ? 'SpaceAfter=No' : '_'
-      yield [
-        tokenIndex++,
-        token.form,
-        interp.lemma,
-        pos,
-        interp.toVesumStr(),
-        udFeatures2conlluString(features),
-        '_',
-        '_',
-        '_',
-        misc,
-      ].join('\t')
+      let index = tokenIndex++
+      for (let interp of token.interps) {
+        let { pos, features } = toUd(interp)
+        let misc = nextToken && nextToken.isGlue() ? 'SpaceAfter=No' : '_'
+        yield [
+          index,
+          token.form,
+          interp.lemma,
+          pos,
+          interp.toVesumStr(),
+          udFeatures2conlluString(features),
+          '_',
+          '_',
+          '_',
+          misc,
+        ].join('\t')
+      }
     }
   }
 }
