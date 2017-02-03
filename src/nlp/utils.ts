@@ -176,7 +176,7 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const TOSKIP = new Set(['w', 'mi:w_', 'pc', 'abbr', 'mi:sb'])
+const TOSKIP = new Set(['w', 'mi:w_', 'w_', 'pc', 'abbr', 'mi:sb', 'sb'])
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
   let subroots = [...root.evaluateNodes('//tei:title|//tei:text', NS)]
@@ -264,7 +264,7 @@ function tagOrXMte(interps: MorphInterp[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isRegularizedFlowElement(el: AbstractElement) {
-  let ret = !(el.name() === elementNames.teiOrig && el.parent() && el.parent().name() === elementNames.teiChoice)
+  let ret = !(el.localName() === 'orig' && el.parent() && el.parent().localName() === 'choice')
   return ret
 }
 
@@ -285,16 +285,16 @@ export function iterateCorpusTokens(root: AbstractElement) {
         let { node, entering } = pointer.value
         if (node.isElement()) {
           let el = node.asElement()
-          let name = el.name()
-          if (entering && (name === W_ || !isRegularizedFlowElement(el))) {
-            if (name === W_) {
+          let name = el.localName()
+          if (entering && (name === 'w_' || !isRegularizedFlowElement(el))) {
+            if (name === 'w_') {
               yield { el, entering }
             }
             pointer = iterator.next('skip')
             // console.log('skipped')
             continue
           }
-          if (elementsOfInterest.has(el.localName())) {  // todo
+          if (elementsOfInterest.has(name)) {  // todo
             yield { el, entering }
           }
         }
@@ -321,8 +321,8 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
   for (let subroot of subroots) {
     traverseDepthEl(subroot, el => {
 
-      let name = el.name()
-      if (name === W_ || !isRegularizedFlowElement(el)) {
+      let name = el.localName()
+      if (name === 'w_' || !isRegularizedFlowElement(el)) {
         return 'skip'
       }
 
@@ -399,7 +399,7 @@ export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAna
 ////////////////////////////////////////////////////////////////////////////////
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0  // todo: switch from wu to normal forEach
-  root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)  // todo: NS bug
+  root.evaluateElements('//mi:w_|//w_', NS)  // todo: NS bug
     .toArray()
     .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
 }
@@ -413,7 +413,7 @@ export function numerateTokensGently(root: AbstractElement, attributeName = 'n')
     .toArray()
 
   let idGen = Math.max(-1, ...numbers)
-  mu(root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]|//tei:pc', NS))  // todo: NS bug
+  mu(root.evaluateElements('//mi:w_|//tei:pc|//w_|//pc', NS))  // todo: NS bug
     .toArray()
     .filter(x => x.attribute(attributeName) === undefined || !/^\d+$/.test(x.attribute(attributeName)))
     .forEach(x => x.setAttribute(attributeName, (++idGen).toString()))
@@ -1182,7 +1182,7 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2sentences(stream: Iterable<Token>, ) {
+export function* tokenStream2sentences(stream: Iterable<Token>) {
   let sentenceId: string;
   let set: string;
   let tokens = new Array<Token>()

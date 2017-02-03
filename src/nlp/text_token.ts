@@ -1,5 +1,4 @@
 import { AbstractNode, AbstractElement } from 'xmlapi'
-import { W, W_, P, L, SE, PC } from './common_elements'
 import { ELEMS_BREAKING_SENTENCE_NS, haveSpaceBetweenEl } from './utils'
 import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils'
 import { wrappedOrNull } from '../lang'
@@ -15,7 +14,7 @@ export function $t(elem: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class TextToken {
-  private static TOKEN_ELEMS = new Set<string>([W_, PC])
+  private static TOKEN_ELEMS = new Set<string>(['w_', 'pc'])
   private static FLAGS_X = 'x'
   private static DISAMB_ATTR = 'disamb'
   private static FLAGS_ATTR = 'ana'
@@ -28,7 +27,7 @@ export class TextToken {
   }
 
   isWord() {  // todo: more name
-    return this.elem.name() === W_
+    return this.elem.localName() === 'w_'
   }
 
   equals(other: TextToken) {
@@ -153,7 +152,7 @@ export class TextToken {
   }
 
   text() {  // todo
-    if (this.elem.name() === W_) {
+    if (this.elem.localName() === 'w_') {
       return this.elem.firstElementChild().text()
     }
 
@@ -225,24 +224,24 @@ export class TextToken {
   insertSentenceEnd() {
     let where: AbstractNode = this.elem
     traverseDocumentOrderEl(where, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.name())) {
+      if (ELEMS_BREAKING_SENTENCE_NS.has(el.localName())) {
 
       }
       else if (!el.nextElementSibling() || haveSpaceBetweenEl(el, el.nextElementSibling())) {
         where = el
         return 'stop'
       }
-      if (el.name() === W_) {
+      if (el.localName() === 'w_') {
         return 'skip'
       }
     }, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.name())) {
+      if (ELEMS_BREAKING_SENTENCE_NS.has(el.localName())) {
         where = el.lastChild()
         return 'stop'
       }
     })
 
-    if (where.isElement() && (where as AbstractElement).name() !== SE) {
+    if (where.isElement() && (where as AbstractElement).localName() !== 'sb') {
       let sb = where.document().createElement('mi:sb')
       where.insertAfter(sb)
     }
@@ -253,7 +252,7 @@ export class TextToken {
   next(f: (token: TextToken) => boolean) {
     let ret = null
     traverseDocumentOrderEl(this.elem, el => {
-      if (el !== this.elem && el.name() === W_) {
+      if (el !== this.elem && el.localName() === 'w_') {
         let token = new TextToken(el)
         if (f(token)) {
           ret = token
@@ -271,8 +270,8 @@ export class TextToken {
   }
 
   breaksLine() {
-    let elName = this.elem.name()
-    return elName === P || elName === L
+    let elName = this.elem.localName()
+    return elName === 'p' || elName === 'l'
   }
 
   isEquallyInterpreted(other: TextToken) {

@@ -5,9 +5,8 @@ import * as fs from 'fs'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
-import { $t } from '../nlp/text_token'
 import { numerateTokensGently } from '../nlp/utils'
-import { NS } from '../xml/utils'
+import { removeNamespacing } from '../xml/utils'
 import { mu } from '../mu'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 
@@ -18,6 +17,12 @@ function main() {
   let files = glob.sync(globStr)
   let wc = 0
 
+  console.log(`removing legacy namespaces…`)
+  for (let filePath of files) {
+    fs.writeFileSync(filePath, removeNamespacing(fs.readFileSync(filePath, 'utf8')) + '\n')
+  }
+
+  console.log(`calculating max sentence id…`)
   let maxSid = 0
   mu(files)
     .map(x => parseXmlFileSync(x).evaluateAttributes('//@sid').map(attr => attr.value()))
@@ -26,6 +31,7 @@ function main() {
     .forEach(x => maxSid = Math.max(maxSid, Number.parseInt(x)))
 
 
+  console.log(`applying autofixes…`)
   for (let file of files) {
     try {
       let root = parseXmlFileSync(file)
@@ -34,13 +40,13 @@ function main() {
       numerateTokensGently(root)
 
       // set missing sentence ids
-      root.evaluateElements('//mi:sb', NS)
+      root.evaluateElements('//sb')
         .flatten()
         .filter(el => el.attribute('sid') === undefined || !/^\d+$/.test(el.attribute('sid')))
         .forEach(el => el.setAttribute('sid', ++maxSid))
 
       // reload tags
-      let words = [...root.evaluateElements('//tei:w', NS)]
+      let words = [...root.evaluateElements('//w')]
       for (let w of words) {
         let flags = w.attribute('ana')
         if (flags) {
@@ -52,7 +58,7 @@ function main() {
       }
 
       // remove redundant attributes
-      words = [...root.evaluateElements('//mi:w_', NS)]
+      words = [...root.evaluateElements('//w_')]
       wc += words.length
       for (let w of words) {
         w.removeAttribute('nn')
@@ -61,7 +67,7 @@ function main() {
 
       // do safe transforms
       let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(true)
-      let interpEls = root.evaluateElements('//mi:w_/tei:w', NS)
+      let interpEls = root.evaluateElements('//w_/w')
       for (let interpEl of interpEls) {
         let form = interpEl.text()
         let tag = interpEl.attribute('ana')

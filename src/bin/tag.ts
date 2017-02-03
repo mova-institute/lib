@@ -118,7 +118,7 @@ function main(args: Args) {
       let root = parseXml(inputStr)
 
       if (args.reinterpret) {
-        morphReinterpret([...root.evaluateElements('//mi:w_', NS)], analyzer)
+        morphReinterpret([...root.evaluateElements('//mi:w_|w_', NS)], analyzer)
       }
 
       if (args.normalize) {
@@ -136,13 +136,13 @@ function main(args: Args) {
       }
 
       if (args.count) {
-        console.log(root.evaluateNumber('count(//mi:w_)', NS))
+        console.log(root.evaluateNumber('count(//mi:w_|w_)', NS))
         return
       }
 
       if (args.unknown) {
         // todo use mu
-        let unknowns = [...new Set(root.evaluateElements('//mi:w_[w[@ana="x"]]', NS).map(x => $t(x).text()))]
+        let unknowns = [...new Set(root.evaluateElements('//mi:w_[w[@ana="x"]]|w_[w[@ana="x"]]', NS).map(x => $t(x).text()))]
         if (args.sort) {
           const collator = new Intl.Collator('uk-UA')
           unknowns.sort(collator.compare)

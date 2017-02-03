@@ -58,7 +58,14 @@ export function namePrefixed(prefix: string, name: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function removeXmlns(xmlstr: string) {
-  return xmlstr.replace(/ xmlns(:\w+)?="[^"]+"/g, '')
+  return xmlstr.replace(/ xmlns(:\w+)?\s*=\s*"[^"]+"/g, '')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function removeNamespacing(xmlstr: string) {
+  let ret = removeXmlns(xmlstr)
+  ret = ret.replace(/<\s*(\/)?\s*\w+:/g, '<$1')
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
