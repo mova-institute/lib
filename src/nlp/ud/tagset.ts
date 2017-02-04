@@ -30,7 +30,7 @@ export type UdTense = 'Past' | 'Pres' | 'Fut'
 export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part' | 'Conv'
 export type UdVoice = 'Act' | 'Pass'
 export type UdPolarity = 'Pos' | 'Neg'
-export type UdVariant = 'Short' | 'Long'
+export type UdVariant = 'Short' | 'Uncontr'
 export type UdStyle = 'Coll' | 'Rare' | 'Odd'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
 export type UdPos =
@@ -94,6 +94,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Variant, 'Variant'],
   [RequiredAnimacy, 'Animacy'],
   [GrammaticalAnimacy, 'Animacy[gram]'],
+  [PrepositionRequirement, 'PrepCase'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -224,7 +225,7 @@ const foreignMap = new Map<Foreign, UdForeign>([
 
 const variantMap = new Map<Variant, UdVariant>([
   [Variant.short, 'Short'],
-  [Variant.long, 'Long'],
+  [Variant.uncontracted, 'Uncontr'],
 ])
 
 const requiredAnimacyMap = new Map<RequiredAnimacy, UdAnimacy>([
@@ -235,6 +236,10 @@ const requiredAnimacyMap = new Map<RequiredAnimacy, UdAnimacy>([
 const grammaticalAnimacyMap = new Map<GrammaticalAnimacy, UdAnimacy>([
   [GrammaticalAnimacy.animate, 'Anim'],
   [GrammaticalAnimacy.inanimate, 'Inan'],
+])
+
+const prepositionRequirementMap = new Map<PrepositionRequirement, UdPrepCase>([
+  [PrepositionRequirement.yes, 'Pre'],
 ])
 
 /*
@@ -263,6 +268,7 @@ const mapMap = new Map<any, any>([
   [Variant, variantMap],
   [RequiredAnimacy, requiredAnimacyMap],
   [GrammaticalAnimacy, grammaticalAnimacyMap],
+  [PrepositionRequirement, prepositionRequirementMap],
 ])
 
 
@@ -333,8 +339,8 @@ export function toUd(interp: MorphInterp) {
   // special-treat conjunctions
   if (interp.isConjunction()) {
     return interp.isSubordinative()
-      ? { pos: 'SCONJ', features }
-      : { pos: 'CCONJ', features }
+      ? { pos: 'SCONJ' as UdPos, features }
+      : { pos: 'CCONJ' as UdPos, features }
   }
 
   // auto-map pos and features
@@ -406,7 +412,7 @@ export function toUd(interp: MorphInterp) {
   } else if (interp.isTransgressive()) {
     pos = 'VERB'
     features.VerbForm = 'Conv'
-  } else if (interp.isAdjective()) {
+  } else if (interp.isAdjective() && !interp.isAdjectiveAsNoun()) {
     if (interp.isPronoun()) {
       pos = 'DET'
     } else if (interp.isParticiple()) {

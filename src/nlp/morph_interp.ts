@@ -136,7 +136,7 @@ export const FEATURE_TABLE = [
   { featStr: 'degree', feat: Degree, vesum: Degree.absolute, vesumStr: 'abs', mte: undefined },
 
   { featStr: 'variant', feat: Variant, vesum: Variant.short, vesumStr: 'short', mte: 's' },
-  { featStr: 'variant', feat: Variant, vesum: Variant.long, vesumStr: 'uncontr', mte: 'f' },
+  { featStr: 'variant', feat: Variant, vesum: Variant.uncontracted, vesumStr: 'uncontr', mte: 'f' },
 
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
@@ -532,7 +532,7 @@ export class MorphInterp {
           }
         }
         else if (flags[6] === 'f' && 'na'.includes(flags[5])) {
-          ret.features.variant = Variant.long
+          ret.features.variant = Variant.uncontracted
         }
         break
 
@@ -846,6 +846,7 @@ export class MorphInterp {
   }
 
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes }
+  isAdjectivish() { return this.features.pos === Pos.adjective }  // todo: rename properly <^
   isAdverb() { return this.features.pos === Pos.adverb }
   isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
   isConjunction() { return this.features.pos === Pos.conjunction }

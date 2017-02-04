@@ -150,7 +150,7 @@ export enum NumeralForm {
 }
 export enum Variant {
   short,
-  long,
+  uncontracted,
 }
 export enum Rarity {
   // archaic,
