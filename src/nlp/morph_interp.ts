@@ -9,7 +9,7 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity, Foreign,
+  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity, Foreign, Formality,
   PrepositionRequirement,
 } from './morph_features'
 
@@ -60,6 +60,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [VuAlternativity, 'vuAlternative'],
   [Polarity, 'polarity'],
   [Foreign, 'foreign'],
+  [Formality, 'formality'],
 ])
 export const featureName2objMap = flipMap(featureObj2nameMap)
 
@@ -214,6 +215,8 @@ export const FEATURE_TABLE = [
 
   { featStr: 'foreign', feat: Foreign, vesum: Foreign.yes, vesumStr: 'foreign' },
 
+  { featStr: 'formality', feat: Formality, vesum: Formality.yes, vesumStr: 'formal' },
+
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
@@ -289,6 +292,7 @@ export const FEATURE_ORDER = {
     PrepositionRequirement,
     Pronoun,
     PronominalType,
+    Formality,
   ],
   [Pos.adjective]: [
     Pos,
@@ -418,6 +422,7 @@ export class Features {
   foreign: Foreign
   colloquial: Colloquial
   rarity: Rarity
+  formality: Formality
 }
 
 ////////////////////////////////////////////////////////////////////////////////

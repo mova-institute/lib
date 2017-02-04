@@ -5,7 +5,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity,
-  booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy,
+  booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
@@ -33,6 +33,7 @@ export type UdPolarity = 'Pos' | 'Neg'
 export type UdVariant = 'Short' | 'Uncontr'
 export type UdStyle = 'Coll' | 'Rare' | 'Odd'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
+export type Polite = UdBoolean
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -95,6 +96,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [RequiredAnimacy, 'Animacy'],
   [GrammaticalAnimacy, 'Animacy[gram]'],
   [PrepositionRequirement, 'PrepCase'],
+  [Formality, 'Polite'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],

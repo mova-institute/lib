@@ -186,5 +186,6 @@ export enum Oddness { yes }
 export enum N2adjness { yes }
 export enum PrepositionRequirement { yes }
 export enum Foreign { yes }
+export enum Formality { yes }
 
-export const booleanFeatures = [Possessiveness, Reflexivity, Abbreviation, PrepositionRequirement]
+export const booleanFeatures = [Possessiveness, Reflexivity, Abbreviation, PrepositionRequirement, Formality]
