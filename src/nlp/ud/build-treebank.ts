@@ -7,7 +7,7 @@ import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
 import { Token } from '../../nlp/token'
 import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
-import { validateSentence } from './validation'
+import { validateSentenceSyntax } from './validation'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -18,6 +18,7 @@ import * as mkdirp from 'mkdirp'
 interface Args {
   _: string[]
   nostand: boolean
+  onlyvalid: boolean
 }
 
 //------------------------------------------------------------------------------
@@ -25,6 +26,7 @@ function main() {
   let args: Args = minimist(process.argv.slice(2), {
     boolean: [
       'nostand',
+      'onlyvalid',
     ],
   }) as any
 
@@ -47,12 +49,21 @@ function main() {
       }
 
       let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
-      let numRoots = mu(tokens).count(x => !x.relation)
 
-      let problems = validateSentence(tokens)
-      if (problems.length) {
+      let numRoots = mu(tokens).count(x => !x.relation)
+      if (!numRoots) {
         wordsKept += numWords
+        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }]))
+        continue
+      }
+
+      let problems = validateSentenceSyntax(tokens)
+      if (problems.length) {
         console.error(formatProblems(basename, sentenceId, tokens, problems))
+      }
+
+      if (problems.length && args.onlyvalid) {
+        wordsKept += numWords
       } else if (numRoots > 1) {
         wordsKept += numWords
       } else {
@@ -79,12 +90,14 @@ if (require.main === module) {
 function formatProblems(docName: string, sentenceId: string, tokens: Token[], problems: any[]) {
   let bratPath = tokens.find(x => x.getAttribute('depsrc')).getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
   let href = `https://lab.mova.institute/syntax_annotator/index.xhtml#/treebank/ud2/${bratPath}`
-  let ret = `Проблеми в реченні ${sentenceId} ${href}\n`
+  let ret = `*** Проблеми в реченні ${sentenceId} ${href}\n\n`
   let repro = tokens.join(' ')
   for (let [i, {index, message}] of problems.entries()) {
-    ret += `  ${message}\n`
-    ret += `    ${repro}\n`
-    ret += `    ${' '.repeat(calculateTokenOffset(index, tokens))}${'^'.repeat(tokens[index].form.length)}\n`
+    ret += `    ${message}\n`
+    ret += `${repro}\n`
+    if (index !== undefined) {
+      ret += `${' '.repeat(calculateTokenOffset(index, tokens))}${'^'.repeat(tokens[index].form.length)}\n`
+    }
   }
   ret += '\n'
   return ret

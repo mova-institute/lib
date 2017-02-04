@@ -910,7 +910,7 @@ export class MorphInterp {
   isRare() { return this.features.rarity === Rarity.rare }
 
   isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }
-  isVerbial() { return this.isVerb() || this.isTransgressive() }
+  isVerbial() { return this.isVerb() || this.isTransgressive() || this.isParticiple() }
 
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }

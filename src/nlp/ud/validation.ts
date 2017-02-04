@@ -167,7 +167,7 @@ export interface Problem {
 
 type SentencePredicate = (x: Token, i?: number) => any
 ////////////////////////////////////////////////////////////////////////////////
-export function validateSentence(sentence: Token[]) {
+export function validateSentenceSyntax(sentence: Token[]) {
 
   let problems = new Array<Problem>()
 
@@ -181,16 +181,26 @@ export function validateSentence(sentence: Token[]) {
 
   const childrenMap = sentence.map((x, i) => mu(sentence).findAllIndexes(xx => xx.head === i).toArray())
 
+  // return []
+  // if (mu(sentence).count(x => !x.relation) > 1) {
+  //   reportIf(`речення недороблене`,
+  //     x => x.relation === undefined)
+  // }
+  // return problems
 
-  reportIf(`до сполучника йде mark:*`,
+  reportIf(`aux з недієслівного`,
+    (x, i) => x.relation === 'cop'
+      && !sentence[x.head].interp.isVerbial()
+  )
+
+  reportIf(`mark:* в сполучник`,
     (x, i) => x.relation
       && x.interp.isSubordinative()
       // && NON_SCONJ_RELS.includes(x.relation)
       && x.relation.startsWith('mark:')
   )
-  // return problems
 
-  reportIf(`в двокрапку йде punct зліва`,
+  reportIf(`punct в двокрапку зліва`,
     (x, i) => x.form === ':'
       && x.interp.isPunctuation()
       && x.head < i)
@@ -205,24 +215,19 @@ export function validateSentence(sentence: Token[]) {
       && sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
 
 
-  reportIf('до часток йде не discourse',
+  reportIf('не discourse до частки',
     x => x.relation
       && !['б', 'би', 'не'].includes(x.form.toLowerCase())
       && x.interp.isParticle()
       && !['discourse', 'fixed'])
 
-  // if (mu(sentence).count(x => !x.relation) > 1) {
-  //   reportIfNot(`речення недороблене: в більше ніж одне слово не входить реляція`,
-  //     x => x.relation === undefined)
-  // }
-
   reportIf('вжито заборонену реляцію',
     x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
 
-  LEFT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} вказує ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
-  RIGHT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} вказувати праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
+  LEFT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
+  RIGHT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
 
-  reportIf('до б(би) йде не aux',
+  reportIf('не aux у б(би)',
     x => ['б', 'би'].includes(x.form.toLowerCase())
       && x.interp.isParticle()
       && !['fixed', 'aux', undefined].includes(x.relation))
@@ -232,11 +237,11 @@ export function validateSentence(sentence: Token[]) {
       x => x.relation === 'iobj')
   }
 
-  reportIf('до пунктуації йде не punct',
+  reportIf('не punct в пунктуацію',
     x => x.interp.isPunctuation()
       && !['punct', 'goeswith', 'discourse', undefined].includes(x.relation))
 
-  reportIf('не/ні підключені не advmod’ом',
+  reportIf('не advmod в не/ні',
     x => x.interp.isParticle()
       && ['не', 'ні'/*, 'лише'*/].includes(x.form.toLowerCase())
       && !['advmod', undefined].includes(x.relation))
@@ -244,10 +249,10 @@ export function validateSentence(sentence: Token[]) {
   // reportIfNot('до DET не йде amod',
   //   x => toUd(x.interp).pos === 'DET' && x.relation === 'amod')
 
-  reportIf(`до DET йде не ${DET_RELATIONS.join('/')}`,
+  reportIf(`не ${DET_RELATIONS.join('/')} в DET`,
     x => toUd(x.interp).pos === 'DET' && !DET_RELATIONS.includes(x.relation))
 
-  reportIf('до сурядного сполучника на початку речення йде не cc',
+  reportIf('не cc в сурядий на початку речення',
     (x, i) => i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.relation))
 
   var predicates = new Set<number>()
@@ -278,7 +283,7 @@ export function validateSentence(sentence: Token[]) {
   reportIf('vocative йде тільки не до іменника в кличному (називному)',
     x => x.relation === 'vocative' && (!x.interp.isNominative() && !x.interp.isVocative() || !x.interp.isNounish()))
 
-  reportIf('керівний числівник позначено не nummod:gov',
+  reportIf('керівний числівник не nummod:gov',
     x => x.relation === 'nummod'
       && x.interp.isCardinalNumeral()
       && !x.interp.isPronoun()
@@ -303,12 +308,12 @@ export function validateSentence(sentence: Token[]) {
       && sentence.some(xx => xx.head === i
         && (!x.interp.isAbbreviation() || !xx.interp.isPunctuation()))))
 
-  reportIf(`obl може йде до неіменника`,
+  reportIf(`obl в неіменник`,
     x => OBLIQUES.includes(x.relation)
       && !x.isEllipsis
       && !x.interp.isNounish())
 
-  reportIf(`obl може йде не від дієслова/дієприслівника/прислівника/прикметника`,
+  reportIf(`obl з не дієслова/дієприслівника/прислівника/прикметника`,
     (x, i) => OBLIQUES.includes(x.relation)
       && !x.isEllipsis
       && !sentence.some(xx => xx.head === i && xx.relation === 'cop')
@@ -319,8 +324,9 @@ export function validateSentence(sentence: Token[]) {
 
   /*
 
-    reportIfNot(``,
-      x => )
+    reportIf(``,
+      (x,i) =>
+    )
 
   */
 
