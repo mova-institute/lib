@@ -221,10 +221,6 @@ const nameTypeMap = new Map<NameType, UdNameType>([
   [NameType.patronym, 'Pat'],
 ])
 
-const foreignMap = new Map<Foreign, UdForeign>([
-  [Foreign.yes, 'Yes'],
-])
-
 const variantMap = new Map<Variant, UdVariant>([
   [Variant.short, 'Short'],
   [Variant.uncontracted, 'Uncontr'],
@@ -266,7 +262,6 @@ const mapMap = new Map<any, any>([
   [MorphNumber, numberMap],
   [Polarity, polarityMap],
   [NameType, nameTypeMap],
-  [Foreign, foreignMap],
   [Variant, variantMap],
   [RequiredAnimacy, requiredAnimacyMap],
   [GrammaticalAnimacy, grammaticalAnimacyMap],
