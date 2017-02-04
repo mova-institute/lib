@@ -4,32 +4,49 @@
     "node_modules/tslint-eslint-rules/dist/rules"
   ],
   "rules": {
-
     "object-literal-shorthand": true,
     "adjacent-overload-signatures": true,
     // "object-literal-key-quotes": [true, "as-needed"],
     // "no-for-in-array": true,
     "no-unsafe-finally": true,
     "no-mergeable-namespace": true,
-    "linebreak-style": [true, "LF"],
+    "linebreak-style": [
+      true,
+      "LF"
+    ],
     "new-parens": true,
     "no-invalid-this": true,
     "use-isnan": true,
-
-
-    "align": [true, "statements", "parameters"],
-    "ban": [true],
+    "align": [
+      true,
+      "statements",
+      "parameters"
+    ],
+    "ban": [
+      true
+    ],
     "class-name": true,
-    "comment-format": [false],
+    "comment-format": [
+      false
+    ],
     "curly": true,
     "eofline": true,
     "forin": true,
-    "indent": [true, "spaces"],
-    "interface-name": [false, "never-prefix"],
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "interface-name": [
+      false,
+      "never-prefix"
+    ],
     "jsdoc-format": true,
     "label-position": true,
     "label-undefined": true,
-    "max-line-length": [true, 200],
+    "max-line-length": [
+      true,
+      200
+    ],
     "member-access": false,
     // "member-ordering": [true, "public-before-private", "static-before-instance", "variables-before-functions"],
     "no-angle-bracket-type-assertion": false,
@@ -38,7 +55,9 @@
     "no-bitwise": false,
     "no-conditional-assignment": false,
     "no-consecutive-blank-lines": false,
-    "no-console": [false],
+    "no-console": [
+      false
+    ],
     "no-construct": true,
     "no-constructor-vars": false,
     "no-debugger": true,
@@ -54,24 +73,37 @@
     "no-string-literal": true,
     "no-trailing-whitespace": true,
     "no-unused-expression": true,
-    "no-unused-variable": [true],
+    "no-unused-variable": [
+      true
+    ],
     "no-use-before-declare": true,
     // "no-var-keyword": true,
     "no-var-requires": false,
     "object-literal-sort-keys": false,
-    "one-line": ["check-else"],
-    "quotemark": [true, "single", "avoid-escape"],
+    "one-line": [
+      "check-else"
+    ],
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
     "radix": true,
-    "semicolon": [false, "never"],
+    "semicolon": [
+      false,
+      "never"
+    ],
     "switch-default": true,
     "trailing-comma": [
-      true,
+      false,
       {
         "multiline": "always",
         "singleline": "never"
       }
     ],
-    "triple-equals": [true],
+    "triple-equals": [
+      true
+    ],
     "typedef": [
       false,
       "parameter",
@@ -96,8 +128,14 @@
         "variable-declaration": "space"
       }
     ],
-    "use-strict": [false],
-    "variable-name": [true, "check-format", "ban-keywords"],
+    "use-strict": [
+      false
+    ],
+    "variable-name": [
+      true,
+      "check-format",
+      "ban-keywords"
+    ],
     "whitespace": [
       true,
       "check-branch",
@@ -107,9 +145,7 @@
       "check-module",
       "check-type"
     ],
-
     "one-variable-per-declaration": false,
-
     // "no-single-line-block-comment": true,
     "no-unnecessary-field-initialization": true,
     "no-typeof-undefined": true,
