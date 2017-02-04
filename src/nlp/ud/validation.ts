@@ -36,7 +36,7 @@ const ALLOWED_RELATIONS = [
   'flat',
   'goeswith',
   'iobj',
-  'list',
+  // 'list',
   'mark:iobj',
   'mark:nsubj',
   'mark:obj',
@@ -141,15 +141,25 @@ const CONTINUOUS_SUBREES = [
   'csubj',
 ]
 
-const DET_RELATIONS = [
-  'det',
-  'det:numgov',
-  'det:nummod',
-  'mark:iobj',
-  'mark:nsubj',
-  'mark:obj',
-  'mark:obl',
-]
+const POS_ALLOWED_RELS = {
+  // 'DET': [
+  //   'det',
+  //   'det:numgov',
+  //   'det:nummod',
+  //   'mark:iobj',
+  //   'mark:nsubj',
+  //   'mark:obj',
+  //   'mark:obl',
+  // ],
+  // 'PUNCT': [
+  //   'punct',
+  //   'goeswith',
+  //   'discourse',
+  // ],
+  'SCONJ': [
+    'mark',
+  ],
+}
 
 const NON_SCONJ_RELS = [
   'mark:iobj',
@@ -159,6 +169,28 @@ const NON_SCONJ_RELS = [
 ]
 
 
+const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
+  [`case`, `з іменника`, t => t.interp.isNounish(), `в прийменник`, t => t.interp.isPreposition()],
+  [`det`, `з іменника`, t => t.interp.isNounish(), `в DET`, t => toUd(t.interp).pos === 'DET'],
+  [`amod`, `з іменника`, t => t.interp.isNounish(), `в прикметник`, t => t.interp.isAdjectivish()],
+  [`nmod`, `з іменника`, t => t.interp.isNounish() || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
+  [`nummod`, `з іменника`, t => t.interp.isNounish(), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronoun()],
+  [`det:numgov`, `з іменника`, t => t.interp.isNounish(), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
+  [`punct`, `з не PUNCT`, t => t /*temp*/ && !t.interp.isPunctuation(), `в PUNCT`, t => t.interp.isPunctuation()],
+  [`vocative`, `з присудка`, (t, s, i) => 1 || canBePredicate(t, s, i), `в кличний/називний іменник`, t => isNounishOrEllipticAdj(t) && (t.interp.isVocative() || t.interp.isNominative())],
+
+  // [`nsubj`, `з присудка`, (t, s, i) => 1 || canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
+  // [`obj`, `з присудка`, (t, s, i) => 1 || canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
+  // [`obl`, `з присудка`, (t, s, i) => 1 || canBePredicate(t, s, i), `в іменник`, t => isNounishOrEllipticAdj(t)],
+  // [`obl:agent`, `з присудка`, (t, s, i) => 1 || canBePredicate(t, s, i), `в іменник`, t => isNounishOrEllipticAdj(t)],
+
+  // [`acl`, `з іменника`, t => isNounishOrEllipticAdj(t), `в присудок`, t => 1],
+
+
+
+  // [`appos`, `з іменника`, t => t.interp.isNounish() || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
+]
+
 ////////////////////////////////////////////////////////////////////////////////
 export interface Problem {
   message: string
@@ -166,6 +198,7 @@ export interface Problem {
 }
 
 type SentencePredicate = (x: Token, i?: number) => any
+type SentencePredicate2 = (t: Token, s?: Token[], i?: number) => any
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentenceSyntax(sentence: Token[]) {
 
@@ -179,26 +212,47 @@ export function validateSentenceSyntax(sentence: Token[]) {
     sentence.some((xx, ii) => xx.head === i && fn(xx, ii))
 
 
-  const childrenMap = sentence.map((x, i) => mu(sentence).findAllIndexes(xx => xx.head === i).toArray())
+  for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
+    reportIf(`${rel} не ${messageFrom}`, (t, i) => t.relation === rel && !predicateFrom(sentence[t.head], sentence, i))
+    reportIf(`${rel} не ${messageTo}`, (t, i) => t.relation === rel && !predicateTo(t, sentence, i))
+  }
+  // return problems
+
+  reportIf(`aux з недієслівного`,
+    (x, i) => x.relation === 'aux'
+      && !sentence[x.head].interp.isVerbial()
+  )
+
+  reportIf(`cop з дієприкметника`,
+    (x, i) => x.relation === 'cop'
+      && isActualParticiple(sentence[x.head], sentence, x.head)
+  )
+
+  reportIf('заборонена реляція',
+    x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
+
+  reportIf(`nsubj в неіменник, НЕ СТАВТЕ Ellipsis коли лінь ставити &noun!`,
+    x => x.relation
+      && !x.isEllipsis
+      && x.relation.startsWith('nsubj')
+      && !x.interp.isNounish()
+  )
+
+  Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
+    reportIf(`не ${rels.join('/')} в ${pos}`,
+      x => x.relation
+        && !x.isEllipsis
+        && toUd(x.interp).pos === pos
+        && !rels.includes(x.relation)))
+
+  LEFT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
+  RIGHT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
 
   // return []
   // if (mu(sentence).count(x => !x.relation) > 1) {
   //   reportIf(`речення недороблене`,
   //     x => x.relation === undefined)
   // }
-  // return problems
-
-  reportIf(`aux з недієслівного`,
-    (x, i) => x.relation === 'cop'
-      && !sentence[x.head].interp.isVerbial()
-  )
-
-  reportIf(`mark:* в сполучник`,
-    (x, i) => x.relation
-      && x.interp.isSubordinative()
-      // && NON_SCONJ_RELS.includes(x.relation)
-      && x.relation.startsWith('mark:')
-  )
 
   reportIf(`punct в двокрапку зліва`,
     (x, i) => x.form === ':'
@@ -214,18 +268,11 @@ export function validateSentenceSyntax(sentence: Token[]) {
     (x, i) => x.relation === 'xcomp'
       && sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
 
-
   reportIf('не discourse до частки',
     x => x.relation
       && !['б', 'би', 'не'].includes(x.form.toLowerCase())
       && x.interp.isParticle()
       && !['discourse', 'fixed'])
-
-  reportIf('вжито заборонену реляцію',
-    x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
-
-  LEFT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
-  RIGHT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
 
   reportIf('не aux у б(би)',
     x => ['б', 'би'].includes(x.form.toLowerCase())
@@ -237,20 +284,10 @@ export function validateSentenceSyntax(sentence: Token[]) {
       x => x.relation === 'iobj')
   }
 
-  reportIf('не punct в пунктуацію',
-    x => x.interp.isPunctuation()
-      && !['punct', 'goeswith', 'discourse', undefined].includes(x.relation))
-
   reportIf('не advmod в не/ні',
     x => x.interp.isParticle()
       && ['не', 'ні'/*, 'лише'*/].includes(x.form.toLowerCase())
       && !['advmod', undefined].includes(x.relation))
-
-  // reportIfNot('до DET не йде amod',
-  //   x => toUd(x.interp).pos === 'DET' && x.relation === 'amod')
-
-  reportIf(`не ${DET_RELATIONS.join('/')} в DET`,
-    x => toUd(x.interp).pos === 'DET' && !DET_RELATIONS.includes(x.relation))
 
   reportIf('не cc в сурядий на початку речення',
     (x, i) => i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.relation))
@@ -277,11 +314,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
     }
   })
 
-  reportIf('obj/iobj має прийменника',
+  reportIf('obj/iobj має прийменник',
     (x, i) => ['obj', 'iobj'].includes(x.relation) && sentence.some(xx => xx.relation === 'case' && xx.head === i))
-
-  reportIf('vocative йде тільки не до іменника в кличному (називному)',
-    x => x.relation === 'vocative' && (!x.interp.isNominative() && !x.interp.isVocative() || !x.interp.isNounish()))
 
   reportIf('керівний числівник не nummod:gov',
     x => x.relation === 'nummod'
@@ -290,13 +324,13 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && (x.interp.isNominative() || x.interp.isAccusative() /*|| /^\d+$/.test(x.form)*/)
       && sentence[x.head].interp.isGenitive())
 
-  reportIf(`потенційна :pass-реляція?`,
+  reportIf(`:pass-реляція?`,
     x => !x.isEllipsis
       && ['aux', 'csubj', 'nsubj'].includes(x.relation)
       && sentence[x.head]
       && isPassive(sentence[x.head].interp))  // todo: навпаки
 
-  reportIf(`потенційний :obl:agent?`,
+  reportIf(`:obl:agent?`,
     (x, i) => !x.isEllipsis
       && x.relation === 'obl'
       && x.interp.isInstrumental()
@@ -308,10 +342,10 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && sentence.some(xx => xx.head === i
         && (!x.interp.isAbbreviation() || !xx.interp.isPunctuation()))))
 
-  reportIf(`obl в неіменник`,
-    x => OBLIQUES.includes(x.relation)
-      && !x.isEllipsis
-      && !x.interp.isNounish())
+  // reportIf(`obl в неіменник`,
+  //   x => OBLIQUES.includes(x.relation)
+  //     && !x.isEllipsis
+  //     && !x.interp.isNounish())
 
   reportIf(`obl з не дієслова/дієприслівника/прислівника/прикметника`,
     (x, i) => OBLIQUES.includes(x.relation)
@@ -330,21 +364,6 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   */
 
-
-
-  //////// trash
-
-  // reportIfNot(`іменники можуть модифікуватися тільки ${NOMINAL_HEAD_MODIFIERS.join(', ')}`,
-  //   (x, i) => x.interp.isNounish() && sentence.some(xx => xx.head === i && !NOMINAL_HEAD_MODIFIERS.includes(xx.relation)))
-
-  // reportIfNot(`dfdfdfd`,
-  //   (x, i) => CONTINUOUS_SUBREES.includes(x.relation) && !isConinuous(getSubtree(i, childrenMap)))
-
-  // reportIfNot('nominal head can be modified by nmod, appos, amod, nummod, acl, det, case only',
-  //   (x, i) => !x.isEllipsis
-  //     && !sentence.some(xx => xx.head === i && xx.relation === 'cop')
-  //     && x.interp.isNounish()
-  //     && sentence.some(xx => xx.head === i && !NOMINAL_HEAD_MODIFIERS.includes(xx.relation)))
 
   return problems
 }
@@ -374,4 +393,19 @@ function isConinuous(array: Array<number>) {
     }
   }
   return true
+}
+
+//------------------------------------------------------------------------------
+function canBePredicate(token: Token, sentence: Token[], index: number) {
+  return token.interp.isVerb() || token.interp.isTransgressive() || sentence.some(t => t.head === index && t.relation === 'cop')
+}
+
+//------------------------------------------------------------------------------
+function isNounishOrEllipticAdj(token: Token) {
+  return token.interp.isNounish() || token.isEllipsis && token.interp.isAdjectivish()
+}
+
+//------------------------------------------------------------------------------
+function isActualParticiple(token: Token, sentence: Token[], index: number) {
+  return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.head === index && xx.relation === x))
 }
