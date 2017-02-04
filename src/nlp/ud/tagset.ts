@@ -24,10 +24,10 @@ export type UdMood = 'Ind' | 'Imp'
 export type UdNameType = 'Giv' | 'Sur' | 'Pat' | 'Oth'    // todo
 export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
 export type UdNumForm = 'Digit' | 'Roman' | 'Word'
-export type UdPerson = '1' | '2' | '3'
+export type UdPerson = '0' | '1' | '2' | '3'
 export type UdPrepCase = 'Npr' | 'Pre'
 export type UdTense = 'Past' | 'Pres' | 'Fut'
-export type UdVerbForm = 'Fin' | 'Inf' | 'Imps' | 'Part' | 'Conv'
+export type UdVerbForm = 'Fin' | 'Inf' | 'Part' | 'Conv'
 export type UdVoice = 'Act' | 'Pass'
 export type UdPolarity = 'Pos' | 'Neg'
 export type UdVariant = 'Short' | 'Uncontr'
@@ -402,12 +402,12 @@ export function toUd(interp: MorphInterp) {
         case Mood.infinitive:
           features.VerbForm = 'Inf'
           break
-        case Mood.impersonal:
-          features.VerbForm = 'Imps'
-          break
         default:
           throw new Error(`Unknown Mood: "${interp.features.mood}"`)
       }
+    }
+    if (interp.isImpersonal()) {
+      features.Person = '0'
     }
   } else if (interp.isTransgressive()) {
     pos = 'VERB'

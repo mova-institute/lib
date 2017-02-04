@@ -97,7 +97,7 @@ export enum Mood {
   indicative,
   imperative,
   infinitive,
-  impersonal,
+  impersonal,  // todo: not mood
 }
 export enum Tense {
   past,

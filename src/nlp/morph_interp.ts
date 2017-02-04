@@ -884,7 +884,7 @@ export class MorphInterp {
   isImperfect() { return this.features.aspect === Aspect.imperfect }
   isImpersonal() { return this.features.mood === Mood.impersonal }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
-  isIndicative() { return this.features.mood === undefined || this.features.mood === Mood.indicative }
+  isIndicative() { return this.features.mood === undefined || this.features.mood === Mood.indicative || this.features.mood === Mood.impersonal }
   isMasculine() { return this.features.gender === Gender.masculine }
   isNegative() { return this.features.polarity === Polarity.negative }
   isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?
