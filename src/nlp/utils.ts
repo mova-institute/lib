@@ -1093,25 +1093,40 @@ export function* polishXml2verticalStream(root: AbstractElement) {
   }
 }
 
+export interface BratSpan {
+  index: number
+  form: string
+  annotations: any
+  relation?: string
+  head?: BratSpan
+  comment?: string
+}
 ////////////////////////////////////////////////////////////////////////////////
 export function parseBratFile(lines: Iterable<string>) {
-  let tokens = {} as any
+  let tokens = {} as { [key: string]: BratSpan }
   let counter = 0
   for (let line of lines) {
+    // span
     let match = line.match(/^T(\d+).*\s(\S+)$/)
     if (match) {
       let [, id, form] = match
-      tokens[id] = { form, i: counter++ }
+      tokens[id] = { form, index: counter++, annotations: {} }
       continue
     }
 
-    match = line.match(/\tN\sT(\S+)\s(\S+)$/)
+    // annotation
+    match = line.match(/^A\d+\t(\S+)\sT(\S+)(\s(\S+))?$/)
     if (match) {
-      let [, id, n] = match
-      tokens[id].n = n
+      let [, key, id, , value] = match
+      if (value === undefined) {
+        tokens[id].annotations[key] = true
+      } else {
+        tokens[id].annotations[key] = value
+      }
       continue
     }
 
+    // relation
     match = line.match(/^R\d+\s(\S+)\sArg1:T(\S+)\sArg2:T(\S+)\s*$/)
     if (match) {
       let [, relation, headId, depId] = match
@@ -1119,44 +1134,17 @@ export function parseBratFile(lines: Iterable<string>) {
       tokens[depId].head = tokens[headId]
       continue
     }
-  }
 
-  return Object.values(tokens).sort((a, b) => a.i - b.i)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function extractInfoFromBrat(n2element: any, lines: Iterable<string>, sourceId: string) {
-  let span2n = {} as any
-  for (let line of lines) {
-    if (line.includes('\tN ')) {
-      let [, , t, n] = line.split(/\s+/g)
-      span2n[t] = n
-    } else if (line.startsWith('R')) {
-      let [, relation, head, dependantStr] = line.split(/\s+/g)
-      relation = relation.replace('_', ':')
-      let headN = span2n[head.substr('Arg1:'.length)]
-      let dependantN = span2n[dependantStr.substr('Arg2:'.length)]
-      // console.log(n2element)
-      let dependant = n2element[dependantN]
-      if (dependant) {
-        n2element[dependantN].setAttribute('dep', `${headN}-${relation}`)
-        n2element[dependantN].setAttribute('depsrc', sourceId)
-      } else {
-        console.error(`no N for "${line}"`)
-      }
-    } else if (line.includes('\tEllipsis ')) {
-      let [, , span] = line.split(/\s+/g)
-      if (span2n[span]) {  // temp
-        n2element[span2n[span]].setAttribute('ellipsis', 'yes')
-      }
-    } else if (line.includes('\tAnnotatorNotes ')) {
-      let [, span, comment] = line.split('\t')
-      span = span.split(' ')[1]
-      if (span2n[span]) {  // temp
-        n2element[span2n[span]].setAttribute('comment', comment)
-      }
+    // comment
+    match = line.match(/\tAnnotatorNotes T(\S+)\t(.+)/)
+    if (match) {
+      let [, id, comment] = match
+      tokens[id].comment = comment
+      continue
     }
   }
+
+  return Object.values(tokens).sort((a, b) => a.index - b.index)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

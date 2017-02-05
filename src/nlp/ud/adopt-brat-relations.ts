@@ -4,8 +4,10 @@ import * as fs from 'fs'
 // import { join } from 'path'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync } from '../../utils.node'
+import { isString } from '../../lang'
 import { firstMatch } from '../../string_utils'
-import { extractInfoFromBrat } from '../../nlp/utils'
+import { parseBratFile } from '../../nlp/utils'
+import { AbstractElement } from 'xmlapi'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -27,7 +29,11 @@ const bratPrefix2xmlFilename = {
 
 //------------------------------------------------------------------------------
 function main() {
-  const args = minimist(process.argv.slice(2)) as any
+  const args = minimist(process.argv.slice(2), {
+    boolean: [
+      'srcid',
+    ]
+  }) as any
 
   let [xmlFiles, allBratFiles] = args._.map(x => glob.sync(x)) as string[][]
   let bratFilesGrouped = groupby(allBratFiles, x => firstMatch(x, /\/([^/]+)_\d+\.ann$/, 1))
@@ -45,14 +51,31 @@ function main() {
     }
     let root = parseXmlFileSync(xmlFile)
 
-    let n2element = {} as any
+    let n2element = {} as { [key: string]: AbstractElement }
     root.evaluateElements('//*[@n]')
       .forEach(x => n2element[x.attribute('n')] = x)
 
     for (let bratFile of bratFiles) {
-      extractInfoFromBrat(n2element, linesSync(bratFile), bratFile)
+      for (let token of parseBratFile(linesSync(bratFile))) {
+        if (isString(token.annotations.N)) {
+          let el = n2element[token.annotations.N]
+          el.setAttribute('comment', token.comment)
+          el.setAttribute('ellipsis', token.annotations.Ellipsis && 'yes')
+
+          if (isString(token.relation) && token.head && isString(token.head.annotations.N)) {
+            let dep = `${token.head.annotations.N}-${token.relation.replace('_', ':')}`
+            el.setAttribute('dep', dep)
+            if (args.srcid) {
+              el.setAttribute('depsrc', bratFile)
+            }
+          } else {
+            el.removeAttribute('dep')
+            el.removeAttribute('srcid')
+          }
+        }
+      }
     }
-    fs.writeFileSync(xmlFile, root.serialize())
+    fs.writeFileSync(xmlFile, root.serialize() + '\n')
   }
 }
 
