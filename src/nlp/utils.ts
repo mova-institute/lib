@@ -1010,7 +1010,7 @@ export function* tei2tokenStream(root: AbstractElement) {
           }
           tok.relation = relation
         }
-        tok.isEllipsis = el.attribute('ellipsis') === 'yes'
+        tok.isPromoted = el.attribute('ellipsis') === 'yes'
       }
 
       yield tok

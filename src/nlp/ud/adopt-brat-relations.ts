@@ -31,7 +31,7 @@ const bratPrefix2xmlFilename = {
 function main() {
   const args = minimist(process.argv.slice(2), {
     boolean: [
-      'srcid',
+      'depsrc',
     ]
   }) as any
 
@@ -65,9 +65,7 @@ function main() {
           if (isString(token.relation) && token.head && isString(token.head.annotations.N)) {
             let dep = `${token.head.annotations.N}-${token.relation.replace('_', ':')}`
             el.setAttribute('dep', dep)
-            if (args.srcid) {
-              el.setAttribute('depsrc', bratFile)
-            }
+            el.setAttribute('depsrc', args.depsrc && bratFile)
           } else {
             el.removeAttribute('dep')
             el.removeAttribute('srcid')

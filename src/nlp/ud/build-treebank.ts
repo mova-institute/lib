@@ -19,6 +19,7 @@ interface Args {
   _: string[]
   nostand: boolean
   onlyvalid: boolean
+  reportHoles: boolean
 }
 
 //------------------------------------------------------------------------------
@@ -27,6 +28,7 @@ function main() {
     boolean: [
       'nostand',
       'onlyvalid',
+      'reportHoles',
     ],
   }) as any
 
@@ -55,6 +57,8 @@ function main() {
         wordsKept += numWords
         console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }]))
         continue
+        // } else if (numRoots > 1 && args.reportHoles) {
+        //   console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене' }]))
       }
 
       let problems = validateSentenceSyntax(tokens)
