@@ -1,8 +1,7 @@
 import { Token } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
-import { mu } from '../../mu'
 import { MorphInterp } from '../morph_interp'
-import { tokenStream2plaintextString, tokenStream2sentences } from '../utils'
+import { tokenStream2plaintextString } from '../utils'
 
 
 
@@ -12,7 +11,13 @@ export function sentence2conllu(sentence: Array<Token>, id = '') {
 
   sentence.forEach((token, i) => {
     let { pos, features } = toUd(token.interp)
-    let misc = token.glued ? 'SpaceAfter=No' : '_'
+    let misc = new Array<string>()
+    if (token.isPromoted) {
+      misc.push('Promoted=Yes')
+    }
+    if (token.glued) {
+      misc.push('SpaceAfter=No')
+    }
     lines.push([
       i + 1,
       token.form,
@@ -23,7 +28,7 @@ export function sentence2conllu(sentence: Array<Token>, id = '') {
       token.head + 1 || 0,
       token.relation || 'root',
       '_',
-      misc,
+      misc/*.sort()*/.join('|') || '_',
     ].join('\t'))
   })
   return lines.join('\n')
