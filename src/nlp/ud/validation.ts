@@ -106,7 +106,7 @@ const CONTINUOUS_REL = [
   'compound',
 ]
 
-const LEAF_RELATIONS = [
+const TERMINAL_RELATIONS = [
   'cop',
   'expl',
   'fixed',
@@ -117,13 +117,13 @@ const LEAF_RELATIONS = [
   'punct',
 ]
 
-const RIGHT_HEADED_RELATIONS = [
+const LEFT_RELATIONS = [
   'case',
   'cc',
   'reparandum',
 ]
 
-const LEFT_HEADED_RELATIONS = [
+const RIGHT_RELATIONS = [
   'appos',
   'conj',
   'dislocated',
@@ -131,10 +131,11 @@ const LEFT_HEADED_RELATIONS = [
   'flat',
   'flat:foreign',
   'flat:name',
+  'list',
   // 'parataxis',
 ]
 
-const CONTINUOUS_SUBREES = [
+const CONTINUOUS_SUBTREES = [
   'advcl',
   'acl',
   'ccomp',
@@ -193,13 +194,13 @@ const ADVMOD_NONADVERBIAL_LEMMAS = [
 
 
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
-  [`case`, `з іменника`, t => t.interp.isNounish(), `в прийменник`, t => t.interp.isPreposition()],
+  [`case`, `з іменника`, t => t.interp.isNounish() || t.interp.isAdjective() && t.interp.isPronoun(), `в прийменник`, t => t.interp.isPreposition()],
   [`det`, `з іменника`, t => t.interp.isNounish(), `в DET`, t => toUd(t.interp).pos === 'DET'],
   [`amod`, `з іменника`, t => t.interp.isNounish(), `в прикметник`, t => t.interp.isAdjectivish()],
   [`nmod`, `з іменника`, t => t.interp.isNounish() || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
   [`nummod`, `з іменника`, t => t.interp.isNounish(), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronoun()],
   [`det:numgov`, `з іменника`, t => t.interp.isNounish(), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
-  [`punct`, `з не PUNCT`, t => t /*temp*/ && !t.interp.isPunctuation(), `в PUNCT`, t => t.interp.isPunctuation()],
+  [`punct`, `з не PUNCT`, t => !t /*temp*/ || !t.interp.isPunctuation(), `в PUNCT`, t => t.interp.isPunctuation()],
   [`discourse`, undefined, undefined, `в ${DISCOURSE_DESTANATIONS.join('|')}`, t => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos)],
   [`aux`, `з дієслівного`, t => t.interp.isVerbial(), `в бути|би|б`, t => TOBE_AND_BY_LEMMAS.includes(t.interp.lemma)],
   [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isTransgressive() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
@@ -237,11 +238,13 @@ export function validateSentenceSyntax(sentence: Token[]) {
     problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, index })))
   }
 
+  const xreportIf = (...args: any[]) => undefined
+
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     sentence.some((xx, ii) => xx.head === i && fn(xx, ii))
 
-  LEFT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
-  RIGHT_HEADED_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
+  RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
+  LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
 
   for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
     if (messageFrom && predicateFrom) {
@@ -254,7 +257,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   reportIf('заборонена реляція',
     x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
-  return problems
+  // return problems
 
   Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
     reportIf(`не ${rels.join('|')} в ${pos}`,
@@ -353,10 +356,10 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && isPassive(sentence[x.head].interp)
       && !hasDependantWhich(i, xx => xx.relation === 'case'))
 
-  LEAF_RELATIONS.forEach(leafrel => reportIf(`${leafrel} може вести тільки до листків`,
+  TERMINAL_RELATIONS.forEach(leafrel => xreportIf(`${leafrel} може вести тільки до листків`,
     (x, i) => x.relation === leafrel
       && sentence.some(xx => xx.head === i
-        && (!x.interp.isAbbreviation() || !xx.interp.isPunctuation()))))
+        && !xx.interp.isPunctuation())))
 
   reportIf(`obl з не дієслова/дієприслівника/прислівника/прикметника`,
     (x, i) => OBLIQUES.includes(x.relation)
