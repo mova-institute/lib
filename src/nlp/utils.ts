@@ -988,7 +988,11 @@ export function* tei2tokenStream(root: AbstractElement) {
           tok = new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text())).setAttributes(el.attributesObj())
           break
         case 'sb':
-          yield Token.structure('sentence', true).setAttributes(el.attributesObj())
+          tok = Token.structure('sentence', true)
+          let attributes = el.attributesObj()
+          attributes.set = el.attributeUp('set')
+          tok.setAttributes(attributes)
+          yield tok
           continue
         case 'g':
           yield Token.glue()

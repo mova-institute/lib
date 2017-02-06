@@ -12,6 +12,7 @@ import { validateSentenceSyntax } from './validation'
 import * as glob from 'glob'
 import * as minimist from 'minimist'
 import * as mkdirp from 'mkdirp'
+import * as columnify from 'columnify'
 
 
 
@@ -20,6 +21,7 @@ interface Args {
   nostand: boolean
   onlyvalid: boolean
   reportHoles: boolean
+  skipValidation: boolean
 }
 
 //------------------------------------------------------------------------------
@@ -27,6 +29,7 @@ function main() {
   let args: Args = minimist(process.argv.slice(2), {
     boolean: [
       'nostand',
+      'skipvalidation',
       'onlyvalid',
       'reportHoles',
     ],
@@ -35,10 +38,9 @@ function main() {
   let [globStr, outDir] = args._
   let roots = mu(glob.sync(globStr)).map(x => ({ root: parseXmlFileSync(x), basename: path.basename(x) }))
   mkdirp.sync(outDir)
-  let openedFiles = {} as any
 
-  let wordsExported = 0
-  let wordsKept = 0
+  let openedFiles = {} as any
+  let wordCounters = {} as any
   for (let {root, basename} of roots) {
     let tokenStream = tei2tokenStream(root)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
@@ -50,11 +52,17 @@ function main() {
         continue
       }
 
+      set = set || 'train'
+      wordCounters[set] = wordCounters[set] || {
+        kept: 0,
+        exported: 0,
+      }
+
       let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
 
       let numRoots = mu(tokens).count(x => !x.relation)
       if (!numRoots) {
-        wordsKept += numWords
+        wordCounters[set].kept += numWords
         console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }]))
         continue
         // } else if (numRoots > 1 && args.reportHoles) {
@@ -62,28 +70,43 @@ function main() {
       }
 
       let problems = validateSentenceSyntax(tokens)
-      if (problems.length) {
+      if (problems.length && !args.skipValidation) {
         console.error(formatProblems(basename, sentenceId, tokens, problems))
       }
 
       if (problems.length && args.onlyvalid) {
-        wordsKept += numWords
+        wordCounters[set].kept += numWords
       } else if (numRoots > 1) {
-        wordsKept += numWords
+        wordCounters[set].kept += numWords
       } else {
-        wordsExported += numWords
+        wordCounters[set].exported += numWords
 
         if (!args.nostand) {
           standartizeSentence2ud20(tokens)
         }
 
-        let filename = set2filename(outDir, set || 'train')
+        let filename = set2filename(outDir, set)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
         fs.writeSync(file, sentence2conllu(tokens, sentenceId) + '\n\n')
       }
     }
   }
-  console.error(`\nWords exported: ${wordsExported}\nWords kept: ${wordsKept}`)
+
+  let stats = Object.entries(wordCounters).map(([set, {kept, exported}]) => ({ set, kept, exported }))
+  stats.push({ set: 'TOTAL', kept: stats.map(x => x.kept).reduce((a, b) => a + b, 0), exported: stats.map(x => x.exported).reduce((a, b) => a + b, 0) })
+
+  console.error(`\n`)
+  console.error(columnify(stats, {
+    config: {
+      kept: {
+        align: 'right',
+      },
+      exported: {
+        align: 'right',
+      },
+    },
+  }))
+  console.error(`\n`)
 }
 
 if (require.main === module) {

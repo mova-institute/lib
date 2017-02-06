@@ -65,7 +65,7 @@ function main() {
           if (isString(token.relation) && token.head && isString(token.head.annotations.N)) {
             let dep = `${token.head.annotations.N}-${token.relation.replace('_', ':')}`
             el.setAttribute('dep', dep)
-            el.setAttribute('depsrc', args.depsrc && bratFile)
+            el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
           } else {
             el.removeAttribute('dep')
             el.removeAttribute('srcid')
