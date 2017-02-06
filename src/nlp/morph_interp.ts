@@ -292,6 +292,7 @@ export const FEATURE_ORDER = {
     PrepositionRequirement,
     Pronoun,
     PronominalType,
+    Person,
     Formality,
   ],
   [Pos.adjective]: [
@@ -370,6 +371,7 @@ export const FEATURE_ORDER = {
     AdjectiveAsNoun,
     PronominalType,
     Person,
+    Formality,
   ],
 }
 
@@ -657,10 +659,6 @@ export class MorphInterp {
       lemma: this.lemma,
       flags: this.toMte(),
     }
-  }
-
-  toUd() {
-
   }
 
   toMte(lemma = this.lemma, lemmaTag?: MorphInterp) {
