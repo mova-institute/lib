@@ -4,6 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
+import { last } from '../../lang'
 import { Token } from '../../nlp/token'
 import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
@@ -22,6 +23,7 @@ interface Args {
   onlyValid: boolean
   reportHoles: boolean
   validate: boolean
+  oneSet: string
 }
 
 class Dataset {
@@ -43,8 +45,13 @@ function main() {
       'reportHoles',
     ],
     alias: {
-      noStandartizing: 'no-std',
-      onlyvalid: 'only-valid'
+      noStandartizing: ['no-std'],
+      onlyvalid: 'only-valid',
+      oneSet: 'one-set',
+    },
+    default: {
+      oneSet: 'train',
+      noStandartizing: false,
     }
   }) as any
 
@@ -64,7 +71,7 @@ function main() {
         continue
       }
 
-      set = set || 'train'
+      set = args.oneSet || set || 'train'
       datasetRegistry[set] = datasetRegistry[set] || new Dataset()
       if (newDocument) {
         Object.values(datasetRegistry).forEach(x => x.newdoc = true)
@@ -170,21 +177,31 @@ function initSyntax(sentence: Array<Token>) {
 
 //------------------------------------------------------------------------------
 function standartizeSentence2ud20(sentence: Array<Token>) {
+  let lastToken = last(sentence)
+  let rootIndex = sentence.findIndex(x => !x.relation)
+
   for (let token of sentence) {
     let interp = token.interp
 
     // set AUX
-    if (interp.isVerbial()) {
-      if (['aux', 'cop'].includes(token.relation)) {
-        token.interp.setIsAuxillary()
-      }
+    if (['aux', 'cop'].includes(token.relation)) {
+      interp.setIsAuxillary()
     }
 
     // set the only iobj to obj
+    if (token.relation === 'iobj' && !sentence.some(tt => tt.head === token.head && tt.relation === 'obj')) {
+      token.relation = 'obj'
+    }
+  }
+
+  // set parataxis punct to the root
+  let thecase = lastToken.interp.isPunctuation() && sentence[lastToken.head] && sentence[lastToken.head].relation === 'parataxis'
+  if (thecase) {
+    lastToken.head = rootIndex
   }
 }
 
-// iobj без obj на obj
+
 
 /*
 

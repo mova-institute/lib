@@ -78,7 +78,7 @@ export const FEATURE_TABLE = [
   { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
 
   { featStr: 'verbType', feat: VerbType, mi: VerbType.main, mte: 'm' },
-  { featStr: 'verbType', feat: VerbType, mi: VerbType.auxilary, mte: 'a' },
+  { featStr: 'verbType', feat: VerbType, mi: VerbType.auxilary, vesumStr: 'aux', mte: 'a' },
 
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
   { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
@@ -919,7 +919,7 @@ export class MorphInterp {
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
-  setIsAuxillary() { this.features.verbType = VerbType.auxilary; return this }
+  setIsAuxillary(value = true) { this.features.verbType = value ? VerbType.auxilary : VerbType.main; return this }
   setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
   setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
