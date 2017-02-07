@@ -5,7 +5,7 @@ import * as fs from 'fs'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
-import { numerateTokensGently } from '../nlp/utils'
+import { numerateTokensGently, serializeMiDocument } from '../nlp/utils'
 import { removeNamespacing } from '../xml/utils'
 import { mu } from '../mu'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
@@ -89,7 +89,7 @@ function main() {
         }
       }
 
-      fs.writeFileSync(file, root.serialize() + '\n')
+      fs.writeFileSync(file, serializeMiDocument(root))
     } catch (e) {
       console.error(`Error in file "${file}"`)
       throw e
@@ -98,6 +98,7 @@ function main() {
   console.log(`${wc} words`)
 }
 
+//------------------------------------------------------------------------------
 function saveInterp(el: AbstractElement, interp: MorphInterp) {
   el.setAttribute('ana', interp.toVesumStr())
   el.setAttribute('lemma', interp.lemma)

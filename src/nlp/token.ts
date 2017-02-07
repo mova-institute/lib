@@ -20,6 +20,7 @@ export class Token {
   relation: string
   glued: boolean
   isPromoted: boolean
+  opensParagraph: boolean  // temp
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()

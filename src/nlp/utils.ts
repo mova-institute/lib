@@ -6,7 +6,7 @@ import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
 import { r, createObject, last, parseIntStrict } from '../lang'
-import { uniqueSmall as unique, uniqueJson } from '../algo'
+import { uniqueSmall as unique, uniqueJson, arr2indexObj } from '../algo'
 import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
@@ -268,7 +268,7 @@ export function isRegularizedFlowElement(el: AbstractElement) {
   return ret
 }
 
-const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'sb'])
+const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'sb', 'doc'])
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement) {
   let subroots = [root]
@@ -941,6 +941,7 @@ export function oldMteDisamb2mivesum(root: AbstractElement) {
 }
 
 const structureElementName2type = new Map<string, Structure>([
+  ['doc', 'document'],
   ['div', 'div'],
   ['p', 'paragraph'],
   ['lg', 'stanza'],
@@ -1177,23 +1178,58 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 export function* tokenStream2sentences(stream: Iterable<Token>) {
   let sentenceId: string;
   let set: string;
+  let newDocument = false
+  let newParagraph = false
+  let newTokenLevelParagraph = false
   let tokens = new Array<Token>()
   for (let token of stream) {
-    if (token.isSentenceBoundary()) {
+    if (token.getStructureName() === 'paragraph') {
+      if (!token.isClosing()) {
+        if (tokens.length) {
+          newTokenLevelParagraph = true
+        } else {
+          newParagraph = true
+
+        }
+      }
+    } else if (token.getStructureName() === 'document' && !token.isClosing()) {
+      newDocument = true
+    } else if (token.isSentenceBoundary()) {
       if (tokens.length) {
-        yield { sentenceId, tokens, set }
+        yield { sentenceId, tokens, set, newParagraph, newDocument }
         tokens = []
+        newDocument = false
+        newParagraph = false
+        newTokenLevelParagraph = false
       }
       sentenceId = token.getAttribute('sid')
       set = token.getAttribute('set')
     } else if (token.isWord()) {
+      token.opensParagraph = newTokenLevelParagraph
       tokens.push(token)
+      newTokenLevelParagraph = false
     } else if (token.isGlue() && tokens.length) {
       last(tokens).glued = true
     }
   }
 
   if (tokens.length) {
-    yield { sentenceId, tokens, set }
+    yield { sentenceId, tokens, set, newParagraph, newDocument }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function serializeMiDocument(root: AbstractElement) {
+  root.evaluateElements('//*').forEach(x => sortAttributes(x))
+  return root.serialize() + '\n'
+}
+
+//------------------------------------------------------------------------------
+const ATTR_ORDER = arr2indexObj(['n', 'dep', 'lemma', 'anna', 'ellipsis', 'mark'], 1)
+function sortAttributes(element: AbstractElement) {
+  let attributes = Object.entries(element.attributesObj()).sort(([a], [b]) => {
+    return (ATTR_ORDER[a] || 100) - (ATTR_ORDER[b] || 100) || a.localeCompare(b)
+  })
+  attributes.forEach(([key]) => element.removeAttribute(key))
+  attributes.forEach(([key, value]) => element.setAttribute(key, value))
 }

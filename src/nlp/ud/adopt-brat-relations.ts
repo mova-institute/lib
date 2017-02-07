@@ -6,7 +6,7 @@ import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync } from '../../utils.node'
 import { isString } from '../../lang'
 import { firstMatch } from '../../string_utils'
-import { parseBratFile } from '../../nlp/utils'
+import { parseBratFile, serializeMiDocument } from '../../nlp/utils'
 import { AbstractElement } from 'xmlapi'
 
 import * as glob from 'glob'
@@ -73,7 +73,7 @@ function main() {
         }
       }
     }
-    fs.writeFileSync(xmlFile, root.serialize() + '\n')
+    fs.writeFileSync(xmlFile, serializeMiDocument(root))
   }
 }
 

@@ -18,21 +18,34 @@ import * as columnify from 'columnify'
 
 interface Args {
   _: string[]
-  nostand: boolean
-  onlyvalid: boolean
+  noStandartizing: boolean
+  onlyValid: boolean
   reportHoles: boolean
-  skipValidation: boolean
+  validate: boolean
+}
+
+class Dataset {
+  file: number
+  counts = {
+    kept: 0,
+    exported: 0,
+  }
+  newdoc = false
 }
 
 //------------------------------------------------------------------------------
 function main() {
   let args: Args = minimist(process.argv.slice(2), {
     boolean: [
-      'nostand',
-      'skipvalidation',
-      'onlyvalid',
+      'validate',
+      'noStandartizing',
+      'onlyValid',
       'reportHoles',
     ],
+    alias: {
+      noStandartizing: 'no-std',
+      onlyvalid: 'only-valid'
+    }
   }) as any
 
   let [globStr, outDir] = args._
@@ -40,29 +53,27 @@ function main() {
   mkdirp.sync(outDir)
 
   let openedFiles = {} as any
-  let wordCounters = {} as any
+  let datasetRegistry = {} as { [name: string]: Dataset }
   for (let {root, basename} of roots) {
     let tokenStream = tei2tokenStream(root)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
-    for (let {sentenceId, set, tokens} of sentenceStream) {
+    for (let {sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
       initSyntax(tokens)
-
       let hasSyntax = tokens.some(x => x.hasSyntax())
       if (!hasSyntax) {
         continue
       }
 
       set = set || 'train'
-      wordCounters[set] = wordCounters[set] || {
-        kept: 0,
-        exported: 0,
+      datasetRegistry[set] = datasetRegistry[set] || new Dataset()
+      if (newDocument) {
+        Object.values(datasetRegistry).forEach(x => x.newdoc = true)
       }
 
       let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
-
       let numRoots = mu(tokens).count(x => !x.relation)
       if (!numRoots) {
-        wordCounters[set].kept += numWords
+        datasetRegistry[set].counts.kept += numWords
         console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }]))
         continue
         // } else if (numRoots > 1 && args.reportHoles) {
@@ -70,29 +81,31 @@ function main() {
       }
 
       let problems = validateSentenceSyntax(tokens)
-      if (problems.length && !args.skipValidation) {
+      if (problems.length && args.validate) {
         console.error(formatProblems(basename, sentenceId, tokens, problems))
       }
 
-      if (problems.length && args.onlyvalid) {
-        wordCounters[set].kept += numWords
+      if (problems.length && args.onlyValid) {
+        datasetRegistry[set].counts.kept += numWords
       } else if (numRoots > 1) {
-        wordCounters[set].kept += numWords
+        datasetRegistry[set].counts.kept += numWords
       } else {
-        wordCounters[set].exported += numWords
+        datasetRegistry[set].counts.exported += numWords
 
-        if (!args.nostand) {
+        if (!args.noStandartizing) {
           standartizeSentence2ud20(tokens)
         }
 
         let filename = set2filename(outDir, set)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        fs.writeSync(file, sentence2conllu(tokens, sentenceId) + '\n\n')
+        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, datasetRegistry[set].newdoc)
+        fs.writeSync(file, conlluedSentence + '\n\n')
+        datasetRegistry[set].newdoc = false
       }
     }
   }
 
-  let stats = Object.entries(wordCounters).map(([set, {kept, exported}]) => ({ set, kept, exported }))
+  let stats = Object.entries(datasetRegistry).map(([set, {counts: {kept, exported}}]) => ({ set, kept, exported }))
   stats.push({ set: 'TOTAL', kept: stats.map(x => x.kept).reduce((a, b) => a + b, 0), exported: stats.map(x => x.exported).reduce((a, b) => a + b, 0) })
 
   console.error(`\n`)

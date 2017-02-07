@@ -6,12 +6,22 @@ import { tokenStream2plaintextString } from '../utils'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function sentence2conllu(sentence: Array<Token>, id = '') {
-  let lines = [`# sent_id = ${id}`, `# text = ${tokenStream2plaintextString(sentence)}`]
+export function sentence2conllu(sentence: Array<Token>, id: string | number, newParagraph: boolean, newDocument: boolean) {
+  let lines = new Array<string>()
+  if (newDocument) {
+    lines.push(`# newdoc`)
+  }
+  if (newParagraph) {
+    lines.push(`# newpar`)
+  }
+  lines.push(`# sent_id = ${id}`, `# text = ${tokenStream2plaintextString(sentence)}`)
 
   sentence.forEach((token, i) => {
     let { pos, features } = toUd(token.interp)
     let misc = new Array<string>()
+    if (token.opensParagraph) {
+      misc.push('NewPar=Yes')
+    }
     if (token.isPromoted) {
       misc.push('Promoted=Yes')
     }

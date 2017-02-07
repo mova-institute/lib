@@ -99,6 +99,16 @@ export function arr2indexMap<T>(value: Array<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function arr2indexObj<T>(value: Array<string>, shift = 0) {
+  let ret = {} as { [index: string]: number }
+  for (let i = 0; i < value.length; ++i) {
+    ret[value[i]] = i + shift
+  }
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function combinations<T>(arr: T[][]) {
   return [..._combinations(arr)]
 }
