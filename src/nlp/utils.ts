@@ -1007,10 +1007,10 @@ export function* tei2tokenStream(root: AbstractElement) {
         if (n) {
           tok.id = parseIntStrict(n)
         }
-        let dependency = el.attribute('dep')
-        if (dependency) {
-          let [head, relation] = dependency.split('-')
-          if (head && head !== 'undefined') {
+        let dependencies = el.attribute('dep')
+        if (dependencies) {
+          let [head, relation] = dependencies.split('|')[0].split('-')  // todo
+          if (head) {
             tok.head = parseIntStrict(head)
           }
           tok.relation = relation
@@ -1096,60 +1096,6 @@ export function* polishXml2verticalStream(root: AbstractElement) {
     }
     pointer = iterator.next()
   }
-}
-
-export interface BratSpan {
-  index: number
-  form: string
-  annotations: any
-  relation?: string
-  head?: BratSpan
-  comment?: string
-}
-////////////////////////////////////////////////////////////////////////////////
-export function parseBratFile(lines: Iterable<string>) {
-  let tokens = {} as { [key: string]: BratSpan }
-  let counter = 0
-  for (let line of lines) {
-    // span
-    let match = line.match(/^T(\d+).*\s(\S+)$/)
-    if (match) {
-      let [, id, form] = match
-      tokens[id] = { form, index: counter++, annotations: {} }
-      continue
-    }
-
-    // annotation
-    match = line.match(/^A\d+\t(\S+)\sT(\S+)(\s(\S+))?$/)
-    if (match) {
-      let [, key, id, , value] = match
-      if (value === undefined) {
-        tokens[id].annotations[key] = true
-      } else {
-        tokens[id].annotations[key] = value
-      }
-      continue
-    }
-
-    // relation
-    match = line.match(/^R\d+\s(\S+)\sArg1:T(\S+)\sArg2:T(\S+)\s*$/)
-    if (match) {
-      let [, relation, headId, depId] = match
-      tokens[depId].relation = relation
-      tokens[depId].head = tokens[headId]
-      continue
-    }
-
-    // comment
-    match = line.match(/\tAnnotatorNotes T(\S+)\t(.+)/)
-    if (match) {
-      let [, id, comment] = match
-      tokens[id].comment = comment
-      continue
-    }
-  }
-
-  return Object.values(tokens).sort((a, b) => a.index - b.index)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -6,7 +6,8 @@ import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync } from '../../utils.node'
 import { isString } from '../../lang'
 import { firstMatch } from '../../string_utils'
-import { parseBratFile, serializeMiDocument } from '../../nlp/utils'
+import { serializeMiDocument } from '../../nlp/utils'
+import { parseBratFile } from './utils'
 import { AbstractElement } from 'xmlapi'
 
 import * as glob from 'glob'
@@ -62,14 +63,12 @@ function main() {
           el.setAttribute('comment', token.comment)
           el.setAttribute('ellipsis', token.annotations.Ellipsis && 'yes')
 
-          if (isString(token.relation) && token.head && isString(token.head.annotations.N)) {
-            let dep = `${token.head.annotations.N}-${token.relation.replace('_', ':')}`
-            el.setAttribute('dep', dep)
-            el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
-          } else {
-            el.removeAttribute('dep')
-            el.removeAttribute('srcid')
-          }
+          let dependencies = token.arcs
+            .filter(x => isString(x.head.annotations.N))
+            .map(({relation, head}) => `${head.annotations.N}-${relation.replace('_', ':')}`)
+            .join('|') || undefined
+          el.setAttribute('dep', dependencies)
+          el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
         }
       }
     }
