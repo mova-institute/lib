@@ -33,7 +33,7 @@ export type UdPolarity = 'Pos' | 'Neg'
 export type UdVariant = 'Short' | 'Uncontr'
 export type UdStyle = 'Coll' | 'Rare' | 'Odd'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
-export type Polite = UdBoolean
+export type UdPolite = 'Form'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -240,6 +240,10 @@ const prepositionRequirementMap = new Map<PrepositionRequirement, UdPrepCase>([
   [PrepositionRequirement.yes, 'Pre'],
 ])
 
+const politeMap = new Map<Formality, UdPolite>([
+  [Formality.yes, 'Form'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -266,6 +270,7 @@ const mapMap = new Map<any, any>([
   [RequiredAnimacy, requiredAnimacyMap],
   [GrammaticalAnimacy, grammaticalAnimacyMap],
   [PrepositionRequirement, prepositionRequirementMap],
+  [Formality, politeMap],
 ])
 
 

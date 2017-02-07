@@ -192,7 +192,5 @@ export const booleanFeatures = [
   Possessiveness,
   Reflexivity,
   Abbreviation,
-  PrepositionRequirement,
-  Formality,
   Foreign,
 ]
