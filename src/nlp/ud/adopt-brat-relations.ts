@@ -44,7 +44,6 @@ function main() {
     if (!fs.existsSync(xmlFile)) {
       xmlFile = bratPrefix2xmlFilename[bratName]
       if (!xmlFile) {
-        // console.log(`dddd ${xmlFile}`)
         console.error(`Skipping ${bratName} files`)
         continue
       }
