@@ -80,6 +80,10 @@ function main() {
         //   console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене' }]))
       }
 
+      if (!args.noStandartizing) {
+        standartizeSentence2ud20(tokens)
+      }
+
       let problems = validateSentenceSyntax(tokens)
       if (problems.length && args.validate) {
         console.error(formatProblems(basename, sentenceId, tokens, problems))
@@ -91,10 +95,6 @@ function main() {
         datasetRegistry[set].counts.kept += numWords
       } else {
         datasetRegistry[set].counts.exported += numWords
-
-        if (!args.noStandartizing) {
-          standartizeSentence2ud20(tokens)
-        }
 
         let filename = set2filename(outDir, set)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
@@ -179,5 +179,18 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
         token.interp.setIsAuxillary()
       }
     }
+
+    // set the only iobj to obj
   }
 }
+
+// iobj без obj на obj
+
+/*
+
+autofix
+cc/punct
+obl:agent
+
+
+*/

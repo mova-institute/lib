@@ -273,12 +273,12 @@ export function validateSentenceSyntax(sentence: Token[]) {
   //     x => x.relation === undefined)
   // }
 
-  reportIf(`punct в двокрапку зліва`,
+  xreportIf(`punct в двокрапку зліва`,
     (x, i) => x.form === ':'
       && x.interp.isPunctuation()
       && x.head < i)
 
-  reportIf(`у залежника ccomp немає підмета`,
+  xreportIf(`у залежника ccomp немає підмета`,
     (x, i) => x.relation === 'ccomp'
       && !x.isPromoted
       && !sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
@@ -293,7 +293,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && x.interp.isParticle()
       && !['discourse', 'fixed'])
 
-  reportIf('не aux у б(би)',
+  xreportIf('не aux у б(би)',
     x => ['б', 'би'].includes(x.form.toLowerCase())
       && x.interp.isParticle()
       && !['fixed', 'aux', undefined].includes(x.relation))
@@ -303,9 +303,9 @@ export function validateSentenceSyntax(sentence: Token[]) {
       x => x.relation === 'iobj')
   }
 
-  reportIf('не advmod в не/ні',
+  reportIf('не advmod в не',
     x => x.interp.isParticle()
-      && ['не', 'ні'/*, 'лише'*/].includes(x.form.toLowerCase())
+      && ['не', /*'ні', 'лише'*/].includes(x.form.toLowerCase())
       && !['advmod', undefined].includes(x.relation))
 
   reportIf('не cc в сурядий на початку речення',
