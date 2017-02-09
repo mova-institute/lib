@@ -74,9 +74,9 @@ function main() {
 
       set = !args.oneSet && set || 'train'
       datasetRegistry[set] = datasetRegistry[set] || new Dataset()
-      if (newDocument) {
-        Object.values(datasetRegistry).forEach(x => x.newdoc = true)
-      }
+      // if (newDocument) {
+      // Object.values(datasetRegistry).forEach(x => x.newdoc = true)
+      // }
 
       let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
@@ -92,12 +92,16 @@ function main() {
         standartizeSentence2ud20(tokens)
       }
 
-      let problems = validateSentenceSyntax(tokens)
-      if (problems.length && args.validate) {
-        console.error(formatProblems(basename, sentenceId, tokens, problems))
+      let hasProblems = false
+      if (args.onlyValid || args.validate) {
+        var problems = validateSentenceSyntax(tokens)
+        if (problems.length && args.validate) {
+          console.error(formatProblems(basename, sentenceId, tokens, problems))
+        }
+        hasProblems = !!problems.length
       }
 
-      if (problems.length && args.onlyValid) {
+      if (args.onlyValid && hasProblems) {
         datasetRegistry[set].counts.kept += numWords
       } else if (roots.length > 1) {
         datasetRegistry[set].counts.kept += numWords
@@ -106,7 +110,7 @@ function main() {
 
         let filename = set2filename(outDir, set)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, datasetRegistry[set].newdoc)
+        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument)
         fs.writeSync(file, conlluedSentence + '\n\n')
         datasetRegistry[set].newdoc = false
       }
@@ -152,15 +156,6 @@ function formatProblems(docName: string, sentenceId: string, tokens: Token[], pr
     }
   }
   ret += '\n'
-  return ret
-}
-
-//------------------------------------------------------------------------------
-function calculateTokenOffset(index: number, tokens: Token[]) {
-  let ret = 0
-  for (let i = 0; i < index; ++i) {
-    ret += tokens[i].form.length + 1
-  }
   return ret
 }
 

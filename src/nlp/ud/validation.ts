@@ -243,6 +243,10 @@ export function validateSentenceSyntax(sentence: Token[]) {
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     sentence.some((xx, ii) => xx.head0 === i && fn(xx, ii))
 
+
+  reportIf('більше однієї стрілки в слово',
+    tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
+
   // return problems
   RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel0 === rel && tok.head0 > i))
   LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel0 === rel && tok.head0 < i))
