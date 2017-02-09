@@ -43,6 +43,7 @@ function main() {
       'noStandartizing',
       'onlyValid',
       'reportHoles',
+      'oneSet',
     ],
     alias: {
       noStandartizing: ['no-std'],
@@ -50,18 +51,18 @@ function main() {
       oneSet: 'one-set',
     },
     default: {
-      oneSet: 'train',
+      // oneSet: 'train',
       noStandartizing: false,
     }
   }) as any
 
   let [globStr, outDir] = args._
-  let roots = mu(glob.sync(globStr)).map(x => ({ root: parseXmlFileSync(x), basename: path.basename(x) }))
+  let xmlRoots = mu(glob.sync(globStr)).map(x => ({ root: parseXmlFileSync(x), basename: path.basename(x) }))
   mkdirp.sync(outDir)
 
   let openedFiles = {} as any
   let datasetRegistry = {} as { [name: string]: Dataset }
-  for (let {root, basename} of roots) {
+  for (let {root, basename} of xmlRoots) {
     let tokenStream = tei2tokenStream(root)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
     for (let {sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
@@ -71,20 +72,20 @@ function main() {
         continue
       }
 
-      set = args.oneSet || set || 'train'
+      set = !args.oneSet && set || 'train'
       datasetRegistry[set] = datasetRegistry[set] || new Dataset()
       if (newDocument) {
         Object.values(datasetRegistry).forEach(x => x.newdoc = true)
       }
 
       let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
-      let numRoots = mu(tokens).count(x => !x.relation)
-      if (!numRoots) {
+      let roots = mu(tokens).findAllIndexes(x => !x.relation).toArray()
+      if (!roots.length) {
         datasetRegistry[set].counts.kept += numWords
         console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }]))
         continue
-        // } else if (numRoots > 1 && args.reportHoles) {
-        //   console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене' }]))
+      } else if (roots.length > 1 && args.reportHoles) {
+        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене', indexes: roots }]))
       }
 
       if (!args.noStandartizing) {
@@ -98,7 +99,7 @@ function main() {
 
       if (problems.length && args.onlyValid) {
         datasetRegistry[set].counts.kept += numWords
-      } else if (numRoots > 1) {
+      } else if (roots.length > 1) {
         datasetRegistry[set].counts.kept += numWords
       } else {
         datasetRegistry[set].counts.exported += numWords
@@ -139,11 +140,15 @@ function formatProblems(docName: string, sentenceId: string, tokens: Token[], pr
   let href = `https://lab.mova.institute/syntax_annotator/index.xhtml#/treebank/ud2/${bratPath}`
   let ret = `*** Проблеми в реченні ${sentenceId} ${href}\n\n`
   let repro = tokens.join(' ')
-  for (let [i, {index, message}] of problems.entries()) {
+  for (let [i, {indexes, message}] of problems.entries()) {
     ret += `    ${message}\n`
     ret += `${repro}\n`
-    if (index !== undefined) {
-      ret += `${' '.repeat(calculateTokenOffset(index, tokens))}${'^'.repeat(tokens[index].form.length)}\n`
+    if (indexes !== undefined) {
+      for (let j = 0; j < tokens.length; ++j) {
+        let char = indexes.includes(j) ? '^' : ' '
+        ret += char.repeat(tokens[j].form.length) + ' '
+      }
+      ret += '\n'
     }
   }
   ret += '\n'

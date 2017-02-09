@@ -224,7 +224,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
 ////////////////////////////////////////////////////////////////////////////////
 export interface Problem {
   message: string
-  index: number
+  indexes: number[]
 }
 
 type SentencePredicate = (x: Token, i?: number) => any
@@ -235,7 +235,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   let problems = new Array<Problem>()
 
   const reportIf = (message: string, fn: SentencePredicate) => {
-    problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, index })))
+    problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
   }
 
   const xreportIf = (...args: any[]) => undefined
@@ -243,6 +243,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     sentence.some((xx, ii) => xx.head === i && fn(xx, ii))
 
+  // return problems
   RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
   LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
 
@@ -257,7 +258,6 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   reportIf('заборонена реляція',
     x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
-  // return problems
 
   Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
     reportIf(`не ${rels.join('|')} в ${pos}`,
@@ -267,11 +267,6 @@ export function validateSentenceSyntax(sentence: Token[]) {
         && !rels.includes(x.relation)))
 
 
-  // return []
-  // if (mu(sentence).count(x => !x.relation) > 1) {
-  //   reportIf(`речення недороблене`,
-  //     x => x.relation === undefined)
-  // }
 
   xreportIf(`punct в двокрапку зліва`,
     (x, i) => x.form === ':'
@@ -315,7 +310,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   sentence.forEach((x, i) => {
     if (CORE_COMPLEMENTS.includes(x.relation)) {
       if (predicates.has(x.head)) {
-        problems.push({ index: x.head, message: `у присудка більше ніж один прямий додаток (${CORE_COMPLEMENTS.join('|')})` })
+        problems.push({ indexes: [x.head], message: `у присудка більше ніж один прямий додаток (${CORE_COMPLEMENTS.join('|')})` })
       } else {
         predicates.add(x.head)
       }
@@ -326,7 +321,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   sentence.forEach((x, i) => {
     if (SUBJECTS.includes(x.relation)) {
       if (predicates2.has(x.head)) {
-        problems.push({ index: x.head, message: `у присудка більше ніж один підмет (${SUBJECTS.join('|')})` })
+        problems.push({ indexes: [x.head], message: `у присудка більше ніж один підмет (${SUBJECTS.join('|')})` })
       } else {
         predicates2.add(x.head)
       }

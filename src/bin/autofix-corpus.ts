@@ -39,6 +39,13 @@ function main() {
       // set missing token numbers
       numerateTokensGently(root)
 
+      // rename sentence boundaries
+      mu(root.evaluateElements('//se'))
+        .forEach(x => {
+          x.insertAfter(root.document().createElement('sb'))
+          x.remove()
+        })
+
       // set missing sentence ids
       root.evaluateElements('//sb')
         .flatten()
