@@ -241,49 +241,49 @@ export function validateSentenceSyntax(sentence: Token[]) {
   const xreportIf = (...args: any[]) => undefined
 
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
-    sentence.some((xx, ii) => xx.head === i && fn(xx, ii))
+    sentence.some((xx, ii) => xx.head0 === i && fn(xx, ii))
 
   // return problems
-  RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.relation === rel && tok.head > i))
-  LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.relation === rel && tok.head < i))
+  RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel0 === rel && tok.head0 > i))
+  LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel0 === rel && tok.head0 < i))
 
   for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
     if (messageFrom && predicateFrom) {
-      reportIf(`${rel} не ${messageFrom}`, (t, i) => t.relation === rel && !predicateFrom(sentence[t.head], sentence, i))
+      reportIf(`${rel} не ${messageFrom}`, (t, i) => t.rel0 === rel && !predicateFrom(sentence[t.head0], sentence, i))
     }
     if (messageTo && predicateTo) {
-      reportIf(`${rel} не ${messageTo}`, (t, i) => t.relation === rel && !predicateTo(t, sentence, i))
+      reportIf(`${rel} не ${messageTo}`, (t, i) => t.rel0 === rel && !predicateTo(t, sentence, i))
     }
   }
 
   reportIf('заборонена реляція',
-    x => x.relation && !ALLOWED_RELATIONS.includes(x.relation))
+    x => x.rel0 && !ALLOWED_RELATIONS.includes(x.rel0))
 
   Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
     reportIf(`не ${rels.join('|')} в ${pos}`,
-      x => x.relation
+      x => x.rel0
         && !x.isPromoted
         && toUd(x.interp).pos === pos
-        && !rels.includes(x.relation)))
+        && !rels.includes(x.rel0)))
 
 
 
   xreportIf(`punct в двокрапку зліва`,
     (x, i) => x.form === ':'
       && x.interp.isPunctuation()
-      && x.head < i)
+      && x.head0 < i)
 
   xreportIf(`у залежника ccomp немає підмета`,
     (x, i) => x.relation === 'ccomp'
       && !x.isPromoted
-      && !sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
+      && !sentence.some(xx => SUBJECTS.includes(xx.rel0) && xx.head0 === i))
 
   reportIf(`у залежника xcomp є підмет`,
-    (x, i) => x.relation === 'xcomp'
-      && sentence.some(xx => SUBJECTS.includes(xx.relation) && xx.head === i))
+    (x, i) => x.rel0 === 'xcomp'
+      && sentence.some(xx => SUBJECTS.includes(xx.rel0) && xx.head0 === i))
 
   reportIf('не discourse до частки',
-    x => x.relation
+    x => x.rel0
       && !['б', 'би', 'не'].includes(x.form.toLowerCase())
       && x.interp.isParticle()
       && !['discourse', 'fixed'])
@@ -293,76 +293,76 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && x.interp.isParticle()
       && !['fixed', 'aux', undefined].includes(x.relation))
 
-  if (sentence.every(x => x.relation !== 'obj')) {
+  if (sentence.every(x => x.rel0 !== 'obj')) {
     reportIf('iobj без obj',
-      x => x.relation === 'iobj')
+      x => x.rel0 === 'iobj')
   }
 
   reportIf('не advmod в не',
     x => x.interp.isParticle()
       && ['не', /*'ні', 'лише'*/].includes(x.form.toLowerCase())
-      && !['advmod', undefined].includes(x.relation))
+      && !['advmod', undefined].includes(x.rel0))
 
   reportIf('не cc в сурядий на початку речення',
-    (x, i) => i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.relation))
+    (x, i) => i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.rel0))
 
   var predicates = new Set<number>()
   sentence.forEach((x, i) => {
-    if (CORE_COMPLEMENTS.includes(x.relation)) {
-      if (predicates.has(x.head)) {
-        problems.push({ indexes: [x.head], message: `у присудка більше ніж один прямий додаток (${CORE_COMPLEMENTS.join('|')})` })
+    if (CORE_COMPLEMENTS.includes(x.rel0)) {
+      if (predicates.has(x.head0)) {
+        problems.push({ indexes: [x.head0], message: `у присудка більше ніж один прямий додаток (${CORE_COMPLEMENTS.join('|')})` })
       } else {
-        predicates.add(x.head)
+        predicates.add(x.head0)
       }
     }
   })
 
   let predicates2 = new Set<number>()
   sentence.forEach((x, i) => {
-    if (SUBJECTS.includes(x.relation)) {
-      if (predicates2.has(x.head)) {
-        problems.push({ indexes: [x.head], message: `у присудка більше ніж один підмет (${SUBJECTS.join('|')})` })
+    if (SUBJECTS.includes(x.rel0)) {
+      if (predicates2.has(x.head0)) {
+        problems.push({ indexes: [x.head0], message: `у присудка більше ніж один підмет (${SUBJECTS.join('|')})` })
       } else {
-        predicates2.add(x.head)
+        predicates2.add(x.head0)
       }
     }
   })
 
   reportIf('obj/iobj має прийменник',
-    (x, i) => ['obj', 'iobj'].includes(x.relation) && sentence.some(xx => xx.relation === 'case' && xx.head === i))
+    (x, i) => ['obj', 'iobj'].includes(x.rel0) && sentence.some(xx => xx.rel0 === 'case' && xx.head0 === i))
 
   reportIf('керівний числівник не nummod:gov',
-    x => x.relation === 'nummod'
+    x => x.rel0 === 'nummod'
       && x.interp.isCardinalNumeral()
       && !x.interp.isPronoun()
       && (x.interp.isNominative() || x.interp.isAccusative() /*|| /^\d+$/.test(x.form)*/)
-      && sentence[x.head].interp.isGenitive())
+      && sentence[x.head0].interp.isGenitive())
 
   reportIf(`:pass-реляція?`,
     x => !x.isPromoted
-      && ['aux', 'csubj', 'nsubj'].includes(x.relation)
-      && sentence[x.head]
-      && isPassive(sentence[x.head].interp))  // todo: навпаки
+      && ['aux', 'csubj', 'nsubj'].includes(x.rel0)
+      && sentence[x.head0]
+      && isPassive(sentence[x.head0].interp))  // todo: навпаки
 
   reportIf(`:obl:agent?`,
     (x, i) => !x.isPromoted
-      && x.relation === 'obl'
+      && x.rel0 === 'obl'
       && x.interp.isInstrumental()
-      && isPassive(sentence[x.head].interp)
-      && !hasDependantWhich(i, xx => xx.relation === 'case'))
+      && isPassive(sentence[x.head0].interp)
+      && !hasDependantWhich(i, xx => xx.rel0 === 'case'))
 
   TERMINAL_RELATIONS.forEach(leafrel => xreportIf(`${leafrel} може вести тільки до листків`,
     (x, i) => x.relation === leafrel
-      && sentence.some(xx => xx.head === i
+      && sentence.some(xx => xx.head0 === i
         && !xx.interp.isPunctuation())))
 
   reportIf(`obl з не дієслова/дієприслівника/прислівника/прикметника`,
-    (x, i) => OBLIQUES.includes(x.relation)
+    (x, i) => OBLIQUES.includes(x.rel0)
       && !x.isPromoted
-      && !sentence.some(xx => xx.head === i && xx.relation === 'cop')
-      && !sentence[x.head].interp.isVerbial()
-      && !sentence[x.head].interp.isAdjective()
-      && !sentence[x.head].interp.isAdverb())
+      && !sentence.some(xx => xx.head0 === i && xx.rel0 === 'cop')
+      && !sentence[x.head0].interp.isVerbial()
+      && !sentence[x.head0].interp.isAdjective()
+      && !sentence[x.head0].interp.isAdverb())
 
 
   /*
@@ -406,7 +406,7 @@ function isConinuous(array: Array<number>) {
 
 //------------------------------------------------------------------------------
 function canBePredicate(token: Token, sentence: Token[], index: number) {
-  return token.interp.isVerb() || token.interp.isTransgressive() || sentence.some(t => t.head === index && t.relation === 'cop')
+  return token.interp.isVerb() || token.interp.isTransgressive() || sentence.some(t => t.head0 === index && t.rel0 === 'cop')
 }
 
 //------------------------------------------------------------------------------
@@ -416,5 +416,5 @@ function isNounishOrEllipticAdj(token: Token) {
 
 //------------------------------------------------------------------------------
 function isActualParticiple(token: Token, sentence: Token[], index: number) {
-  return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.head === index && xx.relation === x))
+  return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.head0 === index && xx.rel0 === x))
 }

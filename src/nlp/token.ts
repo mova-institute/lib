@@ -7,6 +7,11 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 export type TokenType = 'word' | 'glue'
 export type Structure = 'document' | 'div' | 'paragraph' | 'sentence' | 'stanza' | 'line'
 
+export interface Dependency {
+  relation: string
+  head: number
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export class Token {
   private structure?: Structure
@@ -16,11 +21,10 @@ export class Token {
   form?: string
   interps = new Array<MorphInterp>()
   id: number
-  head: number
-  relation: string
   glued: boolean
   isPromoted: boolean
   opensParagraph: boolean  // temp
+  deps = new Array<Dependency>()
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()
@@ -96,8 +100,24 @@ export class Token {
     return this.interps[0]
   }
 
-  hasSyntax() {
-    return !!(this.head && this.relation)
+  get head0() {
+    return this.deps.length > 0 && this.deps[0].head
+  }
+
+  set head0(val: number) {
+    this.deps[0].head = val
+  }
+
+  get rel0() {
+    return this.deps.length > 0 && this.deps[0].relation
+  }
+
+  set rel0(val: string) {
+    this.deps[0].relation = val
+  }
+
+  hasDeps() {
+    return !!this.deps.length
   }
 
   toString() {

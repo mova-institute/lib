@@ -67,7 +67,7 @@ function main() {
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
     for (let {sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
       initSyntax(tokens)
-      let hasSyntax = tokens.some(x => x.hasSyntax())
+      let hasSyntax = tokens.some(x => x.hasDeps())
       if (!hasSyntax) {
         continue
       }
@@ -79,7 +79,7 @@ function main() {
       }
 
       let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
-      let roots = mu(tokens).findAllIndexes(x => !x.relation).toArray()
+      let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
       if (!roots.length) {
         datasetRegistry[set].counts.kept += numWords
         console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }]))
@@ -175,34 +175,36 @@ function initSyntax(sentence: Array<Token>) {
   for (let i = 0; i < sentence.length; ++i) {
     id2i[sentence[i].getAttribute('n')] = i
   }
-  sentence.forEach(token => {
-    token.head = id2i[token.head]
-  })
+  for (let token of sentence) {
+    for (let dep of token.deps) {
+      dep.head = id2i[token.head0]
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
 function standartizeSentence2ud20(sentence: Array<Token>) {
   let lastToken = last(sentence)
-  let rootIndex = sentence.findIndex(x => !x.relation)
+  let rootIndex = sentence.findIndex(x => !x.hasDeps())
 
   for (let token of sentence) {
     let interp = token.interp
 
     // set AUX
-    if (['aux', 'cop'].includes(token.relation)) {
+    if (['aux', 'cop'].includes(token.rel0)) {
       interp.setIsAuxillary()
     }
 
     // set the only iobj to obj
-    if (token.relation === 'iobj' && !sentence.some(tt => tt.head === token.head && tt.relation === 'obj')) {
-      token.relation = 'obj'
+    if (token.rel0 === 'iobj' && !sentence.some(tt => tt.head0 === token.head0 && tt.rel0 === 'obj')) {
+      token.rel0 = 'obj'
     }
   }
 
   // set parataxis punct to the root
-  let thecase = lastToken.interp.isPunctuation() && sentence[lastToken.head] && sentence[lastToken.head].relation === 'parataxis'
+  let thecase = lastToken.interp.isPunctuation() && sentence[lastToken.head0] && sentence[lastToken.head0].rel0 === 'parataxis'
   if (thecase) {
-    lastToken.head = rootIndex
+    lastToken.head0 = rootIndex
   }
 }
 

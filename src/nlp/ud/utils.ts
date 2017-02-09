@@ -35,8 +35,8 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
       pos,
       token.interp.toMte(),
       udFeatures2conlluString(features) || '_',
-      token.head + 1 || 0,
-      token.relation || 'root',
+      token.head0 + 1 || 0,
+      token.rel0 || 'root',
       '_',
       misc/*.sort()*/.join('|') || '_',
     ].join('\t'))
@@ -101,12 +101,12 @@ export function tokenSentence2bratPlaintext(sentence: Token[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2brat(stream: Token[][]) {
+export function* tokenStream2brat(sentences: Token[][]) {
   let offset = 0
   let t = 1
   let a = 1
   let n2id = {} as any
-  for (let sentence of stream) {
+  for (let sentence of sentences) {
     for (let token of sentence) {
       if (token.isStructure()) {
         continue
@@ -136,12 +136,12 @@ export function* tokenStream2brat(stream: Token[][]) {
   }
 
   let rId = 1
-  for (let sentence of stream) {
+  for (let sentence of sentences) {
     for (let token of sentence) {
-      if (token.relation !== undefined) {
-        let head = n2id[token.head]
+      for (let dep of token.deps) {
+        let head = n2id[dep.head]
         let dependant = n2id[token.id]
-        yield `R${rId++}\t${token.relation} Arg1:T${head} Arg2:T${dependant}`
+        yield `R${rId++}\t${dep.relation} Arg1:T${head} Arg2:T${dependant}`
       }
     }
   }

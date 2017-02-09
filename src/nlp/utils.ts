@@ -1007,13 +1007,12 @@ export function* tei2tokenStream(root: AbstractElement) {
         if (n) {
           tok.id = parseIntStrict(n)
         }
-        let dependencies = el.attribute('dep')
-        if (dependencies) {
-          let [head, relation] = dependencies.split('|')[0].split('-')  // todo
-          if (head) {
-            tok.head = parseIntStrict(head)
-          }
-          tok.relation = relation
+        let depsStr = el.attribute('dep')
+        if (depsStr) {
+          let deps = depsStr.split('|')
+            .map(x => x.split('-'))
+            .map(([head, relation]) => ({ head: parseIntStrict(head), relation }))
+          tok.deps.push(...deps)
         }
         tok.isPromoted = el.attribute('ellipsis') === 'yes'
       }
