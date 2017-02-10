@@ -62,6 +62,7 @@ function main() {
 
   let openedFiles = {} as any
   let datasetRegistry = {} as { [name: string]: Dataset }
+  let problemCounter = 1
   for (let {root, basename} of xmlRoots) {
     let tokenStream = tei2tokenStream(root)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
@@ -82,10 +83,10 @@ function main() {
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
       if (!roots.length) {
         datasetRegistry[set].counts.kept += numWords
-        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }]))
+        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }], problemCounter++))
         continue
       } else if (roots.length > 1 && args.reportHoles) {
-        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене', indexes: roots }]))
+        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене', indexes: roots }], problemCounter++))
       }
 
       if (!args.noStandartizing) {
@@ -96,7 +97,7 @@ function main() {
       if (args.onlyValid || args.validate) {
         var problems = validateSentenceSyntax(tokens)
         if (problems.length && args.validate) {
-          console.error(formatProblems(basename, sentenceId, tokens, problems))
+          console.error(formatProblems(basename, sentenceId, tokens, problems, problemCounter++))
         }
         hasProblems = !!problems.length
       }
@@ -139,12 +140,13 @@ if (require.main === module) {
 }
 
 //------------------------------------------------------------------------------
-function formatProblems(docName: string, sentenceId: string, tokens: Token[], problems: any[]) {
-  let bratPath = tokens.find(x => x.getAttribute('depsrc')).getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
+function formatProblems(docName: string, sentenceId: string, tokens: Token[], problems: any[], count: number) {
+  let tokenWithDepsrc = tokens.find(x => x.getAttribute('depsrc'))
+  let bratPath = tokenWithDepsrc && tokenWithDepsrc.getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
   let href = `https://lab.mova.institute/syntax_annotator/index.xhtml#/treebank/ud2/${bratPath}`
-  let ret = `*** Проблеми в реченні ${sentenceId} ${href}\n\n`
+  let ret = `*** [${count}] Проблеми в реченні ${sentenceId} ${href}\n\n`
   let repro = tokens.join(' ')
-  for (let [i, {indexes, message}] of problems.entries()) {
+  for (let {indexes, message} of problems) {
     ret += `    ${message}\n`
     ret += `${repro}\n`
     if (indexes !== undefined) {
@@ -183,11 +185,12 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
   let rootIndex = sentence.findIndex(x => !x.hasDeps())
 
   for (let token of sentence) {
-    let interp = token.interp
+    // choose (punct) relation from rigthtest token
+    token.deps = token.deps.sort((a, b) => a.head - b.head).slice(0, 1)
 
     // set AUX
     if (['aux', 'cop'].includes(token.rel0)) {
-      interp.setIsAuxillary()
+      token.interp.setIsAuxillary()
     }
 
     // set the only iobj to obj

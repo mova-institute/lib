@@ -59,6 +59,9 @@ function main() {
       for (let token of parseBratFile(linesSync(bratFile))) {
         if (isString(token.annotations.N)) {
           let el = n2element[token.annotations.N]
+          if (!el) {  // sometimes tokens are deleted in xml but remain in brat
+            continue
+          }
           el.setAttribute('comment', token.comment)
           el.setAttribute('ellipsis', token.annotations.Ellipsis && 'yes')
 

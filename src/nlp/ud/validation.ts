@@ -244,6 +244,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
     sentence.some((xx, ii) => xx.head0 === i && fn(xx, ii))
 
 
+  // ~~~~~~~ rules ~~~~~~~~
+
   reportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
 
@@ -269,7 +271,6 @@ export function validateSentenceSyntax(sentence: Token[]) {
         && !x.isPromoted
         && toUd(x.interp).pos === pos
         && !rels.includes(x.rel0)))
-
 
 
   xreportIf(`punct в двокрапку зліва`,
