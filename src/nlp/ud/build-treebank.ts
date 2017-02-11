@@ -200,7 +200,7 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     token.deps = token.deps.sort((a, b) => a.head - b.head).slice(0, 1)
 
     // set AUX
-    if (['aux', 'cop'].includes(token.rel0)) {
+    if (['aux', 'aux:pass', 'cop'].includes(token.rel0)) {
       token.interp.setIsAuxillary()
     }
 

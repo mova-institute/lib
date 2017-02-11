@@ -867,6 +867,7 @@ export class MorphInterp {
   isDative() { return this.features.case === Case.dative }
   isAccusative() { return this.features.case === Case.accusative }
   isInstrumental() { return this.features.case === Case.instrumental }
+  isLocative() { return this.features.case === Case.locative }
   isVocative() { return this.features.case === Case.vocative }
 
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }

@@ -73,6 +73,7 @@ const COMPLEMENTS = [
 
 const OBLIQUES = [
   'obl',
+  'obl:agent',
   'mark:obl',
 ]
 
@@ -192,32 +193,62 @@ const ADVMOD_NONADVERBIAL_LEMMAS = [
   'ні',
 ]
 
+const CLAUSAL_MODIFIERS = [
+  'acl',
+  'advcl',
+  'csubj',
+  'csubj:pass',
+  'ccomp',
+  'xcomp',
+]
+
+const EXPL_FORMS = [
+  'собі'
+]
+
+const CC_HEAD_RELS = [
+  'conj',
+  'parataxis',
+  'conj:parataxis',
+]
+
+const NON_CHAINABLE_RELS = [
+  'aux',
+  'fixed',
+]
+
 
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
-  [`case`, `з іменника`, t => t.interp.isNounish() || t.interp.isAdjective() && t.interp.isPronoun(), `в прийменник`, t => t.interp.isPreposition()],
+  [
+    `case`, `з іменника`,
+    t => t.interp.isNounish() || t.interp.isAdjective() && t.interp.isPronoun() || t.interp.isAdjective() && t.isPromoted,
+    `в прийменник`,
+    t => t.interp.isPreposition()
+  ],
   [`det`, `з іменника`, t => t.interp.isNounish(), `в DET`, t => toUd(t.interp).pos === 'DET'],
   [`amod`, `з іменника`, t => t.interp.isNounish(), `в прикметник`, t => t.interp.isAdjectivish()],
-  [`nmod`, `з іменника`, t => t.interp.isNounish() || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
+  [`nmod`, `з іменника`, t => t.isPromoted || t.interp.isNounish() || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
   [`nummod`, `з іменника`, t => t.interp.isNounish(), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronoun()],
   [`det:numgov`, `з іменника`, t => t.interp.isNounish(), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
   [`punct`, `з не PUNCT`, t => !t /*temp*/ || !t.interp.isPunctuation(), `в PUNCT`, t => t.interp.isPunctuation()],
   [`discourse`, undefined, undefined, `в ${DISCOURSE_DESTANATIONS.join('|')}`, t => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos)],
   [`aux`, `з дієслівного`, t => t.interp.isVerbial(), `в бути|би|б`, t => TOBE_AND_BY_LEMMAS.includes(t.interp.lemma)],
   [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isTransgressive() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
-  [`nsubj`, ``, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
-  [`obj`, ``, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
-  [`iobj`, ``, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
-  [`obl`, ``, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => isNounishOrEllipticAdj(t)],
-  [`obl:agent`, ``, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => isNounishOrEllipticAdj(t)],
-  [`vocative`, ``, (t, s, i) => 1 || canBePredicate(t, s, i), `в кличний/називний іменник`, t => isNounishOrEllipticAdj(t) && (t.interp.isVocative() || t.interp.isNominative())],
+  [`nsubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
+  [`obj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
+  [`iobj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
+  [`obl`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => isNounishOrEllipticAdj(t)],
+  [`obl:agent`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => isNounishOrEllipticAdj(t)],
+  [`vocative`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в кличний/називний іменник`, t => isNounishOrEllipticAdj(t) && (t.interp.isVocative() || t.interp.isNominative())],
   [`advmod`, ``, t => 0, `в прислівник`, t => t.interp.isAdverb() || t.interp.isParticle() && ADVMOD_NONADVERBIAL_LEMMAS.includes(t.interp.lemma)],
+  [`expl`, ``, t => 0, `в ${EXPL_FORMS.join('|')}`, t => EXPL_FORMS.includes(t.form)],
+  [`mark`, ``, t => t, `в SCONJ`, t => toUd(t.interp).pos === 'SCONJ'],
 
 
 
+  // [`cc`, `з ${CC_HEAD_RELS.join('|')}`, t => !t.rel0 || CC_HEAD_RELS.includes(t.rel0), ``, t => t],  // окремо
 
-
-  // [`acl`, `з іменника`, t => isNounishOrEllipticAdj(t), ``, t => 1],
-
+  // [`acl`, `з іменника`, t => isNounishOrEllipticAdj(t), ``, t => t],
   // [`appos`, `з іменника`, t => t.interp.isNounish() || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
 ]
 
@@ -246,31 +277,31 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   // ~~~~~~~ rules ~~~~~~~~
 
-  reportIf('більше однієї стрілки в слово',
-    tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
-
-  // return problems
-  RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel0 === rel && tok.head0 > i))
-  LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel0 === rel && tok.head0 < i))
-
   for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
     if (messageFrom && predicateFrom) {
-      reportIf(`${rel} не ${messageFrom}`, (t, i) => t.rel0 === rel && !predicateFrom(sentence[t.head0], sentence, i))
+      reportIf(`${rel} не ${messageFrom}`, (t, i) => t.rel0 === rel && !predicateFrom(sentence[t.head0], sentence, t.head0))
     }
     if (messageTo && predicateTo) {
       reportIf(`${rel} не ${messageTo}`, (t, i) => t.rel0 === rel && !predicateTo(t, sentence, i))
     }
   }
+  // return problems
+
+  reportIf('більше однієї стрілки в слово',
+    tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
+
+  RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel0 === rel && tok.head0 > i))
+  LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel0 === rel && tok.head0 < i))
 
   reportIf('заборонена реляція',
     x => x.rel0 && !ALLOWED_RELATIONS.includes(x.rel0))
 
-  Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
-    reportIf(`не ${rels.join('|')} в ${pos}`,
-      x => x.rel0
-        && !x.isPromoted
-        && toUd(x.interp).pos === pos
-        && !rels.includes(x.rel0)))
+  // Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
+  //   reportIf(`не ${rels.join('|')} в ${pos}`,
+  //     x => x.rel0
+  //       && !x.isPromoted
+  //       && toUd(x.interp).pos === pos
+  //       && !rels.includes(x.rel0)))
 
 
   xreportIf(`punct в двокрапку зліва`,
@@ -361,10 +392,11 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && sentence.some(xx => xx.head0 === i
         && !xx.interp.isPunctuation())))
 
-  reportIf(`obl з не дієслова/дієприслівника/прислівника/прикметника`,
+  reportIf(`obl з неприсудка`,
     (x, i) => OBLIQUES.includes(x.rel0)
       && !x.isPromoted
       && !sentence.some(xx => xx.head0 === i && xx.rel0 === 'cop')
+      && !sentence[x.head0].interp.isNounish()
       && !sentence[x.head0].interp.isVerbial()
       && !sentence[x.head0].interp.isAdjective()
       && !sentence[x.head0].interp.isAdverb())
@@ -388,11 +420,6 @@ function isPassive(interp: MorphInterp) {
 }
 
 //------------------------------------------------------------------------------
-function isIntransitiveVerb(interp: MorphInterp) {
-  return interp.isVerb() && interp.isReflexiveVerb()
-}
-
-//------------------------------------------------------------------------------
 function getSubtree(i: number, childrenMap: number[][]) {
   let ret = [i, ...childrenMap[i]]
   childrenMap[i].forEach(x => ret.push(...getSubtree(x, childrenMap)))
@@ -411,7 +438,16 @@ function isConinuous(array: Array<number>) {
 
 //------------------------------------------------------------------------------
 function canBePredicate(token: Token, sentence: Token[], index: number) {
-  return token.interp.isVerb() || token.interp.isTransgressive() || sentence.some(t => t.head0 === index && t.rel0 === 'cop')
+  return token.isPromoted
+    || token.interp.isVerb()
+    || token.interp.isTransgressive()
+    || token.interp.isAdverb()
+    || (sentence.some(t => t.head0 === index && t.rel0 === 'cop')
+      && (token.interp.isNounish() || token.interp.isAdjective())
+      && (token.interp.isNominative() || token.interp.isInstrumental() || token.interp.isLocative())
+    )
+    || ((token.interp.isNounish() || token.interp.isAdjective()) && token.interp.isNominative())
+    || CLAUSAL_MODIFIERS.includes(token.rel0)
 }
 
 //------------------------------------------------------------------------------
