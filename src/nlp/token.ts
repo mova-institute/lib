@@ -100,19 +100,19 @@ export class Token {
     return this.interps[0]
   }
 
-  get head0() {
+  get head() {
     return this.deps.length > 0 && this.deps[0].head
   }
 
-  set head0(val: number) {
+  set head(val: number) {
     this.deps[0].head = val
   }
 
-  get rel0() {
+  get rel() {
     return this.deps.length > 0 && this.deps[0].relation
   }
 
-  set rel0(val: string) {
+  set rel(val: string) {
     this.deps[0].relation = val
   }
 

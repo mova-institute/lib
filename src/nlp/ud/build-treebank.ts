@@ -188,7 +188,7 @@ function initSyntax(sentence: Array<Token>) {
   }
   for (let token of sentence) {
     for (let dep of token.deps) {
-      dep.head = id2i[token.head0]
+      dep.head = id2i[token.head]
     }
   }
 }
@@ -202,18 +202,18 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     token.deps = token.deps.sort((a, b) => a.head - b.head).slice(0, 1)
 
     // set AUX
-    if (['aux', 'aux:pass', 'cop'].includes(token.rel0)) {
+    if (['aux', 'aux:pass', 'cop'].includes(token.rel)) {
       token.interp.setIsAuxillary()
     }
 
     // set the only iobj to obj
-    if (token.rel0 === 'iobj' && !sentence.some(tt => tt.head0 === token.head0 && CORE_COMPLEMENTS.includes(tt.rel0))) {
-      token.rel0 = 'obj'
+    if (token.rel === 'iobj' && !sentence.some(tt => tt.head === token.head && CORE_COMPLEMENTS.includes(tt.rel))) {
+      token.rel = 'obj'
     }
 
     // simple-rename internal rels
     if (token.hasDeps()) {
-      token.rel0 = REL_RENAMINGS[token.rel0] || token.rel0
+      token.rel = REL_RENAMINGS[token.rel] || token.rel
     }
 
     // remove degree from &noun
@@ -223,9 +223,9 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
   }
 
   // set parataxis punct to the root
-  let thecase = lastToken.interp.isPunctuation() && sentence[lastToken.head0] && sentence[lastToken.head0].rel0 === 'parataxis'
+  let thecase = lastToken.interp.isPunctuation() && sentence[lastToken.head] && sentence[lastToken.head].rel === 'parataxis'
   if (thecase) {
-    lastToken.head0 = rootIndex
+    lastToken.head = rootIndex
   }
 }
 

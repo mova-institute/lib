@@ -35,8 +35,8 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
       pos,
       token.interp.toMte(),
       udFeatures2conlluString(features) || '_',
-      token.head0 + 1 || 0,
-      token.rel0 || 'root',
+      token.head + 1 || 0,
+      token.rel || 'root',
       '_',
       misc/*.sort()*/.join('|') || '_',
     ].join('\t'))
