@@ -8,7 +8,7 @@ import { last } from '../../lang'
 import { Token } from '../../nlp/token'
 import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
-import { validateSentenceSyntax } from './validation'
+import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -40,10 +40,12 @@ class Dataset {
 
 //------------------------------------------------------------------------------
 const REL_RENAMINGS = {
-  'mark:obj': 'obj:mark',
-  'mark:iobj': 'iobj:mark',
-  'mark:obl': 'obl:mark',
-  'mark:nsubj': 'nsubj:mark',
+  'mark:obj': 'obj',
+  'mark:iobj': 'iobj',
+  'mark:obl': 'obl',
+  'mark:nsubj': 'nsubj',
+  'conj:parataxis': 'conj',
+  'conj:repeat': 'conj',
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +86,7 @@ function main() {
         continue
       }
 
-      set = args.oneSet || set || 'train'
+      set = args.oneSet || set || 'unassigned'
       datasetRegistry[set] = datasetRegistry[set] || new Dataset()
       // if (newDocument) {
       // Object.values(datasetRegistry).forEach(x => x.newdoc = true)
@@ -205,7 +207,7 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     }
 
     // set the only iobj to obj
-    if (token.rel0 === 'iobj' && !sentence.some(tt => tt.head0 === token.head0 && tt.rel0 === 'obj')) {
+    if (token.rel0 === 'iobj' && !sentence.some(tt => tt.head0 === token.head0 && CORE_COMPLEMENTS.includes(tt.rel0))) {
       token.rel0 = 'obj'
     }
 
@@ -216,7 +218,7 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
 
     // remove degree from &noun
     if (token.interp.isAdjectiveAsNoun()) {
-      // token.interp.features.degree = undefined
+      token.interp.features.degree = undefined
     }
   }
 

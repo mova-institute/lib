@@ -59,7 +59,7 @@ const ALLOWED_RELATIONS = [
   'xcomp',
 ]
 
-const CORE_COMPLEMENTS = [
+export const CORE_COMPLEMENTS = [
   'obj',
   // 'xcomp',
   'ccomp',
@@ -329,11 +329,6 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && x.interp.isParticle()
       && !['fixed', 'aux', undefined].includes(x.relation))
 
-  if (sentence.every(x => x.rel0 !== 'obj')) {
-    reportIf('iobj без obj',
-      x => x.rel0 === 'iobj')
-  }
-
   reportIf('не advmod в не',
     x => x.interp.isParticle()
       && ['не', /*'ні', 'лише'*/].includes(x.form.toLowerCase())
@@ -439,6 +434,7 @@ function isConinuous(array: Array<number>) {
 //------------------------------------------------------------------------------
 function canBePredicate(token: Token, sentence: Token[], index: number) {
   return token.isPromoted
+    || !token.hasDeps()
     || token.interp.isVerb()
     || token.interp.isTransgressive()
     || token.interp.isAdverb()
