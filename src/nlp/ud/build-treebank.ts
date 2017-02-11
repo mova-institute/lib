@@ -17,15 +17,18 @@ import * as columnify from 'columnify'
 
 
 
+//------------------------------------------------------------------------------
 interface Args {
   _: string[]
   noStandartizing: boolean
-  onlyValid: boolean
-  reportHoles: boolean
-  validate: boolean
   oneSet: string
+
+  reportHoles: boolean
+  reportErrors: 'all' | 'complete' | 'none'
+  validOnly: boolean
 }
 
+//------------------------------------------------------------------------------
 class Dataset {
   file: number
   counts = {
@@ -36,23 +39,31 @@ class Dataset {
 }
 
 //------------------------------------------------------------------------------
+const REL_RENAMINGS = {
+  'mark:obj': 'obj:mark',
+  'mark:iobj': 'iobj:mark',
+  'mark:obl': 'obl:mark',
+  'mark:nsubj': 'nsubj:mark',
+}
+
+//------------------------------------------------------------------------------
 function main() {
   let args: Args = minimist(process.argv.slice(2), {
     boolean: [
-      'validate',
       'noStandartizing',
-      'onlyValid',
       'reportHoles',
-      'oneSet',
+      'onlyValid',
     ],
     alias: {
-      noStandartizing: ['no-std'],
-      onlyvalid: 'only-valid',
       oneSet: 'one-set',
+      noStandartizing: 'no-std',
+
+      validOnly: 'valid-only',
+      reportHoles: 'report-holes',
+      reportErrors: 'report-errors',
     },
     default: {
-      // oneSet: 'train',
-      noStandartizing: false,
+      reportErrors: 'none',
     }
   }) as any
 
@@ -73,7 +84,7 @@ function main() {
         continue
       }
 
-      set = !args.oneSet && set || 'train'
+      set = args.oneSet || set || 'train'
       datasetRegistry[set] = datasetRegistry[set] || new Dataset()
       // if (newDocument) {
       // Object.values(datasetRegistry).forEach(x => x.newdoc = true)
@@ -81,33 +92,34 @@ function main() {
 
       let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
+      let isComplete = roots.length === 1
+
       if (!roots.length) {
         datasetRegistry[set].counts.kept += numWords
-        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'cycle' }], problemCounter++))
+        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'цикл' }], problemCounter++))
         continue
-      } else if (roots.length > 1 && args.reportHoles) {
+      } else if (!isComplete && args.reportHoles) {
         console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене', indexes: roots }], problemCounter++))
       }
 
-      if (!args.noStandartizing) {
-        standartizeSentence2ud20(tokens)
-      }
-
       let hasProblems = false
-      if (args.onlyValid || args.validate) {
+      if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
         var problems = validateSentenceSyntax(tokens)
-        if (problems.length && args.validate) {
+        hasProblems = !!problems.length
+        if (hasProblems && args.reportErrors) {
           console.error(formatProblems(basename, sentenceId, tokens, problems, problemCounter++))
         }
-        hasProblems = !!problems.length
       }
 
-      if (args.onlyValid && hasProblems) {
+      if (args.validOnly && hasProblems) {
         datasetRegistry[set].counts.kept += numWords
-      } else if (roots.length > 1) {
+      } else if (!isComplete) {
         datasetRegistry[set].counts.kept += numWords
       } else {
         datasetRegistry[set].counts.exported += numWords
+        if (!args.noStandartizing) {
+          standartizeSentence2ud20(tokens)
+        }
 
         let filename = set2filename(outDir, set)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
@@ -179,13 +191,12 @@ function initSyntax(sentence: Array<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function standartizeSentence2ud20(sentence: Array<Token>) {
   let lastToken = last(sentence)
   let rootIndex = sentence.findIndex(x => !x.hasDeps())
 
   for (let token of sentence) {
-    // choose (punct) relation from rigthtest token
+    // choose (punct) relation from the rigthtest token
     token.deps = token.deps.sort((a, b) => a.head - b.head).slice(0, 1)
 
     // set AUX
@@ -196,6 +207,16 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     // set the only iobj to obj
     if (token.rel0 === 'iobj' && !sentence.some(tt => tt.head0 === token.head0 && tt.rel0 === 'obj')) {
       token.rel0 = 'obj'
+    }
+
+    // simple-rename internal rels
+    if (token.hasDeps()) {
+      token.rel0 = REL_RENAMINGS[token.rel0] || token.rel0
+    }
+
+    // remove degree from &noun
+    if (token.interp.isAdjectiveAsNoun()) {
+      // token.interp.features.degree = undefined
     }
   }
 
