@@ -185,11 +185,22 @@ function set2filename(dir: string, setName: string) {
 function initSyntax(sentence: Array<Token>) {
   let id2i = {} as any
   for (let i = 0; i < sentence.length; ++i) {
-    id2i[sentence[i].getAttribute('n')] = i
+    id2i[sentence[i].id] = i
   }
+  let changed = new Set<number>()
   for (let token of sentence) {
     for (let dep of token.deps) {
-      dep.head = id2i[token.head]
+      if (!changed.has(token.id)) {
+        if (id2i[token.head] === undefined) {
+          console.log(sentence)
+          console.log(id2i)
+          console.log(token.id)
+          console.log(token.head)
+          throw 'head outside sentence'
+        }
+        dep.head = id2i[token.head]
+        changed.add(token.id)
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 ////////////////////////////////////////////////////////////////////////////////
 export type TokenType = 'word' | 'glue'
 export type Structure = 'document' | 'div' | 'paragraph' | 'sentence' | 'stanza' | 'line'
+export type TokenTag = 'adjdet' | 'nestedpunct'
 
 export interface Dependency {
   relation: string
@@ -25,6 +26,7 @@ export class Token {
   isPromoted: boolean
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
+  tags = new Array<TokenTag>()
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()
@@ -101,7 +103,7 @@ export class Token {
   }
 
   get head() {
-    return this.deps.length > 0 && this.deps[0].head
+    return this.deps.length > 0 ? this.deps[0].head : undefined
   }
 
   set head(val: number) {
@@ -109,7 +111,7 @@ export class Token {
   }
 
   get rel() {
-    return this.deps.length > 0 && this.deps[0].relation
+    return this.deps.length > 0 ? this.deps[0].relation : undefined
   }
 
   set rel(val: string) {

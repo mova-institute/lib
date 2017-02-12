@@ -228,12 +228,12 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     `в прийменник`,
     t => t.interp.isPreposition()
   ],
-  [`det`, `з іменника`, t => isNounishOrEllipticAdj(t), `в DET`, t => toUd(t.interp).pos === 'DET'],
+  [`det`, `з іменника`, (t, s, i) => isNounishOrEllipticAdj(t) || s.some(tt => tt.rel === 'acl' || tt.head === i) || t.tags.includes('adjdet'), `в DET`, t => toUd(t.interp).pos === 'DET'],
   [`amod`, `з іменника`, t => isNounishOrEllipticAdj(t), `в прикметник`, t => t.interp.isAdjectivish()],
-  [`nmod`, `з іменника`, t => isNounishOrEllipticAdj(t) || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
+  [`nmod`, `з іменника`, t => isNounishOrEllipticAdj(t), `в іменник`, t => isNounishOrEllipticAdj(t)],
   [`nummod`, `з іменника`, t => isNounishOrEllipticAdj(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronoun()],
   [`det:numgov`, `з іменника`, t => isNounishOrEllipticAdj(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
-  [`punct`, `з не PUNCT`, t => !t /*temp*/ || !t.interp.isPunctuation(), `в PUNCT`, t => t.interp.isPunctuation()],
+  [`punct`, `з не PUNCT`, t => !t /*temp*/ || !t.interp.isPunctuation() || t.tags.includes('nestedpunct'), `в PUNCT`, t => t.interp.isPunctuation()],
   [`discourse`, undefined, undefined, `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`, (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
   [`aux`, `з дієслівного`, t => t.interp.isVerbial(), `в бути|би|б`, t => TOBE_AND_BY_LEMMAS.includes(t.interp.lemma)],
   [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isTransgressive() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
@@ -438,6 +438,7 @@ function isConinuous(array: Array<number>) {
 function canBePredicate(token: Token, sentence: Token[], index: number) {
   return token.isPromoted
     || !token.hasDeps()
+    || token.interp.isInterjection()
     || token.interp.isVerb()
     || token.interp.isTransgressive()
     || token.interp.isAdverb()

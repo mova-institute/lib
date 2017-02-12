@@ -1012,9 +1012,14 @@ export function* tei2tokenStream(root: AbstractElement) {
           let deps = depsStr.split('|')
             .map(x => x.split('-'))
             .map(([head, relation]) => ({ head: parseIntStrict(head), relation }))
-          tok.deps.push(...deps)
+          tok.deps = deps
         }
         tok.isPromoted = el.attribute('ellipsis') === 'yes'
+        let comment = el.attribute('comment')
+        if (comment) {
+          let tags = comment.split(/\s+/g).filter(x => x.startsWith('@')).map(x => x.substr(1)) as any
+          tok.tags = tags
+        }
       }
 
       yield tok

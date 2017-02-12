@@ -860,6 +860,7 @@ export class MorphInterp {
   isPunctuation() { return this.features.pos === Pos.punct }
   isTransgressive() { return this.features.pos === Pos.transgressive }
   isVerb() { return this.features.pos === Pos.verb }
+  isInterjection() { return this.features.pos === Pos.interjection }
   isX() { return this.features.pos === Pos.x }
 
   isNominative() { return this.features.case === Case.nominative }
