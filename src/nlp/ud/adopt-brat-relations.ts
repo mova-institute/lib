@@ -17,15 +17,15 @@ import groupby = require('lodash.groupby')
 
 
 const bratPrefix2xmlFilename = {
-  'babornia': 'laiuk__babornia',
-  'dzhaz': 'polishchuk__dzhaz',
-  'haz': 'zakon__metan',
-  'pidslukhano': 'sotsmerezhi__pidslukhano_kma',
-  'prokhasko': 'prokhasko__opovidannia',
-  'shcherbachov': 'umoloda__shcherbachov',
-  'tyhrolovy': 'bahrianyi__tyhrolovy',
-  'vichnyk': 'sverstiuk__vichnyk',
-  'zakon_tvaryny': 'zakon__tvaryny',
+  // 'babornia': 'laiuk__babornia',
+  // 'dzhaz': 'polishchuk__dzhaz',
+  // 'haz': 'zakon__metan',
+  // 'pidslukhano': 'sotsmerezhi__pidslukhano_kma',
+  // 'prokhasko': 'prokhasko__opovidannia',
+  // 'shcherbachov': 'umoloda__shcherbachov',
+  // 'tyhrolovy': 'bahrianyi__tyhrolovy',
+  // 'vichnyk': 'sverstiuk__vichnyk',
+  // 'zakon_tvaryny': 'zakon__tvaryny',
 }
 
 //------------------------------------------------------------------------------
@@ -56,16 +56,16 @@ function main() {
       .forEach(x => n2element[x.attribute('n')] = x)
 
     for (let bratFile of bratFiles) {
-      for (let token of parseBratFile(linesSync(bratFile))) {
-        if (isString(token.annotations.N)) {
-          let el = n2element[token.annotations.N]
+      for (let span of parseBratFile(linesSync(bratFile))) {
+        if (isString(span.annotations.N)) {
+          let el = n2element[span.annotations.N]
           if (!el) {  // sometimes tokens are deleted in xml but remain in brat
             continue
           }
-          el.setAttribute('comment', token.comment)
-          el.setAttribute('ellipsis', token.annotations.Ellipsis && 'yes')
+          el.setAttribute('comment', span.comment)
+          el.setAttribute('promoted', span.annotations.Promoted && 'yes')
 
-          let dependencies = token.arcs
+          let dependencies = span.arcs
             .filter(x => isString(x.head.annotations.N))
             .map(({relation, head}) => `${head.annotations.N}-${relation.replace('_', ':')}`)
             .join('|') || undefined

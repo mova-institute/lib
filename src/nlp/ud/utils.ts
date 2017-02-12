@@ -105,6 +105,7 @@ export function* tokenStream2brat(sentences: Token[][]) {
   let offset = 0
   let t = 1
   let a = 1
+  let commentN = 1
   let n2id = {} as any
   for (let sentence of sentences) {
     for (let token of sentence) {
@@ -130,6 +131,13 @@ export function* tokenStream2brat(sentences: Token[][]) {
       if (token.id !== undefined) {
         n2id[token.id] = id
         yield `A${a++}\tN ${tId} ${token.id}`
+      }
+      if (token.isPromoted) {
+        yield `A${a++}\tPromoted ${tId}`
+      }
+      let comment = token.getAttribute('comment')
+      if (comment) {
+        yield `#${commentN++}\tAnnotatorNotes ${tId}\t${comment}`
       }
       offset = rightOffset + 1    // account for space
     }
