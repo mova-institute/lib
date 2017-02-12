@@ -46,6 +46,7 @@ const REL_RENAMINGS = {
   'mark:nsubj': 'nsubj',
   'conj:parataxis': 'conj',
   'conj:repeat': 'conj',
+  'obl:agent': 'obl',
 }
 
 //------------------------------------------------------------------------------
@@ -108,7 +109,7 @@ function main() {
       if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
         var problems = validateSentenceSyntax(tokens)
         hasProblems = !!problems.length
-        if (hasProblems && args.reportErrors) {
+        if (hasProblems && args.reportErrors !== 'none') {
           console.error(formatProblems(basename, sentenceId, tokens, problems, problemCounter++))
         }
       }
