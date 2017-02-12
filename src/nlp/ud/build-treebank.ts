@@ -136,8 +136,8 @@ function main() {
   let stats = Object.entries(datasetRegistry).map(([set, {counts: {kept, exported}}]) => ({ set, kept, exported }))
   stats.push({ set: 'TOTAL', kept: stats.map(x => x.kept).reduce((a, b) => a + b, 0), exported: stats.map(x => x.exported).reduce((a, b) => a + b, 0) })
 
-  console.error(`\n`)
-  console.error(columnify(stats, {
+  console.log(`\n`)
+  console.log(columnify(stats, {
     config: {
       kept: {
         align: 'right',
@@ -147,7 +147,7 @@ function main() {
       },
     },
   }))
-  console.error(`\n`)
+  console.log(`\n`)
 }
 
 if (require.main === module) {
