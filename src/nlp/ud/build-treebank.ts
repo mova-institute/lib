@@ -173,7 +173,7 @@ if (require.main === module) {
 function formatProblems(docName: string, sentenceId: string, tokens: Token[], problems: any[], count: number) {
   let tokenWithDepsrc = tokens.find(x => x.getAttribute('depsrc'))
   let bratPath = tokenWithDepsrc && tokenWithDepsrc.getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
-  let href = `https://lab.mova.institute/syntax_annotator/index.xhtml#/ud/${bratPath}`
+  let href = `https://lab.mova.institute/brat/index.xhtml#/ud/${bratPath}`
   let ret = `*** [${count}] Проблеми в реченні ${sentenceId} ${href}\n\n`
   let repro = tokens.join(' ')
   for (let {indexes, message} of problems) {
@@ -207,11 +207,12 @@ function initSyntax(sentence: Array<Token>) {
     for (let dep of token.deps) {
       if (!changed.has(token.id)) {
         if (id2i[token.head] === undefined) {
+          // console.log(`head outside sentence`)
           console.log(sentence)
           console.log(id2i)
           console.log(token.id)
           console.log(token.head)
-          throw 'head outside sentence'
+          throw new Error(`head outside sentence`)
         }
         dep.head = id2i[token.head]
         changed.add(token.id)
@@ -246,6 +247,15 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     // remove degree from &noun
     if (token.interp.isAdjectiveAsNoun()) {
       token.interp.features.degree = undefined
+    }
+
+    // move dislocated to its head's head, see docs and https://github.com/UniversalDependencies/docs/issues/345
+    // internally we are doing it deliberately against UD to preserve more info
+    if (token.rel === 'dislocated') {
+      token.head = sentence[token.head].head
+      if (!token.head) {
+        throw new Error(`"dislocated" from root`)
+      }
     }
   }
 
