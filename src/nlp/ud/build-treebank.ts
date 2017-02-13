@@ -250,10 +250,11 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     }
 
     // move dislocated to its head's head, see docs and https://github.com/UniversalDependencies/docs/issues/345
-    // internally we are doing it deliberately against UD to preserve more info
+    // internally we annoate it deliberately against UD to preserve more info
     if (token.rel === 'dislocated') {
       token.head = sentence[token.head].head
-      if (!token.head) {
+      if (token.head === undefined) {
+        console.error(sentence.map(x => x.form).join(' '))
         throw new Error(`"dislocated" from root`)
       }
     }
