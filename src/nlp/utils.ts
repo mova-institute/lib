@@ -1017,7 +1017,7 @@ export function* tei2tokenStream(root: AbstractElement) {
         tok.isPromoted = el.attribute('promoted') === 'yes'
         let comment = el.attribute('comment')
         if (comment) {
-          let tags = comment.split(/\s+/g).filter(x => x.startsWith('@')).map(x => x.substr(1)) as any
+          let tags = comment.split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as any
           tok.tags = tags
         }
       }
