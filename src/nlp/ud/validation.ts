@@ -158,9 +158,17 @@ const POS_ALLOWED_RELS = {
   //   'goeswith',
   //   'discourse',
   // ],
-  'SCONJ': [
-    'mark',
-  ],
+  // 'SCONJ': [
+  //   'mark',
+  // ],
+  // 'NUM': [
+  //   'nummod',
+  //   'nummod:gov',
+  //   'compound',
+  //   'flat',
+  //   'appos',
+  //   'conj',
+  // ],
 }
 
 const NON_SCONJ_RELS = [
@@ -219,6 +227,35 @@ const NON_CHAINABLE_RELS = [
   'fixed',
 ]
 
+const NEVER_CONJUNCT_POS = [
+  'CCONJ',
+  'PART',
+  'PUNCT',
+  'SCONJ',
+  'AUX',
+]
+
+/*
+
+ADJ
+ADP
+'ADV'
+'CCONJ'
+'PART'
+'PUNCT'
+'SCONJ'
+AUX
+DET
+INTJ
+NOUN
+NUM
+PRON
+PROPN
+SYM
+VERB
+X
+
+*/
 
 
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
@@ -247,12 +284,16 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`expl`, ``, t => 0, `в ${EXPL_FORMS.join('|')}`, t => EXPL_FORMS.includes(t.form)],
   [`mark`, ``, t => t, `в SCONJ|ADV`, t => toUd(t.interp).pos === 'SCONJ' || t.interp.isAdverb()],
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
+  [`csubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
+  [`ccomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
+  [`xcomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
+  [`advcl`, ``, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
 
+  [`cc`, ``, (t, s, i) => t, `в сурядний`, t => t.interp.isCoordinating()],  // окремо
+  [`acl`, `з іменника`, t => isNounishOrEllipticAdj(t), ``, t => t],
 
-  // [`cc`, `з ${CC_HEAD_RELS.join('|')}`, t => !t.rel0 || CC_HEAD_RELS.includes(t.rel0), ``, t => t],  // окремо
+  [`appos`, `з іменника`, t => isNounishOrEllipticAdj(t), `в іменник`, t => isNounishOrEllipticAdj(t)],
 
-  // [`acl`, `з іменника`, t => isNounishOrEllipticAdj(t), ``, t => t],
-  // [`appos`, `з іменника`, t => t.interp.isNounish() || t.interp.isX(), `в іменник`, t => t.interp.isNounish()],
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -290,6 +331,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   }
   // return problems
 
+  reportIf(`токен позначено #error`, (x, i) => x.tags.includes('error'))
+
   reportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
 
@@ -301,16 +344,16 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   // Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
   //   reportIf(`не ${rels.join('|')} в ${pos}`,
-  //     x => x.rel0
+  //     x => x.rel
   //       && !x.isPromoted
   //       && toUd(x.interp).pos === pos
-  //       && !rels.includes(x.rel0)))
+  //       && !rels.includes(x.rel)))
 
 
-  xreportIf(`punct в двокрапку зліва`,
+  reportIf(`punct в двокрапку зліва`,
     (x, i) => x.form === ':'
       && x.interp.isPunctuation()
-      && x.head0 < i)
+      && x.head < i)
 
   xreportIf(`у залежника ccomp немає підмета`,
     (x, i) => x.relation === 'ccomp'
