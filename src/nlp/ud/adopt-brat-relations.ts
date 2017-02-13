@@ -37,7 +37,7 @@ function main() {
   }) as any
 
   let [xmlFiles, allBratFiles] = args._.map(x => glob.sync(x)) as string[][]
-  let bratFilesGrouped = groupby(allBratFiles, x => firstMatch(x, /\/([^/]+)_\d+\.ann$/, 1))
+  let bratFilesGrouped = groupby(allBratFiles, x => firstMatch(x, /\/([^/]+)\/\d+\.ann$/, 1))
 
   for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
     let xmlFile = `${bratName}.xml`

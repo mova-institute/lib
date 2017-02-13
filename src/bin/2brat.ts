@@ -57,7 +57,7 @@ function main() {
       .toArray()
 
     for (let [i, chunk] of chunks.entries()) {
-      let filename = `${base}_${zerofillMax(i + 1, chunks.length)}`
+      let filename = `${zerofillMax(i + 1, chunks.length)}`
       let str = mu(tokenStream2brat(chunk)).join('\n')
 
       writeFileSync(join(dest, `${filename}.ann`), str)

@@ -158,7 +158,7 @@ if (require.main === module) {
 function formatProblems(docName: string, sentenceId: string, tokens: Token[], problems: any[], count: number) {
   let tokenWithDepsrc = tokens.find(x => x.getAttribute('depsrc'))
   let bratPath = tokenWithDepsrc && tokenWithDepsrc.getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
-  let href = `https://lab.mova.institute/syntax_annotator/index.xhtml#/treebank/ud2/${bratPath}`
+  let href = `https://lab.mova.institute/syntax_annotator/index.xhtml#/ud/${bratPath}`
   let ret = `*** [${count}] Проблеми в реченні ${sentenceId} ${href}\n\n`
   let repro = tokens.join(' ')
   for (let {indexes, message} of problems) {
