@@ -32,8 +32,9 @@ interface Args {
 class Dataset {
   file: number
   counts = {
-    kept: 0,
-    exported: 0,
+    wordsKept: 0,
+    wordsExported: 0,
+    sentsExported: 0,
   }
   newdoc = false
 }
@@ -71,13 +72,16 @@ function main() {
   }) as any
 
   let [globStr, outDir] = args._
-  let xmlRoots = mu(glob.sync(globStr)).map(x => ({ root: parseXmlFileSync(x), basename: path.basename(x) }))
+  let xmlPaths = glob.sync(globStr)
   mkdirp.sync(outDir)
 
   let openedFiles = {} as any
   let datasetRegistry = {} as { [name: string]: Dataset }
   let problemCounter = 1
-  for (let {root, basename} of xmlRoots) {
+  for (let xmlPath of xmlPaths) {
+    let basename = path.basename(xmlPath)
+    console.log(`exporting ${basename}`)
+    let root = parseXmlFileSync(xmlPath)
     let tokenStream = tei2tokenStream(root)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
     for (let {sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
@@ -98,7 +102,7 @@ function main() {
       let isComplete = roots.length === 1
 
       if (!roots.length) {
-        datasetRegistry[set].counts.kept += numWords
+        datasetRegistry[set].counts.wordsKept += numWords
         console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'цикл' }], problemCounter++))
         continue
       } else if (!isComplete && args.reportHoles) {
@@ -115,11 +119,12 @@ function main() {
       }
 
       if (args.validOnly && hasProblems) {
-        datasetRegistry[set].counts.kept += numWords
+        datasetRegistry[set].counts.wordsKept += numWords
       } else if (!isComplete) {
-        datasetRegistry[set].counts.kept += numWords
+        datasetRegistry[set].counts.wordsKept += numWords
       } else {
-        datasetRegistry[set].counts.exported += numWords
+        ++datasetRegistry[set].counts.sentsExported
+        datasetRegistry[set].counts.wordsExported += numWords
         if (!args.noStandartizing) {
           standartizeSentence2ud20(tokens)
         }
@@ -133,8 +138,18 @@ function main() {
     }
   }
 
-  let stats = Object.entries(datasetRegistry).map(([set, {counts: {kept, exported}}]) => ({ set, kept, exported }))
-  stats.push({ set: 'TOTAL', kept: stats.map(x => x.kept).reduce((a, b) => a + b, 0), exported: stats.map(x => x.exported).reduce((a, b) => a + b, 0) })
+  let stats = Object.entries(datasetRegistry).map(([set, {counts: {wordsKept, wordsExported, sentsExported}}]) => ({
+    set,
+    'w kept': wordsKept,
+    'w exported': wordsExported,
+    's exported': sentsExported,
+  }))
+  stats.push({
+    set: 'TOTAL',
+    'w kept': stats.map(x => x['w kept']).reduce((a, b) => a + b, 0),
+    'w exported': stats.map(x => x['w exported']).reduce((a, b) => a + b, 0),
+    's exported': stats.map(x => x['s exported']).reduce((a, b) => a + b, 0),
+  })
 
   console.log(`\n`)
   console.log(columnify(stats, {
