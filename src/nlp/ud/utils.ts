@@ -149,7 +149,7 @@ export function* tokenStream2brat(sentences: Token[][]) {
       for (let dep of token.deps) {
         let head = n2id[dep.head]
         let dependant = n2id[token.id]
-        yield `R${rId++}\t${dep.relation} Arg1:T${head} Arg2:T${dependant}`
+        yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
       }
     }
   }
