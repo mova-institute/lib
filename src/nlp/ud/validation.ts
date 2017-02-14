@@ -259,12 +259,10 @@ X
 
 
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
-  [
-    `case`, `з іменника`,
+  [`case`, `з іменника`,
     t => isNounishOrEllipticAdj(t) || t.interp.isAdjective() && t.interp.isPronoun() || t.isPromoted && t.interp.isCardinalNumeral(),
     `в прийменник`,
-    t => t.interp.isPreposition()
-  ],
+    t => t.interp.isPreposition()],
   [`det`, `з іменника`, (t, s, i) => isNounishOrEllipticAdj(t) || s.some(tt => tt.rel === 'acl' || tt.head === i) || t.tags.includes('adjdet'), `в DET`, t => toUd(t.interp).pos === 'DET'],
   [`amod`, `з іменника`, t => isNounishOrEllipticAdj(t), `в прикметник`, t => t.interp.isAdjectivish()],
   [`nmod`, `з іменника`, t => isNounishOrEllipticAdj(t), `в іменник`, t => isNounishOrEllipticAdj(t)],
@@ -279,7 +277,11 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`iobj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrEllipticAdj(t)],
   [`obl`, `з присудка`, (t, s, i) => canBePredicate(t, s, i) || t.interp.isAdjective(), `в іменник`, t => isNounishOrEllipticAdj(t)],
   [`obl:agent`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => isNounishOrEllipticAdj(t)],
-  [`vocative`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в кличний/називний іменник`, t => isNounishOrEllipticAdj(t) && (t.interp.isVocative() || t.interp.isNominative())],
+  [`vocative`,
+    `з присудка`,
+    (t, s, i) => canBePredicate(t, s, i),
+    `в кличний/називний іменник`,
+    t => t.interp.isForeign() || isNounishOrEllipticAdj(t) && (t.interp.isVocative() || t.interp.isNominative())],
   [`advmod`, ``, t => 0, `в прислівник`, t => t.interp.isAdverb() || t.interp.isParticle() && ADVMOD_NONADVERBIAL_LEMMAS.includes(t.interp.lemma)],
   [`expl`, ``, t => 0, `в ${EXPL_FORMS.join('|')}`, t => EXPL_FORMS.includes(t.form)],
   [`mark`, ``, t => t, `в SCONJ|ADV`, t => toUd(t.interp).pos === 'SCONJ' || t.interp.isAdverb()],
