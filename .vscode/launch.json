@@ -1,137 +1,132 @@
 {
-	"version": "0.1.0",
-	"configurations": [
-		{
-			"name": "compilec",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/src/nlp/grabbers/experimental_all.node.ts",
-			"stopOnEntry": false,
-			"args": [
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "compilec",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/src/nlp/grabbers/experimental_all.node.ts",
+      "stopOnEntry": false,
+      "args": [
         "--in",
         "~/Downloads/precor",
         "--out",
         "~/Downloads/outt"
       ],
-			"cwd": "${workspaceRoot}",
-			"preLaunchTask": null,
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
-			"externalConsole": false,
-			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/lib"
-		},
-
-
-    {
-			"name": "tests",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/src/bin/test.ts",
-			"stopOnEntry": false,
-			"args": [],
-			"cwd": "${workspaceRoot}",
-			"preLaunchTask": null,
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
-      "console": "internalConsole",
-			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/lib"
-		},
-
-
-    {
-			"name": "tagger",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/src/bin/tag.ts",
-			"stopOnEntry": false,
-			"args": [
-        "-t",
-        "напр."
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
       ],
-			"cwd": "${workspaceRoot}",
-			"preLaunchTask": null,
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
-      "console": "internalConsole",
-			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/lib"
-		},
-
-
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "externalConsole": false,
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/lib"
+    },
     {
-			"name": "annotator",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/src/annotator/server.ts",
-			"stopOnEntry": false,
-			"args": [],
-			"cwd": "${workspaceRoot}",
-			"preLaunchTask": null,
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
+      "name": "tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/src/bin/test.ts",
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
       "console": "internalConsole",
-			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/lib"
-		},
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/lib"
+    },
     {
-			"name": "do",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/src/bin/do.ts",
-			"stopOnEntry": false,
-			"args": [
+      "name": "tagger",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/src/bin/tag.ts",
+      "stopOnEntry": false,
+      "args": [
+        "-f",
+        "xml",
+        "-t",
+        "по-українському. "
+      ],
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "internalConsole",
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/lib"
+    },
+    {
+      "name": "annotator",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/src/annotator/server.ts",
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "internalConsole",
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/lib"
+    },
+    {
+      "name": "do",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/src/bin/do.ts",
+      "stopOnEntry": false,
+      "args": [
         "nlp/utils",
         "processMiTeiDocument",
         "../corpus-text/text/авторське/Нечуй-Левицький Іван/Хмари.xml",
         "--xml"
       ],
-			"cwd": "${workspaceRoot}",
-			"preLaunchTask": null,
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
       "console": "internalConsole",
-			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/lib"
-		},
-
-		{
-			"name": "Attach",
-			"type": "node",
-			"request": "attach",
-			"port": 5858,
-			"address": "localhost",
-			"restart": false,
-			"sourceMaps": false,
-			"outDir": null,
-			"localRoot": "${workspaceRoot}",
-			"remoteRoot": null
-		}
-	]
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/lib"
+    },
+    {
+      "name": "Attach",
+      "type": "node",
+      "request": "attach",
+      "port": 5858,
+      "address": "localhost",
+      "restart": false,
+      "sourceMaps": false,
+      "outDir": null,
+      "localRoot": "${workspaceRoot}",
+      "remoteRoot": null
+    }
+  ]
 }

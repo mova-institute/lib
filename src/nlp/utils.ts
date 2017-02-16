@@ -100,7 +100,7 @@ export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
     let token = toks[i]
     if (!/^\s*$/.test(token)) {
       if (token.includes('-') && (!analyzer || !analyzer.canBeToken(token))) {
-        ret.push(...token.split(/(-)/).filter(x => x).map(token => ({ token, glue })))
+        ret.push(...token.split(/(-)/).filter(x => x).map((t, j) => ({ token: t, glue: glue || j !== 0 || false })))
       }
       else {
         ret.push({ token, glue })
@@ -126,12 +126,13 @@ export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
 }
 
 //------------------------------------------------------------------------------
+// let rrr = new Regex(`(${ANY_PUNC})`)
 function* splitNospace(val: string, analyzer: MorphAnalyzer) {
   if (analyzer.canBeToken(val)) {
     yield [val, false] as [string, boolean]
   } else {
     // console.log(val)
-    yield* tokenizeUk(val).map(({token, glue}) => [token, glue]) as [string, boolean][]
+    yield* tokenizeUk(val, analyzer).map(({token, glue}) => [token, glue]) as [string, boolean][]
   }
 }
 
@@ -399,7 +400,7 @@ export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAna
 ////////////////////////////////////////////////////////////////////////////////
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0  // todo: switch from wu to normal forEach
-  root.evaluateElements('//mi:w_|//w_', NS)  // todo: NS bug
+  root.evaluateElements('//mi:w_|//w_|//tei:pc|//pc', NS)  // todo: NS bug
     .toArray()
     .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
 }
