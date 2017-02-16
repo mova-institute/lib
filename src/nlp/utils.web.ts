@@ -11,7 +11,7 @@ export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 80
   let ret = new Array<DocumentFragment>()
 
-  let paragraphs: any[] = xpath(doc, '//tei:p|//tei:lg|//tei:chunk[not(ancestor::tei:p)]', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+  let paragraphs: any[] = xpath(doc, '//*[local-name()="p"]|//*[local-name()="chunk" and not(descendant::*[local-name()="p"])]', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
   if (!paragraphs.length) {
     paragraphs = [doc.documentElement] // todo //xpath(doc, '//div//p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
   }
