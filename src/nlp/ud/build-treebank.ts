@@ -26,6 +26,7 @@ interface Args {
   reportHoles: boolean
   reportErrors: 'all' | 'complete' | 'none'
   validOnly: boolean
+  forSyntaxnet: boolean
 }
 
 //------------------------------------------------------------------------------
@@ -57,6 +58,7 @@ function main() {
       'noStandartizing',
       'reportHoles',
       'onlyValid',
+      'forSyntaxnet',
     ],
     alias: {
       oneSet: 'one-set',
@@ -65,6 +67,7 @@ function main() {
       validOnly: 'valid-only',
       reportHoles: 'report-holes',
       reportErrors: 'report-errors',
+      forSyntaxnet: 'for-syntaxnet',
     },
     default: {
       reportErrors: 'none',
@@ -131,7 +134,7 @@ function main() {
 
         let filename = set2filename(outDir, set)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument)
+        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, !args.forSyntaxnet)
         fs.writeSync(file, conlluedSentence + '\n\n')
         datasetRegistry[set].newdoc = false
       }

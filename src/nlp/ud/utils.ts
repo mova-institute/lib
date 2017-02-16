@@ -6,7 +6,7 @@ import { tokenStream2plaintextString } from '../utils'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function sentence2conllu(sentence: Array<Token>, id: string | number, newParagraph: boolean, newDocument: boolean) {
+export function sentence2conllu(sentence: Array<Token>, id: string | number, newParagraph: boolean, newDocument: boolean, mte: boolean) {
   let lines = new Array<string>()
   if (newDocument) {
     lines.push(`# newdoc`)
@@ -33,7 +33,7 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
       token.form,
       token.interp.lemma,
       pos,
-      token.interp.toMte(),
+      mte ? token.interp.toMte() : pos,
       udFeatures2conlluString(features) || '_',
       token.head === undefined ? 0 : token.head + 1,
       token.rel || 'root',
