@@ -10,7 +10,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement,
+  PrepositionRequirement, Typo,
 } from './morph_features'
 
 
@@ -61,6 +61,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Polarity, 'polarity'],
   [Foreign, 'foreign'],
   [Formality, 'formality'],
+  [Typo, 'typo'],
 ])
 export const featureName2objMap = flipMap(featureObj2nameMap)
 
@@ -217,6 +218,8 @@ export const FEATURE_TABLE = [
 
   { featStr: 'formality', feat: Formality, vesum: Formality.yes, vesumStr: 'formal' },
 
+  { featStr: 'typo', feat: Typo, vesum: Typo.yes, vesumStr: 'typo' },
+
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
@@ -277,6 +280,7 @@ for (let row of FEATURE_TABLE) {
 export const FEATURE_ORDER = {
   [Pos.noun]: [
     Pos,
+    Foreign,
     Animacy,
     MorphNumber,
     Gender,
@@ -297,6 +301,7 @@ export const FEATURE_ORDER = {
   ],
   [Pos.adjective]: [
     Pos,
+    Foreign,
     Beforeadj,
     Gender,
     MorphNumber,
@@ -320,6 +325,7 @@ export const FEATURE_ORDER = {
   ],
   [Pos.verb]: [
     Pos,
+    Foreign,
     Reflexivity,
     Voice,
     Aspect,
@@ -342,6 +348,7 @@ export const FEATURE_ORDER = {
   ],
   [Pos.transgressive]: [
     Pos,
+    Foreign,
     Reflexivity,
     Voice,
     Aspect,
@@ -353,6 +360,7 @@ export const FEATURE_ORDER = {
   ],
   other: [  // todo check
     Pos,
+    Foreign,
     Degree,
     ConjunctionType,
     Case, RequiredCase,
@@ -372,6 +380,7 @@ export const FEATURE_ORDER = {
     PronominalType,
     Person,
     Formality,
+    Typo,
   ],
 }
 
@@ -425,6 +434,7 @@ export class Features {
   colloquial: Colloquial
   rarity: Rarity
   formality: Formality
+  typo: Typo
 }
 
 ////////////////////////////////////////////////////////////////////////////////

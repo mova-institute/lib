@@ -187,6 +187,7 @@ export enum N2adjness { yes }
 export enum PrepositionRequirement { yes }
 export enum Foreign { yes }
 export enum Formality { yes }
+export enum Typo { yes }
 
 export const booleanFeatures = [
   Possessiveness,
