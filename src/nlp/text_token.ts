@@ -271,7 +271,7 @@ export class TextToken {
 
   breaksLine() {
     let elName = this.elem.localName()
-    return elName === 'p' || elName === 'l'
+    return elName === 'p' || elName === 'l' || elName === 'chunk'
   }
 
   isEquallyInterpreted(other: TextToken) {
