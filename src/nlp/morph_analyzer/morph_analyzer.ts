@@ -19,17 +19,22 @@ import * as stringUtils from '../../string_utils'
 
 
 const REGEX2TAG = [
-  [URL_RE, 'sym'],
-  [EMAIL_RE, 'sym'],
-  [SYMBOL_RE, 'sym'],
-  [LITERAL_SMILE_RE, 'sym'],
-  [ARABIC_NUMERAL_RE, 'numr'],
-  [ROMAN_NUMERAL_RE, 'numr:roman'],
-  [ANY_PUNC_OR_DASH_RE, 'punct'],
-  [URL_RE, 'sym'],
-  [FOREIGN_RE, 'x:foreign'],
-  [HASHTAG_RE, 'x'],
-] as [RegExp, string][]
+  [URL_RE, ['sym']],
+  [EMAIL_RE, ['sym']],
+  [SYMBOL_RE, ['sym']],
+  [LITERAL_SMILE_RE, ['sym']],
+  [ARABIC_NUMERAL_RE, ['numr']],
+  [ROMAN_NUMERAL_RE, ['numr:roman']],
+  [ANY_PUNC_OR_DASH_RE, ['punct']],
+  [URL_RE, ['sym']],
+  [FOREIGN_RE, [
+    'noun:foreign',
+    'adj:foreign',
+    'verb:foreign',
+    'x:foreign',
+  ]],
+  // [HASHTAG_RE, 'x'],
+] as [RegExp, string[]][]
 
 
 const gluedPrefixes = [
@@ -185,7 +190,7 @@ export class MorphAnalyzer {
     // regexp
     for (let [regex, tsgStr] of REGEX2TAG) {
       if (regex.test(token)) {
-        return [MorphInterp.fromVesumStr(tsgStr, token)]
+        return tsgStr.map(x => MorphInterp.fromVesumStr(x, token))
       }
     }
 
@@ -308,7 +313,7 @@ export class MorphAnalyzer {
     }
 
     // list items, letter names
-    if (initialsRe.test(token.toUpperCase())) {
+    if (token !== 'я' && initialsRe.test(token.toUpperCase())) {
       res.add(MorphInterp.fromVesumStr('noun:inanim:prop', `${token}.`))
     }
 
