@@ -6,7 +6,7 @@ import { MorphInterp } from '../morph_interp'
 import { Case, Pos } from '../morph_features'
 import {
   FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
-  APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE, HASHTAG_RE,
+  APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE,
   EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE,
 } from '../static'
 
@@ -155,6 +155,7 @@ function postrpocessPerfPrefixedVerb(x: MorphInterp) {
 export class MorphAnalyzer {
   expandAdjectivesAsNouns = false
   keepN2adj = false
+  keepParadigmOmonyms = false
   private numeralMap = new Array<{ digit: number, form: string, interp: MorphInterp, lemma: string }>()
   private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)))
@@ -424,12 +425,17 @@ export class MorphAnalyzer {
       })
       ret = flatten(a) as any
     }
+
     return ret
   }
 
   private lookup(token: string) {
-    return this.dictCache.get(token).map(x => x.clone())
+    let interps = this.dictCache.get(token).map(x => x.clone())
+    if (!this.keepParadigmOmonyms) {
+      interps.forEach(x => x.features.paradigmOmonym = undefined)
+    }
     // return this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+    return interps
   }
 
   private isCompoundAdjective(token: string) {
