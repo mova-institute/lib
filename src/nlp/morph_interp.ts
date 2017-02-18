@@ -280,7 +280,6 @@ for (let row of FEATURE_TABLE) {
 export const FEATURE_ORDER = {
   [Pos.noun]: [
     Pos,
-    Foreign,
     Animacy,
     MorphNumber,
     Gender,
@@ -298,10 +297,10 @@ export const FEATURE_ORDER = {
     PronominalType,
     Person,
     Formality,
+    Foreign,
   ],
   [Pos.adjective]: [
     Pos,
-    Foreign,
     Beforeadj,
     Gender,
     MorphNumber,
@@ -322,10 +321,10 @@ export const FEATURE_ORDER = {
     OrdinalNumeral,
     AdjectiveAsNoun,
     Animacy,
+    Foreign,
   ],
   [Pos.verb]: [
     Pos,
-    Foreign,
     Reflexivity,
     Voice,
     Aspect,
@@ -336,6 +335,7 @@ export const FEATURE_ORDER = {
     Gender,
     Dimin,
     VuAlternativity,
+    Foreign,
   ],
   [Pos.cardinalNumeral]: [
     Pos,
@@ -357,10 +357,10 @@ export const FEATURE_ORDER = {
   [Pos.x]: [
     Pos,
     Abbreviation,
+    Foreign,
   ],
   other: [  // todo check
     Pos,
-    Foreign,
     Degree,
     ConjunctionType,
     Case, RequiredCase,
@@ -381,6 +381,7 @@ export const FEATURE_ORDER = {
     Person,
     Formality,
     Typo,
+    Foreign,
   ],
 }
 
@@ -930,6 +931,8 @@ export class MorphInterp {
 
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
+  setIsAdjectiveAsNoun(value = true) { this.features.adjectiveAsNoun = value ? AdjectiveAsNoun.yes : undefined; return this }
+  setIsAnimate(value = true) { this.features.animacy = value ? Animacy.animate : Animacy.inanimate; return this }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
   setIsAuxillary(value = true) { this.features.verbType = value ? VerbType.auxilary : VerbType.main; return this }
   setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }

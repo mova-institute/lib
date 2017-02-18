@@ -7,34 +7,38 @@ import { Case, Pos } from '../morph_features'
 import {
   FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
   APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE, HASHTAG_RE,
-  EMAIL_RE, LITERAL_SMILE_RE,
+  EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
 import { CacheMap } from '../../data_structures/cache_map'
 import * as algo from '../../algo'
+import { parseIntStrict } from '../../lang'
 import * as stringUtils from '../../string_utils'
 
 
 
 
 const REGEX2TAG = [
-  [URL_RE, ['sym']],
-  [EMAIL_RE, ['sym']],
-  [SYMBOL_RE, ['sym']],
-  [LITERAL_SMILE_RE, ['sym']],
-  [ARABIC_NUMERAL_RE, ['numr']],
-  [ROMAN_NUMERAL_RE, ['numr:roman']],
-  [ANY_PUNC_OR_DASH_RE, ['punct']],
-  [URL_RE, ['sym']],
-  [FOREIGN_RE, [
+  [[URL_RE], ['sym']],
+  [[EMAIL_RE], ['sym']],
+  [[SYMBOL_RE], ['sym']],
+  [[LITERAL_SMILE_RE], ['sym']],
+  [[ARABIC_NUMERAL_RE], ['numr']],
+  [[ROMAN_NUMERAL_RE], ['numr:roman']],
+  [[ANY_PUNC_OR_DASH_RE], ['punct']],
+  [[URL_RE,
+    EMOJI_RE,
+    SMILE_RE], ['sym']],
+  [[FOREIGN_RE], [
     'noun:foreign',
+    'noun:prop:foreign',
     'adj:foreign',
     'verb:foreign',
     'x:foreign',
   ]],
   // [HASHTAG_RE, 'x'],
-] as [RegExp, string[]][]
+] as [RegExp[], string[]][]
 
 
 const gluedPrefixes = [
@@ -151,7 +155,7 @@ function postrpocessPerfPrefixedVerb(x: MorphInterp) {
 export class MorphAnalyzer {
   expandAdjectivesAsNouns = false
   keepN2adj = false
-  private numeralMap = new Array<{ form: string, flags: string, lemma: string }>()
+  private numeralMap = new Array<{ digit: number, form: string, interp: MorphInterp, lemma: string }>()
   private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)))
 
@@ -177,7 +181,12 @@ export class MorphAnalyzer {
     if (this.isCompoundAdjective(token)) {
       return false
     }
-    return !!this.tag(token).length
+    let interps = this.tag(token)
+    if (token.endsWith('.')) {
+      return !interps.every(x => x.isAbbreviation())
+    }
+
+    return interps.length > 0
   }
 
   /** @token is atomic */
@@ -188,9 +197,9 @@ export class MorphAnalyzer {
     }
 
     // regexp
-    for (let [regex, tsgStr] of REGEX2TAG) {
-      if (regex.test(token)) {
-        return tsgStr.map(x => MorphInterp.fromVesumStr(x, token))
+    for (let [regexes, tagStrs] of REGEX2TAG) {
+      if (regexes.some(x => x.test(token))) {
+        return tagStrs.map(x => MorphInterp.fromVesumStr(x, token))
       }
     }
 
@@ -324,25 +333,36 @@ export class MorphAnalyzer {
 
     // try 20-x, todo
     {
-      let match = lowercase.match(/^(\d+)[-–—]([^\d]+)$/)
+      let match = lowercase.match(/^(\d+)[-–—]?([^\d]+)$/)
       if (match) {
         // console.log(match)
         let [, digits, ending] = match
+        let lastDigit = parseIntStrict(digits.slice(-1))
+
         let interps = this.numeralMap
-          .filter(x => x.form.endsWith(ending))
-          .map(x => MorphInterp.fromVesumStr(x.flags, `${digits}-${x.lemma.slice(-ending.length)}`))
+          .filter(x => x.digit === lastDigit && x.form.endsWith(ending))
+          .map(x => x.interp.clone().setLemma(`${digits}-${x.lemma.slice(-ending.length)}`))
+        res.addAll(interps)
+
+        if (this.expandAdjectivesAsNouns) {
+          interps = interps.map(x => x.clone().setIsAdjectiveAsNoun().setIsAnimate(false))
+          res.addAll(interps)
+        }
+      }
+    }
+
+    // try reverse from non-reverse
+    if (!res.size && lowercase.length > 4) {
+      let ending = lowercase.slice(-2)
+      if (ending === 'ся' || ending === 'сь') {
+        let interps = this.lookup(lowercase.slice(0, -2))
+          // .filter(x => x.isParticiple())
+          .map(x => x.setIsReflexive().setLemma(x.lemma + 'ся'))
         res.addAll(interps)
       }
     }
 
-    if (!res.size && (lowercase.endsWith('ся') || lowercase.endsWith('сь'))) {
-      let interps = this.lookup(lowercase.slice(0, -2))
-        .filter(x => x.isParticiple())
-        .map(x => x.setIsReflexive())
-      res.addAll(interps)
-    }
-
-
+    //~~~~~~~~~~~~~~
     // expand/add
     for (let interp of res) {
       if (interp.isNoun() && interp.canBeOrdinalNumeral()) {
@@ -476,22 +496,31 @@ export class MorphAnalyzer {
   }
 
   private buildNumeralMap() {
-    let a = [
-      'перший',
-      'третій',
-      'другий',
-      'вісім',
-      'восьмий',
-      'двадцять',
-      'двадцятий',
-      'п’ять',
-    ].map(x => this.dictionary.lookupLexemesByLemma(x))
+    let supermap = [
+      [1, 'перший'],
+      [2, 'другий'],
+      [3, 'третій'],
+      [4, 'четвертий'],
+      [5, 'п’ятий'],
+      [6, 'шостий'],
+      [7, 'сьомий'],
+      [8, 'восьмий'],
+      [9, 'дев’ятий'],
+      [0, 'десятий'],
+    ] as [number, string][]
 
-    for (let numeral of a) {
-      for (let lexeme of numeral) {
-        for (let {form, flags, lemma} of lexeme) {
-          if (!flags.includes('&pron')) {
-            this.numeralMap.push({ form, flags, lemma })
+    // let uniquerSet = new Set<string>()
+    for (let [digit, lemma] of supermap) {
+      let lexemes = this.dictionary.lookupLexemesByLemma(lemma)
+      for (let lexeme of lexemes) {
+        for (let {form, flags} of lexeme) {
+          let interp = MorphInterp.fromVesumStr(flags)
+          if (!interp.isPronoun()) {
+            interp.features.degree = undefined
+            // let hash = `${} ${} ${} $`
+            this.numeralMap.push({ digit, form, interp, lemma })
+            // interp = interp.clone().setIsAdjectiveAsNoun().setIsAnimate(false)
+            // this.numeralMap.push({ digit, form, interp, lemma })
           }
         }
       }

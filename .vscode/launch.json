@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "compilec",
-      "type": "node",
+      "type": "node2",
       "request": "launch",
-      "program": "${workspaceRoot}/src/nlp/grabbers/experimental_all.node.ts",
+      "program": "${workspaceRoot}/src/nlp/grabbers/experimental_all.node2.ts",
       "stopOnEntry": false,
       "args": [
         "--in",
@@ -22,13 +22,12 @@
       "env": {
         "NODE_ENV": "development"
       },
-      "externalConsole": false,
       "sourceMaps": true,
       "outDir": "${workspaceRoot}/lib"
     },
     {
       "name": "tests",
-      "type": "node",
+      "type": "node2",
       "request": "launch",
       "program": "${workspaceRoot}/src/bin/test.ts",
       "stopOnEntry": false,
@@ -48,7 +47,7 @@
     },
     {
       "name": "tagger",
-      "type": "node",
+      "type": "node2",
       "request": "launch",
       "program": "${workspaceRoot}/src/bin/tag.ts",
       "stopOnEntry": false,
@@ -56,7 +55,7 @@
         "-f",
         "xml",
         "-t",
-        "по-українському. "
+        "ім."
       ],
       "cwd": "${workspaceRoot}",
       "preLaunchTask": null,
@@ -73,7 +72,7 @@
     },
     {
       "name": "annotator",
-      "type": "node",
+      "type": "node2",
       "request": "launch",
       "program": "${workspaceRoot}/src/annotator/server.ts",
       "stopOnEntry": false,
@@ -93,7 +92,7 @@
     },
     {
       "name": "do",
-      "type": "node",
+      "type": "node2",
       "request": "launch",
       "program": "${workspaceRoot}/src/bin/do.ts",
       "stopOnEntry": false,
@@ -118,7 +117,7 @@
     },
     {
       "name": "Attach",
-      "type": "node",
+      "type": "node2",
       "request": "attach",
       "port": 5858,
       "address": "localhost",
