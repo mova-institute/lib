@@ -231,7 +231,7 @@ export class MorphAnalyzer {
       res.addAll(this.fromPrefixes(lowercase, res))
     }
 
-    // guess невідомосиній from невідо- and синій
+    // guess невідомосиній from невідомо- and синій
     if (!res.size) {
       let oIndex = lowercase.indexOf('о')
       if (oIndex > 2) {
@@ -255,7 +255,7 @@ export class MorphAnalyzer {
     // ірод from Ірод
     if (!res.size) {
       let titlecase = stringUtils.titlecase(lowercase)
-      res.addAll(this.lookup(titlecase).map(x => x.unproper().setIsAuto()))
+      res.addAll(this.lookup(titlecase).map(x => x/*.unproper()*/.setIsAuto()))
       // try ґ→г
       if (!res.size) {
         res.addAll(this.fromGH([titlecase]))
@@ -552,7 +552,7 @@ function varyLetterCases(value: string) {
 }
 
 //------------------------------------------------------------------------------
-const ignoreLemmas = new Set(['ввесь', 'його', 'її', 'весь', 'який'])
+const ignoreLemmas = new Set(['ввесь', 'його', 'її', 'весь', 'увесь', 'який'])
 function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: string) {
   yield flags
   if (expandAdjectivesAsNouns && flags.includes('adj:') && !flags.includes('beforeadj')) {
@@ -561,7 +561,7 @@ function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: s
         ? ['anim:m', 'anim:f', 'anim:n', 'anim:ns', 'inanim:m', 'inanim:f', 'inanim:n', 'inanim:ns']
         : ['anim', 'inanim']
       yield* suffixes.map(x => flags + ':&noun:' + x)
-    } else if (lemma === 'весь' && flags.includes(':p:')) {
+    } else if (['весь', 'увесь'].includes(lemma) && flags.includes(':p:')) {
       yield flags + ':&noun:anim:ns'
     }
   }
