@@ -55,7 +55,7 @@
         "-f",
         "xml",
         "-t",
-        "ім."
+        "т."
       ],
       "cwd": "${workspaceRoot}",
       "preLaunchTask": null,

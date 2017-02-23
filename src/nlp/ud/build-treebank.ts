@@ -23,10 +23,12 @@ interface Args {
   noStandartizing: boolean
   oneSet: string
 
+  datasetSchema: string
   reportHoles: boolean
   reportErrors: 'all' | 'complete' | 'none'
   validOnly: boolean
   forSyntaxnet: boolean
+  xpos: any
 }
 
 //------------------------------------------------------------------------------
@@ -64,6 +66,7 @@ function main() {
       oneSet: 'one-set',
       noStandartizing: 'no-std',
 
+      datasetSchema: 'dataset-schema',
       validOnly: 'valid-only',
       reportHoles: 'report-holes',
       reportErrors: 'report-errors',
@@ -71,6 +74,7 @@ function main() {
     },
     default: {
       reportErrors: 'none',
+      datasetSchema: 'mi',
     }
   }) as any
 
@@ -85,59 +89,62 @@ function main() {
     let basename = path.basename(xmlPath)
     console.log(`exporting ${basename}`)
     let root = parseXmlFileSync(xmlPath)
-    let tokenStream = tei2tokenStream(root)
+    let tokenStream = tei2tokenStream(root, args.datasetSchema)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
     for (let {sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
       initSyntax(tokens)
       let hasSyntax = tokens.some(x => x.hasDeps())
-      if (!hasSyntax) {
-        continue
-      }
-
       set = args.oneSet || set || 'unassigned'
-      datasetRegistry[set] = datasetRegistry[set] || new Dataset()
-      // if (newDocument) {
-      // Object.values(datasetRegistry).forEach(x => x.newdoc = true)
-      // }
+      if (hasSyntax) {
+        datasetRegistry[set] = datasetRegistry[set] || new Dataset()
+        // if (newDocument) {
+        // Object.values(datasetRegistry).forEach(x => x.newdoc = true)
+        // }
 
-      let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
-      let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
-      let isComplete = roots.length === 1
+        let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
+        let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
+        let isComplete = roots.length === 1
 
-      if (!roots.length) {
-        datasetRegistry[set].counts.wordsKept += numWords
-        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'цикл' }], problemCounter++))
-        continue
-      } else if (!isComplete && args.reportHoles) {
-        console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене', indexes: roots }], problemCounter++))
-      }
+        if (!roots.length) {
+          datasetRegistry[set].counts.wordsKept += numWords
+          console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'цикл' }], problemCounter++))
+          continue
+        } else if (!isComplete && args.reportHoles) {
+          console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене', indexes: roots }], problemCounter++))
+        }
 
-      let hasProblems = false
-      if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
-        var problems = validateSentenceSyntax(tokens)
-        hasProblems = !!problems.length
-        if (hasProblems && args.reportErrors !== 'none') {
-          console.error(formatProblems(basename, sentenceId, tokens, problems, problemCounter++))
+        let hasProblems = false
+        if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
+          var problems = validateSentenceSyntax(tokens)
+          hasProblems = !!problems.length
+          if (hasProblems && args.reportErrors !== 'none') {
+            console.error(formatProblems(basename, sentenceId, tokens, problems, problemCounter++))
+          }
+        }
+
+        if (args.validOnly && hasProblems) {
+          datasetRegistry[set].counts.wordsKept += numWords
+        } else if (!isComplete) {
+          datasetRegistry[set].counts.wordsKept += numWords
+        } else {
+          ++datasetRegistry[set].counts.sentsExported
+          datasetRegistry[set].counts.wordsExported += numWords
+          if (!args.noStandartizing) {
+            standartizeSentence2ud20(tokens)
+          }
+
+          let filename = set2filename(outDir, args.datasetSchema, set)
+          let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
+          let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { xpos: args.xpos })
+          fs.writeSync(file, conlluedSentence + '\n\n')
+          datasetRegistry[set].newdoc = false
         }
       }
 
-      if (args.validOnly && hasProblems) {
-        datasetRegistry[set].counts.wordsKept += numWords
-      } else if (!isComplete) {
-        datasetRegistry[set].counts.wordsKept += numWords
-      } else {
-        ++datasetRegistry[set].counts.sentsExported
-        datasetRegistry[set].counts.wordsExported += numWords
-        if (!args.noStandartizing) {
-          standartizeSentence2ud20(tokens)
-        }
-
-        let filename = set2filename(outDir, set)
-        let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, !args.forSyntaxnet)
-        fs.writeSync(file, conlluedSentence + '\n\n')
-        datasetRegistry[set].newdoc = false
-      }
+      let filename = path.join(outDir, `uk-mi-${set}.morphonly.conllu`)
+      let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
+      let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { morphOnly: true })
+      fs.writeSync(file, conlluedSentence + '\n\n')
     }
   }
 
@@ -195,8 +202,8 @@ function formatProblems(docName: string, sentenceId: string, tokens: Token[], pr
 }
 
 //------------------------------------------------------------------------------
-function set2filename(dir: string, setName: string) {
-  return path.join(dir, `uk-ud-${setName}.conllu`)
+function set2filename(dir: string, setSchema: string, setName: string) {
+  return path.join(dir, `uk-${setSchema}-${setName}.conllu`)
 }
 
 //------------------------------------------------------------------------------

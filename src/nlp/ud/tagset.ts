@@ -446,9 +446,10 @@ export function toUd(interp: MorphInterp) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+const comparator = new Intl.Collator('en', { sensitivity: 'base' }).compare
 export function udFeatures2conlluString(features) {
   return Object.keys(features)
-    .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }))
+    .sort(comparator)
     .map(key => `${key}=${features[key]}`)
     .join('|')
 }

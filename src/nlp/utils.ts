@@ -952,7 +952,7 @@ const structureElementName2type = new Map<string, Structure>([
 ])
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tei2tokenStream(root: AbstractElement) {
+export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: string) {
   for (let {el, entering} of iterateCorpusTokens(root)) {
     let name = el.localName()
 
@@ -992,7 +992,10 @@ export function* tei2tokenStream(root: AbstractElement) {
         case 'sb':
           tok = Token.structure('sentence', true)
           let attributes = el.attributesObj()
-          attributes.set = el.attributeUp('set')
+          if (sentenceSetSchema) {
+            let attrName = `dataset-${sentenceSetSchema}`
+            attributes.set = el.attributeUp(attrName)
+          }
           tok.setAttributes(attributes)
           yield tok
           continue

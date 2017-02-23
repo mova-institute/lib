@@ -397,9 +397,9 @@ export class MorphAnalyzer {
       if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
         continue
       }
-      if (token.length === 1 && interp.isAbbreviation() && !interp.isProper() && !interp.isX()) {
-        continue
-      }
+      // if (token.length === 1 && interp.isAbbreviation() && !interp.isProper() && !interp.isX()) {
+      //   continue
+      // }
 
       ret.push(interp)
     }

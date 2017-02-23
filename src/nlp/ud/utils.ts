@@ -6,7 +6,11 @@ import { tokenStream2plaintextString } from '../utils'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function sentence2conllu(sentence: Array<Token>, id: string | number, newParagraph: boolean, newDocument: boolean, mte: boolean) {
+export interface Sentence2conlluParams {
+  xpos?: 'mte' | 'upos'
+  morphOnly?: boolean
+}
+export function sentence2conllu(sentence: Array<Token>, id: string | number, newParagraph: boolean, newDocument: boolean, options: Sentence2conlluParams = {}) {
   let lines = new Array<string>()
   if (newDocument) {
     lines.push(`# newdoc`)
@@ -28,15 +32,25 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
     if (token.glued) {
       misc.push('SpaceAfter=No')
     }
+
+    let xpos: string
+    if (options.xpos === 'mte') {
+      xpos = token.interp.toMte()
+    } else if (options.xpos === 'upos') {
+      xpos = pos
+    } else {
+      xpos = '_'
+    }
+
     lines.push([
       i + 1,
       token.form,
       token.interp.lemma,
       pos,
-      mte ? token.interp.toMte() : pos,
-      udFeatures2conlluString(features) || '_',
-      token.head === undefined ? 0 : token.head + 1,
-      token.rel || 'root',
+      xpos,
+      udFeatures2conlluString(features),
+      options.morphOnly ? '_' : (token.head === undefined ? 0 : token.head + 1),
+      options.morphOnly ? '_' : (token.rel || 'root'),
       '_',
       misc/*.sort()*/.join('|') || '_',
     ].join('\t'))
