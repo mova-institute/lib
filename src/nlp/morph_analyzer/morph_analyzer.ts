@@ -13,6 +13,7 @@ import {
 import { HashSet } from '../../data_structures'
 import { CacheMap } from '../../data_structures/cache_map'
 import * as algo from '../../algo'
+import { CachedValue } from '../../cached_value'
 import { parseIntStrict } from '../../lang'
 import * as stringUtils from '../../string_utils'
 
@@ -151,12 +152,14 @@ function postrpocessPerfPrefixedVerb(x: MorphInterp) {
   }
 }
 
+type NumeralMapObj = { digit: number, form: string, interp: MorphInterp, lemma: string }
+
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
   expandAdjectivesAsNouns = false
   keepN2adj = false
   keepParadigmOmonyms = false
-  private numeralMap = new Array<{ digit: number, form: string, interp: MorphInterp, lemma: string }>()
+  private numeralMap = new CachedValue<NumeralMapObj[]>(this.buildNumeralMap.bind(this))
   private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)))
 
@@ -340,14 +343,22 @@ export class MorphAnalyzer {
         let [, digits, ending] = match
         let lastDigit = parseIntStrict(digits.slice(-1))
 
-        let interps = this.numeralMap
+        let toadd = this.numeralMap.get()
           .filter(x => x.digit === lastDigit && x.form.endsWith(ending))
-          .map(x => x.interp.clone().setLemma(`${digits}-${x.lemma.slice(-ending.length)}`))
-        res.addAll(interps)
+          .map(x => {
+            let ret = x.interp.clone()
+            if (ret.isOrdinalNumeral()) {
+              ret.setLemma(`${digits}-${x.lemma.slice(-ending.length)}`)
+            } else {
+              ret.setLemma(digits)
+            }
+            return ret
+          })
+        res.addAll(toadd)
 
         if (this.expandAdjectivesAsNouns) {
-          interps = interps.map(x => x.clone().setIsAdjectiveAsNoun().setIsAnimate(false))
-          res.addAll(interps)
+          toadd = toadd.map(x => x.clone().setIsAdjectiveAsNoun().setIsAnimate(false))
+          res.addAll(toadd)
         }
       }
     }
@@ -356,12 +367,24 @@ export class MorphAnalyzer {
     if (!res.size && lowercase.length > 4) {
       let ending = lowercase.slice(-2)
       if (ending === 'ся' || ending === 'сь') {
-        let interps = this.lookup(lowercase.slice(0, -2))
+        let toadd = this.lookup(lowercase.slice(0, -2))
           // .filter(x => x.isParticiple())
           .map(x => x.setIsReflexive().setLemma(x.lemma + 'ся'))
-        res.addAll(interps)
+        res.addAll(toadd)
       }
     }
+
+    // О'Райлі from Райлі
+    if (token.startsWith('О’')) {
+      let toadd = this.lookup(token.substr(2))
+        .filter(x => x.isLastname())
+      toadd.forEach(x => x.lemma = `О’${x.lemma}`)
+      res.addAll(toadd)
+    }
+
+
+
+
 
     //~~~~~~~~~~~~~~
     // expand/add
@@ -386,6 +409,7 @@ export class MorphAnalyzer {
 
     // filter and postprocess
     let ret = new Array<MorphInterp>()
+    // let hasBeforeadjishOnly = mu(res).every(x => x.isBeforeadj() || x.isAdverb())
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
         if (!mu(res.keys()).some(x => x.isAdverb())) {
@@ -393,6 +417,10 @@ export class MorphAnalyzer {
         }
         continue
       }
+
+      // if (!hasBeforeadjishOnly && interp.isBeforeadj()) {
+      //   continue
+      // }
 
       if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
         continue
@@ -513,9 +541,21 @@ export class MorphAnalyzer {
       [8, 'восьмий'],
       [9, 'дев’ятий'],
       [0, 'десятий'],
+
+      [1, 'один'],
+      [2, 'два'],
+      [3, 'три'],
+      [4, 'чотири'],
+      [5, 'п’ять'],
+      [6, 'шість'],
+      [7, 'сім'],
+      [8, 'вісім'],
+      [9, 'дев’ять'],
+      [0, 'десять'],
     ] as [number, string][]
 
     // let uniquerSet = new Set<string>()
+    let ret = new Array<NumeralMapObj>()
     for (let [digit, lemma] of supermap) {
       let lexemes = this.dictionary.lookupLexemesByLemma(lemma)
       for (let lexeme of lexemes) {
@@ -524,13 +564,15 @@ export class MorphAnalyzer {
           if (!interp.isPronoun()) {
             interp.features.degree = undefined
             // let hash = `${} ${} ${} $`
-            this.numeralMap.push({ digit, form, interp, lemma })
+            ret.push({ digit, form, interp, lemma })
             // interp = interp.clone().setIsAdjectiveAsNoun().setIsAnimate(false)
             // this.numeralMap.push({ digit, form, interp, lemma })
           }
         }
       }
     }
+
+    return ret
   }
 }
 

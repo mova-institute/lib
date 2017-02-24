@@ -917,6 +917,8 @@ export class MorphInterp {
   isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
   isSubordinative() { return this.features.conjunctionType === ConjunctionType.subordinative }
+  isFirstname() { return this.features.nameType === NameType.first }
+  isLastname() { return this.features.nameType === NameType.last }
 
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }

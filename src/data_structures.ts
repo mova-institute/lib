@@ -146,7 +146,7 @@ export class NumeratedSet<T> {  // todo move somewhere
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class CachedValue<T> {
+export class CachedFunctionResult<T> {
   private value: T
   private argsHash: string = null
 

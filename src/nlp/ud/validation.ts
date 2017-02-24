@@ -1,11 +1,12 @@
 import { Token } from '../token'
 import { toUd } from './tagset'
+import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
 import { MorphInterp } from '../morph_interp'
 
 
 
-const ALLOWED_RELATIONS = [
+const ALLOWED_RELATIONS: UdMiRelation[] = [
   'acl',
   'advcl',
   'advmod',

@@ -39,6 +39,7 @@ export const APOSTROPES_REPLACE_RE = /['"*`]/g
 
 const SMILE_RE_STRS = [
   r`[:;]?[)(]+`,
+  r`О_о`
   // r``,
 ]
 export const SMILE_RE_STR = SMILE_RE_STRS.join('|')
@@ -65,6 +66,7 @@ const PUNC_REGS = [
   r`;`,
   r`—`,  // M
   r`–`,  // N
+  r`---?`,
   r`/`,
   r`•`,
   r`"`,
