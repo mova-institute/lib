@@ -1,4 +1,4 @@
-import { createReadStream, createWriteStream, rename } from 'fs'
+import { createReadStream, createWriteStream, renameSync } from 'fs'
 import { dirname } from 'path'
 import * as tmp from 'tmp'
 import { sync as mkdirpSync } from 'mkdirp'
@@ -17,7 +17,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
   if (filename2) {
     input = createReadStream(filename1, 'utf8')  // todo
     tmpFile = tmp.fileSync()
-    output = createWriteStream(undefined!, { fd: tmpFile.fd })
+    output = createWriteStream(undefined, { fd: tmpFile.fd })
   }
   else if (filename1) {
     if (process.stdout.isTTY) {
@@ -34,7 +34,6 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
     input = process.stdin
     output = process.stdout
   }
-
   try {
     let res = f(input, output)
     if (res instanceof Promise) {
@@ -42,7 +41,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
       if (tmpFile) {
         let filename = filename2 || filename1
         mkdirpSync(dirname(filename))
-        await rename(tmpFile.name, filename)
+        renameSync(tmpFile.name, filename)
       }
     }
   }
