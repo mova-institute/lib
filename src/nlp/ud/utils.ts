@@ -48,7 +48,7 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
       token.interp.lemma,
       pos,
       xpos,
-      udFeatures2conlluString(features),
+      udFeatures2conlluString(features) || '_',
       options.morphOnly ? '_' : (token.head === undefined ? 0 : token.head + 1),
       options.morphOnly ? '_' : (token.rel || 'root'),
       '_',
@@ -128,7 +128,7 @@ export function* tokenStream2brat(sentences: Token[][]) {
       }
       let id = t++
       let tId = `T${id}`
-      let {pos, features} = toUd(token.interp0())
+      let { pos, features } = toUd(token.interp0())
       let rightOffset = offset + token.form.length
 
       yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
@@ -198,7 +198,7 @@ export function canBeConlluLine(line: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function interp2udVertFeatures(interp: MorphInterp) {
-  let {pos, features} = toUd(interp)
+  let { pos, features } = toUd(interp)
   // CAUTION: sort this list by js comparator, not by UD site
   return [
     pos,
