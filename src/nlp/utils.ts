@@ -132,7 +132,7 @@ function* splitNospace(val: string, analyzer: MorphAnalyzer) {
     yield [val, false] as [string, boolean]
   } else {
     // console.log(val)
-    yield* tokenizeUk(val, analyzer).map(({token, glue}) => [token, glue]) as [string, boolean][]
+    yield* tokenizeUk(val, analyzer).map(({ token, glue }) => [token, glue]) as [string, boolean][]
   }
 }
 
@@ -369,7 +369,7 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
     if (lang && lang !== 'uk') {
       token.onlyInterpAs('x:foreign', form)
     } else {
-      let next = token.nextToken() && token.nextToken() !.text()
+      let next = token.nextToken() && token.nextToken()!.text()
       let curDictInterps = analyzer.tag(form, next)
       if (curDictInterps.length) {
         token.elem.clear()
@@ -392,7 +392,7 @@ export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAna
   for (let token of tokens) {
     let form = token.text()
     // console.log(form)
-    let next = token.nextToken() && token.nextToken() !.text()
+    let next = token.nextToken() && token.nextToken()!.text()
     analyzer.tag(form, next).forEach(x => token.assureHasInterp(x.toVesumStr(), x.lemma))
   }
 }
@@ -451,7 +451,8 @@ export function cantBeLowerCase(word: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isSaneLemma(value: string) {
-  return new RegExp(`^[${WCHAR_UK}]+\.?$`).test(value) || /^\d+$/.test(value)
+  return !/\s/.test(value)
+  // return new RegExp(`^[${WCHAR_UK}]+\.?$`).test(value) || /^\d+$/.test(value)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -594,7 +595,7 @@ export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: Abstrac
     }
     miwDest.clear()
     let tokenSource = $t(miwSource)
-    for (let {lemma, flags} of tokenSource.getDisambedInterps()) {
+    for (let { lemma, flags } of tokenSource.getDisambedInterps()) {
       let w = miwSource.document().createElement('w').setAttributes({
         ana: flags,
         lemma,
@@ -828,7 +829,7 @@ export function* tokenizedTeiDoc2sketchVertical(
 
   yield `<doc ${xmlutils.keyvalue2attributesNormalized(meta)}>`
 
-  for (let {el, entering} of iterateCorpusTokens(root)) {
+  for (let { el, entering } of iterateCorpusTokens(root)) {
     let interps
     if (el.localName() === 'w'/* && !meta.disambed*/) {
       interps = analyzer.tagOrX(el.text(), findNextToken(el))
@@ -858,7 +859,7 @@ export function* interpretedTeiDoc2sketchVertical2(root: AbstractElement, meta: 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVerticalTokens(root: AbstractElement) {
-  for (let {el, entering} of iterateCorpusTokens(root)) {
+  for (let { el, entering } of iterateCorpusTokens(root)) {
     let line = element2sketchVertical(el, entering)
     if (line) {
       yield line
@@ -953,7 +954,7 @@ const structureElementName2type = new Map<string, Structure>([
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: string) {
-  for (let {el, entering} of iterateCorpusTokens(root)) {
+  for (let { el, entering } of iterateCorpusTokens(root)) {
     let name = el.localName()
 
     let structureType = structureElementName2type.get(name)
