@@ -17,7 +17,7 @@ export const WCHAR_OTHER = r`\u0301А-Яа-яóéëá`
 export const WORDCHAR = r`\w${WCHAR_UK}${WCHAR_OTHER}'\``
 export const WORDCHAR_RE = new RegExp(`^[${WORDCHAR}]+$`)
 
-export const URL_RE = /^https?:\/\/\w+(\.\w+)+(\/([\w/\-]+)?)?$/
+export const URL_RE = /^(https?:\/\/|www\.)\w+(\.\w+)+(\/([\w/\-]+)?)?$/
 export const EMAIL_RE = /^[\w\.]+@\w+(\.\w+)+$/
 export const ARABIC_NUMERAL_RE = /^(\d+[½]?|\d+[,.]\d+)$/
 export const ROMAN_NUMERAL_RE = /^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/
