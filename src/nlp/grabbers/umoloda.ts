@@ -18,10 +18,11 @@ const articleHrefRe = new RegExp(String.raw`<a\s.*href="/number/(\d+)/(\d+)/(\d+
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     alias: {
-      'workspace': ['ws'],
+      workspace: ['ws'],
     },
     default: {
-      'seed': 3055,
+      seed: 3127,
+      workspace: '.'
     },
   }) as any
 
