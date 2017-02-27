@@ -10,6 +10,10 @@ if (require.main === module) {
 
 //------------------------------------------------------------------------------
 async function main() {
+  if (process.argv[2] === 'vert2vec') {
+    vert2vec()
+    return
+  }
   // try {
   //   await id2i(process.stdin, process.stdout)
   // } catch (e) {
@@ -36,3 +40,19 @@ async function main() {
 //   }
 //   return false
 // }
+
+function vert2vec() {
+  forEachLine(process.stdin, line => {
+    if (line.startsWith('<')) {
+      if (line.startsWith('</p>')) {
+        process.stdout.write(`\n`)
+      }
+      return
+    } else {
+      let [form, , mte] = line.split('\t', 3)
+      if (mte !== 'U') {
+        process.stdout.write(`${form} `)
+      }
+    }
+  })
+}
