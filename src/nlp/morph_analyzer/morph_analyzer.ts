@@ -217,9 +217,10 @@ export class MorphAnalyzer {
     }
 
     let res = new HashSet(MorphInterp.hash, flatten(lookupees.map(x => this.lookup(x))))
+    let presentInDict = res.size > 0
 
     // try одробив is the same as відробив
-    if (!res.size && lowercase.startsWith('од') && lowercase.length > 4) {
+    if (!presentInDict && lowercase.startsWith('од') && lowercase.length > 4) {
       res.addAll(this.lookup('від' + lowercase.substr(2))
         .filter(x => x.isVerb())
         .map(x => {
@@ -230,12 +231,12 @@ export class MorphAnalyzer {
     }
 
     // try prefixes
-    if (!res.size) {
+    if (!presentInDict) {
       res.addAll(this.fromPrefixes(lowercase, res))
     }
 
     // guess невідомосиній from невідомо- and синій
-    if (!res.size) {
+    if (!presentInDict) {
       let oIndex = lowercase.indexOf('о')
       if (oIndex > 2) {
         let left = lowercase.substring(0, oIndex + 1)
@@ -251,12 +252,12 @@ export class MorphAnalyzer {
     }
 
     // try ґ→г
-    if (!res.size) {
+    if (!presentInDict) {
       res.addAll(this.fromGH(lookupees))
     }
 
     // ірод from Ірод
-    if (!res.size) {
+    if (!presentInDict) {
       let titlecase = stringUtils.titlecase(lowercase)
       res.addAll(this.lookup(titlecase).map(x => x/*.unproper()*/.setIsAuto()))
       // try ґ→г
@@ -266,14 +267,14 @@ export class MorphAnalyzer {
     }
 
     // *річчя
-    if (!res.size) {
+    if (!presentInDict) {
       if (lowercase.endsWith('річчя')) {
         res.addAll(this.lookup('дворіччя').map(x => x.setIsAuto().setLemma(lowercase)))
       }
     }
 
     // Погода була *най*кепська
-    if (!res.size && /^(що|як)?най/.test(lowercase)) {
+    if (!presentInDict && /^(що|як)?най/.test(lowercase)) {
       let match = lowercase.match(/^(що|як)?най/)
       if (match) {
         let toadd = this.lookup(lowercase.substr(match[0].length))
@@ -285,7 +286,7 @@ export class MorphAnalyzer {
     }
 
     // по-*ськи, по-*:v_dav
-    if (!res.size && lowercase.startsWith('по-')) {
+    if (!presentInDict && lowercase.startsWith('по-')) {
       let right = lowercase.substr(3)
       let rightRes = this.lookup(right)
         .filter(x => x.isAdjective() && x.isMasculine() && x.isDative())
@@ -295,12 +296,12 @@ export class MorphAnalyzer {
     }
 
     // дз from ДЗ
-    if (!res.size) {
+    if (!presentInDict) {
       res.addAll(this.lookup(lowercase.toUpperCase()).map(x => x.setIsAuto()))
     }
 
     // try ховаючися from ховаючись
-    if (!res.size && lowercase.endsWith('ся')) {
+    if (!presentInDict && lowercase.endsWith('ся')) {
       let sia = lowercase.slice(0, -1) + 'ь'
       let advps = this.lookup(sia).filter(x => x.isTransgressive())
       advps.forEach(x => {
@@ -311,7 +312,7 @@ export class MorphAnalyzer {
     }
 
     // try якнайстаранніш from якнайстаранніше
-    if (!res.size
+    if (!presentInDict
       && (lowercase.startsWith('най') || lowercase.startsWith('якнай'))
       && lowercase.endsWith('іш')) {
       let she = lowercase + 'е'
@@ -379,6 +380,12 @@ export class MorphAnalyzer {
       let toadd = this.lookup(token.substr(2))
         .filter(x => x.isLastname())
       toadd.forEach(x => x.lemma = `О’${x.lemma}`)
+      res.addAll(toadd)
+    }
+
+    // укр from укр.
+    if (!presentInDict) {
+      let toadd = flatten(lookupees.map(x => this.lookup(`${x}.`).map(xx => xx.setIsAuto())))
       res.addAll(toadd)
     }
 
@@ -559,7 +566,7 @@ export class MorphAnalyzer {
     for (let [digit, lemma] of supermap) {
       let lexemes = this.dictionary.lookupLexemesByLemma(lemma)
       for (let lexeme of lexemes) {
-        for (let {form, flags} of lexeme) {
+        for (let { form, flags } of lexeme) {
           let interp = MorphInterp.fromVesumStr(flags)
           if (!interp.isPronoun()) {
             interp.features.degree = undefined
@@ -613,24 +620,3 @@ function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: s
 function capitalizeFirst(value: string) {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }
-
-
-/*
-
-1,2,5
-
-20-ті
-20-х
-20-их
-20-тих
-20-ми
-
-5-та
-5-й
-5-ий
-125-ій
-1920-й
-1920-му
-
-
-*/
