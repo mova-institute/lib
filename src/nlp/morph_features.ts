@@ -194,4 +194,5 @@ export const booleanFeatures = [
   Reflexivity,
   Abbreviation,
   Foreign,
+  Typo,
 ]

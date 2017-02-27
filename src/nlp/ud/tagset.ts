@@ -4,7 +4,7 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity,
+  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
 } from '../morph_features'
 
@@ -32,6 +32,8 @@ export type UdVoice = 'Act' | 'Pass'
 export type UdPolarity = 'Pos' | 'Neg'
 export type UdVariant = 'Short' | 'Uncontr'
 export type UdStyle = 'Coll' | 'Rare' | 'Odd'
+export type UdTypo = UdBoolean
+export type UdOrth = 'Khark'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
 export type UdPolite = 'Form'
 export type UdPos =
@@ -97,6 +99,8 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [GrammaticalAnimacy, 'Animacy[gram]'],
   [PrepositionRequirement, 'PrepCase'],
   [Formality, 'Polite'],
+  [Typo, 'Typo'],
+  [Alternativity, 'Orth'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -244,6 +248,10 @@ const politeMap = new Map<Formality, UdPolite>([
   [Formality.yes, 'Form'],
 ])
 
+const orthoMap = new Map<Alternativity, UdOrth>([
+  [Alternativity.yes, 'Khark'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -271,6 +279,7 @@ const mapMap = new Map<any, any>([
   [GrammaticalAnimacy, grammaticalAnimacyMap],
   [PrepositionRequirement, prepositionRequirementMap],
   [Formality, politeMap],
+  [Alternativity, orthoMap],
 ])
 
 
