@@ -108,7 +108,6 @@ function main(args: Args) {
       inputStr = await readTillEnd(input)
     }
 
-
     if (args.format === 'xml') {
       inputStr = xmlutils.removeProcessingInstructions(inputStr)
       if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(inputStr)) {
