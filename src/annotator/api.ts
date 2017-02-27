@@ -7,9 +7,11 @@ import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './bus
 import { firstNWords, morphReinterpretGently, morphReinterpret, keepDisambedOnly } from '../nlp/utils'
 import { NS, encloseInRootNs } from '../xml/utils'
 import * as assert from 'assert'
+import * as columnify from 'columnify'
 import { parseXml } from '../xml/utils.node'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { getLibRootRelative } from '../path.node'
+
 
 
 // const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve'])
@@ -402,7 +404,35 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
   }
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+export async function getStats(req: IReq, res: express.Response, client: PgClient) {
+  const QUERY = `
+  select * from annotator.fragment_version
+  join annotator.task on fragment_version.task_id=task.id
+  join common.person on task.user_id = person.id
+  where task.step='annotate' and fragment_version.status='done'
+  `
+  let rows = (await client.query(QUERY)).rows
+  let stats = {} as any
+  for (let {content, name_last} of rows) {
+    stats[name_last] = stats[name_last] || { count: 0 }
+    let numWords = parseXml(encloseInRootNs(content)).evaluateNumber('count(//*[local-name()="w_"]|//mi:w_)', NS)
+    // console.log(numWords)
+    stats[name_last].count += numWords
+  }
+  let cols = Object.entries(stats).map(([user, {count}]) => ({ user, count })).sort((a, b) => b.count - a.count)
+  cols.push({ user: 'TOTAL', count: cols.map(x => x.count).reduce((a, b) => a + b, 0) })
+  let tosend = columnify(cols, {
+    config: {
+      count: {
+        align: 'right',
+      },
+    }
+  })
+  res.setHeader('Content-Type', 'text/html')
+  tosend = `<html><body><pre style="font-family:'Courier New';">\n${tosend}\n</pre></body></html>`
+  res.end(tosend)
+}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
