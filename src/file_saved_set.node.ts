@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { basename } from 'path'
+import { basename, dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 
 
@@ -17,7 +17,7 @@ export class FileSavedSet<T extends Tostringable> {
       fs.readFileSync(filePath, 'utf8').split('\n').forEach(x => this.set.add(x))
       this.file = fs.openSync(filePath, 'a')
     } else {
-      mkdirpSync(basename(filePath))
+      mkdirpSync(dirname(filePath))
       this.file = fs.openSync(filePath, 'w')
     }
   }
