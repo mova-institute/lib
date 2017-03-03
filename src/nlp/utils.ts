@@ -362,6 +362,7 @@ function orX(form: string, interps: MorphInterp[]) {  // todo
 
 ////////////////////////////////////////////////////////////////////////////////
 export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyzer) {
+  // let stream = mu(words.map(x => $t(x))).window(3)
   for (let token of words.map(x => $t(x))) {
     let form = token.text()
     let interps = token.getDisambedInterps()
