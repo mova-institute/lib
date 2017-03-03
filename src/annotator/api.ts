@@ -258,7 +258,6 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
       }
       task.content = root.serialize()
     }
-
   }
   res.json(wrapData(task))
 }
@@ -414,13 +413,13 @@ export async function getStats(req: IReq, res: express.Response, client: PgClien
   `
   let rows = (await client.query(QUERY)).rows
   let stats = {} as any
-  for (let {content, name_last} of rows) {
+  for (let { content, name_last } of rows) {
     stats[name_last] = stats[name_last] || { count: 0 }
     let numWords = parseXml(encloseInRootNs(content)).evaluateNumber('count(//*[local-name()="w_"]|//mi:w_)', NS)
     // console.log(numWords)
     stats[name_last].count += numWords
   }
-  let cols = Object.entries(stats).map(([user, {count}]) => ({ user, count })).sort((a, b) => b.count - a.count)
+  let cols = Object.entries(stats).map(([user, { count }]) => ({ user, count })).sort((a, b) => b.count - a.count)
   cols.push({ user: 'TOTAL', count: cols.map(x => x.count).reduce((a, b) => a + b, 0) })
   let tosend = columnify(cols, {
     config: {
