@@ -11,7 +11,7 @@ export class FolderSavedMap {
 
   constructor(private directoryPath: string, glob = '**') {
     mkdirpSync(directoryPath)
-    globSync(`${directoryPath}/${glob}`)
+    globSync(`${directoryPath}/${glob}`, { nosort: true })
       .map(x => relative(directoryPath, x))
       .forEach(x => this.keySet.add(x))
   }
