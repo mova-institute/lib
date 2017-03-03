@@ -20,13 +20,69 @@ import * as tlds from 'tlds'
 
 
 
+
+const DOMAIN_AS_NAME = new RegExp(r`^\w+\.(${tlds.join('|')})$`)
+
+const CASES = [
+  'v_naz',
+  'v_rod',
+  'v_dav',
+  'v_zna',
+  'v_oru',
+  'v_mis',
+  'v_kly',
+]
+
+const NONINFL_PARADIGM = [
+  'm:v_naz:nv',
+  'm:v_rod:nv',
+  'm:v_dav:nv',
+  'm:v_zna:nv',
+  'm:v_oru:nv',
+  'm:v_mis:nv',
+  'm:v_kly:nv',
+  'f:v_naz:nv',
+  'f:v_rod:nv',
+  'f:v_dav:nv',
+  'f:v_zna:nv',
+  'f:v_oru:nv',
+  'f:v_mis:nv',
+  'f:v_kly:nv',
+  'n:v_naz:nv',
+  'n:v_rod:nv',
+  'n:v_dav:nv',
+  'n:v_zna:nv',
+  'n:v_oru:nv',
+  'n:v_mis:nv',
+  'p:v_naz:nv',
+  'p:v_rod:nv',
+  'p:v_dav:nv',
+  'p:v_zna:nv',
+  'p:v_oru:nv',
+  'p:v_mis:nv',
+  'p:v_kly:nv',
+]
+
+const NONIFL_NOUN_PARADIGM = NONINFL_PARADIGM.map(x => `noun:inanim:${x}`)
+const NONIFL_ADJ_PARADIGM = NONINFL_PARADIGM.map(x => `adj:${x}`)
+
+const NONIFL_ARABIC_CARDINAL_PARADIGM_1_2 = NONINFL_PARADIGM.map(x => `numr:${x}`)
+const NONIFL_ARABIC_CARDINAL_PARADIGM = CASES.map(x => `numr:p:${x}:nv`)
+
+const NONIFL_ARABIC_ORDINAL_PARADIGM = NONIFL_ADJ_PARADIGM.map(x => `${x}:&numr`)
+NONIFL_ARABIC_ORDINAL_PARADIGM.push(...NONIFL_ARABIC_ORDINAL_PARADIGM.map(x => `${x}:&noun:inanim`))
+
+const NONIFL_ROMAN_ORDINAL_PARADIGM = NONIFL_ARABIC_ORDINAL_PARADIGM.map(x => `${x}:roman`)
+NONIFL_ROMAN_ORDINAL_PARADIGM.push(...NONIFL_ROMAN_ORDINAL_PARADIGM.map(x => `${x}:&noun:inanim`))
+
 const REGEX2TAG_IMMEDIATE = [
-  [[URL_RE], ['sym']],
-  [[EMAIL_RE], ['sym']],
-  [[SYMBOL_RE], ['sym']],
-  [[LITERAL_SMILE_RE], ['sym']],
-  [[ARABIC_NUMERAL_RE], ['numr']],
-  [[ROMAN_NUMERAL_RE], ['numr:roman']],
+  [[URL_RE,
+    EMAIL_RE,
+    SYMBOL_RE,
+    LITERAL_SMILE_RE], ['sym']],
+  [[/^[02-9]*1$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_1_2, ...NONIFL_ARABIC_ORDINAL_PARADIGM]],
+  [[ARABIC_NUMERAL_RE], [...NONIFL_ARABIC_CARDINAL_PARADIGM, ...NONIFL_ARABIC_ORDINAL_PARADIGM]],
+  [[ROMAN_NUMERAL_RE], [...NONIFL_ROMAN_ORDINAL_PARADIGM]],
   [[ANY_PUNC_OR_DASH_RE], ['punct']],
   [[URL_RE,
     EMOJI_RE,
@@ -45,38 +101,6 @@ const REGEX2TAG_ADDITIONAL = [
     [INTERJECTION_RE], ['intj']
   ],
 ] as [RegExp[], string[]][]
-
-const DOMAIN_AS_NAME = new RegExp(r`^\w+\.(${tlds.join('|')})$`)
-
-const NONIFLECTED_NOUN_TAG_PARADIGM = [
-  'noun:inanim:m:v_naz:nv',
-  'noun:inanim:m:v_rod:nv',
-  'noun:inanim:m:v_dav:nv',
-  'noun:inanim:m:v_zna:nv',
-  'noun:inanim:m:v_oru:nv',
-  'noun:inanim:m:v_mis:nv',
-  'noun:inanim:m:v_kly:nv',
-  'noun:inanim:f:v_naz:nv',
-  'noun:inanim:f:v_rod:nv',
-  'noun:inanim:f:v_dav:nv',
-  'noun:inanim:f:v_zna:nv',
-  'noun:inanim:f:v_oru:nv',
-  'noun:inanim:f:v_mis:nv',
-  'noun:inanim:n:v_naz:nv',
-  'noun:inanim:n:v_rod:nv',
-  'noun:inanim:n:v_dav:nv',
-  'noun:inanim:n:v_zna:nv',
-  'noun:inanim:n:v_oru:nv',
-  'noun:inanim:n:v_mis:nv',
-  'noun:inanim:f:v_kly:nv',
-  'noun:inanim:p:v_naz:nv',
-  'noun:inanim:p:v_rod:nv',
-  'noun:inanim:p:v_dav:nv',
-  'noun:inanim:p:v_zna:nv',
-  'noun:inanim:p:v_oru:nv',
-  'noun:inanim:p:v_mis:nv',
-  'noun:inanim:p:v_kly:nv',
-]
 
 const gluedPrefixes = [
   'авіа',
@@ -243,7 +267,7 @@ export class MorphAnalyzer {
 
     // try domain as names
     if (DOMAIN_AS_NAME.test(token)) {
-      return NONIFLECTED_NOUN_TAG_PARADIGM.map(tag => MorphInterp.fromVesumStr(`${tag}:prop`, token))
+      return NONIFL_NOUN_PARADIGM.map(tag => MorphInterp.fromVesumStr(`${tag}:prop`, token))
     }
 
     // отримав (-ла)
@@ -283,9 +307,9 @@ export class MorphAnalyzer {
     }
 
     // try prefixes
-    if (!presentInDict) {
-      res.addAll(this.fromPrefixes(lowercase, res))
-    }
+    // if (!presentInDict) {
+    res.addAll(this.fromPrefixes(lowercase, res))
+    // }
 
     // guess невідомосиній from невідомо- and синій
     if (!presentInDict) {
