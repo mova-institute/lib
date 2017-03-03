@@ -68,7 +68,7 @@ if (require.main === module) {
       expandAdjAsNoun: ['adj-as-noun'],
     },
     default: {
-      format: 'cg',
+      format: 'xml',
     },
     // unknown(arg: string) {
     //   console.error(`Unknown parameter "${arg}"`)
