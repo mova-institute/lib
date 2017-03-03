@@ -78,7 +78,8 @@ export function complement<T>(a: Set<T>, b: Set<T>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sleep(ms = 0) {
-  return new Promise(resolve => setTimeout(() => resolve(), ms))
+  // todo
+  return new Promise<never>(resolve => setTimeout(() => resolve(), ms))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
