@@ -11,6 +11,8 @@ import { parseHtmlString } from 'libxmljs'
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
 import * as minimist from 'minimist'
 
+import { FolderSavedMap } from '../folder_saved_map.node'
+import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
@@ -22,14 +24,15 @@ import { parseZbrucArticle } from '../nlp/parsers/zbruc'
 import { parseTyzhdenArticle } from '../nlp/parsers/tyzhden'
 import { buildMiteiVertical } from './mitei_build_utils'
 import { streamChtyvo } from '../nlp/parsers/chtyvo'
-import { trimExtension } from '../string_utils'
+import { trimExtension, trimExtensions } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
+import * as nlpStatic from '../nlp/static'
 import {
   tokenizeTei, tei2tokenStream, token2sketchVertical, morphInterpret,
   normalizeCorpusTextString, polishXml2verticalStream,
 } from '../nlp/utils'
-import { mu } from '../mu'
+import { mu, Mu } from '../mu'
 import { uniq } from '../algo'
 
 
@@ -38,6 +41,10 @@ interface Args {
   workspace: string
   part: string
   mitei?: string
+
+  tempgeneric: boolean
+  inputGlob: string
+  inputRoot: string
 }
 
 
@@ -64,13 +71,54 @@ if (require.main === module) {
     default: {
       workspace: '.',
     },
+    boolean: [
+      'tempgeneric'
+    ]
   }) as any
 
   main(args)
 }
 
+interface SpecificModule {
+  streamDocs(inputStr: string): Iterable<CorpusDoc>
+}
+
 //------------------------------------------------------------------------------
 function main(args: Args) {
+  if (args.tempgeneric) {
+    let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
+
+    let outDir = join(args.workspace, 'build', args.part)
+    let inputGlob = join(args.inputRoot, args.inputGlob)
+    let inputFiles = globSync(inputGlob, { nodir: true })
+    // let outFiles = globSync(join(outDir, '**', '*.vrt.txt'))
+    // inputFiles = inputFiles.filter(x => path.relative(args.inputRoot, x))
+
+    let specificModule = require(`../nlp/parsers/${args.part}`) as SpecificModule
+    let docStream = mu(inputFiles)
+      .map(x => fs.readFileSync(x, 'utf8'))
+      .map(x => specificModule.streamDocs(x))
+      .flatten() as Mu<CorpusDoc>
+
+    mkdirpSync(outDir)
+    fs.appendFileSync(join(outDir, 'commands.txt'), process.argv.join(' ') + '\n')
+    let tempout = fs.openSync(join(outDir, `${args.part}.4vec`), 'w')
+    for (let { paragraphs } of docStream) {
+      for (let paragraph of paragraphs) {
+        let towrite = mu(nlpUtils.tokenizeUk(paragraph, analyzer))
+          .map(({ token }) => token.trim())
+          .filter(token => token && !nlpStatic.ANY_PUNC_OR_DASH_RE.test(token))
+          .join(' ')
+        fs.writeSync(tempout, towrite + '\n')
+      }
+    }
+  } else {
+    mainOld(args)
+  }
+}
+
+//------------------------------------------------------------------------------
+function mainOld(args: Args) {
   // console.log(args.part)
   // process.exit(0)
   let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
@@ -81,7 +129,7 @@ function main(args: Args) {
 
 //------------------------------------------------------------------------------
 function umoloda(workspacePath: string, analyzer: MorphAnalyzer) {
-  let verticalFile = rotateAndOpen(join(workspacePath, `build/umoloda.vrt.txt`))
+  let verticalFile = rotateAndOpen(join(workspacePath, `build/ umoloda.vrt.txt`))
   let articlePathsGlob = join(workspacePath, 'data/umoloda/fetched_articles/*.html')
   let articlePaths = globSync(articlePathsGlob).sort(umolodaFilenameComparator)
   for (let path of articlePaths) {
@@ -265,7 +313,7 @@ function den(workspacePath: string, analyzer: MorphAnalyzer) {
 
     try {
       let html = fs.readFileSync(path, 'utf8')
-      var { author, date, paragraphs, title, url, valid} = parseDenArticle(html, htmlDocCreator)
+      var { author, date, paragraphs, title, url, valid } = parseDenArticle(html, htmlDocCreator)
     } catch (e) {
       console.error(`Error: ${e.message}`)
       continue
@@ -298,7 +346,7 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer) {
   for (let path of articlePaths) {
     try {
       let html = fs.readFileSync(path, 'utf8')
-      var { author, date, paragraphs, title, url, isValid} = parseTyzhdenArticle(html, htmlDocCreator)
+      var { author, date, paragraphs, title, url, isValid } = parseTyzhdenArticle(html, htmlDocCreator)
     } catch (e) {
       console.error(`Error: ${e.stack}`)
       continue
@@ -332,7 +380,7 @@ function zbruc(workspacePath: string, analyzer: MorphAnalyzer) {
   for (let path of articlePaths) {
     try {
       let html = fs.readFileSync(path, 'utf8')
-      var { author, date, paragraphs, title, url, isValid} = parseZbrucArticle(html, htmlDocCreator)
+      var { author, date, paragraphs, title, url, isValid } = parseZbrucArticle(html, htmlDocCreator)
     } catch (e) {
       console.error(`Error: ${e.message}`)
       continue

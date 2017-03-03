@@ -1,3 +1,9 @@
+export interface CorpusDoc {
+  paragraphs: string[]
+  title: string
+}
+
+
 export type Disamb = 'жодного' | 'часткове-правила' | 'руками-Політехніка' | 'руками-стандарт'
 export type Type = 'невизначені'
 export type Domain = 'невизначені'

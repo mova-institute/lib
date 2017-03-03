@@ -29,6 +29,13 @@ export function trimExtension(filename: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function trimExtensions(path: string) {
+  let lastSlashIndex = path.lastIndexOf('/')
+  let dotIndex = path.indexOf('.', lastSlashIndex)
+  return path.substr(0, dotIndex)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function titlecaseToken(str: string) {
   return str[0].toUpperCase() + str.substr(1).toLowerCase()
 }
