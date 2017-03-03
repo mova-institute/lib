@@ -282,7 +282,7 @@ export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: Abstra
 export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
   let ret: AbstractElement | undefined
   traverseDocumentOrder(context, callbackIfElement(el => {
-    if (!context.isSame(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.name()))) {
+    if (!context.isSame(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.localName()))) {
       ret = el
       return 'stop'
     }
