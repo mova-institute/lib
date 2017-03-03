@@ -363,15 +363,25 @@ function orX(form: string, interps: MorphInterp[]) {  // todo
 ////////////////////////////////////////////////////////////////////////////////
 export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyzer) {
   // let stream = mu(words.map(x => $t(x))).window(3)
-  for (let token of words.map(x => $t(x))) {
+  for (let el of words) {
+    let token = $t(el)
     let form = token.text()
-    let interps = token.getDisambedInterps()
     let lang = token.elem.lang()
     if (lang && lang !== 'uk') {
       token.onlyInterpAs('x:foreign', form)
     } else {
+      let interps = token.getDisambedInterps()
       let next = token.nextToken() && token.nextToken()!.text()
-      let curDictInterps = analyzer.tag(form, next)
+
+      let curDictInterps: MorphInterp[]
+      let correctedForm = el.attribute('correct')
+      if (correctedForm) {
+        curDictInterps = analyzer.tag(correctedForm, next)
+        curDictInterps.forEach(x => x.setIsTypo())
+      } else {
+        curDictInterps = analyzer.tag(form, next)
+      }
+
       if (curDictInterps.length) {
         token.elem.clear()
         token.clearDisamb()

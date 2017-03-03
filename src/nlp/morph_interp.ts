@@ -298,6 +298,7 @@ export const FEATURE_ORDER = {
     Person,
     Formality,
     Foreign,
+    Typo,
   ],
   [Pos.adjective]: [
     Pos,
@@ -322,6 +323,7 @@ export const FEATURE_ORDER = {
     AdjectiveAsNoun,
     Animacy,
     Foreign,
+    Typo,
   ],
   [Pos.verb]: [
     Pos,
@@ -336,6 +338,7 @@ export const FEATURE_ORDER = {
     Dimin,
     VuAlternativity,
     Foreign,
+    Typo,
   ],
   [Pos.cardinalNumeral]: [
     Pos,
@@ -345,6 +348,7 @@ export const FEATURE_ORDER = {
     CaseInflectability,
     Pronoun,
     PronominalType,
+    Typo,
   ],
   [Pos.transgressive]: [
     Pos,
@@ -353,11 +357,13 @@ export const FEATURE_ORDER = {
     Voice,
     Aspect,
     Alternativity,
+    Typo,
   ],
   [Pos.x]: [
     Pos,
     Abbreviation,
     Foreign,
+    Typo,
   ],
   other: [  // todo check
     Pos,
@@ -382,6 +388,7 @@ export const FEATURE_ORDER = {
     Formality,
     Typo,
     Foreign,
+    Typo,
   ],
 }
 
@@ -945,6 +952,7 @@ export class MorphInterp {
   setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
+  setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
   setPos(pos: Pos) { this.features.pos = pos; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
