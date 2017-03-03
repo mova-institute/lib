@@ -1,7 +1,6 @@
 import { r } from '../lang'
 
 
-// todo: wait for unicode in node's V8
 export const EMOJI_RE = require('emoji-regex')()
 export const LETTER_UK = r`АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`
 export const LETTER_UK_UPPERCASE = r`АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ`
@@ -103,3 +102,6 @@ export const NO_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x
 export const SMILIES_1 = [
   'О_о'
 ].join('|')
+
+
+export const INTERJECTION_RE = /^(о+|а+)$/

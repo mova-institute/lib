@@ -7,20 +7,20 @@ import { Case, Pos } from '../morph_features'
 import {
   FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
   APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE,
-  EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE,
+  EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE, INTERJECTION_RE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
 import { CacheMap } from '../../data_structures/cache_map'
 import * as algo from '../../algo'
 import { CachedValue } from '../../cached_value'
-import { parseIntStrict } from '../../lang'
+import { parseIntStrict, r } from '../../lang'
 import * as stringUtils from '../../string_utils'
+import * as tlds from 'tlds'
 
 
 
-
-const REGEX2TAG = [
+const REGEX2TAG_IMMEDIATE = [
   [[URL_RE], ['sym']],
   [[EMAIL_RE], ['sym']],
   [[SYMBOL_RE], ['sym']],
@@ -33,7 +33,6 @@ const REGEX2TAG = [
     SMILE_RE], ['sym']],
   [[FOREIGN_RE], [
     'noun:foreign',
-    'noun:prop:foreign',
     'adj:foreign',
     'verb:foreign',
     'x:foreign',
@@ -41,6 +40,43 @@ const REGEX2TAG = [
   // [HASHTAG_RE, 'x'],
 ] as [RegExp[], string[]][]
 
+const REGEX2TAG_ADDITIONAL = [
+  [
+    [INTERJECTION_RE], ['intj']
+  ],
+] as [RegExp[], string[]][]
+
+const DOMAIN_AS_NAME = new RegExp(r`^\w+\.(${tlds.join('|')})$`)
+
+const NONIFLECTED_NOUN_TAG_PARADIGM = [
+  'noun:inanim:m:v_naz:nv',
+  'noun:inanim:m:v_rod:nv',
+  'noun:inanim:m:v_dav:nv',
+  'noun:inanim:m:v_zna:nv',
+  'noun:inanim:m:v_oru:nv',
+  'noun:inanim:m:v_mis:nv',
+  'noun:inanim:m:v_kly:nv',
+  'noun:inanim:f:v_naz:nv',
+  'noun:inanim:f:v_rod:nv',
+  'noun:inanim:f:v_dav:nv',
+  'noun:inanim:f:v_zna:nv',
+  'noun:inanim:f:v_oru:nv',
+  'noun:inanim:f:v_mis:nv',
+  'noun:inanim:n:v_naz:nv',
+  'noun:inanim:n:v_rod:nv',
+  'noun:inanim:n:v_dav:nv',
+  'noun:inanim:n:v_zna:nv',
+  'noun:inanim:n:v_oru:nv',
+  'noun:inanim:n:v_mis:nv',
+  'noun:inanim:f:v_kly:nv',
+  'noun:inanim:p:v_naz:nv',
+  'noun:inanim:p:v_rod:nv',
+  'noun:inanim:p:v_dav:nv',
+  'noun:inanim:p:v_zna:nv',
+  'noun:inanim:p:v_oru:nv',
+  'noun:inanim:p:v_mis:nv',
+  'noun:inanim:p:v_kly:nv',
+]
 
 const gluedPrefixes = [
   'авіа',
@@ -92,6 +128,7 @@ const gluedPrefixes = [
   'пост',
   'псевдо',
   'радіо',
+  'спец',
   'стерео',
   'супер',
   'теле',
@@ -102,11 +139,8 @@ const gluedPrefixes = [
   'фіз',
   'фото',
 ]
-const initialsRe = new RegExp(`^[${LETTER_UK_UPPERCASE}]$`)
-const ukLowercaseRe = new RegExp(`^[${LETTER_UK_LOWERCASE}]$`)
-const localDictArr = [
-  // ['всі', 'adj:p:'],
-]
+const INITIALS_RE = new RegExp(`^[${LETTER_UK_UPPERCASE}]$`)
+const UK_LOWERCASE_RE = new RegExp(`^[${LETTER_UK_LOWERCASE}]$`)
 
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
@@ -194,17 +228,27 @@ export class MorphAnalyzer {
   }
 
   /** @token is atomic */
-  tag(token: string, nextToken?: string) {
+  tag(token: string, nextToken?: string, prevToken?: string) {
     token = token.replace(/\u0301/g, '')  // kill stress
     if (!token.length) {
       return []
     }
 
-    // regexp
-    for (let [regexes, tagStrs] of REGEX2TAG) {
+    // regexes returning immediately
+    for (let [regexes, tagStrs] of REGEX2TAG_IMMEDIATE) {
       if (regexes.some(x => x.test(token))) {
         return tagStrs.map(x => MorphInterp.fromVesumStr(x, token))
       }
+    }
+
+    // try domain as names
+    if (DOMAIN_AS_NAME.test(token)) {
+      return NONIFLECTED_NOUN_TAG_PARADIGM.map(tag => MorphInterp.fromVesumStr(`${tag}:prop`, token))
+    }
+
+    // отримав (-ла)
+    if (token === 'ла' /*&& prevToken === '-'*/) {  // todo
+      return [MorphInterp.fromVesumStr('verb:perf:past:f', token)]
     }
 
     token = token.replace(APOSTROPES_REPLACE_RE, '’')  // normalize
@@ -218,6 +262,14 @@ export class MorphAnalyzer {
 
     let res = new HashSet(MorphInterp.hash, flatten(lookupees.map(x => this.lookup(x))))
     let presentInDict = res.size > 0
+
+    // regexes adding interps
+    for (let [regexes, tagStrs] of REGEX2TAG_ADDITIONAL) {
+      if (regexes.some(x => x.test(token))) {
+        let toadd = tagStrs.map(x => MorphInterp.fromVesumStr(x, token))
+        res.addAll(toadd)
+      }
+    }
 
     // try одробив is the same as відробив
     if (!presentInDict && lowercase.startsWith('од') && lowercase.length > 4) {
@@ -322,17 +374,17 @@ export class MorphAnalyzer {
     }
 
     // initials
-    if (initialsRe.test(token) && nextToken === '.') {
+    if (INITIALS_RE.test(token) && nextToken === '.') {
       res.add(MorphInterp.fromVesumStr('noun:anim:abbr:prop', `${token}.`))
     }
 
     // list items, letter names
-    if (token !== 'я' && initialsRe.test(token.toUpperCase())) {
+    if (token !== 'я' && INITIALS_RE.test(token.toUpperCase())) {
       res.add(MorphInterp.fromVesumStr('noun:inanim:prop', `${token}.`))
     }
 
     // one-letter abbrs
-    if (ukLowercaseRe.test(lowercase) && nextToken === '.' && lowercase !== 'я') {   // <–– todo
+    if (UK_LOWERCASE_RE.test(lowercase) && nextToken === '.' && lowercase !== 'я') {   // <–– todo
       res.add(MorphInterp.fromVesumStr('x:abbr', `${lowercase}.`))
     }
 
@@ -561,7 +613,6 @@ export class MorphAnalyzer {
       [0, 'десять'],
     ] as [number, string][]
 
-    // let uniquerSet = new Set<string>()
     let ret = new Array<NumeralMapObj>()
     for (let [digit, lemma] of supermap) {
       let lexemes = this.dictionary.lookupLexemesByLemma(lemma)
@@ -570,10 +621,7 @@ export class MorphAnalyzer {
           let interp = MorphInterp.fromVesumStr(flags)
           if (!interp.isPronoun()) {
             interp.features.degree = undefined
-            // let hash = `${} ${} ${} $`
             ret.push({ digit, form, interp, lemma })
-            // interp = interp.clone().setIsAdjectiveAsNoun().setIsAnimate(false)
-            // this.numeralMap.push({ digit, form, interp, lemma })
           }
         }
       }
