@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { basename, dirname } from 'path'
+import { dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 
 
