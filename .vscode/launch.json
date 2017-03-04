@@ -2,6 +2,34 @@
   "version": "0.1.0",
   "configurations": [
     {
+      "type": "node2",
+      "request": "launch",
+      "name": "linoder",
+      "program": "${workspaceRoot}/src/linode.ts",
+      "args": [
+        "--prefix=udpiper",
+        "--location=frankfurt",
+        "--runOnClientBefore='scp data $CREDS:~/'",
+        "--plan=linode1024",
+        "--distribution='Ubuntu 16.10'",
+        "--setupScript=setup-linode.sh",
+        "--linodePerLine=linode-per-line.sh",
+        "--runOnClientAfter='scp $CREDS:~/result ./results/$LABEL-result'"
+      ],
+      "cwd": "${workspaceRoot}/../../../Desktop/linodews",
+      "preLaunchTask": null,
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "internalConsole",
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/lib"
+    },
+    {
       "name": "compilec",
       "type": "node2",
       "request": "launch",
@@ -55,7 +83,7 @@
         "-f",
         "xml",
         "-t",
-        "т."
+        "телеведучий"
       ],
       "cwd": "${workspaceRoot}",
       "preLaunchTask": null,
