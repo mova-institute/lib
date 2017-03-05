@@ -1,8 +1,8 @@
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
   Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
-  Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
-  Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
+  Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
+  Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
@@ -82,7 +82,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Case, 'Case'],
   [Degree, 'Degree'],
   [Gender, 'Gender'],
-  [Mood, 'Mood'],
+  [VerbType, 'Mood'],
   [MorphNumber, 'Number'],
   [Person, 'Person'],
   [Pos, 'POS'],
@@ -173,9 +173,9 @@ const tenseMap = new Map<Tense, UdTense>([
   [Tense.future, 'Fut'],
 ])
 
-const moodMap = new Map<Mood, UdMood>([
-  [Mood.indicative, 'Ind'],
-  [Mood.imperative, 'Imp'],
+const moodMap = new Map<VerbType, UdMood>([
+  [VerbType.indicative, 'Ind'],
+  [VerbType.imperative, 'Imp'],
 ])
 
 const genderMap = new Map<Gender, UdGender>([
@@ -266,7 +266,7 @@ const mapMap = new Map<any, any>([
   [RequiredCase, requiredCaseMap],
   [Aspect, aspectMap],
   [Tense, tenseMap],
-  [Mood, moodMap],
+  [VerbType, moodMap],
   [Voice, voiceMap],
   [Degree, degreeMap],
   [Gender, genderMap],
@@ -405,22 +405,22 @@ export function toUd(interp: MorphInterp) {
       features.Mood = 'Ind'
       features.VerbForm = 'Fin'
     } else {
-      switch (interp.features.mood) {
-        case Mood.imperative:
+      switch (interp.features.verbType) {
+        case VerbType.imperative:
           features.Mood = 'Imp'
           features.VerbForm = 'Fin'
           break
-        case Mood.infinitive:
+        case VerbType.infinitive:
           features.VerbForm = 'Inf'
           break
         default:
-          throw new Error(`Unknown Mood: "${interp.features.mood}"`)
+          throw new Error(`Unknown VerbType: "${interp.features.verbType}"`)
       }
     }
     if (interp.isImpersonal()) {
       features.Person = '0'
     }
-  } else if (interp.isTransgressive()) {
+  } else if (interp.isConverb()) {
     pos = 'VERB'
     features.VerbForm = 'Conv'
   } else if (interp.isAdjective() && !interp.isAdjectiveAsNoun()) {

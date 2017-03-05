@@ -272,7 +272,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`punct`, `з не PUNCT`, t => !t /*temp*/ || !t.interp.isPunctuation() || t.tags.includes('nestedpunct'), `в PUNCT`, t => t.interp.isPunctuation()],
   [`discourse`, undefined, undefined, `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`, (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
   [`aux`, `з дієслівного`, t => t.interp.isVerbial(), `в бути|би|б`, t => TOBE_AND_BY_LEMMAS.includes(t.interp.lemma)],
-  [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isTransgressive() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
+  [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
   [`nsubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrElliptic(t)],
   [`obj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrElliptic(t)],
   [`iobj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrElliptic(t)],
@@ -486,7 +486,7 @@ function canBePredicate(token: Token, sentence: Token[], index: number) {
     || !token.hasDeps()
     || token.interp.isInterjection()
     || token.interp.isVerb()
-    || token.interp.isTransgressive()
+    || token.interp.isConverb()
     || token.interp.isAdverb()
     || (sentence.some(t => t.head === index && t.rel === 'cop')
       && (token.interp.isNounish() || token.interp.isAdjective())

@@ -19,9 +19,6 @@ export enum Pos {
 export enum Pronoun {
   yes,
 }
-export enum Participle {
-  yes,
-}
 export enum OrdinalNumeral {
   yes,
   maybe,
@@ -89,15 +86,15 @@ export enum Degree {
 }
 
 ///// Verbal /////
-// export enum VerbForm {
-//   participle,  // дієприкм
-//   transgressive,  // дієприсл
-// }
-export enum Mood {
+
+// a mix of Mood and VerbForm
+export enum VerbType {
+  infinitive,
   indicative,
   imperative,
-  infinitive,
-  impersonal,  // todo: not mood
+  impersonal,
+  participle,  // дієприкметник
+  converb,  // advp
 }
 export enum Tense {
   past,

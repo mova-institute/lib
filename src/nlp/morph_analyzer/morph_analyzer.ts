@@ -368,7 +368,7 @@ export class MorphAnalyzer {
     // try ховаючися from ховаючись
     if (!presentInDict && lowercase.endsWith('ся')) {
       let sia = lowercase.slice(0, -1) + 'ь'
-      let advps = this.lookup(sia).filter(x => x.isTransgressive())
+      let advps = this.lookup(sia).filter(x => x.isConverb())
       advps.forEach(x => {
         // x.lemma = x.lemma.slice(0, -1) + 'я'
         x.setIsAuto()

@@ -6,8 +6,8 @@ import { isOddball, compare, zipLongest } from '../lang'
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, GrammaticalAnimacy,
   Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
-  Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
-  Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
+  Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
+  Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
   PrepositionRequirement, Typo,
@@ -29,7 +29,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Degree, 'degree'],
   [Dimin, 'dimin'],
   [Gender, 'gender'],
-  [Mood, 'mood'],
+  [VerbType, 'verbType'],
   [MorphNumber, 'number'],
   [N2adjness, 'n2adjness'],
   [NameType, 'nameType'],
@@ -39,7 +39,6 @@ export const featureObj2nameMap = new Map<any, string>([
   [Oddness, 'oddness'],
   [OrdinalNumeral, 'ordinalNumeral'],
   [ParadigmOmonym, 'paradigmOmonym'],
-  [Participle, 'participle'],
   [Person, 'person'],
   [Pos, 'pos'],
   [Possessiveness, 'possessiveness'],
@@ -123,10 +122,11 @@ export const FEATURE_TABLE = [
   { featStr: 'tense', feat: Tense, vesum: Tense.present, vesumStr: 'pres', mte: 'p' },
   { featStr: 'tense', feat: Tense, vesum: Tense.future, vesumStr: 'futr', mte: 'f' },
 
-  { featStr: 'mood', feat: Mood, mi: Mood.indicative, mte: 'i' },
-  { featStr: 'mood', feat: Mood, vesum: Mood.imperative, vesumStr: 'impr', mte: 'm' },
-  { featStr: 'mood', feat: Mood, vesum: Mood.infinitive, vesumStr: 'inf', mte: 'n' },
-  { featStr: 'mood', feat: Mood, vesum: Mood.impersonal, vesumStr: 'impers', mte: 'o' },
+  { featStr: 'verbType', feat: VerbType, mi: VerbType.indicative, mte: 'i' },
+  { featStr: 'verbType', feat: VerbType, vesum: VerbType.imperative, vesumStr: 'impr', mte: 'm' },
+  { featStr: 'verbType', feat: VerbType, vesum: VerbType.infinitive, vesumStr: 'inf', mte: 'n' },
+  { featStr: 'verbType', feat: VerbType, vesum: VerbType.impersonal, vesumStr: 'impers', mte: 'o' },
+  { featStr: 'verbType', feat: VerbType, vesum: VerbType.participle, vesumStr: '&adjp' },
 
   { featStr: 'voice', feat: Voice, vesum: Voice.active, vesumStr: 'actv', mte: 'a' },
   { featStr: 'voice', feat: Voice, vesum: Voice.passive, vesumStr: 'pasv', mte: 'p' },
@@ -175,7 +175,6 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.punct, vesumStr: 'punct', mte: 'U' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
-  { featStr: 'participle', feat: Participle, vesum: Participle.yes, vesumStr: '&adjp' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.maybe, vesumStr: '&_numr' },
   { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
@@ -244,7 +243,7 @@ export const FEATURE_TABLE = [
 
 export const MTE_FEATURES = {
   N: [Pos.noun, NounType, Gender, MorphNumber, Case, Animacy],  // todo: common gender
-  V: [undefined, VerbAuxilarity, Aspect, Mood, Tense, Person, MorphNumber, Gender],
+  V: [undefined, VerbAuxilarity, Aspect, VerbType, Tense, Person, MorphNumber, Gender],
   A: [Pos.adjective, undefined, Degree, Gender, MorphNumber, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
   P: [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, MorphNumber, Case, undefined],
   R: [Pos.adverb, Degree],
@@ -315,7 +314,7 @@ export const FEATURE_ORDER = {
     CaseInflectability,
     NumberTantum,
     Pronoun,
-    Participle,
+    VerbType,
     PronominalType,
     Aspect,
     Voice,
@@ -331,7 +330,7 @@ export const FEATURE_ORDER = {
     Voice,
     Aspect,
     Tense,
-    Mood,
+    VerbType,
     MorphNumber,
     Person,
     Gender,
@@ -380,7 +379,7 @@ export const FEATURE_ORDER = {
     Abbreviation,
     PrepositionRequirement,
     Pronoun,
-    Participle,
+    VerbType,
     OrdinalNumeral,
     AdjectiveAsNoun,
     PronominalType,
@@ -403,7 +402,6 @@ Object.keys(Pos).filter(x => /^\d+$/.test(x)).forEach(x => POSWISE_COMPARATORS[x
 export class Features {
   pos: Pos
   pronoun: Pronoun
-  participle: Participle
   ordinalNumeral: OrdinalNumeral
   adjectiveAsNoun: AdjectiveAsNoun
   case: Case
@@ -411,7 +409,7 @@ export class Features {
   number: MorphNumber
   aspect: Aspect
   tense: Tense
-  mood: Mood
+  verbType: VerbType
   person: Person
   voice: Voice
   animacy: Animacy
@@ -548,7 +546,7 @@ export class MorphInterp {
 
       case 'A':
         if (flags[1] === 'p') {
-          ret.features.participle = Participle.yes
+          ret.features.verbType = VerbType.participle
         }
 
         if (ret.features.gender === Gender.masculine) {
@@ -649,7 +647,7 @@ export class MorphInterp {
       let value = this.features[name]
       if (value === undefined
         // || this.features.number === Numberr.plural && name === 'gender' && !this.isAdjectiveAsNoun()
-        || this.isTransgressive() && this.isPerfect() && name === 'tense') {
+        || this.isConverb() && this.isPerfect() && name === 'tense') {
         continue
       }
       let flag = mapVesumFeatureValue(name, value)
@@ -746,13 +744,13 @@ export class MorphInterp {
       return 'N' + type + gender + morphNumber + morphCase + animacy
     }
 
-    if (this.isVerb() || this.isTransgressive()) {
+    if (this.isVerb() || this.isConverb()) {
       if (!lemma) {
         throw new Error('No lemma provided')
       }
       let type = isAuxVerb(lemma) ? 'a' : 'm'
       let aspect = map2mte(Aspect, this.features.aspect)
-      let verbForm = this.isTransgressive() ? 'g' : tryMap2Mte(Mood, this.features.mood) || 'i'
+      let verbForm = this.isConverb() ? 'g' : tryMap2Mte(VerbType, this.features.verbType) || 'i'
       let tense = map2mteOrDash(Tense, this.features.tense)
       let person = map2mteOrDash(Person, this.features.person)
       let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
@@ -872,7 +870,7 @@ export class MorphInterp {
   isPreposition() { return this.features.pos === Pos.preposition }
   isPronoun() { return this.features.pronoun !== undefined }
   isPunctuation() { return this.features.pos === Pos.punct }
-  isTransgressive() { return this.features.pos === Pos.transgressive }
+  isConverb() { return this.features.pos === Pos.transgressive }
   isVerb() { return this.features.pos === Pos.verb }
   isInterjection() { return this.features.pos === Pos.interjection }
   isX() { return this.features.pos === Pos.x }
@@ -901,15 +899,15 @@ export class MorphInterp {
   isFeminine() { return this.features.gender === Gender.feminine }
   isForeign() { return this.otherFlags.has('foreign') }
   isImperfect() { return this.features.aspect === Aspect.imperfect }
-  isImpersonal() { return this.features.mood === Mood.impersonal }
+  isImpersonal() { return this.features.verbType === VerbType.impersonal }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
-  isIndicative() { return this.features.mood === undefined || this.features.mood === Mood.indicative || this.features.mood === Mood.impersonal }
+  isIndicative() { return this.features.verbType === undefined || this.features.verbType === VerbType.indicative || this.features.verbType === VerbType.impersonal }
   isMasculine() { return this.features.gender === Gender.masculine }
   isNegative() { return this.features.polarity === Polarity.negative }
   isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?
   isOdd() { return this.features.oddness === Oddness.yes }
   isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
-  isParticiple() { return this.features.participle !== undefined }
+  isParticiple() { return this.features.verbType === VerbType.participle }
   isPassive() { return this.features.voice === Voice.passive }
   isPerfect() { return this.features.aspect === Aspect.perfect }
   isPlural() { return this.features.number === MorphNumber.plural }
@@ -932,7 +930,7 @@ export class MorphInterp {
   isRare() { return this.features.rarity === Rarity.rare }
 
   isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }
-  isVerbial() { return this.isVerb() || this.isTransgressive() || this.isParticiple() }
+  isVerbial() { return this.isVerb() || this.isConverb() || this.isParticiple() }
 
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
@@ -1049,7 +1047,7 @@ function createVesumFlagCompare(pos: Pos) {
       let featA = rowA.feat
       let featB = rowB.feat
 
-      let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other
+      let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as any[]
       return overflowNegative(order.indexOf(featA)) - overflowNegative(order.indexOf(featB))
     }
 
@@ -1060,7 +1058,7 @@ function createVesumFlagCompare(pos: Pos) {
 
 //------------------------------------------------------------------------------
 function createVesumFlagComparator2(pos: Pos) {
-  let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other
+  let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as any[]
   return (a, b) => {
     return overflowNegative(order.indexOf(a.feature)) - overflowNegative(order.indexOf(b.feature))
   }
@@ -1140,7 +1138,7 @@ export function mapVesumFeatureValue(featureName: string, value) {
 const featureCompareOrder = new Set([
   Pos,
   AdjectiveAsNoun,
-  Participle,
+  VerbType,
   Pronoun,
   OrdinalNumeral,
   Animacy,
