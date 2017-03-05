@@ -15,7 +15,7 @@ import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString, string2tokenStream } from '../utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { Token } from '../token'
-import { CorpusDocumentAttributes } from '../../corpus_workflow/types'
+import { CorpusDocumentAttributes } from '../types'
 import { mu } from '../../mu'
 
 const detectCharacterEncoding = require('detect-character-encoding');

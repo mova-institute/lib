@@ -258,14 +258,14 @@ mi-buildcorp --part parallel
 ###### en ######
 mi-deploycorp \
   --vertical build/en/vrt.txt \
-  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/en \
+  --config $MI_ROOT/mi-lib/src/corpus-workflow/configs/en \
   --name en
 
 ###### pl ######
 mi-buildcorp --part pl
 mi-deploycorp \
   --vertical build/pl/vrt.txt \
-  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/pl \
+  --config $MI_ROOT/mi-lib/src/corpus-workflow/configs/pl \
   --name pl
 
 ###### uk ######
@@ -279,14 +279,14 @@ cat build/pl/vrt.txt | mi-id2i > build/pl/id2i.txt
 
 mi-deploycorp \
 --vertical build/parallel/vrt.txt \
---config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
---config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk \
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/paruk \
 --alignmentPath paruk_en.align.txt --alignmentPath paruk_pl.align.txt
 
 mi-deploycorp \
 --vertical build/parallel/vrt.txt \
---config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
---config $MI_ROOT/mi-lib/src/corpus_workflow/configs/paruk \
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk \
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/paruk \
 --alignmentPath paruk_en.align.txt --alignmentPath paruk_pl.align.txt --name paruk
 
 cat build/parallel/vrt.txt \
@@ -318,8 +318,8 @@ cat uk_list.txt \
 
 mi-deploycorp \
 --verticalList uk_list.txt \
---config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
---subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk \
+--subcorp-config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk_sub \
 --alignmentPath uk_en.align.txt --alignmentPath uk_pl.align.txt
 
 
@@ -336,8 +336,8 @@ mi-genalign test_id2i.txt 'data/parallel/*.alignment.xml' build/en/id2i.txt \
 
 mi-deploycorp \
   --verticalList test_list.txt \
-  --config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
-  --subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub \
+  --config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk \
+  --subcorp-config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk_sub \
   --alignmentPath test_uk_en.align \
   --name test
 
@@ -361,8 +361,8 @@ time printf 'den kontrakty chtyvo tyzhden zbruc dzt parallel' \
 | xargs mi-buildcorp --part && \
 time mi-deploycorp \
 --verticalList uk_list.txt \
---config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
---subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk \
+--subcorp-config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk_sub
 
 time mi-buildcorp --part kontrakty
 time mi-buildcorp --part tyzhden
@@ -372,7 +372,7 @@ time mi-buildcorp --part parallel
 time mi-buildcorp --part chtyvo
 time mi-deploycorp \
 --verticalList uk_list.txt \
---config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk \
---subcorp-config $MI_ROOT/mi-lib/src/corpus_workflow/configs/uk_sub
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk \
+--subcorp-config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk_sub
 
 */
