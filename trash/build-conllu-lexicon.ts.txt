@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+
+import { iterateDictCorpVizLines } from '../vesum_utils'
+import { MorphInterp } from '../morph_interp'
+import { toUd, udFeatures2conlluString } from './tagset'
+import { linesStreamSync } from '../../utils.node'
+
+
+function main() {
+  let lines = linesStreamSync(process.argv[2])
+  let entries = iterateDictCorpVizLines(lines)
+  let i = 1
+  for (let {form, tag, lemma} of entries) {
+    let interp = MorphInterp.fromVesumStr(tag, lemma)
+    let {pos, features} = toUd(interp)
+    process.stdout.write([
+      i++,
+      form,
+      lemma,
+      pos,
+      '_',
+      udFeatures2conlluString(features),
+      '_',
+      '_',
+      '_',
+      '_',
+    ].join('\t') + '\n')
+  }
+  process.stdout.write('\n')
+}
+
+if (require.main === module) {
+  main()
+}
