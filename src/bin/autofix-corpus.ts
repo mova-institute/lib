@@ -52,24 +52,13 @@ function main() {
         .filter(el => el.attribute('sid') === undefined || !/^\d+$/.test(el.attribute('sid')))
         .forEach(el => el.setAttribute('sid', ++maxSid))
 
-      // reload tags
-      let words = [...root.evaluateElements('//w')]
-      for (let w of words) {
-        let flags = w.attribute('ana')
-        if (flags) {
-          let interp = MorphInterp.fromVesumStr(w.attribute('ana'), w.attribute('lemma'))
-          w.setAttribute('ana', interp.toVesumStr())
-        }
-        w.removeAttribute('disamb')
-        w.removeAttribute('author')
-      }
-
       // remove redundant attributes
-      words = [...root.evaluateElements('//w_')]
+      let words = [...root.evaluateElements('//w_')]
       wc += words.length
       for (let w of words) {
         w.removeAttribute('nn')
         w.removeAttribute('disamb')
+        w.removeAttribute('author')
       }
 
       // do safe transforms
@@ -90,10 +79,19 @@ function main() {
           // negativity
           let newInterp = interp.clone().setIsNegative()
           if (interpsInDict.some(x => x.featurewiseEquals(newInterp))) {
-            saveInterp(interpEl, newInterp)
+            interp = newInterp
           }
-
         }
+
+        // advp lemmas
+        if (interp.isConverb()) {
+          let dictInterps = analyzer.tag(form).filter(x => x.isConverb)
+          if (dictInterps.length) {
+            interp.lemma = dictInterps[0].lemma
+          }
+        }
+
+        saveInterp(interpEl, interp)
       }
 
       fs.writeFileSync(file, serializeMiDocument(root))
