@@ -139,6 +139,7 @@ export const FEATURE_TABLE = [
 
   { featStr: 'variant', feat: Variant, vesum: Variant.short, vesumStr: 'short', mte: 's' },
   { featStr: 'variant', feat: Variant, vesum: Variant.uncontracted, vesumStr: 'uncontr', mte: 'f' },
+  { featStr: 'variant', feat: Variant, vesum: Variant.symbolical, vesumStr: 'symbol' },
 
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },

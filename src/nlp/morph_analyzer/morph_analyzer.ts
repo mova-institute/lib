@@ -33,34 +33,23 @@ const CASES = [
   'v_kly',
 ]
 
+const MASC_NONINFL_PARADIGM = CASES.map(x => `m:${x}:nv`)
+// const MASC_NOUN_NONINFL_PARADIGM = CASES.map(x => `noun:inanim:m:${x}:nv`)
+const FEM_NONINFL_PARADIGM = CASES.map(x => `f:${x}:nv`)
+// const FEM_NOUN_NONINFL_PARADIGM = CASES.map(x => `noun:inanim:f:${x}:nv`)
+const NEUT_NONINFL_PARADIGM = CASES.map(x => `n:${x}:nv`)
+// const NEUT_NOUN_NONINFL_PARADIGM = CASES.map(x => `noun:inanim:n:${x}:nv`)
+const PLUR_NONINFL_PARADIGM = CASES.map(x => `p:${x}:nv`)
+// const PLUR_NOUN_NONINFL_PARADIGM = CASES.map(x => `noun:inanim:p:${x}:nv`)
+const PLUR_TANTUM_NONINFL_PARADIGM = PLUR_NONINFL_PARADIGM.map(x => `${x}:ns`)
+
+
+
 const NONINFL_PARADIGM = [
-  'm:v_naz:nv',
-  'm:v_rod:nv',
-  'm:v_dav:nv',
-  'm:v_zna:nv',
-  'm:v_oru:nv',
-  'm:v_mis:nv',
-  'm:v_kly:nv',
-  'f:v_naz:nv',
-  'f:v_rod:nv',
-  'f:v_dav:nv',
-  'f:v_zna:nv',
-  'f:v_oru:nv',
-  'f:v_mis:nv',
-  'f:v_kly:nv',
-  'n:v_naz:nv',
-  'n:v_rod:nv',
-  'n:v_dav:nv',
-  'n:v_zna:nv',
-  'n:v_oru:nv',
-  'n:v_mis:nv',
-  'p:v_naz:nv',
-  'p:v_rod:nv',
-  'p:v_dav:nv',
-  'p:v_zna:nv',
-  'p:v_oru:nv',
-  'p:v_mis:nv',
-  'p:v_kly:nv',
+  ...MASC_NONINFL_PARADIGM,
+  ...FEM_NONINFL_PARADIGM,
+  ...NEUT_NONINFL_PARADIGM,
+  ...PLUR_NONINFL_PARADIGM,
 ]
 
 const NONIFL_NOUN_PARADIGM = NONINFL_PARADIGM.map(x => `noun:inanim:${x}`)
@@ -69,20 +58,20 @@ const NONIFL_ADJ_PARADIGM = NONINFL_PARADIGM.map(x => `adj:${x}`)
 const NONIFL_ARABIC_CARDINAL_PARADIGM_1_2 = NONINFL_PARADIGM.map(x => `numr:${x}`)
 const NONIFL_ARABIC_CARDINAL_PARADIGM = CASES.map(x => `numr:p:${x}:nv`)
 
-const NONIFL_ARABIC_ORDINAL_PARADIGM = NONIFL_ADJ_PARADIGM.map(x => `${x}:&numr`)
-NONIFL_ARABIC_ORDINAL_PARADIGM.push(...NONIFL_ARABIC_ORDINAL_PARADIGM.map(x => `${x}:&noun:inanim`))
+const NONIFL_ORDINAL_PARADIGM = NONIFL_ADJ_PARADIGM.map(x => `${x}:&numr`)
+NONIFL_ORDINAL_PARADIGM.push(
+  ...NONIFL_ORDINAL_PARADIGM.map(x => `${x}:&noun:inanim`),
+  ...PLUR_TANTUM_NONINFL_PARADIGM.map(x => `adj:${x}:&noun:inanim`),
+)
 
-const NONIFL_ROMAN_ORDINAL_PARADIGM = NONIFL_ARABIC_ORDINAL_PARADIGM.map(x => `${x}:roman`)
-NONIFL_ROMAN_ORDINAL_PARADIGM.push(...NONIFL_ROMAN_ORDINAL_PARADIGM.map(x => `${x}:&noun:inanim`))
 
 const REGEX2TAG_IMMEDIATE = [
   [[URL_RE,
     EMAIL_RE,
-    SYMBOL_RE,
     LITERAL_SMILE_RE], ['sym']],
-  [[/^[02-9]*1$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_1_2, ...NONIFL_ARABIC_ORDINAL_PARADIGM]],
-  [[ARABIC_NUMERAL_RE], [...NONIFL_ARABIC_CARDINAL_PARADIGM, ...NONIFL_ARABIC_ORDINAL_PARADIGM]],
-  [[ROMAN_NUMERAL_RE], [...NONIFL_ROMAN_ORDINAL_PARADIGM]],
+  [[/^[02-9]*1$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_1_2, ...NONIFL_ORDINAL_PARADIGM]],
+  [[ARABIC_NUMERAL_RE], [...NONIFL_ARABIC_CARDINAL_PARADIGM, ...NONIFL_ORDINAL_PARADIGM]],
+  [[ROMAN_NUMERAL_RE], [...NONIFL_ORDINAL_PARADIGM]],
   [[ANY_PUNC_OR_DASH_RE], ['punct']],
   [[URL_RE,
     EMOJI_RE,
@@ -93,12 +82,12 @@ const REGEX2TAG_IMMEDIATE = [
     'verb:foreign',
     'x:foreign',
   ]],
-  // [HASHTAG_RE, 'x'],
 ] as [RegExp[], string[]][]
 
 const REGEX2TAG_ADDITIONAL = [
   [
-    [INTERJECTION_RE], ['intj']
+    [INTERJECTION_RE], ['intj'],
+    [SYMBOL_RE], ['sym'],
   ],
 ] as [RegExp[], string[]][]
 
@@ -307,9 +296,9 @@ export class MorphAnalyzer {
     }
 
     // try prefixes
-    // if (!presentInDict) {
-    res.addAll(this.fromPrefixes(lowercase, res))
-    // }
+    if (!presentInDict) {
+      res.addAll(this.fromPrefixes(lowercase, res))
+    }
 
     // guess невідомосиній from невідомо- and синій
     if (!presentInDict) {
@@ -492,7 +481,6 @@ export class MorphAnalyzer {
 
     // filter and postprocess
     let ret = new Array<MorphInterp>()
-    // let hasBeforeadjishOnly = mu(res).every(x => x.isBeforeadj() || x.isAdverb())
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
         if (!mu(res.keys()).some(x => x.isAdverb())) {
@@ -501,9 +489,11 @@ export class MorphAnalyzer {
         continue
       }
 
-      // if (!hasBeforeadjishOnly && interp.isBeforeadj()) {
-      //   continue
-      // }
+      // kill adv interps from аварійно-рятувальні
+      let hasBeforeadjishOnly = mu(res).every(x => x.isBeforeadj() || x.isAdverb())
+      if (!hasBeforeadjishOnly && interp.isBeforeadj()) {
+        continue
+      }
 
       if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
         continue
