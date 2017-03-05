@@ -126,6 +126,7 @@ export const FEATURE_TABLE = [
   { featStr: 'verbType', feat: VerbType, vesum: VerbType.imperative, vesumStr: 'impr', mte: 'm' },
   { featStr: 'verbType', feat: VerbType, vesum: VerbType.infinitive, vesumStr: 'inf', mte: 'n' },
   { featStr: 'verbType', feat: VerbType, vesum: VerbType.impersonal, vesumStr: 'impers', mte: 'o' },
+  { featStr: 'verbType', feat: VerbType, vesum: VerbType.converb, vesumStr: 'advp' },
   { featStr: 'verbType', feat: VerbType, vesum: VerbType.participle, vesumStr: '&adjp' },
 
   { featStr: 'voice', feat: Voice, vesum: Voice.active, vesumStr: 'actv', mte: 'a' },
@@ -161,7 +162,6 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.verb, vesumStr: 'verb', mte: 'V' },
   { featStr: 'pos', feat: Pos, vesum: Pos.adjective, vesumStr: 'adj', mte: 'A' },
   { featStr: 'pos', feat: Pos, vesum: Pos.adverb, vesumStr: 'adv', mte: 'R' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.transgressive, vesumStr: 'advp' },
   { featStr: 'pos', feat: Pos, vesum: Pos.preposition, vesumStr: 'prep', mte: 'S' },
   { featStr: 'pos', feat: Pos, vesum: Pos.predicative, vesumStr: 'predic' },  // ?
   // { featStr: 'pos', feat: Pos, vesum: Pos.insert, vesumStr: 'insert' },  // ?
@@ -349,15 +349,6 @@ export const FEATURE_ORDER = {
     PronominalType,
     Typo,
   ],
-  [Pos.transgressive]: [
-    Pos,
-    Foreign,
-    Reflexivity,
-    Voice,
-    Aspect,
-    Alternativity,
-    Typo,
-  ],
   [Pos.x]: [
     Pos,
     Abbreviation,
@@ -499,7 +490,7 @@ export class MorphInterp {
       }
     }
 
-    if (lemma && ret.features.pos === Pos.transgressive) {
+    if (lemma && ret.isConverb()) {
       if (/ши(сь)?/.test(lemma)) {
         ret.features.tense = Tense.past
       }
@@ -510,6 +501,9 @@ export class MorphInterp {
         // mte-tagged texts made me comment this out:
         // throw new Error(`Unexpected adverb "${lemma}" flection`)
       }
+
+      // legacy where advp was a separate pos
+      ret.features.pos = Pos.verb
     }
 
     if (ret.isPronoun() && ret.features.polarity === Polarity.negative) {
@@ -540,7 +534,7 @@ export class MorphInterp {
         if (form && (form.endsWith('ся') || form.endsWith('сь'))) {
           ret.features.reflexivity = Reflexivity.yes
         }
-        ret.features.pos = flags[3] === 'g' ? Pos.transgressive : Pos.verb
+        ret.features.pos = Pos.verb
         break
       }
 
@@ -870,7 +864,7 @@ export class MorphInterp {
   isPreposition() { return this.features.pos === Pos.preposition }
   isPronoun() { return this.features.pronoun !== undefined }
   isPunctuation() { return this.features.pos === Pos.punct }
-  isConverb() { return this.features.pos === Pos.transgressive }
+  isConverb() { return this.features.verbType === VerbType.converb }
   isVerb() { return this.features.pos === Pos.verb }
   isInterjection() { return this.features.pos === Pos.interjection }
   isX() { return this.features.pos === Pos.x }

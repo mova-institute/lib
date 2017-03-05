@@ -5,7 +5,6 @@ export enum Pos {
   preposition,
   predicative,  // todo
   interjection,
-  transgressive,
   cardinalNumeral,
   verb,
   noun,

@@ -413,6 +413,9 @@ export function toUd(interp: MorphInterp) {
         case VerbType.infinitive:
           features.VerbForm = 'Inf'
           break
+        case VerbType.converb:
+          features.VerbForm = 'Conv'
+          break
         default:
           throw new Error(`Unknown VerbType: "${interp.features.verbType}"`)
       }
@@ -420,9 +423,6 @@ export function toUd(interp: MorphInterp) {
     if (interp.isImpersonal()) {
       features.Person = '0'
     }
-  } else if (interp.isConverb()) {
-    pos = 'VERB'
-    features.VerbForm = 'Conv'
   } else if (interp.isAdjective() && !interp.isAdjectiveAsNoun()) {
     if (interp.isPronoun()) {
       pos = 'DET'
