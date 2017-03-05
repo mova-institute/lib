@@ -680,10 +680,6 @@ export class MorphInterp {
   }
 
   toMte(lemma = this.lemma, lemmaTag?: MorphInterp) {
-    if (lemma === 'незважаючи' && this.isPreposition()) {
-      return 'Vmpgp'
-    }
-
     if (this.isAbbreviation()) {
       return 'Y'
     }
