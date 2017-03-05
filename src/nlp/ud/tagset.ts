@@ -4,7 +4,7 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity, Typo,
+  Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
 } from '../morph_features'
 

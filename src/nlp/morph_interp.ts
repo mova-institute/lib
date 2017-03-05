@@ -9,7 +9,7 @@ import {
   Degree, Dimin, Gender, Mood, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Participle, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, Polarity, VerbType, Voice, VuAlternativity, Foreign, Formality,
+  Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
   PrepositionRequirement, Typo,
 } from './morph_features'
 
@@ -55,7 +55,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Slang, 'slang'],
   [Tense, 'tense'],
   [Variant, 'variant'],
-  [VerbType, 'verbType'],
+  [VerbAuxilarity, 'verbAuxilarity'],
   [Voice, 'voice'],
   [VuAlternativity, 'vuAlternative'],
   [Polarity, 'polarity'],
@@ -78,8 +78,7 @@ export const FEATURE_TABLE = [
   { featStr: 'nounType', feat: NounType, mi: NounType.common, mte: 'c' },
   { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
 
-  { featStr: 'verbType', feat: VerbType, mi: VerbType.main, mte: 'm' },
-  { featStr: 'verbType', feat: VerbType, mi: VerbType.auxilary, vesumStr: 'aux', mte: 'a' },
+  { featStr: 'verbAuxilarity', feat: VerbAuxilarity, mi: VerbAuxilarity.yes, vesumStr: 'aux', mte: 'a' },
 
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
   { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
@@ -245,7 +244,7 @@ export const FEATURE_TABLE = [
 
 export const MTE_FEATURES = {
   N: [Pos.noun, NounType, Gender, MorphNumber, Case, Animacy],  // todo: common gender
-  V: [undefined, VerbType, Aspect, Mood, Tense, Person, MorphNumber, Gender],
+  V: [undefined, VerbAuxilarity, Aspect, Mood, Tense, Person, MorphNumber, Gender],
   A: [Pos.adjective, undefined, Degree, Gender, MorphNumber, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
   P: [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, MorphNumber, Case, undefined],
   R: [Pos.adverb, Degree],
@@ -424,7 +423,7 @@ export class Features {
   pronominalType: PronominalType
   numberTantum: NumberTantum
   reflexivity: Reflexivity
-  verbType: VerbType
+  verbAuxilarity: VerbAuxilarity
   numeralForm: NumeralForm
   conjunctionType: ConjunctionType
   nounType: NounType
@@ -897,7 +896,7 @@ export class MorphInterp {
   isAbbreviation() { return this.features.abbreviation === Abbreviation.yes }
   isActive() { return this.features.voice === Voice.active }
   isAnimate() { return this.features.animacy === Animacy.animate }
-  isAuxillary() { return this.features.verbType === VerbType.auxilary }
+  isAuxillary() { return this.features.verbAuxilarity === VerbAuxilarity.yes }
   isBacteria() { return this.features.animacy === Animacy.bacteria }
   isBeforeadj() { return this.features.beforeadj === Beforeadj.yes }
   isComparable() { return this.features.degree !== undefined }
@@ -944,7 +943,7 @@ export class MorphInterp {
   setIsAdjectiveAsNoun(value = true) { this.features.adjectiveAsNoun = value ? AdjectiveAsNoun.yes : undefined; return this }
   setIsAnimate(value = true) { this.features.animacy = value ? Animacy.animate : Animacy.inanimate; return this }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
-  setIsAuxillary(value = true) { this.features.verbType = value ? VerbType.auxilary : VerbType.main; return this }
+  setIsAuxillary(value = true) { this.features.verbAuxilarity = value ? VerbAuxilarity.yes : undefined; return this }
   setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
   setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }

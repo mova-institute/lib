@@ -121,9 +121,8 @@ export enum Polarity {
   positive,
   negative,
 }
-export enum VerbType {
-  main,
-  auxilary,
+export enum VerbAuxilarity {
+  yes,
 }
 export enum Reflexivity {
   yes,
