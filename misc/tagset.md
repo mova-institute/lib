@@ -12,7 +12,6 @@
     - [`adj` Прикметник](#adj)
     - [`numr` Кількісний числівник](#numr)
     - [`adv` Прислівник](#adv)
-    - [`advp` Дієприслівник](#advp)
     - [`prep` Прийменник](#prep)
     - [`conj` Сполучник](#conj)
     - [`part` Частка](#part)
@@ -137,14 +136,19 @@
 |`s`|однина|роби `verb:imperf:impr:s:2`|
 |`p`|множина|робіть `verb:imperf:impr:p:2`|
 
-|||форма-час||
+|||форма||
 |---|---|---|---|
 |`inf`|infinitive|інфінітив|робити `verb:imperf:inf`|
+|`impr`|imperative|наказова форма|робімо `робімо verb:imperf:impr:p:1`|
+|`impers`|impersonal|безособова форма|роблено `verb:imperf:impers`|
+|`advp`||дієприслівник|ховаючись `verb:rev:imperf:pres:advp`|
+
+|||час||
+|---|---|---|---|
+|*(без позначки)*||форма не має часу|
 |`past`|past|минулий час|робили `verb:imperf:past:p`|
 |`pres`|present|теперішній час|роблять `verb:imperf:pres:p:3`|
 |`futr`|future|майбутній час|робитимуть `verb:imperf:futr:p:3`|
-|`impr`|imperative|наказова форма|робімо `робімо verb:imperf:impr:p:1`|
-|`impers`|impersonal|безособова форма|роблено `verb:imperf:impers`|
 
 |||рід|
 |---|---|---|
@@ -262,27 +266,6 @@
 |`compr`|порівняльна|тупіше `adv:compr`|
 |`super`|найвища|найтупіше `adv:super`|
 |`abs`|абсолютна|якнайтупіше `adv:abs`, щонайтупіше `adv:abs`|
-
-<a name="advp"></a>
-&nbsp;
-
-### `advp` **Дієприслівник**
-
-||зворотність||
-|---|---|---|
-|*(без позначки)*|незворотний|хлюпаючи `advp:imperf:pres`|
-|`rev`|зворотний|хлюпаючись `advp:rev:imperf:pres`|
-
-||вид||
-|---|---|---|
-|`imperf`|недоконаний|хлюпавши `advp:imperf:past`|
-|`perf`|доконаний|хлюпнувши `advp:perf`|
-
-||час||
-|---|---|---|
-|*(без позначки)*|доконаний вид|хлюпнувши `advp:perf`|
-|`past`|минулий час|хлюпавши `advp:imperf:past`|
-|`pres`|теперішній час|хлюпаючи `advp:imperf:pres`|
 
 <a name="prep"></a>
 &nbsp;
