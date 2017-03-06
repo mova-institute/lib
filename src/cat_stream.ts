@@ -19,7 +19,7 @@ export class CatStream extends Readable {
   }
 
   private streamNext() {
-    let {value, done} = this.iterator.next()
+    let { value, done } = this.iterator.next()
     if (done) {
       this.push(null)
     } else {
