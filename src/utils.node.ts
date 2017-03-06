@@ -1,5 +1,8 @@
 import { readFileSync } from 'fs'
+import * as fs from 'fs'
+import * as path from 'path'
 import { createInterface } from 'readline'
+import { sync as mkdirpSync } from 'mkdirp'
 
 const lineIterator = require('n-readlines')
 
@@ -60,4 +63,17 @@ export function ignorePipeErrors() {
       process.exit(0)
     }
   })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function writeFileSyncMkdirp(filePath: string, value: string) {
+  mkdirpSync(path.dirname(filePath))
+  fs.writeFileSync(filePath, value)
+  return filePath
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function openSyncMkdirp(filePath: string, flags: string) {
+  mkdirpSync(path.dirname(filePath))
+  return fs.openSync(filePath, flags)
 }

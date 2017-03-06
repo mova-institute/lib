@@ -682,9 +682,13 @@ export function removeHypenation(str: string, analyzer: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function removeInvisibles(value: string) {
+  return value.replace(/[\t\u{0}\u{200B}-\u{200F}\u{202A}-\u{202E}\u{2060}]/gu, '')
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
-  let ret = value
-    .replace(/[\t\u{0}\u{200B}-\u{200F}\u{202A}-\u{202E}\u{2060}]/gu, '')  // invizibles
+  let ret = removeInvisibles(value)
     // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')

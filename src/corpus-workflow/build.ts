@@ -16,6 +16,7 @@ import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
+import { writeFileSyncMkdirp, openSyncMkdirp } from '../utils.node'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { parseUmolodaArticle } from './parsers/umoloda'
 import { parseDztArticle } from './parsers/dzt'
@@ -90,30 +91,84 @@ function main(args: Args) {
 
     let outDir = join(args.workspace, 'build', args.part)
     let inputGlob = join(args.inputRoot, args.inputGlob)
-    let inputFiles = globSync(inputGlob, { nodir: true })
-    // let outFiles = globSync(join(outDir, '**', '*.vrt.txt'))
-    // inputFiles = inputFiles.filter(x => path.relative(args.inputRoot, x))
-
-    let specificModule = require(`../nlp/parsers/${args.part}`) as SpecificModule
-    let docStream = mu(inputFiles)
-      .map(x => fs.readFileSync(x, 'utf8'))
-      .map(x => specificModule.streamDocs(x))
-      .flatten() as Mu<CorpusDoc>
+    console.log(`globbing input files: ${inputGlob}`)
+    let inputFiles = globSync(inputGlob, { nodir: true, nosort: true })
+    console.log(`globbed ${inputFiles.length} files`)
 
     mkdirpSync(outDir)
     fs.appendFileSync(join(outDir, 'commands.txt'), process.argv.join(' ') + '\n')
-    let tempout = fs.openSync(join(outDir, `${args.part}.4vec`), 'w')
-    for (let { paragraphs } of docStream) {
-      for (let paragraph of paragraphs) {
-        let towrite = mu(nlpUtils.tokenizeUk(paragraph, analyzer))
-          .map(({ token }) => token.trim())
-          .filter(token => token && !nlpStatic.ANY_PUNC_OR_DASH_RE.test(token))
-          .join(' ')
-        fs.writeSync(tempout, towrite + '\n')
+
+    let specificModule = require(`./parsers/${args.part}`) as SpecificModule
+    for (let filePath of inputFiles) {
+      let relPath = path.relative(args.inputRoot, filePath)
+      let jsonPath = join(outDir, 'json', `${relPath}.json`)
+      if (fs.existsSync(jsonPath)) {
+        continue
       }
+      console.log(`parsing ${filePath}`)
+
+      let fileStr = fs.readFileSync(filePath, 'utf8')
+      let parsedDocs = [...specificModule.streamDocs(fileStr)]
+
+      parsedDocs = parsedDocs.filter(doc => {
+        if (!doc.paragraphs || !doc.paragraphs.length) {
+          console.error('missing paragraphs ✖️')
+          return false
+        }
+        if (!doc.date) {
+          console.error(`no date ✖️`)
+          return false
+        }
+        if (!isConsideredUkrainan(doc.paragraphs, analyzer)) {
+          console.error(`considered foreign ✖️`)
+          return false
+        }
+        return true
+      })
+
+      // console.log(parsedDocs)
+      writeFileSyncMkdirp(jsonPath, JSON.stringify(parsedDocs, undefined, 2))
+
+      let forvecPath = join(outDir, '4vec', `${relPath}.4vec`)
+      let tempout = openSyncMkdirp(forvecPath, 'w')
+      for (let parsedDoc of parsedDocs) {
+        // add title to the body
+        // if (parsedDoc.paragraphs.length && parsedDoc.paragraphs[0] !== parsedDoc.title) {
+        //   parsedDoc.paragraphs = [parsedDoc.title, ...parsedDoc.paragraphs]
+        // }
+
+        for (let paragraph of parsedDoc.paragraphs) {
+          let towrite = mu(nlpUtils.tokenizeUk(paragraph, analyzer))
+            .map(({ token }) => token.trim())
+            .filter(token => token && !nlpStatic.ANY_PUNC_OR_DASH_RE.test(token))
+            .join(' ')
+          fs.writeSync(tempout, towrite + '\n')
+        }
+      }
+      fs.closeSync(tempout)
     }
   } else {
     mainOld(args)
+  }
+}
+
+//------------------------------------------------------------------------------
+function isConsideredUkrainan(paragraphs: string[], analyzer: MorphAnalyzer) {
+  const THRESHOLD = 0.15
+
+  let tokensChecked = 0
+  let numX = 0
+  for (let i = paragraphs.length - 1; i >= 0; --i) {
+    let tokens = nlpUtils.tokenizeUk(paragraphs[i], analyzer)
+    numX += tokens.filter(({ token }) => !analyzer.tag(token).filter(x => !x.isX()).length)
+      .length
+    tokensChecked += tokens.length
+    if (tokensChecked >= 30) {
+      return numX / tokensChecked < THRESHOLD
+    }
+  }
+  if (tokensChecked) {
+    return numX / tokensChecked < THRESHOLD
   }
 }
 

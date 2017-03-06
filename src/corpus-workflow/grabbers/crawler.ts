@@ -60,7 +60,7 @@ export class Crawler {
         || this.visiting.has(urlStr)
         || this.saved.has(fileishUrl)
         || this.failed.has(urlStr)
-        || urlStr.startsWith('http://ukr')
+        // || urlStr.startsWith('http://ukr')
       ) {
         return
       }

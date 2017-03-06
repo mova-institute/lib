@@ -1,3 +1,7 @@
+import { CorpusDoc } from '../doc_meta'
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(wikiExtractorFileStr: string) {
   // workaround https://github.com/attardi/wikiextractor/issues/53
@@ -20,3 +24,4 @@ export function* streamDocs(wikiExtractorFileStr: string) {
     }
   }
 }
+

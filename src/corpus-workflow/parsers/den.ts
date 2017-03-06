@@ -1,22 +1,9 @@
 import { DocCreator } from 'xmlapi'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
+import { GENITIVE_UK_MON_MAP } from './utils'
 
 
 
-const monthMap = new Map([
-  ['січня', '01'],
-  ['лютого', '02'],
-  ['березня', '03'],
-  ['квітня', '04'],
-  ['травня', '05'],
-  ['червня', '06'],
-  ['липня', '07'],
-  ['серпня', '08'],
-  ['вересня', '09'],
-  ['жовтня', '10'],
-  ['листопада', '11'],
-  ['грудня', '12'],
-])
 
 ////////////////////////////////////////////////////////////////////////////////
 export function parseDenArticle(html: string, htmlDocCreator: DocCreator) {
@@ -29,7 +16,7 @@ export function parseDenArticle(html: string, htmlDocCreator: DocCreator) {
   if (d.length === 1) {
     d = '0' + d
   }
-  m = monthMap.get(m)
+  m = GENITIVE_UK_MON_MAP.get(m)
   let date = `${y}–${m}–${d}`
 
   let title = root.evaluateString('string(//meta[@property="og:title"]/@content)').trim()
