@@ -100,8 +100,29 @@ export const PUNC_GLUED_BEFORE = Object.keys(PUNC_SPACING).filter(x => PUNC_SPAC
 export const NO_GLUE_PUNC = Object.keys(PUNC_SPACING).filter(x => PUNC_SPACING[x][0] && PUNC_SPACING[x][1]).map(x => '\\' + x).join('')
 
 export const SMILIES_1 = [
-  'О_о'
+  r`О_о`,
+  r`0_0`,
 ].join('|')
 
 
-export const INTERJECTION_RE = /^(о+|а+)$/
+const INTERJECTION_RE_STRS = [
+  r`о+`,
+  r`є+`,
+  r`а+`,
+  r`уу+`,
+  r`ги+`,
+  r`ммм+`,
+  r`еее+`,
+  r`гг+`,
+  r`фу+`,
+  r`бу+`,
+  r`о+к`,
+  r`юху+`,
+  r`ура+`,
+  r`о(ло){2,}`,
+  r`уфф+`,
+  r`а?(ха)+х?`,
+  r`і?(хі)+х?`,
+]
+const INTERJECTION_RE_STR = INTERJECTION_RE_STRS.join('|')
+export const INTERJECTION_RE = new RegExp(`^(${INTERJECTION_RE_STR})$`)
