@@ -119,7 +119,7 @@ function main(args: Args) {
           return false
         }
         if (!isConsideredUkrainan(doc.paragraphs, analyzer)) {
-          console.error(`considered foreign ✖️ ${doc.paragraphs[0].substr(0, 20)}`)
+          console.error(`considered foreign ✖️  ${doc.paragraphs[0].substr(0, 20)} ${doc.url}`)
           return false
         }
         return true
@@ -166,7 +166,16 @@ function isConsideredUkrainan(paragraphs: string[], analyzer: MorphAnalyzer) {
       return numX / tokensChecked < THRESHOLD
     }
   }
+
   if (tokensChecked) {
+    if (tokensChecked < 6) {
+      if (paragraphs.some(p => /їєґі/.test(p))) {
+        return true
+      }
+      if (paragraphs.some(p => /ыэёъ/.test(p))) {
+        return false
+      }
+    }
     return numX / tokensChecked < THRESHOLD
   }
 }
