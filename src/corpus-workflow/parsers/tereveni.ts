@@ -15,6 +15,7 @@ export function* streamDocs(html: string) {
     title = `повідомлення ${title}`
     let url = textOf(postRoot, './/span[contains(@class, "post_id ")]/a/@href')
     let author = textOf(postRoot, './/span[@class="author vcard"]/a/text()')
+    author = `${author} @ tereveni.org`
     let date = textOf(postRoot, './/abbr[@class="published updated"]/@title')
     date = toSortableDate(new Date(date))
     let paragraphs = getPostParagraphs(
@@ -42,8 +43,18 @@ function getPostParagraphs(contentRoot: AbstractElement) {
           ret.push(buf)
           buf = ''
         }
+        continue
+      } else if (el.localName() === 'img' && el.attribute('class') === 'bbc_emoticon') {
+        let alt = el.attribute('alt')
+        if (alt) {
+          buf += alt
+        }
+        continue
       }
+    } else if (node.isComment() || node.isCdata()) {
+      continue
     }
+
     buf += node.text()
   }
   buf = buf.trim()
