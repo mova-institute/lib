@@ -11,7 +11,6 @@ import { parseHtmlString } from 'libxmljs'
 import { LibxmljsDocument } from 'xmlapi-libxmljs'
 import * as minimist from 'minimist'
 
-import { FolderSavedMap } from '../folder_saved_map.node'
 import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
@@ -25,7 +24,7 @@ import { parseZbrucArticle } from './parsers/zbruc'
 import { parseTyzhdenArticle } from './parsers/tyzhden'
 import { buildMiteiVertical } from './mitei_build_utils'
 import { streamChtyvo } from './parsers/chtyvo'
-import { trimExtension, trimExtensions } from '../string_utils'
+import { trimExtension } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
 import * as nlpStatic from '../nlp/static'
@@ -120,7 +119,7 @@ function main(args: Args) {
           return false
         }
         if (!isConsideredUkrainan(doc.paragraphs, analyzer)) {
-          console.error(`considered foreign ✖️`)
+          console.error(`considered foreign ✖️ ${doc.paragraphs[0].substr(0, 20)}`)
           return false
         }
         return true
@@ -154,7 +153,7 @@ function main(args: Args) {
 
 //------------------------------------------------------------------------------
 function isConsideredUkrainan(paragraphs: string[], analyzer: MorphAnalyzer) {
-  const THRESHOLD = 0.15
+  const THRESHOLD = 0.2
 
   let tokensChecked = 0
   let numX = 0

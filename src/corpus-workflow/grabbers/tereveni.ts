@@ -23,5 +23,5 @@ if (require.main === module) {
 
 //------------------------------------------------------------------------------
 function isForumPage(pathname: string) {
-  return /\/topic\/\d+\/(page__st__\d+)$/.test(pathname)
+  return /\/topic\/\d+\/(page__st__\d+)?$/.test(pathname)
 }
