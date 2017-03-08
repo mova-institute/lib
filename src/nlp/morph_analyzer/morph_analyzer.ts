@@ -62,6 +62,7 @@ const NONIFL_ORDINAL_PARADIGM = NONIFL_ADJ_PARADIGM.map(x => `${x}:&numr`)
 NONIFL_ORDINAL_PARADIGM.push(
   ...NONIFL_ORDINAL_PARADIGM.map(x => `${x}:&noun:inanim`),
   ...PLUR_TANTUM_NONINFL_PARADIGM.map(x => `adj:${x}:&noun:inanim`),
+  // ...CASES.map(x => `adj:p:ns${x}:nv:&noun:inanim`)
 )
 
 
@@ -69,26 +70,25 @@ const REGEX2TAG_IMMEDIATE = [
   [[URL_RE,
     EMAIL_RE,
     LITERAL_SMILE_RE], ['sym']],
-  [[/^[02-9]*1$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_1_2, ...NONIFL_ORDINAL_PARADIGM]],
+  // trmp [12]
+  [[/^[02-9]*[12]$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_1_2, ...NONIFL_ORDINAL_PARADIGM]],
   [[ARABIC_NUMERAL_RE], [...NONIFL_ARABIC_CARDINAL_PARADIGM, ...NONIFL_ORDINAL_PARADIGM]],
-  [[ROMAN_NUMERAL_RE], [...NONIFL_ORDINAL_PARADIGM]],
   [[ANY_PUNC_OR_DASH_RE], ['punct']],
   [[URL_RE,
     EMOJI_RE,
     SMILE_RE], ['sym']],
-  [[FOREIGN_RE], [
-    'noun:foreign',
-    'adj:foreign',
-    'verb:foreign',
-    'x:foreign',
-  ]],
 ] as [RegExp[], string[]][]
 
 const REGEX2TAG_ADDITIONAL = [
-  [
-    [INTERJECTION_RE], ['intj'],
-    [SYMBOL_RE], ['sym'],
-  ],
+  [[ROMAN_NUMERAL_RE], [...NONIFL_ORDINAL_PARADIGM]],
+  [[INTERJECTION_RE], ['intj']],
+  [[SYMBOL_RE], ['sym']],
+  [[FOREIGN_RE], [
+    // 'noun:foreign',
+    // 'adj:foreign',
+    // 'verb:foreign',
+    'x:foreign',
+  ]],
 ] as [RegExp[], string[]][]
 
 const gluedPrefixes = [
@@ -393,7 +393,9 @@ export class MorphAnalyzer {
 
     // list items, letter names
     if (token !== 'я' && INITIALS_RE.test(token.toUpperCase())) {
-      res.add(MorphInterp.fromVesumStr('noun:inanim:prop', `${token}.`))
+      res.add(MorphInterp.fromVesumStr('noun:inanim:prop', `${token}`))
+    } else if (/^[A-Z]$/.test(token)) {
+      res.add(MorphInterp.fromVesumStr('noun:inanim:prop:foreign', `${token}`))
     }
 
     // one-letter abbrs
@@ -420,11 +422,18 @@ export class MorphAnalyzer {
             }
             return ret
           })
+
         res.addAll(toadd)
 
         if (this.expandAdjectivesAsNouns) {
-          toadd = toadd.map(x => x.clone().setIsAdjectiveAsNoun().setIsAnimate(false))
+          toadd = toadd.filter(x => x.isAdjective())
+            .map(x => x.clone().setIsAdjectiveAsNoun().setIsAnimate(false))
           res.addAll(toadd)
+
+          if (lastDigit === 0) {  // 90-ті
+            toadd = toadd.filter(x => x.isPlural()).map(x => x.clone().setIsPluraleTantum())
+            res.addAll(toadd)
+          }
         }
       }
     }
@@ -625,6 +634,7 @@ export class MorphAnalyzer {
       [8, 'вісім'],
       [9, 'дев’ять'],
       [0, 'десять'],
+      [0, 'двадцять'],
     ] as [number, string][]
 
     let ret = new Array<NumeralMapObj>()
@@ -633,7 +643,7 @@ export class MorphAnalyzer {
       for (let lexeme of lexemes) {
         for (let { form, flags } of lexeme) {
           let interp = MorphInterp.fromVesumStr(flags)
-          if (!interp.isPronoun()) {
+          if (!interp.isPronoun() && interp.isOrdinalNumeral()) {
             interp.features.degree = undefined
             ret.push({ digit, form, interp, lemma })
           }

@@ -938,6 +938,7 @@ export class MorphInterp {
   setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
   setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
+  setIsPluraleTantum(value = true) { this.features.numberTantum = value ? NumberTantum.noSingular : NumberTantum.noPlural; return this }
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
   setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
