@@ -21,7 +21,6 @@ export function isAllcaps(str: string) {
   return str === str.toUpperCase()
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 export function trimExtension(filename: string) {
   let dotIndex = filename.lastIndexOf('.')

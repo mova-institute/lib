@@ -185,13 +185,6 @@ export function* conll2sentenceStream(lines: Iterable<string>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conllu2bratPlaintext(lines: Iterable<string>) {
-  for (let sent of conll2sentenceStream(lines)) {
-    yield sent.map(x => x[1]).join(' ') + '\n'
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function canBeConlluLine(line: string) {
   return !/^\s*#/.test(line) && /^([^\t]+\t){9}[^\t]+$/.test(line)
 }

@@ -2,18 +2,20 @@
 
 import * as fs from 'fs'
 import * as path from 'path'
-import { parseXmlFileSync } from '../../xml/utils.node'
-import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
-import { last } from '../../lang'
-import { Token } from '../../nlp/token'
-import { sentence2conllu } from './utils'
-import { mu } from '../../mu'
-import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
 import * as mkdirp from 'mkdirp'
 import * as columnify from 'columnify'
+
+import { parseXmlFileSync } from '../../xml/utils.node'
+import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
+import { last } from '../../lang'
+import { Dict } from '../../types'
+import { Token } from '../../nlp/token'
+import { sentence2conllu } from './utils'
+import { mu } from '../../mu'
+import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
 
 
 
@@ -27,7 +29,6 @@ interface Args {
   reportHoles: boolean
   reportErrors: 'all' | 'complete' | 'none'
   validOnly: boolean
-  forSyntaxnet: boolean
   xpos: any
 }
 
@@ -60,7 +61,6 @@ function main() {
       'noStandartizing',
       'reportHoles',
       'onlyValid',
-      'forSyntaxnet',
     ],
     alias: {
       oneSet: 'one-set',
@@ -70,7 +70,6 @@ function main() {
       validOnly: 'valid-only',
       reportHoles: 'report-holes',
       reportErrors: 'report-errors',
-      forSyntaxnet: 'for-syntaxnet',
     },
     default: {
       reportErrors: 'none',
@@ -83,23 +82,22 @@ function main() {
   mkdirp.sync(outDir)
 
   let openedFiles = {} as any
-  let datasetRegistry = {} as { [name: string]: Dataset }
+  let datasetRegistry = {} as Dict<Dataset>
   let problemCounter = 1
   for (let xmlPath of xmlPaths) {
     let basename = path.basename(xmlPath)
+
     console.log(`exporting ${basename}`)
+
     let root = parseXmlFileSync(xmlPath)
     let tokenStream = tei2tokenStream(root, args.datasetSchema)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
-    for (let {sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
+    for (let { sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
       initSyntax(tokens)
       let hasSyntax = tokens.some(x => x.hasDeps())
       set = args.oneSet || set || 'unassigned'
       if (hasSyntax) {
         datasetRegistry[set] = datasetRegistry[set] || new Dataset()
-        // if (newDocument) {
-        // Object.values(datasetRegistry).forEach(x => x.newdoc = true)
-        // }
 
         let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
         let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
@@ -148,7 +146,12 @@ function main() {
     }
   }
 
-  let stats = Object.entries(datasetRegistry).map(([set, {counts: {wordsKept, wordsExported, sentsExported}}]) => ({
+  printStats(datasetRegistry)
+}
+
+//------------------------------------------------------------------------------
+function printStats(datasetRegistry: Dict<Dataset>) {
+  let stats = Object.entries(datasetRegistry).map(([set, { counts: { wordsKept, wordsExported, sentsExported } }]) => ({
     set,
     'w kept': wordsKept,
     'w exported': wordsExported,
@@ -175,10 +178,6 @@ function main() {
   console.log(`\n`)
 }
 
-if (require.main === module) {
-  main()
-}
-
 //------------------------------------------------------------------------------
 function formatProblems(docName: string, sentenceId: string, tokens: Token[], problems: any[], count: number) {
   let tokenWithDepsrc = tokens.find(x => x.getAttribute('depsrc'))
@@ -186,7 +185,7 @@ function formatProblems(docName: string, sentenceId: string, tokens: Token[], pr
   let href = `https://lab.mova.institute/brat/index.xhtml#/ud/${bratPath}`
   let ret = `*** [${count}] Проблеми в реченні ${sentenceId} ${href}\n\n`
   let repro = tokens.join(' ')
-  for (let {indexes, message} of problems) {
+  for (let { indexes, message } of problems) {
     ret += `    ${message}\n`
     ret += `${repro}\n`
     if (indexes !== undefined) {
@@ -231,6 +230,7 @@ function initSyntax(sentence: Array<Token>) {
   }
 }
 
+//------------------------------------------------------------------------------
 function standartizeSentence2ud20(sentence: Array<Token>) {
   let lastToken = last(sentence)
   let rootIndex = sentence.findIndex(x => !x.hasDeps())
@@ -277,13 +277,7 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
   }
 }
 
-
-
-/*
-
-autofix
-cc/punct
-obl:agent
-
-
-*/
+////////////////////////////////////////////////////////////////////////////////
+if (require.main === module) {
+  main()
+}

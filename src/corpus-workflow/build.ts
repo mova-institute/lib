@@ -18,13 +18,14 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 import { writeFileSyncMkdirp, openSyncMkdirp } from '../utils.node'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { parseUmolodaArticle } from './parsers/umoloda'
+import { conlluToken2vertical } from './parsers/conllu'
 import { parseDztArticle } from './parsers/dzt'
 import { parseDenArticle } from './parsers/den'
 import { parseZbrucArticle } from './parsers/zbruc'
 import { parseTyzhdenArticle } from './parsers/tyzhden'
 import { buildMiteiVertical } from './mitei_build_utils'
 import { streamChtyvo } from './parsers/chtyvo'
-import { trimExtension } from '../string_utils'
+import { trimExtension, zerofill } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
 import * as nlpStatic from '../nlp/static'
@@ -34,6 +35,7 @@ import {
 } from '../nlp/utils'
 import { mu, Mu } from '../mu'
 import { uniq } from '../algo'
+import { UdpipeApiClient } from '../nlp/ud/udpipe_api_client'
 
 
 
@@ -42,9 +44,11 @@ interface Args {
   part: string
   mitei?: string
 
-  tempgeneric: boolean
+  out?: string
+  generic?: string
   inputGlob: string
   inputRoot: string
+  udpipeUrl: string
 }
 
 
@@ -72,7 +76,6 @@ if (require.main === module) {
       workspace: '.',
     },
     boolean: [
-      'tempgeneric'
     ]
   }) as any
 
@@ -84,11 +87,13 @@ interface SpecificModule {
 }
 
 //------------------------------------------------------------------------------
-function main(args: Args) {
-  if (args.tempgeneric) {
+async function main(args: Args) {
+  if (args.generic) {
+    let udpipe =
+     args.udpipeUrl ? new UdpipeApiClient(args.udpipeUrl) : undefined
     let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
 
-    let outDir = join(args.workspace, 'build', args.part)
+    let outDir = join(args.workspace, 'build', args.out || args.generic)
     let inputGlob = join(args.inputRoot, args.inputGlob)
     console.log(`globbing input files: ${inputGlob}`)
     let inputFiles = globSync(inputGlob, { nodir: true, nosort: true })
@@ -97,7 +102,7 @@ function main(args: Args) {
     mkdirpSync(outDir)
     fs.appendFileSync(join(outDir, 'commands.txt'), process.argv.join(' ') + '\n')
 
-    let specificModule = require(`./parsers/${args.part}`) as SpecificModule
+    let specificModule = require(`./parsers/${args.generic}`) as SpecificModule
     for (let filePath of inputFiles) {
       let relPath = path.relative(args.inputRoot, filePath)
       let jsonPath = join(outDir, 'json', `${relPath}.json`)
@@ -115,40 +120,54 @@ function main(args: Args) {
           return false
         }
         if (!doc.date) {
-          console.error(`no date ✖️`)
-          return false
+          // console.error(`no date ✖️`)
+          // return false
         }
-        if (!isConsideredUkrainan(doc.paragraphs, analyzer)) {
-          console.error(`considered foreign ✖️  ${doc.paragraphs[0].substr(0, 20)} ${doc.url}`)
-          return false
-        }
+        // if (!isConsideredUkrainan(doc.paragraphs, analyzer)) {
+        //   console.error(`considered foreign ✖️  ${doc.paragraphs[0].substr(0, 20)} ${doc.url}`)
+        //   return false
+        // }
         return true
       })
 
       // console.log(parsedDocs)
       writeFileSyncMkdirp(jsonPath, JSON.stringify(parsedDocs, undefined, 2))
+      write4vec(outDir, relPath, parsedDocs, analyzer)
 
-      let forvecPath = join(outDir, '4vec', `${relPath}.4vec`)
-      let tempout = openSyncMkdirp(forvecPath, 'w')
+      let i = 0
       for (let parsedDoc of parsedDocs) {
-        // add title to the body
-        // if (parsedDoc.paragraphs.length && parsedDoc.paragraphs[0] !== parsedDoc.title) {
-        //   parsedDoc.paragraphs = [parsedDoc.title, ...parsedDoc.paragraphs]
-        // }
-
+        let iStr = zerofill(i, parsedDocs.length)
+        let docPath = join(outDir, 'vertical', `${relPath}_doc-${iStr}.vrt`)
         for (let paragraph of parsedDoc.paragraphs) {
-          let towrite = mu(nlpUtils.tokenizeUk(paragraph, analyzer))
-            .map(({ token }) => token.trim())
-            .filter(token => token && !nlpStatic.ANY_PUNC_OR_DASH_RE.test(token))
-            .join(' ')
-          fs.writeSync(tempout, towrite + '\n')
+          let parsed = await udpipe.parse(paragraph)
+
         }
       }
-      fs.closeSync(tempout)
     }
   } else {
     mainOld(args)
   }
+}
+
+//------------------------------------------------------------------------------
+function write4vec(outDir: string, relPath: string, parsedDocs: CorpusDoc[], analyzer: MorphAnalyzer) {
+  let forvecPath = join(outDir, '4vec', `${relPath}.4vec`)
+  let tempout = openSyncMkdirp(forvecPath, 'w')
+  for (let parsedDoc of parsedDocs) {
+    // add title to the body
+    // if (parsedDoc.paragraphs.length && parsedDoc.paragraphs[0] !== parsedDoc.title) {
+    //   parsedDoc.paragraphs = [parsedDoc.title, ...parsedDoc.paragraphs]
+    // }
+
+    for (let paragraph of parsedDoc.paragraphs) {
+      let towrite = mu(nlpUtils.tokenizeUk(paragraph, analyzer))
+        .map(({ token }) => token.trim())
+        .filter(token => token && !nlpStatic.ANY_PUNC_OR_DASH_RE.test(token))
+        .join(' ')
+      fs.writeSync(tempout, towrite + '\n')
+    }
+  }
+  fs.closeSync(tempout)
 }
 
 //------------------------------------------------------------------------------

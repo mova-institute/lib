@@ -296,7 +296,7 @@ export class Mu<T> implements Iterable<T> {
     return ret
   }
 
-  join(joiner = '') {
+  join(joiner = '', trailing = false) {
     let ret = ''
     for (let x of this) {
       if (ret) {
@@ -304,6 +304,10 @@ export class Mu<T> implements Iterable<T> {
       }
       ret += x
     }
+    if (trailing) {
+      ret += joiner
+    }
+
     return ret
   }
 

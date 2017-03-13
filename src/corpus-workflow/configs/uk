@@ -2,9 +2,9 @@ NAME "корпус української"
 #INFO "Корпус української (випробовування)"   # todo: say mova intitute some day
 INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
-TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
+TAGSETDOC "http://universaldependencies.org"    # todo
 
-VERTICAL "|printf 'a\ta\ta\ta'"
+VERTICAL "|zcat vertical/uk.vrt.txt"
 
 
 LANGUAGE "Ukrainian"
@@ -29,22 +29,15 @@ ATTRIBUTE lemma {
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE tag {
-  LABEL "морфмітка"
-  MULTIVALUE yes
-  MULTISEP "|"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE tag2 {
-  LABEL "морфмітка (службова)"
-  MULTIVALUE yes
-  MULTISEP "|"
-  TYPE "FD_FGD"
-}
-
 ATTRIBUTE pos {
   LABEL "ЧМ"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE upos {
+  LABEL "універсальна ЧМ"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
@@ -59,6 +52,13 @@ ATTRIBUTE abbr {
 
 ATTRIBUTE animacy {
   LABEL "істотовість"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE animacy_gram {
+  LABEL "граматична істотовість"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
@@ -99,8 +99,15 @@ ATTRIBUTE gender {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE hyph {
+  LABEL "передрисковість"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE mood {
-  LABEL ""
+  LABEL "спосіб"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
@@ -176,6 +183,13 @@ ATTRIBUTE tense {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE variant {
+  LABEL "форма прикметника"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE verbform {
   LABEL "форма дієслова"
   MULTIVALUE yes
@@ -185,6 +199,20 @@ ATTRIBUTE verbform {
 
 ATTRIBUTE voice {
   LABEL "стан"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE rel {
+  LABEL "реляція"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE urel {
+  LABEL "універсальна реляція"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
