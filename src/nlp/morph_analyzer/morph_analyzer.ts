@@ -79,9 +79,12 @@ const REGEX2TAG_IMMEDIATE = [
     SMILE_RE], ['sym']],
 ] as [RegExp[], string[]][]
 
+const REGEX2TAG_ADDITIONAL_LC_LEMMA = [
+  [[INTERJECTION_RE], ['intj']],
+]
+
 const REGEX2TAG_ADDITIONAL = [
   [[ROMAN_NUMERAL_RE], [...NONIFL_ORDINAL_PARADIGM]],
-  [[INTERJECTION_RE], ['intj']],
   [[SYMBOL_RE], ['sym']],
   [[FOREIGN_RE], [
     // 'noun:foreign',
@@ -139,6 +142,7 @@ const gluedPrefixes = [
   'мульти',
   'нео',
   'пост',
+  'пост-',
   'псевдо',
   'радіо',
   'спец',
@@ -276,11 +280,21 @@ export class MorphAnalyzer {
     let res = new HashSet(MorphInterp.hash, flatten(lookupees.map(x => this.lookup(x))))
     let presentInDict = res.size > 0
 
-    // regexes adding interps
+    // regexes that add interps
     for (let [regexes, tagStrs] of REGEX2TAG_ADDITIONAL) {
       if (regexes.some(x => x.test(token))) {
         let toadd = tagStrs.map(x => MorphInterp.fromVesumStr(x, token))
-        res.addAll(toadd)
+        if (toadd.length) {
+          res.addAll(toadd)
+        } else {
+          // regexes that add interps with lowercase lemma
+          for (let [regexes, tagStrs] of REGEX2TAG_ADDITIONAL) {
+            if (regexes.some(x => x.test(token))) {
+              let toadd = tagStrs.map(x => MorphInterp.fromVesumStr(x, token.toLowerCase()))
+              res.addAll(toadd)
+            }
+          }
+        }
       }
     }
 
@@ -492,15 +506,15 @@ export class MorphAnalyzer {
     let ret = new Array<MorphInterp>()
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
-        if (!mu(res.keys()).some(x => x.isAdverb())) {
+        // if (!mu(res.keys()).some(x => x.isAdverb())) {
           // ret.push(MorphInterp.fromVesumStr('adv', lowercase).setIsAuto())
-        }
+        // }
         continue
       }
 
       // kill adv interps from аварійно-рятувальні
       let hasBeforeadjishOnly = mu(res).every(x => x.isBeforeadj() || x.isAdverb())
-      if (!hasBeforeadjishOnly && interp.isBeforeadj()) {
+      if (hasBeforeadjishOnly && !interp.isBeforeadj()) {
         continue
       }
 
