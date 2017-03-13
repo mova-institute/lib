@@ -140,6 +140,7 @@ export const FEATURE_TABLE = [
   { featStr: 'variant', feat: Variant, vesum: Variant.short, vesumStr: 'short', mte: 's' },
   { featStr: 'variant', feat: Variant, vesum: Variant.uncontracted, vesumStr: 'uncontr', mte: 'f' },
   { featStr: 'variant', feat: Variant, vesum: Variant.symbolical, vesumStr: 'symbol' },
+  { featStr: 'variant', feat: Variant, vesum: Variant.stem, vesumStr: 'stem' },
 
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
@@ -832,7 +833,7 @@ export class MorphInterp {
       return {
         featureName: row && row.featStr,
         feature: row && row.feat,
-        value: row && row.vesum || row.mi,
+        value: row && (row.vesum || row.mi) || true,
       }
     })
 

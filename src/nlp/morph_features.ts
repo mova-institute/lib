@@ -147,6 +147,7 @@ export enum Variant {
   short,
   uncontracted,
   symbolical,
+  stem,
 }
 export enum Rarity {
   // archaic,
