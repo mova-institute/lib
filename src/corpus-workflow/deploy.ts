@@ -54,10 +54,9 @@ function main(args: Args) {
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)
   } else {
-    verticalPaths = readFileSync(args.verticalList, 'utf8').split('\n')
+    verticalPaths = readFileSync(args.verticalList, 'utf8').split('\n').filter(x => x)
   }
 
-  verticalPaths = mu(verticalPaths).map(x => glob.sync(x)).flatten().toArray()
   let nonExistentFiles = verticalPaths.filter(x => !existsSync(x))
   if (nonExistentFiles.length) {
     throw new Error(`File(s) not found:\n${nonExistentFiles.join('\n')}`)
@@ -114,22 +113,28 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
   const subcorpSuffix = '_sub'
   const tempConfigPath = `${registryPath}/${tempName}`
   const tempSubcorpConfigPath = `${tempConfigPath}${subcorpSuffix}`
+  const tempVerticalPath = `${verticalPath}/temp.vrt.gz`
+
+  const sshCreds = `${remoteParams.user}@${remoteParams.hostname}`
 
   execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user,
     `rm -rfv '${manateePath}/${tempName}'`)  // just in case
 
   // upload temp configs
   let tempConfig = nameCorpusInConfig(tempName, manateePath, params.config)
+  tempConfig = `${tempConfig}\nVERTICAL "|zcat ${tempVerticalPath}"\n`
   if (!checkConfigIsSane(tempConfig, manateePath)) {
     throw new Error(`Bad corpus config`)
   }
   if (params.subcorpConfig) {
+    console.log(`uploading subcorp config`)
     tempConfig = addSubcorpToConfig(tempSubcorpConfigPath, tempConfig)
     upload(params.subcorpConfig, tempSubcorpConfigPath)
   }
 
   // upload alingments
   if (params.alignmentPaths) {
+    console.log(`uploading alingments`)
     var tempAlingmentPaths = params.alignmentPaths.map(x => `${verticalPath}/temp_${basename(x)}`)
     tempConfig = addAlingmentsPaths(tempAlingmentPaths, tempConfig)
     for (let path of params.alignmentPaths) {
@@ -141,18 +146,25 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
   // process.exit(0)
   upload(tempConfig, `${registryPath}/${tempName}`)
 
+
+  // upload verticals
+  console.log(`uploading vertical file from ${params.verticalPaths.length} parts`)
+  let uploadCommand = `gzip -9 | ssh ${sshCreds} 'cat - > ${tempVerticalPath}'`
+  console.log(uploadCommand)
+  await execPipe(uploadCommand, new CatStream(params.verticalPaths), process.stdout)
+
+
   // call compilecorp
-  let verticals = mu(params.verticalPaths).map(x => glob.sync(x)).flatten().toArray()
-  console.log(`indexing a corpus from ${verticals.length} files`)
-  let compileCommand = `ssh -C ${remoteParams.user}@${remoteParams.hostname}`
-    + ` 'time compilecorp --no-ske`
+  console.log(`indexing corpus`)
+  let compileCommand = `time compilecorp`
+    + ` --no-ske`
     + ` --recompile-corpus`
     + ` --recompile-subcorpora`
     + ` --recompile-align`
-    + ` ${tempName} -'`
+    + ` ${tempName}`
   console.log(`\n${compileCommand}\n`)
-
-  await execPipe(compileCommand, new CatStream(verticals), process.stdout)
+  execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user, compileCommand)
+  // process.exit(0)
 
   const overwrite = (name: string) => {
     let newConfig = nameCorpusInConfig(name, manateePath, params.config)
@@ -374,5 +386,13 @@ time mi-deploycorp \
 --verticalList uk_list.txt \
 --config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk \
 --subcorp-config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk_sub
+
+
+
+## new
+
+mi-deploycorp \
+--verticalList uk.lst \
+--config $MI_ROOT/mi-lib/src/corpus-workflow/configs/uk
 
 */
