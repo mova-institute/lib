@@ -4,8 +4,6 @@ INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
 TAGSETDOC "http://universaldependencies.org"    # todo
 
-VERTICAL "|zcat vertical/uk.vrt.txt"
-
 
 LANGUAGE "Ukrainian"
 ENCODING "utf8"

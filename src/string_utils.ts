@@ -22,9 +22,14 @@ export function isAllcaps(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function trimAfterLast(toBeTrimmed: string, substring: string) {
+  let index = toBeTrimmed.lastIndexOf(substring)
+  return index < 0 ? toBeTrimmed : toBeTrimmed.substr(0, index)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function trimExtension(filename: string) {
-  let dotIndex = filename.lastIndexOf('.')
-  return dotIndex < 0 ? filename : filename.substr(0, dotIndex)
+  return trimAfterLast(filename, '.')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
