@@ -191,6 +191,10 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
         return 'skip'
       }
       if (node.isText()) {
+        let lang = node.parent().attributeUp('lang')
+        if (lang && lang !== 'uk') {
+          return
+        }
         let text = node.text()
         let cursor = node.document().createElement('cursor')
         node.replace(cursor)
@@ -288,6 +292,10 @@ export function iterateCorpusTokens(root: AbstractElement) {
           let el = node.asElement()
           let name = el.localName()
           if (entering && (name === 'w_' || !isRegularizedFlowElement(el))) {
+            // let lang = el.attributeUp('lang')
+            // if (lang && lang !== 'uk') {
+            //   continue
+            // }
             if (name === 'w_') {
               yield { el, entering }
             }

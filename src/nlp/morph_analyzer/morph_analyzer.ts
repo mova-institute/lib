@@ -273,6 +273,7 @@ export class MorphAnalyzer {
     // dictionary
     let lookupees = varyLetterCases(token)
     let lowercase = lookupees[0]
+    let titlecase = stringUtils.titlecase(lowercase)
     if (nextToken === '.') {
       lookupees.push(...lookupees.map(x => x + '.'))
     }
@@ -336,10 +337,15 @@ export class MorphAnalyzer {
     }
 
     // ірод from Ірод
+    {
+      let toadd = this.lookup(titlecase)
+        .filter(x => !res.has(x))
+        .map(x => x/*.unproper()*/.setIsAuto())
+      res.addAll(toadd)
+    }
+
+    // try ґ→г
     if (!presentInDict) {
-      let titlecase = stringUtils.titlecase(lowercase)
-      res.addAll(this.lookup(titlecase).map(x => x/*.unproper()*/.setIsAuto()))
-      // try ґ→г
       if (!res.size) {
         res.addAll(this.fromGH([titlecase]))
       }
@@ -472,8 +478,10 @@ export class MorphAnalyzer {
     }
 
     // укр from укр.
-    if (!presentInDict) {
-      let toadd = flatten(lookupees.map(x => this.lookup(`${x}.`).map(xx => xx.setIsAuto())))
+    {
+      let toadd = flatten(lookupees.map(x => this.lookup(`${x}.`)
+        .filter(xx => !res.has(xx))
+        .map(xx => xx.setIsAuto())))
       res.addAll(toadd)
     }
 
@@ -507,13 +515,15 @@ export class MorphAnalyzer {
     for (let interp of res) {
       if (nextToken !== '-' && interp.isBeforeadj()) {
         // if (!mu(res.keys()).some(x => x.isAdverb())) {
-          // ret.push(MorphInterp.fromVesumStr('adv', lowercase).setIsAuto())
+        // ret.push(MorphInterp.fromVesumStr('adv', lowercase).setIsAuto())
         // }
         continue
       }
 
       // kill adv interps from аварійно-рятувальні
-      let hasBeforeadjishOnly = mu(res).every(x => x.isBeforeadj() || x.isAdverb())
+      let hasBeforeadjish = mu(res).some(x => x.isBeforeadj())
+      let hasBeforeadjishOnly = hasBeforeadjish
+        && mu(res).every(x => x.isBeforeadj() || x.isAdverb())
       if (hasBeforeadjishOnly && !interp.isBeforeadj()) {
         continue
       }
