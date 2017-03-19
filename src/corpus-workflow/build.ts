@@ -17,14 +17,14 @@ import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
 import { writeFileSyncMkdirp, openSyncMkdirp } from '../utils.node'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { parseUmolodaArticle } from './parsers/umoloda'
-import { conlluToken2vertical } from './parsers/conllu'
-import { parseDztArticle } from './parsers/dzt'
-import { parseDenArticle } from './parsers/den'
-import { parseZbrucArticle } from './parsers/zbruc'
-import { parseTyzhdenArticle } from './parsers/tyzhden'
+import { parseUmolodaArticle } from './extractors/umoloda'
+// import { conlluToken2vertical } from './extractors/conllu'
+import { parseDztArticle } from './extractors/dzt'
+import { parseDenArticle } from './extractors/den'
+import { parseZbrucArticle } from './extractors/zbruc'
+import { parseTyzhdenArticle } from './extractors/tyzhden'
 import { buildMiteiVertical } from './mitei_build_utils'
-import { streamChtyvo } from './parsers/chtyvo'
+import { streamChtyvo } from './extractors/chtyvo'
 import { trimExtension, zerofill } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
@@ -90,7 +90,7 @@ interface SpecificModule {
 async function main(args: Args) {
   if (args.generic) {
     let udpipe =
-     args.udpipeUrl ? new UdpipeApiClient(args.udpipeUrl) : undefined
+      args.udpipeUrl ? new UdpipeApiClient(args.udpipeUrl) : undefined
     let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
 
     let outDir = join(args.workspace, 'build', args.out || args.generic)
