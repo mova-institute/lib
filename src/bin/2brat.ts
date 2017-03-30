@@ -25,7 +25,7 @@ function main() {
   })
 
   let maxWordsPerFile = parseIntStrict(args.n)
-  let inputFiles = glob.sync(args._[0])
+  let inputFiles = glob.sync(args._[0], { nodir: true })
   for (let file of inputFiles) {
     let base = trimExtension(basename(file))
     let root = parseXmlFileSync(file)
@@ -34,7 +34,7 @@ function main() {
 
     let sentenceStream = tokenStream2sentences(tei2tokenStream(root))
     let arr = [] as Token[][]
-    for (let {tokens} of sentenceStream) {
+    for (let { tokens } of sentenceStream) {
       // for (let i = 0; i < tokens.length; ++i) {
       //   if (tokens[i].interp0().isPreposition()) {
       //     for (let j = i + 1; j < tokens.length && j < i + 4; ++j) {
