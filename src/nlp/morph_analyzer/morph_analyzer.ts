@@ -159,6 +159,10 @@ const gluedPrefixes = [
 const INITIALS_RE = new RegExp(`^[${LETTER_UK_UPPERCASE}]$`)
 const UK_LOWERCASE_RE = new RegExp(`^[${LETTER_UK_LOWERCASE}]$`)
 
+const REPLACINGS = [
+  ['лянд', 'ланд'],
+]
+
 //------------------------------------------------------------------------------
 const PREFIX_SPECS = [
   {
@@ -485,6 +489,13 @@ export class MorphAnalyzer {
       res.addAll(toadd)
     }
 
+    // голяндець from голандець
+    {
+      for (let [find, replace] of REPLACINGS) {
+        // let candidates =
+      }
+    }
+
 
 
 
@@ -521,12 +532,12 @@ export class MorphAnalyzer {
       }
 
       // kill adv interps from аварійно-рятувальні
-      let hasBeforeadjish = mu(res).some(x => x.isBeforeadj())
-      let hasBeforeadjishOnly = hasBeforeadjish
-        && mu(res).every(x => x.isBeforeadj() || x.isAdverb())
-      if (hasBeforeadjishOnly && !interp.isBeforeadj()) {
-        continue
-      }
+      // let hasBeforeadjish = mu(res).some(x => x.isBeforeadj())
+      // let hasBeforeadjishOnly = hasBeforeadjish
+      //   && mu(res).every(x => x.isBeforeadj() || x.isAdverb())
+      // if (hasBeforeadjishOnly && !interp.isBeforeadj()) {
+      //   continue
+      // }
 
       if (!this.keepN2adj && interp.isN2Adj() && !interp.isProper()) {
         continue
