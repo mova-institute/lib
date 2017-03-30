@@ -13,14 +13,21 @@ import { getLibRootRelative } from '../../path.node'
 
 
 function main() {
-  // const args: any = minimist(process.argv.slice(2))
+  const args: any = minimist(process.argv.slice(2))
   // streamSsh(args.userhost, args.path)
+  // let datetimeFrom: Date
+  // if (args.from) {
+  //   datetimeFrom = args.from
+  // }
   let stats: { [arrowId: string]: { user: string; timestamp: Date } } = {}
   createInterface({ input: process.stdin })
     .on('line', (line: string) => {
       let [dateStr, timeStr, user, path, document, step, action, head, dependant, relation, , oldRelation, oldDependant] = line.trim().split(/\s+/g)
 
       let timestamp = new Date(`${dateStr} ${timeStr}`)
+      if (args.from && args.from > `${dateStr} ${timeStr}`) {
+        return
+      }
 
       let arrowId = `${document} ${head} ${dependant}`
       if (step === 'FINISH') {
@@ -40,7 +47,7 @@ function main() {
     }).on('close', () => {
       let grandTotal = 0
       let counts = {} as any
-      for (let [arrowId, {user}] of Object.entries(stats).filter(x => x[1])) {
+      for (let [arrowId, { user }] of Object.entries(stats).filter(x => x[1])) {
         if (user === undefined) {
           continue
         }
