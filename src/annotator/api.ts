@@ -363,7 +363,7 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
       for (let task of doc.taskTypes) {
         if (task.type[0] === 'disambiguate_morphologically') {
           let latestFragments = task.fragments
-            .filter(x => x.isDone)
+            .filter(x => x.isDone || x.latestAnnotations.some(xx => xx.status === 'done'))
             .map(x => x.latestAnnotations.find(xx => xx.step === 'resolve')
               || x.latestAnnotations.find(xx => xx.step === 'review')
               || x.latestAnnotations.find(xx => xx.step === 'annotate'))
