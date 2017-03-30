@@ -19,7 +19,7 @@ function main() {
 
   console.log(`removing legacy namespaces…`)
   for (let filePath of files) {
-    fs.writeFileSync(filePath, removeNamespacing(fs.readFileSync(filePath, 'utf8')) + '\n')
+    fs.writeFileSync(filePath, removeNamespacing(fs.readFileSync(filePath, 'utf8')))
   }
 
   console.log(`calculating max sentence id…`)
