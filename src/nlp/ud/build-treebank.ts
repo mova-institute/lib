@@ -13,6 +13,7 @@ import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
 import { last } from '../../lang'
 import { Dict } from '../../types'
 import { Token } from '../../nlp/token'
+import { MorphInterp } from '../../nlp/morph_interp'
 import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
 import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
@@ -139,6 +140,7 @@ function main() {
         }
       }
 
+      standartizeMorpho(tokens)
       let filename = path.join(outDir, `uk-mi-${set}.morphonly.conllu`)
       let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
       let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { morphOnly: true })
@@ -226,6 +228,19 @@ function initSyntax(sentence: Array<Token>) {
         dep.head = id2i[token.head]
         changed.add(token.id)
       }
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+// const FOREIGN = MorphInterp.fromVesumStr('x:foreign')
+function standartizeMorpho(sentence: Array<Token>) {
+  for (let token of sentence) {
+    // token.interp.killNongrammaticalFeatures()
+    token.interp.setIsAuxillary(false)
+
+    if (token.interp.isForeign()) {
+      token.interps = [MorphInterp.fromVesumStr('x:foreign').setLemma(token.interp.lemma)]
     }
   }
 }

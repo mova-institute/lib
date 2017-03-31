@@ -8,7 +8,8 @@ import { MorphInterp } from '../nlp/morph_interp'
 import { numerateTokensGently, serializeMiDocument } from '../nlp/utils'
 import { removeNamespacing } from '../xml/utils'
 import { mu } from '../mu'
-import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
+import { createDictionarySync } from '../nlp/dictionary/factories.node'
+import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 
 
 
@@ -36,6 +37,7 @@ function main() {
     try {
       let root = parseXmlFileSync(file)
 
+      // root.evaluateElements('//*').forEach(x => x.removeAttribute('n'))
       // set missing token numbers
       numerateTokensGently(root)
 
@@ -62,7 +64,8 @@ function main() {
       }
 
       // do safe transforms
-      let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(true)
+      let dict = createDictionarySync()
+      let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
       let interpEls = root.evaluateElements('//w_/w')
       for (let interpEl of interpEls) {
         let form = interpEl.text()
@@ -88,6 +91,31 @@ function main() {
           let dictInterps = analyzer.tag(form).filter(x => x.isConverb)
           if (dictInterps.length) {
             interp.lemma = dictInterps[0].lemma
+          }
+        }
+
+        // adj as noun lemmas
+        if (interp.isAdjectiveAsNoun() && !interpEl.attribute('lemma2')) {
+          interpEl.setAttribute('lemma2', interp.lemma)
+          let lexeme = dict.lookupLexemesByLemma(interp.lemma)
+            .find(([{ flags }]) => MorphInterp.fromVesumStr(flags).isAdjective())
+          if (lexeme) {
+            let nounLemma =
+              lexeme.find(({ flags }) => {
+                let cursor = MorphInterp.fromVesumStr(flags)
+                let ret = !cursor.isUncontracted()
+                  && ((cursor.isPlural() && cursor.features.number === interp.features.number)
+                    || cursor.features.gender === interp.features.gender)
+                return ret
+              })
+            if (nounLemma) {
+              interp.lemma = nounLemma.form
+            } else {
+              console.log(`Nothingo ${interp.lemma}`)
+              // console.log(`Nothingo ${interp.lemma}`)
+            }
+          } else {
+            console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
           }
         }
 

@@ -64,6 +64,26 @@ export const featureObj2nameMap = new Map<any, string>([
 ])
 export const featureName2objMap = flipMap(featureObj2nameMap)
 
+const NONGRAMMATIACAL_FEATURES = [
+  // Foreign,
+  Alternativity,
+  Auto,
+  Badness,
+  CaseInflectability,  // ~
+  Colloquial,
+  Formality,  // ~
+  N2adjness,
+  NameType,
+  NumberTantum,
+  Oddness,
+  ParadigmOmonym,
+  PrepositionRequirement,  // ~
+  Rarity,
+  SemanticOmonym,
+  Slang,
+  Typo,
+  VuAlternativity,
+]
 
 
 export const FEATURE_TABLE = [
@@ -277,6 +297,9 @@ for (let row of FEATURE_TABLE) {
   }
 }
 
+const NONGRAMMATIACAL_FEATURE_NAMES = NONGRAMMATIACAL_FEATURES.map(x => FEAT_MAP_STRING.get(x as any) as string).filter(x => x)
+// console.log(FEAT_MAP_STRING.get(PrepositionRequirement))
+
 export const FEATURE_ORDER = {
   [Pos.noun]: [
     Pos,
@@ -377,7 +400,6 @@ export const FEATURE_ORDER = {
     PronominalType,
     Person,
     Formality,
-    Typo,
     Foreign,
     Typo,
   ],
@@ -393,46 +415,46 @@ Object.keys(Pos).filter(x => /^\d+$/.test(x)).forEach(x => POSWISE_COMPARATORS[x
 ////////////////////////////////////////////////////////////////////////////////
 export class Features {
   pos: Pos
-  pronoun: Pronoun
-  ordinalNumeral: OrdinalNumeral
-  adjectiveAsNoun: AdjectiveAsNoun
-  case: Case
-  requiredCase: RequiredCase
-  number: MorphNumber
-  aspect: Aspect
-  tense: Tense
-  verbType: VerbType
-  person: Person
-  voice: Voice
-  animacy: Animacy
-  grammaticalAnimacy: GrammaticalAnimacy
-  requiredAnimacy: RequiredAnimacy
-  gender: Gender
-  degree: Degree
-  variant: Variant
-  pronominalType: PronominalType
-  numberTantum: NumberTantum
-  reflexivity: Reflexivity
-  verbAuxilarity: VerbAuxilarity
-  numeralForm: NumeralForm
-  conjunctionType: ConjunctionType
-  nounType: NounType
-  nameType: NameType
-  auto: Auto
-  beforeadj: Beforeadj
-  paradigmOmonym: ParadigmOmonym
-  possessiveness: Possessiveness
   abbreviation: Abbreviation
-  oddness: Oddness
+  adjectiveAsNoun: AdjectiveAsNoun
+  animacy: Animacy
+  aspect: Aspect
+  auto: Auto
   badness: Badness
-  n2adjness: N2adjness
-  prepositionRequirement: PrepositionRequirement
-  polarity: Polarity  // the only ambig flag (neg)
-  foreign: Foreign
+  beforeadj: Beforeadj
+  case: Case
   colloquial: Colloquial
-  rarity: Rarity
+  conjunctionType: ConjunctionType
+  degree: Degree
+  foreign: Foreign
   formality: Formality
+  gender: Gender
+  grammaticalAnimacy: GrammaticalAnimacy
+  n2adjness: N2adjness
+  nameType: NameType
+  nounType: NounType
+  number: MorphNumber
+  numberTantum: NumberTantum
+  numeralForm: NumeralForm
+  oddness: Oddness
+  ordinalNumeral: OrdinalNumeral
+  paradigmOmonym: ParadigmOmonym
+  person: Person
+  polarity: Polarity  // the only ambig flag (neg)
+  possessiveness: Possessiveness
+  prepositionRequirement: PrepositionRequirement
+  pronominalType: PronominalType
+  pronoun: Pronoun
+  rarity: Rarity
+  reflexivity: Reflexivity
+  requiredAnimacy: RequiredAnimacy
+  requiredCase: RequiredCase
+  tense: Tense
   typo: Typo
+  variant: Variant
+  verbAuxilarity: VerbAuxilarity
+  verbType: VerbType
+  voice: Voice
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -915,6 +937,7 @@ export class MorphInterp {
   isSubordinative() { return this.features.conjunctionType === ConjunctionType.subordinative }
   isFirstname() { return this.features.nameType === NameType.first }
   isLastname() { return this.features.nameType === NameType.last }
+  isUncontracted() { return this.features.variant === Variant.uncontracted }
 
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }
@@ -953,6 +976,14 @@ export class MorphInterp {
     return this
   }
 
+  killNongrammaticalFeatures() {
+    for (let feat of NONGRAMMATIACAL_FEATURE_NAMES) {
+      if (feat in this.features) {
+        this.features[feat] = undefined
+      }
+    }
+    // NONGRAMMATIACAL_FEATURE_NAMES.forEach(x => this.features[x] = undefined)
+  }
 
   canBeKharkivSty() {
     return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber())

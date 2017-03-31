@@ -8,6 +8,8 @@ import { MorphInterp } from '../morph_interp'
 export function* mivesum2Udpipe(lines: Iterable<string>) {
   for (let { form, tag, lemma } of iterateDictCorpVizLines(lines)) {
     let interp = MorphInterp.fromVesumStr(tag, lemma)
+    // interp.killNongrammaticalFeatures()
+
     try {
       let udTag = toUd(interp)
 
