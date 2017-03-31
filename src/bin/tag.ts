@@ -56,12 +56,13 @@ if (require.main === module) {
       'reinterpret',
       'apply',
       'expandAdjAsNoun',
+      'text',
+      // 't',
     ],
     string: [
-      't',
-      'text',
     ],
     alias: {
+      text: ['t'],
       forAnnotation: ['for-annotation'],
       numerate: ['n'],
       format: ['f'],
@@ -94,11 +95,16 @@ function normalizeArgs(args: Args) {
 
 //------------------------------------------------------------------------------
 function main(args: Args) {
+  let inputStr: string
+  if (args.text) {
+    inputStr = args._.join(' ')
+    args._ = []
+  }
+
   ioArgsPlain(async (input, outputFromIoargs) => {
     const analyzer = createAnalyzer(args)
       .setExpandAdjectivesAsNouns(args.expandAdjAsNoun)
 
-    let inputStr = args.t || args.text
     let output
     if (inputStr) {
       output = args._[0] && createReadStream(args._[0]) || process.stdout
