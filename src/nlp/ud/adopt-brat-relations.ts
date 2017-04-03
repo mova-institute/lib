@@ -41,6 +41,7 @@ function main() {
 
   for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
     let xmlFile = `${bratName}.xml`
+    console.log(xmlFile)
     if (!fs.existsSync(xmlFile)) {
       xmlFile = bratPrefix2xmlFilename[bratName]
       if (!xmlFile) {
@@ -67,7 +68,7 @@ function main() {
 
           let dependencies = span.arcs
             .filter(x => isString(x.head.annotations.N))
-            .map(({relation, head}) => `${head.annotations.N}-${relation.replace('_', ':')}`)
+            .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
             .join('|') || undefined
           el.setAttribute('dep', dependencies)
           el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
