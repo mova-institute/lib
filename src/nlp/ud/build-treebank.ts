@@ -46,10 +46,10 @@ class Dataset {
 
 //------------------------------------------------------------------------------
 const REL_RENAMINGS = {
-  'mark:obj': 'obj',
-  'mark:iobj': 'iobj',
-  'mark:obl': 'obl',
-  'mark:nsubj': 'nsubj',
+  'obj:mark': 'obj',
+  'iobj:mark': 'iobj',
+  'obl:mark': 'obl',
+  'nsubj:mark': 'nsubj',
   'conj:parataxis': 'conj',
   'conj:repeat': 'conj',
   'obl:agent': 'obl',
@@ -242,6 +242,21 @@ function standartizeMorpho(sentence: Array<Token>) {
     if (token.interp.isForeign()) {
       token.interps = [MorphInterp.fromVesumStr('x:foreign').setLemma(token.interp.lemma)]
     }
+
+    if (token.interp.isTypo()) {
+      let correction = token.getAttribute('correct')
+      if (correction) {
+        token.form = correction
+        token.interp.setIsTypo(false)
+      } else {
+        console.error(`No typo correction for ${token}`)
+      }
+    }
+
+    if (token.interp.lemma === 'бути' && token.interp.isVerb()) {
+      token.interp.features.person = undefined
+      token.interp.features.number = undefined
+    }
   }
 }
 
@@ -274,15 +289,15 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
       token.interp.features.degree = undefined
     }
 
-    // move dislocated to its head's head, see docs and https://github.com/UniversalDependencies/docs/issues/345
-    // internally we annoate it deliberately against UD to preserve more info
-    if (token.rel === 'dislocated') {
-      token.head = sentence[token.head].head
-      if (token.head === undefined) {
-        console.error(sentence.map(x => x.form).join(' '))
-        throw new Error(`"dislocated" from root`)
-      }
-    }
+    // // move dislocated to its head's head, see docs and https://github.com/UniversalDependencies/docs/issues/345
+    // // internally we annoate it deliberately against UD to preserve more info
+    // if (token.rel === 'dislocated') {
+    //   token.head = sentence[token.head].head
+    //   if (token.head === undefined) {
+    //     console.error(sentence.map(x => x.form).join(' '))
+    //     throw new Error(`"dislocated" from root`)
+    //   }
+    // }
   }
 
   // set parataxis punct to the root

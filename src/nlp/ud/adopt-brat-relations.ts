@@ -41,7 +41,6 @@ function main() {
 
   for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
     let xmlFile = `${bratName}.xml`
-    console.log(xmlFile)
     if (!fs.existsSync(xmlFile)) {
       xmlFile = bratPrefix2xmlFilename[bratName]
       if (!xmlFile) {

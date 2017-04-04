@@ -38,10 +38,10 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'goeswith',
   'iobj',
   // 'list',
-  'mark:iobj',
-  'mark:nsubj',
-  'mark:obj',
-  'mark:obl',
+  'iobj:mark',
+  'nsubj:mark',
+  'obj:mark',
+  'obl:mark',
   'mark',
   'nmod',
   'nsubj:pass',
@@ -64,7 +64,7 @@ export const CORE_COMPLEMENTS = [
   'obj',
   // 'xcomp',
   'ccomp',
-  'mark:obj',
+  'obj:mark',
 ]
 
 const COMPLEMENTS = [
@@ -75,7 +75,7 @@ const COMPLEMENTS = [
 const OBLIQUES = [
   'obl',
   'obl:agent',
-  'mark:obl',
+  'obl:mark',
 ]
 
 const SUBJECTS = [
@@ -83,7 +83,7 @@ const SUBJECTS = [
   'nsubj:pass',
   'csubj',
   'csubj:pass',
-  'mark:subj',
+  'subj:mark',
 ]
 
 const NOMINAL_HEAD_MODIFIERS = [
@@ -149,10 +149,10 @@ const POS_ALLOWED_RELS = {
   //   'det',
   //   'det:numgov',
   //   'det:nummod',
-  //   'mark:iobj',
-  //   'mark:nsubj',
-  //   'mark:obj',
-  //   'mark:obl',
+  //   'iobj:mark',
+  //   'nsubj:mark',
+  //   'obj:mark',
+  //   'obl:mark',
   // ],
   // 'PUNCT': [
   //   'punct',
@@ -173,10 +173,10 @@ const POS_ALLOWED_RELS = {
 }
 
 const NON_SCONJ_RELS = [
-  'mark:iobj',
-  'mark:nsubj',
-  'mark:obj',
-  'mark:obl',
+  'iobj:mark',
+  'nsubj:mark',
+  'obj:mark',
+  'obl:mark',
 ]
 
 const DISCOURSE_DESTANATIONS = [

@@ -97,7 +97,7 @@ export const FEATURE_TABLE = [
   { featStr: 'nounType', feat: NounType, mi: NounType.common, mte: 'c' },
   { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
 
-  { featStr: 'verbAuxilarity', feat: VerbAuxilarity, mi: VerbAuxilarity.yes, vesumStr: 'aux', mte: 'a' },
+  { featStr: 'verbAuxilarity', feat: VerbAuxilarity, vesum: VerbAuxilarity.yes, vesumStr: 'aux', mte: 'a' },
 
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
   { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
@@ -350,6 +350,7 @@ export const FEATURE_ORDER = {
   ],
   [Pos.verb]: [
     Pos,
+    VerbAuxilarity,
     Reflexivity,
     Voice,
     Aspect,
@@ -514,17 +515,6 @@ export class MorphInterp {
     }
 
     if (lemma && ret.isConverb()) {
-      if (/ши(сь)?/.test(lemma)) {
-        ret.features.tense = Tense.past
-      }
-      else if (/чи(сь)?/.test(lemma)) {
-        ret.features.tense = Tense.present
-      }
-      else {
-        // mte-tagged texts made me comment this out:
-        // throw new Error(`Unexpected adverb "${lemma}" flection`)
-      }
-
       // legacy where advp was a separate pos
       ret.features.pos = Pos.verb
     }
@@ -914,7 +904,8 @@ export class MorphInterp {
   isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
   isEmphatic() { return this.features.pronominalType === PronominalType.emphatic }
   isFeminine() { return this.features.gender === Gender.feminine }
-  isForeign() { return this.otherFlags.has('foreign') }
+  isForeign() { return this.features.foreign === Foreign.yes }
+  isTypo() { return this.features.typo === Typo.yes }
   isImperfect() { return this.features.aspect === Aspect.imperfect }
   isImpersonal() { return this.features.verbType === VerbType.impersonal }
   isInanimate() { return this.features.animacy === Animacy.inanimate }

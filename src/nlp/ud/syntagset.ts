@@ -45,10 +45,10 @@ export type Ud20MiSpecificRelation =
   'det:nummod' |
   'flat:foreign' |
   'flat:name' |
-  'mark:iobj' |
-  'mark:nsubj' |
-  'mark:obj' |
-  'mark:obl' |
+  'iobj:mark' |
+  'nsubj:mark' |
+  'obj:mark' |
+  'obl:mark' |
   'nsubj:pass' |
   'nummod:gov' |
   'obl:agent'
