@@ -34,8 +34,8 @@ ATTRIBUTE pos {
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE upos {
-  LABEL "універсальна ЧМ"
+ATTRIBUTE lspos {
+  LABEL "українізована ЧМ"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"

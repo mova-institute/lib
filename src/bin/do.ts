@@ -31,6 +31,7 @@ ioArgs(filename1, filename2, async (input, output) => {
     if (args.byline) {
       inputStr = inputStr.split('\n')
     }
+
     if (args.xml) {
       let root = parseXml(inputStr)
       let res = func(root)
@@ -46,9 +47,9 @@ ioArgs(filename1, filename2, async (input, output) => {
       if (typeof res === 'object' && Symbol.iterator in res) {
         for (let line of res) {
           output.write(line)
-          if (!args.byline) {
-            output.write('\n')
-          }
+          // if (!args.byline) {
+          output.write('\n')
+          // }
         }
       }
       else if (res) {

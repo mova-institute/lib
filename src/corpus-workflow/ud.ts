@@ -1,17 +1,15 @@
-import { ConlluToken } from '../nlp/ud/conllu'
 import { UdPos, UdFeats } from '../nlp/ud/tagset'
-import { Dict } from '../types'
 import { trimAfterLast } from '../string_utils'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats, rel: string) {
-  let pos = domesticateUdPos(upos)
+  let ukrificatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
 
   let ret = `${form}\t${lemma}\t`
   ret += [
-    pos,
     upos,
+    ukrificatedPos,
     feats.Abbr,
     feats.Animacy,
     feats['Animacy[gram]'],

@@ -130,6 +130,7 @@ const posMap = new Map<Pos, UdPos>([
   [Pos.punct, 'PUNCT'],
   [Pos.preposition, 'ADP'],
   [Pos.cardinalNumeral, 'NUM'],
+  // [Pos.error, 'X'],  // todo: throw
   // [Pos, ''],
 ])
 
