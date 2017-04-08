@@ -24,6 +24,7 @@ import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
 interface Args {
   _: string[]
   noStandartizing: boolean
+  includeIncomplete: boolean
   oneSet: string
 
   datasetSchema: string
@@ -60,6 +61,7 @@ function main() {
   let args: Args = minimist(process.argv.slice(2), {
     boolean: [
       'noStandartizing',
+      'includeIncomplete',
       'reportHoles',
       'onlyValid',
     ],
@@ -123,20 +125,23 @@ function main() {
 
         if (args.validOnly && hasProblems) {
           datasetRegistry[set].counts.wordsKept += numWords
-        } else if (!isComplete) {
-          datasetRegistry[set].counts.wordsKept += numWords
         } else {
-          ++datasetRegistry[set].counts.sentsExported
-          datasetRegistry[set].counts.wordsExported += numWords
-          if (!args.noStandartizing) {
-            standartizeSentence2ud20(tokens)
+          if (!isComplete) {
+            datasetRegistry[set].counts.wordsKept += numWords
           }
+          if (isComplete || args.includeIncomplete) {
+            ++datasetRegistry[set].counts.sentsExported
+            datasetRegistry[set].counts.wordsExported += numWords
+            if (!args.noStandartizing) {
+              standartizeSentence2ud20(tokens)
+            }
 
-          let filename = set2filename(outDir, args.datasetSchema, set)
-          let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-          let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { xpos: args.xpos })
-          fs.writeSync(file, conlluedSentence + '\n\n')
-          datasetRegistry[set].newdoc = false
+            let filename = set2filename(outDir, args.datasetSchema, set)
+            let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
+            let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { xpos: args.xpos })
+            fs.writeSync(file, conlluedSentence + '\n\n')
+            datasetRegistry[set].newdoc = false
+          }
         }
       }
 
