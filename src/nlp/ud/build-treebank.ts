@@ -9,7 +9,7 @@ import * as mkdirp from 'mkdirp'
 import * as columnify from 'columnify'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
-import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
+import { tei2tokenStream, tokenStream2sentences, normalizeMorphoForUd } from '../../nlp/utils'
 import { last } from '../../lang'
 import { Dict } from '../../types'
 import { Token } from '../../nlp/token'
@@ -241,6 +241,8 @@ function initSyntax(sentence: Array<Token>) {
 // const FOREIGN = MorphInterp.fromVesumStr('x:foreign')
 function standartizeMorpho(sentence: Array<Token>) {
   for (let token of sentence) {
+    normalizeMorphoForUd(token.interp, token.form)
+
     // token.interp.killNongrammaticalFeatures()
     token.interp.setIsAuxillary(false)
 
@@ -287,11 +289,6 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     // simple-rename internal rels
     if (token.hasDeps()) {
       token.rel = REL_RENAMINGS[token.rel] || token.rel
-    }
-
-    // remove degree from &noun
-    if (token.interp.isAdjectiveAsNoun()) {
-      token.interp.features.degree = undefined
     }
 
     // // move dislocated to its head's head, see docs and https://github.com/UniversalDependencies/docs/issues/345

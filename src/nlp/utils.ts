@@ -1217,6 +1217,17 @@ export function setTenseIfConverb(interp: MorphInterp, form: string) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
+  setTenseIfConverb(interp, form)
+
+  // remove degree from &noun
+  if (interp.isAdjectiveAsNoun()) {
+    interp.features.degree = undefined
+  }
+}
+
+
 
 //------------------------------------------------------------------------------
 const ATTR_ORDER = arr2indexObj(['n', 'dep', 'lemma', 'anna', 'promoted', 'mark'], 1)
