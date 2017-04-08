@@ -654,7 +654,7 @@ export class MorphInterp {
       let value = this.features[name]
       if (value === undefined
         // || this.features.number === Numberr.plural && name === 'gender' && !this.isAdjectiveAsNoun()
-        || this.isConverb() && this.isPerfect() && name === 'tense') {
+        /*|| this.isConverb() && this.isPerfect() && name === 'tense'*/) {
         continue
       }
       let flag = mapVesumFeatureValue(name, value)
