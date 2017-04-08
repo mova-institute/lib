@@ -2,8 +2,9 @@ import {
   tryMapVesumFlag, tryMapVesumFlagToFeature, MorphInterp, FEATURE_ORDER,
   compareTags,
 } from './morph_interp'
-import { groupTableBy, arr2indexMap, combinations, stableSort, uniq } from '../algo'
+import { groupTableBy, arr2indexMap, stableSort } from '../algo'
 import { IStringMorphInterp } from './interfaces'
+import { setTenseIfConverb } from './utils'
 
 import { mu } from '../mu'
 const wu: Wu.WuStatic = require('wu')
@@ -165,15 +166,25 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function domesticateDictCorpViz(fileStr: string) {
+export function* domesticateDictCorpViz(fileStr: string) {
   let lines = wu(fileStr.split('\n'))
     .filter(x => !/^\s*$/.test(x))
     .map(x => x.replace(/'/g, '’'))
 
-  return wu(iterateDictCorpVizLines(expandDictCorpViz(lines))).map(x => {
-    let tag = MorphInterp.fromVesumStr(x.tag, x.lemma, x.lemmaTag).toVesumStr()
-    return (x.isLemma ? '' : NONLEMMA_PADDING) + x.form + ' ' + tag
-  })
+  let expandedStream = expandDictCorpViz(lines)
+  let lineIterator = iterateDictCorpVizLines(expandedStream)
+  for (let { form, tag, lemma, lemmaTag, isLemma } of lineIterator) {
+    let interp = MorphInterp.fromVesumStr(tag, lemma, lemmaTag)
+    setTenseIfConverb(interp, form)
+
+    let lineStart = (isLemma ? '' : NONLEMMA_PADDING) + form + ' '
+    yield lineStart + interp.toVesumStr()
+
+    if (interp.lemma === 'бути' && interp.isVerb()) {
+      interp.setIsAuxillary()
+      yield lineStart + interp.toVesumStr()
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
