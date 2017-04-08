@@ -12,6 +12,7 @@ import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
 import { MorphInterp, compareTags } from './morph_interp'
+import { Tense } from './morph_features'
 import {
   WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
   PUNC_GLUED_BEFORE, PUNC_GLUED_AFTER, NO_GLUE_PUNC, WCHAR_UK,
@@ -1201,6 +1202,21 @@ export function serializeMiDocument(root: AbstractElement) {
   root.evaluateElements('//*').forEach(x => sortAttributes(x))
   return root.serialize() + '\n'
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function setTenseIfConverb(interp: MorphInterp, form: string) {
+  if (interp.isConverb()) {
+    if (/ши(с[ья])?$/.test(form)) {
+      interp.features.tense = Tense.past
+    }
+    else if (/чи(с[ья])?$/.test(form)) {
+      interp.features.tense = Tense.present
+    } else {
+      throw new Error(`Bad ending for converb "${form}"`)
+    }
+  }
+}
+
 
 //------------------------------------------------------------------------------
 const ATTR_ORDER = arr2indexObj(['n', 'dep', 'lemma', 'anna', 'promoted', 'mark'], 1)

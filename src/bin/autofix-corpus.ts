@@ -5,7 +5,7 @@ import * as fs from 'fs'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
-import { numerateTokensGently, serializeMiDocument } from '../nlp/utils'
+import { numerateTokensGently, serializeMiDocument, setTenseIfConverb } from '../nlp/utils'
 import { removeNamespacing } from '../xml/utils'
 import { mu } from '../mu'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
@@ -118,6 +118,16 @@ function main() {
             console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
           }
         }
+
+        if (interp.isVerb() && interp.lemma === 'бути') {
+          let dep = interpEl.parent().attribute('dep')
+          if (dep && /^\d+\-(aux|cop)$/.test(dep)) {
+            interp.setIsAuxillary()
+          }
+        }
+
+        // advps without tense
+        setTenseIfConverb(interp, form)
 
         saveInterp(interpEl, interp)
       }
