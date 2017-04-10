@@ -318,6 +318,9 @@ export class UdFeats {
 
 //------------------------------------------------------------------------------
 function mapFeatureValue2Ud(featureName, value) {
+  if (value === undefined) {
+    return
+  }
   let feature = featureName2objMap.get(featureName)
   if (!feature) {
     throw new Error(`Unknown feature: ${featureName}`)
