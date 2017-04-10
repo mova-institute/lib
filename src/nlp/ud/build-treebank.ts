@@ -12,6 +12,7 @@ import { parseXmlFileSync } from '../../xml/utils.node'
 import { tei2tokenStream, tokenStream2sentences, normalizeMorphoForUd } from '../../nlp/utils'
 import { last } from '../../lang'
 import { Dict } from '../../types'
+// import { toUdString, toUd } from './tagset'
 import { Token } from '../../nlp/token'
 import { MorphInterp } from '../../nlp/morph_interp'
 import { sentence2conllu } from './utils'
@@ -260,7 +261,11 @@ function standartizeMorpho(sentence: Array<Token>) {
       }
     }
 
-    if (token.interp.lemma === 'бути' && token.interp.isVerb()) {
+    if (token.interp.isAdjectiveAsNoun() && token.interp.isOrdinalNumeral()) {
+      token.interp.setIsOrdinalNumeral(false)
+    }
+
+    if (token.interp.lemma === 'бути' && token.form === 'є' && token.interp.isVerb()) {
       token.interp.features.person = undefined
       token.interp.features.number = undefined
     }
