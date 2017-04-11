@@ -413,3 +413,7 @@ export function* gatherXps(lines: Iterable<string>) {
 function isAdditionalTag(flags: string) {
   return /:&noun|:(in)?animish/.test(flags)
 }
+--------------------------------------------
+function isAdditionalTag(flags: string) {
+  return /:&noun|:(in)?animish/.test(flags)
+}

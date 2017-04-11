@@ -1225,6 +1225,7 @@ export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
   if (interp.isAdjectiveAsNoun()) {
     interp.features.degree = undefined
   }
+  interp.features.prepositionRequirement = undefined
 }
 
 

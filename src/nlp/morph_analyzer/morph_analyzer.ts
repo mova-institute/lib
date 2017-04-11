@@ -232,6 +232,10 @@ export class MorphAnalyzer {
     return this
   }
 
+  getNumeralMap() {
+    return this.numeralMap.get()
+  }
+
   hasAnyCase(token: string) {
     return this.dictionary.hasAnyCase(token)
   }
@@ -678,7 +682,7 @@ export class MorphAnalyzer {
       for (let lexeme of lexemes) {
         for (let { form, flags } of lexeme) {
           let interp = MorphInterp.fromVesumStr(flags)
-          if (!interp.isPronoun() && interp.isOrdinalNumeral()) {
+          if (!interp.isPronoun() && (interp.isOrdinalNumeral() || interp.isCardinalNumeral())) {
             interp.features.degree = undefined
             ret.push({ digit, form, interp, lemma })
           }

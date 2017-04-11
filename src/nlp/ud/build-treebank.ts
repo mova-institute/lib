@@ -265,7 +265,7 @@ function standartizeMorpho(sentence: Array<Token>) {
       token.interp.setIsOrdinalNumeral(false)
     }
 
-    if (token.interp.lemma === 'бути' && token.form === 'є' && token.interp.isVerb()) {
+    if (token.interp.lemma === 'бути' && ['є', 'Є'].includes(token.form) && token.interp.isVerb()) {
       token.interp.features.person = undefined
       token.interp.features.number = undefined
     }
