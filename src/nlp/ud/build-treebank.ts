@@ -103,12 +103,13 @@ function main() {
       if (hasSyntax) {
         datasetRegistry[set] = datasetRegistry[set] || new Dataset()
 
-        let numWords = mu(tokens).count(x => !x.interp.isPunctuation())
+        // let numTokens = mu(tokens).count(x => !x.interp.isPunctuation())
+        let numTokens = tokens.length
         let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
         let isComplete = roots.length === 1
 
         if (!roots.length) {
-          datasetRegistry[set].counts.wordsKept += numWords
+          datasetRegistry[set].counts.wordsKept += numTokens
           console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'цикл' }], problemCounter++))
           continue
         } else if (!isComplete && args.reportHoles) {
@@ -125,14 +126,14 @@ function main() {
         }
 
         if (args.validOnly && hasProblems) {
-          datasetRegistry[set].counts.wordsKept += numWords
+          datasetRegistry[set].counts.wordsKept += numTokens
         } else {
           if (!isComplete) {
-            datasetRegistry[set].counts.wordsKept += numWords
+            datasetRegistry[set].counts.wordsKept += numTokens
           }
           if (isComplete || args.includeIncomplete) {
             ++datasetRegistry[set].counts.sentsExported
-            datasetRegistry[set].counts.wordsExported += numWords
+            datasetRegistry[set].counts.wordsExported += numTokens
             if (!args.noStandartizing) {
               standartizeSentence2ud20(tokens)
             }
@@ -161,14 +162,14 @@ function main() {
 function printStats(datasetRegistry: Dict<Dataset>) {
   let stats = Object.entries(datasetRegistry).map(([set, { counts: { wordsKept, wordsExported, sentsExported } }]) => ({
     set,
-    'w kept': wordsKept,
-    'w exported': wordsExported,
+    't kept': wordsKept,
+    't exported': wordsExported,
     's exported': sentsExported,
   }))
   stats.push({
     set: 'TOTAL',
-    'w kept': stats.map(x => x['w kept']).reduce((a, b) => a + b, 0),
-    'w exported': stats.map(x => x['w exported']).reduce((a, b) => a + b, 0),
+    't kept': stats.map(x => x['t kept']).reduce((a, b) => a + b, 0),
+    't exported': stats.map(x => x['t exported']).reduce((a, b) => a + b, 0),
     's exported': stats.map(x => x['s exported']).reduce((a, b) => a + b, 0),
   })
 

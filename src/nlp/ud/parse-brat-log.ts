@@ -38,7 +38,7 @@ function main() {
             let oldArrowId = `${document} ${head} ${oldDependant}`
             stats[oldArrowId] = undefined
           }
-          if (relation !== 'punct') {
+          /*if (relation !== 'punct')*/ {
             stats[arrowId] = { user, timestamp }
           }
         }
