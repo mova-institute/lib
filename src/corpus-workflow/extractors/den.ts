@@ -1,23 +1,30 @@
-import { DocCreator } from 'xmlapi'
+import { CorpusDoc } from '../doc_meta'
+import { parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 import { GENITIVE_UK_MON_MAP } from './utils'
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
-export function parseDenArticle(html: string, htmlDocCreator: DocCreator) {
-  let valid = true
-  let root = htmlDocCreator(html).root()
+export function extract(html: string) {
+  try {
+    var root = parseHtml(html)
+  } catch (e) {
+    return
+  }
   let url = root.evaluateString('string(/html/head/link[@rel="canonical"]/@href)').trim()
+
+  let date: string
   let datetimeStr = root.evaluateString('string(//div[@class="node_date"]/text())').trim()
   //  ↑ '20 жовтня, 1998 - 00:00'
-  let [, d, m, y] = datetimeStr.match(/^(\d+)\s+([^,]+),\s+(\d{4})/)
-  if (d.length === 1) {
-    d = '0' + d
+  if (datetimeStr) {
+    let [, d, m, y] = datetimeStr.match(/^(\d+)\s+([^,]+),\s+(\d{4})/)
+    if (d.length === 1) {
+      d = '0' + d
+    }
+    m = GENITIVE_UK_MON_MAP.get(m)
+    date = `${y}–${m}–${d}`
   }
-  m = GENITIVE_UK_MON_MAP.get(m)
-  let date = `${y}–${m}–${d}`
 
   let title = root.evaluateString('string(//meta[@property="og:title"]/@content)').trim()
   title = normalize(title)
@@ -34,9 +41,5 @@ export function parseDenArticle(html: string, htmlDocCreator: DocCreator) {
     .filter(x => !!x.text().trim())
     .map(x => normalize(x.text()))]
 
-  if (!paragraphs.length) {
-    valid = false
-  }
-
-  return { valid, url, date, description, title, author, paragraphs }
+  return { url, date, description, title, author, paragraphs } as CorpusDoc
 }

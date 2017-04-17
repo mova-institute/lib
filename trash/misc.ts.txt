@@ -25,3 +25,128 @@ function adoptBratRelationsNoN() {
   }
   fs.writeFileSync(xmlFile, root.serialize() + '\n')
 }
+
+
+//------------------------------------------------------------------------------
+function write4vec(outDir: string, relPath: string, parsedDocs: CorpusDoc[], analyzer: MorphAnalyzer) {
+  let forvecPath = join(outDir, '4vec', `${relPath}.4vec`)
+  let tempout = openSyncMkdirp(forvecPath, 'w')
+  for (let parsedDoc of parsedDocs) {
+    // add title to the body
+    // if (parsedDoc.paragraphs.length && parsedDoc.paragraphs[0] !== parsedDoc.title) {
+    //   parsedDoc.paragraphs = [parsedDoc.title, ...parsedDoc.paragraphs]
+    // }
+
+    for (let paragraph of parsedDoc.paragraphs) {
+      let towrite = mu(nlpUtils.tokenizeUk(paragraph, analyzer))
+        .map(({ token }) => token.trim())
+        .filter(token => token && !nlpStatic.ANY_PUNC_OR_DASH_RE.test(token))
+        .join(' ')
+      fs.writeSync(tempout, towrite + '\n')
+    }
+  }
+  fs.closeSync(tempout)
+}
+
+//------------------------------------------------------------------------------
+function umoloda(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, `build/ umoloda.vrt.txt`))
+  let articlePathsGlob = join(workspacePath, 'data/umoloda/fetched_articles/*.html')
+  let articlePaths = globSync(articlePathsGlob).sort(umolodaFilenameComparator)
+  for (let path of articlePaths) {
+    let [a, b, c] = trimExtension(basename(path)).split('_')
+    console.log(`processing umoloda article ${a}_${b}_${c}`)
+
+    let html = fs.readFileSync(path, 'utf8')
+    let { title, author, paragraphs, date } = parseUmolodaArticle(html, htmlDocCreator)
+
+    if (!paragraphs.length) {  // some empty articles happen
+      continue
+    }
+
+    date = date.split('.').reverse().join('–')
+    let meta = {
+      // publisher: 'Україна молода',
+      // proofread: '✓',
+      url: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
+      author,
+      title,
+      reference_title: title ? `УМ:${title}` : `УМ`,
+      date,
+      type: 'публіцистика',
+    }
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
+  }
+}
+
+//------------------------------------------------------------------------------
+function den(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, `build/den.vrt.txt`))
+  let articlePathsGLob = join(workspacePath, 'data/den/fetched_articles/*/**/*.html')
+  let articlePaths = globSync(articlePathsGLob)
+
+  for (let path of articlePaths) {
+    console.log(`processing den article ${trimExtension(basename(path))}`)
+
+    try {
+      let html = fs.readFileSync(path, 'utf8')
+      var { author, date, paragraphs, title, url, valid } = parseDenArticle(html, htmlDocCreator)
+    } catch (e) {
+      console.error(`Error: ${e.message}`)
+      continue
+    }
+    if (!valid) {
+      continue
+    }
+
+    let meta = {
+      // publisher: 'День',
+      // proofread: '✓',
+      url,
+      author,
+      title,
+      reference_title: `Д.: ${title}`,
+      date,
+      type: 'публіцистика',
+    }
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
+  }
+}
+
+
+
+
+//------------------------------------------------------------------------------
+function tyzhden(workspacePath: string, analyzer: MorphAnalyzer) {
+  let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'tyzhden.vrt.txt'))
+  let articlePathsGLob = join(workspacePath, 'data/tyzhden/html/**/*.html')
+  let articlePaths = globSync(articlePathsGLob, { nosort: true })
+    .sort((a, b) => Number(trimExtension(basename(a))) - Number(trimExtension(basename(b))))
+
+  for (let path of articlePaths) {
+    try {
+      let html = fs.readFileSync(path, 'utf8')
+      var { author, date, paragraphs, title, url, isValid } = parseTyzhdenArticle(html, htmlDocCreator)
+    } catch (e) {
+      console.error(`Error: ${e.stack}`)
+      continue
+    }
+    if (!isValid) {
+      continue
+    }
+    console.log(`processing tyzhden article ${url}`)
+
+    let meta = {
+      // publisher: 'Тиждень',
+      // proofread: '✓',
+      url,
+      author,
+      title,
+      reference_title: `Т.: ${title}`,
+      date,
+      type: 'публіцистика',
+    }
+
+    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
+  }
+}

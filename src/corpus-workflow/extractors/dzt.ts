@@ -1,11 +1,12 @@
-import { DocCreator } from 'xmlapi'
+import { CorpusDoc } from '../doc_meta'
+import { parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseDztArticle(html: string, htmlDocCreator: DocCreator) {
-  let root = htmlDocCreator(html).root()
+export function extract(html: string) {
+  let root = parseHtml(html)
 
   let url = root.evaluateString('string(/html/@itemid)').trim()
 
@@ -22,5 +23,5 @@ export function parseDztArticle(html: string, htmlDocCreator: DocCreator) {
     .filter(x => !!x.text().trim())
     .map(x => normalize(x.text()))
 
-  return { url, datetime, title, author, paragraphs: [...paragraphs] }
+  return { url, datetime, title, author, paragraphs: [...paragraphs] } as CorpusDoc
 }

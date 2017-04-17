@@ -4,24 +4,15 @@ import { CorpusDoc } from '../doc_meta'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(wikiExtractorFileStr: string) {
-  // workaround https://github.com/attardi/wikiextractor/issues/53
-  wikiExtractorFileStr = wikiExtractorFileStr.replace(/\s*(\(\)|formula_\d+)/g, '')
-  let rawDocs = wikiExtractorFileStr.split('</doc>\n<doc ')
-  for (let rawDoc of rawDocs) {
-    let match = rawDoc.match(/^(?:<doc )?id="[^"]+" url="([^"]+)" title="([^"]+)">([\s\S]*)(?:<\/doc>)?/)
-    // console.log(rawDoc)
-    if (!match) {
-      console.error(rawDoc)
-      continue
-    }
-    let [, url, title, content] = match
-    if (content) {
-      let paragraphs = content.trim().split(/\n{2,}/).map(x => x.trim())
-      yield { url, title, paragraphs }
+  for (let line of wikiExtractorFileStr.trim().split('\n')) {
+    let { url, text, title } = JSON.parse(line)
+    // workaround https://github.com/attardi/wikiextractor/issues/53
+    text = text.replace(/\s*(\(\)|formula_\d+)/g, '').trim()
+    if (text) {
+      let paragraphs = text.split(/\n{2,}/).map(x => x.replace(/\n+/g, ' '))
+      yield { url, title, paragraphs } as CorpusDoc
     } else {
       console.error(`no content for "${title}"`)
-      // console.error(match)
     }
   }
 }
-

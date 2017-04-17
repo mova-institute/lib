@@ -17,15 +17,10 @@ import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
 import { writeFileSyncMkdirp, openSyncMkdirp } from '../utils.node'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { parseUmolodaArticle } from './extractors/umoloda'
 // import { conlluToken2vertical } from './extractors/conllu'
-import { parseDztArticle } from './extractors/dzt'
-import { parseDenArticle } from './extractors/den'
-import { parseZbrucArticle } from './extractors/zbruc'
-import { parseTyzhdenArticle } from './extractors/tyzhden'
 import { buildMiteiVertical } from './mitei_build_utils'
 import { streamChtyvo } from './extractors/chtyvo'
-import { trimExtension, zerofill } from '../string_utils'
+import { trimExtension, zerofill, toPercent } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
 import * as nlpStatic from '../nlp/static'
@@ -40,28 +35,25 @@ import { UdpipeApiClient } from '../nlp/ud/udpipe_api_client'
 
 
 interface Args {
+  stage: 'extract' | 'udpipe' | '4vec' | 'vertical'
   workspace: string
   part: string
   mitei?: string
 
   out?: string
-  generic?: string
   inputGlob: string
   inputRoot: string
   udpipeUrl: string
+
+  checkUkr?: boolean
+  checkDate?: boolean
 }
 
 
 
 const partName2function = {
-  umoloda,
-  dzt,
   kontrakty,
-  den,
-  zbruc,
-  tyzhden,
   chtyvo,
-  mitei,
   parallel: buildUkParallelSide,
   en: buildEnglish,
   pl: buildPolish,
@@ -76,6 +68,8 @@ if (require.main === module) {
       workspace: '.',
     },
     boolean: [
+      'checkDate',
+      'checkUkr'
     ]
   }) as any
 
@@ -83,91 +77,182 @@ if (require.main === module) {
 }
 
 interface SpecificModule {
-  streamDocs(inputStr: string): Iterable<CorpusDoc>
+  streamDocs?(inputStr: string): Iterable<CorpusDoc>
+  extract?(inputStr: string): CorpusDoc
 }
 
 //------------------------------------------------------------------------------
-async function main(args: Args) {
-  if (args.generic) {
-    let udpipe =
-      args.udpipeUrl ? new UdpipeApiClient(args.udpipeUrl) : undefined
+function getOutDir(args: Args) {
+  return join(args.workspace, 'build', args.out || args.part)
+}
+
+//------------------------------------------------------------------------------
+function globInforming(globStr: string) {
+  console.log(`globbing input files: ${globStr}`)
+  let ret = globSync(globStr, { nodir: true, nosort: true })
+  console.log(`globbed ${ret.length} files`)
+  return ret
+}
+
+//------------------------------------------------------------------------------
+function main(args: Args) {
+  let outDir = getOutDir(args)
+
+  if (args.stage === 'extract') {
     let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
 
-    let outDir = join(args.workspace, 'build', args.out || args.generic)
-    let inputGlob = join(args.inputRoot, args.inputGlob)
-    console.log(`globbing input files: ${inputGlob}`)
-    let inputFiles = globSync(inputGlob, { nodir: true, nosort: true })
-    console.log(`globbed ${inputFiles.length} files`)
+    let inputGlob = args.inputRoot ? join(args.inputRoot, args.inputGlob) : args.inputGlob
+    let inputFiles = globInforming(inputGlob)
 
-    mkdirpSync(outDir)
-    fs.appendFileSync(join(outDir, 'commands.txt'), process.argv.join(' ') + '\n')
+    let specificModule = require(`./extractors/${args.part}`) as SpecificModule
+    let docCounter = 0
 
-    let specificModule = require(`./parsers/${args.generic}`) as SpecificModule
-    for (let filePath of inputFiles) {
+    for (let [fileI, filePath] of inputFiles.entries()) {
+      let tolog = `done ${fileI} files (${toPercent(fileI, inputFiles.length)}%), ${docCounter} docs, parsing ${filePath}`
+
       let relPath = path.relative(args.inputRoot, filePath)
-      let jsonPath = join(outDir, 'json', `${relPath}.json`)
-      if (fs.existsSync(jsonPath)) {
-        continue
-      }
-      console.log(`parsing ${filePath}`)
-
-      let fileStr = fs.readFileSync(filePath, 'utf8')
-      let parsedDocs = [...specificModule.streamDocs(fileStr)]
-
-      parsedDocs = parsedDocs.filter(doc => {
-        if (!doc.paragraphs || !doc.paragraphs.length) {
-          console.error('missing paragraphs ✖️')
-          return false
+      if (specificModule.extract) {
+        if (getMetaParaPaths(outDir, relPath).some(x => !fs.existsSync(x))) {
+          console.log(tolog)
+          let fileStr = fs.readFileSync(filePath, 'utf8')
+          processDoc(args, specificModule.extract(fileStr), outDir, relPath, analyzer)
         }
-        if (!doc.date) {
-          // console.error(`no date ✖️`)
-          // return false
+        ++docCounter
+      } else if (specificModule.streamDocs) {
+        console.log(tolog)
+        let fileStr = fs.readFileSync(filePath, 'utf8')
+        let i = 0;
+        for (let doc of specificModule.streamDocs(fileStr)) {
+          let docId = join(relPath, zerofill(i++, 4))
+          processDoc(args, doc, outDir, docId, analyzer)
         }
-        // if (!isConsideredUkrainan(doc.paragraphs, analyzer)) {
-        //   console.error(`considered foreign ✖️  ${doc.paragraphs[0].substr(0, 20)} ${doc.url}`)
-        //   return false
-        // }
-        return true
-      })
-
-      // console.log(parsedDocs)
-      writeFileSyncMkdirp(jsonPath, JSON.stringify(parsedDocs, undefined, 2))
-      write4vec(outDir, relPath, parsedDocs, analyzer)
-
-      let i = 0
-      for (let parsedDoc of parsedDocs) {
-        let iStr = zerofill(i, parsedDocs.length)
-        let docPath = join(outDir, 'vertical', `${relPath}_doc-${iStr}.vrt`)
-        for (let paragraph of parsedDoc.paragraphs) {
-          let parsed = await udpipe.parse(paragraph)
-
-        }
+        docCounter += i
+      } else {
+        throw new Error(`No extractor for ${args.part}`)
       }
     }
+  } else if (args.stage === 'udpipe') {
+    doUdpipeStage(args)
+  } else if (args.stage === '4vec') {
+    do4vecStage(args)
+  } else if (args.stage === 'vertical') {
+
   } else {
-    mainOld(args)
+    throw new Error('Unknown stage')
   }
 }
 
 //------------------------------------------------------------------------------
-function write4vec(outDir: string, relPath: string, parsedDocs: CorpusDoc[], analyzer: MorphAnalyzer) {
-  let forvecPath = join(outDir, '4vec', `${relPath}.4vec`)
-  let tempout = openSyncMkdirp(forvecPath, 'w')
-  for (let parsedDoc of parsedDocs) {
-    // add title to the body
-    // if (parsedDoc.paragraphs.length && parsedDoc.paragraphs[0] !== parsedDoc.title) {
-    //   parsedDoc.paragraphs = [parsedDoc.title, ...parsedDoc.paragraphs]
-    // }
+function getMetaParaPaths(outDir: string, relpath: string) {
+  return [join(outDir, 'meta', `${relpath}.json`), join(outDir, 'para', `${relpath}.json`)]
+}
 
-    for (let paragraph of parsedDoc.paragraphs) {
-      let towrite = mu(nlpUtils.tokenizeUk(paragraph, analyzer))
-        .map(({ token }) => token.trim())
-        .filter(token => token && !nlpStatic.ANY_PUNC_OR_DASH_RE.test(token))
-        .join(' ')
-      fs.writeSync(tempout, towrite + '\n')
+//------------------------------------------------------------------------------
+function processDoc(args: Args, doc: CorpusDoc, outDir: string, relpath: string, analyzer?: MorphAnalyzer) {
+  let [metaPath, paraPath] = getMetaParaPaths(outDir, relpath)
+
+  if (!doc) {
+    console.error('no doc ✖️')
+    return
+  }
+  if (!doc.paragraphs || !doc.paragraphs.length) {
+    console.error('missing paragraphs ✖️')
+    return
+  }
+  if (args.checkDate && !doc.date) {
+    console.error(`no date ✖️`)
+    return
+  }
+  if (args.checkUkr && !isConsideredUkrainan(doc.paragraphs, analyzer)) {
+    console.error(`considered foreign ✖️  ${doc.paragraphs[0].substr(0, 20)} ${doc.url}`)
+    return
+  }
+
+  doc.paragraphs = doc.paragraphs.map(x => x.trim())
+  writeFileSyncMkdirp(paraPath, JSON.stringify(doc.paragraphs, undefined, 2))
+
+  let meta = { ...doc }
+  delete meta.paragraphs
+  writeFileSyncMkdirp(metaPath, JSON.stringify(meta, undefined, 2))
+}
+
+//------------------------------------------------------------------------------
+async function doUdpipeStage(args: Args) {
+  let outDir = getOutDir(args)
+  let udpipe = new UdpipeApiClient(args.udpipeUrl)
+
+  let paraFiles = globInforming(args.inputGlob)
+
+  for (let [i, filePath] of paraFiles.entries()) {
+    console.log(`parsed ${i} docs (${toPercent(i, paraFiles.length)}%), parsing ${filePath}`)
+
+    let filename = trimExtension(path.basename(filePath))
+    let conlluPath = join(outDir, 'conllu', `${filename}.conllu`)
+    if (!fs.existsSync(conlluPath)) {
+      let paragraphs = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+      let conllu = await udpipe.tag(paragraphs2UdpipeInput(paragraphs))
+      writeFileSyncMkdirp(conlluPath, conllu)
     }
   }
-  fs.closeSync(tempout)
+}
+
+//------------------------------------------------------------------------------
+function doVerticalStage(args: Args) {
+  let outDir = getOutDir(args)
+  let conlluFiles = globInforming(args.inputGlob)
+}
+
+//------------------------------------------------------------------------------
+function do4vecStage(args: Args) {
+  let outDir = getOutDir(args)
+  let conlluFiles = globInforming(args.inputGlob)
+
+  for (let [i, filePath] of conlluFiles.entries()) {
+    console.log(`parsed ${i} docs (${toPercent(i, conlluFiles.length)}%), parsing ${filePath}`)
+    let filename = trimExtension(path.basename(filePath))
+    let forvecFormsPath = join(outDir, '4vec.forms', `${filename}.4vec`)
+    let forvecLemmasPath = join(outDir, '4vec.lemmas', `${filename}.4vec`)
+
+    if (!fs.existsSync(forvecFormsPath) || !fs.existsSync(forvecLemmasPath)) {
+      let conllu = fs.readFileSync(filePath, 'utf8')
+      let { forms, lemmas } = conllu2forvec(conllu)
+      writeFileSyncMkdirp(forvecFormsPath, forms)
+      writeFileSyncMkdirp(forvecLemmasPath, lemmas)
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+function paragraphs2UdpipeInput(paragraphs: string[]) {
+  return paragraphs.map(x => x.replace(/\u0301/g, '')).join('\n\n')
+}
+
+//------------------------------------------------------------------------------
+function conllu2forvec(conllu: string) {
+  let forms = ''
+  let lemmas = ''
+
+  for (let sent of conllu.trim().split('\n\n')) {
+    let tempForms = []
+    let tempLemmas = []
+
+    let lines = sent.split('\n')
+    for (let line of lines) {
+      if (line.startsWith('#')) {
+        continue
+      }
+      let [, form, lemma, pos] = line.split('\t', 4)
+      if (pos === 'PUNCT') {
+        continue
+      }
+      tempForms.push(form)
+      tempLemmas.push(lemma)
+    }
+    forms += tempForms.join(' ') + '\n'
+    lemmas += tempLemmas.join(' ') + '\n'
+  }
+
+  return { forms, lemmas }
 }
 
 //------------------------------------------------------------------------------
@@ -207,37 +292,6 @@ function mainOld(args: Args) {
   // let verticalFile = createVerticalFile(args.workspace, args.part)
   let func = partName2function[args.part]
   func(args.workspace, analyzer, args)
-}
-
-//------------------------------------------------------------------------------
-function umoloda(workspacePath: string, analyzer: MorphAnalyzer) {
-  let verticalFile = rotateAndOpen(join(workspacePath, `build/ umoloda.vrt.txt`))
-  let articlePathsGlob = join(workspacePath, 'data/umoloda/fetched_articles/*.html')
-  let articlePaths = globSync(articlePathsGlob).sort(umolodaFilenameComparator)
-  for (let path of articlePaths) {
-    let [a, b, c] = trimExtension(basename(path)).split('_')
-    console.log(`processing umoloda article ${a}_${b}_${c}`)
-
-    let html = fs.readFileSync(path, 'utf8')
-    let { title, author, paragraphs, date } = parseUmolodaArticle(html, htmlDocCreator)
-
-    if (!paragraphs.length) {  // some empty articles happen
-      continue
-    }
-
-    date = date.split('.').reverse().join('–')
-    let meta = {
-      // publisher: 'Україна молода',
-      // proofread: '✓',
-      url: `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
-      author,
-      title,
-      reference_title: title ? `УМ:${title}` : `УМ`,
-      date,
-      type: 'публіцистика',
-    }
-    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -382,138 +436,6 @@ async function buildEnglish(workspacePath: string) {
   // let wstream = createWriteStream(join(buildDir, 'id2i.txt'))
   // await id2i(createReadStream(verticalFilePath), wstream)
   // wstream.close()
-}
-
-//------------------------------------------------------------------------------
-function den(workspacePath: string, analyzer: MorphAnalyzer) {
-  let verticalFile = rotateAndOpen(join(workspacePath, `build/den.vrt.txt`))
-  let articlePathsGLob = join(workspacePath, 'data/den/fetched_articles/*/**/*.html')
-  let articlePaths = globSync(articlePathsGLob)
-
-  for (let path of articlePaths) {
-    console.log(`processing den article ${trimExtension(basename(path))}`)
-
-    try {
-      let html = fs.readFileSync(path, 'utf8')
-      var { author, date, paragraphs, title, url, valid } = parseDenArticle(html, htmlDocCreator)
-    } catch (e) {
-      console.error(`Error: ${e.message}`)
-      continue
-    }
-    if (!valid) {
-      continue
-    }
-
-    let meta = {
-      // publisher: 'День',
-      // proofread: '✓',
-      url,
-      author,
-      title,
-      reference_title: `Д.: ${title}`,
-      date,
-      type: 'публіцистика',
-    }
-    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
-  }
-}
-
-//------------------------------------------------------------------------------
-function tyzhden(workspacePath: string, analyzer: MorphAnalyzer) {
-  let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'tyzhden.vrt.txt'))
-  let articlePathsGLob = join(workspacePath, 'data/tyzhden/html/**/*.html')
-  let articlePaths = globSync(articlePathsGLob, { nosort: true })
-    .sort((a, b) => Number(trimExtension(basename(a))) - Number(trimExtension(basename(b))))
-
-  for (let path of articlePaths) {
-    try {
-      let html = fs.readFileSync(path, 'utf8')
-      var { author, date, paragraphs, title, url, isValid } = parseTyzhdenArticle(html, htmlDocCreator)
-    } catch (e) {
-      console.error(`Error: ${e.stack}`)
-      continue
-    }
-    if (!isValid) {
-      continue
-    }
-    console.log(`processing tyzhden article ${url}`)
-
-    let meta = {
-      // publisher: 'Тиждень',
-      // proofread: '✓',
-      url,
-      author,
-      title,
-      reference_title: `Т.: ${title}`,
-      date,
-      type: 'публіцистика',
-    }
-
-    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
-  }
-}
-
-//------------------------------------------------------------------------------
-function zbruc(workspacePath: string, analyzer: MorphAnalyzer) {
-  let verticalFile = rotateAndOpen(join(workspacePath, `build/zbruc.vrt.txt`))
-  let articlePathsGLob = join(workspacePath, 'data/zbruc/fetched_articles/**/*.html')
-  let articlePaths = globSync(articlePathsGLob)
-
-  for (let path of articlePaths) {
-    try {
-      let html = fs.readFileSync(path, 'utf8')
-      var { author, date, paragraphs, title, url, isValid } = parseZbrucArticle(html, htmlDocCreator)
-    } catch (e) {
-      console.error(`Error: ${e.message}`)
-      continue
-    }
-    if (!isValid) {
-      continue
-    }
-    console.log(`processing zbruc article ${trimExtension(basename(path))}`)
-
-    let meta = {
-      reference_title: `Збруч: ${title}`,
-      title,
-      url,
-      author,
-      date,
-      type: 'публіцистика',
-    }
-
-    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
-  }
-}
-
-//------------------------------------------------------------------------------
-function dzt(workspacePath: string, analyzer: MorphAnalyzer) {
-  let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'dzt.vrt.txt'))
-  let articlePathsGLob = join(workspacePath, 'data/dzt/fetched_articles/**/*.html')
-  let articlePaths = globSync(articlePathsGLob)  // todo: sort by date
-
-  for (let path of articlePaths) {
-    console.log(`processing dzt article ${trimExtension(basename(path))}`)
-
-    let html = fs.readFileSync(path, 'utf8')
-    let { title, author, paragraphs, datetime, url } = parseDztArticle(html, htmlDocCreator)
-
-    if (!paragraphs.length) {  // some empty articles happen
-      continue
-    }
-
-    let meta = {
-      // publisher: 'Дзеркало тижня',
-      // proofread: '✓',
-      url,
-      author,
-      title,
-      reference_title: `ДТ.: ${title}`,
-      date: datetime,
-      type: 'публіцистика',
-    }
-
-    writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
-  }
 }
 
 //------------------------------------------------------------------------------

@@ -1,4 +1,5 @@
-import { DocCreator } from 'xmlapi'
+import { CorpusDoc } from '../doc_meta'
+import { parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 import { allcaps2TitlecaseDirty } from '../../string_utils'
 import { toSortableDate } from '../../date'
@@ -8,8 +9,8 @@ import { toSortableDate } from '../../date'
 const baseUrl = 'http://zbruc.eu'
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseZbrucArticle(html: string, htmlDocCreator: DocCreator) {
-  let root = htmlDocCreator(html).root()
+export function extract(html: string) {
+  let root = parseHtml(html)
 
   let url = root.evaluateString('string(/html/head/link[@rel="canonical"]/@href)').trim()
   if (url.startsWith('/')) {
@@ -46,5 +47,7 @@ export function parseZbrucArticle(html: string, htmlDocCreator: DocCreator) {
 
   let isValid = !!(paragraphs.length && url)
 
-  return { isValid, url, date, title, author, paragraphs }
+  if (isValid) {
+    return { isValid, url, date, title, author, paragraphs } as CorpusDoc
+  }
 }

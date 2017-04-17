@@ -1,12 +1,13 @@
-import { DocCreator } from 'xmlapi'
+import { CorpusDoc } from '../doc_meta'
+import { parseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 import { dayUkmonthCommaYear2date, isDayUkMonthCommaYear, toSortableDate, dayUkmonth2date } from '../../date'
 import { matchNth } from '../../lang'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseTyzhdenArticle(html: string, htmlDocCreator: DocCreator) {
-  let root = htmlDocCreator(html).root()
+export function extract(html: string) {
+  let root = parseHtml(html)
 
   let url = root.evaluateString('string(/html/head/meta[@property="og:url"]/@content)').trim()
 
@@ -58,5 +59,7 @@ export function parseTyzhdenArticle(html: string, htmlDocCreator: DocCreator) {
   let isValid = !!paragraphs.length && !!url
     && (paragraphs.length > 1 || author !== 'The Economist')
 
-  return { isValid, url, date, title, author, paragraphs }
+  if (isValid) {
+    return { url, date, title, author, paragraphs } as CorpusDoc
+  }
 }

@@ -1,13 +1,14 @@
 import * as nlpUtils from '../../nlp/utils'
 import { removeTags } from '../../xml/utils'
-import { DocCreator } from 'xmlapi'
+import { parseHtml } from '../../xml/utils.node'
 import * as capitalize from 'lodash.capitalize'
-
+import { CorpusDoc } from '../doc_meta'
+import { ogValue } from './utils'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
-  let root = htmlDocCreator(html).root()
+export function extract(html: string) {
+  let root = parseHtml(html)
 
   let title = root.evaluateString('string(//h1[@class="titleMain"])')
   if (title) {
@@ -21,6 +22,8 @@ export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
   }
   if (date === '01.01.1970') {
     date = ''
+  } else {
+    date = date.split('.').reverse().join('-')
   }
 
   let author = betweenTags(html, 'a', 'class="authorName"')
@@ -41,13 +44,17 @@ export function parseUmolodaArticle(html: string, htmlDocCreator: DocCreator) {
   content = nlpUtils.normalizeCorpusTextString(content)
   let paragraphs = content && content.split(/[\n\r]+/).filter(x => x.trim()) || []
 
+  let url = ogValue(root, 'url').replace(/\/fb$/, '')
+
+
   return {
     title,
+    url,
     // reference_title: title ? `УМ:${title}` : `УМ`,
     date,
     author,
     paragraphs,
-  }
+  } as CorpusDoc
 }
 
 //------------------------------------------------------------------------------

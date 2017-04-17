@@ -117,6 +117,19 @@ export function isObject(value) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isIterable(thing) {
+  return typeof thing[Symbol.iterator] === 'function'
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function assureIterable<T>(thing: T | Iterable<T>) {
+  if (isIterable(thing)) {
+    return thing as Iterable<T>
+  }
+  return [thing] as Iterable<T>
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function compare(a, b) {
   if (isOddball(a) && !isOddball(b)) {
     return -1

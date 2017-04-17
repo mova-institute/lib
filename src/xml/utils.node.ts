@@ -15,6 +15,15 @@ export function parseHtml(html: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function tryParseHtml(html: string) {
+  try {
+    return parseHtml(html)
+  } catch (e) {
+    return
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function parseXmlFileSync(path: string) {
   let xmlstr = readFileSync(path, 'utf8')
   return parseXml(xmlstr)

@@ -1,4 +1,4 @@
-import { parseHtml } from '../../xml/utils.node'
+import { tryParseHtml } from '../../xml/utils.node'
 import { zerofill } from '../../string_utils'
 import { parseIntStrict, last } from '../../lang'
 import * as utils from './utils'
@@ -9,21 +9,12 @@ import { AbstractElement } from 'xmlapi'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function streamDocs(content: string) {
-  let doc = parsePage(content)
-  if (!doc) {
-    return []
+export function extract(html: string) {
+  let root = tryParseHtml(html)
+  if (!root) {
+    console.error(`malformed xml`)
+    return
   }
-  return [doc]
-}
-
-//------------------------------------------------------------------------------
-function parsePage(html: string): CorpusDoc {
-  let root = parseHtml(html)
-  // if (!root) {
-  //   console.error(`malformed xml`)
-  //   return
-  // }
 
   let title = utils.ogValue(root, 'title')
   if (!title) {
@@ -100,7 +91,7 @@ function parsePage(html: string): CorpusDoc {
       author = undefined
     }
 
-    return { title, author, url: url.href, date, paragraphs }
+    return { title, author, url: url.href, date, paragraphs } as CorpusDoc
   }
 }
 

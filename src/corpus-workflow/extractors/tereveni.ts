@@ -1,3 +1,4 @@
+import { CorpusDoc } from '../doc_meta'
 import { parseHtml } from '../../xml/utils.node'
 import { toSortableDate } from '../../date'
 import { AbstractElement } from 'xmlapi'
@@ -6,7 +7,7 @@ import { textOf } from './utils'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* streamDocs(html: string) {
+export function* extract(html: string) {
   let root = parseHtml(html)
   let posts = [...root.evaluateElements('//div[contains(@class, "post_wrap")]')]
   // console.log(`---${posts.length}----`)
@@ -21,7 +22,7 @@ export function* streamDocs(html: string) {
     let paragraphs = getPostParagraphs(
       postRoot.evaluateElement('.//div[contains(@class, "post entry-content")]'))
     // console.log({ title, url, author, date, paragraphs })
-    yield { title, url, author, date, paragraphs }
+    yield { title, url, author, date, paragraphs } as CorpusDoc
   }
 }
 

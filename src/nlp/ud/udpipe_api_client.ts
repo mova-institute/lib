@@ -11,6 +11,19 @@ export class UdpipeApiClient {
   constructor(private endpoint: string) {
   }
 
+  async tag(plaintext: string) {
+    let res = await fetchJson(this.endpoint, {
+      agent: this.agent,
+      method: 'post',
+      formData: {
+        tokenizer: '',
+        tagger: '',
+        data: plaintext,
+      }
+    })
+    return res.result
+  }
+
   async parse(plaintext: string) {
     let res = await fetchJson(this.endpoint, {
       agent: this.agent,
