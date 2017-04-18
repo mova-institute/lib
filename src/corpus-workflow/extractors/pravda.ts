@@ -37,8 +37,6 @@ export function extract(html: string) {
     return
   }
 
-
-
   if (url.hostname.startsWith('www.pravda.com.ua') && url.pathname.startsWith('/news')) {
     let date = getDate(root, '//div[@class="post_news__date"]')
     let paragraphs = utils.normalizedTextsOf(root, '//div[@class="post_news__text"]/p')

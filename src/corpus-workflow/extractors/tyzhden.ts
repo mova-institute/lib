@@ -1,5 +1,5 @@
 import { CorpusDoc } from '../doc_meta'
-import { parseHtml } from '../../xml/utils.node'
+import { tryParseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 import { dayUkmonthCommaYear2date, isDayUkMonthCommaYear, toSortableDate, dayUkmonth2date } from '../../date'
 import { matchNth } from '../../lang'
@@ -7,7 +7,10 @@ import { matchNth } from '../../lang'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
-  let root = parseHtml(html)
+  let root = tryParseHtml(html)
+  if (!root) {
+    return
+  }
 
   let url = root.evaluateString('string(/html/head/meta[@property="og:url"]/@content)').trim()
 

@@ -77,3 +77,16 @@ export function openSyncMkdirp(filePath: string, flags: string) {
   mkdirpSync(path.dirname(filePath))
   return fs.openSync(filePath, flags)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function parseJsonFromFile(filePath: string) {
+  let fileStr = fs.readFileSync(filePath, 'utf8')
+  let ret = JSON.parse(fileStr)
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function write2jsonFile(filePath: string, obj: any) {
+  let json = JSON.stringify(obj)
+  fs.writeFileSync(filePath, json)
+}

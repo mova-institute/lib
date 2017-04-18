@@ -696,11 +696,30 @@ export function removeInvisibles(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function autofixCorpusText(value: string, analyzer?: MorphAnalyzer) {
+  let ret = removeInvisibles(value)
+    // .replace(/[\xa0]/g, ' ')
+    .replace(/\r/g, '\n')
+    .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
+
+  ret = fixLatinGlyphMisspell(ret)
+  ret = normalizeDiacritics(ret)
+  if (analyzer) {
+    ret = removeHypenation(ret, analyzer)
+  }
+  ret = ret.trim()
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
   let ret = removeInvisibles(value)
     // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
+
+    // ~
     .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])\.{3}([^\.])?`, 'g'), '$1…$2')
     .replace(new RegExp(r`(^|[\s${PUNC_GLUED_BEFORE}])[\-–] `, 'g'), '$1— ')
     // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
@@ -709,6 +728,8 @@ export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyze
     .replace(new RegExp(r`(^|\s)"([${PUNC_GLUED_BEFORE}${WORDCHAR}])`, 'g'), '$1“$2')
     .replace(new RegExp(r`(^|\s),,([${PUNC_GLUED_AFTER}${WORDCHAR}])`, 'g'), '$1„$2')
     .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])"(\s|[-${PUNC_GLUED_BEFORE}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
+  // ~
+
   ret = fixLatinGlyphMisspell(ret)
   ret = normalizeDiacritics(ret)
   if (analyzer) {

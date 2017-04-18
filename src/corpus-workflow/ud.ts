@@ -3,13 +3,13 @@ import { trimAfterLast } from '../string_utils'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats, rel: string) {
-  let ukrificatedPos = domesticateUdPos(upos)
+  let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
 
   let ret = `${form}\t${lemma}\t`
   ret += [
     upos,
-    ukrificatedPos,
+    domesticatedPos,
     feats.Abbr,
     feats.Animacy,
     feats['Animacy[gram]'],

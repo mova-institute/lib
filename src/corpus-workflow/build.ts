@@ -15,11 +15,10 @@ import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../xml/utils'
-import { writeFileSyncMkdirp, openSyncMkdirp } from '../utils.node'
+import { writeFileSyncMkdirp, parseJsonFromFile, write2jsonFile } from '../utils.node'
 import { parseXmlFileSync } from '../xml/utils.node'
 // import { conlluToken2vertical } from './extractors/conllu'
 import { buildMiteiVertical } from './mitei_build_utils'
-import { streamChtyvo } from './extractors/chtyvo'
 import { trimExtension, zerofill, toPercent } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
@@ -31,7 +30,7 @@ import {
 import { mu, Mu } from '../mu'
 import { uniq } from '../algo'
 import { UdpipeApiClient } from '../nlp/ud/udpipe_api_client'
-
+import { conlluAndMeta2vertical } from './tovert'
 
 
 interface Args {
@@ -53,7 +52,6 @@ interface Args {
 
 const partName2function = {
   kontrakty,
-  chtyvo,
   parallel: buildUkParallelSide,
   en: buildEnglish,
   pl: buildPolish,
@@ -87,9 +85,10 @@ function getOutDir(args: Args) {
 }
 
 //------------------------------------------------------------------------------
-function globInforming(globStr: string) {
+function globInforming(inputRoot: string, inputGlob = '**/*') {
+  let globStr = join(inputRoot, inputGlob)
   console.log(`globbing input files: ${globStr}`)
-  let ret = globSync(globStr, { nodir: true, nosort: true })
+  let ret = globSync(globStr, { nodir: true })
   console.log(`globbed ${ret.length} files`)
   return ret
 }
@@ -101,8 +100,10 @@ function main(args: Args) {
   if (args.stage === 'extract') {
     let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
 
-    let inputGlob = args.inputRoot ? join(args.inputRoot, args.inputGlob) : args.inputGlob
-    let inputFiles = globInforming(inputGlob)
+    let inputFiles = globInforming(args.inputRoot, args.inputGlob)
+    if (args.part === 'chtyvo') {  // todo
+      inputFiles = [...new Set(inputFiles.map(x => trimExtension(x)).filter(x => !x.endsWith('.meta')))]
+    }
 
     let specificModule = require(`./extractors/${args.part}`) as SpecificModule
     let docCounter = 0
@@ -119,8 +120,11 @@ function main(args: Args) {
         }
         ++docCounter
       } else if (specificModule.streamDocs) {
+        if (fs.existsSync(join(outDir, 'meta', dirname(relPath)))) {
+          continue
+        }
         console.log(tolog)
-        let fileStr = fs.readFileSync(filePath, 'utf8')
+        let fileStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
         let i = 0;
         for (let doc of specificModule.streamDocs(fileStr)) {
           let docId = join(relPath, zerofill(i++, 4))
@@ -136,7 +140,7 @@ function main(args: Args) {
   } else if (args.stage === '4vec') {
     do4vecStage(args)
   } else if (args.stage === 'vertical') {
-
+    doVerticalStage(args)
   } else {
     throw new Error('Unknown stage')
   }
@@ -179,17 +183,18 @@ function processDoc(args: Args, doc: CorpusDoc, outDir: string, relpath: string,
 //------------------------------------------------------------------------------
 async function doUdpipeStage(args: Args) {
   let outDir = getOutDir(args)
+  let inputRoot = join(outDir, 'para')
+
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
 
-  let paraFiles = globInforming(args.inputGlob)
+  let paraFiles = globInforming(inputRoot)
+  for (let [i, paraPath] of paraFiles.entries()) {
+    console.log(`parsed ${i} docs (${toPercent(i, paraFiles.length)}%), parsing ${paraPath}`)
+    let basePath = trimExtension(path.relative(inputRoot, paraPath))
+    let conlluPath = join(outDir, 'conllu', `${basePath}.conllu`)
 
-  for (let [i, filePath] of paraFiles.entries()) {
-    console.log(`parsed ${i} docs (${toPercent(i, paraFiles.length)}%), parsing ${filePath}`)
-
-    let filename = trimExtension(path.basename(filePath))
-    let conlluPath = join(outDir, 'conllu', `${filename}.conllu`)
     if (!fs.existsSync(conlluPath)) {
-      let paragraphs = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+      let paragraphs = parseJsonFromFile(paraPath)
       let conllu = await udpipe.tag(paragraphs2UdpipeInput(paragraphs))
       writeFileSyncMkdirp(conlluPath, conllu)
     }
@@ -199,22 +204,40 @@ async function doUdpipeStage(args: Args) {
 //------------------------------------------------------------------------------
 function doVerticalStage(args: Args) {
   let outDir = getOutDir(args)
-  let conlluFiles = globInforming(args.inputGlob)
+  let inputRoot = join(outDir, 'conllu')
+
+  let conlluFiles = globInforming(inputRoot)
+  for (let [i, conlluPath] of conlluFiles.entries()) {
+    console.log(`parsed ${i} docs (${toPercent(i, conlluFiles.length)}%), parsing ${conlluPath}`)
+
+    let relativePath = path.relative(inputRoot, conlluPath)
+    relativePath = trimExtension(relativePath)
+    let outPath = join(outDir, 'vertial', `${relativePath}.vrt`)
+    if (fs.existsSync(outPath)) {
+      continue
+    }
+    let metaPath = join(outDir, 'meta', `${relativePath}.json`)
+    let meta = parseJsonFromFile(metaPath)
+    let conlluStr = fs.readFileSync(conlluPath, 'utf8')
+    let vrtLines = conlluAndMeta2vertical(conlluStr.split('\n'), meta)
+    writeFileSyncMkdirp(outPath, mu(vrtLines).join('\n', true))
+  }
 }
 
 //------------------------------------------------------------------------------
 function do4vecStage(args: Args) {
   let outDir = getOutDir(args)
-  let conlluFiles = globInforming(args.inputGlob)
+  let inputRoot = join(outDir, 'conllu')
+  let conlluFiles = globInforming(inputRoot)
 
-  for (let [i, filePath] of conlluFiles.entries()) {
-    console.log(`parsed ${i} docs (${toPercent(i, conlluFiles.length)}%), parsing ${filePath}`)
-    let filename = trimExtension(path.basename(filePath))
-    let forvecFormsPath = join(outDir, '4vec.forms', `${filename}.4vec`)
-    let forvecLemmasPath = join(outDir, '4vec.lemmas', `${filename}.4vec`)
+  for (let [i, conlluPath] of conlluFiles.entries()) {
+    console.log(`parsed ${i} docs (${toPercent(i, conlluFiles.length)}%), parsing ${conlluPath}`)
+    let basePath = trimExtension(path.relative(inputRoot, conlluPath))
+    let forvecFormsPath = join(outDir, 'forms4vec', `${basePath}.4vec`)
+    let forvecLemmasPath = join(outDir, 'lemmas4vec', `${basePath}.4vec`)
 
     if (!fs.existsSync(forvecFormsPath) || !fs.existsSync(forvecLemmasPath)) {
-      let conllu = fs.readFileSync(filePath, 'utf8')
+      let conllu = fs.readFileSync(conlluPath, 'utf8')
       let { forms, lemmas } = conllu2forvec(conllu)
       writeFileSyncMkdirp(forvecFormsPath, forms)
       writeFileSyncMkdirp(forvecLemmasPath, lemmas)
@@ -292,31 +315,6 @@ function mainOld(args: Args) {
   // let verticalFile = createVerticalFile(args.workspace, args.part)
   let func = partName2function[args.part]
   func(args.workspace, analyzer, args)
-}
-
-//------------------------------------------------------------------------------
-function chtyvo(workspacePath: string, analyzer: MorphAnalyzer) {
-  console.log(`Now bulding chtyvo`)
-  let buildDir = join(workspacePath, 'build', 'chtyvo', 'vrt')
-  let dataRootDir = join(workspacePath, 'data', 'chtyvo')
-  let metas = globSync(join(dataRootDir, '**', '*.meta.html'))
-  for (let i = 0; i < metas.length; ++i) {
-    let base = metas[i].slice(0, -'.meta.html'.length)
-    let dest = path.relative(dataRootDir, base) + '.vrt.txt'
-    dest = path.join(buildDir, dest)
-    if (fs.existsSync(dest)) {
-      continue
-    }
-    let doc = mu(streamChtyvo(base, analyzer))
-      .map(x => nlpUtils.token2sketchVertical(x))
-      .join('\n') + '\n'
-    if (doc) {
-      mkdirpSync(path.dirname(dest))
-      fs.writeFileSync(dest, doc)
-    }
-  }
-  // global.gc()
-  // global.gc()
 }
 
 //------------------------------------------------------------------------------

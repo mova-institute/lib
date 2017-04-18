@@ -12,11 +12,12 @@ import * as shuffle from 'lodash.shuffle'
 import { execSync2String } from '../../child_process.node'
 import { renameTag, removeElements } from '../../xml/utils'
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
-import { normalizeCorpusTextString, string2tokenStream } from '../../nlp/utils'
+import { autofixCorpusText, string2tokenStream } from '../../nlp/utils'
 import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
 import { Token } from '../../nlp/token'
 import { CorpusDocumentAttributes } from '../types'
 import { mu } from '../../mu'
+import { CorpusDoc } from '../doc_meta'
 
 const detectCharacterEncoding = require('detect-character-encoding');
 
@@ -41,7 +42,7 @@ const docFormatBooktypes = [
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* streamChtyvo(basePath: string, analyzer: MorphAnalyzer) {
+export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
   let metaPath = `${basePath}.meta.html`
   try {
     let format = ['txt', 'htm', 'fb2', 'doc'].find(x => existsSync(`${basePath}.${x}`))
@@ -54,7 +55,7 @@ export function* streamChtyvo(basePath: string, analyzer: MorphAnalyzer) {
     console.log(`processing ${dataPath}`)
 
     let metaRoot = parseHtmlFileSync(metaPath)
-    let meta = extractMeta(metaRoot) as any
+    let meta = extractMeta(metaRoot)
     if (meta.isForeign) {
       console.log(`foreign`)
       return
@@ -82,7 +83,7 @@ export function* streamChtyvo(basePath: string, analyzer: MorphAnalyzer) {
         .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
         .toArray()
       // console.log(paragraphs.length)
-      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+      yield { paragraphs, ...meta } as CorpusDoc
       return
     }
 
@@ -100,10 +101,11 @@ export function* streamChtyvo(basePath: string, analyzer: MorphAnalyzer) {
       mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
       let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
         // todo: inline verses
-        .map(x => normalizeCorpusTextString(x.text().trim()))
+        .map(x => autofixCorpusText(x.text().trim()))
         .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
         .toArray()
-      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+
+      yield { paragraphs, ...meta } as CorpusDoc
     }
     // else if (true) { continue }
     else if (format === 'htm') {
@@ -114,14 +116,16 @@ export function* streamChtyvo(basePath: string, analyzer: MorphAnalyzer) {
         .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
         .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))
       let paragraphs = [...paragraphsIt]
-      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+
+      yield { paragraphs, ...meta } as CorpusDoc
     } else if (format === 'txt') {
       content = extractTextFromTxt(content)
       content = normalizeText(content)
       content = content.replace(/\n+/g, '\n').trim()
 
       let paragraphs = content.split(/\s*\n\s*/)
-      yield* yieldDocOfParagraphs(paragraphs, meta, analyzer)
+
+      yield { paragraphs, ...meta } as CorpusDoc
     } else {
       console.log(`skipping (format not supported yet)`)
     }
@@ -171,12 +175,12 @@ function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
   year = year.split(/\s/)[0]
 
   let title = getTextByClassName(root, 'h1', 'book_name')
-  title = normalizeCorpusTextString(title)
+  title = autofixCorpusText(title)
   let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
   let translator = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
-  translator = normalizeCorpusTextString(translator.trim())
+  translator = autofixCorpusText(translator.trim())
   let originalAutor = root.evaluateString('string(//div[@class="author_name_book"]/a/text())')
-  originalAutor = normalizeCorpusTextString(originalAutor.trim())
+  originalAutor = autofixCorpusText(originalAutor.trim())
   if (originalAutor === 'народ Український') {
     originalAutor = 'народ'
   }
@@ -251,23 +255,9 @@ function killReferences(str: string) {
 
 //------------------------------------------------------------------------------
 function normalizeText(str: string) {
-  let ret = normalizeCorpusTextString(str)
+  let ret = autofixCorpusText(str)
   ret = killReferences(ret)
   return ret.trim()
-}
-
-//------------------------------------------------------------------------------
-function* yieldDocOfParagraphs(paragraphs: string[], meta: CorpusDocumentAttributes, analyzer: MorphAnalyzer) {
-  meta.disamb = 'жодного'
-  if (paragraphs.length) {
-    yield Token.structure('document', false, meta)
-    for (let p of paragraphs) {
-      yield Token.structure('paragraph', false)
-      yield* string2tokenStream(p, analyzer)
-      yield Token.structure('paragraph', true)
-    }
-    yield Token.structure('document', true)
-  }
 }
 
 //------------------------------------------------------------------------------

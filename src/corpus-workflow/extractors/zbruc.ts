@@ -1,5 +1,5 @@
 import { CorpusDoc } from '../doc_meta'
-import { parseHtml } from '../../xml/utils.node'
+import { tryParseHtml } from '../../xml/utils.node'
 import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 import { allcaps2TitlecaseDirty } from '../../string_utils'
 import { toSortableDate } from '../../date'
@@ -10,7 +10,10 @@ const baseUrl = 'http://zbruc.eu'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
-  let root = parseHtml(html)
+  let root = tryParseHtml(html)
+  if (!root) {
+    return
+  }
 
   let url = root.evaluateString('string(/html/head/link[@rel="canonical"]/@href)').trim()
   if (url.startsWith('/')) {
