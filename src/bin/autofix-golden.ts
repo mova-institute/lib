@@ -129,6 +129,14 @@ function main() {
         // advps without tense
         setTenseIfConverb(interp, form)
 
+        // if (isNoninfl(interp)) {
+        //   let oldLemma = interp.lemma
+        //   interp.lemma = interpEl.parent().attribute('corrected') || form.toLowerCase()
+        //   if (oldLemma.endsWith('.')) {
+        //     interp.lemma += '.'
+        //   }
+        // }
+
         saveInterp(interpEl, interp)
       }
 
@@ -149,4 +157,10 @@ function saveInterp(el: AbstractElement, interp: MorphInterp) {
 
 if (require.main === module) {
   main()
+}
+
+//------------------------------------------------------------------------------
+function isNoninfl(interp: MorphInterp) {
+  return interp.isConjunction() || interp.isParticle() || interp.isAdverb()
+    || interp.isPreposition() || interp.isInterjection() || interp.isPunctuation()
 }

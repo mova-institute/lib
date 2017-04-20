@@ -11,7 +11,7 @@
   "bin": {
     "mi-2brat": "lib/bin/2brat.js",
     "mi-adopt-brat-relations": "lib/nlp/ud/adopt-brat-relations.js",
-    "mi-autofix-corpus": "lib/bin/autofix-corpus.js",
+    "mi-autofix-golden": "lib/bin/autofix-golden.js",
     "mi-build-treebank": "lib/nlp/ud/build-treebank.js",
     "mi-buildcorp": "lib/corpus-workflow/build.js",
     "mi-cat": "lib/bin/cat.js",
