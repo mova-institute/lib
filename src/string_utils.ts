@@ -152,3 +152,9 @@ export function insertAtIndexes(str: string, indexes: number[], what: string) {
 export function toPercent(nominator: number, denominator: number, aftercomma = 0) {
   return ((nominator / denominator) * 100).toFixed(aftercomma)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function toFloorPercent(nominator: number, denominator: number, aftercomma = 0) {
+  let exp = 10 ** aftercomma
+  return (Math.floor(nominator / denominator * exp * 100) / exp).toFixed(aftercomma)
+}

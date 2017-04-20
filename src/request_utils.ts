@@ -17,5 +17,14 @@ export function fetchText(href: string, options?: request.CoreOptions) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function fetchJson(href: string, options?: request.CoreOptions) {
   let resStr = await fetchText(href, options)
-  return JSON.parse(resStr)
+  let ret: {}
+  try {
+    ret = JSON.parse(resStr)
+  } catch (e) {
+    if (true || e instanceof SyntaxError) {
+      console.error(resStr)
+      throw e
+    }
+  }
+  return ret as any
 }

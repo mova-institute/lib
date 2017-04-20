@@ -1,4 +1,4 @@
-#!/usr/bin/env node --max-old-space-size=7000 --expose-gc
+#!/usr/bin/env node --max-old-space-size=6000
 
 import { basename, join, dirname } from 'path'
 import * as fs from 'fs'
@@ -19,7 +19,7 @@ import { writeFileSyncMkdirp, parseJsonFromFile, write2jsonFile } from '../utils
 import { parseXmlFileSync } from '../xml/utils.node'
 // import { conlluToken2vertical } from './extractors/conllu'
 import { buildMiteiVertical } from './mitei_build_utils'
-import { trimExtension, zerofill, toPercent } from '../string_utils'
+import { trimExtension, zerofill, toFloorPercent } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
 import * as nlpStatic from '../nlp/static'
@@ -109,7 +109,7 @@ function main(args: Args) {
     let docCounter = 0
 
     for (let [fileI, filePath] of inputFiles.entries()) {
-      let tolog = `done ${fileI} files (${toPercent(fileI, inputFiles.length)}%), ${docCounter} docs, parsing ${filePath}`
+      let tolog = `done ${fileI} files (${toFloorPercent(fileI, inputFiles.length)}%), ${docCounter} docs, parsing ${filePath}`
 
       let relPath = path.relative(args.inputRoot, filePath)
       if (specificModule.extract) {
@@ -189,14 +189,18 @@ async function doUdpipeStage(args: Args) {
 
   let paraFiles = globInforming(inputRoot)
   for (let [i, paraPath] of paraFiles.entries()) {
-    console.log(`parsed ${i} docs (${toPercent(i, paraFiles.length)}%), parsing ${paraPath}`)
     let basePath = trimExtension(path.relative(inputRoot, paraPath))
     let conlluPath = join(outDir, 'conllu', `${basePath}.conllu`)
 
     if (!fs.existsSync(conlluPath)) {
+      console.log(`udpiped ${i} docs (${toFloorPercent(i, paraFiles.length)}%), doing ${paraPath}`)
       let paragraphs = parseJsonFromFile(paraPath)
-      let conllu = await udpipe.tag(paragraphs2UdpipeInput(paragraphs))
-      writeFileSyncMkdirp(conlluPath, conllu)
+      try {
+        let conllu = await udpipe.tag(paragraphs2UdpipeInput(paragraphs))
+        writeFileSyncMkdirp(conlluPath, conllu)
+      } catch (e) {
+        throw e
+      }
     }
   }
 }
@@ -208,7 +212,6 @@ function doVerticalStage(args: Args) {
 
   let conlluFiles = globInforming(inputRoot)
   for (let [i, conlluPath] of conlluFiles.entries()) {
-    console.log(`parsed ${i} docs (${toPercent(i, conlluFiles.length)}%), parsing ${conlluPath}`)
 
     let relativePath = path.relative(inputRoot, conlluPath)
     relativePath = trimExtension(relativePath)
@@ -216,6 +219,8 @@ function doVerticalStage(args: Args) {
     if (fs.existsSync(outPath)) {
       continue
     }
+    console.log(`verted ${i} docs (${toFloorPercent(i, conlluFiles.length)}%), doing ${conlluPath}`)
+
     let metaPath = join(outDir, 'meta', `${relativePath}.json`)
     let meta = parseJsonFromFile(metaPath)
     let conlluStr = fs.readFileSync(conlluPath, 'utf8')
@@ -231,12 +236,13 @@ function do4vecStage(args: Args) {
   let conlluFiles = globInforming(inputRoot)
 
   for (let [i, conlluPath] of conlluFiles.entries()) {
-    console.log(`parsed ${i} docs (${toPercent(i, conlluFiles.length)}%), parsing ${conlluPath}`)
     let basePath = trimExtension(path.relative(inputRoot, conlluPath))
     let forvecFormsPath = join(outDir, 'forms4vec', `${basePath}.4vec`)
     let forvecLemmasPath = join(outDir, 'lemmas4vec', `${basePath}.4vec`)
 
     if (!fs.existsSync(forvecFormsPath) || !fs.existsSync(forvecLemmasPath)) {
+      console.log(`4vecced ${i} docs (${toFloorPercent(i, conlluFiles.length)}%), doing ${conlluPath}`)
+
       let conllu = fs.readFileSync(conlluPath, 'utf8')
       let { forms, lemmas } = conllu2forvec(conllu)
       writeFileSyncMkdirp(forvecFormsPath, forms)
@@ -256,23 +262,29 @@ function conllu2forvec(conllu: string) {
   let lemmas = ''
 
   for (let sent of conllu.trim().split('\n\n')) {
-    let tempForms = []
-    let tempLemmas = []
-
     let lines = sent.split('\n')
-    for (let line of lines) {
-      if (line.startsWith('#')) {
+    let lenBefore = forms.length
+    for (let i = 0, max = lines.length - 1; i <= max; ++i) {
+      if (lines[i].startsWith('#')) {
         continue
       }
-      let [, form, lemma, pos] = line.split('\t', 4)
+      let [, form, lemma, pos] = lines[i].split('\t', 4)
       if (pos === 'PUNCT') {
         continue
       }
-      tempForms.push(form)
-      tempLemmas.push(lemma)
+      forms += form
+      lemmas += lemma
+
+      if (i !== max) {
+        forms += ' '
+        lemmas += ' '
+      }
     }
-    forms += tempForms.join(' ') + '\n'
-    lemmas += tempLemmas.join(' ') + '\n'
+
+    if (lenBefore < forms.length) {
+      forms += '\n'
+      lemmas += '\n'
+    }
   }
 
   return { forms, lemmas }
