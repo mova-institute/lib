@@ -1233,7 +1233,9 @@ export function setTenseIfConverb(interp: MorphInterp, form: string) {
     else if (/чи(с[ья])?$/.test(form)) {
       interp.features.tense = Tense.present
     } else {
-      throw new Error(`Bad ending for converb "${form}"`)
+      let msg = `Bad ending for converb "${form}"`
+      console.error(msg)
+      // throw new Error(msg)
     }
   }
 }
@@ -1242,10 +1244,20 @@ export function setTenseIfConverb(interp: MorphInterp, form: string) {
 export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
   setTenseIfConverb(interp, form)
 
+  // set rudundant number
+  if ((interp.isNounish() || interp.isAdjective())
+    && interp.features.number === undefined
+    && interp.features.numberTantum === undefined
+    && interp.hasGender()) {
+    interp.setIsSingular()
+  }
+
   // remove degree from &noun
   if (interp.isAdjectiveAsNoun()) {
     interp.features.degree = undefined
   }
+
+  // drop it
   interp.features.prepositionRequirement = undefined
 }
 

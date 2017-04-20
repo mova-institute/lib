@@ -4,7 +4,7 @@ import {
 } from './morph_interp'
 import { groupTableBy, arr2indexMap, stableSort } from '../algo'
 import { IStringMorphInterp } from './interfaces'
-import { normalizeMorphoForUd } from './utils'
+import { setTenseIfConverb } from './utils'
 
 import { mu } from '../mu'
 const wu: Wu.WuStatic = require('wu')
@@ -176,7 +176,7 @@ export function* domesticateDictCorpViz(fileStr: string) {
   for (let { form, tag, lemma, lemmaTag, isLemma } of lineIterator) {
     let interp = MorphInterp.fromVesumStr(tag, lemma, lemmaTag)
 
-    normalizeMorphoForUd(interp, form)
+    setTenseIfConverb(interp, form)
 
     let lineStart = (isLemma ? '' : NONLEMMA_PADDING) + form + ' '
     yield lineStart + interp.toVesumStr()

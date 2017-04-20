@@ -880,6 +880,7 @@ export class MorphInterp {
   isConverb() { return this.features.verbType === VerbType.converb }
   isVerb() { return this.features.pos === Pos.verb }
   isInterjection() { return this.features.pos === Pos.interjection }
+  isSymbol() { return this.features.pos === Pos.sym }
   isX() { return this.features.pos === Pos.x }
 
   isNominative() { return this.features.case === Case.nominative }
@@ -952,7 +953,8 @@ export class MorphInterp {
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
   setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
   setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
-  setIsPlural(value = true) { this.features.number = value ? MorphNumber.plural : MorphNumber.singular; return this }
+  setIsSingular() { this.features.number = MorphNumber.singular; return this }
+  setIsPlural() { this.features.number = MorphNumber.plural; return this }
   setIsPluraleTantum(value = true) { this.features.numberTantum = value ? NumberTantum.noSingular : NumberTantum.noPlural; return this }
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
