@@ -157,20 +157,6 @@ export function lexCompare(a, b) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/** pythonish */
-export function* zip<T>(...iterables: Iterable<T>[]) {
-  let iterators = iterables.map(x => x[Symbol.iterator]())
-
-  for (let state = iterators.map(x => x.next());
-    state.every(x => !x.done);
-    state = iterators.map(x => x.next())) {
-
-    yield state.map(x => x.value)
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/** pythonish */
 export function* zipLongest<T>(...iterables: Iterable<T>[]) {
   let iterators = iterables.map(x => x[Symbol.iterator]())
 
@@ -179,6 +165,24 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
     state = iterators.map(x => x.next())) {
 
     yield state.map(x => x.done ? undefined : x.value)
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* zip<T>(...iterables: Iterable<T>[]) {
+  let iterators = iterables.map(x => x[Symbol.iterator]())
+
+  let toyield: T[] = []
+  while (true) {
+    for (let it of iterators) {
+      let { done, value } = it.next()
+      if (done) {
+        return
+      }
+      toyield.push(value)
+    }
+    yield toyield
+    toyield = []
   }
 }
 

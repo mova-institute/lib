@@ -193,26 +193,3 @@ export class CachedFunctionResult<T> {
 //     return ret
 //   }
 // }
-
-////////////////////////////////////////////////////////////////////////////////
-export class DefaultMap<K, V> {
-  private map: Map<K, V>
-
-  constructor(private v: { new (): V; }, iterable?: Iterable<[K, V]>) {
-    this.map = new Map<K, V>(iterable)
-  }
-
-  get(key: K) {
-    let ret = this.map.get(key)
-    if (!ret) {
-      ret = new this.v()
-      this.map.set(key, ret)
-    }
-
-    return ret
-  }
-
-  [Symbol.iterator]() {
-    return this.map[Symbol.iterator]()
-  }
-}
