@@ -24,7 +24,6 @@ function main() {
     .on('line', (line: string) => {
       let [dateStr, timeStr, user, path, document, step, action, head, dependant, relation, , oldRelation, oldDependant] = line.trim().split(/\s+/g)
 
-      let timestamp = new Date(`${dateStr} ${timeStr}`)
       if (args.from && args.from > `${dateStr} ${timeStr}`) {
         return
       }
@@ -38,9 +37,10 @@ function main() {
             let oldArrowId = `${document} ${head} ${oldDependant}`
             stats[oldArrowId] = undefined
           }
-          /*if (relation !== 'punct')*/ {
-            stats[arrowId] = { user, timestamp }
-          }
+          // if (relation !== 'punct') {
+          let timestamp = new Date(`${dateStr} ${timeStr}`)
+          stats[arrowId] = { user, timestamp }
+          // }
         }
       }
 

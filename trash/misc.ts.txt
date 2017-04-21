@@ -150,3 +150,37 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer) {
     writeDocMetaAndParagraphs(meta, paragraphs, analyzer, verticalFile)
   }
 }
+
+//------------------------------------------------------------------------------
+function conllu2forvec(conllu: string) {
+  let forms = ''
+  let lemmas = ''
+
+  for (let sent of conllu.trim().split('\n\n')) {
+    let lines = sent.split('\n')
+    let lenBefore = forms.length
+    for (let i = 0, max = lines.length - 1; i <= max; ++i) {
+      if (lines[i].startsWith('#')) {
+        continue
+      }
+      let [, form, lemma, pos] = lines[i].split('\t', 4)
+      if (pos === 'PUNCT') {
+        continue
+      }
+      forms += form
+      lemmas += lemma
+
+      if (i !== max) {
+        forms += ' '
+        lemmas += ' '
+      }
+    }
+
+    if (lenBefore < forms.length) {
+      forms += '\n'
+      lemmas += '\n'
+    }
+  }
+
+  return { forms, lemmas }
+}

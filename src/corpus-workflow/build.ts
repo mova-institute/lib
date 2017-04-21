@@ -102,14 +102,18 @@ function main(args: Args) {
 
     let inputFiles = globInforming(args.inputRoot, args.inputGlob)
     if (args.part === 'chtyvo') {  // todo
-      inputFiles = [...new Set(inputFiles.map(x => trimExtension(x)).filter(x => !x.endsWith('.meta')))]
+      inputFiles = mu(inputFiles)
+        .map(x => trimExtension(x))
+        .filter(x => !x.endsWith('.meta'))
+        .unique()
+        .toArray()
     }
 
     let specificModule = require(`./extractors/${args.part}`) as SpecificModule
     let docCounter = 0
 
     for (let [fileI, filePath] of inputFiles.entries()) {
-      let tolog = `done ${fileI} files (${toFloorPercent(fileI, inputFiles.length)}%), ${docCounter} docs, parsing ${filePath}`
+      let tolog = `extracted ${fileI} files (${toFloorPercent(fileI, inputFiles.length)}%), ${docCounter} docs, doing ${filePath}`
 
       let relPath = path.relative(args.inputRoot, filePath)
       if (specificModule.extract) {
@@ -120,13 +124,13 @@ function main(args: Args) {
         }
         ++docCounter
       } else if (specificModule.streamDocs) {
-        if (fs.existsSync(join(outDir, 'meta', dirname(relPath)))) {
+        if (fs.existsSync(join(outDir, 'meta', args.part === 'chtyvo' ? relPath : dirname(relPath)))) {
           continue
         }
         console.log(tolog)
-        let fileStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
+        let inputStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
         let i = 0;
-        for (let doc of specificModule.streamDocs(fileStr)) {
+        for (let doc of specificModule.streamDocs(inputStr)) {
           let docId = join(relPath, zerofill(i++, 4))
           processDoc(args, doc, outDir, docId, analyzer)
         }
@@ -137,8 +141,6 @@ function main(args: Args) {
     }
   } else if (args.stage === 'udpipe') {
     doUdpipeStage(args)
-  } else if (args.stage === '4vec') {
-    do4vecStage(args)
   } else if (args.stage === 'vertical') {
     doVerticalStage(args)
   } else {
@@ -230,64 +232,30 @@ function doVerticalStage(args: Args) {
 }
 
 //------------------------------------------------------------------------------
-function do4vecStage(args: Args) {
-  let outDir = getOutDir(args)
-  let inputRoot = join(outDir, 'conllu')
-  let conlluFiles = globInforming(inputRoot)
+// function do4vecStage(args: Args) {
+//   let outDir = getOutDir(args)
+//   let inputRoot = join(outDir, 'conllu')
+//   let conlluFiles = globInforming(inputRoot)
 
-  for (let [i, conlluPath] of conlluFiles.entries()) {
-    let basePath = trimExtension(path.relative(inputRoot, conlluPath))
-    let forvecFormsPath = join(outDir, 'forms4vec', `${basePath}.4vec`)
-    let forvecLemmasPath = join(outDir, 'lemmas4vec', `${basePath}.4vec`)
+//   for (let [i, conlluPath] of conlluFiles.entries()) {
+//     let basePath = trimExtension(path.relative(inputRoot, conlluPath))
+//     let forvecFormsPath = join(outDir, 'forms4vec', `${basePath}.4vec`)
+//     let forvecLemmasPath = join(outDir, 'lemmas4vec', `${basePath}.4vec`)
 
-    if (!fs.existsSync(forvecFormsPath) || !fs.existsSync(forvecLemmasPath)) {
-      console.log(`4vecced ${i} docs (${toFloorPercent(i, conlluFiles.length)}%), doing ${conlluPath}`)
+//     if (!fs.existsSync(forvecFormsPath) || !fs.existsSync(forvecLemmasPath)) {
+//       console.log(`4vecced ${i} docs (${toFloorPercent(i, conlluFiles.length)}%), doing ${conlluPath}`)
 
-      let conllu = fs.readFileSync(conlluPath, 'utf8')
-      let { forms, lemmas } = conllu2forvec(conllu)
-      writeFileSyncMkdirp(forvecFormsPath, forms)
-      writeFileSyncMkdirp(forvecLemmasPath, lemmas)
-    }
-  }
-}
+//       let conllu = fs.readFileSync(conlluPath, 'utf8')
+//       let { forms, lemmas } = conllu2forvec(conllu)
+//       writeFileSyncMkdirp(forvecFormsPath, forms)
+//       writeFileSyncMkdirp(forvecLemmasPath, lemmas)
+//     }
+//   }
+// }
 
 //------------------------------------------------------------------------------
 function paragraphs2UdpipeInput(paragraphs: string[]) {
   return paragraphs.map(x => x.replace(/\u0301/g, '')).join('\n\n')
-}
-
-//------------------------------------------------------------------------------
-function conllu2forvec(conllu: string) {
-  let forms = ''
-  let lemmas = ''
-
-  for (let sent of conllu.trim().split('\n\n')) {
-    let lines = sent.split('\n')
-    let lenBefore = forms.length
-    for (let i = 0, max = lines.length - 1; i <= max; ++i) {
-      if (lines[i].startsWith('#')) {
-        continue
-      }
-      let [, form, lemma, pos] = lines[i].split('\t', 4)
-      if (pos === 'PUNCT') {
-        continue
-      }
-      forms += form
-      lemmas += lemma
-
-      if (i !== max) {
-        forms += ' '
-        lemmas += ' '
-      }
-    }
-
-    if (lenBefore < forms.length) {
-      forms += '\n'
-      lemmas += '\n'
-    }
-  }
-
-  return { forms, lemmas }
 }
 
 //------------------------------------------------------------------------------

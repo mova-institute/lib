@@ -44,6 +44,7 @@ const docFormatBooktypes = [
 ////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
   let metaPath = `${basePath}.meta.html`
+
   try {
     let format = ['txt', 'htm', 'fb2', 'doc'].find(x => existsSync(`${basePath}.${x}`))
     if (!format) {
@@ -84,6 +85,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
         .toArray()
       // console.log(paragraphs.length)
       yield { paragraphs, ...meta } as CorpusDoc
+
       return
     }
 
@@ -102,7 +104,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
       let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
         // todo: inline verses
         .map(x => autofixCorpusText(x.text().trim()))
-        .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+        .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
         .toArray()
 
       yield { paragraphs, ...meta } as CorpusDoc
@@ -114,7 +116,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
         // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
         '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
         .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
-        .filter(x => !!x && !/^\s*(©|\([cс]\))/.test(x))
+        .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
       let paragraphs = [...paragraphsIt]
 
       yield { paragraphs, ...meta } as CorpusDoc

@@ -1,12 +1,51 @@
 import { readFileSync } from 'fs'
 import * as fs from 'fs'
 import * as path from 'path'
-import { createInterface } from 'readline'
+import { createInterface, ReadLine } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
+import { last } from './lang'
 
 const lineIterator = require('n-readlines')
 
 
+
+//////////////////////////////////////////////////////////////////////////////
+// export async function* forEachLineSuper(stream: NodeJS.ReadableStream): Iterable<Promise<string>> {
+//   let endPromise = promiseEnd(stream)
+//   let buf = ''
+//   while (true) {
+//     let chunk = await Promise.race([endPromise, promiseData(stream)])
+//     if (!chunk) {
+//       if (buf) {
+//         yield buf
+//       }
+//       return
+//     }
+
+//     let lines = chunk.split('\n')
+//     if (lines.length === 1) {
+//       buf += chunk
+//     } else {
+//       yield buf + chunk[0]
+//       for (let i = 1; i < lines.length - 1; ++i) {
+//         yield lines[i]
+//       }
+//       buf = last(lines)
+//     }
+//   }
+// }
+
+// function promiseData(stream: NodeJS.ReadableStream) {
+//   return new Promise<string>((resolve, reject) => {
+//     stream.once('data', chunk => resolve(chunk))
+//   })
+// }
+
+// function promiseEnd(stream: NodeJS.ReadableStream) {
+//   return new Promise<void>((resolve, reject) => {
+//     stream.once('end', () => resolve())
+//   })
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => void) {
