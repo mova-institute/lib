@@ -29,6 +29,7 @@ import {
 } from '../nlp/utils'
 import { mu, Mu } from '../mu'
 import { uniq } from '../algo'
+import { AsyncTaskRunner } from '../lib/async_task_runner'
 import { UdpipeApiClient } from '../nlp/ud/udpipe_api_client'
 import { conlluAndMeta2vertical } from './tovert'
 
@@ -188,6 +189,7 @@ async function doUdpipeStage(args: Args) {
   let inputRoot = join(outDir, 'para')
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
+  let runner = new AsyncTaskRunner<void>()
 
   let paraFiles = globInforming(inputRoot)
   for (let [i, paraPath] of paraFiles.entries()) {
@@ -195,14 +197,13 @@ async function doUdpipeStage(args: Args) {
     let conlluPath = join(outDir, 'conllu', `${basePath}.conllu`)
 
     if (!fs.existsSync(conlluPath)) {
-      console.log(`udpiped ${i} docs (${toFloorPercent(i, paraFiles.length)}%), doing ${paraPath}`)
-      let paragraphs = parseJsonFromFile(paraPath)
-      try {
+      await runner.run(async () => {
+        console.log(`udpiped ${i} docs (${toFloorPercent(i, paraFiles.length)}%), doing ${paraPath}`)
+
+        let paragraphs = parseJsonFromFile(paraPath)
         let conllu = await udpipe.tag(paragraphs2UdpipeInput(paragraphs))
         writeFileSyncMkdirp(conlluPath, conllu)
-      } catch (e) {
-        throw e
-      }
+      })
     }
   }
 }
