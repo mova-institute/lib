@@ -696,7 +696,19 @@ export function removeInvisibles(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function autofixCorpusText(value: string, analyzer?: MorphAnalyzer) {
+// safe autofixes
+export function normalizeWebParaSafe(value: string) {
+  let ret = removeInvisibles(value)
+    .replace(/[\s\n\r]+/g, ' ')
+    .replace(/\u00AD/g, '')
+
+  ret = normalizeDiacritics(ret)
+
+  return ret.trim()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
   let ret = removeInvisibles(value)
     // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
@@ -713,32 +725,32 @@ export function autofixCorpusText(value: string, analyzer?: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
-  let ret = removeInvisibles(value)
-    // .replace(/[\xa0]/g, ' ')
-    .replace(/\r/g, '\n')
-    .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
+// export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
+//   let ret = removeInvisibles(value)
+//     // .replace(/[\xa0]/g, ' ')
+//     .replace(/\r/g, '\n')
+//     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
 
-    // ~
-    .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])\.{3}([^\.])?`, 'g'), '$1…$2')
-    .replace(new RegExp(r`(^|[\s${PUNC_GLUED_BEFORE}])[\-–] `, 'g'), '$1— ')
-    // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
-    .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
-    .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
-    .replace(new RegExp(r`(^|\s)"([${PUNC_GLUED_BEFORE}${WORDCHAR}])`, 'g'), '$1“$2')
-    .replace(new RegExp(r`(^|\s),,([${PUNC_GLUED_AFTER}${WORDCHAR}])`, 'g'), '$1„$2')
-    .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])"(\s|[-${PUNC_GLUED_BEFORE}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
-  // ~
+//     // ~
+//     .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])\.{3}([^\.])?`, 'g'), '$1…$2')
+//     .replace(new RegExp(r`(^|[\s${PUNC_GLUED_BEFORE}])[\-–] `, 'g'), '$1— ')
+//     // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
+//     .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
+//     .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
+//     .replace(new RegExp(r`(^|\s)"([${PUNC_GLUED_BEFORE}${WORDCHAR}])`, 'g'), '$1“$2')
+//     .replace(new RegExp(r`(^|\s),,([${PUNC_GLUED_AFTER}${WORDCHAR}])`, 'g'), '$1„$2')
+//     .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])"(\s|[-${PUNC_GLUED_BEFORE}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
+//   // ~
 
-  ret = fixLatinGlyphMisspell(ret)
-  ret = normalizeDiacritics(ret)
-  if (analyzer) {
-    ret = removeHypenation(ret, analyzer)
-  }
-  ret = ret.trim()
+//   ret = fixLatinGlyphMisspell(ret)
+//   ret = normalizeDiacritics(ret)
+//   if (analyzer) {
+//     ret = removeHypenation(ret, analyzer)
+//   }
+//   ret = ret.trim()
 
-  return ret
-}
+//   return ret
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 const unboxElems = new Set(['nobr', 'img'])
@@ -759,7 +771,7 @@ export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnaly
   })
 
   for (let textNode of root.evaluateNodes('//text()', NS)) {
-    let res = normalizeCorpusTextString(textNode.text(), analyzer)
+    let res = autofixDirtyText(textNode.text(), analyzer)
     if (res) {
       textNode.replace(doc.createTextNode(res))
     }
@@ -959,23 +971,23 @@ export function looksLikeMiTei(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function preprocessForTaggingGeneric(value: string, docCreator: DocCreator, isXml: boolean) {
-  if (isXml) {
-    value = xmlutils.removeProcessingInstructions(value)
-    if (looksLikeMiTei(value)) {
-      let ret = docCreator(value).root()
-      // processMiTeiDocument(ret)
-      return ret
-    }
-  }
-  value = normalizeCorpusTextString(value)
-  if (!isXml) {
-    value = xmlutils.escape(value)
-  }
-  value = xmlutils.encloseInRootNs(value)
+// export function preprocessForTaggingGeneric(value: string, docCreator: DocCreator, isXml: boolean) {
+//   if (isXml) {
+//     value = xmlutils.removeProcessingInstructions(value)
+//     if (looksLikeMiTei(value)) {
+//       let ret = docCreator(value).root()
+//       // processMiTeiDocument(ret)
+//       return ret
+//     }
+//   }
+//   value = normalizeCorpusTextString(value)
+//   if (!isXml) {
+//     value = xmlutils.escape(value)
+//   }
+//   value = xmlutils.encloseInRootNs(value)
 
-  return docCreator(value).root()
-}
+//   return docCreator(value).root()
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function oldMteDisamb2mivesum(root: AbstractElement) {

@@ -5,7 +5,7 @@ import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { readTillEnd } from '../stream_utils.node'
 import {
   tokenizeTei, morphInterpret, numerateTokensGently, tei2tokenStream, string2tokenStream,
-  tokenStream2plainVertical, tokenizeUk, normalizeCorpusTextString, normalizeCorpusText,
+  tokenStream2plainVertical, tokenizeUk, autofixDirtyText, normalizeCorpusText,
   newline2Paragraph, tokenStream2cg, morphReinterpret, token2sketchVertical,
   applyMiTeiDocTransforms,
 } from '../nlp/utils'
@@ -34,7 +34,7 @@ interface Args extends minimist.ParsedArgs {
   unknown: boolean
   sort: boolean
   mte: boolean  // todo
-  normalize: boolean
+  autofix: boolean
   forAnnotation: boolean
   nl2p: boolean
   reinterpret: boolean
@@ -118,7 +118,7 @@ function main(args: Args) {
       inputStr = xmlutils.removeProcessingInstructions(inputStr)
       if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(inputStr)) {
         inputStr = xmlutils.encloseInRootNs(inputStr, 'text')
-        args.normalize = args.normalize || args.forAnnotation
+        args.autofix = args.autofix || args.forAnnotation
       }
       let root = parseXml(inputStr)
 
@@ -126,7 +126,7 @@ function main(args: Args) {
         morphReinterpret([...root.evaluateElements('//mi:w_|w_', NS)], analyzer)
       }
 
-      if (args.normalize) {
+      if (args.autofix) {
         normalizeCorpusText(root, analyzer)
       }
 
@@ -164,8 +164,8 @@ function main(args: Args) {
         output.write('\n')
       }
     } else {
-      if (args.normalize) {
-        inputStr = normalizeCorpusTextString(inputStr, analyzer)
+      if (args.autofix) {
+        inputStr = autofixDirtyText(inputStr, analyzer)
       }
       if (args.count) {
         let len = mu(tokenizeUk(inputStr, analyzer)).length()

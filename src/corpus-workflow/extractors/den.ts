@@ -1,7 +1,7 @@
 import { CorpusDoc } from '../doc_meta'
 import { parseHtml } from '../../xml/utils.node'
-import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
-import { GENITIVE_UK_MON_MAP } from './utils'
+// import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
+import { GENITIVE_UK_MON_MAP, textOf, textsOf } from './utils'
 
 
 
@@ -12,10 +12,10 @@ export function extract(html: string) {
   } catch (e) {
     return
   }
-  let url = root.evaluateString('string(/html/head/link[@rel="canonical"]/@href)').trim()
+  let url = textOf(root, '/html/head/link[@rel="canonical"]/@href')
 
   let date: string
-  let datetimeStr = root.evaluateString('string(//div[@class="node_date"]/text())').trim()
+  let datetimeStr = textOf(root, '//div[@class="node_date"]/text()').trim()
   //  ↑ '20 жовтня, 1998 - 00:00'
   if (datetimeStr) {
     let [, d, m, y] = datetimeStr.match(/^(\d+)\s+([^,]+),\s+(\d{4})/)
@@ -26,20 +26,15 @@ export function extract(html: string) {
     date = `${y}–${m}–${d}`
   }
 
-  let title = root.evaluateString('string(//meta[@property="og:title"]/@content)').trim()
-  title = normalize(title)
-  // title = 'Д.: ' + title
+  let title = textOf(root, '//meta[@property="og:title"]/@content')
 
-  let description = root.evaluateString('string(//meta[@name="description"]/@content)').trim()
+  let description = textOf(root, '//meta[@name="description"]/@content')
 
-  let author = root.evaluateString('string(//div[@class="node_author"]//text())').trim()
-  // author = normalize(author)
+  let author = textOf(root, '//div[@class="node_author"]//text()')
 
   let pXpath = '//div[contains(@property, "articlebody")]/p'
     + '|//div[contains(@property, "articlebody")]/center/p'
-  let paragraphs = [...root.evaluateElements(pXpath)
-    .filter(x => !!x.text().trim())
-    .map(x => normalize(x.text()))]
+  let paragraphs = textsOf(root, pXpath)
 
   return { url, date, description, title, author, paragraphs } as CorpusDoc
 }

@@ -1,8 +1,10 @@
 import { tryParseHtml } from '../../xml/utils.node'
 import { zerofill } from '../../string_utils'
 import { parseIntStrict, last } from '../../lang'
-import * as utils from './utils'
+import { mu } from '../../mu'
+import { textOf, textsOf, ogValue, canonical, GENITIVE_UK_MON_MAP } from './utils'
 import { CorpusDoc } from '../doc_meta'
+
 import * as Url from 'url'
 import { AbstractElement } from 'xmlapi'
 
@@ -16,13 +18,13 @@ export function extract(html: string) {
     return
   }
 
-  let title = utils.ogValue(root, 'title')
+  let title = ogValue(root, 'title')
   if (!title) {
     console.error(`no title`)
     return
   }
 
-  let urlStr = utils.canonical(root) || utils.ogValue(root, 'url')
+  let urlStr = canonical(root) || ogValue(root, 'url')
   if (!urlStr) {
     console.error(`no url for ${title}`)
     return
@@ -30,7 +32,7 @@ export function extract(html: string) {
   let url = Url.parse(urlStr)
 
   let isForeign = false
-  let description = utils.ogValue(root, 'description')
+  let description = ogValue(root, 'description')
   isForeign = description && /\(рос\.?\)\s*$/i.test(description)
   if (isForeign) {
     // console.error(`foreign`)
@@ -39,9 +41,9 @@ export function extract(html: string) {
 
   if (url.hostname.startsWith('www.pravda.com.ua') && url.pathname.startsWith('/news')) {
     let date = getDate(root, '//div[@class="post_news__date"]')
-    let paragraphs = utils.normalizedTextsOf(root, '//div[@class="post_news__text"]/p')
+    let paragraphs = textsOf(root, '//div[@class="post_news__text"]/p')
     if (!paragraphs.length) {
-      paragraphs = utils.normalizedTextsOf(root, '//div[@class="post_news__text"]/div/p')
+      paragraphs = textsOf(root, '//div[@class="post_news__text"]/div/p')
     }
     if (!paragraphs.length) {
       paragraphs = brbr2paragraphs(root.evaluateElement('//div[@class="post_news__text"]'))
@@ -61,29 +63,23 @@ export function extract(html: string) {
         date = `${y}-${m}-${d}`
       }
     }
+    let paragraphs = mu([
+      '//div[@class="post__text"]/p',
+      '//article/p',
+      '//div[@class="post_news__text"]/p',
+      '//div[@class="text"]/p',
+      '//div[contains(@class, "text ")]/p',
+    ]).map(x => textsOf(root, x)).find(x => x.length)
 
-    let paragraphs = utils.normalizedTextsOf(root, '//div[@class="post__text"]/p')
-    if (!paragraphs.length) {
-      paragraphs = utils.normalizedTextsOf(root, '//article/p')
-    }
-    if (!paragraphs.length) {
-      paragraphs = utils.normalizedTextsOf(root, '//div[@class="post_news__text"]/p')
-    }
-    if (!paragraphs.length) {
-      paragraphs = utils.normalizedTextsOf(root, '//div[@class="text"]/p')
-    }
-    if (!paragraphs.length) {
-      paragraphs = utils.normalizedTextsOf(root, '//div[contains(@class, "text ")]/p')
-    }
-    if (!paragraphs.length) {
+    if (!paragraphs) {
       paragraphs = brbr2paragraphs(root.evaluateElement('//div[@class="post_news__text"]'))
     }
     paragraphs = paragraphs.filter(x => x)
     trimCopyrightish(paragraphs)
 
-    let author = utils.textOf(root, '//div[@class="post_news__author"]')
+    let author = textOf(root, '//div[@class="post_news__author"]')
     if (!author) {
-      author = utils.textOf(root, '//div[@class="article"]/div[@class="dt1"]/b[1]')
+      author = textOf(root, '//div[@class="article"]/div[@class="dt1"]/b[1]')
     }
     if (!author || author === 'Українська правда') {
       author = undefined
@@ -96,14 +92,14 @@ export function extract(html: string) {
 //------------------------------------------------------------------------------
 function getDate(root: AbstractElement, xpath: string) {
   // Неділя, 5 березня 2017, 01:08
-  let ret = utils.textOf(root, xpath)
+  let ret = textOf(root, xpath)
   if (!ret) {
     return
   }
   let [, date] = ret.split(', ')
   let [d, m, y] = date.split(' ')
   d = zerofill(parseIntStrict(d), 2)
-  m = utils.GENITIVE_UK_MON_MAP.get(m)
+  m = GENITIVE_UK_MON_MAP.get(m)
   ret = `${y}-${m}-${d}`
 
   return ret

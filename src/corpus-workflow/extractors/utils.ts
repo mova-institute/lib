@@ -1,6 +1,5 @@
 import { AbstractElement } from 'xmlapi'
 import { mu } from '../../mu'
-import * as nlpUtils from '../../nlp/utils'
 
 
 
@@ -22,12 +21,12 @@ export const GENITIVE_UK_MON_MAP = new Map([
 
 ////////////////////////////////////////////////////////////////////////////////
 export function canonical(root: AbstractElement) {
-  return root.evaluateString('string(/html/head/link[@rel="canonical"]/@href)').trim()
+  return textOf(root, '/html/head/link[@rel="canonical"]/@href')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function metaProperty(root: AbstractElement, key: string) {
-  return root.evaluateString(`string(//meta[@property="${key}"]/@content)`).trim()
+  return textOf(root, `//meta[@property="${key}"]/@content`)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,20 +36,12 @@ export function ogValue(root: AbstractElement, key: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function textOf(root: AbstractElement, xpath: string) {
-  return root.evaluateString(`string(${xpath})`).trim()
+  return root.evaluateString(`string(${xpath})`)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function normalizedTextsOf(root: AbstractElement, xpath: string) {
+export function textsOf(root: AbstractElement, xpath: string) {
   return mu(root.evaluateElements(xpath))
-    .map(x => normalizeWebText(x.text()))
+    .map(x => x.text())
     .toArray()
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function normalizeWebText(value: string) {
-  return nlpUtils.removeInvisibles(value)
-    .replace(/\s+/g, ' ')
-    .replace(/\u00AD/g, '')
-    .trim()
 }

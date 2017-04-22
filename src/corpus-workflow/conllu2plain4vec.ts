@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { forEachLine } from '../utils.node'
-import { BufferedWriter } from '../lib/buffered_writer'
+import { BufferedSyncWriter } from '../lib/buffered_writer'
 
 
 
@@ -10,7 +10,7 @@ async function main() {
   let i = process.argv[2] === '--lemma' ? 1 : 0
 
   let prevLine: string
-  let writer = new BufferedWriter(process.stdout)
+  let writer = new BufferedSyncWriter(1)
   await forEachLine(process.stdin, line => {
     if (line.startsWith('#')) {
       return
@@ -24,16 +24,16 @@ async function main() {
       }
 
       if (prevLine) {
-        writer.write(' ')
+        writer.writeSync(' ')
       }
-      writer.write(cols[1 + i])
+      writer.writeSync(cols[1 + i])
     } else if (prevLine) {
-      writer.write('\n')
+      writer.writeSync('\n')
     }
 
     prevLine = line
   })
-  writer.flush()
+  writer.flushSync()
 }
 
 

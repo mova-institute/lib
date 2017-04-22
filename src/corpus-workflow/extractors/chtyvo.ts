@@ -1,21 +1,12 @@
-import { join } from 'path'
 import { parse } from 'url'
 import { readFileSync, existsSync } from 'fs'
-import { execSync } from 'child_process'
 
-import { sync as globSync } from 'glob'
 import { decode } from 'iconv-lite'
 import { AbstractElement } from 'xmlapi'
-import * as last from 'lodash.last'
-import * as shuffle from 'lodash.shuffle'
 
 import { execSync2String } from '../../child_process.node'
-import { renameTag, removeElements } from '../../xml/utils'
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
-import { autofixCorpusText, string2tokenStream } from '../../nlp/utils'
-import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
-import { Token } from '../../nlp/token'
-import { CorpusDocumentAttributes } from '../types'
+import { autofixDirtyText } from '../../nlp/utils'
 import { mu } from '../../mu'
 import { CorpusDoc } from '../doc_meta'
 
@@ -103,7 +94,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
       mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
       let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
         // todo: inline verses
-        .map(x => autofixCorpusText(x.text().trim()))
+        .map(x => autofixDirtyText(x.text().trim()))
         .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
         .toArray()
 
@@ -177,12 +168,12 @@ function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
   year = year.split(/\s/)[0]
 
   let title = getTextByClassName(root, 'h1', 'book_name')
-  title = autofixCorpusText(title)
+  title = autofixDirtyText(title)
   let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
   let translator = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
-  translator = autofixCorpusText(translator.trim())
+  translator = autofixDirtyText(translator.trim())
   let originalAutor = root.evaluateString('string(//div[@class="author_name_book"]/a/text())')
-  originalAutor = autofixCorpusText(originalAutor.trim())
+  originalAutor = autofixDirtyText(originalAutor.trim())
   if (originalAutor === 'народ Український') {
     originalAutor = 'народ'
   }
@@ -257,15 +248,11 @@ function killReferences(str: string) {
 
 //------------------------------------------------------------------------------
 function normalizeText(str: string) {
-  let ret = autofixCorpusText(str)
+  let ret = autofixDirtyText(str)
   ret = killReferences(ret)
   return ret.trim()
 }
 
-//------------------------------------------------------------------------------
-function prepareDocumentMeta(meta) {
-
-}
 
 
 /*

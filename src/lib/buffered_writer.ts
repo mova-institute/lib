@@ -1,20 +1,20 @@
-export class BufferedWriter {
+import { writeSync } from 'fs'
+
+export class BufferedSyncWriter {
   private buf = ''
 
-  constructor(private stream: NodeJS.WritableStream, private bufSize = 10 ** 7) {
+  constructor(private file: number, private bufSize = 10 ** 7) {
   }
 
-  write(value: string) {
-    if (this.buf.length + value.length >= this.bufSize) {
-      this.stream.write(this.buf + value)
-      this.buf = ''
-    } else {
-      this.buf += value
+  writeSync(value: string) {
+    this.buf += value
+    if (this.buf.length > this.bufSize) {
+      this.flushSync()
     }
   }
 
-  flush() {
-    this.stream.write('')
+  flushSync() {
+    writeSync(this.file, this.buf)
     this.buf = ''
   }
 }

@@ -1,8 +1,9 @@
 import { CorpusDoc } from '../doc_meta'
 import { tryParseHtml } from '../../xml/utils.node'
-import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
+import { normalizeWebParaSafe } from '../../nlp/utils'
 import { dayUkmonthCommaYear2date, isDayUkMonthCommaYear, toSortableDate, dayUkmonth2date } from '../../date'
 import { matchNth } from '../../lang'
+import { textsOf } from './utils'
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +16,6 @@ export function extract(html: string) {
   let url = root.evaluateString('string(/html/head/meta[@property="og:url"]/@content)').trim()
 
   let title = root.evaluateString('string(//h1/text())').trim()
-  title = normalize(title)
 
   let datetimeStr = root.evaluateString(
     'string(//div[@id="postView" or contains(@class, "post-body")]'
@@ -34,7 +34,7 @@ export function extract(html: string) {
 
   let author = root.evaluateString(
     'string(//div[@id="postView"]//div[@class="bf4"]//*[contains(@href, "/Author/")]/text())')
-  author = normalize(author)
+  author = normalizeWebParaSafe(author)
 
   let paragraphs: string[] = []
   let jumbo = root.evaluateString(
@@ -50,9 +50,9 @@ export function extract(html: string) {
   // + '|//div[@id="postBody" or contains(@class, "post-body")]//div'
   // + '|//div[@id="postBody" or contains(@class, "post-body")]/h1'
   for (let paragraphsXapth of paragraphsXapthTries) {
-    root.evaluateElements(paragraphsXapth)
-      .map(x => normalize(x.text()).trim())
-      .filter(x => !!x && !x.startsWith('Читайте також'))
+    textsOf(root, paragraphsXapth)
+      .map(x => normalizeWebParaSafe(x))
+      .filter(x => !x.startsWith('Читайте також'))
       .forEach(x => paragraphs.push(x))
     if (paragraphs.length) {
       break

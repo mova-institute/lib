@@ -25,7 +25,7 @@ import * as nlpUtils from '../nlp/utils'
 import * as nlpStatic from '../nlp/static'
 import {
   tokenizeTei, tei2tokenStream, token2sketchVertical, morphInterpret,
-  normalizeCorpusTextString, polishXml2verticalStream,
+  autofixDirtyText, polishXml2verticalStream, normalizeWebParaSafe,
 } from '../nlp/utils'
 import { mu, Mu } from '../mu'
 import { uniq } from '../algo'
@@ -162,6 +162,9 @@ function processDoc(args: Args, doc: CorpusDoc, outDir: string, relpath: string,
     console.error('no doc ✖️')
     return
   }
+
+  normalizeCorpusDoc(doc)
+
   if (!doc.paragraphs || !doc.paragraphs.length) {
     console.error('missing paragraphs ✖️')
     return
@@ -175,7 +178,7 @@ function processDoc(args: Args, doc: CorpusDoc, outDir: string, relpath: string,
     return
   }
 
-  doc.paragraphs = doc.paragraphs.map(x => x.trim())
+
   writeFileSyncMkdirp(paraPath, JSON.stringify(doc.paragraphs, undefined, 2))
 
   let meta = { ...doc }
@@ -255,6 +258,15 @@ function doVerticalStage(args: Args) {
 // }
 
 //------------------------------------------------------------------------------
+function normalizeCorpusDoc(doc: CorpusDoc) {
+  doc.paragraphs = doc.paragraphs.map(x => normalizeWebParaSafe(x)).filter(x => x)
+  doc.title = doc.title && normalizeWebParaSafe(doc.title)
+  doc.author = doc.author && normalizeWebParaSafe(doc.author)
+  doc.authors = doc.authors && doc.authors.map(x => normalizeWebParaSafe(x))
+  doc.date = doc.date && doc.date.trim()
+}
+
+//------------------------------------------------------------------------------
 function paragraphs2UdpipeInput(paragraphs: string[]) {
   return paragraphs.map(x => x.replace(/\u0301/g, '')).join('\n\n')
 }
@@ -323,7 +335,7 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
     console.log(`processing ${path}`)
     let root = parseXmlFileSync(path)
     root.evaluateNodes('//text()')
-      .forEach(x => x.text(normalizeCorpusTextString(x.text(), analyzer)))
+      .forEach(x => x.text(autofixDirtyText(x.text(), analyzer)))
     root.evaluateNodes('//s')
       .filter(x => !x.text().trim())
       .forEach(x => x.remove() && console.log('rm'))
@@ -425,7 +437,7 @@ function kontrakty(workspacePath: string, analyzer: MorphAnalyzer) {
     console.log(`processsing ${basename(file)}…`)
     let year = Number.parseInt(basename(file).replace(/\.txt$/, ''))
     let contents = fs.readFileSync(file, 'utf8')
-    contents = nlpUtils.normalizeCorpusTextString(contents)
+    contents = nlpUtils.autofixDirtyText(contents)
 
     let stream = nlpUtils.string2tokenStream(contents, analyzer)
       .map(x => nlpUtils.token2sketchVertical(x))

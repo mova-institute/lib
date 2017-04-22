@@ -1,5 +1,5 @@
 import { tryParseHtml } from '../../xml/utils.node'
-import * as utils from './utils'
+import { canonical, ogValue, metaProperty, textOf, textsOf } from './utils'
 import { CorpusDoc } from '../doc_meta'
 
 
@@ -12,14 +12,13 @@ export function extract(html: string) {
     return
   }
 
-  let url = utils.canonical(root)
-  let title = utils.ogValue(root, 'title')
-  let date = utils.metaProperty(root, 'article:published_time').substr(0, 10)
-  let author = utils.textOf(root,
-    '//li[@class="createdby" and @itemprop="author"]/span[@class="name" or @itemprop="name"]')
-    || utils.textOf(root, '//div[@class="media"]//h4[@class="media-heading"]/a')
-  let paragraphs = utils.normalizedTextsOf(root,
-    '//div[@class="article-text"]//p')
+  let url = canonical(root)
+  let title = ogValue(root, 'title')
+  let date = metaProperty(root, 'article:published_time').substr(0, 10)
+  let author =
+    textOf(root, '//li[@class="createdby" and @itemprop="author"]/span[@class="name" or @itemprop="name"]')
+    || textOf(root, '//div[@class="media"]//h4[@class="media-heading"]/a')
+  let paragraphs = textsOf(root, '//div[@class="article-text"]//p')
 
   if ([url, title, date].some(x => !x)) {
     console.error(`===NOT`)

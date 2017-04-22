@@ -1,4 +1,3 @@
-import * as nlpUtils from '../../nlp/utils'
 import { removeTags } from '../../xml/utils'
 import { parseHtml } from '../../xml/utils.node'
 import * as capitalize from 'lodash.capitalize'
@@ -9,6 +8,8 @@ import { ogValue } from './utils'
 ////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
   let root = parseHtml(html)
+
+  let url = ogValue(root, 'url').replace(/\/fb$/, '')
 
   let title = root.evaluateString('string(//h1[@class="titleMain"])')
   if (title) {
@@ -41,10 +42,9 @@ export function extract(html: string) {
     }
   }
   content = removeTags(content)
-  content = nlpUtils.normalizeCorpusTextString(content)
+  // content = nlpUtils.normalizeCorpusTextString(content)
   let paragraphs = content && content.split(/[\n\r]+/).filter(x => x.trim()) || []
 
-  let url = ogValue(root, 'url').replace(/\/fb$/, '')
 
 
   return {
