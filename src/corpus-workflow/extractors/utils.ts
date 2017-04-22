@@ -26,8 +26,13 @@ export function canonical(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function metaProperty(root: AbstractElement, key: string) {
+  return root.evaluateString(`string(//meta[@property="${key}"]/@content)`).trim()
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function ogValue(root: AbstractElement, key: string) {
-  return root.evaluateString(`string(//meta[@property="og:${key}"]/@content)`).trim()
+  return metaProperty(root, `og:${key}`)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
