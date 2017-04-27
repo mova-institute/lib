@@ -11,8 +11,8 @@ export function extract(html: string) {
 
   let url = textOf(root, '/html/@itemid')
   let date = textOf(root, '//meta[@property="article:published_time"]/@content')
-  let title = textOf(root, 'string(//meta[@property="og:title"]/@content')
-  let author = textOf(root, 'string(//a[contains(@class, "author_")]/text()')
+  let title = textOf(root, '//meta[@property="og:title"]/@content')
+  let author = textOf(root, '//a[contains(@class, "author_")]/text()')
   let paragraphs = textsOf(root, '//div[contains(@class, "body_gzn")]/p')
 
   return { url, date, title, author, paragraphs: [...paragraphs] } as CorpusDoc
