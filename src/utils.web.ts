@@ -114,13 +114,15 @@ export interface IWebapiCollection<T> {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-export function collection2array<T>(collection: IWebapiCollection<T>) {
-  let ret = new Array<T>()
+export function* iterateCollection<T>(collection: IWebapiCollection<T>) {
   for (let i = 0; i < collection.length; ++i) {
-    ret.push(collection.item(i))
+    yield collection.item(i)
   }
+}
 
-  return ret
+//////////////////////////////////////////////////////////////////////////////
+export function collection2array<T>(collection: IWebapiCollection<T>) {
+  return [...iterateCollection(collection)]
 }
 
 //////////////////////////////////////////////////////////////////////////////
