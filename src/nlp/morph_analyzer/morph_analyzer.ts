@@ -155,6 +155,10 @@ const gluedPrefixes = [
   'ультра',
   'фіз',
   'фото',
+  'проти',
+  'кіно',
+  'ново',
+  'євро',
 ]
 const INITIALS_RE = new RegExp(`^[${LETTER_UK_UPPERCASE}]$`)
 const UK_LOWERCASE_RE = new RegExp(`^[${LETTER_UK_LOWERCASE}]$`)
@@ -188,7 +192,7 @@ const PREFIX_SPECS = [
   {
     prefixes: ['обі', 'від', 'об', 'по', 'роз', 'за', 'з', 'у', 'пере', 'ви', 'на', 'пови', 'про'],
     pretest: (x: string) => x.length > 4,
-    test: (x: MorphInterp) => x.isVerb() && x.isImperfect(),
+    test: (x: MorphInterp) => x.isVerbial() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
   },
   {
