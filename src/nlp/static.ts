@@ -18,7 +18,7 @@ export const WORDCHAR_RE = new RegExp(`^[${WORDCHAR}]+$`)
 
 export const URL_RE = /^(https?:\/\/|www\.)\w+(\.\w+)+(\/([\w/\-]+)?)?$/
 export const EMAIL_RE = /^[\w\.]+@\w+(\.\w+)+$/
-export const ARABIC_NUMERAL_RE = /^(\d+[½]?|\d+[,.]\d+|\d+( 000)+)$/
+export const ARABIC_NUMERAL_RE = /^(\d+[½]?|\d+[,.]\d+|\d+([ ,]000)+)$/
 export const ROMAN_NUMERAL_RE = /^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/
 export const SYMBOL_RE = new RegExp(r`^([@#$*+×÷=<>♥∙·❤❄~←→↑↓]|${EMOJIS}|:\()$`)
 export const LITERAL_SMILE_RE = /^:\w+:$/
