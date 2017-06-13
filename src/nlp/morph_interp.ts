@@ -395,6 +395,7 @@ export const FEATURE_ORDER = {
     Abbreviation,
     PrepositionRequirement,
     Pronoun,
+    Polarity,
     VerbType,
     OrdinalNumeral,
     AdjectiveAsNoun,

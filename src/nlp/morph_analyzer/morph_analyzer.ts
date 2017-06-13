@@ -190,7 +190,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'від', 'об', 'по', 'роз', 'за', 'з', 'із', 'у', 'уві', 'пере', 'ви', 'на', 'пови', 'про'],
+    prefixes: ['обі', 'від', 'об', 'по', 'попо', 'роз', 'за', 'з', 'із', 'у', 'уві', 'пере', 'ви', 'на', 'пови', 'про'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerbial() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
@@ -475,7 +475,7 @@ export class MorphAnalyzer {
       let ending = lowercase.slice(-2)
       if (ending === 'ся' || ending === 'сь') {
         let toadd = this.lookup(lowercase.slice(0, -2))
-          // .filter(x => x.isParticiple())
+          .filter(x => x.isVerbial())
           .map(x => x.setIsReflexive().setLemma(x.lemma + 'ся'))
         res.addAll(toadd)
       }
