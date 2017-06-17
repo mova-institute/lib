@@ -1,3 +1,23 @@
+   temp-calculate text lengthes
+      for (let chunk of root.evaluateElements(`//*[@src]`)) {
+        let src = chunk.attribute('src')
+        if (!src || sett.has(src)) {
+          continue
+        }
+        sett.add(src)
+        let count = chunk.evaluateNumber(`count(.//w_)`) || chunk.evaluateNumber(`count(.//w)`)
+        if (!count) {
+          tokenizeTei(chunk, analyzer)
+          count = chunk.evaluateNumber(`count(.//w)`)
+        }
+        count += chunk.evaluateNumber(`count(.//pc)`)
+        console.log(`${src}\t${count}`)
+      }
+      continue
+
+
+
+
 //------------------------------------------------------------------------------
 function adoptBratRelationsNoN() {
   let [xmlFile, bratFilesGlob, nStr] = process.argv.slice(2)

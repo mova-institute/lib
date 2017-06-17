@@ -14,7 +14,7 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 
 
 function main() {
-  let globStr = process.argv[2]
+  let [globStr, sequencePath] = process.argv.slice(2)
   let files = glob.sync(globStr)
   let wc = 0
 
@@ -22,6 +22,8 @@ function main() {
   for (let filePath of files) {
     fs.writeFileSync(filePath, removeNamespacing(fs.readFileSync(filePath, 'utf8')))
   }
+
+  let idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
 
   console.log(`calculating max sentence id…`)
   let maxSid = 0
@@ -68,6 +70,7 @@ function main() {
       let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
       let interpEls = root.evaluateElements('//w_/w')
       for (let interpEl of interpEls) {
+        // continue
         let form = interpEl.text()
         let tag = interpEl.attribute('ana')
         let lemma = interpEl.attribute('lemma')
@@ -140,12 +143,22 @@ function main() {
         saveInterp(interpEl, interp)
       }
 
+      // give each token an id
+      let tokens = root.evaluateElements('//w_|//pc')
+      for (let token of tokens) {
+        if (!token.attribute('id')) {
+          token.setAttribute('id', (idSequence++).toString(36))
+        }
+      }
+
       fs.writeFileSync(file, serializeMiDocument(root))
     } catch (e) {
       console.error(`Error in file "${file}"`)
       throw e
     }
   }
+
+  fs.writeFileSync(sequencePath, idSequence)
   console.log(`${wc} words`)
 }
 

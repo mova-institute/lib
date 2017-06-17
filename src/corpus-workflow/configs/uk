@@ -20,11 +20,37 @@ ATTRIBUTE word {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE lc {
+  LABEL "слово (мал. літерами)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR word
+  TYPE index
+  TRANSQUERY yes
+}
+
 ATTRIBUTE lemma {
   LABEL "лема"
   MULTIVALUE yes
   MULTISEP  "|"
   TYPE "FD_FGD"
+}
+
+ATTRIBUTE lemma_lc  {
+  LABEL "лема (мал. літерами)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR lemma
+  TYPE index
+  TRANSQUERY yes
 }
 
 ATTRIBUTE pos {
@@ -216,31 +242,24 @@ ATTRIBUTE urel {
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE lc {
-  LABEL "слово (мал. літерами)"
+ATTRIBUTE tag  {
+#  LABEL "лема (мал. літерами)"
   MULTIVALUE yes
   MULTISEP "|"
   DYNAMIC utf8lowercase
   DYNLIB internal
   ARG1 "C"
   FUNTYPE s
-  FROMATTR word
+  FROMATTR pos
   TYPE index
   TRANSQUERY yes
 }
 
-ATTRIBUTE lemma_lc  {
-  LABEL "лема (мал. літерами)"
-  MULTIVALUE yes
-  MULTISEP "|"
-  DYNAMIC utf8lowercase
-  DYNLIB internal
-  ARG1 "C"
-  FUNTYPE s
-  FROMATTR lemma
-  TYPE index
-  TRANSQUERY yes
+ATTRIBUTE id {
+  LABEL "номер токена"
+  TYPE "FD_FGD"
 }
+
 
 
 ################################################################################
@@ -332,4 +351,4 @@ FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,d
 STRUCTATTRLIST "doc.reference_title,doc.author,doc.date,doc.type"
 SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
 #FREQTTATTRS ""
-WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,займенник,P.*,прислівник,R.*,прийменник,S.*,сполучник,C.*,числівник,M.*,частка,Q.*,вигук,I.*,скорочення,Y.*,розділовий,U.*,залишок,X.*"
+WPOSLIST ",іменник,noun|propn,дієслово,verb,прикметник,adj,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,розділовий,punct,залишок,x"

@@ -2,7 +2,7 @@ import { UdPos, UdFeats } from '../nlp/ud/tagset'
 import { trimAfterLast } from '../string_utils'
 
 ////////////////////////////////////////////////////////////////////////////////
-export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats, rel: string) {
+export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats, rel: string, id?: string) {
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
 
@@ -35,6 +35,7 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
     feats.Voice,
     rel,
     urel,
+    id && `#${id}`,
   ].map(x => x || '').join('\t').toLowerCase()
 
   return ret
