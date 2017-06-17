@@ -12,11 +12,11 @@ elif [ $1 == "annotator" ]
     if [[ -z $2 ]]
       then
         echo "Running dry-run"
-        rsync --dry-run -rlpcgoD --force --delete --exclude 'node_modules/libxmljs/build'            -i -e ssh $SOURCE $REMOTE:$DEST | pcregrep '^[<>*]' || exit 1
+        rsync --dry-run -rlpcgoDL --force --delete --exclude 'node_modules/libxmljs/build'            -i -e ssh $SOURCE $REMOTE:$DEST | pcregrep '^[<>*]' || exit 1
     elif [ $2 == "go" ]
       then
         echo "Running actual deploy"
-        rsync           -rlpcgoD --force --delete --exclude 'node_modules/libxmljs/build' --progress    -e ssh $SOURCE $REMOTE:$DEST                    || exit 1
+        rsync           -rlpcgoDL --force --delete --exclude 'node_modules/libxmljs/build' --progress    -e ssh $SOURCE $REMOTE:$DEST                    || exit 1
         ssh $REMOTE "cd $DEST && pm2 restart annotator" || exit 1
     else
       echo $ERRORSTRING;
