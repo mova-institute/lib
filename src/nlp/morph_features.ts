@@ -166,6 +166,10 @@ export enum ConjunctionType {
   subordinative,
   coordinating,
 }
+export enum PartType {
+  personal,
+  consequential,
+}
 export enum NumberTantum { noPlural, noSingular }
 export enum NameType { first, last, patronym, nick }
 

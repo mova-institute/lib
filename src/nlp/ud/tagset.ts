@@ -6,6 +6,7 @@ import {
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
+  PartType,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
@@ -35,6 +36,7 @@ export type UdStyle = 'Coll' | 'Rare' | 'Odd'
 export type UdTypo = UdBoolean
 export type UdOrth = 'Khark'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
+export type UdPartType = 'Prs' | 'Conseq'
 export type UdPolite = 'Form'
 export type UdPos =
   'ADJ' |
@@ -101,6 +103,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Formality, 'Polite'],
   [Typo, 'Typo'],
   [Alternativity, 'Orth'],
+  [PartType, 'PartType'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -253,6 +256,11 @@ const orthoMap = new Map<Alternativity, UdOrth>([
   [Alternativity.yes, 'Khark'],
 ])
 
+const partTypeMap = new Map<PartType, UdPartType>([
+  [PartType.personal, 'Prs'],
+  [PartType.consequential, 'Conseq'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -281,6 +289,7 @@ const mapMap = new Map<any, any>([
   [PrepositionRequirement, prepositionRequirementMap],
   [Formality, politeMap],
   [Alternativity, orthoMap],
+  [PartType, partTypeMap],
 ])
 
 

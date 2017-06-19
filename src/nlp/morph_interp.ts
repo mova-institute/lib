@@ -10,7 +10,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo,
+  PrepositionRequirement, Typo, PartType,
 } from './morph_features'
 
 
@@ -38,6 +38,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [NumeralForm, 'numeralForm'],
   [Oddness, 'oddness'],
   [OrdinalNumeral, 'ordinalNumeral'],
+  [PartType, 'partType'],
   [ParadigmOmonym, 'paradigmOmonym'],
   [Person, 'person'],
   [Pos, 'pos'],
@@ -83,6 +84,7 @@ const NONGRAMMATIACAL_FEATURES = [
   Slang,
   Typo,
   VuAlternativity,
+  PartType,
 ]
 
 
@@ -240,6 +242,8 @@ export const FEATURE_TABLE = [
 
   { featStr: 'typo', feat: Typo, vesum: Typo.yes, vesumStr: 'typo' },
 
+  { featStr: 'partType', feat: PartType, vesum: PartType.consequential, vesumStr: 'conseq' },
+
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
@@ -382,6 +386,7 @@ export const FEATURE_ORDER = {
   ],
   other: [  // todo check
     Pos,
+    PartType,
     Degree,
     ConjunctionType,
     Case, RequiredCase,
@@ -441,6 +446,7 @@ export class Features {
   oddness: Oddness
   ordinalNumeral: OrdinalNumeral
   paradigmOmonym: ParadigmOmonym
+  partType: PartType
   person: Person
   polarity: Polarity  // the only ambig flag (neg)
   possessiveness: Possessiveness
