@@ -1,0 +1,20 @@
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+
+
+
+export class FileSavedValue<T> {
+  private value: T
+
+  constructor(private path: string, parser: (string) => T) {
+    this.value = parser(readFileSync(path))
+  }
+
+  get() {
+    return this.value
+  }
+
+  setAndWrite(newValue: T) {
+    this.value = newValue
+    writeFileSync(this.path, this.value)
+  }
+}
