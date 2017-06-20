@@ -45,6 +45,7 @@ export type Ud20MiSpecificRelation =
   'det:nummod' |
   'flat:foreign' |
   'flat:name' |
+  'flat:title' |
   'iobj:mark' |
   'nsubj:mark' |
   'obj:mark' |

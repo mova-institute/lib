@@ -18,6 +18,7 @@ import { MorphInterp } from '../../nlp/morph_interp'
 import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
 import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
+import { zerofillMax } from '../../string_utils'
 
 
 
@@ -76,18 +77,24 @@ function main() {
       reportErrors: 'report-errors',
     },
     default: {
-      reportErrors: 'none',
+      reportErrors: 'all',
+      reportHoles: true,
       datasetSchema: 'mi',
     }
   }) as any
 
   let [globStr, outDir] = args._
   let xmlPaths = glob.sync(globStr)
+  if (!xmlPaths.length) {
+    return
+  }
+
   mkdirp.sync(outDir)
 
   let openedFiles = {} as any
   let datasetRegistry = {} as Dict<Dataset>
-  let problemCounter = 1
+  let sentenseErrors = []
+  let sentenseHoles = []
   for (let xmlPath of xmlPaths) {
     let basename = path.basename(xmlPath)
 
@@ -103,25 +110,39 @@ function main() {
       if (hasSyntax) {
         datasetRegistry[set] = datasetRegistry[set] || new Dataset()
 
-        // let numTokens = mu(tokens).count(x => !x.interp.isPunctuation())
         let numTokens = tokens.length
         let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
         let isComplete = roots.length === 1
 
         if (!roots.length) {
           datasetRegistry[set].counts.wordsKept += numTokens
-          console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'цикл' }], problemCounter++))
+          sentenseErrors.push({
+            sentenceId,
+            problems: [{ message: 'цикл' }],
+            tokens: tokens.map(x => x.toString()),
+            bratPath: getBratPath(tokens[0]),
+          })
           continue
         } else if (!isComplete && args.reportHoles) {
-          console.error(formatProblems(basename, sentenceId, tokens, [{ message: 'речення недороблене', indexes: roots }], problemCounter++))
+          sentenseHoles.push({
+            sentenceId,
+            problems: [{ message: 'речення недороблене', indexes: roots }],
+            tokens: tokens.map(x => x.toString()),
+            bratPath: getBratPath(tokens[0]),
+          })
         }
 
         let hasProblems = false
         if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
-          var problems = validateSentenceSyntax(tokens)
+          let problems = validateSentenceSyntax(tokens)
           hasProblems = !!problems.length
-          if (hasProblems && args.reportErrors !== 'none') {
-            console.error(formatProblems(basename, sentenceId, tokens, problems, problemCounter++))
+          if (hasProblems && args.reportErrors) {
+            sentenseErrors.push({
+              problems,
+              sentenceId,
+              tokens: tokens.map(x => x.toString()),
+              bratPath: getBratPath(tokens[0]),
+            })
           }
         }
 
@@ -153,6 +174,14 @@ function main() {
       let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { morphOnly: true })
       fs.writeSync(file, conlluedSentence + '\n\n')
     }
+  }
+
+  if (sentenseErrors.length) {
+    fs.writeFileSync(path.join(outDir, 'errors.html'), formatProblemsHtml(sentenseErrors))
+  }
+
+  if (sentenseHoles.length) {
+    fs.writeFileSync(path.join(outDir, 'holes.html'), formatProblemsHtml(sentenseHoles))
   }
 
   printStats(datasetRegistry)
@@ -188,25 +217,39 @@ function printStats(datasetRegistry: Dict<Dataset>) {
 }
 
 //------------------------------------------------------------------------------
-function formatProblems(docName: string, sentenceId: string, tokens: Token[], problems: any[], count: number) {
-  let tokenWithDepsrc = tokens.find(x => x.getAttribute('depsrc'))
-  let bratPath = tokenWithDepsrc && tokenWithDepsrc.getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
-  let href = `https://lab.mova.institute/brat/index.xhtml#/ud/${bratPath}`
-  let ret = `*** [${count}] Проблеми в реченні ${sentenceId} ${href}\n\n`
-  let repro = tokens.join(' ')
-  for (let { indexes, message } of problems) {
-    ret += `    ${message}\n`
-    ret += `${repro}\n`
-    if (indexes !== undefined) {
-      for (let j = 0; j < tokens.length; ++j) {
-        let char = indexes.includes(j) ? '^' : ' '
-        ret += char.repeat(tokens[j].form.length) + ' '
+function getBratPath(token: Token) {
+  return token.getAttribute('depsrc').slice('/Users/msklvsk/Developer/mova-institute/playground/4brat/'.length, -4)
+}
+
+//------------------------------------------------------------------------------
+function formatProblemsHtml(sentenceProblems: any[]) {
+  let body = ''
+  for (let [i, { sentenceId, problems, tokens, bratPath }] of sentenceProblems.entries()) {
+    let href = `https://lab.mova.institute/brat/index.xhtml#/ud/${bratPath}`
+    let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
+
+    body += `<div><b>#${problemNumber}</b> реч.#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`
+    for (let { indexes, message } of problems) {
+      body += `<p class="message">- ${message}</p>`
+      if (indexes !== undefined) {
+        for (let j = 0; j < tokens.length; ++j) {
+          if (indexes.includes(j)) {
+            body += `<span class="error">${tokens[j]}</span> `
+          } else {
+            body += `${tokens[j]} `
+          }
+        }
       }
-      ret += '\n'
+      body += `<br/><br/>`
     }
+    body += `<div><hr/>`
   }
-  ret += '\n'
-  return ret
+
+  return `<html><head><style>
+    html { padding: 3em; font-size: 14px; font-family: "Lucida Console", Menlo, Monaco, monospace; }
+    .error { padding: 0.25em; border: 2px solid #FFAB40; color: #555; }
+    .message { color: #555; margin-left:-2ch; }
+  </style></head><body>${body}</body>`
 }
 
 //------------------------------------------------------------------------------

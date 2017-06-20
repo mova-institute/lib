@@ -34,6 +34,7 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'fixed',
   'flat:foreign',
   'flat:name',
+  'flat:title',
   'flat',
   'goeswith',
   'iobj',
