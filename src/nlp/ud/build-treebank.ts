@@ -9,6 +9,7 @@ import * as mkdirp from 'mkdirp'
 import * as columnify from 'columnify'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
+import { escape } from '../../xml/utils'
 import { tei2tokenStream, tokenStream2sentences, normalizeMorphoForUd } from '../../nlp/utils'
 import { last } from '../../lang'
 import { Dict } from '../../types'
@@ -177,6 +178,8 @@ function main() {
   }
 
   if (sentenseErrors.length) {
+    // console.log(sentenseErrors.length)
+
     fs.writeFileSync(path.join(outDir, 'errors.html'), formatProblemsHtml(sentenseErrors))
   }
 
@@ -230,11 +233,11 @@ function formatProblemsHtml(sentenceProblems: any[]) {
 
     body += `<div><b>#${problemNumber}</b> реч.#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`
     for (let { indexes, message } of problems) {
-      body += `<p class="message">- ${message}</p>`
+      body += `<p class="message">- ${escape(message)}</p>`
       if (indexes !== undefined) {
         for (let j = 0; j < tokens.length; ++j) {
           if (indexes.includes(j)) {
-            body += `<span class="error">${tokens[j]}</span> `
+            body += `<span class="error">${escape(tokens[j])}</span> `
           } else {
             body += `${tokens[j]} `
           }
@@ -242,14 +245,14 @@ function formatProblemsHtml(sentenceProblems: any[]) {
       }
       body += `<br/><br/>`
     }
-    body += `<div><hr/>`
+    body += `</div><hr/>\n`
   }
 
   return `<html><head><style>
     html { padding: 3em; font-size: 14px; font-family: "Lucida Console", Menlo, Monaco, monospace; }
     .error { padding: 0.25em; border: 2px solid #FFAB40; color: #555; }
     .message { color: #555; margin-left:-2ch; }
-  </style></head><body>${body}</body>`
+  </style></head><body>${body}</body></html>`
 }
 
 //------------------------------------------------------------------------------

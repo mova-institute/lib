@@ -327,10 +327,10 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
     if (messageFrom && predicateFrom) {
-      reportIf(`${rel} не ${messageFrom}`, (t, i) => t.rel === rel && !predicateFrom(sentence[t.head], sentence, t.head))
+      reportIf(`${rel} не ${messageFrom}`, (t, i) => t.rel === rel && !sentence[t.head].interp0().isForeign() && !predicateFrom(sentence[t.head], sentence, t.head))
     }
     if (messageTo && predicateTo) {
-      reportIf(`${rel} не ${messageTo}`, (t, i) => t.rel === rel && !predicateTo(t, sentence, i))
+      reportIf(`${rel} не ${messageTo}`, (t, i) => t.rel === rel && !t.interp0().isForeign() && !predicateTo(t, sentence, i))
     }
   }
   // return problems
@@ -419,7 +419,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && (x.interp.isNominative() || x.interp.isAccusative() /*|| /^\d+$/.test(x.form)*/)
       && sentence[x.head].interp.isGenitive())
 
-  reportIf(`:pass-реляція?`,
+  xreportIf(`:pass-реляція?`,
     x => !x.isPromoted
       && ['aux', 'csubj', 'nsubj'].includes(x.rel)
       && sentence[x.head]

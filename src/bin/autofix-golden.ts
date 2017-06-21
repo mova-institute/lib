@@ -16,14 +16,18 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 function main() {
   let [globStr, sequencePath] = process.argv.slice(2)
   let files = glob.sync(globStr)
-  let wc = 0
+  let tokenCount = 0
 
   console.log(`removing legacy namespaces…`)
   for (let filePath of files) {
     fs.writeFileSync(filePath, removeNamespacing(fs.readFileSync(filePath, 'utf8')))
   }
 
-  let idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
+  if (fs.existsSync(sequencePath)) {
+    var idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
+  } else {
+    idSequence = 0
+  }
 
   console.log(`calculating max sentence id…`)
   let maxSid = 0
@@ -57,9 +61,8 @@ function main() {
         .forEach(el => el.setAttribute('sid', ++maxSid))
 
       // remove redundant attributes
-      let words = [...root.evaluateElements('//w_')]
-      wc += words.length
-      for (let w of words) {
+      let tokens = [...root.evaluateElements('//w_|//pc')]
+      for (let w of tokens) {
         w.removeAttribute('nn')
         w.removeAttribute('disamb')
         w.removeAttribute('author')
@@ -144,10 +147,11 @@ function main() {
       }
 
       // give each token an id
-      let tokens = root.evaluateElements('//w_|//pc')
+      tokens = [...root.evaluateElements('//w_|//pc')]
+      tokenCount += tokens.length
       for (let token of tokens) {
         if (!token.attribute('id')) {
-          token.setAttribute('id', (idSequence++).toString(36))
+          // token.setAttribute('id', (idSequence++).toString(36).padStart(4, '0'))
         }
       }
 
@@ -158,8 +162,10 @@ function main() {
     }
   }
 
-  fs.writeFileSync(sequencePath, idSequence)
-  console.log(`${wc} words`)
+  if (fs.existsSync(sequencePath)) {
+    fs.writeFileSync(sequencePath, idSequence)
+  }
+  console.log(`${tokenCount} tokens`)
 }
 
 //------------------------------------------------------------------------------

@@ -27,6 +27,7 @@ function main() {
   let maxWordsPerFile = parseIntStrict(args.n)
   let inputFiles = glob.sync(args._[0], { nodir: true })
   for (let file of inputFiles) {
+    // console.error(file)
     let base = trimExtension(basename(file))
     let root = parseXmlFileSync(file)
     let dest = join(args.dest, base)
