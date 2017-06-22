@@ -326,6 +326,9 @@ STRUCTURE g {
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
 }
+#STRUCTURE gap {
+#  LABEL "пропуск"
+#}
 
 
 ################################################################################

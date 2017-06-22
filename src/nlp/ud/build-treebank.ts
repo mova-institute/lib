@@ -7,6 +7,7 @@ import * as glob from 'glob'
 import * as minimist from 'minimist'
 import * as mkdirp from 'mkdirp'
 import * as columnify from 'columnify'
+import * as _ from 'lodash'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
@@ -105,7 +106,7 @@ function main() {
     let tokenStream = tei2tokenStream(root, args.datasetSchema)
     let sentenceStream = mu(tokenStream2sentences(tokenStream))
     for (let { sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
-      initSyntax(tokens)
+      initSyntax(tokens, sentenceId)
       let hasSyntax = tokens.some(x => x.hasDeps())
       set = args.oneSet || set || 'unassigned'
       if (hasSyntax) {
@@ -178,8 +179,7 @@ function main() {
   }
 
   if (sentenseErrors.length) {
-    // console.log(sentenseErrors.length)
-
+    sentenseErrors = transposeProblems(sentenseErrors)
     fs.writeFileSync(path.join(outDir, 'errors.html'), formatProblemsHtml(sentenseErrors))
   }
 
@@ -188,6 +188,21 @@ function main() {
   }
 
   printStats(datasetRegistry)
+}
+
+//------------------------------------------------------------------------------
+function transposeProblems(problems: any[]) {
+  let problemsByType = []
+  for (let sentence of problems) {
+    for (let problem of sentence.problems || []) {
+      let sentWithOneProblem = { ...sentence }
+      sentWithOneProblem.problems = [problem]
+      problemsByType.push(sentWithOneProblem)
+    }
+  }
+  problemsByType = _.sortBy(problemsByType, x => x.problems[0].message)
+
+  return problemsByType
 }
 
 //------------------------------------------------------------------------------
@@ -261,7 +276,7 @@ function set2filename(dir: string, setSchema: string, setName: string) {
 }
 
 //------------------------------------------------------------------------------
-function initSyntax(sentence: Array<Token>) {
+function initSyntax(sentence: Array<Token>, sentenceId: string) {
   let id2i = {} as any
   for (let i = 0; i < sentence.length; ++i) {
     id2i[sentence[i].id] = i
@@ -271,12 +286,7 @@ function initSyntax(sentence: Array<Token>) {
     for (let dep of token.deps) {
       if (!changed.has(token.id)) {
         if (id2i[token.head] === undefined) {
-          // console.log(`head outside sentence`)
-          console.log(sentence)
-          console.log(id2i)
-          console.log(token.id)
-          console.log(token.head)
-          throw new Error(`head outside sentence`)
+          throw new Error(`head outside sentence #${sentenceId} token #${token.getAttribute('id')}`)
         }
         dep.head = id2i[token.head]
         changed.add(token.id)

@@ -5,7 +5,8 @@ import * as fs from 'fs'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
-import { numerateTokensGently, serializeMiDocument, setTenseIfConverb } from '../nlp/utils'
+import { numerateTokensGently, serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret } from '../nlp/utils'
+// import { $t } from '../nlp/text_token'
 import { removeNamespacing } from '../xml/utils'
 import { mu } from '../mu'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
@@ -47,12 +48,7 @@ function main() {
       // set missing token numbers
       numerateTokensGently(root)
 
-      // rename sentence boundaries
-      mu(root.evaluateElements('//se'))
-        .forEach(x => {
-          x.insertAfter(root.document().createElement('sb'))
-          x.remove()
-        })
+      renameStructures(root)
 
       // set missing sentence ids
       root.evaluateElements('//sb')
@@ -68,9 +64,29 @@ function main() {
         w.removeAttribute('author')
       }
 
-      // do safe transforms
+
       let dict = createDictionarySync()
       let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
+
+      // tokens.forEach(el => {
+      //   let t = $t(el)
+
+      //   let interps = [...el.elementChildren()]
+      //   if (interps.length === 1) {
+      //     let form = t.text()
+      //     let lemma = t.lemmaIfUnamb()
+      //     if ((!lemma || !lemma.startsWith('будь-')) && /[^\-\d]-[^\-]/.test(form)) {
+      //       if (!analyzer.tag(form).length) {
+      //         el.insertBefore(el.firstElementChild().firstChild())
+      //         el.remove()
+      //       }
+      //     }
+      //   }
+      // })
+      // tokenizeTei(root, analyzer)
+      // morphInterpret(root, analyzer)
+
+      // do safe transforms
       let interpEls = root.evaluateElements('//w_/w')
       for (let interpEl of interpEls) {
         // continue
@@ -145,24 +161,27 @@ function main() {
 
         saveInterp(interpEl, interp)
       }
+      tokenCount += [...root.evaluateElements('//w_|//pc')].length
 
       // give each token an id
-      tokens = [...root.evaluateElements('//w_|//pc')]
-      tokenCount += tokens.length
+      const idedElements = ['doc', 'p', 'sb', 's', 'w_', 'pc']
+      tokens = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
       for (let token of tokens) {
         if (!token.attribute('id')) {
-          // token.setAttribute('id', (idSequence++).toString(36).padStart(4, '0'))
+          token.setAttribute('id', (idSequence++).toString(36).padStart(4, '0'))
         }
       }
 
-      fs.writeFileSync(file, serializeMiDocument(root))
+      let content = serializeMiDocument(root)
+      // content = beautify(content, { indent_size: 2 })
+      fs.writeFileSync(file, content)
     } catch (e) {
       console.error(`Error in file "${file}"`)
       throw e
     }
   }
 
-  if (fs.existsSync(sequencePath)) {
+  if (sequencePath) {
     fs.writeFileSync(sequencePath, idSequence)
   }
   console.log(`${tokenCount} tokens`)
@@ -182,4 +201,28 @@ if (require.main === module) {
 function isNoninfl(interp: MorphInterp) {
   return interp.isConjunction() || interp.isParticle() || interp.isAdverb()
     || interp.isPreposition() || interp.isInterjection() || interp.isPunctuation()
+}
+
+//------------------------------------------------------------------------------
+function renameStructures(root: AbstractElement) {
+  // rename sentence boundaries
+  mu(root.evaluateElements('//se'))
+    .forEach(x => {
+      x.insertAfter(root.document().createElement('sb'))
+      x.remove()
+    })
+
+  // let elems = [...root.evaluateElements('chunk').filter(x => !x.ancestors().find(xx => xx.localName() === 'chunk'))]
+  // elems.forEach(x => x)
+
+  const DOC_META_ATTRS = [
+    'src',
+    'title',
+    'author',
+    'date',
+  ]
+  root.evaluateElements('//doc').forEach(doc =>
+    DOC_META_ATTRS.forEach(attr =>
+      !doc.attribute(attr) && doc.setAttribute(attr, '')))
+
 }

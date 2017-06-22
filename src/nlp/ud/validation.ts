@@ -264,7 +264,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`case`, `з іменника`,
     t => isNounishOrElliptic(t) || t.interp.isAdjective() && t.interp.isPronoun() || t.isPromoted && t.interp.isCardinalNumeral(),
     `в прийменник`,
-    t => t.interp.isPreposition()],
+    (t, s, i) => t.interp.isPreposition() || s.some(t2 => t2.head === i && t2.rel === 'fixed')],
   [`det`, `з іменника`, (t, s, i) => isNounishOrElliptic(t) || s.some(tt => tt.rel === 'acl' || tt.head === i) || t.tags.includes('adjdet'), `в DET`, t => toUd(t.interp).pos === 'DET'],
   [`amod`, `з іменника`, t => isNounishOrElliptic(t), `в прикметник`, t => t.interp.isAdjectivish()],
   [`nmod`, `з іменника`, t => isNounishOrElliptic(t), `в іменник`, t => isNounishOrElliptic(t)],
@@ -385,7 +385,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && !['advmod', undefined].includes(x.rel))
 
   reportIf('не cc в сурядий на початку речення',
-    (x, i) => i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.rel))
+    (x, i) => x.rel && i === 0 && x.interp.isCoordinating() && !['cc'].includes(x.rel))
 
   var predicates = new Set<number>()
   sentence.forEach((x, i) => {

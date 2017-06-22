@@ -17,11 +17,22 @@ export function cantBeXml(str: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function escape(value: string) {   // todo
-  return value.replace(/&/g, '&amp;')
+  return value
+    .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function unescape(value: string) {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, '\'')
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 import {
   NS, nameNs, traverseDepth, traverseDepthEl, sortChildElements,
-  traverseDepthGen2, keyvalue2attributesNormalized,
+  traverseDepthGen2,
 } from '../xml/utils'
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
@@ -22,6 +22,7 @@ import { mu, Mu } from '../mu'
 import { startsWithCapital } from '../string_utils'
 import { Token, TokenType, Structure } from './token'
 import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
+import { keyvalue2attributesNormalized } from './noske_utils'
 
 import * as uniq from 'lodash.uniq'
 import * as sortedUniq from 'lodash.sorteduniq'
@@ -274,7 +275,7 @@ export function isRegularizedFlowElement(el: AbstractElement) {
   return ret
 }
 
-const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'sb', 'doc'])
+const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'sb', 'doc', 'gap'])
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement) {
   let subroots = [root]
@@ -1059,6 +1060,9 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
           continue
         case 'g':
           yield Token.glue()
+          continue
+        case 'gap':
+          yield Token.gap()
           continue
         default:
           continue

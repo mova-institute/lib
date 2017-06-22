@@ -1,5 +1,5 @@
 import { CorpusDoc } from './doc_meta'
-import { keyvalue2attributesNormalized } from '../xml/utils'
+import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
 import { makeObject } from '../lang'
 import { token2verticalLine } from './ud'
 // import { UdPos, UdFeats } from '../nlp/ud/tagset'

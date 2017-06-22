@@ -20,6 +20,7 @@ import { token2verticalLine } from './ud'
 // import { sentence2conllu } from './utils'
 import { mu } from '../mu'
 // import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
+import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
 
 
 
@@ -55,12 +56,29 @@ function main() {
     let relDirname = path.relative(inputDirname, args.inputRoot)
 
     let root = parseXmlFileSync(xmlPath)
-    let docRoots = [root]
-    for (let docRoot of docRoots) {
+    let docRoots = [...root.evaluateElements('//doc[not(ancestor::doc)]')]
+    if (!docRoots.length) {
+      docRoots = [root]
+    }
+
+    for (let [i, docRoot] of docRoots.entries()) {
       let outDirVertical = path.join(args.outDir, 'vertical', relDirname)
-      let outPathVertical = path.join(outDirVertical, `${basename}_0.vrt`)
+      let outPathVertical = path.join(outDirVertical, `${basename}_${i}.vrt`)
       mkdirp.sync(outDirVertical)
-      let vertical = mu(streamVertical(docRoot, basename)).join('\n', true)
+
+      // build meta
+      let docMeta: any = {
+        title: docRoot.attribute('title') || basename,
+      }
+      docMeta.reference_title = docMeta.title
+      for (let attribute of ['author', 'date', 'url']) {
+        docMeta[attribute] = docRoot.attribute(attribute)
+      }
+      if (!docMeta.href) {
+        docMeta.url = docRoot.attribute('src')
+      }
+
+      let vertical = mu(streamVertical(docRoot, docMeta)).join('\n', true)
       fs.writeFileSync(outPathVertical, vertical)
 
       let outDirVector = path.join(args.outDir, '4vec', relDirname)
@@ -73,8 +91,8 @@ function main() {
 }
 
 //------------------------------------------------------------------------------
-function* streamVertical(root: AbstractElement, title: string) {
-  yield `<doc title="${title}" reference_title="${title}">`
+function* streamVertical(root: AbstractElement, docMeta) {
+  yield `<doc ${keyvalue2attributesNormalized(docMeta)}>`
   yield '<p>'
   let tokenStream = tei2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))
