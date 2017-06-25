@@ -11,8 +11,8 @@ export enum Pos {
   adjective,
   sym,
   error,
-  x,
   punct,  // todo
+  x,
 }
 
 export enum Pronoun {
@@ -70,8 +70,7 @@ export enum Case {
   // other non-ukr
 }
 export enum RequiredCase {
-  // nominative,
-  genitive,
+  genitive = 1,  // so we can comare to Case
   dative,
   accusative,
   instrumental,

@@ -236,7 +236,11 @@ function printStats(datasetRegistry: Dict<Dataset>) {
 
 //------------------------------------------------------------------------------
 function getBratPath(token: Token) {
-  return token.getAttribute('depsrc').slice('/Users/msklvsk/Developer/mova-institute/playground/4brat/'.length, -4)
+  let src = token.getAttribute('depsrc')
+  if (src) {
+    return src.slice('/Users/msklvsk/Developer/mova-institute/playground/4brat/'.length, -4)
+  }
+  return ''
 }
 
 //------------------------------------------------------------------------------

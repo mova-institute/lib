@@ -179,7 +179,7 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const TOSKIP = new Set(['w', 'mi:w_', 'w_', 'pc', 'abbr', 'mi:sb', 'sb'])
+const TOSKIP = new Set(['w', 'mi:w_', 'w_', 'abbr', 'mi:sb', 'sb'])
 
 export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
   let subroots = [...root.evaluateNodes('//tei:title|//tei:text', NS)]
@@ -218,21 +218,8 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function elementFromToken(token: string, document: AbstractDocument) {
-  let ret: AbstractNode
-  if (ANY_PUNC_OR_DASH_RE.test(token)) {
-    ret = document.createElement('pc'/*, NS.tei*/)
-    ret.text(token)
-  }
-  // else if (/^\d+$/.test(token) || WORDCHAR_RE.test(token)) {
-  //   ret = document.createElement('w'/*, NS.tei*/)
-  //   ret.text(token)
-  // }
-  else {
-    //console.error(`Unknown token: "${token}"`) // todo
-    ret = document.createElement('w'/*, NS.tei*/)
-    ret.text(token)
-    //throw 'kuku' + token.length
-  }
+  let ret = document.createElement('w'/*, NS.tei*/)
+  ret.text(token)
 
   return ret
 }
@@ -275,7 +262,7 @@ export function isRegularizedFlowElement(el: AbstractElement) {
   return ret
 }
 
-const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'pc', 'div', 'g', 'sb', 'doc', 'gap'])
+const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g', 'sb', 'doc', 'gap'])
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement) {
   let subroots = [root]
@@ -317,7 +304,7 @@ export function iterateCorpusTokens(root: AbstractElement) {
 
 //------------------------------------------------------------------------------
 function findNextToken(el: AbstractElement) {
-  return el.nextElementSiblings().find(x => x.localName() === 'pc' || x.localName === 'w')
+  return el.nextElementSiblings().find(x => x.localName === 'w')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -421,7 +408,7 @@ export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAna
 ////////////////////////////////////////////////////////////////////////////////
 export function enumerateWords(root: AbstractElement, attributeName = 'n') {
   let idGen = 0  // todo: switch from wu to normal forEach
-  root.evaluateElements('//mi:w_|//w_|//tei:pc|//pc', NS)  // todo: NS bug
+  root.evaluateElements('//mi:w_|//w_', NS)  // todo: NS bug
     .toArray()
     .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
 }
@@ -435,7 +422,7 @@ export function numerateTokensGently(root: AbstractElement, attributeName = 'n')
     .toArray()
 
   let idGen = Math.max(-1, ...numbers)
-  mu(root.evaluateElements('//mi:w_|//tei:pc|//w_|//pc', NS))  // todo: NS bug
+  mu(root.evaluateElements('//mi:w_|//w_', NS))  // todo: NS bug
     .toArray()
     .filter(x => x.attribute(attributeName) === undefined || !/^\d+$/.test(x.attribute(attributeName)))
     .forEach(x => x.setAttribute(attributeName, (++idGen).toString()))
@@ -814,9 +801,6 @@ function element2sketchVertical(el: AbstractElement, entering: boolean, interps?
         return sketchLine($t(el).text(),
           lemmas.join(MULTISEP), mteTags.join(MULTISEP), vesumFlagss.join(MULTISEP))
       }
-      case 'pc':
-      case elementNames.PC:  // todo
-        return sketchLine(el.text(), el.text(), 'U', 'punct')
       case 'g':
       case elementNames.G:
         return '<g/>'
@@ -1045,9 +1029,6 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
           }
           break
         }
-        case 'pc':
-          tok = new Token().setForm(el.text()).addInterp(MorphInterp.fromVesumStr('punct', el.text())).setAttributes(el.attributesObj())
-          break
         case 'sb':
           tok = Token.structure('sentence', true)
           let attributes = el.attributesObj()
@@ -1061,14 +1042,11 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
         case 'g':
           yield Token.glue()
           continue
-        case 'gap':
-          yield Token.gap()
-          continue
         default:
           continue
       }
 
-      if (name === 'w_' || name === 'pc') {
+      if (name === 'w_') {
         let n = el.attribute('n')
         if (n) {
           tok.id = parseIntStrict(n)

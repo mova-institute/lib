@@ -14,7 +14,7 @@ export function $t(elem: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class TextToken {
-  private static TOKEN_ELEMS = new Set<string>(['w_', 'pc'])
+  private static TOKEN_ELEMS = new Set<string>(['w_'])
   private static FLAGS_X = 'x'
   private static DISAMB_ATTR = 'disamb'
   private static FLAGS_ATTR = 'ana'

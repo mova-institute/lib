@@ -122,6 +122,10 @@ export class Token {
     return !!this.deps.length
   }
 
+  correctedForm() {
+    return this.getAttribute('correct') || this.form
+  }
+
   toString() {
     if (this.form) {
       return this.form

@@ -33,7 +33,8 @@ function main() {
     let dest = join(args.dest, base)
     mkdirpSync(dest)
 
-    let sentenceStream = tokenStream2sentences(tei2tokenStream(root))
+    let tokenStream = mu(tei2tokenStream(root)).transform(x => x.form = x.correctedForm())
+    let sentenceStream = tokenStream2sentences(tokenStream)
     let arr = [] as Token[][]
     for (let { tokens } of sentenceStream) {
       // for (let i = 0; i < tokens.length; ++i) {

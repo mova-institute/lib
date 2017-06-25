@@ -14,6 +14,8 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 
 
 
+// const IDS = new Set(``.trim().split(/\s/g))
+
 function main() {
   let [globStr, sequencePath] = process.argv.slice(2)
   let files = glob.sync(globStr)
@@ -44,7 +46,6 @@ function main() {
     try {
       let root = parseXmlFileSync(file)
 
-      // root.evaluateElements('//*').forEach(x => x.removeAttribute('n'))
       // set missing token numbers
       numerateTokensGently(root)
 
@@ -57,34 +58,20 @@ function main() {
         .forEach(el => el.setAttribute('sid', ++maxSid))
 
       // remove redundant attributes
-      let tokens = [...root.evaluateElements('//w_|//pc')]
+      let tokens = [...root.evaluateElements('//w_')]
       for (let w of tokens) {
         w.removeAttribute('nn')
         w.removeAttribute('disamb')
         w.removeAttribute('author')
       }
 
+      // tokens.filter(x => IDS.has(x.attribute('id')))
+      //   .forEach(t => t.firstElementChild().setAttribute('ana', 'part'))
+
 
       let dict = createDictionarySync()
       let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
 
-      // tokens.forEach(el => {
-      //   let t = $t(el)
-
-      //   let interps = [...el.elementChildren()]
-      //   if (interps.length === 1) {
-      //     let form = t.text()
-      //     let lemma = t.lemmaIfUnamb()
-      //     if ((!lemma || !lemma.startsWith('будь-')) && /[^\-\d]-[^\-]/.test(form)) {
-      //       if (!analyzer.tag(form).length) {
-      //         el.insertBefore(el.firstElementChild().firstChild())
-      //         el.remove()
-      //       }
-      //     }
-      //   }
-      // })
-      // tokenizeTei(root, analyzer)
-      // morphInterpret(root, analyzer)
 
       // do safe transforms
       let interpEls = root.evaluateElements('//w_/w')
@@ -161,7 +148,7 @@ function main() {
 
         saveInterp(interpEl, interp)
       }
-      tokenCount += [...root.evaluateElements('//w_|//pc')].length
+      tokenCount += [...root.evaluateElements('//w_')].length
 
       // give each token an id
       const idedElements = ['doc', 'p', 'sb', 's', 'w_', 'pc']
@@ -226,3 +213,37 @@ function renameStructures(root: AbstractElement) {
       !doc.attribute(attr) && doc.setAttribute(attr, '')))
 
 }
+
+//------------------------------------------------------------------------------
+function convertPcToW(root: AbstractElement) {
+  mu(root.evaluateElements('//pc'))
+    .forEach(pc => {
+      let word = root.document().createElement('w_').setAttributes(pc.attributesObj())
+      let interp = root.document().createElement('w').setAttributes({
+        lemma: pc.text(),
+        ana: 'punct'
+      })
+      interp.text(pc.text())
+      word.appendChild(interp)
+      pc.insertAfter(word)
+      pc.remove()
+    })
+}
+
+      // tokens.forEach(el => {
+      //   let t = $t(el)
+
+      //   let interps = [...el.elementChildren()]
+      //   if (interps.length === 1) {
+      //     let form = t.text()
+      //     let lemma = t.lemmaIfUnamb()
+      //     if ((!lemma || !lemma.startsWith('будь-')) && /[^\-\d]-[^\-]/.test(form)) {
+      //       if (!analyzer.tag(form).length) {
+      //         el.insertBefore(el.firstElementChild().firstChild())
+      //         el.remove()
+      //       }
+      //     }
+      //   }
+      // })
+      // tokenizeTei(root, analyzer)
+      // morphInterpret(root, analyzer)

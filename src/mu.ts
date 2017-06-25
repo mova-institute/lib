@@ -217,6 +217,16 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
+  transform<MappedT>(fn: (x: T) => void) {
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        fn(x)
+        yield x
+      }
+    })())
+  }
+
   pluck<MappedT>(prop: string) {
     const thiss = this
     return mu((function* () {
