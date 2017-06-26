@@ -98,6 +98,10 @@ export class Token {
     return this.interps[0]
   }
 
+  get globalId() {
+    return this.attributes.id
+  }
+
   get interp() {
     return this.interps[0]
   }

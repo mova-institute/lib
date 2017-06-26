@@ -937,9 +937,12 @@ export class MorphInterp {
   isFirstname() { return this.features.nameType === NameType.first }
   isLastname() { return this.features.nameType === NameType.last }
   isUncontracted() { return this.features.variant === Variant.uncontracted }
+  isStem() { return this.features.variant === Variant.stem }
 
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }
+  hasCase() { return this.features.case !== undefined }
+  hasRequiredCase() { return this.features.requiredCase !== undefined }
 
   isProper() { return this.features.nounType === NounType.proper }
   isBad() { return this.features.badness === Badness.yes }

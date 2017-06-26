@@ -2,7 +2,9 @@ import { Token } from '../token'
 import { toUd } from './tagset'
 import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
+import { TreeNode } from '../../lib/tree'
 import { MorphInterp } from '../morph_interp'
+
 
 
 
@@ -308,13 +310,20 @@ export interface Problem {
 
 type SentencePredicate = (x: Token, i?: number) => any
 type SentencePredicate2 = (t: Token, s?: Token[], i?: number) => any
+type TreedSentencePredicate = (t: TreeNode<Token>, i?: number) => any
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentenceSyntax(sentence: Token[]) {
 
   let problems = new Array<Problem>()
 
+  let treedSentence = sentenceArray2TreeNodes(sentence)
+
   const reportIf = (message: string, fn: SentencePredicate) => {
     problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
+  }
+
+  const treedReportIf = (message: string, fn: TreedSentencePredicate) => {
+    problems.push(...mu(treedSentence).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
   }
 
   const xreportIf = (...args: any[]) => undefined
@@ -446,6 +455,58 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && !sentence[x.head].interp.isAdjective()
       && !sentence[x.head].interp.isAdverb())
 
+  treedReportIf(`сполучник виділено розділовим`,
+    (x, i) => x.node.interp.isCoordinating() && x.children.some(ch => ch.node.rel === 'punct')
+  )
+
+
+  // coordination
+
+  treedReportIf(`неузгодження`,
+    (x, i) => {
+      if (!x.parent) {
+        return
+      }
+      let dep = x.node.interp
+      let head = x.parent.node.interp
+
+      let ret = ['amod', 'det'].includes(x.node.rel)
+        && dep.isAdjective()
+        // && head.isNounish()
+        && !head.isForeign()
+        && !x.parent.children.some(xx => isNumgov(xx.node.rel))
+        && (
+          dep.features.case !== head.features.case
+          || (dep.isPlural() && !head.isPlural() && !x.parent.children.some(xx => xx.node.rel === 'conj'))
+          || (dep.isSingular() && dep.features.gender !== head.features.gender)
+        )
+      ret = false //////////////////////////////
+      if (ret) {
+        return true
+      }
+
+      // amod det nummod conj // nsubj appos acl
+
+      // ret = ret || x.node.rel === 'nummod'
+      //   && (dep.hasGender() && dep.features.gender !== head.features.gender
+      //     || dep.features.case !== head.features.case
+      //   )
+
+      // ret = ret || x.node.rel === 'conj'
+      //   && dep.features.pos === head.features.pos
+      //   && !dep.isBeforeadj()
+      //   && !x.parent.children.some(xx => isNumgov(xx.node.rel))
+      //   && (dep.hasCase() && dep.features.case !== head.features.case
+      //   )
+
+      // ret = x.node.rel === 'nsubj'
+      //   && head.isVerb()
+      //   && (dep.features.person !== head.features.person
+      //     // || dep.features.number !== head.features.number
+      //   )
+      return ret
+    }
+  )
 
   /*
 
@@ -457,6 +518,11 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
 
   return problems
+}
+
+//------------------------------------------------------------------------------
+function isNumgov(relation: string) {
+  return relation === 'nummod:gov' || relation === 'det:numgov'
 }
 
 //------------------------------------------------------------------------------
@@ -472,7 +538,7 @@ function getSubtree(i: number, childrenMap: number[][]) {
 }
 
 //------------------------------------------------------------------------------
-function isConinuous(array: Array<number>) {
+function isContinuous(array: Array<number>) {
   for (let i = 1; i < array.length; ++i) {
     if (array[i] - array[i - 1] !== 1) {
       return false
@@ -505,4 +571,25 @@ function isNounishOrElliptic(token: Token) {
 //------------------------------------------------------------------------------
 function isActualParticiple(token: Token, sentence: Token[], index: number) {
   return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.head === index && xx.rel === x))
+}
+
+//------------------------------------------------------------------------------
+function sentenceArray2TreeNodes(sentence: Token[]) {
+  // return mu(sentence)
+  //   .map(x => new TreeNode(x))
+  //   .transform((x, i) => {
+  //   if (x.node.head) {
+  //     nodeArray[i].parent = nodeArray[sentence[i].head]
+  //     nodeArray[sentence[i].head].children.push(nodeArray[i])
+  //   }
+  // })
+  let nodeArray = sentence.map(x => new TreeNode(x))
+  for (let i = 0; i < sentence.length; ++i) {
+    if (sentence[i].head) {
+      nodeArray[i].parent = nodeArray[sentence[i].head]
+      nodeArray[sentence[i].head].children.push(nodeArray[i])
+    }
+  }
+
+  return nodeArray
 }

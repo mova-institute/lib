@@ -5,7 +5,8 @@ import * as fs from 'fs'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
-import { numerateTokensGently, serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret } from '../nlp/utils'
+import * as ukGrammar from '../nlp/uk_grammar'
+import { numerateTokensGently, serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing } from '../xml/utils'
 import { mu } from '../mu'
@@ -104,9 +105,10 @@ function main() {
         }
 
         // adj as noun lemmas
-        if (interp.isAdjectiveAsNoun() && !interpEl.attribute('lemma2')) {
-          interpEl.setAttribute('lemma2', interp.lemma)
-          let lexeme = dict.lookupLexemesByLemma(interp.lemma)
+        if (interp.isAdjectiveAsNoun()) {
+          let adjLemma = interpEl.attribute('lemma2') || interp.lemma
+          interpEl.setAttribute('lemma2', adjLemma)
+          let lexeme = dict.lookupLexemesByLemma(adjLemma)
             .find(([{ flags }]) => MorphInterp.fromVesumStr(flags).isAdjective())
           if (lexeme) {
             let nounLemma =
@@ -123,7 +125,7 @@ function main() {
               console.log(`Nothingo ${interp.lemma}`)
               // console.log(`Nothingo ${interp.lemma}`)
             }
-          } else {
+          } else if (!interp.isOrdinalNumeral()) {
             console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
           }
         }
@@ -159,6 +161,8 @@ function main() {
         }
       }
 
+      runValidations(root)
+
       let content = serializeMiDocument(root)
       // content = beautify(content, { indent_size: 2 })
       fs.writeFileSync(file, content)
@@ -172,6 +176,24 @@ function main() {
     fs.writeFileSync(sequencePath, idSequence)
   }
   console.log(`${tokenCount} tokens`)
+}
+
+//------------------------------------------------------------------------------
+function runValidations(root: AbstractElement) {
+  for (let token of tei2tokenStream(root)) {
+    if (!token.isWord()) {
+      continue
+    }
+
+    let interp = token.interp
+    let features = interp.features
+    if (interp.isPreposition() && !interp.hasRequiredCase()) {
+      console.error(`no case in prep "${token.form}" #${token.globalId}`)
+    } else if (ukGrammar.inflectsCase(features.pos) && !interp.isBeforeadj()
+        && !interp.isStem() && !interp.isForeign() && !interp.hasCase()) {
+      // console.error(`no case in "${token.form}" #${token.globalId}`)
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -247,3 +269,4 @@ function convertPcToW(root: AbstractElement) {
       // })
       // tokenizeTei(root, analyzer)
       // morphInterpret(root, analyzer)
+

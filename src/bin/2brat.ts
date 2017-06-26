@@ -60,10 +60,10 @@ function main() {
 
     for (let [i, chunk] of chunks.entries()) {
       let filename = `${zerofillMax(i + 1, chunks.length)}`
-      let str = mu(tokenStream2brat(chunk)).join('\n')
+      let str = mu(tokenStream2brat(chunk)).join('\n', true)
 
       writeFileSync(join(dest, `${filename}.ann`), str)
-      str = mu(tokenStream2bratPlaintext(chunk)).join('\n')
+      str = mu(tokenStream2bratPlaintext(chunk)).join('\n', true)
       writeFileSync(join(dest, `${filename}.txt`), str)
     }
   }

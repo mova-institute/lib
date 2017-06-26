@@ -217,11 +217,12 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
-  transform<MappedT>(fn: (x: T) => void) {
+  transform<MappedT>(fn: (x: T, i: number) => void) {
     const thiss = this
+    let i = 0
     return mu((function* () {
       for (let x of thiss) {
-        fn(x)
+        fn(x, i++)
         yield x
       }
     })())
