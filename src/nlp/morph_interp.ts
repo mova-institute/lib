@@ -121,7 +121,7 @@ export const FEATURE_TABLE = [
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
   { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
 
-  { featStr: 'reflexivity', feat: Reflexivity, vesum: Reflexivity.yes, vesumStr: 'rev' },  // ?
+  { featStr: 'reflexivity', feat: Reflexivity, vesum: Reflexivity.yes, vesumStr: 'refl' },
 
   { featStr: 'case', feat: Case, vesum: Case.nominative, vesumStr: 'v_naz', mte: 'n' },
   { featStr: 'case', feat: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
@@ -165,7 +165,7 @@ export const FEATURE_TABLE = [
   { featStr: 'variant', feat: Variant, vesum: Variant.stem, vesumStr: 'stem' },
 
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
+  // { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.demonstrative, vesumStr: 'dem', mte: 'd' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.interrogative, vesumStr: 'int', mte: 'q' },
   { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.relative, vesumStr: 'rel', mte: 'r' },
@@ -186,7 +186,7 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.adjective, vesumStr: 'adj', mte: 'A' },
   { featStr: 'pos', feat: Pos, vesum: Pos.adverb, vesumStr: 'adv', mte: 'R' },
   { featStr: 'pos', feat: Pos, vesum: Pos.preposition, vesumStr: 'prep', mte: 'S' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.predicative, vesumStr: 'predic' },  // ?
+  // { featStr: 'pos', feat: Pos, vesum: Pos.predicative, vesumStr: 'predic' },  // ?
   // { featStr: 'pos', feat: Pos, vesum: Pos.insert, vesumStr: 'insert' },  // ?
   { featStr: 'pos', feat: Pos, vesum: Pos.conjunction, vesumStr: 'conj', mte: 'C' },
   { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
@@ -823,8 +823,8 @@ export class MorphInterp {
       case Pos.x:
       case Pos.sym:
         return 'X'
-      case Pos.predicative:  // todo
-        return 'Vm-p'
+      // case Pos.predicative:  // todo
+      //   return 'Vm-p'
       case Pos.punct:
         return 'U'
 
@@ -929,15 +929,17 @@ export class MorphInterp {
   isPlural() { return this.features.number === MorphNumber.plural }
   isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
+  isReflexive() { return this.features.reflexivity === Reflexivity.yes }
   isPresent() { return this.features.tense === Tense.present }
-  isReflexivePronoun() { return this.features.pronominalType === PronominalType.reflexive }
-  isReflexiveVerb() { return this.features.reflexivity === Reflexivity.yes }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
   isSubordinative() { return this.features.conjunctionType === ConjunctionType.subordinative }
   isFirstname() { return this.features.nameType === NameType.first }
   isLastname() { return this.features.nameType === NameType.last }
   isUncontracted() { return this.features.variant === Variant.uncontracted }
   isStem() { return this.features.variant === Variant.stem }
+  isDemonstrative() { return this.features.pronominalType === PronominalType.demonstrative }
+
+
 
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }

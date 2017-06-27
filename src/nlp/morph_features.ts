@@ -3,7 +3,7 @@ export enum Pos {
   conjunction,
   particle,
   preposition,
-  predicative,  // todo
+  // predicative,  // todo
   interjection,
   cardinalNumeral,
   verb,
@@ -131,7 +131,7 @@ export enum PronominalType {
   personal,
   demonstrative,
   // possessive,
-  reflexive,
+  // reflexive,
   negative,
   general,
   emphatic,

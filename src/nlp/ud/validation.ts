@@ -2,11 +2,15 @@ import { Token } from '../token'
 import { toUd } from './tagset'
 import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
-import { TreeNode } from '../../lib/tree'
+import { TreeNode, walkDepth } from '../../lib/tree'
 import { MorphInterp } from '../morph_interp'
+import { Pos } from '../morph_features'
 
 
 
+class SentenceToken extends Token {
+  index: number
+}
 
 const ALLOWED_RELATIONS: UdMiRelation[] = [
   'acl',
@@ -42,6 +46,7 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'iobj',
   // 'list',
   'iobj:mark',
+  'list',
   'nsubj:mark',
   'obj:mark',
   'obl:mark',
@@ -105,12 +110,6 @@ const NOMINAL_HEAD_MODIFIERS = [
   'discourse',
 ]
 
-const CONTINUOUS_REL = [
-  'flat',
-  'fixed',
-  'compound',
-]
-
 const TERMINAL_RELATIONS = [
   'cop',
   'expl',
@@ -123,7 +122,7 @@ const TERMINAL_RELATIONS = [
 ]
 
 const LEFT_RELATIONS = [
-  'case',
+  // 'case',  // treated separately
   'cc',
   'reparandum',
 ]
@@ -138,13 +137,6 @@ const RIGHT_RELATIONS = [
   'flat:name',
   'list',
   // 'parataxis',
-]
-
-const CONTINUOUS_SUBTREES = [
-  'advcl',
-  'acl',
-  'ccomp',
-  'csubj',
 ]
 
 const POS_ALLOWED_RELS = {
@@ -239,27 +231,27 @@ const NEVER_CONJUNCT_POS = [
   'AUX',
 ]
 
-/*
+const CLAUSE_RELS = [
+  'csubj',
+  'ccomp',
+  'xcomp',
+  'advcl',
+  'acl',
+  'parataxis',
+]
 
-ADJ
-ADP
-'ADV'
-'CCONJ'
-'PART'
-'PUNCT'
-'SCONJ'
-AUX
-DET
-INTJ
-NOUN
-NUM
-PRON
-PROPN
-SYM
-VERB
-X
+const CONTINUOUS_REL = [
+  'csubj',
+  'ccomp',
+  // 'xcomp',
+  'advcl',
+  // 'acl',
+  'parataxis',
+  'flat',
+  'fixed',
+  'compound',
+]
 
-*/
 
 
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
@@ -267,12 +259,16 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     t => isNounishOrElliptic(t) || t.interp.isAdjective() && t.interp.isPronoun() || t.isPromoted && t.interp.isCardinalNumeral(),
     `в прийменник`,
     (t, s, i) => t.interp.isPreposition() || s.some(t2 => t2.head === i && t2.rel === 'fixed')],
-  [`det`, `з іменника`, (t, s, i) => isNounishOrElliptic(t) || s.some(tt => tt.rel === 'acl' || tt.head === i) || t.tags.includes('adjdet'), `в DET`, t => toUd(t.interp).pos === 'DET'],
+  [`det:`,
+    `з іменника`,
+    (t, s, i) => isNounishOrElliptic(t) || s.some(tt => tt.rel === 'acl' || tt.head === i) || t.tags.includes('adjdet'),
+    `в нечислівниковий DET`,
+    t => toUd(t.interp).pos === 'DET' && !t.interp.isCardinalNumeral() && !t.interp.isOrdinalNumeral()],
   [`amod`, `з іменника`, t => isNounishOrElliptic(t), `в прикметник`, t => t.interp.isAdjectivish()],
   [`nmod`, `з іменника`, t => isNounishOrElliptic(t), `в іменник`, t => isNounishOrElliptic(t)],
   [`nummod`, `з іменника`, t => isNounishOrElliptic(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronoun()],
   [`det:numgov`, `з іменника`, t => isNounishOrElliptic(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
-  [`punct`, `з не PUNCT`, t => !t /*temp*/ || !t.interp.isPunctuation() || t.tags.includes('nestedpunct'), `в PUNCT`, t => t.interp.isPunctuation()],
+  [`punct`, `з content word`, t => !t /*temp*/ || isContentWord(t) || t.tags.includes('nestedpunct'), `в PUNCT`, t => t.interp.isPunctuation()],
   [`discourse`, undefined, undefined, `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`, (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
   [`aux`, `з дієслівного`, t => t.interp.isVerbial(), `в бути|би|б`, t => TOBE_AND_BY_LEMMAS.includes(t.interp.lemma)],
   [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
@@ -296,10 +292,9 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`advcl`, ``, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
 
   [`cc`, ``, (t, s, i) => t, `в сурядний`, t => t.interp.isCoordinating()],  // окремо
-  [`acl`, `з іменника`, t => isNounishOrElliptic(t), ``, t => t],
+  [`acl`, `з іменника`, t => isNounishOrElliptic(t) || t.interp.isDemonstrative(), ``, t => t],
 
   [`appos`, `з іменника`, t => isNounishOrElliptic(t), `в іменник`, t => isNounishOrElliptic(t)],
-
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -317,6 +312,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   let problems = new Array<Problem>()
 
   let treedSentence = sentenceArray2TreeNodes(sentence)
+  let node2index = new Map(treedSentence.map((x, i) => [x, i] as [TreeNode<Token>, number]))
 
   const reportIf = (message: string, fn: SentencePredicate) => {
     problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
@@ -335,11 +331,17 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // ~~~~~~~ rules ~~~~~~~~
 
   for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
+    let relMatcher = rel.endsWith(':')
+      ? (x: string) => x === rel.slice(0, -1)
+      : (x: string) => x === rel || x && x.startsWith(`${rel}:`)
+
+    let relName = rel.endsWith(':') ? `${rel} без двокрапки` : rel
+
     if (messageFrom && predicateFrom) {
-      reportIf(`${rel} не ${messageFrom}`, (t, i) => t.rel === rel && !sentence[t.head].interp0().isForeign() && !predicateFrom(sentence[t.head], sentence, t.head))
+      reportIf(`${relName} не ${messageFrom}`, (t, i) => relMatcher(t.rel) && !sentence[t.head].interp0().isForeign() && !predicateFrom(sentence[t.head], sentence, t.head))
     }
     if (messageTo && predicateTo) {
-      reportIf(`${rel} не ${messageTo}`, (t, i) => t.rel === rel && !t.interp0().isForeign() && !predicateTo(t, sentence, i))
+      reportIf(`${relName} не ${messageTo}`, (t, i) => relMatcher(t.rel) && !t.interp0().isForeign() && !predicateTo(t, sentence, i))
     }
   }
   // return problems
@@ -352,8 +354,11 @@ export function validateSentenceSyntax(sentence: Token[]) {
   RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.head > i))
   LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.head < i))
 
-  reportIf('заборонена реляція',
-    x => x.rel && !ALLOWED_RELATIONS.includes(x.rel))
+  reportIf(`case праворуч`, (tok, i) => tok.rel === 'case'
+    && tok.head < i && !(sentence[i + i] && sentence[i + 1].interp.isCardinalNumeral()))
+
+  reportIf('невідома реляція',
+    x => x.rel && !ALLOWED_RELATIONS.includes(x.rel as UdMiRelation))
 
   // Object.entries(POS_ALLOWED_RELS).forEach(([pos, rels]) =>
   //   reportIf(`не ${rels.join('|')} в ${pos}`,
@@ -462,6 +467,13 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   // coordination
 
+  treedReportIf(`неузгодження відмінків cполучника`,
+    (x, i) => x.node.rel === 'case'
+      && (x.node.interp.features.requiredCase as number) !== x.parent.node.interp.features.case
+      && !x.parent.node.interp.isForeign()
+      && !x.parent.children.some(xx => isNumgov(xx.node.rel))
+  )
+
   treedReportIf(`неузгодження`,
     (x, i) => {
       if (!x.parent) {
@@ -508,6 +520,31 @@ export function validateSentenceSyntax(sentence: Token[]) {
     }
   )
 
+
+  for (let token of treedSentence) {
+    if (CONTINUOUS_REL.some(x => urelEquals(token.node.rel, x))) {
+      let rootFromHere = token.root()
+
+      let indexes = mu(walkDepth(token))
+        .map(x => node2index.get(x))
+        .toArray()
+        .sort((a, b) => a - b)
+      let holes = findHoles(indexes)
+        .filter(i => treedSentence[i].root() === rootFromHere)
+
+      if (holes.length) {
+        // console.error(sentence.map(x => x.form).join(' '))
+        // console.error(indexes)
+        // console.error(holes)
+        problems.push({ indexes: holes, message: `чужі токени всередині ${token.node.rel}` })
+      }
+    } else if (urelEquals(token.node.rel, 'cc')) {
+      // cc тільки з того, в що увіходив conj чи з кореня
+    }
+  }
+
+
+
   /*
 
     reportIf(``,
@@ -518,6 +555,36 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
 
   return problems
+}
+
+//------------------------------------------------------------------------------
+function findHoles(array: Array<number>) {
+  let ret = new Array<number>()
+  if (array.length < 3) {
+    return ret
+  }
+  for (let i = 1; i < array.length; ++i) {
+    for (let j = 1; j < array[i] - array[i - 1]; ++j) {
+      ret.push(array[i - 1] + j)
+    }
+  }
+
+  return ret
+}
+
+//------------------------------------------------------------------------------
+function urelEquals(rel: string, unirel: string) {
+  return rel === unirel || rel && rel.startsWith(`${unirel}:`)
+}
+
+//------------------------------------------------------------------------------
+function isContentWord(token: Token) {
+  if (token.isPromoted) {
+    return true
+  }
+  // const CONTENT_WORD_POSES = [Pos.adjective, Pos.adverb, Pos.]
+  const FUNCTION_WORD_POSES = [Pos.conjunction, Pos.particle, Pos.punct]
+  return !FUNCTION_WORD_POSES.includes(token.interp.features.pos) && !token.interp.isAuxillary()
 }
 
 //------------------------------------------------------------------------------
@@ -584,8 +651,8 @@ function sentenceArray2TreeNodes(sentence: Token[]) {
   //   }
   // })
   let nodeArray = sentence.map(x => new TreeNode(x))
-  for (let i = 0; i < sentence.length; ++i) {
-    if (sentence[i].head) {
+  for (let i = 0; i < nodeArray.length; ++i) {
+    if (sentence[i].rel) {
       nodeArray[i].parent = nodeArray[sentence[i].head]
       nodeArray[sentence[i].head].children.push(nodeArray[i])
     }

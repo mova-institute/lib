@@ -386,7 +386,7 @@ export function toUd(interp: MorphInterp) {
   }
 
   // special-treat reflexives
-  if (interp.isReflexivePronoun()) {
+  if (interp.isReflexive()) {
     features.Reflex = 'Yes'
     features.PronType = 'Prs'
   }

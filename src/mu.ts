@@ -299,6 +299,14 @@ export class Mu<T> implements Iterable<T> {
     return this.nth(0)
   }
 
+  last() {
+    let ret: T
+    for (let x of this) {
+      ret = x
+    }
+    return ret
+  }
+
   length() {
     let ret = 0
     while (!this.next().done) {
