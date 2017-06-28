@@ -19,6 +19,10 @@ export class TreeNode<T> {
   root() {
     return mu(this.walkUp()).last()
   }
+
+  hasChildren() {
+    return !!this.children.length
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

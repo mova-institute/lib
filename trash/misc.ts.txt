@@ -1,4 +1,11 @@
-//------------------------------------------------------------------------------
+  // reportIf('керівний числівник не nummod:gov',
+  //   x => x.rel === 'nummod'
+  //     && x.interp.isCardinalNumeral()
+  //     && !x.interp.isPronoun()
+  //     && (x.interp.isNominative() || x.interp.isAccusative() /*|| /^\d+$/.test(x.form)*/)
+  //     && sentence[x.head].interp.isGenitive())
+
+  //------------------------------------------------------------------------------
 function formatProblemsTxt(docName: string, sentenceId: string, tokens: Token[], problems: any[], count: number) {
   let tokenWithDepsrc = tokens.find(x => x.getAttribute('depsrc'))
   let bratPath = tokenWithDepsrc && tokenWithDepsrc.getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
