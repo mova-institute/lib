@@ -10,7 +10,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo, PartType,
+  PrepositionRequirement, Typo, PartType, VerbRevesivity,
 } from './morph_features'
 
 
@@ -100,6 +100,7 @@ export const FEATURE_TABLE = [
   { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
 
   { featStr: 'verbAuxilarity', feat: VerbAuxilarity, vesum: VerbAuxilarity.yes, vesumStr: 'aux', mte: 'a' },
+  { featStr: 'verbRevesivity', feat: VerbRevesivity, vesum: VerbRevesivity.yes, vesumStr: 'rev' },
 
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
   { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
@@ -321,6 +322,7 @@ export const FEATURE_ORDER = {
     Possessiveness,
     PrepositionRequirement,
     Pronoun,
+    Reflexivity,
     PronominalType,
     Person,
     Formality,
@@ -342,6 +344,7 @@ export const FEATURE_ORDER = {
     CaseInflectability,
     NumberTantum,
     Pronoun,
+    Reflexivity,
     VerbType,
     PronominalType,
     Aspect,
@@ -354,6 +357,7 @@ export const FEATURE_ORDER = {
   ],
   [Pos.verb]: [
     Pos,
+    VerbRevesivity,
     VerbAuxilarity,
     Reflexivity,
     Voice,
@@ -461,6 +465,7 @@ export class Features {
   typo: Typo
   variant: Variant
   verbAuxilarity: VerbAuxilarity
+  verbRevesivity: VerbRevesivity
   verbType: VerbType
   voice: Voice
 }

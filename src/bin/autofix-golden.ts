@@ -27,10 +27,9 @@ function main() {
     fs.writeFileSync(filePath, removeNamespacing(fs.readFileSync(filePath, 'utf8')))
   }
 
+  let idSequence: number
   if (fs.existsSync(sequencePath)) {
-    var idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
-  } else {
-    idSequence = 0
+    idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
   }
 
   console.log(`calculating max sentence id…`)
@@ -153,11 +152,13 @@ function main() {
       tokenCount += [...root.evaluateElements('//w_')].length
 
       // give each token an id
-      const idedElements = ['doc', 'p', 'sb', 's', 'w_', 'pc']
-      tokens = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
-      for (let token of tokens) {
-        if (!token.attribute('id')) {
-          token.setAttribute('id', (idSequence++).toString(36).padStart(4, '0'))
+      if (idSequence !== undefined) {
+        const idedElements = ['doc', 'p', 'sb', 's', 'w_', 'pc']
+        tokens = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
+        for (let token of tokens) {
+          if (!token.attribute('id')) {
+            token.setAttribute('id', (idSequence++).toString(36).padStart(4, '0'))
+          }
         }
       }
 
@@ -190,7 +191,7 @@ function runValidations(root: AbstractElement) {
     if (interp.isPreposition() && !interp.hasRequiredCase()) {
       console.error(`no case in prep "${token.form}" #${token.globalId}`)
     } else if (ukGrammar.inflectsCase(features.pos) && !interp.isBeforeadj()
-        && !interp.isStem() && !interp.isForeign() && !interp.hasCase()) {
+      && !interp.isStem() && !interp.isForeign() && !interp.hasCase()) {
       // console.error(`no case in "${token.form}" #${token.globalId}`)
     }
   }
