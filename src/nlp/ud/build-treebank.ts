@@ -274,7 +274,7 @@ function formatProblemsHtml(sentenceProblems: any[]) {
     .error { padding: 0.25em; border: 2px solid #FFAB40; color: #555; }
     .message { color: #555; margin-left:-2ch; }
   </style></head><body>
-  <h4>згенеровано: ${timestamp} за Києвом</h4>
+  <p style="margin-top:-2em;">київський час створення: <b>${timestamp}</b></p>
   <br/>
   <br/>
   ${body}
@@ -292,14 +292,14 @@ function initSyntax(sentence: Array<Token>, sentenceId: string) {
   for (let i = 0; i < sentence.length; ++i) {
     id2i[sentence[i].id] = i
   }
-  let changed = new Set<number>()
+  let changed = new Set<string>()
   for (let token of sentence) {
     for (let dep of token.deps) {
       if (!changed.has(token.id)) {
-        if (id2i[token.head] === undefined) {
+        if (id2i[token.deps[0].headId] === undefined) {
           throw new Error(`head outside sentence #${sentenceId} token #${token.getAttribute('id')}`)
         }
-        dep.head = id2i[token.head]
+        dep.headIndex = id2i[token.deps[0].headId]
         changed.add(token.id)
       }
     }
@@ -342,12 +342,16 @@ function standartizeMorpho(sentence: Array<Token>) {
 
 //------------------------------------------------------------------------------
 function standartizeSentence2ud20(sentence: Array<Token>) {
+  // let id2i = new Map(sentence.map((t, i) => [t.id, i] as [string, number]))
+
   let lastToken = last(sentence)
   let rootIndex = sentence.findIndex(x => !x.hasDeps())
 
   for (let token of sentence) {
     // choose (punct) relation from the rigthtest token
-    token.deps = token.deps.sort((a, b) => a.head - b.head).slice(0, 1)
+    token.deps = token.deps
+      .sort((a, b) => a.headIndex - b.headIndex)
+      .slice(0, 1)
 
     // set AUX
     if (['aux', 'aux:pass', 'cop'].includes(token.rel)) {
@@ -355,7 +359,7 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     }
 
     // set the only iobj to obj
-    if (token.rel === 'iobj' && !sentence.some(tt => tt.head === token.head && CORE_COMPLEMENTS.includes(tt.rel))) {
+    if (token.rel === 'iobj' && !sentence.some(tt => tt.headIndex === token.headIndex && CORE_COMPLEMENTS.includes(tt.rel))) {
       token.rel = 'obj'
     }
 
@@ -376,9 +380,11 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
   }
 
   // set parataxis punct to the root
-  let thecase = lastToken.interp.isPunctuation() && sentence[lastToken.head] && sentence[lastToken.head].rel === 'parataxis'
+  let thecase = lastToken.interp.isPunctuation()
+    && sentence[lastToken.headIndex]
+    && sentence[lastToken.headIndex].rel === 'parataxis'
   if (thecase) {
-    lastToken.head = rootIndex
+    lastToken.headIndex = rootIndex
   }
 }
 

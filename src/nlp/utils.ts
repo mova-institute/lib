@@ -1047,15 +1047,15 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
       }
 
       if (name === 'w_') {
-        let n = el.attribute('n')
-        if (n) {
-          tok.id = parseIntStrict(n)
+        let id = el.attribute('id')
+        if (id) {
+          tok.id = id
         }
         let depsStr = el.attribute('dep')
         if (depsStr) {
           let deps = depsStr.split('|')
             .map(x => x.split('-'))
-            .map(([head, relation]) => ({ head: parseIntStrict(head), relation }))
+            .map(([head, relation]) => ({ headId: head, relation }))
           tok.deps = deps
         }
         tok.isPromoted = el.attribute('promoted') === 'yes'
@@ -1258,7 +1258,7 @@ export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
 
 
 //------------------------------------------------------------------------------
-const ATTR_ORDER = arr2indexObj(['n', 'dep', 'lemma', 'anna', 'promoted', 'mark'], 1)
+const ATTR_ORDER = arr2indexObj(['id', 'dep', 'promoted', 'lemma', 'anna', 'mark'], 1)
 function sortAttributes(element: AbstractElement) {
   let attributes = Object.entries(element.attributesObj()).sort(([a], [b]) => {
     return (ATTR_ORDER[a] || 100) - (ATTR_ORDER[b] || 100) || a.localeCompare(b)

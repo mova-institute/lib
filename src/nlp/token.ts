@@ -10,7 +10,8 @@ export type TokenTag = 'adjdet' | 'nestedpunct' | 'error'
 
 export interface Dependency {
   relation: string
-  head: number
+  headId: string
+  headIndex?: number
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +22,7 @@ export class Token {
   private type: TokenType
   form?: string
   interps = new Array<MorphInterp>()
-  id: number
+  id: string
   glued: boolean
   isPromoted: boolean
   opensParagraph: boolean  // temp
@@ -98,20 +99,16 @@ export class Token {
     return this.interps[0]
   }
 
-  get globalId() {
-    return this.attributes.id
-  }
-
   get interp() {
     return this.interps[0]
   }
 
-  get head() {
-    return this.deps.length > 0 ? this.deps[0].head : undefined
+  get headIndex() {
+    return this.deps.length > 0 ? this.deps[0].headIndex : undefined
   }
 
-  set head(val: number) {
-    this.deps[0].head = val
+  set headIndex(val: number) {
+    this.deps[0].headIndex = val
   }
 
   get rel() {

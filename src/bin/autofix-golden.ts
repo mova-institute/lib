@@ -188,6 +188,8 @@ function main() {
           })
       }
 
+      // switch2globalIds(root)
+
       let content = serializeMiDocument(root)
       // content = beautify(content, { indent_size: 2 })
       fs.writeFileSync(file, content)
@@ -213,7 +215,7 @@ function runValidations(root: AbstractElement) {
     let interp = token.interp
     let features = interp.features
     if (interp.isPreposition() && !interp.hasRequiredCase()) {
-      console.error(`no case in prep "${token.form}" #${token.globalId}`)
+      console.error(`no case in prep "${token.form}" #${token.id}`)
     } else if (ukGrammar.inflectsCase(features.pos) && !interp.isBeforeadj()
       && !interp.isStem() && !interp.isForeign() && !interp.hasCase()) {
       // console.error(`no case in "${token.form}" #${token.globalId}`)
@@ -259,6 +261,26 @@ function renameStructures(root: AbstractElement) {
     DOC_META_ATTRS.forEach(attr =>
       !doc.attribute(attr) && doc.setAttribute(attr, '')))
 
+}
+
+//------------------------------------------------------------------------------
+function switch2globalIds(root: AbstractElement) {
+  let tokens = [...root.evaluateElements('//w_')]
+
+  let n2id = new Map<string, string>(
+    tokens.map(x => [x.attribute('n'), x.attribute('id')] as [string, string])
+  )
+
+  for (let token of tokens) {
+    let dep = token.attribute('dep')
+    if (dep) {
+      dep = dep.replace(/\d+/g, x => n2id.get(x))
+      token.setAttribute('dep', dep)
+    }
+  }
+  for (let token of tokens) {
+    token.removeAttribute('n')
+  }
 }
 
 //------------------------------------------------------------------------------

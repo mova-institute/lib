@@ -52,11 +52,12 @@ function main() {
       }
       xmlFile = xmlFiles.find(x => x.endsWith(`${xmlFile}.xml`))
     }
+    console.log(`adopting ${xmlFile}`)
     let root = parseXmlFileSync(xmlFile)
 
     let n2element = {} as { [key: string]: AbstractElement }
-    root.evaluateElements('//*[@n]')
-      .forEach(x => n2element[x.attribute('n')] = x)
+    root.evaluateElements('//*[@id]')
+      .forEach(x => n2element[x.attribute('id')] = x)
 
     for (let bratFile of bratFiles) {
       for (let span of parseBratFile(linesSync(bratFile))) {

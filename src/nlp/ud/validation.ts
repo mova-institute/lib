@@ -267,10 +267,10 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`case`, `з іменника`,
     t => isNounishOrElliptic(t) || t.interp.isAdjective() && t.interp.isPronoun() || t.isPromoted && t.interp.isCardinalNumeral(),
     `в прийменник`,
-    (t, s, i) => t.interp.isPreposition() || s.some(t2 => t2.head === i && uEq(t2.rel, 'fixed'))],
+    (t, s, i) => t.interp.isPreposition() || s.some(t2 => t2.headIndex === i && uEq(t2.rel, 'fixed'))],
   [`det:`,
     `з іменника`,
-    (t, s, i) => isNounishOrElliptic(t) || s.some(tt => tt.rel === 'acl' || tt.head === i) || t.tags.includes('adjdet'),
+    (t, s, i) => isNounishOrElliptic(t) || s.some(tt => tt.rel === 'acl' || tt.headIndex === i) || t.tags.includes('adjdet'),
     `в нечислівниковий DET`,
     t => toUd(t.interp).pos === 'DET' && !t.interp.isCardinalNumeral() && !t.interp.isOrdinalNumeral()],
   [`amod`, `з іменника`, t => isNounishOrElliptic(t), `в прикметник`, t => t.interp.isAdjectivish()],
@@ -349,7 +349,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   const xreportIf = (...args: any[]) => undefined
 
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
-    sentence.some((xx, ii) => xx.head === i && fn(xx, ii))
+    sentence.some((xx, ii) => xx.headIndex === i && fn(xx, ii))
 
 
   // ~~~~~~~ rules ~~~~~~~~
@@ -378,7 +378,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
     let relName = rel.endsWith(':') ? `${rel} без двокрапки` : rel
 
     if (messageFrom && predicateFrom) {
-      reportIf(`${relName} не ${messageFrom}`, (t, i) => relMatcher(t.rel) && !sentence[t.head].interp0().isForeign() && !predicateFrom(sentence[t.head], sentence, t.head))
+      reportIf(`${relName} не ${messageFrom}`, (t, i) => relMatcher(t.rel) && !sentence[t.headIndex].interp0().isForeign() && !predicateFrom(sentence[t.headIndex], sentence, t.headIndex))
     }
     if (messageTo && predicateTo) {
       reportIf(`${relName} не ${messageTo}`, (t, i) => relMatcher(t.rel) && !t.interp0().isForeign() && !predicateTo(t, sentence, i))
@@ -390,11 +390,11 @@ export function validateSentenceSyntax(sentence: Token[]) {
   reportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
 
-  RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.head > i))
-  LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.head < i))
+  RIGHT_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.headIndex > i))
+  LEFT_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.headIndex < i))
 
   reportIf(`case праворуч*`, (t, i) => uEq(t.rel, 'case')
-    && t.head < i
+    && t.headIndex < i
     && !(sentence[i + i] && sentence[i + 1].interp.isCardinalNumeral())
   )
 
@@ -412,16 +412,16 @@ export function validateSentenceSyntax(sentence: Token[]) {
   reportIf(`punct в двокрапку зліва`,
     (t, i) => t.form === ':'
       && t.interp.isPunctuation()
-      && t.head < i)
+      && t.headIndex < i)
 
   xreportIf(`у залежника ccomp немає підмета`,
     (t, i) => t.relation === 'ccomp'
       && !t.isPromoted
-      && !sentence.some(xx => SUBJECTS.includes(xx.rel) && xx.head === i))
+      && !sentence.some(xx => SUBJECTS.includes(xx.rel) && xx.headIndex === i))
 
   reportIf(`у залежника xcomp є підмет`,
     (t, i) => uEq(t.rel, 'xcomp')
-      && sentence.some(x => SUBJECTS.includes(x.rel) && x.head === i))
+      && sentence.some(x => SUBJECTS.includes(x.rel) && x.headIndex === i))
 
   reportIf('не discourse до частки',
     t => t.rel
@@ -445,10 +445,10 @@ export function validateSentenceSyntax(sentence: Token[]) {
   var predicates = new Set<number>()
   sentence.forEach((x, i) => {
     if (CORE_COMPLEMENTS.includes(x.rel)) {
-      if (predicates.has(x.head)) {
-        problems.push({ indexes: [x.head], message: `у присудка більше ніж один прямий додаток (${CORE_COMPLEMENTS.join('|')})` })
+      if (predicates.has(x.headIndex)) {
+        problems.push({ indexes: [x.headIndex], message: `у присудка більше ніж один прямий додаток (${CORE_COMPLEMENTS.join('|')})` })
       } else {
-        predicates.add(x.head)
+        predicates.add(x.headIndex)
       }
     }
   })
@@ -456,16 +456,16 @@ export function validateSentenceSyntax(sentence: Token[]) {
   let predicates2 = new Set<number>()
   sentence.forEach((x, i) => {
     if (SUBJECTS.includes(x.rel)) {
-      if (predicates2.has(x.head)) {
-        problems.push({ indexes: [x.head], message: `у присудка більше ніж один підмет (${SUBJECTS.join('|')})` })
+      if (predicates2.has(x.headIndex)) {
+        problems.push({ indexes: [x.headIndex], message: `у присудка більше ніж один підмет (${SUBJECTS.join('|')})` })
       } else {
-        predicates2.add(x.head)
+        predicates2.add(x.headIndex)
       }
     }
   })
 
   reportIf('obj/iobj має прийменник',
-    (t, i) => ['obj', 'iobj'].includes(t.rel) && sentence.some(xx => uEq(xx.rel, 'case') && xx.head === i))
+    (t, i) => ['obj', 'iobj'].includes(t.rel) && sentence.some(xx => uEq(xx.rel, 'case') && xx.headIndex === i))
 
   xreportIf(`:pass-реляція?`,
     t => !t.isPromoted
@@ -488,7 +488,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   xreportIf(`obl з неприсудка`,
     (t, i) => OBLIQUES.includes(t.rel)
       && !t.isPromoted
-      && !sentence.some(xx => xx.head === i && uEq(xx.rel, 'cop'))
+      && !sentence.some(xx => xx.headIndex === i && uEq(xx.rel, 'cop'))
       && !sentence[t.head].interp.isNounish()
       && !sentence[t.head].interp.isVerbial()
       && !sentence[t.head].interp.isAdjective()
@@ -611,6 +611,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: в AUX не входить cop/aux
   // зробити: остання крапка не з кореня
   // зробити: коми належать підрядним: Подейкують,
+  // зробити: conj в "і т. д." йде в "д."
+  // зробити: orphan з Promoted
 
   // treedReportIf(`bubu`,
   //   (t, i) => t.node.rel === 'nmod' && t.parent.node.rel === 'nmod'
@@ -696,7 +698,7 @@ function canBePredicate(token: Token, sentence: Token[], index: number) {
     || token.interp.isVerb()
     || token.interp.isConverb()
     || token.interp.isAdverb()
-    || (sentence.some(t => t.head === index && uEq(t.rel, 'cop'))
+    || (sentence.some(t => t.headIndex === index && uEq(t.rel, 'cop'))
       && (token.interp.isNounish() || token.interp.isAdjective())
       && (token.interp.isNominative() || token.interp.isInstrumental() || token.interp.isLocative())
     )
@@ -717,7 +719,7 @@ function isNounishEllipticOrMeta(node: GraphNode<Token>) {
 
 //------------------------------------------------------------------------------
 function isActualParticiple(token: Token, sentence: Token[], index: number) {
-  return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.head === index && xx.rel === x))
+  return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.headIndex === index && xx.rel === x))
 }
 
 //------------------------------------------------------------------------------
@@ -733,8 +735,8 @@ function sentenceArray2TreeNodes(sentence: Token[]) {
   let nodeArray = sentence.map(x => new GraphNode(x))
   for (let i = 0; i < nodeArray.length; ++i) {
     if (sentence[i].rel) {
-      nodeArray[i].parents.push(nodeArray[sentence[i].head])
-      nodeArray[sentence[i].head].children.push(nodeArray[i])
+      nodeArray[i].parents.push(nodeArray[sentence[i].headIndex])
+      nodeArray[sentence[i].headIndex].children.push(nodeArray[i])
     }
   }
 

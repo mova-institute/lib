@@ -49,7 +49,7 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
       pos,
       xpos,
       udFeatures2conlluString(features) || '_',
-      options.morphOnly ? '_' : (token.head === undefined ? 0 : token.head + 1),
+      options.morphOnly ? '_' : (token.headIndex === undefined ? 0 : token.headIndex + 1),
       options.morphOnly ? '_' : (token.rel || 'root'),
       '_',
       misc/*.sort()*/.join('|') || '_',
@@ -161,7 +161,7 @@ export function* tokenStream2brat(sentences: Token[][]) {
   for (let sentence of sentences) {
     for (let token of sentence) {
       for (let dep of token.deps) {
-        let head = n2id[dep.head]
+        let head = n2id[dep.headId]
         let dependant = n2id[token.id]
         yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
       }
