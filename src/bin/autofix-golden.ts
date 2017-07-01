@@ -46,14 +46,6 @@ function main() {
     idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
   }
 
-  console.log(`calculating max sentence id…`)
-  let maxSid = 0
-  mu(files)
-    .map(x => parseXmlFileSync(x).evaluateAttributes('//@sid').map(attr => attr.value()))
-    .flatten()
-    .filter(x => /^\d+$/.test(x))
-    .forEach(x => maxSid = Math.max(maxSid, Number.parseInt(x)))
-
 
   console.log(`applying autofixes…`)
   for (let file of files) {
@@ -64,12 +56,6 @@ function main() {
       numerateTokensGently(root)
 
       renameStructures(root)
-
-      // set missing sentence ids
-      root.evaluateElements('//sb')
-        .flatten()
-        .filter(el => el.attribute('sid') === undefined || !/^\d+$/.test(el.attribute('sid')))
-        .forEach(el => el.setAttribute('sid', ++maxSid))
 
       // remove redundant attributes
       let tokens = [...root.evaluateElements('//w_')]

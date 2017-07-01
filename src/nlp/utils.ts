@@ -1037,8 +1037,7 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
             attributes.set = el.attributeUp(attrName)
           }
           tok.setAttributes(attributes)
-          yield tok
-          continue
+          break
         case 'g':
           yield Token.glue()
           continue
@@ -1046,11 +1045,12 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
           continue
       }
 
+      let id = el.attribute('id')
+      if (id) {
+        tok.id = id
+      }
+
       if (name === 'w_') {
-        let id = el.attribute('id')
-        if (id) {
-          tok.id = id
-        }
         let depsStr = el.attribute('dep')
         if (depsStr) {
           let deps = depsStr.split('|')
@@ -1196,7 +1196,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
         newParagraph = false
         newTokenLevelParagraph = false
       }
-      sentenceId = token.getAttribute('sid')
+      sentenceId = token.id
       set = token.getAttribute('set')
     } else if (token.isWord()) {
       token.opensParagraph = newTokenLevelParagraph
