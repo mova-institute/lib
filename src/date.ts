@@ -19,6 +19,16 @@ const ukMonthMap = new Map([
 
 const dayUkMonthCommaYearRe = /^(\d+)\s+([^,]+),\s+(\d{4})/
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function toSortableDatetime(date: Date) {
+  let hh = zerofill(date.getHours(), 2)
+  let mm = zerofill(date.getMinutes(), 2)
+  let ss = zerofill(date.getSeconds(), 2)
+
+  return `${toSortableDate(date)} ${hh}:${mm}:${ss}`
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function toSortableDate(date: Date) {
   return `${date.getFullYear()}-${zerofill(date.getMonth() + 1, 2)}-${zerofill(date.getDate(), 2)}`

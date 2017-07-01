@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-import * as glob from 'glob'
 import * as fs from 'fs'
+import * as glob from 'glob'
+import * as minimist from 'minimist'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
@@ -9,6 +10,7 @@ import * as ukGrammar from '../nlp/uk_grammar'
 import { numerateTokensGently, serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing } from '../xml/utils'
+import { toSortableDatetime } from '../date'
 import { mu } from '../mu'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
@@ -17,8 +19,20 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 
 // const IDS = new Set(``.trim().split(/\s/g))
 
+const TRANSFORMS = {
+  toPart(el: AbstractElement) {
+    el.firstElementChild().setAttribute('ana', 'part')
+  }
+}
+
 function main() {
-  let [globStr, sequencePath] = process.argv.slice(2)
+  const now = toSortableDatetime(new Date())
+
+  let args = minimist(process.argv.slice(2))
+  if (args.tranformIds) {
+    var ids = new Set(fs.readFileSync(args.tranformIds, 'utf8').trim().split(/\s+/g))
+  }
+  let [globStr, sequencePath] = args._
   let files = glob.sync(globStr)
   let tokenCount = 0
 
@@ -163,6 +177,16 @@ function main() {
       }
 
       runValidations(root)
+
+      if (ids) {
+        mu(root.evaluateElements('//w_'))
+          .filter(x => ids.has(x.attribute('id')))
+          .toArray()
+          .forEach(el => {
+            TRANSFORMS[args.transform](el)
+            el.setAttribute('mtime-morpho', now)
+          })
+      }
 
       let content = serializeMiDocument(root)
       // content = beautify(content, { indent_size: 2 })

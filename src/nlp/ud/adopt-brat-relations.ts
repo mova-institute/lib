@@ -9,6 +9,7 @@ import { firstMatch } from '../../string_utils'
 import { serializeMiDocument } from '../../nlp/utils'
 import { parseBratFile } from './utils'
 import { AbstractElement } from 'xmlapi'
+import { toSortableDatetime } from '../../date'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -30,6 +31,8 @@ const bratPrefix2xmlFilename = {
 
 //------------------------------------------------------------------------------
 function main() {
+  const now = toSortableDatetime(new Date())
+
   const args = minimist(process.argv.slice(2), {
     boolean: [
       'depsrc',
@@ -63,14 +66,21 @@ function main() {
             continue
           }
           el.setAttribute('comment', span.comment)
-          el.setAttribute('promoted', span.annotations.Promoted && 'yes')
+          let promotedStr = span.annotations.Promoted && 'yes'
+          let changed = (el.attribute('promoted') || '') !== (promotedStr || '')
+          el.setAttribute('promoted', promotedStr)
 
           let dependencies = span.arcs
             .filter(x => isString(x.head.annotations.N))
             .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
             .join('|') || undefined
+          changed = changed || (el.attribute('dep') || '') !== (dependencies || '')
           el.setAttribute('dep', dependencies)
+          if (changed) {
+            el.setAttribute('mtime-synt', now)
+          }
           el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
+
         }
       }
     }
