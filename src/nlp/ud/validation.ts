@@ -306,7 +306,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     (t, s, i) => canBePredicate(t, s, i),
     `в ${EXPL_FORMS.join('|')} — іменники`,
     t => EXPL_FORMS.includes(t.form) && t.interp.isNounish()],
-  [`mark`, ``, t => t, `в SCONJ|ADV`, t => toUd(t.interp).pos === 'SCONJ' || t.interp.isAdverb()],
+  [`mark`, ``, t => t, `в SCONJ|ADV`, t => toUd(t.interp).pos === 'SCONJ' || t.interp.isAdverb()/*todo*/],
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
   [`csubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`ccomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
@@ -610,6 +610,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   // зробити: в AUX не входить cop/aux
   // зробити: остання крапка не з кореня
+  // зробити: коми належать підрядним: Подейкують,
 
   // treedReportIf(`bubu`,
   //   (t, i) => t.node.rel === 'nmod' && t.parent.node.rel === 'nmod'

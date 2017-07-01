@@ -21,6 +21,7 @@ import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
 import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
 import { zerofillMax } from '../../string_utils'
+import { toSortableDatetime } from '../../date'
 
 
 
@@ -151,9 +152,6 @@ function main() {
         if (args.validOnly && hasProblems) {
           datasetRegistry[set].counts.wordsKept += numTokens
         } else {
-          if (!isComplete) {
-            datasetRegistry[set].counts.wordsKept += numTokens
-          }
           if (isComplete || args.includeIncomplete) {
             ++datasetRegistry[set].counts.sentsExported
             datasetRegistry[set].counts.wordsExported += numTokens
@@ -166,6 +164,8 @@ function main() {
             let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
             datasetRegistry[set].newdoc = false
+          } else {
+            datasetRegistry[set].counts.wordsKept += numTokens
           }
         }
       }
@@ -267,11 +267,18 @@ function formatProblemsHtml(sentenceProblems: any[]) {
     body += `</div><hr/>\n`
   }
 
+  let timestamp = toSortableDatetime(new Date())
+
   return `<html><head><style>
     html { padding: 3em; font-size: 14px; font-family: "Lucida Console", Menlo, Monaco, monospace; }
     .error { padding: 0.25em; border: 2px solid #FFAB40; color: #555; }
     .message { color: #555; margin-left:-2ch; }
-  </style></head><body>${body}</body></html>`
+  </style></head><body>
+  <h4>згенеровано: ${timestamp} за Києвом</h4>
+  <br/>
+  <br/>
+  ${body}
+  </body></html>`
 }
 
 //------------------------------------------------------------------------------
