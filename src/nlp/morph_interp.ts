@@ -56,6 +56,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Tense, 'tense'],
   [Variant, 'variant'],
   [VerbAuxilarity, 'verbAuxilarity'],
+  [VerbRevesivity, 'verbRevesivity'],
   [Voice, 'voice'],
   [VuAlternativity, 'vuAlternative'],
   [Polarity, 'polarity'],
