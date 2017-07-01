@@ -72,7 +72,7 @@ export class Mu<T> implements Iterable<T> {
     return mu((function* () {
       for (let x of thiss) {
         let xLength = lengther(x)
-        if (curLength + xLength > n) {
+        if (curLength + xLength > n && buf.length) {
           yield buf
           buf = []
           curLength = 0
