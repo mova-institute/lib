@@ -289,8 +289,8 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   ['nsubj:mark',
     `з присудка`,
     (t, s, i) => canBePredicate(t, s, i),
-    `у вказівний`,
-    t => t.interp.isDemonstrative()],
+    `у відносний`,
+    t => t.interp.isRelative()],
   [`obj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrElliptic(t)],
   [`iobj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishOrElliptic(t)],
   [`obl`, `з присудка`, (t, s, i) => canBePredicate(t, s, i) || t.interp.isAdjective(), `в іменник`, t => isNounishOrElliptic(t)],
@@ -375,7 +375,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
       ? (x: string) => x === rel.slice(0, -1)
       : (x: string) => x === rel || x && x.startsWith(`${rel}:`)
 
-    let relName = rel.endsWith(':') ? `${rel} без двокрапки` : rel
+    let relName = rel.endsWith(':') ? `простий ${rel.slice(0, -1)}` : rel
 
     if (messageFrom && predicateFrom) {
       reportIf(`${relName} не ${messageFrom}`, (t, i) => relMatcher(t.rel) && !sentence[t.headIndex].interp0().isForeign() && !predicateFrom(sentence[t.headIndex], sentence, t.headIndex))
@@ -495,7 +495,9 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && !sentence[t.head].interp.isAdverb())
 
   treedReportIf(`сполучник виділено розділовим знаком`,
-    (t, i) => t.node.interp.isCoordinating() && t.children.some(ch => ch.node.rel === 'punct')
+    (t, i) => sentence.length > 2
+      && t.node.interp.isCoordinating()
+      && t.children.some(ch => ch.node.rel === 'punct')
   )
 
 
@@ -709,7 +711,7 @@ function canBePredicate(token: Token, sentence: Token[], index: number) {
 //------------------------------------------------------------------------------
 function isNounishOrElliptic(token: Token) {
   return token.interp.isNounish()
-  || token.isPromoted && (token.interp.isAdjectivish() || token.interp.isCardinalNumeral())
+    || token.isPromoted && (token.interp.isAdjectivish() || token.interp.isCardinalNumeral())
 }
 
 //------------------------------------------------------------------------------

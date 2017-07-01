@@ -944,6 +944,7 @@ export class MorphInterp {
   isUncontracted() { return this.features.variant === Variant.uncontracted }
   isStem() { return this.features.variant === Variant.stem }
   isDemonstrative() { return this.features.pronominalType === PronominalType.demonstrative }
+  isRelative() { return this.features.pronominalType === PronominalType.relative }
 
 
 
