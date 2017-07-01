@@ -33,28 +33,11 @@ function main() {
     let dest = join(args.dest, base)
     mkdirpSync(dest)
 
-    let tokenStream = mu(tei2tokenStream(root)).transform(x => x.form = x.correctedForm())
+    let tokenStream = mu(tei2tokenStream(root))
+      .transform(x => x.form = x.correctedForm())
     let sentenceStream = tokenStream2sentences(tokenStream)
-    let arr = [] as Token[][]
-    for (let { tokens } of sentenceStream) {
-      // for (let i = 0; i < tokens.length; ++i) {
-      //   if (tokens[i].interp0().isPreposition()) {
-      //     for (let j = i + 1; j < tokens.length && j < i + 4; ++j) {
-      //       if (tokens[j].interp0().isAdjective()) {
-      //         continue
-      //       } else if (tokens[j].interp0().isNoun()) {
-      //         tokens[i].relation = 'case'
-      //         tokens[i].head = j
-      //       } else {
-      //         break
-      //       }
-      //     }
-      //   }
-      // }
-      arr.push(tokens)
-    }
-
-    let chunks = mu(arr)
+    let chunks = mu(sentenceStream)
+      .map(x => x.tokens)
       .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.isWord()))
       .toArray()
 
