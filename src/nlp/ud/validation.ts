@@ -112,6 +112,7 @@ const NOMINAL_HEAD_MODIFIERS = [
 
 const LEAF_RELATIONS = [
   'cop',
+  'aux',
   'expl',
   'fixed',
   // 'flat',
@@ -239,6 +240,14 @@ const CLAUSE_RELS = [
   'parataxis',
 ]
 
+const SUBORDINATE_CLAUSES = [
+  'csubj',
+  'ccomp',
+  'xcomp',
+  'advcl',
+  'acl',
+]
+
 const CONTINUOUS_REL = [
   'csubj',
   'ccomp',
@@ -278,7 +287,11 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`nummod`, `з іменника`, t => isNounishOrElliptic(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronoun()],
   [`det:numgov`, `з іменника`, t => isNounishOrElliptic(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
   [`punct`, `з content word`, t => !t /*temp*/ || isContentWord(t) || t.tags.includes('nestedpunct'), `в PUNCT`, t => t.interp.isPunctuation()],
-  [`discourse`, undefined, undefined, `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`, (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
+  [`discourse`,
+    undefined,
+    undefined,
+    `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`,
+    (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
   [`aux`, `з дієслівного`, t => t.interp.isVerbial(), `в бути|би|б`, t => TOBE_AND_BY_LEMMAS.includes(t.interp.lemma)],
   [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
   [`nsubj:`,
@@ -410,7 +423,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
 
   reportIf(`punct в двокрапку зліва`,
-    (t, i) => t.form === ':'
+    (t, i) => i !== sentence.length - 1  // not last in sentence
+      && t.form === ':'
       && t.interp.isPunctuation()
       && t.headIndex < i)
 
@@ -503,7 +517,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   // coordination
 
-  treedReportIf(`неузгодження відмінків cполучника`,
+  treedReportIf(`неузгодження відмінків прийменника`,
     (t, i) => uEq(t.node.rel, 'case')
       && (t.node.interp.features.requiredCase as number) !== t.parent.node.interp.features.case
       && !t.parent.node.interp.isForeign()
@@ -568,6 +582,18 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && t.node.interp.features.case !== t.parent.node.interp.features.case
   )
 
+  treedReportIf(`mark не з кореня підрядного`,
+    (t, i) => t.node.rel
+      && (uEq(t.node.rel, 'mark') || t.node.rel.endsWith(':mark'))
+      && (sentenceHasOneRoot && !t.parent.node.rel
+        || t.parent.node.rel
+        && !SUBORDINATE_CLAUSES.some(x => uEq(t.parent.node.rel, x))
+        && !(uEq(t.parent.node.rel, 'conj')
+          && SUBORDINATE_CLAUSES.some(x => uEq(t.parent.parent.node.rel, x))
+        )
+      )
+  )
+
 
   // continuity/projectivity
 
@@ -615,6 +641,27 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: коми належать підрядним: Подейкують,
   // зробити: conj в "і т. д." йде в "д."
   // зробити: orphan з Promoted
+  // зробити: конкеретні дозволені відмінки в :gov-реляціях
+  // зробити: mark не з підкореня https://lab.mova.institute/brat/index.xhtml#/ud/prokhasko__opovidannia/047
+
+  /*
+
+  Nevertheless, there are four important exceptions to the rule that function words do not take dependents:
+
+  Multiword function words
+  Coordinated function words
+  Function word modifiers
+  Promotion by head elision
+
+
+  + http://universaldependencies.org/u/overview/syntax.html#function-word-modifiers
+
+  + If the predicative element in the equation is a clause, then the copula
+  verb is treated as the head of the clause, with the following clause as a ccomp
+   (to prevent that the head of the smaller clause gets two subjects).
+   Note that in some languages it may be instead possible to analyze the clause as the subject (csubj), retaining the cop relation for the copula verb.
+
+  */
 
   // treedReportIf(`bubu`,
   //   (t, i) => t.node.rel === 'nmod' && t.parent.node.rel === 'nmod'

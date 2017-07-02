@@ -195,7 +195,7 @@ export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
       if (node.isText()) {
         let lang = node.parent().attributeUp('lang')
         if (lang && lang !== 'uk') {
-          return
+          // return
         }
         let text = node.text()
         let cursor = node.document().createElement('cursor')

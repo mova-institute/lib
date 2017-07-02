@@ -7,7 +7,7 @@ import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
 import * as ukGrammar from '../nlp/uk_grammar'
-import { numerateTokensGently, serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret, tei2tokenStream } from '../nlp/utils'
+import { serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing } from '../xml/utils'
 import { toSortableDatetime } from '../date'
@@ -22,9 +22,22 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 const TRANSFORMS = {
   toPart(el: AbstractElement) {
     el.firstElementChild().setAttribute('ana', 'part')
-  }
+  },
+  toConjSubord(el: AbstractElement) {
+    el.firstElementChild().setAttribute('ana', 'conj:subord')
+  },
 }
 
+// temp
+const KNOWN_NONDIC_LEMMAS = new Set([
+  'п.',
+  'неповчальний',
+  'і.',
+  'телеведучий',
+])
+
+
+//------------------------------------------------------------------------------
 function main() {
   const now = toSortableDatetime(new Date())
 
@@ -52,14 +65,12 @@ function main() {
     try {
       let root = parseXmlFileSync(file)
 
-      // set missing token numbers
-      numerateTokensGently(root)
-
       renameStructures(root)
 
       // remove redundant attributes
       let tokens = [...root.evaluateElements('//w_')]
       for (let w of tokens) {
+        w.removeAttribute('n')
         w.removeAttribute('nn')
         w.removeAttribute('disamb')
         w.removeAttribute('author')
@@ -124,7 +135,7 @@ function main() {
               console.log(`Nothingo ${interp.lemma}`)
               // console.log(`Nothingo ${interp.lemma}`)
             }
-          } else if (!interp.isOrdinalNumeral()) {
+          } else if (!interp.isOrdinalNumeral() && !KNOWN_NONDIC_LEMMAS.has(interp.lemma)) {
             console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
           }
         }

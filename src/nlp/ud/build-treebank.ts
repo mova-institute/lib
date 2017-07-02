@@ -250,7 +250,7 @@ function formatProblemsHtml(sentenceProblems: any[]) {
     let href = `https://lab.mova.institute/brat/index.xhtml#/ud/${bratPath}`
     let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
 
-    body += `<div><b>#${problemNumber}</b> реч.#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`
+    body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`
     for (let { indexes, message } of problems) {
       body += `<p class="message">- ${escape(message)}</p>`
       if (indexes !== undefined) {
