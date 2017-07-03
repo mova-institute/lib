@@ -309,10 +309,10 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`obl`, `з присудка`, (t, s, i) => canBePredicate(t, s, i) || t.interp.isAdjective(), `в іменник`, t => isNounishOrElliptic(t)],
   [`obl:agent`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => isNounishOrElliptic(t)],
   [`vocative`,
-    `з присудка`,
+    undefined, //`з присудка`,
     (t, s, i) => canBePredicate(t, s, i),
-    `в кличний/називний іменник`,
-    t => t.interp.isForeign() || isNounishOrElliptic(t) && (t.interp.isVocative() || t.interp.isNominative())],
+    `в кличний іменник`,
+    t => t.interp.isForeign() || isNounishOrElliptic(t) && (t.interp.isVocative()/* || t.interp.isNominative()*/)],
   [`advmod`, ``, t => 0, `в прислівник`, t => t.interp.isAdverb() || t.interp.isParticle() && ADVMOD_NONADVERBIAL_LEMMAS.includes(t.interp.lemma)],
   [`expl`,
     `з присудка`,
@@ -398,7 +398,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
     }
   }
 
-  reportIf(`токен позначено #error`, (t, i) => t.tags.includes('error'))
+  reportIf(`токен позначено error’ом`, (t, i) => t.tags.includes('error'))
 
   reportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
@@ -643,6 +643,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: orphan з Promoted
   // зробити: конкеретні дозволені відмінки в :gov-реляціях
   // зробити: mark не з підкореня https://lab.mova.institute/brat/index.xhtml#/ud/prokhasko__opovidannia/047
+  // зробити: якщо коренем є NP, і в кінці "!", то корінь і конжі мають бути кличними
+  // зробити: More than as a multi-word expression
 
   /*
 

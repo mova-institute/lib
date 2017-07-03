@@ -88,7 +88,7 @@ function main() {
       let interpEls = root.evaluateElements('//w_/w')
       for (let interpEl of interpEls) {
         // continue
-        let form = interpEl.text()
+        let form = interpEl.text() as string  // todo: remove as
         let tag = interpEl.attribute('ana')
         let lemma = interpEl.attribute('lemma')
         if (!tag || !lemma) {
@@ -158,6 +158,7 @@ function main() {
         //   }
         // }
 
+
         saveInterp(interpEl, interp)
       }
       tokenCount += [...root.evaluateElements('//w_')].length
@@ -168,7 +169,7 @@ function main() {
         tokens = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
         for (let token of tokens) {
           if (!token.attribute('id')) {
-            token.setAttribute('id', (idSequence++).toString(36).padStart(4, '0'))
+            token.setAttribute('id', id2str(idSequence++))
           }
         }
       }
@@ -200,6 +201,11 @@ function main() {
     fs.writeFileSync(sequencePath, idSequence)
   }
   console.log(`${tokenCount} tokens`)
+}
+
+//------------------------------------------------------------------------------
+function id2str(n: number) {
+  return n.toString(36).padStart(4, '0')
 }
 
 //------------------------------------------------------------------------------
@@ -296,21 +302,74 @@ function convertPcToW(root: AbstractElement) {
     })
 }
 
-      // tokens.forEach(el => {
-      //   let t = $t(el)
 
-      //   let interps = [...el.elementChildren()]
-      //   if (interps.length === 1) {
-      //     let form = t.text()
-      //     let lemma = t.lemmaIfUnamb()
-      //     if ((!lemma || !lemma.startsWith('будь-')) && /[^\-\d]-[^\-]/.test(form)) {
-      //       if (!analyzer.tag(form).length) {
-      //         el.insertBefore(el.firstElementChild().firstChild())
-      //         el.remove()
-      //       }
-      //     }
-      //   }
-      // })
-      // tokenizeTei(root, analyzer)
-      // morphInterpret(root, analyzer)
 
+/*
+
+// split tokens
+
+tokens.forEach(el => {
+  let t = $t(el)
+
+  let interps = [...el.elementChildren()]
+  if (interps.length === 1) {
+    let form = t.text()
+    let lemma = t.lemmaIfUnamb()
+    if ((!lemma || !lemma.startsWith('будь-')) && /[^\-\d]-[^\-]/.test(form)) {
+      if (!analyzer.tag(form).length) {
+        el.insertBefore(el.firstElementChild().firstChild())
+        el.remove()
+      }
+    }
+  }
+})
+tokenizeTei(root, analyzer)
+morphInterpret(root, analyzer)
+
+
+
+// split fractions
+
+      tokens = mu(root.evaluateElements('//w_')).toArray()
+      for (let token of tokens) {
+        let interpEl = token.firstElementChild()
+        let form = interpEl.text()
+        let match = form.match(/^(\d+)([^\d\s])+(\d+)$/)
+        if (match) {
+          let [, intPart, punct, fracPart] = match
+          interpEl.text(intPart)
+          interpEl.setAttribute('lemma', intPart)
+
+          let punctElId = id2str(idSequence++)
+          let fracElId = id2str(idSequence++)
+
+
+          let fracEl = token.document().createElement('w_').setAttributes({
+            id: fracElId,
+            dep: `${token.attribute('id')}-compound`
+          }) as AbstractElement
+          let fracInterpEl = token.document().createElement('w').setAttributes({
+            lemma: fracPart,
+            ana: interpEl.attribute('ana'),
+          })
+          fracInterpEl.text(fracPart)
+          fracEl.appendChild(fracInterpEl)
+          token.insertAfter(fracEl)
+
+
+          let punctEl = token.document().createElement('w_').setAttributes({
+            id: punctElId,
+            dep: `${fracElId}-punct`
+          }) as AbstractElement
+          let punctInterpEl = token.document().createElement('w').setAttributes({
+            lemma: punct,
+            ana: 'punct',
+          })
+          punctInterpEl.text(punct)
+          punctEl.appendChild(punctInterpEl)
+          token.insertAfter(punctEl)
+        }
+      }
+
+
+*/
