@@ -6,7 +6,12 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 ////////////////////////////////////////////////////////////////////////////////
 export type TokenType = 'word' | 'glue'
 export type Structure = 'document' | 'div' | 'paragraph' | 'sentence' | 'stanza' | 'line'
-export type TokenTag = 'adjdet' | 'nestedpunct' | 'error'
+export type TokenTag =
+  | 'adjdet'
+  | 'nestedpunct'
+  | 'error'
+  | 'meta'
+  | 'nomvoc'
 
 export interface Dependency {
   relation: string

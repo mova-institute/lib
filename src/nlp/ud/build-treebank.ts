@@ -28,6 +28,7 @@ import { toSortableDatetime } from '../../date'
 //------------------------------------------------------------------------------
 interface Args {
   _: string[]
+  dryRun: boolean
   noStandartizing: boolean
   includeIncomplete: boolean
   oneSet: string
@@ -67,6 +68,7 @@ function main() {
     boolean: [
       'noStandartizing',
       'includeIncomplete',
+      'dryRun',
       'reportHoles',
       'onlyValid',
     ],
@@ -149,7 +151,9 @@ function main() {
           }
         }
 
-        if (args.validOnly && hasProblems) {
+        if (args.dryRun) {
+          continue
+        } else if (args.validOnly && hasProblems) {
           datasetRegistry[set].counts.wordsKept += numTokens
         } else {
           if (isComplete || args.includeIncomplete) {
@@ -356,6 +360,9 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
     // set AUX
     if (['aux', 'aux:pass', 'cop'].includes(token.rel)) {
       token.interp.setIsAuxillary()
+      if (['б', 'би'].includes(token.interp.lemma)) {
+        token.interp.setIsConditional()
+      }
     }
 
     // set the only iobj to obj

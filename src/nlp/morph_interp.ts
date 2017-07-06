@@ -411,6 +411,7 @@ export const FEATURE_ORDER = {
     AdjectiveAsNoun,
     PronominalType,
     Person,
+    Variant,
     Formality,
     Foreign,
     Typo,
@@ -967,6 +968,7 @@ export class MorphInterp {
   setIsAnimate(value = true) { this.features.animacy = value ? Animacy.animate : Animacy.inanimate; return this }
   setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
   setIsAuxillary(value = true) { this.features.verbAuxilarity = value ? VerbAuxilarity.yes : undefined; return this }
+  setIsConditional() { this.features.verbType = VerbType.conditional; return this }
   setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
   setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
   setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }

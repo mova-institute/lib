@@ -9,7 +9,7 @@ import { MorphInterp } from '../nlp/morph_interp'
 import * as ukGrammar from '../nlp/uk_grammar'
 import { serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
-import { removeNamespacing } from '../xml/utils'
+import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime } from '../date'
 import { mu } from '../mu'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
@@ -49,9 +49,12 @@ function main() {
   let files = glob.sync(globStr)
   let tokenCount = 0
 
-  console.log(`removing legacy namespaces…`)
+  console.log(`removing legacy namespaces & autofixing xml…`)
   for (let filePath of files) {
-    fs.writeFileSync(filePath, removeNamespacing(fs.readFileSync(filePath, 'utf8')))
+    let xmlstr = fs.readFileSync(filePath, 'utf8')
+    xmlstr = autofixSomeEntitites(xmlstr)
+    xmlstr = removeNamespacing(xmlstr)
+    fs.writeFileSync(filePath, xmlstr)
   }
 
   let idSequence: number
@@ -157,7 +160,6 @@ function main() {
         //     interp.lemma += '.'
         //   }
         // }
-
 
         saveInterp(interpEl, interp)
       }

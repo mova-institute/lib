@@ -91,6 +91,7 @@ export enum VerbType {
   indicative,
   imperative,
   impersonal,
+  conditional,  // би
   participle,  // дієприкметник
   converb,  // advp
 }

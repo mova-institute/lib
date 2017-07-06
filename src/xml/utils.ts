@@ -336,3 +336,9 @@ export function sortChildElements(el: AbstractElement, compare: (a: AbstractElem
     el.appendChild(child.remove())
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function autofixSomeEntitites(xmlstr: string) {
+  return xmlstr
+    .replace(/&(?!(amp|quot|lt|gt);)/g, '&amp;')
+}

@@ -21,7 +21,7 @@ export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
 export type UdForeign = UdBoolean    // todo
 export type UdHyph = UdBoolean    // todo
 export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
-export type UdMood = 'Ind' | 'Imp'
+export type UdMood = 'Ind' | 'Imp' | 'Cnd'
 export type UdNameType = 'Giv' | 'Sur' | 'Pat' | 'Oth'    // todo
 export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
 export type UdNumForm = 'Digit' | 'Roman' | 'Word'
@@ -180,6 +180,7 @@ const tenseMap = new Map<Tense, UdTense>([
 const moodMap = new Map<VerbType, UdMood>([
   [VerbType.indicative, 'Ind'],
   [VerbType.imperative, 'Imp'],
+  [VerbType.conditional, 'Cnd'],
 ])
 
 const genderMap = new Map<Gender, UdGender>([
