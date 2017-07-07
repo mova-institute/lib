@@ -193,6 +193,16 @@ export enum Foreign { yes }
 export enum Formality { yes }
 export enum Typo { yes }
 
+export enum PunctType {
+  quoute,
+  mdash,
+}
+
+export enum PunctSide {
+  open,
+  close,
+}
+
 export const booleanFeatures = [
   Possessiveness,
   Reflexivity,

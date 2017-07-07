@@ -228,6 +228,20 @@ ATTRIBUTE voice {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE puncttype {
+  LABEL "тип пунктуації"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE punctside {
+  LABEL "бік пунктуації"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE rel {
   LABEL "реляція"
   MULTIVALUE yes

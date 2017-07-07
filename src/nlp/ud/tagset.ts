@@ -6,7 +6,7 @@ import {
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
-  PartType,
+  PartType, PunctType, PunctSide,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
@@ -38,6 +38,8 @@ export type UdOrth = 'Khark'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
 export type UdPartType = 'Prs' | 'Conseq'
 export type UdPolite = 'Form'
+export type UdPunctType = 'Quot' | 'Mdash'
+export type UdPunctSide = 'Ini' | 'Fin'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -104,6 +106,8 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Typo, 'Typo'],
   [Alternativity, 'Orth'],
   [PartType, 'PartType'],
+  [PunctSide, 'PunctSide'],
+  [PunctType, 'PunctType'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -262,6 +266,16 @@ const partTypeMap = new Map<PartType, UdPartType>([
   [PartType.consequential, 'Conseq'],
 ])
 
+const punctTypeMap = new Map<PunctType, UdPunctType>([
+  [PunctType.quoute, 'Quot'],
+  [PunctType.mdash, 'Mdash'],
+])
+
+const punctSideMap = new Map<PunctSide, UdPunctSide>([
+  [PunctSide.open, 'Ini'],
+  [PunctSide.close, 'Fin'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -291,6 +305,8 @@ const mapMap = new Map<any, any>([
   [Formality, politeMap],
   [Alternativity, orthoMap],
   [PartType, partTypeMap],
+  [PunctType, punctTypeMap],
+  [PunctSide, punctSideMap],
 ])
 
 
@@ -316,6 +332,8 @@ export class UdFeats {
   Poss: UdBoolean
   PrepCase: UdPrepCase
   PronType: UdPronType
+  PunctType: UdPunctType
+  PunctSide: UdPunctSide
   Reflex: UdBoolean
   Style: UdStyle
   Tense: UdTense

@@ -33,6 +33,8 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
     feats.Variant,
     feats.VerbForm,
     feats.Voice,
+    feats.PunctType,
+    feats.PunctSide,
     rel,
     urel,
     id && `#${id}`,

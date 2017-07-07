@@ -10,7 +10,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo, PartType, VerbRevesivity,
+  PrepositionRequirement, Typo, PartType, VerbRevesivity, PunctType, PunctSide,
 } from './morph_features'
 
 
@@ -47,6 +47,8 @@ export const featureObj2nameMap = new Map<any, string>([
   [PronominalType, 'pronominalType'],
   [Pronoun, 'pronoun'],
   [GrammaticalAnimacy, 'grammaticalAnimacy'],
+  [PunctType, 'punctType'],
+  [PunctSide, 'punctSide'],
   [Rarity, 'rarity'],
   [Reflexivity, 'reflexivity'],
   [RequiredAnimacy, 'requiredAnimacy'],
@@ -246,6 +248,12 @@ export const FEATURE_TABLE = [
 
   { featStr: 'partType', feat: PartType, vesum: PartType.consequential, vesumStr: 'conseq' },
 
+  { featStr: 'punctType', feat: PunctType, vesum: PunctType.quoute, vesumStr: 'quote' },
+  { featStr: 'punctType', feat: PunctType, vesum: PunctType.mdash, vesumStr: 'mdash' },
+
+  { featStr: 'punctSide', feat: PunctSide, vesum: PunctSide.open, vesumStr: 'open' },
+  { featStr: 'punctSide', feat: PunctSide, vesum: PunctSide.close, vesumStr: 'close' },
+
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
@@ -383,6 +391,11 @@ export const FEATURE_ORDER = {
     PronominalType,
     Typo,
   ],
+  [Pos.punct]: [
+    Pos,
+    PunctType,
+    PunctSide,
+  ],
   [Pos.x]: [
     Pos,
     Abbreviation,
@@ -459,6 +472,8 @@ export class Features {
   prepositionRequirement: PrepositionRequirement
   pronominalType: PronominalType
   pronoun: Pronoun
+  punctType: PunctType
+  punctSide: PunctSide
   rarity: Rarity
   reflexivity: Reflexivity
   requiredAnimacy: RequiredAnimacy
@@ -947,6 +962,9 @@ export class MorphInterp {
   isStem() { return this.features.variant === Variant.stem }
   isDemonstrative() { return this.features.pronominalType === PronominalType.demonstrative }
   isRelative() { return this.features.pronominalType === PronominalType.relative }
+  isQuote() { return this.features.punctType === PunctType.quoute }
+  isOpeningPunctuation() { return this.features.punctSide === PunctSide.open }
+  isClosingPunctuation() { return this.features.punctSide === PunctSide.close }
 
 
 
