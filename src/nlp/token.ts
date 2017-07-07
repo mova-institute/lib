@@ -12,6 +12,7 @@ export type TokenTag =
   | 'error'
   | 'meta'
   | 'nomvoc'
+  | 'gendisagr'
 
 export interface Dependency {
   relation: string

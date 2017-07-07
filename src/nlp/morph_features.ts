@@ -109,7 +109,7 @@ export enum Voice {
   passive,
 }
 export enum Person {
-  first,
+  first = 1,
   second,
   third,
 }

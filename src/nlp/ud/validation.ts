@@ -4,7 +4,7 @@ import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
 import { GraphNode, walkDepth } from '../../lib/graph'
 import { MorphInterp } from '../morph_interp'
-import { Pos } from '../morph_features'
+import { Pos, Person } from '../morph_features'
 import { last } from '../../lang'
 import { uEq } from './utils'
 
@@ -558,6 +558,50 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && !t.parent.children.some(xx => isNumgov(xx.node.rel))
   )
 
+  treedReportIf(`безособове має підмет`,
+    t => t.node.interp.isImpersonal() && t.children.some(x => uEq(x.node.rel, 'nsubj')))
+
+  treedReportIf(`неузгодження підмет-присудок`,
+    (t, i) => {
+      if (t.isRoot()
+        || t.node.tags.includes('meta')
+        || !uEq(t.node.rel, 'nsubj')
+        || !t.parent.node.interp.isVerbial()
+        || t.parent.node.interp.isImpersonal()
+        || t.node.interp.isForeign()
+      ) {
+        return false
+      }
+
+      let verbInterp = t.parent.node.interp
+      let subjFeats = t.node.interp.features
+
+      if (verbInterp.hasPerson()) {
+        let subjPerson = subjFeats.person || Person.third
+        if (subjPerson !== verbInterp.features.person) {
+          return true
+        }
+      }
+
+      if (verbInterp.hasGender()
+        && !t.node.tags.includes('gendisagr')
+        && !t.node.interp.isPlural()
+        // && !(t.node.interp.isPronoun()
+        //   && subjFeats.person === Person.first || subjFeats.person === Person.second)
+        && !(t.node.interp.isPronoun() && !t.node.interp.hasGender())
+        && verbInterp.features.gender !== subjFeats.gender) {
+        return true
+      }
+
+      if (!t.children.some(x => uEq(x.node.rel, 'conj'))
+        && !(t.node.interp.isPronoun() && !t.node.interp.hasNumber())
+        && verbInterp.features.number !== subjFeats.number
+      ) {
+        return true
+      }
+    }
+  )
+
   treedReportIf(`неузгодження`,
     (t, i) => {
       if (!t.parent) {
@@ -595,11 +639,6 @@ export function validateSentenceSyntax(sentence: Token[]) {
       //   && (dep.hasCase() && dep.features.case !== head.features.case
       //   )
 
-      // ret = uEq(x.node.rel, 'nsubj')
-      //   && head.isVerb()
-      //   && (dep.features.person !== head.features.person
-      //     // || dep.features.number !== head.features.number
-      //   )
       return ret
     }
   )
@@ -687,6 +726,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: на кілька тисяч
   // зробити: nsubj в родовий з не
   // зробити: крапка в паратаксі без закритих дужок/лапок належить паратаксі
+  // зробити: незбалансовані дужки/лапки
+  // зробити: Ми не в змозі встановити — тест на узгодження підмета з присудком щоб був acl
 
 
   /*

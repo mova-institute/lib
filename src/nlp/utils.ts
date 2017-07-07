@@ -1025,7 +1025,8 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
         case 'w': {
           tok = new Token().setForm(el.text())
           if (el.attribute('ana')) {
-            tok.addInterp(MorphInterp.fromVesumStr(el.attribute('ana'), el.attribute('lemma')))
+            tok.addInterp(
+              MorphInterp.fromVesumStr(el.attribute('ana'), el.attribute('lemma')))
           }
           break
         }
@@ -1064,6 +1065,7 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
           let tags = comment.split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as any
           tok.tags = tags
         }
+        tok.interp.denormalize()
       }
 
       yield tok

@@ -106,8 +106,8 @@ function main() {
     console.log(`exporting ${basename}`)
 
     let root = parseXmlFileSync(xmlPath)
-    let tokenStream = tei2tokenStream(root, args.datasetSchema)
-    let sentenceStream = mu(tokenStream2sentences(tokenStream))
+    let tokenStream = mu(tei2tokenStream(root, args.datasetSchema))
+    let sentenceStream = tokenStream2sentences(tokenStream)
     for (let { sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
       initSyntax(tokens, sentenceId)
       let hasSyntax = tokens.some(x => x.hasDeps())

@@ -220,7 +220,7 @@ export class MorphAnalyzer {
   keepParadigmOmonyms = false
   private numeralMap = new CachedValue<NumeralMapObj[]>(this.buildNumeralMap.bind(this))
   private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
-    this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)))
+    this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)/*.denormalize()*/))
 
   constructor(private dictionary: Dictionary) {
     this.buildNumeralMap()

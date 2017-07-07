@@ -865,6 +865,17 @@ export class MorphInterp {
   //   // todo
   // }
 
+  denormalize() {
+    if (
+      (this.isVerb() || this.isAdjective() || this.isNoun())
+      && this.hasGender()
+      && !this.hasNumber()
+    ) {
+      this.setIsSingular()
+    }
+    return this
+  }
+
   getFeatures() {
     let others = [...this.otherFlags].map(x => {
       let row = tryMapVesumFlag(x)
@@ -961,6 +972,7 @@ export class MorphInterp {
   isUncontracted() { return this.features.variant === Variant.uncontracted }
   isStem() { return this.features.variant === Variant.stem }
   isDemonstrative() { return this.features.pronominalType === PronominalType.demonstrative }
+  isIndefinite() { return this.features.pronominalType === PronominalType.indefinite }
   isRelative() { return this.features.pronominalType === PronominalType.relative }
   isQuote() { return this.features.punctType === PunctType.quoute }
   isOpeningPunctuation() { return this.features.punctSide === PunctSide.open }
@@ -970,6 +982,7 @@ export class MorphInterp {
 
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }
+  hasPerson() { return this.features.person !== undefined }
   hasCase() { return this.features.case !== undefined }
   hasRequiredCase() { return this.features.requiredCase !== undefined }
 
