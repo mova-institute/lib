@@ -17,18 +17,6 @@ import groupby = require('lodash.groupby')
 
 
 
-const bratPrefix2xmlFilename = {
-  // 'babornia': 'laiuk__babornia',
-  // 'dzhaz': 'polishchuk__dzhaz',
-  // 'haz': 'zakon__metan',
-  // 'pidslukhano': 'sotsmerezhi__pidslukhano_kma',
-  // 'prokhasko': 'prokhasko__opovidannia',
-  // 'shcherbachov': 'umoloda__shcherbachov',
-  // 'tyhrolovy': 'bahrianyi__tyhrolovy',
-  // 'vichnyk': 'sverstiuk__vichnyk',
-  // 'zakon_tvaryny': 'zakon__tvaryny',
-}
-
 //------------------------------------------------------------------------------
 function main() {
   const now = toSortableDatetime(new Date())
@@ -45,24 +33,19 @@ function main() {
   for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
     let xmlFile = `${bratName}.xml`
     if (!fs.existsSync(xmlFile)) {
-      xmlFile = bratPrefix2xmlFilename[bratName]
-      if (!xmlFile) {
-        console.error(`Skipping ${bratName} files`)
-        continue
-      }
       xmlFile = xmlFiles.find(x => x.endsWith(`${xmlFile}.xml`))
     }
     console.log(`adopting ${xmlFile}`)
     let root = parseXmlFileSync(xmlFile)
 
-    let n2element = {} as { [key: string]: AbstractElement }
-    root.evaluateElements('//*[@id]')
-      .forEach(x => n2element[x.attribute('id')] = x)
+    let n2element = new Map(
+      root.evaluateElements('//*[@id]')
+        .map(x => [x.attribute('id'), x] as [string, AbstractElement]))
 
     for (let bratFile of bratFiles) {
       for (let span of parseBratFile(linesSync(bratFile))) {
         if (isString(span.annotations.N)) {
-          let el = n2element[span.annotations.N]
+          let el = n2element.get(span.annotations.N)
           if (!el) {  // sometimes tokens are deleted in xml but remain in brat
             continue
           }
@@ -81,7 +64,6 @@ function main() {
             el.setAttribute('mtime-synt', now)
           }
           el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
-
         }
       }
     }

@@ -17,7 +17,7 @@ import { Dict } from '../../types'
 // import { toUdString, toUd } from './tagset'
 import { Token } from '../../nlp/token'
 import { MorphInterp } from '../../nlp/morph_interp'
-import { sentence2conllu } from './utils'
+import { sentence2conllu, uEq } from './utils'
 import { mu } from '../../mu'
 import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
 import { zerofillMax } from '../../string_utils'
@@ -358,7 +358,7 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
       .slice(0, 1)
 
     // set AUX
-    if (['aux', 'aux:pass', 'cop'].includes(token.rel)) {
+    if (['aux', 'aux', 'cop'].some(x => uEq(token.rel, x))) {
       token.interp.setIsAuxillary()
       if (['б', 'би'].includes(token.interp.lemma)) {
         token.interp.setIsConditional()

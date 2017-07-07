@@ -296,3 +296,8 @@ export function parseBratFile(lines: Iterable<string>) {
 
   return Object.values(tokens).sort((a, b) => a.index - b.index)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function uEq(rel: string, unirel: string) {  // universally equals
+  return rel === unirel || rel && rel.startsWith(`${unirel}:`)
+}

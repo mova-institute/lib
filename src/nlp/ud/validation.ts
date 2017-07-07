@@ -6,6 +6,7 @@ import { GraphNode, walkDepth } from '../../lib/graph'
 import { MorphInterp } from '../morph_interp'
 import { Pos } from '../morph_features'
 import { last } from '../../lang'
+import { uEq } from './utils'
 
 
 
@@ -540,11 +541,12 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // treedReportIf(`один з*`,
   //   (t, i) => (t.node.interp.lemma === 'один'
   //     || t.node.interp.isCardinalNumeral()
-  //     || t.node.interp.isOrdinalNumeral())
-  //     && t.parent
-  //     && t.parent.children.some(x => ['з', 'із', 'зі'].includes(x.node.interp.lemma))
+  //     || t.node.interp.isOrdinalNumeral()
+  //     || t.node.interp.isSuperlative())
+  //     && !t.isRoot()
+  //     && t.parent.children.some(x =>
+  //       ['з', 'із', 'зі', 'поміж', 'з-поміж'].includes(x.node.interp.lemma))
   // )
-
 
 
   // coordination
@@ -683,6 +685,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: я не любив праці — родовий якщо з не, інакше перевірити аніміш
   // зробити: чиє не? аукса чи кореня?
   // зробити: на кілька тисяч
+  // зробити: nsubj в родовий з не
+  // зробити: крапка в паратаксі без закритих дужок/лапок належить паратаксі
 
 
   /*
@@ -736,11 +740,6 @@ function findHoles(array: Array<number>) {
   }
 
   return ret
-}
-
-//------------------------------------------------------------------------------
-function uEq(rel: string, unirel: string) {
-  return rel === unirel || rel && rel.startsWith(`${unirel}:`)
 }
 
 //------------------------------------------------------------------------------
