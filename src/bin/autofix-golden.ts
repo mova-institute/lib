@@ -308,6 +308,29 @@ function convertPcToW(root: AbstractElement) {
 
 /*
 
+//------------------------------------------------------------------------------
+function sideQuotes(root: AbstractElement) {
+  mu(root.evaluateElements('//w_'))
+    .filter(x => x.firstElementChild().attribute('lemma') === '"')
+    .forEach(interpEl => {
+      let isOpeninig = interpEl.nextElementSibling()
+        && interpEl.nextElementSibling().localName() === 'g'
+        && !(interpEl.nextElementSibling().firstElementChild()
+          && interpEl.nextElementSibling().firstElementChild().attribute('ana').startsWith('punct'))
+      let isClosing = interpEl.previousElementSibling()
+        && interpEl.previousElementSibling().localName() === 'g'
+        && !(interpEl.previousElementSibling().firstElementChild()
+          && interpEl.previousElementSibling().firstElementChild().attribute('ana').startsWith('punct'))
+      if (isOpeninig === isClosing) {
+        console.error(`fooooo id ${interpEl.attribute('id')}`)
+      } else if (isOpeninig) {
+        interpEl.firstElementChild().setAttribute('ana', 'punct:quote:open')
+      } else if (isClosing) {
+        interpEl.firstElementChild().setAttribute('ana', 'punct:quote:close')
+      }
+    })
+}
+
 // split tokens
 
 tokens.forEach(el => {
