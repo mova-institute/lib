@@ -951,6 +951,7 @@ export class MorphInterp {
   isImpersonal() { return this.features.verbType === VerbType.impersonal }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
   isIndicative() { return this.features.verbType === undefined || this.features.verbType === VerbType.indicative || this.features.verbType === VerbType.impersonal }
+  isInfinitive() { return this.features.verbType === VerbType.infinitive }
   isMasculine() { return this.features.gender === Gender.masculine }
   isNegative() { return this.features.polarity === Polarity.negative }
   isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?

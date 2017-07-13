@@ -285,14 +285,23 @@ export class Mu<T> implements Iterable<T> {
   }
 
   nth(n: number) {
-    if (n < 0) {
-      return
-    }
     for (let x of this) {
-      if (!n--) {
+      if (--n < 0) {
         return x
       }
     }
+  }
+
+  skip(n: number) {
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        if (--n > 0) {
+          continue
+        }
+        yield x
+      }
+    })())
   }
 
   first() {

@@ -46,11 +46,7 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'flat',
   'goeswith',
   'iobj',
-  'iobj:mark',
   'list',
-  'nsubj:mark',
-  'obj:mark',
-  'obl:mark',
   'mark',
   'nmod',
   'nsubj:pass',
@@ -73,7 +69,6 @@ export const CORE_COMPLEMENTS = [
   'obj',
   // 'xcomp',
   'ccomp',
-  'obj:mark',
 ]
 
 const COMPLEMENTS = [
@@ -84,7 +79,6 @@ const COMPLEMENTS = [
 const OBLIQUES = [
   'obl',
   'obl:agent',
-  'obl:mark',
 ]
 
 const SUBJECTS = [
@@ -92,7 +86,6 @@ const SUBJECTS = [
   'nsubj:pass',
   'csubj',
   'csubj:pass',
-  'csubj:mark',
 ]
 
 const NOMINAL_HEAD_MODIFIERS = [
@@ -144,10 +137,6 @@ const POS_ALLOWED_RELS = {
   //   'det',
   //   'det:numgov',
   //   'det:nummod',
-  //   'iobj:mark',
-  //   'nsubj:mark',
-  //   'obj:mark',
-  //   'obl:mark',
   // ],
   // 'PUNCT': [
   //   'punct',
@@ -166,13 +155,6 @@ const POS_ALLOWED_RELS = {
   //   'conj',
   // ],
 }
-
-const NON_SCONJ_RELS = [
-  'iobj:mark',
-  'nsubj:mark',
-  'obj:mark',
-  'obl:mark',
-]
 
 const DISCOURSE_DESTANATIONS = [
   'PART',
@@ -272,6 +254,42 @@ const POSES_NEVER_ROOT: UdPos[] = [
   'PUNCT',
 ]
 
+const MODAL_ADVS = `
+важко
+варто
+вільно
+гарно
+дивно
+дозволено
+досить
+досить
+достатньо
+довше
+приємно
+цікаво
+жарко
+правильно
+зручніше
+нормально
+доцільно
+запізно
+краще
+ліпше
+найліпше
+легко
+може
+можливо
+можна
+найкраще
+найтяжче
+неможливо
+необхідно
+потрібно
+реально
+слід
+треба
+`.trim().split(/\s+/g)
+
 
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
   [`case`, `з іменника`,
@@ -305,11 +323,6 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     (t, s, i) => canBePredicate(t, s, i),
     `в іменникове`,
     t => isNounishEllipticOrMeta(t)],
-  ['nsubj:mark',
-    `з присудка`,
-    (t, s, i) => canBePredicate(t, s, i),
-    `у відносний`,
-    t => t.interp.isRelative()],
   [`obj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishEllipticOrMeta(t)],
   [`iobj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменникове`, t => isNounishEllipticOrMeta(t)],
   [`obl`, `з присудка`, (t, s, i) => canBePredicate(t, s, i) || t.interp.isAdjective(), `в іменник`, t => isNounishEllipticOrMeta(t)],
@@ -326,7 +339,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     (t, s, i) => canBePredicate(t, s, i),
     `в ${EXPL_FORMS.join('|')} — іменники`,
     t => EXPL_FORMS.includes(t.form) && t.interp.isNounish()],
-  [`mark`, ``, t => t, `в SCONJ|ADV`, t => toUd(t.interp).pos === 'SCONJ' || t.interp.isAdverb()/*todo*/],
+  [`mark`, ``, t => t, `в підрядний сполучник`, t => t.interp.isSubordinative()],
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
   [`csubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`ccomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
@@ -375,6 +388,21 @@ export function validateSentenceSyntax(sentence: Token[]) {
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     sentence.some((xx, ii) => xx.headIndex === i && fn(xx, ii))
 
+
+  /*treedSentence
+    .filter(t => isSubordiateRoot(t.node))
+    .forEach(subRoot => {
+      let ownRelatives = mu(walkDepth(subRoot, t => t !== subRoot && isSubordiateRoot(t.node)))
+        .filter(x => x.node.interp.isRelative())
+        // .skip(1)
+        .toArray()
+      if (ownRelatives.length > 1) {
+        problems.push({
+          indexes: ownRelatives.map(x => node2index.get(x)),
+          message: `relik`
+        })
+      }
+    })*/
 
   // ~~~~~~~ rules ~~~~~~~~
 
@@ -657,7 +685,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   treedReportIf(`mark не з кореня підрядного`,
     (t, i) => t.node.rel
-      && (uEq(t.node.rel, 'mark') || t.node.rel.endsWith(':mark'))
+      && (uEq(t.node.rel, 'mark'))
       && (sentenceHasOneRoot && !t.parent.node.rel
         || t.parent.node.rel
         && !SUBORDINATE_CLAUSES.some(x => uEq(t.parent.node.rel, x))
@@ -709,6 +737,30 @@ export function validateSentenceSyntax(sentence: Token[]) {
     }
   }
 
+  // modal ADVs, espacially with copula
+  let interests = treedSentence.filter(t =>
+    !t.isRoot()
+    && t.node.interp.isAdverb()
+    && t.parent.node.interp.isInfinitive()
+    && MODAL_ADVS.some(form => t.node.form === form)
+  )
+  if (interests.length) {
+    problems.push({
+      indexes: interests.map(x => node2index.get(x)),
+      message: `модальний прислівник не підкорінь`,
+    })
+  }
+
+  // наістотнення
+  // treedReportIf(`obj в родовому`,
+  //   (t, i) => uEq(t.node.rel, 'obj')
+  //     && t.node.interp.isGenitive()
+  //     && !t.children.some(x => isNumgov(x.node.rel))
+  //     && !t.parent.node.interp.isNegative()
+  //     && !t.parent.children.some(x => uEq(x.node.rel, 'advmod') && x.node.interp.isNegative())
+  // )
+
+
   // зробити: в AUX не входить cop/aux
   // зробити: остання крапка не з кореня
   // зробити: коми належать підрядним: Подейкують,
@@ -728,6 +780,14 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: крапка в паратаксі без закритих дужок/лапок належить паратаксі
   // зробити: незбалансовані дужки/лапки
   // зробити: Ми не в змозі встановити — тест на узгодження підмета з присудком щоб був acl
+  // зробити: колишні :марки тільки в рел
+  // зробити: крім — не конж
+  // зробити: mark лише від голови підрядного
+  // зробити: advcl входить в вузол з то
+  // зробити: в правий бік прикдадни не входять nsubj і решта зовнішнє
+  // зробити: appos’и йдуть пучком, а не як однорідні
+  // зробити: узгодження наістотнень!
+
 
 
   /*
@@ -766,6 +826,11 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
 
   return problems
+}
+
+//------------------------------------------------------------------------------
+function isSubordiateRoot(token: Token) {
+  return SUBORDINATE_CLAUSES.some(x => uEq(token.rel, x))
 }
 
 //------------------------------------------------------------------------------

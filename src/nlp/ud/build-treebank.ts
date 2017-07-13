@@ -53,10 +53,6 @@ class Dataset {
 
 //------------------------------------------------------------------------------
 const REL_RENAMINGS = {
-  'obj:mark': 'obj',
-  'iobj:mark': 'iobj',
-  'obl:mark': 'obl',
-  'nsubj:mark': 'nsubj',
   'conj:parataxis': 'conj',
   'conj:repeat': 'conj',
   'obl:agent': 'obl',
@@ -188,6 +184,8 @@ function main() {
   }
 
   if (sentenseHoles.length) {
+    // _.sortBy(sentenseHoles, )
+    sentenseHoles.sort((a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length)
     fs.writeFileSync(path.join(outDir, 'holes.html'), formatProblemsHtml(sentenseHoles))
   }
 

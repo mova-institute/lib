@@ -61,7 +61,7 @@ function main() {
           changed = changed || (el.attribute('dep') || '') !== (dependencies || '')
           el.setAttribute('dep', dependencies)
           if (changed) {
-            el.setAttribute('mtime-synt', now)
+            // el.setAttribute('mtime-synt', now)
           }
           el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
         }

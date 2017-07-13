@@ -46,10 +46,6 @@ export type Ud20MiSpecificRelation =
   'flat:foreign' |
   'flat:name' |
   'flat:title' |
-  'iobj:mark' |
-  'nsubj:mark' |
-  'obj:mark' |
-  'obl:mark' |
   'nsubj:pass' |
   'nummod:gov' |
   'obl:agent'
