@@ -61,7 +61,7 @@ export function last<T>(array: Array<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function wrappedOrNull<T>(construct: { new (val): T; }, val) {
+export function wrappedOrNull<T>(construct: { new(val): T; }, val) {
   return val ? new construct(val) : null
 }
 
@@ -127,33 +127,6 @@ export function assureIterable<T>(thing: T | Iterable<T>) {
     return thing as Iterable<T>
   }
   return [thing] as Iterable<T>
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function compare(a, b) {
-  if (isOddball(a) && !isOddball(b)) {
-    return -1
-  }
-
-  if (!isOddball(a) && isOddball(b)) {
-    return 1
-  }
-
-  if (isNumber(a) && isNumber(b)) {
-    return numericCompare(a, b)
-  }
-
-  return lexCompare(a, b)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function numericCompare(a: number, b: number) {
-  return a - b
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function lexCompare(a, b) {
-  return String(a).localeCompare(String(b))
 }
 
 ////////////////////////////////////////////////////////////////////////////////

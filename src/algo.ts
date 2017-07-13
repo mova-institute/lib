@@ -1,7 +1,67 @@
-import { lexCompare } from './lang'
+import { isOddball, isNumber } from './lang'
 import { HashSet } from './data_structures'  // todo remove dep
 
 
+////////////////////////////////////////////////////////////////////////////////
+export type Comparator<T> = (a: T, b: T) => number
+
+////////////////////////////////////////////////////////////////////////////////
+export function compare(a, b) {
+  if (isOddball(a) && !isOddball(b)) {
+    return -1
+  }
+
+  if (!isOddball(a) && isOddball(b)) {
+    return 1
+  }
+
+  if (isNumber(a) && isNumber(b)) {
+    return numericCompare(a, b)
+  }
+
+  return lexCompare(a, b)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function numericCompare(a: number, b: number) {
+  return a - b
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function chainComparators<T>(...comparators: Comparator<T>[]) {
+  return (a: T, b: T) => {
+    for (let comparator of comparators) {
+      let ret = comparator(a, b)
+      if (ret) {
+        return ret
+      }
+    }
+    return 0
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function comparatorBy<ArgT, CompT>(
+  comparator: Comparator<CompT>, transformation: (a: ArgT) => CompT) {
+  return (a: ArgT, b: ArgT) => comparator(transformation(a), transformation(b))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function lexCompare(a, b) {
+  return String(a).localeCompare(String(b))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function indexComparator<T>(array: T[]) {
+  let indexMap = arr2indexMap(array)
+  return (a: T, b: T) => indexMap.get(a) - indexMap.get(b)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = lexCompare) {
+  let stableComparator = chainComparators(comparator, indexComparator(array))
+  return array.sort(stableComparator)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function flipMap<K, V>(map: Map<K, V>) {
@@ -129,18 +189,6 @@ function* _combinations<T>(arr: T[][], state = new Array<T>()): Iterable<T[]> {
 ////////////////////////////////////////////////////////////////////////////////
 export function overflowNegative(value: number) {
   return value & 0x7FFFFFFF  // todo: MAX_SAFE_INTEGER?
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = lexCompare) {
-  let indexMap = arr2indexMap(array)
-  return array.sort((a, b) => {
-    let initialCompare = comparator(a, b)
-    if (!initialCompare) {
-      return indexMap.get(a) - indexMap.get(b)
-    }
-    return initialCompare
-  })
 }
 
 ////////////////////////////////////////////////////////////////////////////////

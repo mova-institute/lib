@@ -2,7 +2,8 @@
 // todo: split to files
 
 import { indexTableByColumns, overflowNegative, flipMap } from '../algo'
-import { isOddball, compare, zipLongest } from '../lang'
+import { isOddball, zipLongest } from '../lang'
+import { compare } from '../algo'
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, GrammaticalAnimacy,
   Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,

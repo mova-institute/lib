@@ -12,6 +12,7 @@ import * as _ from 'lodash'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
 import { tei2tokenStream, tokenStream2sentences, normalizeMorphoForUd } from '../../nlp/utils'
+import * as algo from '../../algo'
 import { last } from '../../lang'
 import { Dict } from '../../types'
 // import { toUdString, toUd } from './tagset'
@@ -184,8 +185,12 @@ function main() {
   }
 
   if (sentenseHoles.length) {
-    // _.sortBy(sentenseHoles, )
-    sentenseHoles.sort((a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length)
+    let comparator = algo.chainComparators<any>(
+      (a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length,
+      (a, b) => b.tokens.length - a.tokens.length,  // prefer longer sents
+      algo.indexComparator(sentenseHoles),  // for stability
+    )
+    sentenseHoles.sort(comparator)
     fs.writeFileSync(path.join(outDir, 'holes.html'), formatProblemsHtml(sentenseHoles))
   }
 
