@@ -339,7 +339,6 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     (t, s, i) => canBePredicate(t, s, i),
     `в ${EXPL_FORMS.join('|')} — іменники`,
     t => EXPL_FORMS.includes(t.form) && t.interp.isNounish()],
-  [`mark`, ``, t => t, `в підрядний сполучник`, t => t.interp.isSubordinative()],
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
   [`csubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`ccomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
@@ -354,6 +353,14 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`acl`, `з іменника`, t => isNounishEllipticOrMeta(t) || t.interp.isDemonstrative(), ``, t => t],
 
   [`appos`, `з іменника`, t => isNounishEllipticOrMeta(t), `в іменник`, t => isNounishEllipticOrMeta(t)],
+]
+
+const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, TreedSentencePredicate][] = [
+  [`mark`,
+    ``, t => t,
+    `в підрядний сполучник`,
+    t => t.node.interp.isSubordinative()
+      || t.children.length && t.children.every(x => uEq(x.node.rel, 'fixed'))]
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -442,6 +449,27 @@ export function validateSentenceSyntax(sentence: Token[]) {
           && !predicateTo(t, sentence, i))
     }
   }
+
+  // treed simple rules
+  for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of TREED_SIMPLE_RULES) {
+    let relMatcher = rel.endsWith(':')
+      ? (x: string) => x === rel.slice(0, -1)
+      : (x: string) => x === rel || x && x.startsWith(`${rel}:`)
+
+    let relName = rel.endsWith(':') ? `${rel.slice(0, -1)}` : rel
+
+    if (messageFrom && predicateFrom) {
+      treedReportIf(`${relName} не ${messageFrom}`,
+        (t, i) => relMatcher(t.node.rel)
+          && !predicateFrom(t))
+    }
+    if (messageTo && predicateTo) {
+      treedReportIf(`${relName} не ${messageTo}`,
+        (t, i) => relMatcher(t.node.rel)
+          && !predicateTo(t))
+    }
+  }
+
 
   reportIf(`токен позначено error’ом`, (t, i) => t.tags.includes('error'))
 
@@ -787,6 +815,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: в правий бік прикдадни не входять nsubj і решта зовнішнє
   // зробити: appos’и йдуть пучком, а не як однорідні
   // зробити: узгодження наістотнень!
+  // зробити: у нас блаблабла, тому… — блаблабла має бути advcl
+  // зробити: obl:agent безособового має бути :anim
 
 
 
