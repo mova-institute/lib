@@ -947,6 +947,7 @@ export class MorphInterp {
   isEmphatic() { return this.features.pronominalType === PronominalType.emphatic }
   isFeminine() { return this.features.gender === Gender.feminine }
   isForeign() { return this.features.foreign === Foreign.yes }
+  isXForeign() { return this.isForeign() && this.features.pos === Pos.x }
   isTypo() { return this.features.typo === Typo.yes }
   isImperfect() { return this.features.aspect === Aspect.imperfect }
   isImpersonal() { return this.features.verbType === VerbType.impersonal }
