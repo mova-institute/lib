@@ -121,7 +121,7 @@ function main() {
           sentenseErrors.push({
             sentenceId,
             problems: [{ message: 'цикл' }],
-            tokens: tokens.map(x => x.toString()),
+            tokens,
             bratPath: getBratPath(tokens[0]),
           })
           continue
@@ -129,7 +129,7 @@ function main() {
           sentenseHoles.push({
             sentenceId,
             problems: [{ message: 'речення недороблене', indexes: roots }],
-            tokens: tokens.map(x => x.toString()),
+            tokens,
             bratPath: getBratPath(tokens[0]),
           })
         }
@@ -142,7 +142,7 @@ function main() {
             sentenseErrors.push({
               problems,
               sentenceId,
-              tokens: tokens.map(x => x.toString()),
+              tokens,
               bratPath: getBratPath(tokens[0]),
             })
           }
@@ -259,15 +259,20 @@ function formatProblemsHtml(sentenceProblems: any[]) {
 
     body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`
     for (let { indexes, message } of problems) {
-      body += `<p class="message">- ${escape(message)}</p>`
+      body += `<p class="message">- ${escape(message)}`
       if (indexes !== undefined) {
+        let ids = indexes.map(x => tokens[x].id).join(` `)
+        body += ` @ ${ids}</p>`
+
         for (let j = 0; j < tokens.length; ++j) {
           if (indexes.includes(j)) {
-            body += `<span class="error">${escape(tokens[j])}</span> `
+            body += `<span class="error">${escape(tokens[j].toString())}</span> `
           } else {
             body += `${tokens[j]} `
           }
         }
+      } else {
+        body += `</p>`
       }
       body += `<br/><br/>`
     }

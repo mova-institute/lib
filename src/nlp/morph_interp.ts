@@ -951,6 +951,7 @@ export class MorphInterp {
   isTypo() { return this.features.typo === Typo.yes }
   isImperfect() { return this.features.aspect === Aspect.imperfect }
   isImpersonal() { return this.features.verbType === VerbType.impersonal }
+  isNotPersonal() { return this.isImpersonal() || this.isInfinitive() }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
   isIndicative() { return this.features.verbType === undefined || this.features.verbType === VerbType.indicative || this.features.verbType === VerbType.impersonal }
   isInfinitive() { return this.features.verbType === VerbType.infinitive }
@@ -998,6 +999,7 @@ export class MorphInterp {
   isVerbial() { return this.isVerb() || this.isConverb() || this.isParticiple() }
 
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
+  setIsAccusative() { this.features.case = Case.accusative; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
   setIsAdjectiveAsNoun(value = true) { this.features.adjectiveAsNoun = value ? AdjectiveAsNoun.yes : undefined; return this }
   setIsAnimate(value = true) { this.features.animacy = value ? Animacy.animate : Animacy.inanimate; return this }

@@ -83,9 +83,7 @@ const OBLIQUES = [
 
 const SUBJECTS = [
   'nsubj',
-  'nsubj:pass',
   'csubj',
-  'csubj:pass',
 ]
 
 const NOMINAL_HEAD_MODIFIERS = [
@@ -321,7 +319,6 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     undefined,
     `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`,
     (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
-  [`aux`, `з дієслівного`, t => t.interp.isVerbial(), `в бути|би|б`, t => TOBE_AND_BY_LEMMAS.includes(t.interp.lemma)],
   [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
   [`obl:agent`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => canActAsNoun(t)],
   [`vocative`,
@@ -339,7 +336,12 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
   [`csubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`ccomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
-  [`xcomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
+  [`xcomp`,
+    `з присудка`,
+    (t, s, i) => canBePredicate(t, s, i),
+    `в присудок`,
+    (t, s, i) => (t.interp.isNounish() || t.interp.isAdjective())
+      && (t.interp.isNominative() || t.interp.isInstrumental())],
   [`advcl`, ``, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
 
   [`cc`,
@@ -367,8 +369,14 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
   ],
   [`obj`, `з присудка`, t => canBePredicateTreed(t), `в іменникове`, t => canActAsNounForObj(t)],
   [`iobj`, `з присудка`, t => canBePredicateTreed(t), `в іменникове`, t => canActAsNounForObj(t)],
-  [`obl`, `з присудка`, t => canBePredicateTreed(t), `в іменник`, t => canActAsNounForObj(t)],
+  [`obl`,
+    `з дієслова|прикм.|присл`,
+    t => t.node.interp.isVerbial() || t.node.interp.isAdjective() || t.node.interp.isAdverb(),
+    `в іменник`, t => canActAsNounForObj(t)],
   [`nmod`, `з іменника`, t => canActAsNoun(t.node), `в іменник`, t => canActAsNoun(t.node)],
+  [`aux`, `з дієслівного`, t => t.node.interp.isVerbial()
+    || t.node.interp.isAdverb() && t.children.some(x => SUBJECTS.some(subj => uEq(x.node.rel, subj))),
+    `в ${TOBE_AND_BY_LEMMAS.join('|')}`, t => TOBE_AND_BY_LEMMAS.includes(t.node.interp.lemma)],
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -610,9 +618,22 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && !t.children.some(x => x.node.interp.isAdverb())
   )
 
+  treedReportIf(`додаток в називному`,
+    t => ['obj', 'iobj', 'obl'].some(x => uEq(t.node.rel, x))
+      && t.node.interp.isNominative()
+      && !t.node.interp.isXForeign()
+    // && !t.children.some(x => isNumgov(x.node.rel))
+    // && !t.children.some(x => x.node.interp.isAdverb())
+  )
+
   treedReportIf(`місцевий без прийменника`,
     t => isLocativeWithoutImmediatePrep(t)
       && (!['appos', 'conj', 'flat'].some(x => uEq(t.node.rel, x)) || isLocativeWithoutImmediatePrep(t.parent))
+  )
+
+  treedReportIf(`підрядне означальне відкриває що-іменник`,
+    t => uEq(t.node.rel, 'acl')
+      && t.children.some(x => x.node.interp.lemma === 'що' && x.node.interp.isNounish())
   )
 
   // treedReportIf(`один з*`,
@@ -635,8 +656,37 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && !t.parent.children.some(xx => isNumgov(xx.node.rel))
   )
 
-  treedReportIf(`безособове має підмет`,
-    t => t.node.interp.isImpersonal() && t.children.some(x => uEq(x.node.rel, 'nsubj')))
+  treedReportIf(`неособове має підмет`,
+    t => (t.node.interp.isImpersonal() || t.node.interp.isInfinitive())
+      && t.children.some(x => uEq(x.node.rel, 'nsubj'))
+      && !t.node.isPromoted
+      && !t.children.some(x => x.node.interp.isAuxillary() && x.node.interp.hasPerson())
+  )
+
+  // treedReportIf(`знахідний без прийменника від недієслова`,
+  //   t => canActAsNounForObj(t)
+  //     && t.node.interp.isAccusative()
+  //     && !t.isRoot()
+  //     && !t.children.some(x => x.node.interp.isPreposition())
+  //     && !t.parent.node.interp.isVerbial()
+  //     && !['conj', 'flat'].some(x => uEq(t.node.rel, x))
+  //   // && !thisOrTravelUp(t, tt =>
+  //   //   tt.parent.node.interp.isVerbial()
+  //   //   && tt.children.some(x => x.node.interp.isPreposition())
+  //   // )
+  //   // && !t.parent.node.interp.isVerbial()
+
+  // )
+
+  // if (roots.length === 1) {
+  //   treedReportIf(`інфінітив — корінь`,
+  //     t => t.isRoot()
+  //       && t.node.interp.isInfinitive()
+  //     // && t.children.some(x => uEq(x.node.rel, 'nsubj'))
+  //     // && !t.node.isPromoted
+  //     // && !t.children.some(x => x.node.interp.isAuxillary() && x.node.interp.hasPerson())
+  //   )
+  // }
 
   treedReportIf(`неузгодження підмет-присудок`,
     (t, i) => {
@@ -842,6 +892,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: у нас блаблабла, тому… — блаблабла має бути advcl
   // зробити: obl:agent безособового має бути :anim
   // зробити: знак питання і чи кріпляться до одного
+  // зробити: підмети чи присудки не бувають неоднорідні
 
 
 
@@ -881,6 +932,18 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
 
   return problems
+}
+
+//------------------------------------------------------------------------------
+function thisOrTravelUp(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
+  const allowed = ['conj', 'flat']
+  while (node) {
+    if (predicate(node)) {
+      return true
+    }
+    node = allowed.some(x => uEq(node.parent.node.rel, x)) && node.parent
+  }
+  return false
 }
 
 //------------------------------------------------------------------------------
@@ -1014,14 +1077,6 @@ function isActualParticiple(token: Token, sentence: Token[], index: number) {
 
 //------------------------------------------------------------------------------
 function sentenceArray2TreeNodes(sentence: Token[]) {
-  // return mu(sentence)
-  //   .map(x => new TreeNode(x))
-  //   .transform((x, i) => {
-  //   if (x.node.head) {
-  //     nodeArray[i].parent = nodeArray[sentence[i].head]
-  //     nodeArray[sentence[i].head].children.push(nodeArray[i])
-  //   }
-  // })
   let nodeArray = sentence.map(x => new GraphNode(x))
   for (let i = 0; i < nodeArray.length; ++i) {
     if (sentence[i].rel) {
