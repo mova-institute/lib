@@ -1065,7 +1065,6 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
           let tags = comment.split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as any
           tok.tags = tags
         }
-        tok.interp.denormalize()
       }
 
       yield tok

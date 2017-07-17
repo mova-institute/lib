@@ -228,6 +228,13 @@ ATTRIBUTE voice {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE parttype {
+  LABEL "тип частки"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE puncttype {
   LABEL "тип пунктуації"
   MULTIVALUE yes

@@ -24,6 +24,7 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
     feats.Number,
     feats.NumForm,
     feats.NumType,
+    feats.PartType,
     feats.Person,
     feats.Poss,
     feats.PrepCase,
@@ -37,7 +38,7 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
     feats.PunctSide,
     rel,
     urel,
-    id && `#${id}`,
+    id,  //&& `#${id}`,
   ].map(x => x || '').join('\t').toLowerCase()
 
   return ret

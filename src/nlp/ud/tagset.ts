@@ -328,6 +328,7 @@ export class UdFeats {
   Number: UdNumber
   NumForm: UdNumForm
   NumType: UdNumType
+  PartType: UdPartType
   Person: UdPerson
   Poss: UdBoolean
   PrepCase: UdPrepCase
@@ -371,6 +372,8 @@ function mapFeatureValue2Ud(featureName, value) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toUd(interp: MorphInterp) {
+  interp.denormalize()
+
   // throw on not supported
   if (interp.isEmphatic()) {
     // throw new Error(`Emphatic pronoun conversion is not implemented`)
