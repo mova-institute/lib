@@ -7,6 +7,9 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 export type TokenType = 'word' | 'glue'
 export type Structure = 'document' | 'div' | 'paragraph' | 'sentence' | 'stanza' | 'line'
 export type TokenTag =
+  | 'promoted'
+  | 'graft'
+
   | 'adjdet'
   | 'nestedpunct'
   | 'error'
@@ -30,7 +33,6 @@ export class Token {
   interps = new Array<MorphInterp>()
   id: string
   glued: boolean
-  isPromoted: boolean
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
   tags = new Array<TokenTag>()
@@ -52,6 +54,14 @@ export class Token {
     ret.interps = interps
     ret.attributes = attributes
     return ret
+  }
+
+  get isPromoted() {
+    return this.tags.includes('promoted')
+  }
+
+  get isGraft() {
+    return this.tags.includes('graft')
   }
 
   setType(type: TokenType) {

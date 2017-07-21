@@ -1,4 +1,4 @@
-import { Token } from '../token'
+import { Token, TokenTag } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { tokenStream2plaintextString } from '../utils'
@@ -28,6 +28,9 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
     }
     if (token.isPromoted) {
       misc.push('Promoted=Yes')
+    }
+    if (token.isGraft) {
+      misc.push('Graft=Yes')
     }
     if (token.glued) {
       misc.push('SpaceAfter=No')
@@ -146,8 +149,10 @@ export function* tokenStream2brat(sentences: Token[][]) {
         n2id[token.id] = id
         yield `A${a++}\tN ${tId} ${token.id}`
       }
-      if (token.isPromoted) {
-        yield `A${a++}\tPromoted ${tId}`
+      for (let tag of ['Promoted', 'Graft']) {
+        if (token.tags.includes(tag.toLowerCase() as TokenTag)) {
+          yield `A${a++}\t${tag} ${tId}`
+        }
       }
       let comment = token.getAttribute('comment')
       if (comment) {

@@ -20,7 +20,7 @@ import {
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
 import { startsWithCapital } from '../string_utils'
-import { Token, TokenType, Structure } from './token'
+import { Token, TokenTag, Structure } from './token'
 import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
 import { keyvalue2attributesNormalized } from './noske_utils'
 
@@ -1059,12 +1059,10 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
             .map(([head, relation]) => ({ headId: head, relation }))
           tok.deps = deps
         }
-        tok.isPromoted = el.attribute('promoted') === 'yes'
-        let comment = el.attribute('comment')
-        if (comment) {
-          let tags = comment.split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as any
-          tok.tags = tags
-        }
+        tok.tags.push(...(el.attribute('tags') || '').split(/\s+/g).filter(x => x) as TokenTag[])
+        tok.tags.push(...(el.attribute('comment') || '')
+          .split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as TokenTag[])
+        // todo: attributeDefault
       }
 
       yield tok
@@ -1259,7 +1257,7 @@ export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
 
 
 //------------------------------------------------------------------------------
-const ATTR_ORDER = arr2indexObj(['id', 'dep', 'promoted', 'lemma', 'anna', 'mark'], 1)
+const ATTR_ORDER = arr2indexObj(['id', 'dep', 'tags', 'lemma', 'anna', 'mark'], 1)
 function sortAttributes(element: AbstractElement) {
   let attributes = Object.entries(element.attributesObj()).sort(([a], [b]) => {
     return (ATTR_ORDER[a] || 100) - (ATTR_ORDER[b] || 100) || a.localeCompare(b)

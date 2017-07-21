@@ -50,19 +50,23 @@ function main() {
             continue
           }
           el.setAttribute('comment', span.comment)
-          let promotedStr = span.annotations.Promoted && 'yes'
-          let changed = (el.attribute('promoted') || '') !== (promotedStr || '')
-          el.setAttribute('promoted', promotedStr)
+          let tags = new Array<string>()
+          for (let tag of ['Promoted', 'Graft']) {
+            if (span.annotations[tag]) {
+              tags.push(tag.toLowerCase())
+            }
+          }
+          if (tags.length) {
+            el.setAttribute('tags', tags.join(' '))
+          } else {
+            el.removeAttribute('tags')
+          }
 
           let dependencies = span.arcs
             .filter(x => isString(x.head.annotations.N))
             .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
             .join('|') || undefined
-          changed = changed || (el.attribute('dep') || '') !== (dependencies || '')
           el.setAttribute('dep', dependencies)
-          if (changed) {
-            // el.setAttribute('mtime-synt', now)
-          }
           el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
         }
       }
