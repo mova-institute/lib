@@ -302,7 +302,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     (t, s, i) => t.interp.isPreposition() || s.some(t2 => t2.headIndex === i && uEq(t2.rel, 'fixed'))],
   [`det:`,
     `з іменника`,
-    (t, s, i) => canActAsNoun(t) || s.some(tt => tt.rel === 'acl' || tt.headIndex === i) || t.tags.includes('adjdet'),
+    (t, s, i) => canActAsNoun(t) || s.some(tt => tt.rel === 'acl' || tt.headIndex === i) || t.hasTag('adjdet'),
     `в нечислівниковий DET`,
     t => toUd(t.interp).pos === 'DET' && !t.interp.isCardinalNumeral() && !t.interp.isOrdinalNumeral()],
   [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.interp.isAdjectivish()],
@@ -310,7 +310,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`det:numgov`, `з іменника`, t => canActAsNoun(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
   [`punct`,
     `зі слова`,
-    t => !t || !t.interp.isPunctuation() || t.tags.includes('nestedpunct'),
+    t => !t || !t.interp.isPunctuation() || t.hasTag('nestedpunct'),
     // t => !t /*temp*/ /*|| isContentWord(t)*/ || t.tags.includes('nestedpunct'),
     `в PUNCT`,
     t => t.interp.isPunctuation()],
@@ -326,21 +326,22 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     (t, s, i) => canBePredicate(t, s, i),
     `в кличний іменник`,
     t => t.interp.isXForeign()
-      || canActAsNoun(t) && (t.interp.isVocative() || t.tags.includes('nomvoc'))],
+      || canActAsNoun(t) && (t.interp.isVocative() || t.hasTag('nomvoc'))],
   [`advmod`, ``, t => 0, `в прислівник`, t => t.interp.isAdverb() || t.interp.isParticle() && ADVMOD_NONADVERBIAL_LEMMAS.includes(t.interp.lemma)],
   [`expl`,
     `з присудка`,
     (t, s, i) => canBePredicate(t, s, i),
     `в ${EXPL_FORMS.join('|')} — іменники`,
-    t => EXPL_FORMS.includes(t.form) && t.interp.isNounish()],
+    t => EXPL_FORMS.includes(t.form.toLowerCase()) && t.interp.isNounish()],
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
   [`csubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`ccomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`xcomp`,
     `з присудка`,
     (t, s, i) => canBePredicate(t, s, i),
-    `в присудок`,
-    (t, s, i) => (t.interp.isNounish() || t.interp.isAdjective())
+    `в куди треба`,
+    (t, s, i) => canBePredicate(t, s, i)
+      || (t.interp.isNounish() || t.interp.isAdjective())
       && (t.interp.isNominative() || t.interp.isInstrumental())],
   [`advcl`, ``, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
 
@@ -487,7 +488,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   }
 
 
-  reportIf(`токен позначено error’ом`, (t, i) => t.tags.includes('error'))
+  reportIf(`токен позначено error’ом`, (t, i) => t.hasTag('error'))
 
   reportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
@@ -633,7 +634,14 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
   treedReportIf(`підрядне означальне відкриває що-іменник`,
     t => uEq(t.node.rel, 'acl')
-      && t.children.some(x => x.node.interp.lemma === 'що' && x.node.interp.isNounish())
+      && t.children.some(x => x.node.form.toLowerCase() === 'що' && x.node.interp.isNounish())
+  )
+
+  treedReportIf(`зворотне має obj/iobj`,
+    t => t.node.interp.isReversive()
+      && t.children.some(child => ['obj', 'iobj'].some(
+        x => uEq(child.node.rel, x) && !child.node.interp.isDative() && !child.node.interp.isGenitive())
+      )
   )
 
   // treedReportIf(`один з*`,
@@ -653,6 +661,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
     (t, i) => uEq(t.node.rel, 'case')
       && (t.node.interp.features.requiredCase as number) !== t.parent.node.interp.features.case
       && !t.parent.node.interp.isXForeign()
+      && !t.parent.node.isGraft
       && !t.parent.children.some(xx => isNumgov(xx.node.rel))
   )
 
@@ -691,7 +700,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   treedReportIf(`неузгодження підмет-присудок`,
     (t, i) => {
       if (t.isRoot()
-        || t.node.tags.includes('meta')
+        || t.node.hasTag('graft')
         || !uEq(t.node.rel, 'nsubj')
         || !t.parent.node.interp.isVerbial()
         || t.parent.node.interp.isImpersonal()
@@ -711,7 +720,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
       }
 
       if (verbInterp.hasGender()
-        && !t.node.tags.includes('gendisagr')
+        && !t.node.hasTag('gendisagr')
         && !t.node.interp.isPlural()
         // && !(t.node.interp.isPronoun()
         //   && subjFeats.person === Person.first || subjFeats.person === Person.second)
@@ -783,8 +792,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   )
 
   treedReportIf(`mark не з кореня підрядного`,
-    (t, i) => t.node.rel
-      && (uEq(t.node.rel, 'mark'))
+    (t, i) => uEq(t.node.rel, 'mark')
+      // && !t.parent.isRoot()
       && (sentenceHasOneRoot && !t.parent.node.rel
         || t.parent.node.rel
         && !SUBORDINATE_CLAUSES.some(x => uEq(t.parent.node.rel, x))
@@ -1054,7 +1063,7 @@ function canBePredicate(token: Token, sentence: Token[], index: number) {
 function canActAsNoun(token: Token) {
   return token.interp.isNounish()
     || token.isPromoted && (token.interp.isAdjectivish() || token.interp.isCardinalNumeral())
-    || token.tags.includes('meta')
+    || token.hasTag('graft')
     || token.interp.isXForeign()
 }
 

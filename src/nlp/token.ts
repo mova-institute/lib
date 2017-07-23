@@ -13,7 +13,6 @@ export type TokenTag =
   | 'adjdet'
   | 'nestedpunct'
   | 'error'
-  | 'meta'
   | 'nomvoc'
   | 'gendisagr'
 
@@ -61,7 +60,11 @@ export class Token {
   }
 
   get isGraft() {
-    return this.tags.includes('graft')
+    return this.hasTag('graft')
+  }
+
+  hasTag(tag: TokenTag) {
+    return this.tags.includes(tag)
   }
 
   setType(type: TokenType) {

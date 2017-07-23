@@ -967,6 +967,7 @@ export class MorphInterp {
   isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isReflexive() { return this.features.reflexivity === Reflexivity.yes }
+  isReversive() { return this.features.verbRevesivity === VerbRevesivity.yes }
   isPresent() { return this.features.tense === Tense.present }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
   isSuperlative() { return this.features.degree === Degree.superlative }  // todo: tantum?
@@ -1000,6 +1001,7 @@ export class MorphInterp {
 
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAccusative() { this.features.case = Case.accusative; return this }
+  setIsGenitive() { this.features.case = Case.genitive; return this }
   setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
   setIsAdjectiveAsNoun(value = true) { this.features.adjectiveAsNoun = value ? AdjectiveAsNoun.yes : undefined; return this }
   setIsAnimate(value = true) { this.features.animacy = value ? Animacy.animate : Animacy.inanimate; return this }

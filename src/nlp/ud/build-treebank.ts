@@ -104,6 +104,7 @@ function main() {
 
     let root = parseXmlFileSync(xmlPath)
     let tokenStream = mu(tei2tokenStream(root, args.datasetSchema))
+      .transform(x => x.interp && x.interp.denormalize())
     let sentenceStream = tokenStream2sentences(tokenStream)
     for (let { sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
       initSyntax(tokens, sentenceId)
@@ -286,7 +287,7 @@ function formatProblemsHtml(sentenceProblems: any[]) {
     .error { padding: 0.25em; border: 2px solid #FFAB40; color: #555; }
     .message { color: #555; margin-left:-2ch; }
   </style></head><body>
-  <p style="margin-top:-2em;">київський час створення: <b>${timestamp}</b></p>
+  <p style="margin-top:-2em;">створено: <b>${timestamp}</b> (час київський)</p>
   <br/>
   <br/>
   ${body}
@@ -300,18 +301,15 @@ function set2filename(dir: string, setSchema: string, setName: string) {
 
 //------------------------------------------------------------------------------
 function initSyntax(sentence: Array<Token>, sentenceId: string) {
-  let id2i = {} as any
-  for (let i = 0; i < sentence.length; ++i) {
-    id2i[sentence[i].id] = i
-  }
+  let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
   let changed = new Set<string>()
   for (let token of sentence) {
     for (let dep of token.deps) {
       if (!changed.has(token.id)) {
-        if (id2i[token.deps[0].headId] === undefined) {
-          throw new Error(`head outside sentence #${sentenceId} token #${token.getAttribute('id')}`)
+        dep.headIndex = id2i.get(token.deps[0].headId)
+        if (dep.headIndex === undefined) {
+          throw new Error(`head outside a sentence #${sentenceId} token #${token.getAttribute('id')}`)
         }
-        dep.headIndex = id2i[token.deps[0].headId]
         changed.add(token.id)
       }
     }
