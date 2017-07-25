@@ -7,26 +7,44 @@ import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
 import * as ukGrammar from '../nlp/uk_grammar'
-import { serializeMiDocument, setTenseIfConverb, tokenizeTei, morphInterpret, tei2tokenStream } from '../nlp/utils'
+import { Token } from '../nlp/token'
+import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime } from '../date'
 import { mu } from '../mu'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
-
+import { GraphNode } from '../lib/graph'
+import { uEq } from '../nlp/ud/utils'
+import { PREDICATES } from "../nlp/ud/uk_grammar";
 
 
 // const IDS = new Set(``.trim().split(/\s/g))
 
 const TRANSFORMS = {
-  toPart(el: AbstractElement) {
-    el.firstElementChild().setAttribute('ana', 'part')
+  // toPart(el: AbstractElement) {
+  //   el.firstElementChild().setAttribute('ana', 'part')
+  // },
+  // toConjSubord(el: AbstractElement) {
+  //   el.firstElementChild().setAttribute('ana', 'conj:subord')
+  // },
+  toAccusative(t: GraphNode<Token>) {
+    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
+    toChange.push(t)
+    toChange.forEach(tt => tt.node.interp.setIsAccusative())
   },
-  toConjSubord(el: AbstractElement) {
-    el.firstElementChild().setAttribute('ana', 'conj:subord')
+  toGenitive(t: GraphNode<Token>) {
+    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
+    toChange.push(t)
+    toChange.forEach(tt => tt.node.interp.setIsGenitive())
   },
+  toCc(t: GraphNode<Token>) {
+  }
 }
+
+//------------------------------------------------------------------------------
+// function changeNominalCaseTo
 
 // temp
 const KNOWN_NONDIC_LEMMAS = new Set([
@@ -42,8 +60,15 @@ function main() {
   const now = toSortableDatetime(new Date())
 
   let args = minimist(process.argv.slice(2))
+  // console.log(args)
   if (args.tranformIds) {
-    var ids = new Set(fs.readFileSync(args.tranformIds, 'utf8').trim().split(/\s+/g))
+    var ids = new Set(fs.readFileSync(args.tranformIds, 'utf8')
+      .trim()
+      .split(/\n+/g)
+      .map(x => x.trim())
+      .filter(x => !x.startsWith('#'))
+      .join(' ')
+      .split(/\s+/g))
   }
   let [globStr, sequencePath] = args._
   let files = glob.sync(globStr)
@@ -71,8 +96,8 @@ function main() {
       renameStructures(root)
 
       // remove redundant attributes
-      let tokens = [...root.evaluateElements('//w_')]
-      for (let w of tokens) {
+      let tokenEls = [...root.evaluateElements('//w_')]
+      for (let w of tokenEls) {
         w.removeAttribute('n')
         w.removeAttribute('nn')
         w.removeAttribute('disamb')
@@ -145,7 +170,7 @@ function main() {
 
         if (interp.isVerb() && interp.lemma === 'бути') {
           let dep = interpEl.parent().attribute('dep')
-          if (dep && /^\d+\-(aux|cop)$/.test(dep)) {
+          if (dep && /\-(aux|cop)$/.test(dep)) {
             interp.setIsAuxillary()
           }
         }
@@ -168,8 +193,8 @@ function main() {
       // give each token an id
       if (idSequence !== undefined) {
         const idedElements = ['doc', 'p', 'sb', 's', 'w_', 'pc']
-        tokens = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
-        for (let token of tokens) {
+        tokenEls = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
+        for (let token of tokenEls) {
           if (!token.attribute('id')) {
             token.setAttribute('id', id2str(idSequence++))
           }
@@ -178,17 +203,58 @@ function main() {
 
       runValidations(root)
 
-      if (ids) {
-        mu(root.evaluateElements('//w_'))
-          .filter(x => ids.has(x.attribute('id')))
-          .toArray()
-          .forEach(el => {
-            TRANSFORMS[args.transform](el)
-            el.setAttribute('mtime-morpho', now)
+      let id2el = new Map(root.evaluateElements('//*[@id]').map(
+        x => [x.attribute('id'), x] as [string, AbstractElement]))
+
+      let documentTokens = mu(tei2tokenStream(root)).toArray()
+      let sentenceStream = tokenStream2sentences(documentTokens)
+      for (let { sentenceId, set, nodes, newParagraph, newDocument } of sentenceStream) {
+        let roots = nodes.filter(x => x.isRoot())
+        let sentenceHasOneRoot = roots.length === 1
+
+        // console.log(ids.size)
+        if (ids) {
+          // console.log(id2el)
+          nodes.forEach(t => {
+            if (ids.has(t.node.id)) {
+              // console.log(t.node.form)
+              TRANSFORMS[args.transform](t)
+            }
           })
+        }
+
+        for (let { node } of nodes) {
+          if (node.rel && node.interp.isPunctuation()) {
+            node.rel = 'punct'
+          }
+        }
+
+        for (let node of nodes) {
+          let token = node.node
+
+          if (PREDICATES.isAuxWithNoCopAux(node)
+            || sentenceHasOneRoot && node.isRoot() && node.node.interp.isAuxillary()) {
+            node.node.interp.setIsAuxillary(false)
+          }
+          if (token.rel === 'mark' && token.interp.isAdverb() && token.interp.isRelative()) {
+            token.rel = 'advmod'
+          }
+          if (token.rel && token.interp.isParticle() && token.interp.isNegative() && !token.isPromoted) {
+            token.rel = 'advmod'
+          }
+        }
+
+        nodes.forEach(x => {
+          // console.log(x)
+          let element = id2el.get(x.node.id)
+          if (element) {
+            // console.log(x.node.form)
+            saveToken(x.node, element)
+          }
+        })
       }
 
-      // switch2globalIds(root)
+
 
       let content = serializeMiDocument(root)
       // content = beautify(content, { indent_size: 2 })
@@ -203,6 +269,17 @@ function main() {
     fs.writeFileSync(sequencePath, idSequence)
   }
   console.log(`${tokenCount} tokens`)
+}
+
+//------------------------------------------------------------------------------
+function saveToken(token: Token, element: AbstractElement) {
+  let interp0 = element.firstElementChild()
+  interp0.setAttribute('ana', token.interp.toVesumStr())
+  interp0.setAttribute('lemma', token.interp.lemma)
+  let dep = token.deps.map(x => `${x.headId}-${x.relation}`).join('|')
+  if (dep) {
+    element.setAttribute('dep', dep)
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -268,6 +345,10 @@ function renameStructures(root: AbstractElement) {
 
 }
 
+
+
+/*
+
 //------------------------------------------------------------------------------
 function switch2globalIds(root: AbstractElement) {
   let tokens = [...root.evaluateElements('//w_')]
@@ -303,10 +384,6 @@ function convertPcToW(root: AbstractElement) {
       pc.remove()
     })
 }
-
-
-
-/*
 
 //------------------------------------------------------------------------------
 function sideQuotes(root: AbstractElement) {

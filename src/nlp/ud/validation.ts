@@ -7,7 +7,7 @@ import { MorphInterp } from '../morph_interp'
 import { Pos, Person } from '../morph_features'
 import { last } from '../../lang'
 import { uEq } from './utils'
-
+import { PREDICATES } from './uk_grammar'
 
 
 class SentenceToken extends Token {
@@ -15,6 +15,12 @@ class SentenceToken extends Token {
 }
 
 const ALLOWED_RELATIONS: UdMiRelation[] = [
+  'parataxis:discourse',
+  'acl:2',
+  'advcl:2',
+  'xcomp:2',
+  'flat:repeat',
+
   'acl',
   'advcl',
   'advmod',
@@ -372,7 +378,8 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
   [`iobj`, `з присудка`, t => canBePredicateTreed(t), `в іменникове`, t => canActAsNounForObj(t)],
   [`obl`,
     `з дієслова|прикм.|присл`,
-    t => t.node.interp.isVerbial() || t.node.interp.isAdjective() || t.node.interp.isAdverb(),
+    t => t.node.interp.isVerbial() || t.node.interp.isAdjective() || t.node.interp.isAdverb()
+      || t.node.isPromoted,
     `в іменник`, t => canActAsNounForObj(t)],
   [`nmod`, `з іменника`, t => canActAsNoun(t.node), `в іменник`, t => canActAsNoun(t.node)],
   [`aux`, `з дієслівного`, t => t.node.interp.isVerbial()
@@ -390,23 +397,24 @@ type SentencePredicate = (x: Token, i?: number) => any
 type SentencePredicate2 = (t: Token, s: Token[], i: number/*, node: GraphNode<Token>*/) => any
 type TreedSentencePredicate = (t: GraphNode<Token>, i?: number) => any
 ////////////////////////////////////////////////////////////////////////////////
-export function validateSentenceSyntax(sentence: Token[]) {
+export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
 
   let problems = new Array<Problem>()
 
-  let treedSentence = sentenceArray2TreeNodes(sentence)
-  let roots = treedSentence.filter(x => x.isRoot())
+  let sentence = nodes.map(x => x.node)
+  let roots = nodes.filter(x => x.isRoot())
   let sentenceHasOneRoot = roots.length === 1
-  let node2index = new Map(treedSentence.map((x, i) => [x, i] as [GraphNode<Token>, number]))
+  let node2index = new Map(nodes.map((x, i) => [x, i] as [GraphNode<Token>, number]))
 
   const reportIf = (message: string, fn: SentencePredicate) => {
     problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
   }
 
   const treedReportIf = (message: string, fn: TreedSentencePredicate) => {
-    problems.push(...mu(treedSentence).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
+    problems.push(...mu(nodes).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
   }
 
+  const xtreedReportIf = (...args: any[]) => undefined
   const xreportIf = (...args: any[]) => undefined
 
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
@@ -439,11 +447,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   }
 
   // invalid AUX
-  treedReportIf(`AUX без cop/aux`, (t, i) =>
-    t.node.interp.isAuxillary()
-    && t.parent
-    && !['cop', 'aux'].some(x => uEq(t.node.rel, x))
-  )
+  treedReportIf(`AUX без cop/aux`, PREDICATES.isAuxWithNoCopAux)
 
   // simple rules
   for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
@@ -637,7 +641,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
       && t.children.some(x => x.node.form.toLowerCase() === 'що' && x.node.interp.isNounish())
   )
 
-  treedReportIf(`зворотне має obj/iobj`,
+  xtreedReportIf(`зворотне має obj/iobj`,
     t => t.node.interp.isReversive()
       && t.children.some(child => ['obj', 'iobj'].some(
         x => uEq(child.node.rel, x) && !child.node.interp.isDative() && !child.node.interp.isGenitive())
@@ -801,12 +805,13 @@ export function validateSentenceSyntax(sentence: Token[]) {
           && SUBORDINATE_CLAUSES.some(x => uEq(t.parent.parent.node.rel, x))
         )
       )
+      && !(i === 0 && t.parent.isRoot())
   )
 
 
   // continuity/projectivity
 
-  for (let token of treedSentence) {
+  for (let token of nodes) {
     if (CONTINUOUS_REL.some(x => uEq(token.node.rel, x))) {
       let rootFromHere = token.root()
 
@@ -815,7 +820,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
         .toArray()
         .sort((a, b) => a - b)
       let holes = findHoles(indexes)
-        .filter(i => treedSentence[i].root() === rootFromHere)
+        .filter(i => nodes[i].root() === rootFromHere)
 
       if (holes.length) {
         // console.error(sentence.map(x => x.form).join(' '))
@@ -828,7 +833,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
     }
   }
 
-  let lastToken = last(treedSentence)
+  let lastToken = last(nodes)
   // /*/^[\.\?!…]|...$/.test(lastToken.node.form)*/
   if (lastToken.node.interp.isPunctuation()) {
     if (sentenceHasOneRoot) {
@@ -838,7 +843,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
         && !lastToken.ancestors0().filter(x => !x.isRoot()).some(
           x => uEq(x.node.rel, 'parataxis') || x.node.rel.endsWith(':parataxis'))) {
         problems.push({
-          indexes: [treedSentence.length - 1],
+          indexes: [nodes.length - 1],
           message: `останній розділовий не з кореня`,
         })
       }
@@ -846,7 +851,7 @@ export function validateSentenceSyntax(sentence: Token[]) {
   }
 
   // modal ADVs, espacially with copula
-  let interests = treedSentence.filter(t =>
+  let interests = nodes.filter(t =>
     !t.isRoot()
     && uEq(t.node.rel, 'advmod')
     && t.node.interp.isAdverb()
@@ -902,6 +907,8 @@ export function validateSentenceSyntax(sentence: Token[]) {
   // зробити: obl:agent безособового має бути :anim
   // зробити: знак питання і чи кріпляться до одного
   // зробити: підмети чи присудки не бувають неоднорідні
+  // зробити: з того, з чого виходить fixed не може виходити нічого крім fixed
+
 
 
 
@@ -941,6 +948,17 @@ export function validateSentenceSyntax(sentence: Token[]) {
 
 
   return problems
+}
+
+//------------------------------------------------------------------------------
+function thisOrConjHead(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
+  if (predicate(node)) {
+    return true
+  }
+  if (!node.isRoot() && uEq(node.parent.node.rel, 'conj') && predicate(node.parent)) {
+    return true
+  }
+  return false
 }
 
 //------------------------------------------------------------------------------
@@ -1070,8 +1088,11 @@ function canActAsNoun(token: Token) {
 //------------------------------------------------------------------------------
 function canActAsNounForObj(node: GraphNode<Token>) {
   return canActAsNoun(node.node)
-    || !node.isRoot() && node.node.interp.isRelative() && isSubordiateRoot(node.parent.node)
-    || node.node.interp.lemma === 'той' && node.node.interp.isDemonstrative()
+    || !node.isRoot()
+    && node.node.interp.isRelative()
+    && thisOrConjHead(node, n => isSubordiateRoot(n.parent.node))
+    || node.node.interp.lemma === 'той'
+    && node.node.interp.isDemonstrative()
 }
 
 //------------------------------------------------------------------------------
@@ -1082,19 +1103,6 @@ function canActAsNounForObj(node: GraphNode<Token>) {
 //------------------------------------------------------------------------------
 function isActualParticiple(token: Token, sentence: Token[], index: number) {
   return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.headIndex === index && xx.rel === x))
-}
-
-//------------------------------------------------------------------------------
-function sentenceArray2TreeNodes(sentence: Token[]) {
-  let nodeArray = sentence.map(x => new GraphNode(x))
-  for (let i = 0; i < nodeArray.length; ++i) {
-    if (sentence[i].rel) {
-      nodeArray[i].parents.push(nodeArray[sentence[i].headIndex])
-      nodeArray[sentence[i].headIndex].children.push(nodeArray[i])
-    }
-  }
-
-  return nodeArray
 }
 
 //------------------------------------------------------------------------------

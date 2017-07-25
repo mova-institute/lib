@@ -106,8 +106,7 @@ function main() {
     let tokenStream = mu(tei2tokenStream(root, args.datasetSchema))
       .transform(x => x.interp && x.interp.denormalize())
     let sentenceStream = tokenStream2sentences(tokenStream)
-    for (let { sentenceId, set, tokens, newParagraph, newDocument } of sentenceStream) {
-      initSyntax(tokens, sentenceId)
+    for (let { sentenceId, set, tokens, nodes, newParagraph, newDocument } of sentenceStream) {
       let hasSyntax = tokens.some(x => x.hasDeps())
       set = args.oneSet || set || 'unassigned'
       if (hasSyntax) {
@@ -137,7 +136,7 @@ function main() {
 
         let hasProblems = false
         if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
-          let problems = validateSentenceSyntax(tokens)
+          let problems = validateSentenceSyntax(nodes)
           hasProblems = !!problems.length
           if (hasProblems && args.reportErrors) {
             sentenseErrors.push({
@@ -297,23 +296,6 @@ function formatProblemsHtml(sentenceProblems: any[]) {
 //------------------------------------------------------------------------------
 function set2filename(dir: string, setSchema: string, setName: string) {
   return path.join(dir, `uk-${setSchema}-${setName}.conllu`)
-}
-
-//------------------------------------------------------------------------------
-function initSyntax(sentence: Array<Token>, sentenceId: string) {
-  let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
-  let changed = new Set<string>()
-  for (let token of sentence) {
-    for (let dep of token.deps) {
-      if (!changed.has(token.id)) {
-        dep.headIndex = id2i.get(token.deps[0].headId)
-        if (dep.headIndex === undefined) {
-          throw new Error(`head outside a sentence #${sentenceId} token #${token.getAttribute('id')}`)
-        }
-        changed.add(token.id)
-      }
-    }
-  }
 }
 
 //------------------------------------------------------------------------------

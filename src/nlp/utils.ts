@@ -26,6 +26,7 @@ import { keyvalue2attributesNormalized } from './noske_utils'
 
 import * as uniq from 'lodash.uniq'
 import * as sortedUniq from 'lodash.sorteduniq'
+import { GraphNode } from "../lib/graph";
 
 const wu: Wu.WuStatic = require('wu')
 
@@ -1175,6 +1176,13 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   let newParagraph = false
   let newTokenLevelParagraph = false
   let tokens = new Array<Token>()
+
+  const toyield = () => {
+    initLocalHeadIndexes(tokens, sentenceId)
+    let nodes = sentenceArray2TreeNodes(tokens)
+    return { sentenceId, tokens, nodes, set, newParagraph, newDocument }
+  }
+
   for (let token of stream) {
     if (token.getStructureName() === 'paragraph') {
       if (!token.isClosing()) {
@@ -1189,7 +1197,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
       newDocument = true
     } else if (token.isSentenceBoundary()) {
       if (tokens.length) {
-        yield { sentenceId, tokens, set, newParagraph, newDocument }
+        yield toyield()
         tokens = []
         newDocument = false
         newParagraph = false
@@ -1207,8 +1215,38 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   }
 
   if (tokens.length) {
-    yield { sentenceId, tokens, set, newParagraph, newDocument }
+    yield toyield()
   }
+}
+
+//------------------------------------------------------------------------------
+function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
+  let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
+  let changed = new Set<string>()
+  for (let token of sentence) {
+    for (let dep of token.deps) {
+      if (!changed.has(token.id)) {
+        dep.headIndex = id2i.get(token.deps[0].headId)
+        if (dep.headIndex === undefined) {
+          throw new Error(`head outside a sentence #${sentenceId} token #${token.getAttribute('id')}`)
+        }
+        changed.add(token.id)
+      }
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+function sentenceArray2TreeNodes(sentence: Token[]) {
+  let nodeArray = sentence.map(x => new GraphNode(x))
+  for (let i = 0; i < nodeArray.length; ++i) {
+    if (sentence[i].rel) {
+      nodeArray[i].parents.push(nodeArray[sentence[i].headIndex])
+      nodeArray[sentence[i].headIndex].children.push(nodeArray[i])
+    }
+  }
+
+  return nodeArray
 }
 
 ////////////////////////////////////////////////////////////////////////////////
