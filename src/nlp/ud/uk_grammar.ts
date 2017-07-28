@@ -13,3 +13,8 @@ export const PREDICATES = {
       && !['cop', 'aux'].some(x => uEq(t.node.rel, x))
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function isNumericModifier(rel: string) {
+  return uEq(rel, 'nummod') || rel === 'det:nummod' || rel === 'det:numgov'
+}

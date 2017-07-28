@@ -40,7 +40,7 @@ export class Token {
     let ret = new Token()
     ret.structure = structure
     ret.closing = closing
-    ret.attributes = attributes
+    ret.attributes = attributes || {}
     return ret
   }
 
@@ -122,6 +122,10 @@ export class Token {
     return this.interps[0]
   }
 
+  set interp(interp: MorphInterp) {
+    this.interps[0] = interp
+  }
+
   get headIndex() {
     return this.deps.length > 0 ? this.deps[0].headIndex : undefined
   }
@@ -136,6 +140,14 @@ export class Token {
 
   set rel(val: string) {
     this.deps[0].relation = val
+  }
+
+  get comment() {
+    return this.getAttribute('comment')
+  }
+
+  set comment(comment: string) {
+    this.attributes.comment = comment
   }
 
   hasDeps() {

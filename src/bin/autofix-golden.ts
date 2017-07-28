@@ -22,6 +22,8 @@ import { PREDICATES } from "../nlp/ud/uk_grammar";
 
 // const IDS = new Set(``.trim().split(/\s/g))
 
+const REPLACE_RE = /#>(\S+)/
+
 const TRANSFORMS = {
   // toPart(el: AbstractElement) {
   //   el.firstElementChild().setAttribute('ana', 'part')
@@ -227,6 +229,15 @@ function main() {
           if (node.rel && node.interp.isPunctuation()) {
             node.rel = 'punct'
           }
+
+          if (node.comment) {
+            let match = node.comment.match(REPLACE_RE)
+            if (match) {
+              node.interp = MorphInterp.fromVesumStr(match[1], node.interp.lemma)
+            }
+            node.comment = node.comment.replace(REPLACE_RE, '').trim()
+          }
+
         }
 
         for (let node of nodes) {
@@ -236,11 +247,31 @@ function main() {
             || sentenceHasOneRoot && node.isRoot() && node.node.interp.isAuxillary()) {
             node.node.interp.setIsAuxillary(false)
           }
+
           if (token.rel === 'mark' && token.interp.isAdverb() && token.interp.isRelative()) {
             token.rel = 'advmod'
           }
+
           if (token.rel && token.interp.isParticle() && token.interp.isNegative() && !token.isPromoted) {
             token.rel = 'advmod'
+          }
+
+          if (token.form.toLowerCase() === 'то' && token.interp.isSubordinative()) {
+            if (token.rel) {
+              token.rel = 'discourse'
+            }
+            token.interp = MorphInterp.fromVesumStr('part:conseq', token.interp.lemma)
+            saveToken(token, id2el.get(token.id))
+          }
+
+          if (['це', 'то'].includes(token.form.toLowerCase())
+            && token.interp.isParticle()
+            && token.rel === 'expl') {
+            token.interp = MorphInterp.fromVesumStr('noun:inanim:n:v_naz:&amp;pron:dem', token.interp.lemma)
+          }
+
+          if (token.rel === 'punct' && token.interp.isCoordinating()) {
+            token.rel = 'cc'
           }
         }
 
@@ -273,6 +304,9 @@ function main() {
 
 //------------------------------------------------------------------------------
 function saveToken(token: Token, element: AbstractElement) {
+  Object.entries(token.getAttributes())
+    .forEach(([k, v]) => element.setAttribute(k, v || undefined))
+
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)

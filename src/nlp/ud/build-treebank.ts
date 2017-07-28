@@ -346,7 +346,7 @@ function standartizeSentence2ud20(sentence: Array<Token>) {
       .slice(0, 1)
 
     // set AUX
-    if (['aux', 'aux', 'cop'].some(x => uEq(token.rel, x))) {
+    if (['aux', 'cop'].some(x => uEq(token.rel, x))) {
       token.interp.setIsAuxillary()
       if (['б', 'би'].includes(token.interp.lemma)) {
         token.interp.setIsConditional()

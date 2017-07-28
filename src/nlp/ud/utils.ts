@@ -306,3 +306,8 @@ export function parseBratFile(lines: Iterable<string>) {
 export function uEq(rel: string, unirel: string) {  // universally equals
   return rel === unirel || rel && rel.startsWith(`${unirel}:`)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function uEqSome(rel: string, unirels: string[]) {  // universally equals
+  return unirels.some(x => uEq(rel, x))
+}
