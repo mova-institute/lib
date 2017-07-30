@@ -595,7 +595,6 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
     )
   }
 
-
   xreportIf(`obl з неприсудка`,
     (t, i) => OBLIQUES.includes(t.rel)
       && !t.isPromoted
@@ -657,10 +656,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   )
 
   xtreedReportIf(`зворотне має obj/iobj`,
-    t => t.node.interp.isReversive()
-      && t.children.some(child => ['obj', 'iobj'].some(
-        x => uEq(child.node.rel, x) && !child.node.interp.isDative() && !child.node.interp.isGenitive())
-      )
+    t => !t.isRoot()
+      && uEqSome(t.node.rel, ['obj', 'iobj'])
+      && t.parent.node.interp.isReversive()
+      && !t.node.interp.isDative()
+      && !t.node.interp.isGenitive()
+      && !t.node.interp.isInstrumental()
   )
 
 
@@ -822,6 +823,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && !(i === 0 && t.parent.isRoot())
   )
 
+  treedReportIf(`parataxis під’єднано сполучником`,
+    t => uEq(t.node.rel, 'parataxis')
+      && t.node.rel !== 'parataxis:discourse'
+      && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
+  )
+
 
   // continuity/projectivity
 
@@ -923,6 +930,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: підмети чи присудки не бувають неоднорідні
   // зробити: з того, з чого виходить fixed не може виходити нічого крім fixed
   // зробити: parataxis:disc в одне слово не дієслово
+  // зробити: вчив вчительку математики
 
 
 

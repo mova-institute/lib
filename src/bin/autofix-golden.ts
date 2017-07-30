@@ -237,7 +237,6 @@ function main() {
             }
             node.comment = node.comment.replace(REPLACE_RE, '').trim()
           }
-
         }
 
         for (let node of nodes) {
@@ -252,7 +251,12 @@ function main() {
             token.rel = 'advmod'
           }
 
-          if (token.rel && token.interp.isParticle() && token.interp.isNegative() && !token.isPromoted) {
+          if (token.rel
+            && token.interp.isParticle()
+            && token.interp.isNegative()
+            && !token.isPromoted
+            && !node.children.some(x => uEq(x.node.rel, 'fixed'))
+          ) {
             token.rel = 'advmod'
           }
 
