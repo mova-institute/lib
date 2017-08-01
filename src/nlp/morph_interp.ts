@@ -972,6 +972,7 @@ export class MorphInterp {
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
   isSuperlative() { return this.features.degree === Degree.superlative }  // todo: tantum?
   isSubordinative() { return this.features.conjunctionType === ConjunctionType.subordinative }
+  isName() { return this.features.nameType !== undefined }
   isFirstname() { return this.features.nameType === NameType.first }
   isLastname() { return this.features.nameType === NameType.last }
   isUncontracted() { return this.features.variant === Variant.uncontracted }
@@ -982,6 +983,7 @@ export class MorphInterp {
   isQuote() { return this.features.punctType === PunctType.quoute }
   isOpeningPunctuation() { return this.features.punctSide === PunctSide.open }
   isClosingPunctuation() { return this.features.punctSide === PunctSide.close }
+  isConsequential() { return this.features.partType === PartType.consequential }
 
 
 
@@ -1019,6 +1021,7 @@ export class MorphInterp {
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
   setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
+  setIsProper(value = true) { this.features.nounType = value ? NounType.proper : undefined; return this }
   setPos(pos: Pos) { this.features.pos = pos; return this }
 
   setCase(value: Case) { this.features.case = value; return this }

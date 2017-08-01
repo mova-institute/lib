@@ -424,8 +424,8 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
     problems.push(...mu(nodes).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
   }
 
-  const xtreedReportIf = (...args: any[]) => undefined
-  const xreportIf = (...args: any[]) => undefined
+  const xtreedReportIf = (message: string, fn: TreedSentencePredicate) => undefined
+  const xreportIf = (message: string, fn: SentencePredicate) => undefined
 
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     sentence.some((xx, ii) => xx.headIndex === i && fn(xx, ii))
@@ -510,13 +510,15 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && t.headIndex < i)
 
   xreportIf(`у залежника ccomp немає підмета`,
-    (t, i) => t.relation === 'ccomp'
+    (t, i) => t.rel === 'ccomp'
       && !t.isPromoted
       && !sentence.some(xx => SUBJECTS.includes(xx.rel) && xx.headIndex === i))
 
-  reportIf(`у залежника xcomp є підмет`,
-    (t, i) => uEq(t.rel, 'xcomp')
-      && sentence.some(x => SUBJECTS.includes(x.rel) && x.headIndex === i))
+  treedReportIf(`у залежника xcomp є підмет`,
+    t => uEq(t.node.rel, 'xcomp')
+      && !t.node.isGraft
+      && t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
+  )
 
   reportIf('не discourse до частки',
     t => t.rel
@@ -527,7 +529,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   xreportIf('не aux у б(би)',
     t => ['б', 'би'].includes(t.form.toLowerCase())
       && t.interp.isParticle()
-      && !['fixed', 'aux', undefined].includes(t.relation))
+      && !['fixed', 'aux', undefined].includes(t.rel))
 
   reportIf('не advmod в не',
     t => t.interp.isParticle()
@@ -574,14 +576,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   xreportIf(`:pass-реляція?`,
     t => !t.isPromoted
       && ['aux', 'csubj', 'nsubj'].includes(t.rel)
-      && sentence[t.head]
-      && isPassive(sentence[t.head].interp))  // todo: навпаки
+      && sentence[t.headIndex]
+      && isPassive(sentence[t.headIndex].interp))  // todo: навпаки
 
   xreportIf(`:obl:agent?`,
     (t, i) => !t.isPromoted
       && t.rel === 'obl'
       && t.interp.isInstrumental()
-      && isPassive(sentence[t.head].interp)
+      && isPassive(sentence[t.headIndex].interp)
       && !hasDependantWhich(i, xx => uEq(xx.rel, 'case')))
 
 
@@ -599,10 +601,10 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
     (t, i) => OBLIQUES.includes(t.rel)
       && !t.isPromoted
       && !sentence.some(xx => xx.headIndex === i && uEq(xx.rel, 'cop'))
-      && !sentence[t.head].interp.isNounish()
-      && !sentence[t.head].interp.isVerbial()
-      && !sentence[t.head].interp.isAdjective()
-      && !sentence[t.head].interp.isAdverb())
+      && !sentence[t.headIndex].interp.isNounish()
+      && !sentence[t.headIndex].interp.isVerbial()
+      && !sentence[t.headIndex].interp.isAdjective()
+      && !sentence[t.headIndex].interp.isAdverb())
 
   treedReportIf(`сполучник виділено розділовим знаком`,
     (t, i) => sentence.length > 2
@@ -653,6 +655,26 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   treedReportIf(`підрядне означальне відкриває що-іменник`,
     t => uEq(t.node.rel, 'acl')
       && t.children.some(x => x.node.form.toLowerCase() === 'що' && x.node.interp.isNounish())
+  )
+
+  treedReportIf(`cc без conj`,
+    t => uEq(t.node.rel, 'cc')
+      && !t.parent.isRoot()
+      && !uEq(t.parent.node.rel, 'conj')
+      && !t.parent.children.some(x => uEq(x.node.rel, 'conj'))
+  )
+
+  // todo
+  xtreedReportIf(`підрядне без сполучника`,
+    t => uEqSome(t.node.rel, SUBORDINATE_CLAUSES)
+      && !uEq(t.node.rel, 'xcomp')
+      && !t.parent.children[0].node.interp.isConsequential()
+      && !t.children.some(x => uEq(x.node.rel, 'mark'))
+      && !t.children.some(x => x.node.interp.isRelative())
+      && !t.node.interp.isInfinitive()
+      && !(uEq(t.node.rel, 'acl') && t.node.interp.isParticiple())
+      && !(uEq(t.node.rel, 'advcl') && t.node.interp.isConverb())
+      && !t.node.rel.endsWith(':2')
   )
 
   xtreedReportIf(`зворотне має obj/iobj`,
@@ -829,6 +851,11 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
   )
 
+  treedReportIf(`flat:name не для імені`,
+    t => (t.node.rel === 'flat:name' || t.children.some(x => x.node.rel === 'flat:name'))
+      && !t.node.interp.isName()
+  )
+
 
   // continuity/projectivity
 
@@ -931,6 +958,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: з того, з чого виходить fixed не може виходити нічого крім fixed
   // зробити: parataxis:disc в одне слово не дієслово
   // зробити: вчив вчительку математики
+  // зробити: xcomp зі сполучником?
+  // зробити: вказівні, з яких не йде щось
+  // зробити: питальні без питання
+  // зробити: узгодження flat:name
+  // зробити: flat:name має :name
+  // зробити: abbr => nv
 
 
 

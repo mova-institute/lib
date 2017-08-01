@@ -237,6 +237,10 @@ function main() {
             }
             node.comment = node.comment.replace(REPLACE_RE, '').trim()
           }
+
+          if (node.interp.isName()) {
+            node.interp.setIsAnimate().setIsProper()
+          }
         }
 
         for (let node of nodes) {
