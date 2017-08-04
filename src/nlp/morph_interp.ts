@@ -984,6 +984,7 @@ export class MorphInterp {
   isOpeningPunctuation() { return this.features.punctSide === PunctSide.open }
   isClosingPunctuation() { return this.features.punctSide === PunctSide.close }
   isConsequential() { return this.features.partType === PartType.consequential }
+  isInstant() { return this.otherFlags.has('instant') }
 
 
 

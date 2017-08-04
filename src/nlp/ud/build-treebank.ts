@@ -186,6 +186,8 @@ function main() {
 
   if (sentenseHoles.length) {
     let comparator = algo.chainComparators<any>(
+      // (a, b) => (a.problems[0].indexes.length - 1) / a.tokens.length
+      //   - (b.problems[0].indexes.length - 1) / b.tokens.length,
       (a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length,
       (a, b) => b.tokens.length - a.tokens.length,  // prefer longer sents
       algo.indexComparator(sentenseHoles),  // for stability

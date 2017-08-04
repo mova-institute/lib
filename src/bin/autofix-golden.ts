@@ -16,7 +16,7 @@ import { mu } from '../mu'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { GraphNode } from '../lib/graph'
-import { uEq } from '../nlp/ud/utils'
+import { uEq, uEqSome } from '../nlp/ud/utils'
 import { PREDICATES } from "../nlp/ud/uk_grammar";
 
 
@@ -226,16 +226,16 @@ function main() {
         }
 
         for (let { node } of nodes) {
-          if (node.rel && node.interp.isPunctuation()) {
-            node.rel = 'punct'
-          }
-
           if (node.comment) {
             let match = node.comment.match(REPLACE_RE)
             if (match) {
               node.interp = MorphInterp.fromVesumStr(match[1], node.interp.lemma)
             }
             node.comment = node.comment.replace(REPLACE_RE, '').trim()
+          }
+
+          if (node.rel && node.interp.isPunctuation()) {
+            node.rel = 'punct'
           }
 
           if (node.interp.isName()) {
@@ -280,6 +280,38 @@ function main() {
 
           if (token.rel === 'punct' && token.interp.isCoordinating()) {
             token.rel = 'cc'
+          }
+
+          // {
+          //   let interpsFromDict = analyzer.tag(token.form)
+          //   let toCompare = token.interp.clone()
+          //   toCompare.features.formality = undefined
+          //   toCompare.features.paradigmOmonym = undefined
+          //   if (!interpsFromDict.some(x => x.featurewiseEquals(toCompare))) {
+          //     console.log(`form-interp not in dict: ${token.form} ${token.interp.toVesumStr()}`)
+          //   }
+          // }
+
+          if (token.interp.isInterjection()) {
+            let newInterp = analyzer.tag(token.form).find(x => x.isInstant())
+            if (newInterp) {
+              // token.interp = newInterp
+            }
+          }
+
+          if (!node.isRoot()
+            && token.interp.isPreposition()
+            && node.children.some(x => !uEqSome(x.node.rel, ['fixed']))
+            && !uEq(token.rel, 'conj')
+          ) {
+            token.rel = 'case'
+          }
+
+          if (uEq(token.rel, 'obl')
+            && token.interp.isDative()
+            && !node.children.some(x => uEq(x.node.rel, 'case'))
+          ) {
+            token.rel = 'iobj'
           }
         }
 
