@@ -43,3 +43,8 @@ export const PREDICATES = {
 export function isNumericModifier(rel: string) {
   return uEq(rel, 'nummod') || rel === 'det:nummod' || rel === 'det:numgov'
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function isGoverning(relation: string) {
+  return relation === 'nummod:gov' || relation === 'det:numgov'
+}

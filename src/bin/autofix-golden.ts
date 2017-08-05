@@ -17,7 +17,9 @@ import { createDictionarySync } from '../nlp/dictionary/factories.node'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { GraphNode } from '../lib/graph'
 import { uEq, uEqSome } from '../nlp/ud/utils'
-import { PREDICATES } from "../nlp/ud/uk_grammar";
+import { toUd } from '../nlp/ud/tagset'
+import { PREDICATES } from '../nlp/ud/uk_grammar';
+import * as grammar from '../nlp/ud/uk_grammar';
 
 
 // const IDS = new Set(``.trim().split(/\s/g))
@@ -245,6 +247,8 @@ function main() {
 
         for (let node of nodes) {
           let token = node.node
+          let interp = token.interp
+          const udInterp = toUd(interp.clone())
 
           if (PREDICATES.isAuxWithNoCopAux(node)
             || sentenceHasOneRoot && node.isRoot() && node.node.interp.isAuxillary()) {
@@ -300,7 +304,7 @@ function main() {
           }
 
           if (!node.isRoot()
-            && token.interp.isPreposition()
+            && interp.isPreposition()
             && node.children.some(x => !uEqSome(x.node.rel, ['fixed']))
             && !uEq(token.rel, 'conj')
           ) {
@@ -308,10 +312,35 @@ function main() {
           }
 
           if (uEq(token.rel, 'obl')
-            && token.interp.isDative()
+            && interp.isDative()
             && !node.children.some(x => uEq(x.node.rel, 'case'))
           ) {
             token.rel = 'iobj'
+          }
+
+          if (uEqSome(token.rel, ['det'])
+            && udInterp.pos === 'DET'
+            && interp.isCardinalNumeral()
+          ) {
+            if (token.interp.features.case === node.parent.node.interp.features.case) {
+              token.rel = 'det:nummod'
+            } else if ((interp.isNominative() || interp.isAccusative())
+              && node.parent.node.interp.isGenitive()
+            ) {
+              token.rel = 'det:numgov'
+            }
+          }
+
+          if (grammar.isGoverning(token.rel)
+            && token.interp.features.case === node.parent.node.interp.features.case
+          ) {
+            if (node.parent.children.some(x => x.node.interp.isPreposition()
+              && x.node.interp.features.requiredCase as number === token.interp.features.case)
+            ) {
+              token.rel = udInterp.pos === 'DET'
+                ? 'det:nummod'
+                : 'nummod'
+            }
           }
         }
 

@@ -7,7 +7,7 @@ import { MorphInterp } from '../morph_interp'
 import { Pos, Person } from '../morph_features'
 import { last } from '../../lang'
 import { uEq, uEqSome } from './utils'
-import { PREDICATES, isNumericModifier } from './uk_grammar'
+import { PREDICATES, isNumericModifier, isGoverning } from './uk_grammar'
 import * as grammar from './uk_grammar'
 
 
@@ -369,7 +369,8 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
 const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, TreedSentencePredicate][] = [
   [`case`,
     `з іменника`,
-    t => canActAsNoun(t.node)
+    t => canActAsNounForObj(t)
+      || t.isRoot() //&& todo: more than 1 root
     // || t.interp.isAdjective() && t.interp.isPronoun()
     // || grammar.PREPS_HEADABLE_BY_NUMS.includes(t.node.interp.lemma),
     ,
@@ -1010,6 +1011,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: узгодження flat:name
   // зробити: abbr => nv
   // зробити: тоді, коли — щоб advcl йшло з тоді
+  // зробити: відмінок брати з ґовів!
 
 
 
@@ -1123,11 +1125,6 @@ function isContentWord(token: Token) {
   // const CONTENT_WORD_POSES = [Pos.adjective, Pos.adverb, Pos.]
   const FUNCTION_WORD_POSES = [Pos.conjunction, Pos.particle, Pos.punct]
   return !FUNCTION_WORD_POSES.includes(token.interp.features.pos) && !token.interp.isAuxillary()
-}
-
-//------------------------------------------------------------------------------
-function isGoverning(relation: string) {
-  return relation === 'nummod:gov' || relation === 'det:numgov'
 }
 
 //------------------------------------------------------------------------------
