@@ -4,7 +4,7 @@ import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
 import { GraphNode, walkDepth } from '../../lib/graph'
 import { MorphInterp } from '../morph_interp'
-import { Pos, Person } from '../morph_features'
+import { Pos, Person, Case } from '../morph_features'
 import { last } from '../../lang'
 import { uEq, uEqSome } from './utils'
 import { PREDICATES, isNumericModifier, isGoverning } from './uk_grammar'
@@ -199,6 +199,7 @@ const EXPL_FORMS = [
   'собі',
   'воно',
   'це',
+  'то',
 ]
 
 const CC_HEAD_RELS = [
@@ -396,7 +397,7 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     t => t.node.interp.isVerbial() || t.node.interp.isAdjective() || t.node.interp.isAdverb()
       || t.node.isPromoted,
     `в іменник`, t => canActAsNounForObj(t)],
-  [`nmod`, `з іменника`, t => canActAsNoun(t.node), `в іменник`, t => canActAsNoun(t.node)],
+  [`nmod`, `з іменника`, t => canActAsNoun(t.node), `в іменник`, t => canActAsNounForObj(t)],
   [`aux`, `з дієслівного`, t => t.node.interp.isVerbial()
     || t.node.interp.isAdverb() && t.children.some(x => SUBJECTS.some(subj => uEq(x.node.rel, subj))),
     `в ${TOBE_AND_BY_LEMMAS.join('|')}`, t => TOBE_AND_BY_LEMMAS.includes(t.node.interp.lemma)],
@@ -625,7 +626,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   treedReportIf(`підмет не в називному`,
     t => uEq(t.node.rel, 'nsubj')
       && !t.node.isGraft
-      && !t.node.interp.isNominative()
+      && thisOrGovernedCase(t) !== Case.nominative
       && !t.node.interp.isXForeign()
       && !t.children.some(x => isGoverning(x.node.rel))
       && !t.children.some(x => x.node.interp.isAdverb())
@@ -633,7 +634,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
 
   treedReportIf(`додаток в називному`,
     t => ['obj', 'iobj', 'obl'].some(x => uEq(t.node.rel, x))
-      && t.node.interp.isNominative()
+      && thisOrGovernedCase(t) === Case.nominative
       && !t.node.interp.isXForeign()
       && !t.node.isGraft
     // && !t.children.some(x => isNumgov(x.node.rel))
@@ -717,10 +718,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
 
   treedReportIf(`неузгодження відмінків прийменника`,
     (t, i) => uEq(t.node.rel, 'case')
-      && (t.node.interp.features.requiredCase as number) !== t.parent.node.interp.features.case
+      && (t.node.interp.features.requiredCase as number) !== thisOrGovernedCase(t.parent)
       && !t.parent.node.interp.isXForeign()
       && !t.parent.node.isGraft
-      && !t.parent.children.some(xx => isGoverning(xx.node.rel))
   )
 
   treedReportIf(`неособове має підмет`,
@@ -777,6 +777,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       }
 
       let verbInterp = t.parent.node.interp
+      if (verbInterp.isInfinitive()) {
+        let copula = t.parent.children.find(x => uEq(x.node.rel, 'cop'))
+        if (copula) {
+          verbInterp = copula.node.interp
+        }
+      }
       let subjFeats = t.node.interp.features
 
       if (verbInterp.hasPerson()) {
@@ -820,7 +826,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
         && !t.parent.node.isGraft
         && !t.parent.children.some(xx => isGoverning(xx.node.rel))
         && (
-          dep.features.case !== head.features.case
+          dep.features.case !== thisOrGovernedCase(t.parent)
           || (dep.isPlural() && !head.isPlural() && !t.parent.children.some(x => x.node.rel === 'conj'))
           || (dep.isSingular() && dep.features.gender !== head.features.gender)
         )
@@ -848,15 +854,33 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   )
 
   treedReportIf(`gov-реляція між однаковими відмінками`,
-    (t, i) => isGoverning(t.node.rel)
+    t => isGoverning(t.node.rel)
       && t.node.interp.features.case === t.parent.node.interp.features.case
   )
 
   treedReportIf(`не gov-реляція між різними відмінками`,
-    (t, i) => !isGoverning(t.node.rel)
+    t => !isGoverning(t.node.rel)
       && ['nummod', 'det:nummod'].some(rel => uEq(t.node.rel, rel))
       && !t.parent.node.interp.isXForeign()
       && t.node.interp.features.case !== t.parent.node.interp.features.case
+  )
+
+  treedReportIf(`керівний числівник не в називному/знахідному`,
+    t => isGoverning(t.node.rel)
+      && t.node.interp.features.case !== t.parent.node.interp.features.case
+      && ![Case.nominative, Case.accusative].includes(t.node.interp.features.case)
+  )
+
+  treedReportIf(`кероване числівником не в родовому`,
+    t => {
+      let governer = t.children.find(x => isGoverning(x.node.rel))
+      if (!governer) {
+        return
+      }
+
+      return t.node.interp.features.case !== governer.node.interp.features.case
+        && !t.node.interp.isGenitive()
+    }
   )
 
   treedReportIf(`mark не з кореня підрядного`,
@@ -919,6 +943,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
         .filter(i => nodes[i].root() === rootFromHere)
 
       if (holes.length) {
+        if (token.parent.node.interp.isAdverb() && token.node.interp.isInfinitive()) {
+          continue
+        }
         // console.error(sentence.map(x => x.form).join(' '))
         // console.error(indexes)
         // console.error(holes)
@@ -1012,6 +1039,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: abbr => nv
   // зробити: тоді, коли — щоб advcl йшло з тоді
   // зробити: відмінок брати з ґовів!
+  // зробити: відносні promoted
 
 
 
@@ -1068,6 +1096,15 @@ function thisOrConjHead(node: GraphNode<Token>, predicate: TreedSentencePredicat
     return true
   }
   return false
+}
+
+//------------------------------------------------------------------------------
+function thisOrGovernedCase(node: GraphNode<Token>) {
+  let governer = node.children.find(x => isGoverning(x.node.rel))
+  if (governer) {
+    return governer.node.interp.features.case
+  }
+  return node.node.interp.features.case
 }
 
 //------------------------------------------------------------------------------

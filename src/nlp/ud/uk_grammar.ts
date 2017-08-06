@@ -30,6 +30,25 @@ export const TEMPORAL_ACCUSATIVES = [
   'р.',
 ]
 
+export const EMPTY_GENDER_NOUNS = [
+  'вони',  // todo: ns?
+  'ніщо',  // середній?
+  'ми',
+  'себе',
+  'ти',
+  'хтось',
+  'ви',
+  'ніхто',
+  'абихто',
+  'дещо',  // ніякий?
+  'будь-хто',  // прибрати після розділу
+  'хто-небудь',  // прибрати після розділу
+]
+
+export const EMPTY_ANIMACY_NOUNS = [
+  'себе',
+]
+
 ////////////////////////////////////////////////////////////////////////////////
 export const PREDICATES = {
   isAuxWithNoCopAux(t: TokenNode) {
