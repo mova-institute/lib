@@ -524,12 +524,10 @@ export class MorphInterp {
         ret.features[row.featStr] = row.vesum
       }
       else {
-        if (MorphInterp.otherFlagsAllowed.has(flag)) {
-          ret.otherFlags.add(flag)
-        }
-        else if (strict) {
+        if (!MorphInterp.otherFlagsAllowed.has(flag) && strict) {
           throw new Error(`Unknown flag "${flag}" in tag "${flags.join(':')}"`)
         }
+        ret.otherFlags.add(flag)
       }
     }
 
@@ -559,8 +557,8 @@ export class MorphInterp {
     return ret
   }
 
-  static fromVesumStr(flags: string, lemma?: string, lemmaFlags?: string) {
-    return MorphInterp.fromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'))
+  static fromVesumStr(flags: string, lemma?: string, lemmaFlags?: string, strict = false) {
+    return MorphInterp.fromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'), strict)
   }
 
   static fromMte(tag: string, form?: string) {

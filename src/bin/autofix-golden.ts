@@ -6,6 +6,7 @@ import * as minimist from 'minimist'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
+import * as f from '../nlp/morph_features'
 import * as ukGrammar from '../nlp/uk_grammar'
 import { Token } from '../nlp/token'
 import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
@@ -61,8 +62,6 @@ const KNOWN_NONDIC_LEMMAS = new Set([
 
 //------------------------------------------------------------------------------
 function main() {
-  const now = toSortableDatetime(new Date())
-
   let args = minimist(process.argv.slice(2))
   // console.log(args)
   if (args.tranformIds) {
@@ -78,12 +77,14 @@ function main() {
   let files = glob.sync(globStr)
   let tokenCount = 0
 
-  console.log(`removing legacy namespaces & autofixing xml…`)
-  for (let filePath of files) {
-    let xmlstr = fs.readFileSync(filePath, 'utf8')
-    xmlstr = autofixSomeEntitites(xmlstr)
-    xmlstr = removeNamespacing(xmlstr)
-    fs.writeFileSync(filePath, xmlstr)
+  if (0) {
+    console.log(`removing legacy namespaces & autofixing xml…`)
+    for (let filePath of files) {
+      let xmlstr = fs.readFileSync(filePath, 'utf8')
+      xmlstr = autofixSomeEntitites(xmlstr)
+      xmlstr = removeNamespacing(xmlstr)
+      fs.writeFileSync(filePath, xmlstr)
+    }
   }
 
   let idSequence: number
@@ -97,15 +98,17 @@ function main() {
     try {
       let root = parseXmlFileSync(file)
 
-      renameStructures(root)
+      // renameStructures(root)
 
       // remove redundant attributes
-      let tokenEls = [...root.evaluateElements('//w_')]
-      for (let w of tokenEls) {
-        w.removeAttribute('n')
-        w.removeAttribute('nn')
-        w.removeAttribute('disamb')
-        w.removeAttribute('author')
+      if (0) {
+        let tokenEls = [...root.evaluateElements('//w_')]
+        for (let w of tokenEls) {
+          w.removeAttribute('n')
+          w.removeAttribute('nn')
+          w.removeAttribute('disamb')
+          w.removeAttribute('author')
+        }
       }
 
       // tokens.filter(x => IDS.has(x.attribute('id')))
@@ -126,7 +129,13 @@ function main() {
         if (!tag || !lemma) {
           throw new Error(`No tag/lemma for ${form}`)
         }
-        let interp = MorphInterp.fromVesumStr(interpEl.attribute('ana'), interpEl.attribute('lemma'))
+        try {
+          var interp = MorphInterp.fromVesumStr(
+            interpEl.attribute('ana'), interpEl.attribute('lemma'), undefined, true)
+        } catch (e) {
+          console.error(e.message)
+          continue
+        }
         let interpsInDict = analyzer.tag(form)
         let presentInDict = interpsInDict.some(dictInterp => dictInterp.featurewiseEquals(interp))
         // console.log(presentInDict)
@@ -197,7 +206,7 @@ function main() {
       // give each token an id
       if (idSequence !== undefined) {
         const idedElements = ['doc', 'p', 'sb', 's', 'w_', 'pc']
-        tokenEls = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
+        let tokenEls = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
         for (let token of tokenEls) {
           if (!token.attribute('id')) {
             token.setAttribute('id', id2str(idSequence++))
@@ -342,7 +351,10 @@ function main() {
                 : 'nummod'
             }
           }
+
+          // testMorpho(node)
         }
+
 
         nodes.forEach(x => {
           // console.log(x)
@@ -448,7 +460,66 @@ function renameStructures(root: AbstractElement) {
 
 }
 
+//------------------------------------------------------------------------------
+function testMorpho(node: GraphNode<Token>) {
 
+  let interp = node.node.interp
+
+  if (interp.isForeign()) {
+    return
+  }
+
+  if (interp.isNounish()) {
+    if (interp.features.gender === undefined
+      && !grammar.EMPTY_GENDER_NOUNS.includes(interp.lemma) && !(
+        interp.isNoSingular() || interp.isSingular() && interp.features.person === 1
+      )
+    ) {
+      console.error(`no gender for ${token2string(node.node)}`)
+    }
+
+    if (interp.features.animacy === undefined
+      && !grammar.EMPTY_ANIMACY_NOUNS.includes(interp.lemma) && !(
+        interp.features.pronominalType === f.PronominalType.personal
+        && interp.features.person === 3
+      )
+    ) {
+      console.error(`no animacy for ${token2string(node.node)}`)
+    }
+
+    if (interp.features.case === undefined) {
+      console.error(`no case for ${token2string(node.node)}`)
+    }
+
+  } else if (interp.isAdjective()) {
+    if (interp.features.gender === undefined && interp.features.number === undefined) {
+      // console.error(`no gender/plural for ${token2string(node.node)}`)
+    }
+
+    if (interp.features.case === undefined) {
+      // console.error(`no case for ${token2string(node.node)}`)
+    }
+  } else if (interp.isVerb()) {
+
+  }
+}
+
+//------------------------------------------------------------------------------
+// function isIncompleteNoun(interp: MorphInterp) {
+//   return
+//   interp.features.gender === undefined && !(
+//     interp.isNoSingular()
+//   )
+//     || interp.features.animacy === undefined && !(
+//       interp.features.pronominalType === f.PronominalType.personal
+//       && interp.features.person === 3
+//     )
+// }
+
+//------------------------------------------------------------------------------
+function token2string(token: Token) {
+  return `#${token.id} "${token.form}" @ "${token.interp.lemma}" @@ ${token.interp.toVesumStr()}`
+}
 
 /*
 
