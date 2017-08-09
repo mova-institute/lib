@@ -362,7 +362,6 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     (t, s, i) => t,
     `в сурядний`,
     (t, s, i) => t.interp.isCoordinating() || s.every(tt => tt.headIndex !== i || uEq(tt.rel, 'fixed'))],  // окремо
-  [`acl`, `з іменника`, t => canActAsNoun(t) || t.interp.isDemonstrative(), ``, t => t],
 
   [`appos`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
@@ -401,6 +400,16 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
   [`aux`, `з дієслівного`, t => t.node.interp.isVerbial()
     || t.node.interp.isAdverb() && t.children.some(x => SUBJECTS.some(subj => uEq(x.node.rel, subj))),
     `в ${TOBE_AND_BY_LEMMAS.join('|')}`, t => TOBE_AND_BY_LEMMAS.includes(t.node.interp.lemma)],
+  [`acl`, `з іменника`, t => canActAsNoun(t.node) || t.node.interp.isDemonstrative(),
+    `в присудок`, t => t.node.interp.isVerb() && t.node.interp.isInfinitive()
+      || t.children.some(x => uEqSome(x.node.rel, ['mark']))
+      || t.children.some(x => (x.node.rel === 'xcomp' || uEqSome(x.node.rel, ['csubj']))
+        && x.node.interp.isInfinitive())
+      || hasOwnRelative(t)
+      // || t.children.some(x => x.node.interp.isRelative())
+      || t.node.interp.isParticiple()  // temp
+  ],
+
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -628,8 +637,10 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && !t.node.isGraft
       && thisOrGovernedCase(t) !== Case.nominative
       && !t.node.interp.isXForeign()
-      && !t.children.some(x => isGoverning(x.node.rel))
-      && !t.children.some(x => x.node.interp.isAdverb())
+      && !t.children.some(x => uEq(x.node.rel, 'advmod')
+        && x.node.interp.isAdverb()
+        && grammar.QAUNTITATIVE_ADVERBS.includes(x.node.interp.lemma)
+      )
   )
 
   treedReportIf(`додаток в називному`,
@@ -698,7 +709,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && !t.parent.children[0].node.interp.isConsequential()
       && !t.children.some(x => uEq(x.node.rel, 'mark'))
       && !t.children.some(x => x.node.interp.isRelative())
-      && !t.node.interp.isInfinitive()
+      && !isInfinitive(t)
       && !(uEq(t.node.rel, 'acl') && t.node.interp.isParticiple())
       && !(uEq(t.node.rel, 'advcl') && t.node.interp.isConverb())
       && !t.node.rel.endsWith(':2')
@@ -724,10 +735,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   )
 
   treedReportIf(`неособове має підмет`,
-    t => (t.node.interp.isImpersonal() || t.node.interp.isInfinitive())
+    t => (t.node.interp.isImpersonal() || isInfinitive(t))
       && t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
       && !t.node.isPromoted
-      && !t.children.some(x => x.node.interp.isAuxillary() && x.node.interp.hasPerson())
   )
 
   treedReportIf(`вторинна предикація не в називний/орудний прикметник`,
@@ -757,7 +767,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   if (roots.length === 1) {
     xtreedReportIf(`інфінітив — корінь`,
       t => t.isRoot()
-        && t.node.interp.isInfinitive()
+        && isInfinitive(t)
       // && t.children.some(x => uEq(x.node.rel, 'nsubj'))
       // && !t.node.isPromoted
       // && !t.children.some(x => x.node.interp.isAuxillary() && x.node.interp.hasPerson())
@@ -928,6 +938,17 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
     }
   )
 
+  treedReportIf(`parataxis:discourse в одне слово-недієслово`,
+    t => t.node.rel === 'parataxis:discourse'
+      && !t.children.length
+      && !t.node.interp.isVerb()
+  )
+
+  xtreedReportIf(`discourse у фразу`,
+    t => uEq(t.node.rel, 'discourse')
+      && t.children.filter(x => !uEqSome(x.node.rel, ['fixed', 'punct'])).length
+  )
+
 
   // continuity/projectivity
 
@@ -963,6 +984,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       let nonRootParents = lastToken.parents.filter(x => !x.isRoot())
       if (nonRootParents.length
         && nonRootParents.some(x => !x.node.interp.isAbbreviation())
+        && !lastToken.node.interp.isQuote()
         && !lastToken.ancestors0().filter(x => !x.isRoot()).some(
           x => uEq(x.node.rel, 'parataxis') || x.node.rel.endsWith(':parataxis'))) {
         problems.push({
@@ -990,6 +1012,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       message: `модальний прислівник не підкорінь`,
     })
   }
+
+  // todo
+  xtreedReportIf(`залежники голови складеного присудка`,
+    t => t.children.some(x => x.node.interp.isInfinitive()
+      && uEqSome(x.node.rel, ['xcomp', 'csubj', 'ccomp'])
+    )
+      && t.children.some(x => uEqSome(x.node.rel, ['obl']))  // туду
+  )
 
   // наістотнення
   // treedReportIf(`obj в родовому`,
@@ -1030,7 +1060,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: знак питання і чи кріпляться до одного
   // зробити: підмети чи присудки не бувають неоднорідні
   // зробити: з того, з чого виходить fixed не може виходити нічого крім fixed
-  // зробити: parataxis:disc в одне слово не дієслово
+  // зробити: inf-корені/підкорені
   // зробити: вчив вчительку математики
   // зробити: xcomp зі сполучником?
   // зробити: вказівні, з яких не йде щось
@@ -1038,8 +1068,10 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: узгодження flat:name
   // зробити: abbr => nv
   // зробити: тоді, коли — щоб advcl йшло з тоді
-  // зробити: відмінок брати з ґовів!
   // зробити: відносні promoted
+  // зробити: опікуватися мамою — мамою тут obj має бути
+  // зробити: (упс) advcl з копули а не
+  // зробити: advcl замість obl’а
 
 
 
@@ -1080,6 +1112,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
 
 
   return problems
+}
+
+//------------------------------------------------------------------------------
+function hasOwnRelative(node: GraphNode<Token>) {
+  return mu(walkDepth(node, nod => nod !== node && uEqSome(nod.node.rel, SUBORDINATE_CLAUSES)))
+    .some(x => x.node.interp.isRelative())
 }
 
 //------------------------------------------------------------------------------

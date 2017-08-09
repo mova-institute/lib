@@ -129,8 +129,9 @@ function main() {
         if (!tag || !lemma) {
           throw new Error(`No tag/lemma for ${form}`)
         }
+        let interp: MorphInterp
         try {
-          var interp = MorphInterp.fromVesumStr(
+          interp = MorphInterp.fromVesumStr(
             interpEl.attribute('ana'), interpEl.attribute('lemma'), undefined, true)
         } catch (e) {
           console.error(e.message)
@@ -240,7 +241,8 @@ function main() {
           if (node.comment) {
             let match = node.comment.match(REPLACE_RE)
             if (match) {
-              node.interp = MorphInterp.fromVesumStr(match[1], node.interp.lemma)
+              let tag = match[1].replace('&amp;', '&')  // sometimes it's copyped from xml
+              node.interp = MorphInterp.fromVesumStr(tag, node.interp.lemma)
             }
             node.comment = node.comment.replace(REPLACE_RE, '').trim()
           }
@@ -256,6 +258,7 @@ function main() {
 
         for (let node of nodes) {
           let token = node.node
+          let parent = node.parent && node.parent.node
           let interp = token.interp
           const udInterp = toUd(interp.clone())
 
@@ -288,7 +291,7 @@ function main() {
           if (['це', 'то'].includes(token.form.toLowerCase())
             && token.interp.isParticle()
             && token.rel === 'expl') {
-            token.interp = MorphInterp.fromVesumStr('noun:inanim:n:v_naz:&amp;pron:dem', token.interp.lemma)
+            token.interp = MorphInterp.fromVesumStr('noun:inanim:n:v_naz:&pron:dem', token.interp.lemma)
           }
 
           if (token.rel === 'punct' && token.interp.isCoordinating()) {
@@ -349,6 +352,47 @@ function main() {
               token.rel = udInterp.pos === 'DET'
                 ? 'det:nummod'
                 : 'nummod'
+            }
+          }
+
+          if (uEq(token.rel, 'discourse')
+            && interp.lemma === 'це'
+            && interp.isParticle()
+            && node.parent.children.some(x => uEqSome(x.node.rel, ['nsubj', 'csubj']))
+            && !parent.interp.isVerb()
+            // && false
+          ) {
+            token.interp = MorphInterp.fromVesumStr('noun:inanim:n:v_naz:&pron:dem', interp.lemma)
+            token.rel = 'expl'
+          }
+
+          if (interp.hasPronominalType()
+            && !interp.isParticle() // todo: separate :pers
+          ) {
+            interp.setIsPronoun()
+          }
+
+          if (!grammar.isGoverning(token.rel)
+            && (uEq(token.rel, 'det')
+              // || uEq(token.rel, 'amod')
+            )
+            // && !interp.isBeforeadj()
+            // && !parent.interp.isForeign()
+            // && !parent.isGraft
+            // && !node.parent.children.some(x => uEq(x.node.rel, 'conj'))
+            // && (interp.isNounish() || interp.isAdjective())
+            && udInterp.pos === 'DET' && ['його', 'її', 'їх'].includes(interp.lemma)
+            // && false
+          ) {
+            interp.features.case = parent.interp.features.case
+            if (parent.interp.isPlural()) {
+              interp.features.number = parent.interp.features.number
+              interp.features.gender = undefined
+            } else {
+              interp.features.number = undefined
+              if (parent.interp.features.gender) {
+                interp.features.gender = parent.interp.features.gender
+              }
             }
           }
 

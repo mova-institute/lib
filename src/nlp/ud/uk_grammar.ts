@@ -49,6 +49,11 @@ export const EMPTY_ANIMACY_NOUNS = [
   'себе',
 ]
 
+export const QAUNTITATIVE_ADVERBS = [
+  'мало',
+  'багато',
+]
+
 ////////////////////////////////////////////////////////////////////////////////
 export const PREDICATES = {
   isAuxWithNoCopAux(t: TokenNode) {

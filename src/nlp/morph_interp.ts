@@ -984,6 +984,8 @@ export class MorphInterp {
   isConsequential() { return this.features.partType === PartType.consequential }
   isInstant() { return this.otherFlags.has('instant') }
 
+  isNonparticipleAdj() { return this.isAdjective() && !this.isParticiple() }
+
 
 
   hasNumber() { return this.features.number !== undefined }
@@ -991,6 +993,7 @@ export class MorphInterp {
   hasPerson() { return this.features.person !== undefined }
   hasCase() { return this.features.case !== undefined }
   hasRequiredCase() { return this.features.requiredCase !== undefined }
+  hasPronominalType() { return this.features.pronominalType !== undefined }
 
   isProper() { return this.features.nounType === NounType.proper }
   isBad() { return this.features.badness === Badness.yes }
@@ -1021,6 +1024,7 @@ export class MorphInterp {
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
   setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
   setIsProper(value = true) { this.features.nounType = value ? NounType.proper : undefined; return this }
+  setIsPronoun(value = true) { this.features.pronoun = value ? Pronoun.yes : undefined; return this }
   setPos(pos: Pos) { this.features.pos = pos; return this }
 
   setCase(value: Case) { this.features.case = value; return this }
