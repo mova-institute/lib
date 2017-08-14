@@ -363,7 +363,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     `в сурядний`,
     (t, s, i) => t.interp.isCoordinating() || s.every(tt => tt.headIndex !== i || uEq(tt.rel, 'fixed'))],  // окремо
 
-  [`appos`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
+  [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
 
 const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, TreedSentencePredicate][] = [
@@ -706,9 +706,10 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   xtreedReportIf(`підрядне без сполучника`,
     t => uEqSome(t.node.rel, SUBORDINATE_CLAUSES)
       && !uEq(t.node.rel, 'xcomp')
-      && !t.parent.children[0].node.interp.isConsequential()
+      // && !t.parent.children[0].node.interp.isConsequential()
       && !t.children.some(x => uEq(x.node.rel, 'mark'))
-      && !t.children.some(x => x.node.interp.isRelative())
+      && !hasOwnRelative(t)
+      // && !t.children.some(x => x.node.interp.isRelative())
       && !isInfinitive(t)
       && !(uEq(t.node.rel, 'acl') && t.node.interp.isParticiple())
       && !(uEq(t.node.rel, 'advcl') && t.node.interp.isConverb())
@@ -912,6 +913,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
   )
 
+  treedReportIf(`xcomp зі сполучником`,
+    t => uEq(t.node.rel, 'xcomp')
+      // && t.node.rel !== 'parataxis:discourse'
+      && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
+  )
+
   treedReportIf(`flat:name не для імені`,
     t => (t.node.rel === 'flat:name' || t.children.some(x => x.node.rel === 'flat:name'))
       && !t.node.interp.isName()
@@ -947,6 +954,18 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   xtreedReportIf(`discourse у фразу`,
     t => uEq(t.node.rel, 'discourse')
       && t.children.filter(x => !uEqSome(x.node.rel, ['fixed', 'punct'])).length
+  )
+
+  treedReportIf(`кого.Acc чому.Gen: patient не iobj?`,
+    t => {
+      let obj = t.children.find(x => uEq(x.node.rel, 'obj'))
+      let iobj = t.children.find(x => uEq(x.node.rel, 'iobj'))
+      if (obj && iobj) {
+        if (obj.node.interp.isAccusative() && iobj.node.interp.isGenitive()) {
+          return true
+        }
+      }
+    }
   )
 
 
@@ -1116,7 +1135,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
 
 //------------------------------------------------------------------------------
 function hasOwnRelative(node: GraphNode<Token>) {
-  return mu(walkDepth(node, nod => nod !== node && uEqSome(nod.node.rel, SUBORDINATE_CLAUSES)))
+  let it = walkDepth(node, x => x !== node
+    && uEqSome(x.node.rel, SUBORDINATE_CLAUSES)
+    && !(x.parent.node.interp.isAdverb() && uEqSome(x.node.rel, ['csubj']))
+  )
+
+  return mu(it)
     .some(x => x.node.interp.isRelative())
 }
 
