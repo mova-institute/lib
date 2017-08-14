@@ -190,7 +190,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
-    prefixes: ['обі', 'від', 'об', 'по', 'попо', 'роз', 'за', 'з', 'із', 'у', 'уві', 'пере', 'ви', 'на', 'пови', 'про'],
+    prefixes: ['обі', 'від', 'об', 'по', 'попо', 'роз', 'за', 'з', 'із', 'у', 'уві', 'пере', 'ви', 'на', 'пови', 'про', 'підо'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerbial() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
