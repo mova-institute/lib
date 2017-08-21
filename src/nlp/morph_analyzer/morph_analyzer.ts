@@ -7,7 +7,7 @@ import { Case, Pos } from '../morph_features'
 import {
   FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
   APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE,
-  EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE, INTERJECTION_RE,
+  EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE, INTERJECTION_RE, NUMERAL_PREFIXED_TOKEN_RE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
@@ -31,6 +31,13 @@ const CASES = [
   'v_oru',
   'v_mis',
   'v_kly',
+]
+
+const INITIALS_INTERPS = [
+  ...CASES.map(x => `noun:anim:m:${x}:prop:fname:nv:abbr`),
+  ...CASES.map(x => `noun:anim:f:${x}:prop:fname:nv:abbr`),
+  ...CASES.map(x => `noun:anim:m:${x}:prop:patr:nv:abbr`),
+  ...CASES.map(x => `noun:anim:f:${x}:prop:patr:nv:abbr`),
 ]
 
 const MASC_NONINFL_PARADIGM = CASES.map(x => `m:${x}:nv`)
@@ -178,7 +185,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
-    prefixes: ['пів'],
+    prefixes: ['пів', 'не'],
     test: (x: MorphInterp) => x.isNoun(),
   },
   {
@@ -420,7 +427,7 @@ export class MorphAnalyzer {
 
     // initials
     if (INITIALS_RE.test(token) && nextToken === '.') {
-      res.add(MorphInterp.fromVesumStr('noun:anim:abbr:prop', `${token}.`))
+      res.addAll(INITIALS_INTERPS.map(x => MorphInterp.fromVesumStr(x, `${token}.`)))
     }
 
     // list items, letter names
@@ -442,6 +449,9 @@ export class MorphAnalyzer {
         // console.log(match)
         let [, digits, ending] = match
         let lastDigit = parseIntStrict(digits.slice(-1))
+        if (digits.match(/^1\d$/)) {
+          lastDigit = 0
+        }
 
         let toadd = this.numeralMap.get()
           .filter(x => x.digit === lastDigit && x.form.endsWith(ending))
@@ -501,6 +511,17 @@ export class MorphAnalyzer {
     {
       for (let [find, replace] of REPLACINGS) {
         // let candidates =
+      }
+    }
+
+    // 25-літній
+    {
+      let match = token.match(NUMERAL_PREFIXED_TOKEN_RE)
+      if (match) {
+        let toadd = mu(this.lookup(match[2]))
+          .filter(x => x.isAdjective() && !x.isAbbreviation())
+          .transform(x => x.lemma = `${match[1]}-${x.lemma}`)
+        // res.addAll(toadd)
       }
     }
 

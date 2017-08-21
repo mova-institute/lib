@@ -1,6 +1,8 @@
 import { r } from '../lang'
 
 
+export const APOSTROPES = '\'"*`’‘'
+
 export const EMOJI_RE = require('emoji-regex')()
 export const LETTER_UK = r`АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`
 export const LETTER_UK_UPPERCASE = r`АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ`
@@ -24,6 +26,7 @@ export const SYMBOL_RE = new RegExp(r`^([@#$*+×÷=<>♥∙·❤❄~←→↑↓
 export const LITERAL_SMILE_RE = /^:\w+:$/
 export const HASHTAG_RE = new RegExp(`^#${WORDCHAR}$`)
 
+
 //(?:(?=\w)(?<!\w)|(?<=\w)(?!\w))
 
 const diacritics = [
@@ -32,8 +35,8 @@ const diacritics = [
   // ['', '', ''],
 ]
 
-// export const APOSTROPES = '\'"`’'
-export const APOSTROPES_REPLACE_RE = /['"*`’‘]/g
+export const APOSTROPES_REPLACE_RE = new RegExp(r`^${APOSTROPES}$`)
+export const NUMERAL_PREFIXED_TOKEN_RE = new RegExp(r`^(\d+)-([${APOSTROPES}${LETTER_UK}]+)$`)
 
 
 const SMILE_RE_STRS = [
@@ -70,6 +73,7 @@ const PUNC_REGS = [
   r`/`,
   r`•`,
   r`"`,
+  r`✓`,
 ]
 export const ANY_PUNC = PUNC_REGS.join('|')
 export const ANY_PUNC_OR_DASH_RE = new RegExp(`^(${ANY_PUNC}|-)$`)
