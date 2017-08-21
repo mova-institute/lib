@@ -305,7 +305,7 @@ export function iterateCorpusTokens(root: AbstractElement) {
 
 //------------------------------------------------------------------------------
 function findNextToken(el: AbstractElement) {
-  return el.nextElementSiblings().find(x => x.localName === 'w')
+  return el.nextElementSiblings().find(x => x.localName() === 'w')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
