@@ -35,7 +35,7 @@ interface Args extends minimist.ParsedArgs {
   sort: boolean
   mte: boolean  // todo
   autofix: boolean
-  forAnnotation: boolean
+  forMorphDisamb: boolean
   nl2p: boolean
   reinterpret: boolean
   apply: boolean
@@ -63,7 +63,7 @@ if (require.main === module) {
     ],
     alias: {
       text: ['t'],
-      forAnnotation: ['for-annotation'],
+      forMorphDisamb: ['for-morph-disamb'],
       numerate: ['n'],
       format: ['f'],
       expandAdjAsNoun: ['adj-as-noun'],
@@ -84,7 +84,7 @@ if (require.main === module) {
 
 //------------------------------------------------------------------------------
 function normalizeArgs(args: Args) {
-  if (args.forAnnotation) {
+  if (args.forMorphDisamb) {
     args.numerate = true
     args.format = 'xml'
   }
@@ -118,7 +118,6 @@ function main(args: Args) {
       inputStr = xmlutils.removeProcessingInstructions(inputStr)
       if (!/^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(inputStr)) {
         inputStr = xmlutils.encloseInRootNs(inputStr, 'text')
-        args.autofix = args.autofix || args.forAnnotation
       }
       let root = parseXml(inputStr)
 
@@ -143,6 +142,14 @@ function main(args: Args) {
       if (args.count) {
         console.log(root.evaluateNumber('count(//mi:w_|w_)', NS))
         return
+      }
+
+      if (args.forMorphDisamb) {
+        root.evaluateElements('//mi:w_|//w_', NS)
+          .map(x => $t(x))
+          .filter(x => x.getDefiniteInterps().some(x => x.flags.startsWith('punct')))
+          .forEach(x => x.elem.setAttribute('disamb', '0'))
+        //console.error(x.elem.attributesObj()
       }
 
       if (args.unknown) {
