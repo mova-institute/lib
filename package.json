@@ -59,10 +59,10 @@
     "@types/rimraf": "0.0.28",
     "@types/tmp": "~0.0.30",
     "@types/wu": "~2.1.29",
-    "tslint": "^4.3.1",
-    "tslint-eslint-rules": "^3.2.3",
-    "tslint-microsoft-contrib": "^4.0.0",
-    "typescript": "^2.2.2"
+    "tslint": "^5.6.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "tslint-microsoft-contrib": "^5.0.1",
+    "typescript": "^2.4.2"
   },
   "dependencies": {
     "body-parser": "^1.15.1",
@@ -78,7 +78,7 @@
     "glob": "^7.0.5",
     "html-entities": "^1.2.0",
     "iconv-lite": "^0.4.13",
-    "libxmljs": "0.18.4",
+    "libxmljs": "^0.18.7",
     "lodash": "^4.15.0",
     "lodash.capitalize": "^4.2.1",
     "lodash.clone": "^4.5.0",
@@ -100,7 +100,7 @@
     "tlds": "^1.183.0",
     "tmp": "^0.0.31",
     "wu": "^2.1.0",
-    "xmlapi-libxmljs": "^0.0.6"
+    "xmlapi-libxmljs": "^0.0.9"
   },
   "optionalDependencies": {
     "detect-character-encoding": "^0.2.1"
