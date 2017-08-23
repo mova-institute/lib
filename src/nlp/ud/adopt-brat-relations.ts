@@ -33,7 +33,9 @@ function main() {
   for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
     let xmlFile = `${bratName}.xml`
     if (!fs.existsSync(xmlFile)) {
-      xmlFile = xmlFiles.find(x => x.endsWith(`${xmlFile}.xml`))
+      // throw new Error(`No xml file to adopt in: "${xmlFile}"`)
+      console.error(`No xml file to adopt in: "${xmlFile}"`)
+      continue
     }
     console.log(`adopting ${xmlFile}`)
     let root = parseXmlFileSync(xmlFile)
