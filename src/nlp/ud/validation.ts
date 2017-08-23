@@ -21,6 +21,7 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'advcl:2',
   'xcomp:2',
   'flat:repeat',
+  'appos:nonnom',
 
   'acl',
   'advcl',
@@ -882,6 +883,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && ![Case.nominative, Case.accusative].includes(t.node.interp.features.case)
   )
 
+  treedReportIf(`числівник керує одниною`,  // todo
+    t => !t.isRoot()
+      && isGoverning(t.parent.node.rel)
+      && !t.node.interp.isPlural()
+  )
+
   treedReportIf(`кероване числівником не в родовому`,
     t => {
       let governer = t.children.find(x => isGoverning(x.node.rel))
@@ -1091,6 +1098,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: опікуватися мамою — мамою тут obj має бути
   // зробити: (упс) advcl з копули а не
   // зробити: advcl замість obl’а
+  // зробити: _це_ не при присудку іменн пред
 
 
 

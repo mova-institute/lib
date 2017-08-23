@@ -54,6 +54,7 @@ export type Ud20MiSpecificRelation =
   | 'advcl:2'
   | 'xcomp:2'
   | 'flat:repeat'
+  | 'appos:nonnom'
 
 
 export type UdMiRelation = Ud20UniversalRelation | Ud20MiSpecificRelation
