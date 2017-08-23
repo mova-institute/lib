@@ -125,6 +125,7 @@ const gluedPrefixes = [
   'динаміко',
   'екзо',
   'екс-',
+  'еко',
   'електро',
   'етно',
   'зоо',
@@ -356,7 +357,7 @@ export class MorphAnalyzer {
     }
 
     // ірод from Ірод
-    {
+    if (!res.size) {
       let toadd = this.lookup(titlecase)
         .filter(x => !res.has(x))
         .map(x => x/*.unproper()*/.setIsAuto())
@@ -521,7 +522,7 @@ export class MorphAnalyzer {
         let toadd = mu(this.lookup(match[2]))
           .filter(x => x.isAdjective() && !x.isAbbreviation())
           .transform(x => x.lemma = `${match[1]}-${x.lemma}`)
-        // res.addAll(toadd)
+        res.addAll(toadd)
       }
     }
 
@@ -553,7 +554,7 @@ export class MorphAnalyzer {
     // filter and postprocess
     let ret = new Array<MorphInterp>()
     for (let interp of res) {
-      if (/^[−\-]$/.test(nextToken) && interp.isBeforeadj()) {
+      if (!/^[−\-]$/.test(nextToken) && interp.isBeforeadj()) {
         // if (!mu(res.keys()).some(x => x.isAdverb())) {
         // ret.push(MorphInterp.fromVesumStr('adv', lowercase).setIsAuto())
         // }
