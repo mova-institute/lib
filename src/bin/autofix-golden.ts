@@ -77,7 +77,7 @@ function main() {
   let files = glob.sync(globStr)
   let tokenCount = 0
 
-  if (0) {
+  if (1) {
     console.log(`removing legacy namespaces & autofixing xml…`)
     for (let filePath of files) {
       let xmlstr = fs.readFileSync(filePath, 'utf8')
@@ -101,10 +101,10 @@ function main() {
       // renameStructures(root)
 
       // remove redundant attributes
-      if (0) {
+      if (1) {
         let tokenEls = [...root.evaluateElements('//w_')]
         for (let w of tokenEls) {
-          w.removeAttribute('n')
+          // w.removeAttribute('n')
           w.removeAttribute('nn')
           w.removeAttribute('disamb')
           w.removeAttribute('author')
@@ -396,6 +396,22 @@ function main() {
             }
           }
 
+          if (udInterp.pos === 'DET' && uEq(token.rel, 'amod')) {
+            token.rel = 'det'
+          }
+
+          if (udInterp.pos !== 'DET' && uEq(token.rel, 'det') && interp.isAdjective()) {
+            token.rel = 'amod'
+          }
+
+          if (!interp.isAccusative() && (
+            interp.features.grammaticalAnimacy !== undefined
+            || interp.features.requiredAnimacy !== undefined)
+          ) {
+            interp.features.grammaticalAnimacy = undefined
+            interp.features.requiredAnimacy = undefined
+          }
+
           // testMorpho(node)
         }
 
@@ -515,7 +531,7 @@ function testMorpho(node: GraphNode<Token>) {
 
   if (interp.isNounish()) {
     if (interp.features.gender === undefined
-      && !grammar.EMPTY_GENDER_NOUNS.includes(interp.lemma) && !(
+      && !grammar.GENDERLESS_PRONOUNS.includes(interp.lemma) && !(
         interp.isNoSingular() || interp.isSingular() && interp.features.person === 1
       )
     ) {

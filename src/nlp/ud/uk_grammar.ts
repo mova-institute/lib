@@ -6,6 +6,30 @@ import { uEq } from './utils'
 export type TokenNode = GraphNode<Token>
 
 
+export const WORDS_WITH_INS_VALENCY = [
+  'даний',
+  'одмітний',
+  'переповнений',
+  'засмічений',
+  'узятий',
+  'зацікавлений',
+
+  'володіти',
+  'задовольнитися',
+  'зробитися',
+
+  'рискувати',
+  'пожертвувати',
+  'курувати',
+  'керувати',
+  'тхнути',
+  'тягнути',
+  'нехтувати',
+  'називати',
+  'дихнути',
+  'нехтувати',
+]
+
 export const PREPS_HEADABLE_BY_NUMS = [
   'близько',
   'понад',
@@ -30,7 +54,8 @@ export const TEMPORAL_ACCUSATIVES = [
   'р.',
 ]
 
-export const EMPTY_GENDER_NOUNS = [
+export const GENDERLESS_PRONOUNS = [
+  'я',
   'вони',  // todo: ns?
   'ніщо',  // середній?
   'ми',
@@ -53,6 +78,18 @@ export const QAUNTITATIVE_ADVERBS = [
   'мало',
   'багато',
 ]
+
+const VALENCY_HAVING_ADJECTIVES = [
+  'властивий',
+  'потрібний',
+  'доступний',
+]
+
+////////////////////////////////////////////////////////////////////////////////
+export function isValencyHavingAdjective(t: Token) {
+  return t.interp.isAdjective()
+    && VALENCY_HAVING_ADJECTIVES.includes(t.interp.lemma)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export const PREDICATES = {
