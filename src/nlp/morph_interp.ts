@@ -977,6 +977,7 @@ export class MorphInterp {
   isStem() { return this.features.variant === Variant.stem }
   isDemonstrative() { return this.features.pronominalType === PronominalType.demonstrative }
   isIndefinite() { return this.features.pronominalType === PronominalType.indefinite }
+  isGeneral() { return this.features.pronominalType === PronominalType.general }
   isRelative() { return this.features.pronominalType === PronominalType.relative }
   isQuote() { return this.features.punctType === PunctType.quoute }
   isOpeningPunctuation() { return this.features.punctSide === PunctSide.open }

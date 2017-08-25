@@ -195,7 +195,6 @@ const CLAUSAL_MODIFIERS = [
   'acl',
   'advcl',
   'csubj',
-  'csubj:pass',
   'ccomp',
   'xcomp',
 ]
@@ -407,8 +406,12 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     t => canActAsNounForObj(t)],
   [`obl`,
     `з дієслова / прикм. / присл. / іншого obl`,
-    t => t.node.interp.isVerbial() || t.node.interp.isAdjective() || t.node.interp.isAdverb()
-      || t.node.isPromoted,
+    t => t.node.interp.isVerbial()
+      || t.node.interp.isAdjective()
+      || t.node.interp.isAdverb()
+      || (t.node.interp.isNounish() && t.children.some(x => uEqSome(x.node.rel, ['cop'])))
+      || t.node.isPromoted
+    ,
     `в іменник`,
     t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && isRelativeInRelcl(t),
   ],
@@ -925,7 +928,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && t.parent.node.interp.features.animacy !== undefined
       && t.node.interp.features.requiredAnimacy as number !== t.parent.node.interp.features.animacy
       && t.node.interp.features.requiredAnimacy as number !== t.parent.node.interp.features.grammaticalAnimacy
-      // todo: or ranim for promoted adj
+    // todo: or ranim for promoted adj
   )
 
   treedReportIf(`неузгодження flat:name`,
@@ -1139,6 +1142,25 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
     // && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
 
+  treedReportIf(`неочікувана реляція в вигук`,
+    t => t.node.rel
+      && !t.node.isGraft
+      && t.node.interp.isInterjection()
+      && !uEqSome(t.node.rel, ['discourse', 'flat:repeat'])
+  )
+
+  xtreedReportIf(`неочікувана реляція в символ`,
+    t => t.node.rel
+      && t.node.interp.isSymbol()
+      && !uEqSome(t.node.rel, ['discourse'])
+  )
+
+  treedReportIf(`неочікувана реляція в PUNCT`,
+    t => t.node.rel
+      && t.node.interp.isPunctuation()
+      && !uEqSome(t.node.rel, ['punct'])
+  )
+
   treedReportIf(`неочікувана реляція в дієприслівник`,
     t => t.node.rel
       && t.node.interp.isConverb()
@@ -1160,6 +1182,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && !uEqSome(t.node.rel, ['cc'])
   )
 
+  treedReportIf(`неочікувана реляція в SCONJ`,
+    t => t.node.rel
+      && t.node.interp.isSubordinative()
+      && !uEqSome(t.node.rel, ['mark'])
+  )
+
   treedReportIf(`неочікувана реляція в DET`,
     t => t.node.rel
       && !t.node.isPromoted
@@ -1168,10 +1196,56 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && !isRelativeInRelcl(t)
   )
 
-  treedReportIf(`неочікувана реляція в SCONJ`,
+  xtreedReportIf(`неочікувана реляція в іменник`,
     t => t.node.rel
-      && t.node.interp.isSubordinative()
-      && !uEqSome(t.node.rel, ['mark'])
+      && t.node.interp.isNoun()
+      && !uEqSome(t.node.rel, ['nsubj', 'nmod', 'appos', 'conj', 'obj', 'iobj', 'obl',
+        'flat:title', 'flat:name', 'xcomp:2', 'flat:repeat', 'parataxis:discourse'])
+      && !(uEqSome(t.node.rel, ['advcl']) && t.children.some(x => uEqSome(x.node.rel, ['mark'])))
+      && !uEqSome(t.node.rel, [...CLAUSAL_MODIFIERS])  // todo
+  )
+
+  xtreedReportIf(`неочікувана реляція в дієслово`,
+    t => t.node.rel
+      && !t.node.isGraft
+      && t.node.interp.isVerb()
+      && !t.node.interp.isAuxillary()
+      && !uEqSome(t.node.rel, [...CLAUSAL_MODIFIERS, 'parataxis', 'conj', 'flat:repeat',
+        'parataxis:discourse'])
+  )
+
+  treedReportIf(`неочікувана реляція в DET`,
+    t => t.node.rel
+      && !t.node.isPromoted
+      && toUd(t.node.interp).pos === 'DET'  // todo: .isDet()
+      && !uEqSome(t.node.rel, ['det', 'conj'])
+      && !isRelativeInRelcl(t)
+  )
+
+  xtreedReportIf(`неочікувана реляція в числівник`,
+    t => t.node.rel
+      && t.node.interp.isCardinalNumeral()
+      && !t.node.isPromoted
+      && !uEqSome(t.node.rel, ['nummod', 'conj', 'flat:title'])
+      && !(toUd(t.node.interp).pos === 'DET'
+        && uEqSome(t.node.rel, ['det:nummod', 'det:numgov', 'conj']))
+  )
+
+  xtreedReportIf(`неочікувана реляція в прислівник`,
+    t => t.node.rel
+      && t.node.interp.isAdverb()
+      // && !t.node.isPromoted
+      && !uEqSome(t.node.rel, ['advmod', 'discourse', 'conj'])
+  )
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  xtreedReportIf(`означення при займеннику`,
+    t => uEqSome(t.node.rel, ['amod', 'det'])
+      && t.parent.node.interp.isNoun()
+      && t.parent.node.interp.isPronoun()
+      && !t.parent.node.interp.isIndefinite()
+      && !t.parent.node.interp.isGeneral()
   )
 
   treedReportIf(`неочікуваний відмінок obj`,
@@ -1204,6 +1278,10 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
         || thisOrGovernedCase(t) === Case.vocative
       )
   )
+
+  // treedReportIf(`неочікуване вживання xcomp:2`,
+  //   t =>
+  //   )
 
   // наістотнення
   // treedReportIf(`obj в родовому`,
@@ -1259,6 +1337,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: використовувати ліс як декорації — ліс і декорації узгод у відм.
   // зробити: cop в дієприсл?
   // зробити: звик опікуватися мамою сам
+  // зробити: xcomp:2
 
 
 
@@ -1292,7 +1371,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   /*
 
     treedReportIf(``,
-      (t, i) =>
+      t =>
     )
 
   */
