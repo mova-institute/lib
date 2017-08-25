@@ -1,6 +1,6 @@
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
-  Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
+  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquial, ConjunctionType,
   Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
@@ -13,6 +13,7 @@ import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_in
 
 
 export type UdBoolean = 'Yes'
+export type UdNegBoolean = 'No'
 
 export type UdAnimacy = 'Anim' | 'Nhum' | 'Inan'
 export type UdAspect = 'Imp' | 'Perf'
@@ -40,6 +41,7 @@ export type UdPartType = 'Prs' | 'Conseq'
 export type UdPolite = 'Form'
 export type UdPunctType = 'Quot' | 'Mdash'
 export type UdPunctSide = 'Ini' | 'Fin'
+export type UdUninflect = UdBoolean
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -108,11 +110,11 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [PartType, 'PartType'],
   [PunctSide, 'PunctSide'],
   [PunctType, 'PunctType'],
+  [Inflectability, 'Uninflect'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
   // [Bad, 'bad'],
-  // [CaseInflectability, 'caseInflectability'],
   // [Colloquial, 'colloquial'],
   // [Dimin, 'dimin'],
   // [N2adjness, 'n2adjness'],
@@ -323,6 +325,7 @@ export class UdFeats {
   Foreign: UdForeign
   Gender: UdGender
   Hyph: UdHyph
+  Inflect: UdUninflect
   Mood: UdMood
   NameType: UdNameType
   Number: UdNumber
@@ -333,8 +336,8 @@ export class UdFeats {
   Poss: UdBoolean
   PrepCase: UdPrepCase
   PronType: UdPronType
-  PunctType: UdPunctType
   PunctSide: UdPunctSide
+  PunctType: UdPunctType
   Reflex: UdBoolean
   Style: UdStyle
   Tense: UdTense

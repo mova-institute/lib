@@ -6,7 +6,7 @@ import { isOddball, zipLongest } from '../lang'
 import { compare } from '../algo'
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, GrammaticalAnimacy,
-  Aspect, Auto, Badness, Beforeadj, Case, CaseInflectability, Colloquial, ConjunctionType,
+  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquial, ConjunctionType,
   Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
@@ -25,7 +25,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Badness, 'bad'],
   [Beforeadj, 'beforeadj'],
   [Case, 'case'],
-  [CaseInflectability, 'caseInflectability'],
+  [Inflectability, 'inflectability'],
   [Colloquial, 'colloquial'],
   [Degree, 'degree'],
   [Dimin, 'dimin'],
@@ -74,7 +74,7 @@ const NONGRAMMATIACAL_FEATURES = [
   Alternativity,
   Auto,
   Badness,
-  CaseInflectability,  // ~
+  Inflectability,  // ~
   Colloquial,
   Formality,  // ~
   N2adjness,
@@ -221,7 +221,7 @@ export const FEATURE_TABLE = [
   { featStr: 'numberTantum', feat: NumberTantum, vesum: NumberTantum.noPlural, vesumStr: 'np' },
   { featStr: 'numberTantum', feat: NumberTantum, vesum: NumberTantum.noSingular, vesumStr: 'ns' },
 
-  { featStr: 'caseInflectability', feat: CaseInflectability, vesum: CaseInflectability.no, vesumStr: 'nv' },
+  { featStr: 'inflectability', feat: Inflectability, vesum: Inflectability.no, vesumStr: 'nv' },
 
   { featStr: 'alternative', feat: Alternativity, vesum: Alternativity.yes, vesumStr: 'alt' },
 
@@ -323,7 +323,7 @@ export const FEATURE_ORDER = {
     Gender,
     Case,
     GrammaticalAnimacy,
-    CaseInflectability,
+    Inflectability,
     NumberTantum,
     Alternativity,
     NounType,
@@ -351,7 +351,7 @@ export const FEATURE_ORDER = {
     Degree,
     Abbreviation,
     Possessiveness,
-    CaseInflectability,
+    Inflectability,
     NumberTantum,
     Pronoun,
     Reflexivity,
@@ -387,7 +387,7 @@ export const FEATURE_ORDER = {
     Gender,
     MorphNumber,
     Case,
-    CaseInflectability,
+    Inflectability,
     Pronoun,
     PronominalType,
     Typo,
@@ -411,7 +411,7 @@ export const FEATURE_ORDER = {
     Case, RequiredCase,
     GrammaticalAnimacy,
     RequiredAnimacy,
-    CaseInflectability,
+    Inflectability,
     Alternativity,
     NumberTantum,
     NameType,
@@ -450,6 +450,7 @@ export class Features {
   badness: Badness
   beforeadj: Beforeadj
   case: Case
+  inflectability: Inflectability
   colloquial: Colloquial
   conjunctionType: ConjunctionType
   degree: Degree
@@ -984,6 +985,7 @@ export class MorphInterp {
   isClosingPunctuation() { return this.features.punctSide === PunctSide.close }
   isConsequential() { return this.features.partType === PartType.consequential }
   isInstant() { return this.otherFlags.has('instant') }
+  isUninflectable() { return this.features.inflectability === Inflectability.no }
 
   isNonparticipleAdj() { return this.isAdjective() && !this.isParticiple() }
 
@@ -1026,6 +1028,7 @@ export class MorphInterp {
   setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
   setIsProper(value = true) { this.features.nounType = value ? NounType.proper : undefined; return this }
   setIsPronoun(value = true) { this.features.pronoun = value ? Pronoun.yes : undefined; return this }
+  setIsInflectable(value = true) { this.features.inflectability = !value ? Inflectability.no : undefined; return this }
   setPos(pos: Pos) { this.features.pos = pos; return this }
 
   setCase(value: Case) { this.features.case = value; return this }

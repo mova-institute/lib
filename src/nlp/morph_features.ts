@@ -176,7 +176,7 @@ export enum PartType {
 export enum NumberTantum { noPlural, noSingular }
 export enum NameType { first, last, patronym, nick }
 
-export enum CaseInflectability { no }
+export enum Inflectability { no }
 export enum Alternativity { yes }
 export enum VuAlternativity { yes }
 export enum Abbreviation { yes }
@@ -209,4 +209,5 @@ export const booleanFeatures = [
   Abbreviation,
   Foreign,
   Typo,
+  Inflectability,
 ]
