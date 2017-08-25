@@ -266,39 +266,30 @@ export function isRegularizedFlowElement(el: AbstractElement) {
 const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g', 'sb', 'doc', 'gap'])
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement) {
-  let subroots = [root]
-  // let subroots = [...root.evaluateElements('//tei:title', NS), ...root.evaluateElements('//tei:text', NS)]
-  // if (!subroots.length) {
-  //   subroots = [root]
-  // }
-
   return mu((function* () {
-    for (let subroot of subroots) {
-      let iterator = traverseDepthGen2(subroot)
-      let pointer = iterator.next()
-      while (!pointer.done) {
-        let { node, entering } = pointer.value
-        if (node.isElement()) {
-          let el = node.asElement()
-          let name = el.localName()
-          if (entering && (name === 'w_' || !isRegularizedFlowElement(el))) {
-            // let lang = el.attributeUp('lang')
-            // if (lang && lang !== 'uk') {
-            //   continue
-            // }
-            if (name === 'w_') {
-              yield { el, entering }
-            }
-            pointer = iterator.next('skip')
-            // console.log('skipped')
-            continue
-          }
-          if (elementsOfInterest.has(name)) {  // todo
+    let iterator = traverseDepthGen2(root)
+    let pointer = iterator.next()
+    while (!pointer.done) {
+      let { node, entering } = pointer.value
+      if (node.isElement()) {
+        let el = node.asElement()
+        let name = el.localName()
+        if (entering && (name === 'w_' || !isRegularizedFlowElement(el))) {
+          // let lang = el.attributeUp('lang')
+          // if (lang && lang !== 'uk') {
+          //   continue
+          // }
+          if (name === 'w_') {
             yield { el, entering }
           }
+          pointer = iterator.next('skip')
+          continue
         }
-        pointer = iterator.next()
+        if (elementsOfInterest.has(name)) {  // todo
+          yield { el, entering }
+        }
       }
+      pointer = iterator.next()
     }
   })())
 }
@@ -992,6 +983,7 @@ const structureElementName2type = new Map<string, Structure>([
   ['lg', 'stanza'],
   ['l', 'line'],
   ['s', 'sentence'],
+  ['gap', 'gap'],
   // ['', ''],
 ])
 
@@ -1031,7 +1023,7 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
           }
           break
         }
-        case 'sb':
+        case 'sb':  // todo
           tok = Token.structure('sentence', true)
           let attributes = el.attributesObj()
           if (sentenceSetSchema) {
@@ -1176,11 +1168,12 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   let newParagraph = false
   let newTokenLevelParagraph = false
   let tokens = new Array<Token>()
+  let hasGap = false
 
-  const toyield = () => {
+  const prepareForYield = () => {
     initLocalHeadIndexes(tokens, sentenceId)
     let nodes = sentenceArray2TreeNodes(tokens)
-    return { sentenceId, tokens, nodes, set, newParagraph, newDocument }
+    return { sentenceId, tokens, nodes, set, newParagraph, newDocument, hasGap }
   }
 
   for (let token of stream) {
@@ -1190,14 +1183,13 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
           newTokenLevelParagraph = true
         } else {
           newParagraph = true
-
         }
       }
     } else if (token.getStructureName() === 'document' && !token.isClosing()) {
       newDocument = true
     } else if (token.isSentenceBoundary()) {
       if (tokens.length) {
-        yield toyield()
+        yield prepareForYield()
         tokens = []
         newDocument = false
         newParagraph = false
@@ -1215,8 +1207,13 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   }
 
   if (tokens.length) {
-    yield toyield()
+    yield prepareForYield()
   }
+}
+
+//------------------------------------------------------------------------------
+function prepareForYield() {
+
 }
 
 //------------------------------------------------------------------------------
