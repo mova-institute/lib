@@ -274,7 +274,13 @@ export class MorphAnalyzer {
     // regexes returning immediately
     for (let [regexes, tagStrs] of REGEX2TAG_IMMEDIATE) {
       if (regexes.some(x => x.test(token))) {
-        return tagStrs.map(x => MorphInterp.fromVesumStr(x, token))
+        return tagStrs.map(x => {
+          let ret = MorphInterp.fromVesumStr(x, token)
+          if (ret.isCardinalNumeral() && /^[\d\s]+$/.test(token)) {
+            ret.lemma = ret.lemma.replace(/\s+/g, '')  // todo
+          }
+          return ret
+        })
       }
     }
 
@@ -487,7 +493,7 @@ export class MorphAnalyzer {
       if (ending === 'ся' || ending === 'сь') {
         let toadd = this.lookup(lowercase.slice(0, -2))
           .filter(x => x.isVerbial())
-          .map(x => x.setIsReflexive().setLemma(x.lemma + 'ся'))
+          .map(x => x.setIsReversive().setLemma(x.lemma + 'ся'))
         res.addAll(toadd)
       }
     }
