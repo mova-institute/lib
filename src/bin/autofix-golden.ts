@@ -7,7 +7,6 @@ import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
 import * as f from '../nlp/morph_features'
-import * as ukGrammar from '../nlp/uk_grammar'
 import { Token } from '../nlp/token'
 import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
@@ -20,36 +19,12 @@ import { GraphNode } from '../lib/graph'
 import { uEq, uEqSome } from '../nlp/ud/utils'
 import { toUd } from '../nlp/ud/tagset'
 import { PREDICATES } from '../nlp/ud/uk_grammar';
+import * as g from '../nlp/uk_grammar'
 import * as grammar from '../nlp/ud/uk_grammar';
 
 
-// const IDS = new Set(``.trim().split(/\s/g))
-
 const REPLACE_RE = /#>(\S+)/
 
-const TRANSFORMS = {
-  // toPart(el: AbstractElement) {
-  //   el.firstElementChild().setAttribute('ana', 'part')
-  // },
-  // toConjSubord(el: AbstractElement) {
-  //   el.firstElementChild().setAttribute('ana', 'conj:subord')
-  // },
-  toAccusative(t: GraphNode<Token>) {
-    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
-    toChange.push(t)
-    toChange.forEach(tt => tt.node.interp.setIsAccusative())
-  },
-  toGenitive(t: GraphNode<Token>) {
-    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
-    toChange.push(t)
-    toChange.forEach(tt => tt.node.interp.setIsGenitive())
-  },
-  toCc(t: GraphNode<Token>) {
-  }
-}
-
-//------------------------------------------------------------------------------
-// function changeNominalCaseTo
 
 // temp
 const KNOWN_NONDIC_LEMMAS = new Set([
@@ -59,32 +34,26 @@ const KNOWN_NONDIC_LEMMAS = new Set([
   'телеведучий',
 ])
 
+//------------------------------------------------------------------------------
+function prepareIds(path: string) {
+  return new Set(fs.readFileSync(path, 'utf8')
+    .trim()
+    .split(/\n+/g)
+    .map(x => x.trim())
+    .filter(x => !x.startsWith('#'))
+    .join(' ')
+    .split(/\s+/g))
+}
 
 //------------------------------------------------------------------------------
 function main() {
   let args = minimist(process.argv.slice(2))
-  // console.log(args)
-  if (args.tranformIds) {
-    var ids = new Set(fs.readFileSync(args.tranformIds, 'utf8')
-      .trim()
-      .split(/\n+/g)
-      .map(x => x.trim())
-      .filter(x => !x.startsWith('#'))
-      .join(' ')
-      .split(/\s+/g))
-  }
   let [globStr, sequencePath] = args._
   let files = glob.sync(globStr)
   let tokenCount = 0
 
-  if (1) {
-    console.log(`removing legacy namespaces & autofixing xml…`)
-    for (let filePath of files) {
-      let xmlstr = fs.readFileSync(filePath, 'utf8')
-      xmlstr = autofixSomeEntitites(xmlstr)
-      xmlstr = removeNamespacing(xmlstr)
-      fs.writeFileSync(filePath, xmlstr)
-    }
+  if (args.tranformIds) {
+    var ids = prepareIds(path)
   }
 
   let idSequence: number
@@ -92,8 +61,18 @@ function main() {
     idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
   }
 
+  // prepare xml
+  if (args.afterAnnotator) {
+    console.log(`removing legacy namespaces & autofixing xml…`)
+    autofixXml(files)
+  }
+
 
   console.log(`applying autofixes…`)
+
+  const dict = createDictionarySync()
+  const analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
+
   for (let file of files) {
     try {
       let root = parseXmlFileSync(file)
@@ -101,7 +80,7 @@ function main() {
       // renameStructures(root)
 
       // remove redundant attributes
-      if (1) {
+      if (args.afterAnnotator) {
         let tokenEls = [...root.evaluateElements('//w_')]
         for (let w of tokenEls) {
           // w.removeAttribute('n')
@@ -110,13 +89,6 @@ function main() {
           w.removeAttribute('author')
         }
       }
-
-      // tokens.filter(x => IDS.has(x.attribute('id')))
-      //   .forEach(t => t.firstElementChild().setAttribute('ana', 'part'))
-
-
-      let dict = createDictionarySync()
-      let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
 
 
       // do safe transforms
@@ -215,7 +187,6 @@ function main() {
         }
       }
 
-      runValidations(root)
 
       let id2el = new Map(root.evaluateElements('//*[@id]').map(
         x => [x.attribute('id'), x] as [string, AbstractElement]))
@@ -297,16 +268,6 @@ function main() {
           if (token.rel === 'punct' && token.interp.isCoordinating()) {
             token.rel = 'cc'
           }
-
-          // {
-          //   let interpsFromDict = analyzer.tag(token.form)
-          //   let toCompare = token.interp.clone()
-          //   toCompare.features.formality = undefined
-          //   toCompare.features.paradigmOmonym = undefined
-          //   if (!interpsFromDict.some(x => x.featurewiseEquals(toCompare))) {
-          //     console.log(`form-interp not in dict: ${token.form} ${token.interp.toVesumStr()}`)
-          //   }
-          // }
 
           if (token.interp.isInterjection()) {
             let newInterp = analyzer.tag(token.form).find(x => x.isInstant())
@@ -412,10 +373,33 @@ function main() {
             interp.features.requiredAnimacy = undefined
           }
 
-          // testMorpho(node)
+          if (interp.isAbbreviation() && interp.lemma.endsWith('.')) {
+            if (g.isInflecable(interp.features.pos)) {
+              interp.setIsUninflectable()
+            } else {
+              interp.setIsUninflectable(false)
+            }
+          }
+
+          if (interp.isCardinalNumeral() && /\d$/.test(token.form)) {
+            interp.setIsUninflectable()
+          }
+
+          // if (interp.isUninflectable()) {
+          //   let form = token.form
+          //   if (interp.isAbbreviation() && interp.lemma.endsWith('.') && !form.endsWith('.')) {
+          //     form = `${form}.`
+          //   }
+          //   if (form.toLowerCase() !== interp.lemma.toLowerCase()) {
+          //     console.error(`form differs from lemma for :nv >> "${token.form}" #${token.id}`)
+          //   }
+          // }
+
+          testMorpho(node, analyzer)
         }
 
 
+        // save to xml doc
         nodes.forEach(x => {
           // console.log(x)
           let element = id2el.get(x.node.id)
@@ -463,37 +447,9 @@ function id2str(n: number) {
 }
 
 //------------------------------------------------------------------------------
-function runValidations(root: AbstractElement) {
-  for (let token of tei2tokenStream(root)) {
-    if (!token.isWord()) {
-      continue
-    }
-
-    let interp = token.interp
-    let features = interp.features
-    if (interp.isPreposition() && !interp.hasRequiredCase()) {
-      console.error(`no case in prep "${token.form}" #${token.id}`)
-    } else if (ukGrammar.inflectsCase(features.pos) && !interp.isBeforeadj()
-      && !interp.isStem() && !interp.isForeign() && !interp.hasCase()) {
-      // console.error(`no case in "${token.form}" #${token.globalId}`)
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
 function saveInterp(el: AbstractElement, interp: MorphInterp) {
   el.setAttribute('ana', interp.toVesumStr())
   el.setAttribute('lemma', interp.lemma)
-}
-
-if (require.main === module) {
-  main()
-}
-
-//------------------------------------------------------------------------------
-function isNoninfl(interp: MorphInterp) {
-  return interp.isConjunction() || interp.isParticle() || interp.isAdverb()
-    || interp.isPreposition() || interp.isInterjection() || interp.isPunctuation()
 }
 
 //------------------------------------------------------------------------------
@@ -521,46 +477,114 @@ function renameStructures(root: AbstractElement) {
 }
 
 //------------------------------------------------------------------------------
-function testMorpho(node: GraphNode<Token>) {
-
+function testMorpho(node: GraphNode<Token>, analyzer: MorphAnalyzer) {
+  let token = node.node
   let interp = node.node.interp
+  token.form = token.correctedForm()
 
   if (interp.isForeign()) {
     return
   }
 
+  // missing case
+  if (g.inflectsCase(interp.features.pos)
+    && !interp.isBeforeadj()
+    && !interp.isStem()
+    && !interp.isForeign()
+    && !interp.hasCase()
+  ) {
+    console.error(`no case in "${token.form}" #${token.id}`)
+    interp.features.case = f.Case.nominative
+  }
+
+  // missing required case
+  if (interp.isPreposition() && !interp.hasRequiredCase()) {
+    console.error(`no case in prep "${token.form}" #${token.id}`)
+  }
+
+  // missing gender for adj
+  if (interp.isAdjective() && !interp.isStem() && !interp.isForeign()) {
+    if (!interp.hasGender() && !interp.hasNumber()) {
+      console.error(`no gender/plural for ${token2string(node.node)}`)
+    }
+  }
+
+  // missing gender for noun
   if (interp.isNounish()) {
-    if (interp.features.gender === undefined
+    // missing gender for noun
+    if (!interp.hasGender()
       && !grammar.GENDERLESS_PRONOUNS.includes(interp.lemma) && !(
         interp.isNoSingular() || interp.isSingular() && interp.features.person === 1
       )
     ) {
-      console.error(`no gender for ${token2string(node.node)}`)
+      // console.error(`no gender for ${token2string(node.node)}`)
     }
+  }
 
-    if (interp.features.animacy === undefined
-      && !grammar.EMPTY_ANIMACY_NOUNS.includes(interp.lemma) && !(
-        interp.features.pronominalType === f.PronominalType.personal
-        && interp.features.person === 3
-      )
+  // missing animacy
+  if (interp.isNounish() && !interp.hasAnimacy()
+    && !grammar.EMPTY_ANIMACY_NOUNS.includes(interp.lemma)
+    && !(interp.features.pronominalType === f.PronominalType.personal
+      && interp.features.person === 3
+    )
+  ) {
+    console.error(`no animacy for ${token2string(node.node)}`)
+  }
+
+  // missing in dict
+  {
+    let interpsFromDict = analyzer.tag(token.form)
+    interpsFromDict.forEach(x => x.features.auto = x.features.oddness = undefined)
+
+    let toCompare = token.interp.clone()
+    // .removeNondictionaryFeatures()
+    toCompare.features.formality = undefined
+    toCompare.features.paradigmOmonym = undefined
+    toCompare.features.auto = undefined
+    toCompare.features.oddness = undefined
+
+    // if (interp.isAdjectiveAsNoun()) {  // todo
+    //   toCompare.lemma =
+    // }
+
+    if (!interpsFromDict.some(x => interp.isAdjectiveAsNoun()
+      ? x.featurewiseEquals(toCompare)
+      : x.equals(toCompare))
+      // temp
+      // && (interp.isParticle()
+      //   // ||interp.isVerb()
+      //   // || interp.isPreposition()
+      //   //   || interp.isParticle()
+      //   //   || interp.isAdverb()
+      //   //   || interp.isAdjective()
+      //   //   || interp.isNoun()
+      //   //   || interp.isConverb()
+      //   //   || interp.isCardinalNumeral()
+      // )
+      && interp.isCardinalNumeral()
+      && !interp.isStem()
+      && !interp.isTypo()  // temp
+      && !interp.isName()  // temp
+      && !interp.isAbbreviation()  // temp
     ) {
-      console.error(`no animacy for ${token2string(node.node)}`)
+      let interpsFromDictStr = interpsFromDict.map(x => `${x.toVesumStr()}@${x.lemma}`)
+      let message = `>>> interp not in dict: ${
+        token2stringRaw(token.id, token.form, toCompare.lemma, toCompare.toVesumStr())}`
+      if (interpsFromDictStr.length) {
+        message += ` dict:\n${interpsFromDictStr.slice(0, 10).join('\n' )}\n=========`
+      }
+      console.log(message)
     }
+  }
+}
 
-    if (interp.features.case === undefined) {
-      console.error(`no case for ${token2string(node.node)}`)
-    }
-
-  } else if (interp.isAdjective()) {
-    if (interp.features.gender === undefined && interp.features.number === undefined) {
-      // console.error(`no gender/plural for ${token2string(node.node)}`)
-    }
-
-    if (interp.features.case === undefined) {
-      // console.error(`no case for ${token2string(node.node)}`)
-    }
-  } else if (interp.isVerb()) {
-
+//------------------------------------------------------------------------------
+function autofixXml(files: string[]) {
+  for (let filePath of files) {
+    let xmlstr = fs.readFileSync(filePath, 'utf8')
+    xmlstr = autofixSomeEntitites(xmlstr)
+    xmlstr = removeNamespacing(xmlstr)
+    fs.writeFileSync(filePath, xmlstr)
   }
 }
 
@@ -577,8 +601,13 @@ function testMorpho(node: GraphNode<Token>) {
 // }
 
 //------------------------------------------------------------------------------
+function token2stringRaw(id: string, form: string, lemma: string, tag: string) {
+  return `#${id} ${form} @ ${lemma} @@ ${tag}`
+}
+
+//------------------------------------------------------------------------------
 function token2string(token: Token) {
-  return `#${token.id} "${token.form}" @ "${token.interp.lemma}" @@ ${token.interp.toVesumStr()}`
+  return token2stringRaw(token.id, token.form, token.interp.lemma, token.interp.toVesumStr())
 }
 
 /*
@@ -709,3 +738,29 @@ morphInterpret(root, analyzer)
 
 
 */
+
+const TRANSFORMS = {
+  // toPart(el: AbstractElement) {
+  //   el.firstElementChild().setAttribute('ana', 'part')
+  // },
+  // toConjSubord(el: AbstractElement) {
+  //   el.firstElementChild().setAttribute('ana', 'conj:subord')
+  // },
+  toAccusative(t: GraphNode<Token>) {
+    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
+    toChange.push(t)
+    toChange.forEach(tt => tt.node.interp.setIsAccusative())
+  },
+  toGenitive(t: GraphNode<Token>) {
+    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
+    toChange.push(t)
+    toChange.forEach(tt => tt.node.interp.setIsGenitive())
+  },
+  toCc(t: GraphNode<Token>) {
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+if (require.main === module) {
+  main()
+}

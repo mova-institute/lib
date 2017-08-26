@@ -861,6 +861,10 @@ export class MorphInterp {
     return this.toVesumStr() === other.toVesumStr()
   }
 
+  equals(other: MorphInterp) {
+    return this.toVesumStr() === other.toVesumStr() && this.lemma === other.lemma
+  }
+
   // grammaticallyEquals(other: MorphInterp) {
   //   // todo
   // }
@@ -991,6 +995,7 @@ export class MorphInterp {
 
 
 
+  hasAnimacy() { return this.features.animacy !== undefined }
   hasNumber() { return this.features.number !== undefined }
   hasGender() { return this.features.gender !== undefined }
   hasPerson() { return this.features.person !== undefined }
@@ -1024,11 +1029,12 @@ export class MorphInterp {
   setIsPlural() { this.features.number = MorphNumber.plural; return this }
   setIsPluraleTantum(value = true) { this.features.numberTantum = value ? NumberTantum.noSingular : NumberTantum.noPlural; return this }
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
+  setIsReversive(value = true) { this.features.verbRevesivity = value ? VerbRevesivity.yes : undefined; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
   setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
   setIsProper(value = true) { this.features.nounType = value ? NounType.proper : undefined; return this }
   setIsPronoun(value = true) { this.features.pronoun = value ? Pronoun.yes : undefined; return this }
-  setIsInflectable(value = true) { this.features.inflectability = !value ? Inflectability.no : undefined; return this }
+  setIsUninflectable(value = true) { this.features.inflectability = value ? Inflectability.no : undefined; return this }
   setPos(pos: Pos) { this.features.pos = pos; return this }
 
   setCase(value: Case) { this.features.case = value; return this }

@@ -10,8 +10,21 @@ import {
 
 
 
+const INFLECTABLE_POSES = [
+  Pos.adjective,
+  Pos.cardinalNumeral,
+  Pos.noun,
+  Pos.verb,
+]
+//[Pos.adverb, Pos.conjunction, Pos.interjection,
+// Pos.particle, Pos.preposition, Pos.punct, Pos.punct, Pos.sym, Pos.x]
 
 ////////////////////////////////////////////////////////////////////////////////
 export function inflectsCase(pos: Pos) {
   return [Pos.adjective, Pos.cardinalNumeral, Pos.noun].includes(pos)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isInflecable(pos: Pos) {
+  return INFLECTABLE_POSES.includes(pos)
 }
