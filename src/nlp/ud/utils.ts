@@ -2,6 +2,7 @@ import { Token, TokenTag } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { tokenStream2plaintextString } from '../utils'
+import { mu } from '../../mu'
 
 
 
@@ -125,14 +126,19 @@ export function* tokenStream2brat(sentences: Token[][]) {
   let commentN = 1
   let n2id = {} as any
   for (let sentence of sentences) {
+    let highlightHoles = mustHighlightHoles(sentence)
     for (let token of sentence) {
       if (token.isStructure()) {
         continue
       }
       let id = t++
       let tId = `T${id}`
-      let { pos, features } = toUd(token.interp0())
       let rightOffset = offset + token.form.length
+
+      let { pos, features } = toUd(token.interp)
+      if (highlightHoles && !token.rel) {
+        features['AnnotationHole'] = 'Yes'
+      }
 
       yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
 
@@ -172,6 +178,20 @@ export function* tokenStream2brat(sentences: Token[][]) {
       }
     }
   }
+}
+
+//------------------------------------------------------------------------------
+function mustHighlightHoles(sentence: Token[]) {
+  let numRoots = mu(sentence).count(x => !x.rel)
+  if (numRoots === 1) {
+    return false
+  }
+
+  if (numRoots / sentence.length < 0.33) {
+    return true
+  }
+
+  return false
 }
 
 ////////////////////////////////////////////////////////////////////////////////
