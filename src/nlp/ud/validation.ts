@@ -1286,6 +1286,16 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       )
   )
 
+  treedReportIf(`nummod праворуч`,
+    t => isNumericModifier(t.node.rel)
+      && node2index.get(t) > node2index.get(t.parent)
+      && !(t.parent.node.interp.isGenitive()
+        && t.parent.node.interp.isPlural()
+        && t.node.interp.isAccusative()
+      )
+      && !grammar.CURRENCY_SYMBOLS.includes(t.parent.node.interp.lemma)
+  )
+
   // treedReportIf(`неочікуване вживання xcomp:2`,
   //   t =>
   //   )
@@ -1345,6 +1355,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: cop в дієприсл?
   // зробити: звик опікуватися мамою сам
   // зробити: xcomp:2
+  // зробити: не flat:title в №
 
 
 

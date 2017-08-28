@@ -6,6 +6,12 @@ import { uEq } from './utils'
 export type TokenNode = GraphNode<Token>
 
 
+export const CURRENCY_SYMBOLS = [
+  '₴',
+  '$',
+  '€',
+]
+
 export const WORDS_WITH_INS_VALENCY = [
   'даний',
   'одмітний',
