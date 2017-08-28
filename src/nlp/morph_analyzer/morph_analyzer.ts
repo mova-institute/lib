@@ -532,6 +532,20 @@ export class MorphAnalyzer {
       }
     }
 
+    // смашний from смачний
+    if (!presentInDict) {
+      let match = lowercase.match(/шн(.{2,4})$/)
+      if (match) {
+        let chnyi = `чн${match[1]}`
+        chnyi = lowercase.slice(0, -chnyi.length) + chnyi
+        let toadd = mu(this.lookup(chnyi))
+          .filter(x => x.isAdjective() && !x.isAbbreviation())
+          .transform(x => x.setIsOdd())
+        // todo: alter lemma?
+        res.addAll(toadd)
+      }
+    }
+
 
 
 
