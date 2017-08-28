@@ -28,26 +28,32 @@ function main() {
   let inputFiles = glob.sync(args._[0], { nodir: true })
   for (let file of inputFiles) {
     // console.error(file)
-    let base = trimExtension(basename(file))
-    let root = parseXmlFileSync(file)
-    let dest = join(args.dest, base)
-    mkdirpSync(dest)
+    try {
+      let base = trimExtension(basename(file))
+      console.log(`generating brat file for ${base}`)
+      let root = parseXmlFileSync(file)
+      let dest = join(args.dest, base)
+      mkdirpSync(dest)
 
-    let tokenStream = mu(tei2tokenStream(root))
-      .transform(x => x.form = x.correctedForm())
-    let sentenceStream = tokenStream2sentences(tokenStream)
-    let chunks = mu(sentenceStream)
-      .map(x => x.tokens)
-      .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.isWord()))
-      .toArray()
+      let tokenStream = mu(tei2tokenStream(root))
+        .transform(x => x.form = x.correctedForm())
+      let sentenceStream = tokenStream2sentences(tokenStream)
+      let chunks = mu(sentenceStream)
+        .map(x => x.tokens)
+        .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.isWord()))
+        .toArray()
 
-    for (let [i, chunk] of chunks.entries()) {
-      let filename = `${zerofillMax(i + 1, chunks.length)}`
-      let str = mu(tokenStream2brat(chunk)).join('\n', true)
+      for (let [i, chunk] of chunks.entries()) {
+        let filename = `${zerofillMax(i + 1, chunks.length)}`
+        let str = mu(tokenStream2brat(chunk)).join('\n', true)
 
-      writeFileSync(join(dest, `${filename}.ann`), str)
-      str = mu(tokenStream2bratPlaintext(chunk)).join('\n', true)
-      writeFileSync(join(dest, `${filename}.txt`), str)
+        writeFileSync(join(dest, `${filename}.ann`), str)
+        str = mu(tokenStream2bratPlaintext(chunk)).join('\n', true)
+        writeFileSync(join(dest, `${filename}.txt`), str)
+      }
+    } catch (e) {
+      console.error(`Error processing ${file}`)
+      throw e
     }
   }
 
