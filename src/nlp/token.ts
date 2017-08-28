@@ -5,7 +5,15 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 
 ////////////////////////////////////////////////////////////////////////////////
 export type TokenType = 'word' | 'glue'
-export type Structure = 'document' | 'div' | 'paragraph' | 'sentence' | 'stanza' | 'line'
+export type Structure =
+  | 'gap'
+  | 'document'
+  | 'div'
+  | 'paragraph'
+  | 'sentence'
+  | 'stanza'
+  | 'line'
+
 export type TokenTag =
   | 'promoted'
   | 'graft'

@@ -582,6 +582,10 @@ export class MorphAnalyzer {
       //   continue
       // }
 
+      if (token.endsWith('.') && interp.isAbbreviation()) {
+        interp.setIsUninflectable()
+      }
+
       ret.push(interp)
     }
 

@@ -129,8 +129,9 @@ function main() {
         }
 
         // adj as noun lemmas
+        let lemma2 = interpEl.attribute('lemma2')
         if (interp.isAdjectiveAsNoun()) {
-          let adjLemma = interpEl.attribute('lemma2') || interp.lemma
+          let adjLemma = lemma2 || interp.lemma
           interpEl.setAttribute('lemma2', adjLemma)
           let lexeme = dict.lookupLexemesByLemma(adjLemma)
             .find(([{ flags }]) => MorphInterp.fromVesumStr(flags).isAdjective())
@@ -152,6 +153,11 @@ function main() {
           } else if (!interp.isOrdinalNumeral() && !KNOWN_NONDIC_LEMMAS.has(interp.lemma)) {
             console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
           }
+        }
+
+        if (lemma2 && !interp.isAdjectiveAsNoun()) {
+          interp.lemma = lemma2
+          interpEl.removeAttribute('lemma2')
         }
 
         if (interp.isVerb() && interp.lemma === 'бути') {
@@ -227,7 +233,7 @@ function main() {
           }
         }
 
-        for (let node of nodes) {
+        for (let [node, nextNode] of mu(nodes).window(2)) {
           let token = node.node
           let parent = node.parent && node.parent.node
           let interp = token.interp
@@ -395,7 +401,7 @@ function main() {
           //   }
           // }
 
-          testMorpho(node, analyzer)
+          // testMorpho(node, nextNode, analyzer)
         }
 
 
@@ -477,7 +483,7 @@ function renameStructures(root: AbstractElement) {
 }
 
 //------------------------------------------------------------------------------
-function testMorpho(node: GraphNode<Token>, analyzer: MorphAnalyzer) {
+function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer: MorphAnalyzer) {
   let token = node.node
   let interp = node.node.interp
   token.form = token.correctedForm()
@@ -532,50 +538,126 @@ function testMorpho(node: GraphNode<Token>, analyzer: MorphAnalyzer) {
   }
 
   // missing in dict
-  {
-    let interpsFromDict = analyzer.tag(token.form)
-    interpsFromDict.forEach(x => x.features.auto = x.features.oddness = undefined)
+  if (!interp.isStem()  // temp
+    && !interp.isPunctuation()  // temp
+    // && !interp.isBeforeadj()  // temp
+    && !interp.lemma.includes('-')  // temp
+  ) {
+    let interpsFromDict = analyzer.tag(token.form, nextNode && nextNode.node.form)
 
-    let toCompare = token.interp.clone()
-    // .removeNondictionaryFeatures()
-    toCompare.features.formality = undefined
-    toCompare.features.paradigmOmonym = undefined
-    toCompare.features.auto = undefined
-    toCompare.features.oddness = undefined
-
-    // if (interp.isAdjectiveAsNoun()) {  // todo
-    //   toCompare.lemma =
-    // }
-
-    if (!interpsFromDict.some(x => interp.isAdjectiveAsNoun()
-      ? x.featurewiseEquals(toCompare)
-      : x.equals(toCompare))
-      // temp
-      // && (interp.isParticle()
-      //   // ||interp.isVerb()
-      //   // || interp.isPreposition()
-      //   //   || interp.isParticle()
-      //   //   || interp.isAdverb()
-      //   //   || interp.isAdjective()
-      //   //   || interp.isNoun()
-      //   //   || interp.isConverb()
-      //   //   || interp.isCardinalNumeral()
-      // )
-      && interp.isCardinalNumeral()
-      && !interp.isStem()
-      && !interp.isTypo()  // temp
-      && !interp.isName()  // temp
-      && !interp.isAbbreviation()  // temp
-    ) {
+    let closestFixable = findClosestFixable(token.interp, interpsFromDict)
+    if (closestFixable) {
+      token.interp = closestFixable
+    } else if (canBeNameFromCommon(token.interp, interpsFromDict)) {
+      // console.error(`canBeNameFromCommon`)
+    } else {
       let interpsFromDictStr = interpsFromDict.map(x => `${x.toVesumStr()}@${x.lemma}`)
       let message = `>>> interp not in dict: ${
-        token2stringRaw(token.id, token.form, toCompare.lemma, toCompare.toVesumStr())}`
+        token2stringRaw(token.id, token.form, token.interp.lemma, token.interp.toVesumStr())}`
       if (interpsFromDictStr.length) {
-        message += ` dict:\n${interpsFromDictStr.slice(0, 10).join('\n' )}\n=========`
+        // message += ` dict:\n${interpsFromDictStr.slice(0, 10).join('\n' )}\n=========`
       }
       console.log(message)
     }
   }
+}
+
+//------------------------------------------------------------------------------
+const DROP_ORDER = [
+  f.ParadigmOmonym,
+  f.Auto,
+  f.Typo,
+  f.Formality,
+
+  f.Alternativity,
+  f.Badness,
+  f.Colloquial,
+  f.Foreign,
+  f.Formality,
+  f.N2adjness,
+  f.Oddness,
+  f.Rarity,
+  f.Slang,
+  f.VuAlternativity,
+
+  f.NounType,
+  f.Degree,
+  f.Pronoun,
+  f.Polarity,
+  f.VerbRevesivity,
+  f.Reflexivity,
+  f.PartType,
+  f.Inflectability,
+  f.Abbreviation,
+  f.PrepositionRequirement,
+
+  f.NumberTantum,
+  f.OrdinalNumeral,
+  f.RequiredAnimacy,
+]
+//------------------------------------------------------------------------------
+function findClosestFixable(inCorp: MorphInterp, inDict: MorphInterp[]) {
+  let inCorp2 = inCorp.clone().dropFeature(f.ParadigmOmonym)
+  let inDict2 = inDict.map(x => x.clone().dropFeature(f.ParadigmOmonym))
+
+  for (let [i, feature] of DROP_ORDER.entries()) {
+    inCorp2.setFeature(feature, undefined)
+    inDict2.forEach(x => x.setFeature(feature, undefined))
+    let index = inDict2.findIndex(x => inCorp.isAdjectiveAsNoun()
+      ? x.featurewiseEquals(inCorp2)
+      : x.equals(inCorp2))
+    if (index >= 0) {
+      if (i > 3) {
+        return inDict[index]
+      }
+      return inCorp
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+function cloneAsBareAdjective(fromInterp: MorphInterp) {
+  return fromInterp.cloneWithFeatures([f.Gender, f.MorphNumber, f.Case])
+    .setLemma(fromInterp.lemma.toLowerCase())
+}
+
+//------------------------------------------------------------------------------
+function cloneAsBareNoun(fromInterp: MorphInterp) {
+  return fromInterp.cloneWithFeatures([f.Animacy, f.Gender, f.MorphNumber, f.Case])
+  // .setLemma(fromInterp.lemma.toLowerCase())
+}
+
+//------------------------------------------------------------------------------
+function createInterpWithFeatures(fromInterp: MorphInterp, features: any[]) {
+  let ret = new MorphInterp()
+  for (let feature of features) {
+    ret.setFeature(feature, fromInterp.getFeature(feature))
+  }
+
+  return ret
+}
+
+//------------------------------------------------------------------------------
+function canBeNameFromCommon(inCorp: MorphInterp, inDict: MorphInterp[]) {
+  let inCorp2 = cloneAsBareAdjective(inCorp)
+  let inDict2 = inDict.map(x => cloneAsBareAdjective(x))
+  if (inDict2.some(x => x.equals(inCorp2))) {
+    return true
+  }
+
+  inCorp2 = cloneAsBareNoun(inCorp)
+  inDict2 = inDict.map(x => cloneAsBareNoun(x))
+  if (inDict2.some(x => x.equals(inCorp2))) {
+    return true
+  }
+
+  inCorp2.setIsAnimate(false)
+  inDict2.forEach(x => x.setIsAnimate(false))
+  if (inDict2.some(x => x.equals(inCorp2))) {
+    return true
+  }
+
+  return false
 }
 
 //------------------------------------------------------------------------------

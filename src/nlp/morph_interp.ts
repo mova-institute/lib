@@ -12,6 +12,7 @@ import {
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
   PrepositionRequirement, Typo, PartType, VerbRevesivity, PunctType, PunctSide,
+  Feature, NONGRAMMATICAL_FEATURES
 } from './morph_features'
 
 
@@ -203,8 +204,8 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.punct, vesumStr: 'punct', mte: 'U' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
-  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.maybe, vesumStr: '&_numr' },
+  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
   { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
 
   { featStr: 'gender', feat: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
@@ -304,7 +305,7 @@ export const MAP_MTE: Map<string, any> = indexTableByColumns(FEATURE_TABLE, ['fe
 // todo: follow https://github.com/Microsoft/TypeScript/issues/7799
 
 export const FEAT_MAP_STRING = new Map<Object, string>()
-export const STRING_MAP_FEAT = new Map<Object, string>()
+export const STRING_MAP_FEAT = new Map<string, Object>()
 for (let row of FEATURE_TABLE) {
   if (row.feat && row.featStr) {
     FEAT_MAP_STRING.set(row.feat, row.featStr)
@@ -493,8 +494,8 @@ export class Features {
 // represents a single unambiguous morphological interpretation
 export class MorphInterp {
   private static otherFlagsAllowed = new Set([
-    'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'nv', 'alt', 'v-u', 'dimin', 'mock', 'instant',
+    // 'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
+    'mock', 'instant',
   ])
 
 
@@ -666,14 +667,24 @@ export class MorphInterp {
 
   clone() {
     let ret = new MorphInterp()
-    let keys = Object.keys(this.features)
-    for (let i = 0; i < keys.length; ++i) {
-      ret.features[keys[i]] = this.features[keys[i]]
-    }
+    ret.features = {...this.features}
     this.otherFlags.forEach(x => ret.otherFlags.add(x))
     ret.lemma = this.lemma
 
     return ret
+  }
+
+  cloneWithFeatures(features: any[]) {
+    let ret = new MorphInterp()
+    for (let feature of features) {
+      ret.setFeature(feature, this.getFeature(feature))
+    }
+
+    return ret
+  }
+
+  cloneWithFeaturesAndLemma(features: Feature[]) {
+    return this.cloneWithFeatures(features).setLemma(this.lemma)
   }
 
   toVesum() {
@@ -865,6 +876,22 @@ export class MorphInterp {
     return this.toVesumStr() === other.toVesumStr() && this.lemma === other.lemma
   }
 
+  nongrammaticallyEquals(other: MorphInterp) {
+    return this.lemma === other.lemma &&
+      this.clone()
+        .dropNongrammaticalFeatures()
+        .featurewiseEquals(other.clone().dropNongrammaticalFeatures())
+  }
+
+  dropNongrammaticalFeatures() {
+    for (let featStr of Object.keys(this.features)) {
+      if (isUngrammaticalFeature(featStr)) {
+        this.features[featStr] = undefined
+      }
+    }
+    return this
+  }
+
   // grammaticallyEquals(other: MorphInterp) {
   //   // todo
   // }
@@ -878,6 +905,19 @@ export class MorphInterp {
       this.setIsSingular()
     }
     return this
+  }
+
+  getFeature(featEnum) {
+    return this.features[FEAT_MAP_STRING.get(featEnum)]
+  }
+
+  setFeature(featEnum, value) {
+    this.features[FEAT_MAP_STRING.get(featEnum)] = value
+    return this
+  }
+
+  dropFeature(featEnum) {
+    return this.setFeature(featEnum, undefined)
   }
 
   getFeatures() {
@@ -1091,6 +1131,11 @@ export class MorphInterp {
       }
     }
   }
+}
+
+//------------------------------------------------------------------------------
+function isUngrammaticalFeature(prop: string) {
+  return NONGRAMMATICAL_FEATURES.includes(STRING_MAP_FEAT.get(prop) as any)
 }
 
 //------------------------------------------------------------------------------

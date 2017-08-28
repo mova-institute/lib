@@ -14,7 +14,6 @@ export enum Pos {
   punct,  // todo
   x,
 }
-
 export enum Pronoun {
   yes,
 }
@@ -203,6 +202,58 @@ export enum PunctSide {
   close,
 }
 
+export type Feature = Abbreviation
+  | AdjectiveAsNoun
+  | Alternativity
+  | Animacy
+  | Aspect
+  | Auto
+  | Badness
+  | Beforeadj
+  | Case
+  | Colloquial
+  | ConjunctionType
+  | Degree
+  | Dimin
+  | Foreign
+  | Formality
+  | Gender
+  | GrammaticalAnimacy
+  | Inflectability
+  | MorphNumber
+  | N2adjness
+  | NameType
+  | NounType
+  | NumberTantum
+  | NumeralForm
+  | Oddness
+  | OrdinalNumeral
+  | ParadigmOmonym
+  | PartType
+  | Person
+  | Polarity
+  | Pos
+  | Possessiveness
+  | PrepositionRequirement
+  | PronominalType
+  | Pronoun
+  | PunctSide
+  | PunctType
+  | Rarity
+  | Reflexivity
+  | RequiredAnimacy
+  | RequiredCase
+  | SemanticOmonym
+  | Slang
+  | Tense
+  | Typo
+  | Variant
+  | VerbAuxilarity
+  | VerbRevesivity
+  | VerbType
+  | Voice
+  | VuAlternativity
+
 export const booleanFeatures = [
   Possessiveness,
   Reflexivity,
@@ -210,4 +261,19 @@ export const booleanFeatures = [
   Foreign,
   Typo,
   Inflectability,
+]
+
+export const NONGRAMMATICAL_FEATURES = [
+  Alternativity,
+  Auto,
+  Badness,
+  Colloquial,
+  Foreign,
+  Formality,
+  N2adjness,
+  Oddness,
+  Rarity,
+  Slang,
+  Typo,
+  VuAlternativity,
 ]

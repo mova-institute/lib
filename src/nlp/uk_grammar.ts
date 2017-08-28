@@ -14,7 +14,7 @@ const INFLECTABLE_POSES = [
   Pos.adjective,
   Pos.cardinalNumeral,
   Pos.noun,
-  Pos.verb,
+  // Pos.verb,
 ]
 //[Pos.adverb, Pos.conjunction, Pos.interjection,
 // Pos.particle, Pos.preposition, Pos.punct, Pos.punct, Pos.sym, Pos.x]
