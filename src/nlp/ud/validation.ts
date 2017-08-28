@@ -169,20 +169,21 @@ const DISCOURSE_DESTANATIONS = [
   'ADV',  // temp
 ]
 
-const TOBE_LEMMAS = [
+const COPULA_LEMMAS = [
   'бути',
+  'бувати',
   'бувши',
   'будучи',
 ]
 
-const CONDITIONSL_BY_LEMMAS = [
+const CONDITIONAL_AUX_LEMMAS = [
   'б',
   'би',
 ]
 
-const TOBE_AND_BY_LEMMAS = [
-  ...TOBE_LEMMAS,
-  ...CONDITIONSL_BY_LEMMAS,
+const AUX_LEMMAS = [
+  ...COPULA_LEMMAS,
+  ...CONDITIONAL_AUX_LEMMAS,
 ]
 
 const ADVMOD_NONADVERBIAL_LEMMAS = [
@@ -335,7 +336,11 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     undefined,
     `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`,
     (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
-  [`cop`, `з недієслівного`, (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i), `в бути`, t => TOBE_LEMMAS.includes(t.interp.lemma)],
+  [`cop`,
+    `з недієслівного`,
+    (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i),
+    `в ${COPULA_LEMMAS.join(' ')}`,
+    t => COPULA_LEMMAS.includes(t.interp.lemma)],
   // [`obl:agent`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => canActAsNoun(t)],
   [`vocative`,
     undefined, //`з присудка`,
@@ -419,9 +424,11 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     `в іменник`,
     t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && isRelativeInRelcl(t)
   ],
-  [`aux`, `з дієслівного`, t => t.node.interp.isVerbial()
-    || t.node.interp.isAdverb() && t.children.some(x => SUBJECTS.some(subj => uEq(x.node.rel, subj))),
-    `в ${TOBE_AND_BY_LEMMAS.join('|')}`, t => TOBE_AND_BY_LEMMAS.includes(t.node.interp.lemma)],
+  [`aux`,
+    `з дієслівного`, t => t.node.interp.isVerbial()
+      || t.node.interp.isAdverb() && t.children.some(x => SUBJECTS.some(subj => uEq(x.node.rel, subj))),
+    `в ${AUX_LEMMAS.join('|')}`,
+    t => AUX_LEMMAS.includes(t.node.interp.lemma)],
   [`acl:`, `з іменника`, t => canActAsNoun(t.node) || t.node.interp.isDemonstrative(),
     `в присудок (з умовами)`, t => t.node.interp.isVerb() && t.node.interp.isInfinitive()
       // sic!: not canBePredicate(), special
@@ -598,7 +605,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && !['discourse', 'fixed'])
 
   xreportIf('не aux у б(би)',
-    t => CONDITIONSL_BY_LEMMAS.includes(t.form.toLowerCase())
+    t => CONDITIONAL_AUX_LEMMAS.includes(t.form.toLowerCase())
       && t.interp.isParticle()
       && !['fixed', 'aux', undefined].includes(t.rel))
 
@@ -1138,7 +1145,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
     t => t.node.rel
       && t.node.interp.isParticle()
       && !uEqSome(t.node.rel, ['discourse', 'advmod', 'fixed', 'flat:repeat', 'goeswith'])
-      && !(uEqSome(t.node.rel, ['aux']) && CONDITIONSL_BY_LEMMAS.includes(t.node.interp.lemma))
+      && !(uEqSome(t.node.rel, ['aux']) && CONDITIONAL_AUX_LEMMAS.includes(t.node.interp.lemma))
     // && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
 
