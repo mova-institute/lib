@@ -46,7 +46,7 @@ if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     boolean: [
       'count',
-      'forAnnotation',
+      'forMorphDisamb',
       'mte',
       'nl2p',
       'normalize',
