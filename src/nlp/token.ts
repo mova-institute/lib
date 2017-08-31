@@ -23,6 +23,7 @@ export type TokenTag =
   | 'error'
   | 'nomvoc'
   | 'gendisagr'
+  | 'numdisagr'
 
 export interface Dependency {
   relation: string
@@ -43,6 +44,7 @@ export class Token {
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
   tags = new Array<TokenTag>()
+  indexInSentence: number
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()

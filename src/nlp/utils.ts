@@ -1140,17 +1140,15 @@ export function* polishXml2verticalStream(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2plaintext(stream: Iterable<Token>) {
-  let spaceNeeded = false
+  let space = ' '
   for (let token of stream) {
     if (token.isGlue()) {
-      spaceNeeded = false
-    }
-    if (token.isWord()) {
-      if (spaceNeeded) {
-        yield ' '
-      }
-      yield token.form
-      spaceNeeded = token.glued ? false : true
+      space = ''
+    } else if (token.getStructureName() === 'paragraph') {  // todo
+      space = '\n'
+    } else if (token.isWord()) {
+      yield space + token.form
+      space = token.glued ? '' : ' '
     }
   }
 }
@@ -1212,15 +1210,11 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
 }
 
 //------------------------------------------------------------------------------
-function prepareForYield() {
-
-}
-
-//------------------------------------------------------------------------------
 function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
   let changed = new Set<string>()
-  for (let token of sentence) {
+  for (let [i, token] of sentence.entries()) {
+    token.indexInSentence = i
     for (let dep of token.deps) {
       if (!changed.has(token.id)) {
         dep.headIndex = id2i.get(token.deps[0].headId)

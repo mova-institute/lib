@@ -502,7 +502,7 @@ export class MorphAnalyzer {
     if (token.startsWith('О’')) {
       let toadd = this.lookup(token.substr(2))
         .filter(x => x.isLastname())
-      toadd.forEach(x => x.lemma = `О’${x.lemma}`)
+      toadd.forEach(x => x.setIsAuto().lemma = `О’${x.lemma}`)
       res.addAll(toadd)
     }
 
@@ -527,7 +527,7 @@ export class MorphAnalyzer {
       if (match) {
         let toadd = mu(this.lookup(match[2]))
           .filter(x => x.isAdjective() && !x.isAbbreviation())
-          .transform(x => x.lemma = `${match[1]}-${x.lemma}`)
+          .transform(x => x.setIsAuto().lemma = `${match[1]}-${x.lemma}`)
         res.addAll(toadd)
       }
     }
@@ -540,7 +540,7 @@ export class MorphAnalyzer {
         chnyi = lowercase.slice(0, -chnyi.length) + chnyi
         let toadd = mu(this.lookup(chnyi))
           .filter(x => x.isAdjective() && !x.isAbbreviation())
-          .transform(x => x.setIsOdd())
+          .transform(x => x.setIsOdd().setIsAuto())
         // todo: alter lemma?
         res.addAll(toadd)
       }

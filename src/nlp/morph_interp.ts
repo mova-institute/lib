@@ -876,6 +876,10 @@ export class MorphInterp {
     return this.toVesumStr() === other.toVesumStr() && this.lemma === other.lemma
   }
 
+  equalsByFeatures(other: MorphInterp, features: any[]) {
+    return features.every(f => this.getFeature(f) === other.getFeature(f))
+  }
+
   nongrammaticallyEquals(other: MorphInterp) {
     return this.lemma === other.lemma &&
       this.clone()
@@ -909,6 +913,10 @@ export class MorphInterp {
 
   getFeature(featEnum) {
     return this.features[FEAT_MAP_STRING.get(featEnum)]
+  }
+
+  hasFeature(featEnum) {
+    return this.getFeature(featEnum) !== undefined
   }
 
   setFeature(featEnum, value) {
@@ -989,6 +997,7 @@ export class MorphInterp {
   isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
   isEmphatic() { return this.features.pronominalType === PronominalType.emphatic }
   isFeminine() { return this.features.gender === Gender.feminine }
+  isNeuter() { return this.features.gender === Gender.neuter }
   isForeign() { return this.features.foreign === Foreign.yes }
   isXForeign() { return this.isForeign() && this.features.pos === Pos.x }
   isTypo() { return this.features.typo === Typo.yes }
@@ -1011,6 +1020,7 @@ export class MorphInterp {
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isReflexive() { return this.features.reflexivity === Reflexivity.yes }
   isReversive() { return this.features.verbRevesivity === VerbRevesivity.yes }
+  isPersonal() { return this.features.pronominalType === PronominalType.personal }
   isPresent() { return this.features.tense === Tense.present }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
   isSuperlative() { return this.features.degree === Degree.superlative }  // todo: tantum?

@@ -4,6 +4,7 @@ import * as fs from 'fs'
 import * as glob from 'glob'
 import * as minimist from 'minimist'
 import { parseXmlFileSync } from '../xml/utils.node'
+import { last } from '../lang'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
 import * as f from '../nlp/morph_features'
@@ -20,7 +21,7 @@ import { uEq, uEqSome } from '../nlp/ud/utils'
 import { toUd } from '../nlp/ud/tagset'
 import { PREDICATES } from '../nlp/ud/uk_grammar';
 import * as g from '../nlp/uk_grammar'
-import * as grammar from '../nlp/ud/uk_grammar';
+import * as g2 from '../nlp/ud/uk_grammar';
 
 
 const REPLACE_RE = /#>(\S+)/
@@ -47,7 +48,12 @@ function prepareIds(path: string) {
 
 //------------------------------------------------------------------------------
 function main() {
-  let args = minimist(process.argv.slice(2))
+  let args = minimist(process.argv.slice(2), {
+    boolean: [
+      'tranformIds',
+      'afterAnnotator',
+    ]
+  })
   let [globStr, sequencePath] = args._
   let files = glob.sync(globStr)
   let tokenCount = 0
@@ -62,7 +68,7 @@ function main() {
   }
 
   // prepare xml
-  if (args.afterAnnotator) {
+  if (1) {
     console.log(`removing legacy namespaces & autofixing xml…`)
     autofixXml(files)
   }
@@ -80,7 +86,7 @@ function main() {
       // renameStructures(root)
 
       // remove redundant attributes
-      if (args.afterAnnotator) {
+      if (1) {
         let tokenEls = [...root.evaluateElements('//w_')]
         for (let w of tokenEls) {
           // w.removeAttribute('n')
@@ -310,7 +316,7 @@ function main() {
             }
           }
 
-          if (grammar.isGoverning(token.rel)
+          if (g2.isGoverning(token.rel)
             && token.interp.features.case === node.parent.node.interp.features.case
           ) {
             if (node.parent.children.some(x => x.node.interp.isPreposition()
@@ -339,7 +345,7 @@ function main() {
             interp.setIsPronoun()
           }
 
-          if (!grammar.isGoverning(token.rel)
+          if (!g2.isGoverning(token.rel)
             && (uEq(token.rel, 'det')
               // || uEq(token.rel, 'amod')
             )
@@ -389,6 +395,41 @@ function main() {
 
           if (interp.isCardinalNumeral() && /\d$/.test(token.form)) {
             interp.setIsUninflectable()
+          }
+
+          if (interp.hasFeature(f.RequiredAnimacy) && !interp.isAccusative()) {
+            interp.dropFeature(f.RequiredAnimacy)
+          }
+
+          if (g2.isNegativeExistentialPseudosubject(node)) {
+            node.node.rel = 'obj'
+          }
+
+          // ↓↓↓↓ breaks the tree, keep last!
+
+          if (interp.isBeforeadj()
+            && !node.isRoot()
+            && !(uEq(token.rel, 'compound') && parent.interp.isBeforeadj())
+            && !(uEq(token.rel, 'compound')
+              && parent.interp.isAdjective()
+              && token.indexInSentence < parent.indexInSentence)
+          ) {
+            console.log(token)
+
+            let middlers = node.children
+              .map(x => x.node)
+              .filter(x => x.rel === 'compound')
+            if (middlers.length) {
+              let newHead = middlers.pop()
+              newHead.deps[0] = token.deps[0]
+              nodes.filter(x => !x.isRoot() && x.node.deps[0].headId === token.id)
+                .forEach(x => x.node.deps[0].headId = newHead.id)
+              let toChange = [token, ...middlers]
+              for (let [i, t] of toChange.entries()) {
+                t.deps = [{ relation: 'compound', headId: newHead.id }]
+                nodes[t.indexInSentence + 1].node.deps[0].headId = t.id
+              }
+            }
           }
 
           // if (interp.isUninflectable()) {
@@ -519,7 +560,7 @@ function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer
   if (interp.isNounish()) {
     // missing gender for noun
     if (!interp.hasGender()
-      && !grammar.GENDERLESS_PRONOUNS.includes(interp.lemma) && !(
+      && !g2.GENDERLESS_PRONOUNS.includes(interp.lemma) && !(
         interp.isNoSingular() || interp.isSingular() && interp.features.person === 1
       )
     ) {
@@ -529,7 +570,7 @@ function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer
 
   // missing animacy
   if (interp.isNounish() && !interp.hasAnimacy()
-    && !grammar.EMPTY_ANIMACY_NOUNS.includes(interp.lemma)
+    && !g2.EMPTY_ANIMACY_NOUNS.includes(interp.lemma)
     && !(interp.features.pronominalType === f.PronominalType.personal
       && interp.features.person === 3
     )
