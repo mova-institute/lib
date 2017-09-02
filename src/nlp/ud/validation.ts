@@ -375,8 +375,9 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     t => canActAsNounForObj(t)
       || t.isRoot() //&& todo: more than 1 root
       || t.node.interp.isAdjective() && t.node.interp.isRelative()  // todo: generalize
-      || t.node.interp.isCardinalNumeral()
-      && g.PREPS_HEADABLE_BY_NUMS.includes(t.node.interp.lemma)
+      || t.node.interp.isCardinalNumeral()  // todo
+    // && g.PREPS_HEADABLE_BY_NUMS.includes(
+    //   t.children.find(x => x.node.rel === 'case').node.interp.lemma)
     ,
     `в прийменник`,
     t => t.node.interp.isPreposition() || t.children.some(t2 => uEq(t2.node.rel, 'fixed'))],
@@ -1031,7 +1032,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && ![f.Case.nominative, f.Case.accusative].includes(t.node.interp.features.case)
   )
 
-  treedReportIf(`числівник керує одниною`,  // todo
+  xtreedReportIf(`числівник керує одниною`,  // todo
     t => !t.isRoot()
       && isGoverning(t.parent.node.rel)
       && !t.node.interp.isPlural()
@@ -1383,6 +1384,20 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && !g.CURRENCY_SYMBOLS.includes(t.parent.node.interp.lemma)
   )
 
+  xtreedReportIf(`підрядне наслідку — головне`,
+    t => uEqSome(t.node.rel, ['advcl'])
+      // todo: generalize
+      && t.children.some(x => x.node.interp.lemma === 'тому'
+        && x.node.interp.isDemonstrative())
+  )
+
+  treedReportIf(`порядковий праворуч`,
+    t => /^\d+/.test(t.node.form)
+      && uEqSome(t.node.rel, ['amod'])
+      && t.node.interp.isOrdinalNumeral()
+      && t.node.indexInSentence > t.parent.node.indexInSentence
+  )
+
   // treedReportIf(`неочікуване вживання xcomp:2`,
   //   t =>
   //   )
@@ -1445,6 +1460,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
   // зробити: не flat:title в №
   // зробити: нам вдалося Inf — csubj vs ccomp
   // зробити: не оповідатиму, що сталося — тут навпаки що що — іменник
+  // зробити: більш практичний, ніж політичний — advcl з практичний!
 
 
 

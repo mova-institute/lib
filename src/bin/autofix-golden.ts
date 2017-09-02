@@ -291,7 +291,7 @@ function main() {
           if (!node.isRoot()
             && interp.isPreposition()
             && node.children.some(x => !uEqSome(x.node.rel, ['fixed']))
-            && !uEq(token.rel, 'conj')
+            && !uEqSome(token.rel, ['conj', 'flat:title'])
           ) {
             token.rel = 'case'
           }
@@ -375,6 +375,11 @@ function main() {
 
           if (udInterp.pos !== 'DET' && uEq(token.rel, 'det') && interp.isAdjective()) {
             token.rel = 'amod'
+          }
+
+          // common typo
+          if (interp.isPreposition() && uEq(token.rel, 'expl')) {
+            token.rel = 'case'
           }
 
           if (!interp.isAccusative() && (
