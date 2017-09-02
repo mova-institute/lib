@@ -186,8 +186,8 @@ function main() {
 
   if (sentenseHoles.length) {
     let comparator = algo.chainComparators<any>(
-      // (a, b) => (a.problems[0].indexes.length - 1) / a.tokens.length
-      //   - (b.problems[0].indexes.length - 1) / b.tokens.length,
+      (a, b) => (a.problems[0].indexes.length - 1) / a.tokens.length
+        - (b.problems[0].indexes.length - 1) / b.tokens.length,
       (a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length,
       (a, b) => b.tokens.length - a.tokens.length,  // prefer longer sents
       algo.indexComparator(sentenseHoles),  // for stability
@@ -256,7 +256,7 @@ function getBratPath(token: Token) {
 function formatProblemsHtml(sentenceProblems: any[]) {
   let body = ''
   for (let [i, { sentenceId, problems, tokens, bratPath }] of sentenceProblems.entries()) {
-    let href = `https://lab.mova.institute/brat/index.xhtml#/ud/${bratPath}`
+    let href = `https://lab.mova.institute/brat/#/ud/${bratPath}`
     let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
 
     body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`
