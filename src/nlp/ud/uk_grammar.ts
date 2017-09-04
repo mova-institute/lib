@@ -1,7 +1,8 @@
 import { GraphNode } from '../../lib/graph'
 import { Token } from '../token'
-import * as features from '../morph_features'
-import { uEq } from './utils'
+import { MorphInterp } from '../morph_interp'
+import * as f from '../morph_features'
+import { uEq, uEqSome } from './utils'
 
 export type TokenNode = GraphNode<Token>
 export type Node2IndexMap = Map<TokenNode, number>
@@ -35,6 +36,7 @@ export const WORDS_WITH_INS_VALENCY = [
   'називати',
   'дихнути',
   'нехтувати',
+  'пахнути',
 ]
 
 export const PREPS_HEADABLE_BY_NUMS = [
@@ -140,6 +142,15 @@ export function isQuantitativeAdverbModified(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function thisOrGovernedCase(t: TokenNode) {
+  let governer = t.children.find(x => isGoverning(x.node.rel))
+  if (governer) {
+    return governer.node.interp.features.case
+  }
+  return t.node.interp.features.case
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function isNmodConj(t: TokenNode) {
   return uEq(t.node.rel, 'nummod')
     && t.node.interp.isInstrumental()
@@ -198,6 +209,26 @@ export function isTerasaZaTerasoyu(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isBeforeadj(t: TokenNode) {
+export function nounAdjectiveAgreed(noun: TokenNode, adjective: TokenNode) {
+  return noun.node.interp.getFeature(f.Case) === adjective.node.interp.getFeature(f.Case)
+    && (adjective.node.interp.isPlural() && noun.node.interp.isPlural()
+      || noun.node.interp.getFeature(f.Gender) === adjective.node.interp.getFeature(f.Gender)
+      || adjective.node.interp.isPlural() && noun.node.interp.isSingular() && hasChild(noun, 'conj')
+      || adjective.node.interp.isSingular() && GENDERLESS_PRONOUNS.includes(noun.node.interp.lemma)
+    )
+}
 
+////////////////////////////////////////////////////////////////////////////////
+export function nounNounAgreed(interp1: MorphInterp, interp2: MorphInterp) {
+  return interp1.equalsByFeatures(interp2, [f.MorphNumber, f.Gender, f.Case])
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function hasCopula(t: TokenNode) {
+  return t.children.some(x => uEqSome(x.node.rel, ['cop']))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function hasChild(t: TokenNode, rel: string) {
+  return t.children.some(x => uEqSome(x.node.rel, [rel]))
 }

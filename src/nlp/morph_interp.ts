@@ -518,49 +518,11 @@ export class MorphInterp {
   }
 
   static fromVesum(flags: string[], lemma?: string, lemmaFlags?: string[], strict = false) {
-    let ret = new MorphInterp()
-
-    for (let flag of flags) {
-      let row = tryMapVesumFlag(flag)
-      if (row) {
-        ret.features[row.featStr] = row.vesum
-      }
-      else {
-        if (!MorphInterp.otherFlagsAllowed.has(flag) && strict) {
-          throw new Error(`Unknown flag "${flag}" in tag "${flags.join(':')}"`)
-        }
-        ret.otherFlags.add(flag)
-      }
-    }
-
-    if (lemmaFlags) {
-      let lemmaTag = MorphInterp.fromVesum(lemmaFlags)
-
-      // gender for plural
-      if (ret.features.pos === Pos.noun) {
-        if (ret.features.number === MorphNumber.plural && !isOddball(lemmaTag.features.gender)) {
-          ret.features.gender = lemmaTag.features.gender
-        }
-      }
-    }
-
-    if (lemma && ret.isConverb()) {
-      // legacy where advp was a separate pos
-      ret.features.pos = Pos.verb
-    }
-
-    if (ret.isPronoun() && ret.features.polarity === Polarity.negative) {
-      ret.features.pronominalType = PronominalType.negative
-      ret.features.polarity = undefined
-    }
-
-    ret.lemma = lemma
-
-    return ret
+    return new MorphInterp().setFromVesum(flags, lemma, lemmaFlags, strict)
   }
 
   static fromVesumStr(flags: string, lemma?: string, lemmaFlags?: string, strict = false) {
-    return MorphInterp.fromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'), strict)
+    return new MorphInterp().setFromVesumStr(flags, lemma, lemmaFlags, strict)
   }
 
   static fromMte(tag: string, form?: string) {
@@ -665,9 +627,64 @@ export class MorphInterp {
     return ret
   }
 
+  resetFromVesumStr(flags: string, lemma?: string, lemmaFlags?: string, strict = false) {
+    return this.reset().setFromVesumStr(flags, lemma, lemmaFlags, strict)
+  }
+
+  setFromVesumStr(flags: string, lemma?: string, lemmaFlags?: string, strict = false) {
+    return this.setFromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'), strict)
+  }
+
+  setFromVesum(flags: string[], lemma?: string, lemmaFlags?: string[], strict = false) {
+    for (let flag of flags) {
+      let row = tryMapVesumFlag(flag)
+      if (row) {
+        this.features[row.featStr] = row.vesum
+      }
+      else {
+        if (!MorphInterp.otherFlagsAllowed.has(flag) && strict) {
+          throw new Error(`Unknown flag "${flag}" in tag "${flags.join(':')}"`)
+        }
+        this.otherFlags.add(flag)
+      }
+    }
+
+    if (lemmaFlags) {
+      let lemmaTag = MorphInterp.fromVesum(lemmaFlags)
+
+      // gender for plural
+      if (this.features.pos === Pos.noun) {
+        if (this.features.number === MorphNumber.plural && !isOddball(lemmaTag.features.gender)) {
+          this.features.gender = lemmaTag.features.gender
+        }
+      }
+    }
+
+    if (lemma && this.isConverb()) {
+      // legacy where advp was a separate pos
+      this.features.pos = Pos.verb
+    }
+
+    if (this.isPronoun() && this.features.polarity === Polarity.negative) {
+      this.features.pronominalType = PronominalType.negative
+      this.features.polarity = undefined
+    }
+
+    this.lemma = lemma
+
+    return this
+  }
+
+  reset() {
+    this.features = new Features()
+    this.lemma = undefined
+
+    return this
+  }
+
   clone() {
     let ret = new MorphInterp()
-    ret.features = {...this.features}
+    ret.features = { ...this.features }
     this.otherFlags.forEach(x => ret.otherFlags.add(x))
     ret.lemma = this.lemma
 
@@ -1059,7 +1076,8 @@ export class MorphInterp {
   isRare() { return this.features.rarity === Rarity.rare }
 
   isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }
-  isVerbial() { return this.isVerb() || this.isConverb() || this.isParticiple() }
+  isVerbial() { return this.isVerb() || this.isConverb() }
+  isVerbial2() { return this.isVerb() || this.isConverb() || this.isParticiple() }
 
   setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
   setIsAccusative() { this.features.case = Case.accusative; return this }

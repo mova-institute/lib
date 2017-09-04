@@ -131,11 +131,19 @@ export function* tokenStream2brat(sentences: Token[][]) {
       if (token.isStructure()) {
         continue
       }
+
+      if (token.id === undefined) {
+        console.error(token)
+        throw new Error(`Token has no id`)
+      }
+
       let id = t++
       let tId = `T${id}`
       let rightOffset = offset + token.form.length
 
       let { pos, features } = toUd(token.interp)
+
+      delete features['Animacy[gram]']
       if (highlightHoles && !token.rel) {
         features['AnnotationHole'] = 'Yes'
       }
@@ -151,10 +159,8 @@ export function* tokenStream2brat(sentences: Token[][]) {
         yield toyield
       }
 
-      if (token.id !== undefined) {
-        n2id[token.id] = id
-        yield `A${a++}\tN ${tId} ${token.id}`
-      }
+      n2id[token.id] = id
+      yield `A${a++}\tN ${tId} ${token.id}`
       for (let tag of ['Promoted', 'Graft']) {
         if (token.tags.includes(tag.toLowerCase() as TokenTag)) {
           yield `A${a++}\t${tag} ${tId}`

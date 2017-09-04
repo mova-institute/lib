@@ -14,6 +14,7 @@ import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2toke
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime } from '../date'
 import { mu } from '../mu'
+import { startsWithCapital, capitalizeFirst } from '../string_utils'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { GraphNode } from '../lib/graph'
@@ -136,7 +137,7 @@ function main() {
 
         // adj as noun lemmas
         let lemma2 = interpEl.attribute('lemma2')
-        if (interp.isAdjectiveAsNoun()) {
+        if (interp.isAdjectiveAsNoun() && !lemma2) {
           let adjLemma = lemma2 || interp.lemma
           interpEl.setAttribute('lemma2', adjLemma)
           let lexeme = dict.lookupLexemesByLemma(adjLemma)
@@ -220,30 +221,33 @@ function main() {
           })
         }
 
-        for (let { node } of nodes) {
-          if (node.comment) {
-            let match = node.comment.match(REPLACE_RE)
-            if (match) {
-              let tag = match[1].replace('&amp;', '&')  // sometimes it's copyped from xml
-              node.interp = MorphInterp.fromVesumStr(tag, node.interp.lemma)
-            }
-            node.comment = node.comment.replace(REPLACE_RE, '').trim()
-          }
-
-          if (node.rel && node.interp.isPunctuation()) {
-            node.rel = 'punct'
-          }
-
-          if (node.interp.isName()) {
-            node.interp.setIsAnimate().setIsProper()
-          }
-        }
-
         for (let [node, nextNode] of mu(nodes).window(2)) {
           let token = node.node
           let parent = node.parent && node.parent.node
           let interp = token.interp
           const udInterp = toUd(interp.clone())
+
+
+          if (token.comment) {
+            let match = token.comment.match(REPLACE_RE)
+            if (match) {
+              let tag = match[1].replace('&amp;', '&')  // sometimes it's copyped from xml
+              interp.resetFromVesumStr(tag, interp.lemma)
+            }
+            token.comment = token.comment.replace(REPLACE_RE, '').trim()
+          }
+
+          if (token.correctedForm() !== token.form) {
+            interp.setIsTypo(false)
+          }
+
+          if (token.rel && interp.isPunctuation()) {
+            token.rel = 'punct'
+          }
+
+          if (interp.isName()) {
+            interp.setIsAnimate().setIsProper()
+          }
 
           if (PREDICATES.isAuxWithNoCopAux(node)
             || sentenceHasOneRoot && node.isRoot() && node.node.interp.isAuxillary()) {
@@ -267,14 +271,14 @@ function main() {
             if (token.rel) {
               token.rel = 'discourse'
             }
-            token.interp = MorphInterp.fromVesumStr('part:conseq', token.interp.lemma)
+            interp.resetFromVesumStr('part:conseq', token.interp.lemma)
             saveToken(token, id2el.get(token.id))
           }
 
           if (['це', 'то'].includes(token.form.toLowerCase())
             && token.interp.isParticle()
             && token.rel === 'expl') {
-            token.interp = MorphInterp.fromVesumStr('noun:inanim:n:v_naz:&pron:dem', token.interp.lemma)
+            interp.resetFromVesumStr('noun:inanim:n:v_naz:&pron:dem', token.interp.lemma)
           }
 
           if (token.rel === 'punct' && token.interp.isCoordinating()) {
@@ -284,7 +288,6 @@ function main() {
           if (token.interp.isInterjection()) {
             let newInterp = analyzer.tag(token.form).find(x => x.isInstant())
             if (newInterp) {
-              // token.interp = newInterp
             }
           }
 
@@ -335,7 +338,7 @@ function main() {
             && !parent.interp.isVerb()
             // && false
           ) {
-            token.interp = MorphInterp.fromVesumStr('noun:inanim:n:v_naz:&pron:dem', interp.lemma)
+            interp.resetFromVesumStr('noun:inanim:n:v_naz:&pron:dem', interp.lemma)
             token.rel = 'expl'
           }
 
@@ -447,7 +450,7 @@ function main() {
           //   }
           // }
 
-          // testMorpho(node, nextNode, analyzer)
+          testMorpho(node, nextNode, analyzer)
         }
 
 
@@ -536,6 +539,11 @@ function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer
 
   if (interp.isForeign()) {
     return
+  }
+
+  if (interp.isProper() && !startsWithCapital(interp.lemma)) {
+    // console.error(`lowercase lemma for proper "${token.form}" #${token.id}`)
+    // interp.lemma = capitalizeFirst(interp.lemma)
   }
 
   // missing case

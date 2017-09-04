@@ -55,6 +55,8 @@ function main() {
     let inputDirname = path.dirname(xmlPath)
     let relDirname = path.relative(inputDirname, args.inputRoot)
 
+    console.log(`verticalizing ${basename}`)
+
     let root = parseXmlFileSync(xmlPath)
     let docRoots = [...root.evaluateElements('//doc[not(ancestor::doc)]')]
     if (!docRoots.length) {

@@ -13,7 +13,7 @@ export function writeCompiledDict(path: string, compiledDict) {   // todo: type
    for (let bytes of compiledDict.words) {
    wordsStream.write(bytes.join(' ') + '\n')
    }
-   compiledDict.words = null;*/
+   compiledDict.words = undefined;*/
 
   let f = openSync(path + '/paradigms.bin', 'w')
   for (let paradigm of compiledDict.paradigms) {

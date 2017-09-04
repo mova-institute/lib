@@ -38,6 +38,7 @@ interface Args {
   reportHoles: boolean
   reportErrors: 'all' | 'complete' | 'none'
   validOnly: boolean
+  morphonlyThreshold: string
   xpos: any
 }
 
@@ -60,8 +61,8 @@ const REL_RENAMINGS = {
 }
 
 //------------------------------------------------------------------------------
-function main() {
-  let args: Args = minimist(process.argv.slice(2), {
+function getArgs() {
+  return minimist(process.argv.slice(2), {
     boolean: [
       'noStandartizing',
       'includeIncomplete',
@@ -82,8 +83,14 @@ function main() {
       reportErrors: 'all',
       reportHoles: true,
       datasetSchema: 'mi',
+      morphonlyThreshold: '0',
     }
-  }) as any
+  }) as Args
+}
+
+//------------------------------------------------------------------------------
+function main() {
+  let args = getArgs()
 
   let [globStr, outDir] = args._
   let xmlPaths = glob.sync(globStr)
@@ -95,6 +102,7 @@ function main() {
 
   let openedFiles = {} as any
   let datasetRegistry = {} as Dict<Dataset>
+  let datasetRegistryMorpho = {} as Dict<Dataset>
   let sentenseErrors = []
   let sentenseHoles = []
   for (let xmlPath of xmlPaths) {
@@ -107,15 +115,15 @@ function main() {
       .transform(x => x.interp && x.interp.denormalize())
     let sentenceStream = tokenStream2sentences(tokenStream)
     for (let { sentenceId, set, tokens, nodes, newParagraph, newDocument } of sentenceStream) {
-      let hasSyntax = tokens.some(x => x.hasDeps())
       set = args.oneSet || set || 'unassigned'
-      if (hasSyntax) {
-        datasetRegistry[set] = datasetRegistry[set] || new Dataset()
+      datasetRegistry[set] = datasetRegistry[set] || new Dataset()
 
-        let numTokens = tokens.length
-        let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
-        let isComplete = roots.length === 1
+      let numTokens = tokens.length
+      let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
+      let isComplete = roots.length === 1
+      let percentComplete = 1 - ((roots.length - 1) / (numTokens - 1))
 
+      if (percentComplete) {
         if (!roots.length) {
           datasetRegistry[set].counts.wordsKept += numTokens
           sentenseErrors.push({
@@ -171,14 +179,32 @@ function main() {
         }
       }
 
-      standartizeMorpho(tokens)
-      let filename = path.join(outDir, `uk-mi-${set}.morphonly.conllu`)
-      let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-      let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { morphOnly: true })
-      fs.writeSync(file, conlluedSentence + '\n\n')
+      datasetRegistryMorpho[set] = datasetRegistryMorpho[set] || new Dataset()
+
+      let morphonlyThreshold = Number.parseFloat(args.morphonlyThreshold)
+      if (percentComplete >= morphonlyThreshold) {
+        standartizeMorpho(tokens)
+        let filename = path.join(outDir, `uk-mi-${set}.morphonly.conllu`)
+        let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
+        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { morphOnly: true })
+        fs.writeSync(file, conlluedSentence + '\n\n')
+
+        ++datasetRegistryMorpho[set].counts.sentsExported
+        datasetRegistryMorpho[set].counts.wordsExported += numTokens
+      } else {
+        datasetRegistryMorpho[set].counts.wordsKept += numTokens
+      }
     }
   }
 
+  writeErrors(sentenseErrors, sentenseHoles, outDir)
+  printStats(datasetRegistry, 'synt')
+  printStats(datasetRegistryMorpho, 'morpho')
+  console.log()
+}
+
+//------------------------------------------------------------------------------
+function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
   if (sentenseErrors.length) {
     sentenseErrors = transposeProblems(sentenseErrors)
     fs.writeFileSync(path.join(outDir, 'errors.html'), formatProblemsHtml(sentenseErrors))
@@ -195,8 +221,6 @@ function main() {
     sentenseHoles.sort(comparator)
     fs.writeFileSync(path.join(outDir, 'holes.html'), formatProblemsHtml(sentenseHoles))
   }
-
-  printStats(datasetRegistry)
 }
 
 //------------------------------------------------------------------------------
@@ -215,7 +239,7 @@ function transposeProblems(problems: any[]) {
 }
 
 //------------------------------------------------------------------------------
-function printStats(datasetRegistry: Dict<Dataset>) {
+function printStats(datasetRegistry: Dict<Dataset>, header: string) {
   let stats = Object.entries(datasetRegistry).map(([set, { counts: { wordsKept, wordsExported, sentsExported } }]) => ({
     set,
     't kept': wordsKept,
@@ -229,7 +253,7 @@ function printStats(datasetRegistry: Dict<Dataset>) {
     's exported': stats.map(x => x['s exported']).reduce((a, b) => a + b, 0),
   })
 
-  console.log(`\n`)
+  console.log(`\n${header}`)
   console.log(columnify(stats, {
     config: {
       kept: {
@@ -240,7 +264,7 @@ function printStats(datasetRegistry: Dict<Dataset>) {
       },
     },
   }))
-  console.log(`\n`)
+  // console.log(`\n`)
 }
 
 //------------------------------------------------------------------------------

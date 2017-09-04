@@ -93,6 +93,11 @@ export function startsWithCapital(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function capitalizeFirst(str: string) {
+  return str[0].toUpperCase() + str.substr(1)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function numDigits(integer: number) {
   if (integer === 0) {
     return 1

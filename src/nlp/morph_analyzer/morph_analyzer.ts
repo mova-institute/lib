@@ -200,7 +200,7 @@ const PREFIX_SPECS = [
   {
     prefixes: ['обі', 'від', 'об', 'по', 'попо', 'роз', 'за', 'з', 'із', 'у', 'уві', 'пере', 'ви', 'на', 'пови', 'про', 'підо'],
     pretest: (x: string) => x.length > 4,
-    test: (x: MorphInterp) => x.isVerbial() && x.isImperfect(),
+    test: (x: MorphInterp) => x.isVerbial2() && x.isImperfect(),
     postprocess: postrpocessPerfPrefixedVerb,
   },
   {
@@ -439,9 +439,9 @@ export class MorphAnalyzer {
 
     // list items, letter names
     if (token !== 'я' && INITIALS_RE.test(token.toUpperCase())) {
-      res.add(MorphInterp.fromVesumStr('noun:inanim:prop', `${token}`))
-    } else if (/^[A-Z]$/.test(token)) {
-      res.add(MorphInterp.fromVesumStr('noun:inanim:prop:foreign', `${token}`))
+      res.add(MorphInterp.fromVesumStr('noun:inanim:m:v_naz:prop', `${token}`))
+    // } else if (/^[A-Z]$/.test(token)) {
+    //   res.add(MorphInterp.fromVesumStr('noun:inanim:prop:foreign', `${token}`))
     }
 
     // one-letter abbrs
@@ -492,7 +492,7 @@ export class MorphAnalyzer {
       let ending = lowercase.slice(-2)
       if (ending === 'ся' || ending === 'сь') {
         let toadd = this.lookup(lowercase.slice(0, -2))
-          .filter(x => x.isVerbial())
+          .filter(x => x.isVerbial2())
           .map(x => x.setIsReversive().setLemma(x.lemma + 'ся'))
         res.addAll(toadd)
       }

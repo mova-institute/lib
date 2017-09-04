@@ -148,7 +148,7 @@ export class NumeratedSet<T> {  // todo move somewhere
 ////////////////////////////////////////////////////////////////////////////////
 export class CachedFunctionResult<T> {
   private value: T
-  private argsHash: string = null
+  private argsHash: string = undefined
 
   constructor(private calculator: (...args) => T) {
 
@@ -165,11 +165,11 @@ export class CachedFunctionResult<T> {
   }
 
   invalidate() {
-    this.argsHash = null
+    this.argsHash = undefined
   }
 
   private isInvalid() {
-    return this.argsHash === null
+    return this.argsHash === undefined
   }
 }
 
