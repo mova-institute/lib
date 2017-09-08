@@ -359,17 +359,12 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
       || (t.interp.isNounish() || t.interp.isAdjective())
       && (t.interp.isNominative() || t.interp.isInstrumental())],
   [`advcl:`, ``, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
-
-  [`cc`,
-    ``,
-    (t, s, i) => t,
-    `в сурядний`,
-    (t, s, i) => t.interp.isCoordinating() || s.every(tt => tt.headIndex !== i || uEq(tt.rel, 'fixed'))],  // окремо
-
   [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
 
 const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, TreedSentencePredicate][] = [
+  // cc не в сурядний is a separate rule
+
   [`case`,
     `з іменника`,
     t => canActAsNounForObj(t)
@@ -509,6 +504,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
           && !sentence[t.headIndex].interp0().isXForeign()
           && !predicateFrom(sentence[t.headIndex], sentence, t.headIndex))
     }
+
     if (messageTo && predicateTo) {
       reportIf(`${relName} не ${messageTo}`,
         (t, i) => relMatcher(t.rel)
@@ -588,6 +584,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
 
   reportIf('невідома реляція',
     t => t.rel && !ALLOWED_RELATIONS.includes(t.rel as UdMiRelation))
+
+  treedReportIf(`cc не в сурядний`,
+    t => uEq(t.node.rel, 'cc')
+      && !t.node.interp.isCoordinating()
+      && !g.hasChild(t, 'fixed')
+  )
 
   reportIf(`punct в двокрапку зліва`,
     (t, i) => i !== sentence.length - 1  // not last in sentence
@@ -775,6 +777,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && (t.node.interp.features.requiredCase as number) !== g.thisOrGovernedCase(t.parent)
       && !t.parent.node.interp.isXForeign()
       && !t.parent.node.isGraft
+      && !g.hasChild(t.parent, 'fixed')
   )
 
   treedReportIf(`неособове має підмет`,
@@ -1408,6 +1411,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
     // todo
   )
 
+  treedReportIf(`неочікувана реляція в :stem`,
+    t => t.node.rel
+      && t.node.interp.isStem()
+      && !uEqSome(t.node.rel, ['compound'])
+  )
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   xtreedReportIf(`означення при займеннику`,
@@ -1472,6 +1481,16 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[]) {
       && uEqSome(t.node.rel, ['amod'])
       && t.node.interp.isOrdinalNumeral()
       && t.node.indexInSentence > t.parent.node.indexInSentence
+  )
+
+  treedReportIf(`неочікуваний відмінок nmod`,
+    t => uEqSome(t.node.rel, ['nmod'])
+      && t.node.interp.isAccusative()
+      && !g.hasChild(t, 'case')
+      && !t.children.some(x => x.node.interp.lemma === '/'
+        && x.node.indexInSentence < t.node.indexInSentence)
+      && !(t.parent.node.interp.isParticiple()
+        && t.parent.node.interp.isActive())
   )
 
   treedReportIf(`неочікуваний відмінок прикметника-присудка`,
