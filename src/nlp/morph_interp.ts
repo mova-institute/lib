@@ -991,6 +991,7 @@ export class MorphInterp {
   isInterjection() { return this.features.pos === Pos.interjection }
   isSymbol() { return this.features.pos === Pos.sym }
   isX() { return this.features.pos === Pos.x }
+  isError() { return this.features.pos === Pos.error }
 
   isNominative() { return this.features.case === Case.nominative }
   isGenitive() { return this.features.case === Case.genitive }

@@ -3,6 +3,7 @@
 import * as fs from 'fs'
 import * as glob from 'glob'
 import * as minimist from 'minimist'
+import * as _ from 'lodash'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { last } from '../lang'
 import { AbstractElement } from 'xmlapi'
@@ -20,9 +21,10 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { GraphNode } from '../lib/graph'
 import { uEq, uEqSome } from '../nlp/ud/utils'
 import { toUd } from '../nlp/ud/tagset'
-import { PREDICATES } from '../nlp/ud/uk_grammar';
+import { PREDICATES } from '../nlp/ud/uk_grammar'
 import * as g from '../nlp/uk_grammar'
-import * as g2 from '../nlp/ud/uk_grammar';
+import * as g2 from '../nlp/ud/uk_grammar'
+
 
 
 const REPLACE_RE = /#>(\S+)/
@@ -84,16 +86,29 @@ function main() {
     try {
       let root = parseXmlFileSync(file)
 
+      killEmptyElements(root)
       // renameStructures(root)
 
-      // remove redundant attributes
-      if (1) {
+      {
         let tokenEls = [...root.evaluateElements('//w_')]
-        for (let w of tokenEls) {
-          // w.removeAttribute('n')
-          w.removeAttribute('nn')
-          w.removeAttribute('disamb')
-          w.removeAttribute('author')
+        // remove redundant attributes
+        if (1) {
+          for (let w of tokenEls) {
+            // w.removeAttribute('n')
+            w.removeAttribute('nn')
+            w.removeAttribute('disamb')
+            w.removeAttribute('author')
+          }
+        }
+        if (0) {
+          idSequence = splitFractions(tokenEls, idSequence)
+        }
+      }
+
+      for (let sb of [...root.evaluateElements('//sb')]) {
+        let prev = sb.previousElementSibling()
+        if (prev && prev.localName() === 'g') {
+          prev.insertBefore(sb)
         }
       }
 
@@ -189,29 +204,36 @@ function main() {
       }
       tokenCount += [...root.evaluateElements('//w_')].length
 
-      // give each token an id
+      // assign id's
       if (idSequence !== undefined) {
-        const idedElements = ['doc', 'p', 'sb', 's', 'w_', 'pc']
-        let tokenEls = [...root.evaluateElements(idedElements.map(x => `//${x}`).join('|'))]
+        const xpath = ['doc', 'p', 'sb', 's', 'w_', 'pc']
+          .map(x => `//${x}[not(@id)]`)
+          .join('|')
+        let tokenEls = [...root.evaluateElements(xpath)]
         for (let token of tokenEls) {
-          if (!token.attribute('id')) {
-            token.setAttribute('id', id2str(idSequence++))
-          }
+          token.setAttribute('id', id2str(idSequence++))
         }
       }
 
-
-      let id2el = new Map(root.evaluateElements('//*[@id]').map(
-        x => [x.attribute('id'), x] as [string, AbstractElement]))
+      // check id uniqueness and build id-element map
+      let id2el = new Map<string, AbstractElement>()
+      let idedElements = root.evaluateElements('//*[@id]')
+      for (let el of idedElements) {
+        let id = el.attribute('id')
+        if (id2el.has(id)) {
+          throw new Error(`Duplicate id: ${id}`)
+        }
+        id2el.set(id, el)
+      }
 
       let documentTokens = mu(tei2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
-      for (let { sentenceId, set, nodes, newParagraph, newDocument } of sentenceStream) {
+      for (let { sentenceId, dataset, nodes, opensParagraph, opensDocument } of sentenceStream) {
         let roots = nodes.filter(x => x.isRoot())
         let sentenceHasOneRoot = roots.length === 1
 
         // console.log(ids.size)
-        if (ids) {
+        if (ids && TRANSFORMS[args.transform]) {
           // console.log(id2el)
           nodes.forEach(t => {
             if (ids.has(t.node.id)) {
@@ -221,12 +243,11 @@ function main() {
           })
         }
 
-        for (let [node, nextNode] of mu(nodes).window(2)) {
+        for (let [index, [node, nextNode]] of mu(nodes).window(2).entries()) {
           let token = node.node
           let parent = node.parent && node.parent.node
           let interp = token.interp
           const udInterp = toUd(interp.clone())
-
 
           if (token.comment) {
             let match = token.comment.match(REPLACE_RE)
@@ -237,12 +258,27 @@ function main() {
             token.comment = token.comment.replace(REPLACE_RE, '').trim()
           }
 
+          // remove duplicates
+          if (token.deps.length > 1) {
+            let n = token.deps.length
+            token.deps = _.uniqWith(token.deps, (a, b) =>
+              a.headId === b.headId && a.relation === b.relation)
+          }
+
+          if (interp.isX()) {
+            interp.lemma = token.correctedForm()
+          }
+
           if (token.correctedForm() !== token.form) {
             interp.setIsTypo(false)
           }
 
           if (token.rel && interp.isPunctuation()) {
             token.rel = 'punct'
+          }
+
+          if (uEqSome(token.rel, ['cc']) && interp.lemma === 'бути') {
+            token.rel = parent.interp.isVerbial() ? 'aux' : 'cop'
           }
 
           if (interp.isName()) {
@@ -422,7 +458,7 @@ function main() {
               && parent.interp.isAdjective()
               && token.indexInSentence < parent.indexInSentence)
           ) {
-            console.log(token)
+            // console.log(token)
 
             let middlers = node.children
               .map(x => x.node)
@@ -450,7 +486,15 @@ function main() {
           //   }
           // }
 
-          testMorpho(node, nextNode, analyzer)
+          // if (token.indexInSentence > 0
+          //   && !interp.isProper()
+          //   && startsWithCapital(token.form)
+          //   && !interp.isX()
+          // ) {
+          //   console.log(`велика літера без :prop, ${token2string(token)}`)
+          // }
+
+          // testMorpho(node, nextNode, analyzer)
         }
 
 
@@ -669,6 +713,15 @@ function findClosestFixable(inCorp: MorphInterp, inDict: MorphInterp[]) {
   }
 }
 
+//==============================================================================
+const ALLOWED_TO_BE_EMPTY = ['g', 'sb', 'gap', 'br']
+function killEmptyElements(root: AbstractElement) {
+  mu(root.evaluateElements(`//*[not(normalize-space())]`))
+    .filter(x => !ALLOWED_TO_BE_EMPTY.includes(x.localName()))
+    .toArray()
+    .forEach(x => x.remove())
+}
+
 //------------------------------------------------------------------------------
 function cloneAsBareAdjective(fromInterp: MorphInterp) {
   return fromInterp.cloneWithFeatures([f.Gender, f.MorphNumber, f.Case])
@@ -744,6 +797,51 @@ function token2stringRaw(id: string, form: string, lemma: string, tag: string) {
 //------------------------------------------------------------------------------
 function token2string(token: Token) {
   return token2stringRaw(token.id, token.form, token.interp.lemma, token.interp.toVesumStr())
+}
+
+//------------------------------------------------------------------------------
+function splitFractions(tokens: AbstractElement[], idSequence: number) {
+  for (let token of tokens) {
+    let interpEl = token.firstElementChild()
+    let form = interpEl.text()
+    let match = form.match(/^(\d+)([\.,])+(\d+)$/)
+    if (match) {
+      let [, intPart, punct, fracPart] = match
+      interpEl.text(intPart)
+      interpEl.setAttribute('lemma', intPart)
+
+      let punctElId = id2str(idSequence++)
+      let fracElId = id2str(idSequence++)
+
+
+      let fracEl = token.document().createElement('w_').setAttributes({
+        id: fracElId,
+        dep: `${token.attribute('id')}-compound`
+      }) as AbstractElement
+      let fracInterpEl = token.document().createElement('w').setAttributes({
+        lemma: fracPart,
+        ana: interpEl.attribute('ana'),
+      })
+      fracInterpEl.text(fracPart)
+      fracEl.appendChild(fracInterpEl)
+      token.insertAfter(fracEl)
+
+
+      let punctEl = token.document().createElement('w_').setAttributes({
+        id: punctElId,
+        dep: `${fracElId}-punct`
+      }) as AbstractElement
+      let punctInterpEl = token.document().createElement('w').setAttributes({
+        lemma: punct,
+        ana: 'punct',
+      })
+      punctInterpEl.text(punct)
+      punctEl.appendChild(punctInterpEl)
+      token.insertAfter(punctEl)
+    }
+  }
+
+  return idSequence
 }
 
 /*
@@ -827,50 +925,6 @@ tokens.forEach(el => {
 tokenizeTei(root, analyzer)
 morphInterpret(root, analyzer)
 
-
-
-// split fractions
-
-      tokens = mu(root.evaluateElements('//w_')).toArray()
-      for (let token of tokens) {
-        let interpEl = token.firstElementChild()
-        let form = interpEl.text()
-        let match = form.match(/^(\d+)([^\d\s])+(\d+)$/)
-        if (match) {
-          let [, intPart, punct, fracPart] = match
-          interpEl.text(intPart)
-          interpEl.setAttribute('lemma', intPart)
-
-          let punctElId = id2str(idSequence++)
-          let fracElId = id2str(idSequence++)
-
-
-          let fracEl = token.document().createElement('w_').setAttributes({
-            id: fracElId,
-            dep: `${token.attribute('id')}-compound`
-          }) as AbstractElement
-          let fracInterpEl = token.document().createElement('w').setAttributes({
-            lemma: fracPart,
-            ana: interpEl.attribute('ana'),
-          })
-          fracInterpEl.text(fracPart)
-          fracEl.appendChild(fracInterpEl)
-          token.insertAfter(fracEl)
-
-
-          let punctEl = token.document().createElement('w_').setAttributes({
-            id: punctElId,
-            dep: `${fracElId}-punct`
-          }) as AbstractElement
-          let punctInterpEl = token.document().createElement('w').setAttributes({
-            lemma: punct,
-            ana: 'punct',
-          })
-          punctInterpEl.text(punct)
-          punctEl.appendChild(punctInterpEl)
-          token.insertAfter(punctEl)
-        }
-      }
 
 
 */
