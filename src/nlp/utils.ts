@@ -23,6 +23,7 @@ import { startsWithCapital } from '../string_utils'
 import { Token, TokenTag, Structure } from './token'
 import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
 import { keyvalue2attributesNormalized } from './noske_utils'
+import { XmlFormatter } from '../xml/xml_formatter'
 
 import * as uniq from 'lodash.uniq'
 import * as sortedUniq from 'lodash.sorteduniq'
@@ -982,7 +983,7 @@ const structureElementName2type = new Map<string, Structure>([
   ['p', 'paragraph'],
   ['lg', 'stanza'],
   ['l', 'line'],
-  ['s', 'sentence'],
+  // ['s', 'sentence'],
   ['gap', 'gap'],
   // ['', ''],
 ])
@@ -1023,6 +1024,7 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
           }
           break
         }
+        case 's':  // todo
         case 'sb':  // todo
           tok = Token.structure('sentence', true)
           let attributes = el.attributesObj()
@@ -1040,6 +1042,7 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
       }
 
       let id = el.attribute('id')
+      // console.log(id)
       if (id) {
         tok.id = id
       }
@@ -1165,7 +1168,6 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   let sentenceId: string;
   let dataset: string;
 
-  let yieldOnNextToken = false
   let opensDocument = false
   let opensParagraph = false
   let newTokenLevelParagraph = false
@@ -1187,7 +1189,6 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     }
 
     tokens = []
-    yieldOnNextToken = false
     opensDocument = false
     opensParagraph = false
     newTokenLevelParagraph = false
@@ -1215,13 +1216,12 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
         opensDocument = true
       }
     } else if (token.isSentenceBoundary()) {
-      yieldOnNextToken = true
+      if (tokens.length) {
+        yield makeYield()
+      }
       sentenceId = token.id
       dataset = token.getAttribute('set')
     } else if (token.isWord()) {
-      if (yieldOnNextToken) {
-        yield makeYield()
-      }
       token.opensParagraph = newTokenLevelParagraph
       tokens.push(token)
       newTokenLevelParagraph = false
@@ -1269,9 +1269,19 @@ function sentenceArray2TreeNodes(sentence: Token[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+const miXmlFormatter = new XmlFormatter({
+  preferSpaces: true,
+  tabSize: 2,
+})
+
 export function serializeMiDocument(root: AbstractElement) {
   root.evaluateElements('//*').forEach(x => sortAttributes(x))
-  return root.serialize() + '\n'
+
+  let ret = root.serialize()
+  ret = miXmlFormatter.format(ret)
+  ret += '\n'
+
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////

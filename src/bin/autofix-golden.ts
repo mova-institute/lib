@@ -12,7 +12,7 @@ import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
 import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
-import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
+import { removeNamespacing, autofixSomeEntitites, walkUpUntil } from '../xml/utils'
 import { toSortableDatetime } from '../date'
 import { mu } from '../mu'
 import { startsWithCapital, capitalizeFirst } from '../string_utils'
@@ -87,6 +87,8 @@ function main() {
       let root = parseXmlFileSync(file)
 
       killEmptyElements(root)
+      insertSb(root)
+      swapSb(root)
       // renameStructures(root)
 
       {
@@ -102,13 +104,6 @@ function main() {
         }
         if (0) {
           idSequence = splitFractions(tokenEls, idSequence)
-        }
-      }
-
-      for (let sb of [...root.evaluateElements('//sb')]) {
-        let prev = sb.previousElementSibling()
-        if (prev && prev.localName() === 'g') {
-          prev.insertBefore(sb)
         }
       }
 
@@ -720,6 +715,29 @@ function killEmptyElements(root: AbstractElement) {
     .filter(x => !ALLOWED_TO_BE_EMPTY.includes(x.localName()))
     .toArray()
     .forEach(x => x.remove())
+}
+
+//------------------------------------------------------------------------------
+function insertSb(root: AbstractElement) {
+  let firstWs = mu(root.evaluateElements('//doc'))
+    .map(x => x.evaluateElement('.//w_')).flatten()
+  for (let firstW of firstWs) {
+    // walkUpUntil()
+    let prev = firstW.previousElementSibling()
+    if (!prev || prev.localName() !== 'sb') {
+      firstW.insertBefore(firstW.document().createElement('sb'))
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+function swapSb(root: AbstractElement) {
+  for (let sb of [...root.evaluateElements('//sb')]) {
+    let next = sb.nextElementSibling()
+    if (next && next.localName() === 'g') {
+      next.insertAfter(sb)
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
