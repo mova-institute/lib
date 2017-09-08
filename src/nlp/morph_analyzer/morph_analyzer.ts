@@ -305,6 +305,13 @@ export class MorphAnalyzer {
     }
 
     let res = new HashSet(MorphInterp.hash, flatten(lookupees.map(x => this.lookup(x))))
+    // add from regexes
+    for (let [regexes, tagStrs] of REGEX2TAG_ADDITIONAL) {
+      if (regexes.some(x => x.test(token))) {
+        res.addAll(tagStrs.map(x => MorphInterp.fromVesumStr(x, token)))
+      }
+    }
+
     let presentInDict = res.size > 0
 
     // regexes that add interps
@@ -440,8 +447,8 @@ export class MorphAnalyzer {
     // list items, letter names
     if (token !== 'я' && INITIALS_RE.test(token.toUpperCase())) {
       res.add(MorphInterp.fromVesumStr('noun:inanim:m:v_naz:prop', `${token}`))
-    // } else if (/^[A-Z]$/.test(token)) {
-    //   res.add(MorphInterp.fromVesumStr('noun:inanim:prop:foreign', `${token}`))
+      // } else if (/^[A-Z]$/.test(token)) {
+      //   res.add(MorphInterp.fromVesumStr('noun:inanim:prop:foreign', `${token}`))
     }
 
     // one-letter abbrs
