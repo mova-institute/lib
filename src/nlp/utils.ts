@@ -1140,7 +1140,7 @@ export function* polishXml2verticalStream(root: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2plaintext(stream: Iterable<Token>) {
-  let space = ' '
+  let space = ''
   for (let token of stream) {
     if (token.isGlue()) {
       space = ''
@@ -1148,7 +1148,7 @@ export function* tokenStream2plaintext(stream: Iterable<Token>) {
       space = '\n'
     } else if (token.isWord()) {
       yield space + token.form
-      space = token.glued ? '' : ' '
+      space = token.gluedNext ? '' : ' '
     }
   }
 }
@@ -1160,52 +1160,80 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentences(stream: Iterable<Token>) {
-  let sentenceId: string;
-  let set: string;
-  let newDocument = false
-  let newParagraph = false
-  let newTokenLevelParagraph = false
   let tokens = new Array<Token>()
-  let hasGap = false
+  let currenctDocument: Token
+  let sentenceId: string;
+  let dataset: string;
 
-  const prepareForYield = () => {
+  let yieldOnNextToken = false
+  let opensDocument = false
+  let opensParagraph = false
+  let newTokenLevelParagraph = false
+  let glueNext = false
+  let followsGap = false
+
+  const makeYield = () => {
     initLocalHeadIndexes(tokens, sentenceId)
     let nodes = sentenceArray2TreeNodes(tokens)
-    return { sentenceId, tokens, nodes, set, newParagraph, newDocument, hasGap }
+    let ret = {
+      sentenceId,
+      tokens,
+      nodes,
+      dataset,
+      opensParagraph,
+      opensDocument,
+      followsGap: followsGap && !opensDocument,
+      currenctDocument
+    }
+
+    tokens = []
+    yieldOnNextToken = false
+    opensDocument = false
+    opensParagraph = false
+    newTokenLevelParagraph = false
+    followsGap = false
+
+    return ret
   }
 
-  for (let token of stream) {
+  for (let [token, nextToken] of mu(stream).window(2)) {
     if (token.getStructureName() === 'paragraph') {
       if (!token.isClosing()) {
         if (tokens.length) {
           newTokenLevelParagraph = true
         } else {
-          newParagraph = true
+          opensParagraph = true
         }
       }
-    } else if (token.getStructureName() === 'document' && !token.isClosing()) {
-      newDocument = true
-    } else if (token.isSentenceBoundary()) {
-      if (tokens.length) {
-        yield prepareForYield()
-        tokens = []
-        newDocument = false
-        newParagraph = false
-        newTokenLevelParagraph = false
+    } else if (token.getStructureName() === 'document') {
+      if (token.isClosing() && tokens.length) {
+        yield makeYield()
+        // throw new Error(`No sentence boundary at the end of document ${currenctDocument.id}`)
       }
+      if (!token.isClosing()) {
+        currenctDocument = token
+        opensDocument = true
+      }
+    } else if (token.isSentenceBoundary()) {
+      yieldOnNextToken = true
       sentenceId = token.id
-      set = token.getAttribute('set')
+      dataset = token.getAttribute('set')
     } else if (token.isWord()) {
+      if (yieldOnNextToken) {
+        yield makeYield()
+      }
       token.opensParagraph = newTokenLevelParagraph
       tokens.push(token)
       newTokenLevelParagraph = false
     } else if (token.isGlue() && tokens.length) {
-      last(tokens).glued = true
+      last(tokens).gluedNext = true
+    } else if (token.getStructureName() === 'gap') {
+      followsGap = true
     }
   }
 
   if (tokens.length) {
-    yield prepareForYield()
+    yield makeYield()
   }
 }
 

@@ -114,18 +114,37 @@ function main() {
     let tokenStream = mu(tei2tokenStream(root, args.datasetSchema))
       .transform(x => x.interp && x.interp.denormalize())
     let sentenceStream = tokenStream2sentences(tokenStream)
-    for (let { sentenceId, set, tokens, nodes, newParagraph, newDocument } of sentenceStream) {
-      set = args.oneSet || set || 'unassigned'
-      datasetRegistry[set] = datasetRegistry[set] || new Dataset()
+    let annotationalGap = false
+    for (let { sentenceId, dataset, tokens, nodes, opensParagraph,
+      opensDocument, currenctDocument, followsGap } of sentenceStream) {
+
+      dataset = args.oneSet || dataset || 'unassigned'
+      datasetRegistry[dataset] = datasetRegistry[dataset] || new Dataset()
 
       let numTokens = tokens.length
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
       let isComplete = roots.length === 1
       let percentComplete = 1 - ((roots.length - 1) / (numTokens - 1))
+      let hasMorphErrors = tokens.some(x => x.interp.isError())
+      if (hasMorphErrors) {
+        annotationalGap = true
+        continue
+      }
+
+      let sentenceLevelData = {
+        'sent_id': sentenceId,
+        'newpar': opensParagraph || undefined,
+        'newdoc': opensDocument || undefined,
+        'gap': (followsGap || annotationalGap && !opensDocument) || undefined
+      } as any
+      if (opensDocument) {
+        sentenceLevelData.doc_title = currenctDocument.getAttribute('title') || undefined
+      }
+      // todo: consider making newpar on gaps
 
       if (percentComplete) {
         if (!roots.length) {
-          datasetRegistry[set].counts.wordsKept += numTokens
+          datasetRegistry[dataset].counts.wordsKept += numTokens
           sentenseErrors.push({
             sentenceId,
             problems: [{ message: 'цикл' }],
@@ -159,40 +178,41 @@ function main() {
         if (args.dryRun) {
           continue
         } else if (args.validOnly && hasProblems) {
-          datasetRegistry[set].counts.wordsKept += numTokens
+          datasetRegistry[dataset].counts.wordsKept += numTokens
         } else {
           if (isComplete || args.includeIncomplete) {
-            ++datasetRegistry[set].counts.sentsExported
-            datasetRegistry[set].counts.wordsExported += numTokens
+            ++datasetRegistry[dataset].counts.sentsExported
+            datasetRegistry[dataset].counts.wordsExported += numTokens
             if (!args.noStandartizing) {
               standartizeSentence2ud20(tokens)
             }
 
-            let filename = set2filename(outDir, args.datasetSchema, set)
+            let filename = set2filename(outDir, args.datasetSchema, dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-            let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { xpos: args.xpos })
+            let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
-            datasetRegistry[set].newdoc = false
+            datasetRegistry[dataset].newdoc = false
+            annotationalGap = false
           } else {
-            datasetRegistry[set].counts.wordsKept += numTokens
+            datasetRegistry[dataset].counts.wordsKept += numTokens
           }
         }
       }
 
-      datasetRegistryMorpho[set] = datasetRegistryMorpho[set] || new Dataset()
+      datasetRegistryMorpho[dataset] = datasetRegistryMorpho[dataset] || new Dataset()
 
       let morphonlyThreshold = Number.parseFloat(args.morphonlyThreshold)
       if (percentComplete >= morphonlyThreshold) {
         standartizeMorpho(tokens)
-        let filename = path.join(outDir, `uk-mi-${set}.morphonly.conllu`)
+        let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentenceId, newParagraph, newDocument, { morphOnly: true })
+        let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { morphOnly: true })
         fs.writeSync(file, conlluedSentence + '\n\n')
 
-        ++datasetRegistryMorpho[set].counts.sentsExported
-        datasetRegistryMorpho[set].counts.wordsExported += numTokens
+        ++datasetRegistryMorpho[dataset].counts.sentsExported
+        datasetRegistryMorpho[dataset].counts.wordsExported += numTokens
       } else {
-        datasetRegistryMorpho[set].counts.wordsKept += numTokens
+        datasetRegistryMorpho[dataset].counts.wordsKept += numTokens
       }
     }
   }

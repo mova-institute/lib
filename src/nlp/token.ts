@@ -40,7 +40,7 @@ export class Token {
   form?: string
   interps = new Array<MorphInterp>()
   id: string
-  glued: boolean
+  gluedNext: boolean
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
   tags = new Array<TokenTag>()

@@ -99,8 +99,8 @@ function* streamVertical(root: AbstractElement, docMeta) {
   let tokenStream = tei2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))
   let first = true
-  for (let { sentenceId, tokens, newParagraph } of sentenceStream) {
-    if (!first && newParagraph) {
+  for (let { sentenceId, tokens, opensParagraph } of sentenceStream) {
+    if (!first && opensParagraph) {
       yield '</p>'
       yield '<p>'
     }
@@ -108,7 +108,7 @@ function* streamVertical(root: AbstractElement, docMeta) {
     for (let token of tokens) {
       let { pos, features } = toUd(token.interp)
       yield token2verticalLine(token.form, token.interp.lemma, pos, features, token.rel, token.getAttribute('id'))
-      if (token.glued) {
+      if (token.gluedNext) {
         yield '<g/>'
       }
     }

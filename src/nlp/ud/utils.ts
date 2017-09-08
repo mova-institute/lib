@@ -11,19 +11,24 @@ export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos'
   morphOnly?: boolean
 }
-export function sentence2conllu(sentence: Array<Token>, id: string | number, newParagraph: boolean, newDocument: boolean, options: Sentence2conlluParams = {}) {
-  let lines = new Array<string>()
-  if (newDocument) {
-    lines.push(`# newdoc`)
+export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options: Sentence2conlluParams = {}) {
+  let comments = new Array<string>()
+  for (let [k, v] of Object.entries(sentenceLevelData)) {
+    if (v === undefined) {
+      continue
+    } else if (v === true) {
+      comments.push(k)
+    } else {
+      comments.push(`${k} = ${v}`)
+    }
   }
-  if (newParagraph) {
-    lines.push(`# newpar`)
-  }
-  lines.push(`# sent_id = ${id}`, `# text = ${tokenStream2plaintextString(sentence)}`)
+  comments.push(`text = ${tokenStream2plaintextString(tokens)}`)
 
-  sentence.forEach((token, i) => {
+  let lines = comments.sort().map(x => `# ${x}`)
+
+  tokens.forEach((token, i) => {
     let { pos, features } = toUd(token.interp)
-    let misc = new Array<string>()
+    let misc = [`Id=${token.id}`]
     if (token.opensParagraph) {
       misc.push('NewPar=Yes')
     }
@@ -33,7 +38,7 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
     if (token.isGraft) {
       misc.push('Graft=Yes')
     }
-    if (token.glued) {
+    if (token.gluedNext) {
       misc.push('SpaceAfter=No')
     }
 
@@ -56,9 +61,10 @@ export function sentence2conllu(sentence: Array<Token>, id: string | number, new
       options.morphOnly ? '_' : (token.headIndex === undefined ? 0 : token.headIndex + 1),
       options.morphOnly ? '_' : (token.rel || 'root'),
       '_',
-      misc/*.sort()*/.join('|') || '_',
+      misc.sort().join('|') || '_',
     ].join('\t'))
   })
+
   return lines.join('\n')
 }
 
