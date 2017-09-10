@@ -186,7 +186,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
-    prefixes: ['пів', 'не'],
+    prefixes: ['пів', 'напів', 'не', 'спів'],
     test: (x: MorphInterp) => x.isNoun(),
   },
   {

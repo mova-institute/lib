@@ -223,7 +223,7 @@ function main() {
   console.log()
 }
 
-//------------------------------------------------------------------------------
+//==============================================================================
 function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
   if (sentenseErrors.length) {
     sentenseErrors = transposeProblems(sentenseErrors)

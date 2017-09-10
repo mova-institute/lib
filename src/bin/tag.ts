@@ -140,7 +140,7 @@ function main(args: Args) {
       }
 
       if (args.count) {
-        console.log(root.evaluateNumber('count(//mi:w_|w_)', NS))
+        console.log(root.evaluateNumber('count(//*[local-name()="w_"])'))
         return
       }
 

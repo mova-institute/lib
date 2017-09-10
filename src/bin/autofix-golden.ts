@@ -403,7 +403,7 @@ function main() {
             }
           }
 
-          if (udInterp.pos === 'DET' && uEq(token.rel, 'amod')) {
+          if (udInterp.pos === 'DET' && uEqSome(token.rel, ['amod', 'case'])) {
             token.rel = 'det'
           }
 
