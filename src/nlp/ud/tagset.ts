@@ -6,7 +6,7 @@ import {
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
-  PartType, PunctType, PunctSide,
+  PartType, PunctType, PunctSide, VerbReversivity,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
@@ -42,6 +42,7 @@ export type UdPolite = 'Form'
 export type UdPunctType = 'Quot' | 'Mdash'
 export type UdPunctSide = 'Ini' | 'Fin'
 export type UdUninflect = UdBoolean
+export type UdReversivity = UdBoolean
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -111,6 +112,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [PunctSide, 'PunctSide'],
   [PunctType, 'PunctType'],
   [Inflectability, 'Uninflect'],
+  [VerbReversivity, 'Reverse'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -326,6 +328,7 @@ export class UdFeats {
   Gender: UdGender
   Hyph: UdHyph
   Inflect: UdUninflect
+  Reverse: UdReversivity
   Mood: UdMood
   NameType: UdNameType
   Number: UdNumber

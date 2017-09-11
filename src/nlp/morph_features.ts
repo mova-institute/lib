@@ -261,6 +261,7 @@ export const booleanFeatures = [
   Foreign,
   Typo,
   Inflectability,
+  VerbReversivity,
 ]
 
 export const NONGRAMMATICAL_FEATURES = [
