@@ -165,6 +165,13 @@ ATTRIBUTE numtype {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE parttype {
+  LABEL "тип частки"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE person {
   LABEL "особа"
   MULTIVALUE yes
@@ -193,8 +200,29 @@ ATTRIBUTE prontype {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE punctside {
+  LABEL "бік пунктуації"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE puncttype {
+  LABEL "тип пунктуації"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE reflex {
   LABEL "зворотність"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE reverse {
+  LABEL "зворотність дієслова"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
@@ -223,27 +251,6 @@ ATTRIBUTE verbform {
 
 ATTRIBUTE voice {
   LABEL "стан"
-  MULTIVALUE yes
-  MULTISEP "|"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE parttype {
-  LABEL "тип частки"
-  MULTIVALUE yes
-  MULTISEP "|"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE puncttype {
-  LABEL "тип пунктуації"
-  MULTIVALUE yes
-  MULTISEP "|"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE punctside {
-  LABEL "бік пунктуації"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"

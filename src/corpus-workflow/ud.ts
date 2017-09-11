@@ -6,8 +6,9 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
 
-  let ret = `${form}\t${lemma}\t`
-  ret += [
+  let ret = [
+    form,
+    lemma,
     upos,
     domesticatedPos,
     feats.Abbr,
@@ -29,17 +30,20 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
     feats.Poss,
     feats.PrepCase,
     feats.PronType,
+    feats.PunctSide,
+    feats.PunctType,
     feats.Reflex,
+    feats.Reverse,
     feats.Tense,
     feats.Variant,
     feats.VerbForm,
     feats.Voice,
-    feats.PunctType,
-    feats.PunctSide,
     rel,
     urel,
-    id,  //&& `#${id}`,
-  ].map(x => x || '').join('\t').toLowerCase()
+    id,
+  ].map(x => x || '')
+    .join('\t')
+    .toLowerCase()
 
   return ret
 }
