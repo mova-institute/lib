@@ -24,6 +24,7 @@ import { mu } from '../../mu'
 import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
 import { zerofillMax } from '../../string_utils'
 import { toSortableDatetime } from '../../date'
+import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 
 
 
@@ -107,6 +108,8 @@ function main() {
 
   mkdirp.sync(outDir)
 
+  const analyzer = createMorphAnalyzerSync()
+
   let openedFiles = {} as any
   let datasetRegistry = {} as Dict<Dataset>
   let datasetRegistryMorpho = {} as Dict<Dataset>
@@ -171,7 +174,7 @@ function main() {
 
         let hasProblems = false
         if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
-          let problems = validateSentenceSyntax(nodes)
+          let problems = validateSentenceSyntax(nodes, analyzer)
           hasProblems = !!problems.length
           if (hasProblems && args.reportErrors) {
             sentenseErrors.push({
@@ -205,6 +208,10 @@ function main() {
             datasetRegistry[dataset].counts.wordsKept += numTokens
           }
         }
+      }
+
+      if (args.dryRun) {
+        continue
       }
 
       datasetRegistryMorpho[dataset] = datasetRegistryMorpho[dataset] || new Dataset()

@@ -85,17 +85,6 @@ export const EMPTY_ANIMACY_NOUNS = [
   'ся',
 ]
 
-export const QAUNTITATIVE_ADVERBS = [
-  'мало',
-  'багато',
-  'чимало',
-  'немало',
-  'менше',
-  'більше',
-  'трошки',
-  'трохи',
-]
-
 const VALENCY_HAVING_ADJECTIVES = [
   'властивий',
   'потрібний',
@@ -137,10 +126,20 @@ export function isNumeralModified(t: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isQuantitativeAdverbModified(t: TokenNode) {
-  return t.node.interp.isGenitive()
-    && t.children.some(x => uEq(x.node.rel, 'advmod')
-      && QAUNTITATIVE_ADVERBS.includes(x.node.interp.lemma)
-    )
+  return t.children.some(x => isQuantitativeAdverbModifier(x))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isQuantitativeAdverbModifier(t: TokenNode) {
+  return t.node.rel === 'advmod:amtgov'// && t.parent.node.interp.isGenitive()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isQuantitativeAdverbModifierCandidate(t: TokenNode) {
+  return !t.isRoot()
+    && t.parent.node.interp.isGenitive()
+    && uEq(t.node.rel, 'advmod')
+    && QAUNTITATIVE_ADVERBS.includes(t.node.interp.lemma)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -234,3 +233,122 @@ export function hasCopula(t: TokenNode) {
 export function hasChild(t: TokenNode, rel: string) {
   return t.children.some(x => uEqSome(x.node.rel, [rel]))
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function isDeceimalFraction(t: TokenNode) {
+  return t.node.interp.isCardinalNumeral()
+    && /^\d+$/.test(t.node.form)
+    && t.children.some(x => /^\d+$/.test(x.node.form)
+      && x.children.length === 1
+      && [',', '.'].includes(x.children[0].node.form)
+      && x.node.indexInSentence < t.node.indexInSentence
+    )
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isNegated(t: TokenNode) {
+  return t.node.interp.isNegative()
+    || t.children.some(x => x.node.interp.isNegative()
+      || x.node.interp.isAuxillary() && x.children.some(xx => xx.node.interp.isNegative()
+      )
+    )
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isModalAdv(t: TokenNode) {
+  return t.node.interp.isAdverb()
+    && MODAL_ADVS.includes(t.node.interp.lemma)
+    && (uEqSome(t.node.rel, SUBORDINATE_CLAUSES)
+      || uEqSome(t.node.rel, ['parataxis', 'conj'])
+      || t.isRoot()
+    )
+    && hasChild(t, 'csubj')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isNumAdvAmbig(lemma: string) {
+  if (NUM_ADV_AMBIG.includes(lemma)) {
+    return true
+  }
+  // temp, hypen treatment
+  return NUM_ADV_AMBIG.some(x => lemma.startsWith(x) || lemma.endsWith(x))
+}
+
+
+
+export const SUBORDINATE_CLAUSES = [
+  'csubj',
+  'ccomp',
+  'xcomp',
+  'advcl',
+  'acl',
+]
+
+////////////////////////////////////////////////////////////////////////////////
+export const MODAL_ADVS = `
+важко
+важливо
+варт
+варто
+вільно
+гарно
+дивно
+довше
+дозволено
+досить
+достатньо
+доцільно
+жарко
+запізно
+зручніше
+краще
+легко
+ліпше
+може
+можливо
+можна
+найкраще
+найліпше
+найтяжче
+невільно
+неефективно
+неможливо
+необхідно
+ніяково
+нормально
+потрібно
+правильно
+приємно
+реально
+слід
+сором
+треба
+цікаво
+чемно
+`.trim().split(/\s+/g)
+
+
+const NUM_ADV_AMBIG = [
+  'багато',
+  'скільки',
+  'небагато',
+  'скілька',
+  'скількись',
+  'скількі',
+]
+
+export const QAUNTITATIVE_ADVERBS = [
+  ...NUM_ADV_AMBIG,
+  'мало',
+  'чимало',
+  'немало',
+  'менше',
+  'більше',
+  'трошки',
+  'трохи',
+]
+
+
+export const ADVERBS_MODIFYING_NOUNS = [
+  'майже',
+]

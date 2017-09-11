@@ -25,6 +25,9 @@ export type TokenTag =
   | 'gendisagr'
   | 'numdisagr'
 
+  | 'commed_conj'
+  | 'legal_alien'
+
 export interface Dependency {
   relation: string
   headId: string

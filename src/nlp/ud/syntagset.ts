@@ -55,6 +55,7 @@ export type Ud20MiSpecificRelation =
   | 'xcomp:2'
   | 'flat:repeat'
   | 'appos:nonnom'
+  | 'advmod:amtgov'
 
 
 export type UdMiRelation = Ud20UniversalRelation | Ud20MiSpecificRelation

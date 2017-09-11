@@ -28,6 +28,12 @@ export class GraphNode<T> {
     }
   }
 
+  *walkThisAndUp0() {
+    for (let p = this; p; p = p.parent) {
+      yield p
+    }
+  }
+
   root() {
     return mu(this.walkUp0()).last()
   }
