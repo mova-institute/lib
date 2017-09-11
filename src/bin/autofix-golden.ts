@@ -687,7 +687,7 @@ const DROP_ORDER = [
   f.Degree,
   f.Pronoun,
   f.Polarity,
-  f.VerbRevesivity,
+  f.VerbReversivity,
   f.Reflexivity,
   f.PartType,
   f.Inflectability,

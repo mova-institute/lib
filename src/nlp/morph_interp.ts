@@ -11,7 +11,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo, PartType, VerbRevesivity, PunctType, PunctSide,
+  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctType, PunctSide,
   Feature, NONGRAMMATICAL_FEATURES
 } from './morph_features'
 
@@ -60,7 +60,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Tense, 'tense'],
   [Variant, 'variant'],
   [VerbAuxilarity, 'verbAuxilarity'],
-  [VerbRevesivity, 'verbRevesivity'],
+  [VerbReversivity, 'verbRevesivity'],
   [Voice, 'voice'],
   [VuAlternativity, 'vuAlternative'],
   [Polarity, 'polarity'],
@@ -105,7 +105,7 @@ export const FEATURE_TABLE = [
   { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
 
   { featStr: 'verbAuxilarity', feat: VerbAuxilarity, vesum: VerbAuxilarity.yes, vesumStr: 'aux', mte: 'a' },
-  { featStr: 'verbRevesivity', feat: VerbRevesivity, vesum: VerbRevesivity.yes, vesumStr: 'rev' },
+  { featStr: 'verbRevesivity', feat: VerbReversivity, vesum: VerbReversivity.yes, vesumStr: 'rev' },
 
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
   { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
@@ -368,7 +368,7 @@ export const FEATURE_ORDER = {
   ],
   [Pos.verb]: [
     Pos,
-    VerbRevesivity,
+    VerbReversivity,
     VerbAuxilarity,
     Reflexivity,
     Voice,
@@ -485,7 +485,7 @@ export class Features {
   typo: Typo
   variant: Variant
   verbAuxilarity: VerbAuxilarity
-  verbRevesivity: VerbRevesivity
+  verbRevesivity: VerbReversivity
   verbType: VerbType
   voice: Voice
 }
@@ -1041,7 +1041,7 @@ export class MorphInterp {
   isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isReflexive() { return this.features.reflexivity === Reflexivity.yes }
-  isReversive() { return this.features.verbRevesivity === VerbRevesivity.yes }
+  isReversive() { return this.features.verbRevesivity === VerbReversivity.yes }
   isPersonal() { return this.features.pronominalType === PronominalType.personal }
   isPresent() { return this.features.tense === Tense.present }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
@@ -1103,7 +1103,7 @@ export class MorphInterp {
   setIsPlural() { this.features.number = MorphNumber.plural; return this }
   setIsPluraleTantum(value = true) { this.features.numberTantum = value ? NumberTantum.noSingular : NumberTantum.noPlural; return this }
   setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
-  setIsReversive(value = true) { this.features.verbRevesivity = value ? VerbRevesivity.yes : undefined; return this }
+  setIsReversive(value = true) { this.features.verbRevesivity = value ? VerbReversivity.yes : undefined; return this }
   setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
   setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
   setIsProper(value = true) { this.features.nounType = value ? NounType.proper : undefined; return this }

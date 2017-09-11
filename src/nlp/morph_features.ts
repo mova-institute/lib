@@ -119,7 +119,7 @@ export enum Polarity {
 export enum VerbAuxilarity {
   yes,
 }
-export enum VerbRevesivity {
+export enum VerbReversivity {
   yes,
 }
 export enum Reflexivity {
@@ -249,7 +249,7 @@ export type Feature = Abbreviation
   | Typo
   | Variant
   | VerbAuxilarity
-  | VerbRevesivity
+  | VerbReversivity
   | VerbType
   | Voice
   | VuAlternativity
