@@ -1,4 +1,4 @@
-import { isOddball, isNumber } from './lang'
+import { isOddball, isNumber, last } from './lang'
 import { HashSet } from './data_structures'  // todo remove dep
 
 
@@ -229,4 +229,36 @@ export function findStringDiffIndexes(str1: string, str2: string) {
     }
   }
   return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function commonPrefixLen(a: string, b: string) {
+  if (a === b) {
+    return a.length
+  }
+
+  let ret = 0
+  while (a[ret] === b[ret]) {
+    ++ret
+  }
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function commonPrefix(a: string, b: string) {
+  return a.substr(0, commonPrefixLen(a, b))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function commonPrefixDestructive(strings: string[]) {
+  if (strings.length === 0) {
+    return ''
+  }
+  if (strings.length === 1) {
+    return strings[0]
+  }
+
+  strings.sort()
+
+  return commonPrefix(strings[0], last(strings))
 }

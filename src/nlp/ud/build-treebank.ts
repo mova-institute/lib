@@ -13,6 +13,7 @@ import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
 import { tei2tokenStream, tokenStream2sentences, normalizeMorphoForUd } from '../../nlp/utils'
 import * as algo from '../../algo'
+import { parseJsonFromFile } from '../../utils.node'
 import { last } from '../../lang'
 import { Dict } from '../../types'
 // import { toUdString, toUd } from './tagset'
@@ -40,6 +41,8 @@ interface Args {
   validOnly: boolean
   morphonlyThreshold: string
   xpos: any
+
+  id2bratPath: string
 }
 
 //------------------------------------------------------------------------------
@@ -97,6 +100,10 @@ function main() {
   if (!xmlPaths.length) {
     return
   }
+  let id2bratPath
+  if (args.id2bratPath) {
+    id2bratPath = parseJsonFromFile(args.id2bratPath)
+  }
 
   mkdirp.sync(outDir)
 
@@ -143,13 +150,14 @@ function main() {
       // todo: consider making newpar on gaps
 
       if (percentComplete) {
+        let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
           datasetRegistry[dataset].counts.wordsKept += numTokens
           sentenseErrors.push({
             sentenceId,
             problems: [{ message: 'цикл' }],
             tokens,
-            bratPath: getBratPath(tokens[0]),
+            bratPath,
           })
           continue
         } else if (!isComplete && args.reportHoles) {
@@ -157,7 +165,7 @@ function main() {
             sentenceId,
             problems: [{ message: 'речення недороблене', indexes: roots }],
             tokens,
-            bratPath: getBratPath(tokens[0]),
+            bratPath,
           })
         }
 
@@ -170,7 +178,7 @@ function main() {
               problems,
               sentenceId,
               tokens,
-              bratPath: getBratPath(tokens[0]),
+              bratPath,
             })
           }
         }
@@ -285,15 +293,6 @@ function printStats(datasetRegistry: Dict<Dataset>, header: string) {
     },
   }))
   // console.log(`\n`)
-}
-
-//------------------------------------------------------------------------------
-function getBratPath(token: Token) {
-  let src = token.getAttribute('depsrc')
-  if (src) {
-    return src.slice('/Users/msklvsk/Developer/mova-institute/playground/4brat/'.length, -4)
-  }
-  return ''
 }
 
 //------------------------------------------------------------------------------

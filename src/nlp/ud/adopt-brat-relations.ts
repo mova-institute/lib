@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs'
-// import { join } from 'path'
+import * as path from 'path'
+import * as algo from '../../algo'
 import { parseXmlFileSync } from '../../xml/utils.node'
-import { linesSync } from '../../utils.node'
-import { isString } from '../../lang'
+import { linesSync, write2jsonFile } from '../../utils.node'
+import { isString, last } from '../../lang'
+import { trimExtension } from '../../string_utils'
 import { firstMatch } from '../../string_utils'
 import { serializeMiDocument } from '../../nlp/utils'
 import { parseBratFile } from './utils'
@@ -23,21 +25,23 @@ function main() {
 
   const args = minimist(process.argv.slice(2), {
     boolean: [
-      'depsrc',
     ]
   }) as any
 
-  let [xmlFiles, allBratFiles] = args._.map(x => glob.sync(x)) as string[][]
+  let [goldenDir, bratGlob] = args._
+  let allBratFiles = glob.sync(bratGlob)
+  let bratFilesRoot = algo.commonPrefix(allBratFiles[0], last(allBratFiles))
   let bratFilesGrouped = groupby(allBratFiles, x => firstMatch(x, /\/([^/]+)\/\d+\.ann$/, 1))
 
+  let id2bratPath = {} as any
   for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
-    let xmlFile = `${bratName}.xml`
+    let xmlFile = path.join(goldenDir, `${bratName}.xml`)
     if (!fs.existsSync(xmlFile)) {
       // throw new Error(`No xml file to adopt in: "${xmlFile}"`)
       console.error(`No xml file to adopt in: "${xmlFile}"`)
       continue
     }
-    console.log(`adopting ${xmlFile}`)
+    console.log(`adopting ${path.basename(xmlFile)}`)
     let root = parseXmlFileSync(xmlFile)
 
     let n2element = new Map(
@@ -69,11 +73,14 @@ function main() {
             .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
             .join('|') || undefined
           el.setAttribute('dep', dependencies)
-          el.setAttribute('depsrc', args.depsrc && bratFile || undefined)
+          id2bratPath[span.annotations.N] = trimExtension(path.relative(bratFilesRoot, bratFile))
         }
       }
     }
     fs.writeFileSync(xmlFile, serializeMiDocument(root))
+    if (args.id2bratPath) {
+      write2jsonFile(args.id2bratPath, id2bratPath)
+    }
   }
 }
 
