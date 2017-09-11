@@ -897,6 +897,10 @@ export class MorphInterp {
     return features.every(f => this.getFeature(f) === other.getFeature(f))
   }
 
+  equalsByLemmaAndFeatures(other: MorphInterp, features: any[]) {
+    return this.lemma === other.lemma && this.equalsByFeatures(other, features)
+  }
+
   nongrammaticallyEquals(other: MorphInterp) {
     return this.lemma === other.lemma &&
       this.clone()
@@ -1070,6 +1074,7 @@ export class MorphInterp {
   hasCase() { return this.features.case !== undefined }
   hasRequiredCase() { return this.features.requiredCase !== undefined }
   hasPronominalType() { return this.features.pronominalType !== undefined }
+  hasNonpositiveDegree() { return this.hasFeature(Degree) && this.features.degree !== Degree.positive }
 
   isProper() { return this.features.nounType === NounType.proper }
   isBad() { return this.features.badness === Badness.yes }

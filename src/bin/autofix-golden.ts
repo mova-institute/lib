@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs'
+import { basename } from 'path'
 import * as glob from 'glob'
 import * as minimist from 'minimist'
 import * as _ from 'lodash'
@@ -84,6 +85,8 @@ function main() {
 
   for (let file of files) {
     try {
+      console.log(`autofixing ${basename(file)}`)
+
       let root = parseXmlFileSync(file)
 
       killEmptyElements(root)
@@ -324,8 +327,8 @@ function main() {
 
           if (!node.isRoot()
             && interp.isPreposition()
-            && node.children.some(x => !uEqSome(x.node.rel, ['fixed']))
-            && !uEqSome(token.rel, ['conj', 'flat:title'])
+            && !uEqSome(token.rel, ['conj', 'flat:title', 'fixed'])
+            && !g2.hasChild(node, 'fixed')
           ) {
             token.rel = 'case'
           }
@@ -411,11 +414,6 @@ function main() {
             token.rel = 'amod'
           }
 
-          // common typo
-          if (interp.isPreposition() && uEq(token.rel, 'expl')) {
-            token.rel = 'case'
-          }
-
           if (!interp.isAccusative() && (
             interp.features.grammaticalAnimacy !== undefined
             || interp.features.requiredAnimacy !== undefined)
@@ -442,6 +440,18 @@ function main() {
 
           if (g2.isNegativeExistentialPseudosubject(node)) {
             node.node.rel = 'obj'
+          }
+
+          if (g2.isQuantitativeAdverbModifierCandidate(node)) {
+            let degree = interp.getFeature(f.Degree)
+            token.rel = 'advmod:amtgov'
+            if (node.parent.node.interp.isPlural()
+              && interp.lemma === 'багато'
+              && !parent.interp.isNoSingular()
+            ) {
+              interp.resetFromVesumStr('numr:p:v_naz:&pron:ind', 'багато')
+              token.rel = 'nummod:gov'
+            }
           }
 
           // ↓↓↓↓ breaks the tree, keep last!
@@ -506,7 +516,7 @@ function main() {
 
 
 
-      let content = serializeMiDocument(root)
+      let content = serializeMiDocument(root, true)
       // content = beautify(content, { indent_size: 2 })
       fs.writeFileSync(file, content)
     } catch (e) {

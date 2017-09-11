@@ -1274,11 +1274,13 @@ const miXmlFormatter = new XmlFormatter({
   tabSize: 2,
 })
 
-export function serializeMiDocument(root: AbstractElement) {
+export function serializeMiDocument(root: AbstractElement, prettify = false) {
   root.evaluateElements('//*').forEach(x => sortAttributes(x))
 
   let ret = root.serialize()
-  ret = miXmlFormatter.format(ret)
+  if (prettify) {
+    ret = miXmlFormatter.format(ret)
+  }
   ret += '\n'
 
   return ret
