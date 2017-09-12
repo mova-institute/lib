@@ -251,7 +251,11 @@ function main() {
             let match = token.comment.match(REPLACE_RE)
             if (match) {
               let tag = match[1].replace('&amp;', '&')  // sometimes it's copyped from xml
-              interp.resetFromVesumStr(tag, interp.lemma)
+              if (tag.startsWith(':')) {
+                interp.setFromVesumStr(tag.substr(1), interp.lemma)
+              } else {
+                interp.resetFromVesumStr(tag, interp.lemma)
+              }
             }
             token.comment = token.comment.replace(REPLACE_RE, '').trim()
           }
