@@ -24,6 +24,11 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'flat:repeat',
   'appos:nonnom',
   'advmod:amtgov',
+  'advcl:svc',
+  'conj:svc',
+  'xcomp:svc',
+  'ccomp:svc',
+  'compound:svc',
 
   'acl',
   'advcl',
@@ -35,7 +40,6 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'case',
   'cc',
   'ccomp',
-  'compound:svc',
   'compound',
   'conj:parataxis',
   'conj:repeat',
@@ -1251,6 +1255,62 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !uEq(t.parent.node.rel, 'xcomp')
   )
 
+  treedReportIf(`conj без розділового чи сполучника`,
+    t => g.isConjWithoutCcOrPunct(t)
+      && t.node.rel !== 'conj:svc'
+  )
+
+  treedReportIf(`conj без розділового чи сполучника (може conj:svc?)`,
+    t => g.isConjWithoutCcOrPunct(t)
+      && t.node.rel !== 'conj:svc'
+      && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
+        .includes(t.node.interp.getFeature(f.VerbType))
+  )
+
+  treedReportIf(`advcl без сполучування (може advcl:svc?)`,
+    t => uEq(t.node.rel, 'advcl')
+      && t.node.rel !== 'advcl:2'
+      && t.node.rel !== 'advcl:svc'
+      && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
+        .includes(t.node.interp.getFeature(f.VerbType))
+      && !t.children.some(x => uEqSome(x.node.rel, ['mark'])
+        || x.node.interp.isRelative()
+        || x.node.interp.isPreposition()  // замість просто зробити
+      )
+  )
+
+  xtreedReportIf(`ccomp:svc-test`,
+    t => t.node.rel === 'ccomp'
+      && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
+        .includes(t.node.interp.getFeature(f.VerbType))
+      && !t.children.some(x => uEqSome(x.node.rel, ['mark'])
+        || x.node.interp.isRelative()
+        || x.node.interp.isPreposition()  // замість просто зробити
+      )
+  )
+
+  xtreedReportIf(`xcomp:svc-test`,
+    t => t.node.rel === 'xcomp'
+      && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
+        .includes(t.node.interp.getFeature(f.VerbType))
+      && !t.children.some(x => uEqSome(x.node.rel, ['mark'])
+        || x.node.interp.isRelative()
+        || x.node.interp.isPreposition()  // замість просто зробити
+      )
+  )
+
+  treedReportIf(`compound:svc неочікуваний`,
+    t => t.node.rel === 'compound:svc'
+      && !g.isCompounSvcCandidate(t)
+  )
+
+  treedReportIf(`кандидат на compound:svc`,
+    t => g.isCompounSvcCandidate(t)
+      && t.node.rel !== 'compound:svc'
+  )
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   treedReportIf(`неочікувана реляція в прийменник`,
     t => t.node.rel
       && t.node.interp.isPreposition()
@@ -1592,6 +1652,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // conj:parataxis не коли однорідні підрядні
   // ціль завбільшки з табуретку — consistent acl
   // рослина висотою сантиметр — flat:title
+  // вказують як синонім — xcomp:2
+  // кома-риска з-від праворуч
+  // між двома inf коли друге без спол не підр зв
 
 
 

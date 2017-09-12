@@ -27,6 +27,7 @@ export type TokenTag =
 
   | 'commed_conj'
   | 'legal_alien'
+  | 'conj_no_cc'
 
 export interface Dependency {
   relation: string

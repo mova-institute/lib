@@ -274,6 +274,27 @@ export function isNumAdvAmbig(lemma: string) {
   return NUM_ADV_AMBIG.some(x => lemma.startsWith(x) || lemma.endsWith(x))
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function isConjWithoutCcOrPunct(t: TokenNode) {
+  return uEq(t.node.rel, 'conj')
+    && !t.children.some(x => uEqSome(x.node.rel, ['cc'])
+      || uEq(x.node.rel, 'punct')
+      && /[,;/–—\-]/.test(x.node.interp.lemma)
+      && x.node.indexInSentence < t.node.indexInSentence
+    )
+    && !t.node.hasTag('conj_no_cc')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isCompounSvcCandidate(t: TokenNode) {
+  return !t.isRoot()
+    && t.node.interp.isVerb()
+    && ['давати', 'дати'].includes(t.parent.node.interp.lemma)
+    && t.parent.node.interp.getFeature(f.Person) === f.Person.second
+    && t.parent.node.interp.isImperative()
+    && !t.node.interp.isPast()
+}
+
 
 
 export const SUBORDINATE_CLAUSES = [

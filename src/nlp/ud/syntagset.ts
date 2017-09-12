@@ -37,7 +37,6 @@ export type Ud20UniversalRelation =
 
 export type Ud20MiSpecificRelation =
   | 'aux:pass'
-  | 'compound:svc'
   | 'conj:parataxis'
   | 'conj:repeat'
   | 'csubj:pass'
@@ -56,6 +55,12 @@ export type Ud20MiSpecificRelation =
   | 'flat:repeat'
   | 'appos:nonnom'
   | 'advmod:amtgov'
+
+  | 'advcl:svc'
+  | 'conj:svc'
+  | 'xcomp:svc'
+  | 'ccomp:svc'
+  | 'compound:svc'
 
 
 export type UdMiRelation = Ud20UniversalRelation | Ud20MiSpecificRelation

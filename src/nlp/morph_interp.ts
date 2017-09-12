@@ -1026,6 +1026,7 @@ export class MorphInterp {
   isImperfect() { return this.features.aspect === Aspect.imperfect }
   isImpersonal() { return this.features.verbType === VerbType.impersonal }
   isNotPersonal() { return this.isImpersonal() || this.isInfinitive() }
+  isImperative() { return this.features.verbType === VerbType.imperative }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
   isIndicative() { return this.features.verbType === undefined || this.features.verbType === VerbType.indicative || this.features.verbType === VerbType.impersonal }
   isInfinitive() { return this.features.verbType === VerbType.infinitive }
@@ -1039,6 +1040,7 @@ export class MorphInterp {
   isPerfect() { return this.features.aspect === Aspect.perfect }
   isPlural() { return this.features.number === MorphNumber.plural }
   isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
+  isPast() { return this.features.tense === Tense.past }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isReflexive() { return this.features.reflexivity === Reflexivity.yes }
   isReversive() { return this.features.verbRevesivity === VerbReversivity.yes }
