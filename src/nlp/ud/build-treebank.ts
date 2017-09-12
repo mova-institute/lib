@@ -101,10 +101,10 @@ function main() {
   if (!xmlPaths.length) {
     return
   }
-  let id2bratPath
-  if (args.id2bratPath) {
-    id2bratPath = parseJsonFromFile(args.id2bratPath)
-  }
+
+  let id2bratPath = args.id2bratPath
+    ? parseJsonFromFile(args.id2bratPath)
+    : {}
 
   mkdirp.sync(outDir)
 
