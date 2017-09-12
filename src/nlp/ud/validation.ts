@@ -369,7 +369,7 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
       || t.node.interp.isAdverb() && t.children.some(x => SUBJECTS.some(subj => uEq(x.node.rel, subj))),
     `в ${AUX_LEMMAS.join('|')}`,
     t => AUX_LEMMAS.includes(t.node.interp.lemma)],
-  [`acl:`, `з іменника`, t => canActAsNoun(t.node) || t.node.interp.isDemonstrative(),
+  [`acl`, `з іменника`, t => canActAsNoun(t.node) || t.node.interp.isDemonstrative(),
     `в присудок (з умовами)`, t => t.node.interp.isVerb() && t.node.interp.isInfinitive()
       // sic!: not canBePredicate(), special
       || t.children.some(x => uEqSome(x.node.rel, ['mark']))
@@ -397,7 +397,15 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     `з присудка`,
     t => canBePredicateTreed(t),
     `в інфінітив`,
-    t => t.node.interp.isInfinitive()
+    t => g.isInfinitive(t) || g.isInfinitiveCop(t)
+  ],
+  [`xcomp:2`,
+    `з присудка`,
+    t => canBePredicateTreed(t),
+    `в називний/орудний іменник/прикметник`,
+    t => (t.node.interp.isNominative() || t.node.interp.isInstrumental())
+      && (t.node.interp.isNoun() || t.node.interp.isAdjective())
+      && !t.node.isGraft
   ]
 ]
 
@@ -713,7 +721,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.children.some(x => uEq(x.node.rel, 'mark'))
       && !hasOwnRelative(t)
       // && !t.children.some(x => x.node.interp.isRelative())
-      && !isInfinitive(t)
+      && !g.isInfinitive(t)
       && !(uEq(t.node.rel, 'acl') && t.node.interp.isParticiple())
       && !(uEq(t.node.rel, 'advcl') && t.node.interp.isConverb())
       && !t.node.rel.endsWith(':2')
@@ -740,7 +748,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   treedReportIf(`неособове має підмет`,
-    t => (t.node.interp.isImpersonal() || isInfinitive(t))
+    t => (t.node.interp.isImpersonal() || g.isInfinitive(t))
       && t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
       && !t.node.isPromoted
   )
@@ -771,7 +779,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   if (roots.length === 1) {
     xtreedReportIf(`інфінітив — корінь`,
       t => t.isRoot()
-        && isInfinitive(t)
+        && g.isInfinitive(t)
       // && t.children.some(x => uEq(x.node.rel, 'nsubj'))
       // && !t.node.isPromoted
       // && !t.children.some(x => x.node.interp.isAuxillary() && x.node.interp.hasPerson())
@@ -1223,7 +1231,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     !t.isRoot()
     && uEq(t.node.rel, 'advmod')
     && t.node.interp.isAdverb()
-    && isInfinitive(t.parent)
+    && g.isInfinitive(t.parent)
     // && t.parent.isRoot()
     // || !['acl', 'xcomp', 'c'].some(x => uEq(t.parent.node.rel, x)))
     && g.MODAL_ADVS.some(form => t.node.interp.lemma === form)
@@ -1749,18 +1757,12 @@ function thisOrTravelUp(node: GraphNode<Token>, predicate: TreedSentencePredicat
 }
 
 //------------------------------------------------------------------------------
-function isLocativeWithoutImmediatePrep(node: GraphNode<Token>) {
-  return node.node.rel
-    && canActAsNounForObj(node)
-    && !uEq(node.node.rel, 'det')
-    && node.node.interp.isLocative()
-    && !node.children.some(x => uEq(x.node.rel, 'case'))
-}
-
-//------------------------------------------------------------------------------
-function isInfinitive(node: GraphNode<Token>) {
-  return node.node.interp.isInfinitive()
-    && !node.children.some(x => uEq(x.node.rel, 'aux') && x.node.interp.hasPerson())
+function isLocativeWithoutImmediatePrep(t: GraphNode<Token>) {
+  return t.node.rel
+    && canActAsNounForObj(t)
+    && !uEq(t.node.rel, 'det')
+    && t.node.interp.isLocative()
+    && !t.children.some(x => uEq(x.node.rel, 'case'))
 }
 
 //------------------------------------------------------------------------------

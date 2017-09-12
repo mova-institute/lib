@@ -295,6 +295,18 @@ export function isCompounSvcCandidate(t: TokenNode) {
     && !t.node.interp.isPast()
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function isInfinitive(t: GraphNode<Token>) {
+  return t.node.interp.isInfinitive()
+    && !t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && !x.node.interp.isInfinitive())
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isInfinitiveCop(t: GraphNode<Token>) {
+  return !t.node.interp.isVerb()
+    && t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isInfinitive())
+}
+
 
 
 export const SUBORDINATE_CLAUSES = [

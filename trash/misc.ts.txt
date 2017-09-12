@@ -1,4 +1,12 @@
-  // reportIf('керівний числівник не nummod:gov',
+// if (token.rel === 'xcomp'
+//   && !interp.isVerb()
+//   && !g2.isInfinitive(node)
+//   && !g2.isInfinitiveCop(node)
+// ) {
+//   token.rel = 'xcomp:2'
+// }
+
+            // reportIf('керівний числівник не nummod:gov',
   //   x => x.rel === 'nummod'
   //     && x.interp.isCardinalNumeral()
   //     && !x.interp.isPronoun()
