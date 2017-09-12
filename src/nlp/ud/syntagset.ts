@@ -49,7 +49,6 @@ export type Ud20MiSpecificRelation =
   | 'nummod:gov'
   | 'obl:agent'
   | 'parataxis:discourse'
-  | 'acl:2'
   | 'advcl:2'
   | 'xcomp:2'
   | 'flat:repeat'

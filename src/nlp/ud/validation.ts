@@ -18,7 +18,6 @@ class SentenceToken extends Token {
 
 const ALLOWED_RELATIONS: UdMiRelation[] = [
   'parataxis:discourse',
-  'acl:2',
   'advcl:2',
   'xcomp:2',
   'flat:repeat',
@@ -309,13 +308,6 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
   [`csubj`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`ccomp`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
-  [`xcomp`,
-    `з присудка`,
-    (t, s, i) => canBePredicate(t, s, i),
-    `в куди треба`,
-    (t, s, i) => canBePredicate(t, s, i)
-      || (t.interp.isNounish() || t.interp.isAdjective())
-      && (t.interp.isNominative() || t.interp.isInstrumental())],
   [`advcl:`, ``, (t, s, i) => canBePredicate(t, s, i), `в присудок`, (t, s, i) => canBePredicate(t, s, i)],
   [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
@@ -389,7 +381,6 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
       || isAdverbialAcl(t)
       || t.children.some(x => uEq(x.node.rel, 'nsubj'))
   ],
-  [`acl:2`, ``, undefined, ``, undefined],
   [`punct`,
     `зі слова`,
     t => !t
@@ -402,6 +393,12 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
   [`flat:foreign`,
     `з :foreign`, t => t.node.interp.isForeign(),
     `у :foreign`, t => t.node.interp.isForeign()],
+  [`xcomp:`,
+    `з присудка`,
+    t => canBePredicateTreed(t),
+    `в інфінітив`,
+    t => t.node.interp.isInfinitive()
+  ]
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
