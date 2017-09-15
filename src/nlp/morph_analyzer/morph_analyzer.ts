@@ -62,8 +62,12 @@ const NONINFL_PARADIGM = [
 const NONIFL_NOUN_PARADIGM = NONINFL_PARADIGM.map(x => `noun:inanim:${x}`)
 const NONIFL_ADJ_PARADIGM = NONINFL_PARADIGM.map(x => `adj:${x}`)
 
-const NONIFL_ARABIC_CARDINAL_PARADIGM_1_2 = NONINFL_PARADIGM.map(x => `numr:${x}`)
-const NONIFL_ARABIC_CARDINAL_PARADIGM = CASES.map(x => `numr:p:${x}:nv`)
+const NONIFL_ARABIC_CARDINAL_PARADIGM_1 = NONINFL_PARADIGM.map(x => `numr:${x}`)
+const NONIFL_ARABIC_CARDINAL_PARADIGM_2 = [
+  ...CASES.map(x => `numr:m:${x}:nv`),
+  ...CASES.map(x => `numr:f:${x}:nv`),
+]
+const NONIFL_ARABIC_CARDINAL_PARADIGM_3_0 = CASES.map(x => `numr:${x}:nv`)
 
 const NONIFL_ORDINAL_PARADIGM = NONIFL_ADJ_PARADIGM.map(x => `${x}:&numr`)
 NONIFL_ORDINAL_PARADIGM.push(
@@ -78,8 +82,9 @@ const REGEX2TAG_IMMEDIATE = [
     EMAIL_RE,
     LITERAL_SMILE_RE], ['sym']],
   // trmp [12]
-  [[/^[02-9]*[12]$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_1_2, ...NONIFL_ORDINAL_PARADIGM]],
-  [[ARABIC_NUMERAL_RE], [...NONIFL_ARABIC_CARDINAL_PARADIGM, ...NONIFL_ORDINAL_PARADIGM]],
+  [[/^[02-9]*[1]$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_1, ...NONIFL_ORDINAL_PARADIGM]],
+  [[/^[02-9]*[2]$/], [...NONIFL_ARABIC_CARDINAL_PARADIGM_2, ...NONIFL_ORDINAL_PARADIGM]],
+  [[ARABIC_NUMERAL_RE], [...NONIFL_ARABIC_CARDINAL_PARADIGM_3_0, ...NONIFL_ORDINAL_PARADIGM]],
   [[ANY_PUNC_OR_DASH_RE], ['punct']],
   [[URL_RE,
     EMOJI_RE,
@@ -241,6 +246,11 @@ export class MorphAnalyzer {
 
   setKeepN2adj(value = true) {
     this.keepN2adj = value
+    return this
+  }
+
+  setKeepParadigmOmonyms(value = true) {
+    this.keepParadigmOmonyms = value
     return this
   }
 

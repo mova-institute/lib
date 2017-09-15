@@ -2,6 +2,7 @@ import {
   tryMapVesumFlag, tryMapVesumFlagToFeature, MorphInterp, FEATURE_ORDER,
   compareTags,
 } from './morph_interp'
+import * as f from './morph_features'
 import { groupTableBy, arr2indexMap, stableSort } from '../algo'
 import { IStringMorphInterp } from './interfaces'
 import { setTenseIfConverb } from './utils'
@@ -130,12 +131,12 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
       let match = lexeme[0].match(regexp)
       if (match && match.length > 1) {
         for (let flag of match) {
-          yield* wu(lexeme).map(x => x.replace(regexp, '') + flag)
+          yield lexeme.map(x => x.replace(regexp, '') + flag)
         }
         continue lexemeLoop
       }
     }
-    yield* lexeme
+    yield lexeme
   }
 }
 
@@ -172,18 +173,27 @@ export function* domesticateDictCorpViz(fileStr: string) {
     .map(x => x.replace(/'/g, '’'))
 
   let expandedStream = expandDictCorpViz(lines)
-  let lineIterator = iterateDictCorpVizLines(expandedStream)
-  for (let { form, tag, lemma, lemmaTag, isLemma } of lineIterator) {
-    let interp = MorphInterp.fromVesumStr(tag, lemma, lemmaTag)
+  for (let lexeme of expandDictCorpViz(lines)) {
+    let mustDropNumber = /\snumr:/.test(lexeme[0])
+      && lexeme.some(x => /\s.*\b:p\b/.test(x))
+      && !lexeme.some(x => !/\s.*\b:p\b/.test(x))
 
-    setTenseIfConverb(interp, form)
+    for (let { form, tag, lemma, lemmaTag, isLemma } of iterateDictCorpVizLines(lexeme)) {
+      let interp = MorphInterp.fromVesumStr(tag, lemma, lemmaTag)
 
-    let lineStart = (isLemma ? '' : NONLEMMA_PADDING) + form + ' '
-    yield lineStart + interp.toVesumStr()
+      if (mustDropNumber) {
+        interp.dropFeature(f.MorphNumber)
+      }
 
-    if (interp.lemma === 'бути' && interp.isVerb()) {
-      interp.setIsAuxillary()
+      setTenseIfConverb(interp, form)
+
+      let lineStart = (isLemma ? '' : NONLEMMA_PADDING) + form + ' '
       yield lineStart + interp.toVesumStr()
+
+      if (interp.lemma === 'бути' && interp.isVerb()) {
+        interp.setIsAuxillary()
+        yield lineStart + interp.toVesumStr()
+      }
     }
   }
 }
