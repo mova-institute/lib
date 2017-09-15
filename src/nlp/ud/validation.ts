@@ -389,16 +389,16 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   let sentenceHasOneRoot = roots.length === 1
   let node2index = new Map(nodes.map((x, i) => [x, i] as [GraphNode<Token>, number]))
 
-  const reportIf = (message: string, fn: SentencePredicate) => {
+  const oldReportIf = (message: string, fn: SentencePredicate) => {
     problems.push(...mu(sentence).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
   }
 
-  const treedReportIf = (message: string, fn: TreedSentencePredicate) => {
+  const reportIf = (message: string, fn: TreedSentencePredicate) => {
     problems.push(...mu(nodes).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
   }
 
-  const xtreedReportIf = (message: string, fn: TreedSentencePredicate) => undefined
-  const xreportIf = (message: string, fn: SentencePredicate) => undefined
+  const xreportIf = (message: string, fn: TreedSentencePredicate) => undefined
+  const xoldReportIf = (message: string, fn: SentencePredicate) => undefined
 
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     sentence.some((xx, ii) => xx.headIndex === i && fn(xx, ii))
@@ -415,7 +415,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   }
 
   // invalid AUX
-  treedReportIf(`AUX без cop/aux`, PREDICATES.isAuxWithNoCopAux)
+  reportIf(`AUX без cop/aux`, PREDICATES.isAuxWithNoCopAux)
 
   // simple rules
   for (let [rel, messageFrom, predicateFrom, messageTo, predicateTo] of SIMPLE_RULES) {
@@ -426,14 +426,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     let relName = rel.endsWith(':') ? `${rel.slice(0, -1)}` : rel
 
     if (messageFrom && predicateFrom) {
-      reportIf(`${relName} не ${messageFrom}`,
+      oldReportIf(`${relName} не ${messageFrom}`,
         (t, i) => relMatcher(t.rel)
           && !sentence[t.headIndex].interp0().isXForeign()
           && !predicateFrom(sentence[t.headIndex], sentence, t.headIndex))
     }
 
     if (messageTo && predicateTo) {
-      reportIf(`${relName} не ${messageTo}`,
+      oldReportIf(`${relName} не ${messageTo}`,
         (t, i) => relMatcher(t.rel)
           && !t.interp0().isXForeign()
           && !predicateTo(t, sentence, i))
@@ -449,123 +449,123 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     let relName = rel.endsWith(':') ? `${rel.slice(0, -1)}` : rel
 
     if (messageFrom && predicateFrom) {
-      treedReportIf(`${relName} не ${messageFrom}`,
+      reportIf(`${relName} не ${messageFrom}`,
         (t, i) => relMatcher(t.node.rel)
           && !predicateFrom(t.parent))
     }
     if (messageTo && predicateTo) {
-      treedReportIf(`${relName} не ${messageTo}`,
+      reportIf(`${relName} не ${messageTo}`,
         (t, i) => relMatcher(t.node.rel)
           && !predicateTo(t))
     }
   }
 
-  treedReportIf(`декілька підметів (${g.SUBJECTS.join('|')})`,
+  reportIf(`декілька підметів (${g.SUBJECTS.join('|')})`,
     t => t.children.filter(x => uEqSome(x.node.rel, g.SUBJECTS)).length > 1
   )
-  treedReportIf(`декілька прямих додатків`,
+  reportIf(`декілька прямих додатків`,
     t => t.children.filter(x => uEqSome(x.node.rel, g.CORE_COMPLEMENTS)
       // || uEq(x.node.rel, 'xcomp') && x.node.rel !== 'xcomp:2'
     ).length > 1
   )
-  treedReportIf(`декілька непрямих додатків`,
+  reportIf(`декілька непрямих додатків`,
     t => t.children.filter(x => uEq(x.node.rel, 'iobj')).length > 1
   )
-  treedReportIf(`декілька числівників`,
+  reportIf(`декілька числівників`,
     t => t.children.filter(x => isNumericModifier(x.node.rel)).length > 1
   )
-  treedReportIf(`декілька gov-реляцій`,
+  reportIf(`декілька gov-реляцій`,
     t => t.children.filter(x => isGoverning(x.node.rel)).length > 1
   )
-  treedReportIf(`декілька cc`,
+  reportIf(`декілька cc`,
     t => t.children.filter(x => uEq(x.node.rel, 'cc')).length > 1
   )
-  treedReportIf(`декілька mark’ів`,
+  reportIf(`декілька mark’ів`,
     t => t.children.filter(x => uEq(x.node.rel, 'mark')).length > 1
   )
-  treedReportIf(`декілька xcomp’ів`,
+  reportIf(`декілька xcomp’ів`,
     t => t.children.filter(x => uEq(x.node.rel, 'xcomp')
       && x.node.rel !== 'xcomp:2').length > 1
   )
-  treedReportIf(`декілька xcomp:2`,
+  reportIf(`декілька xcomp:2`,
     t => t.children.filter(x => x.node.rel === 'xcomp:2').length > 1
   )
-  treedReportIf(`декілька cop’ів`,
+  reportIf(`декілька cop’ів`,
     t => t.children.filter(x => uEq(x.node.rel, 'cop')).length > 1
   )
-  treedReportIf(`декілька прийменників`,
+  reportIf(`декілька прийменників`,
     t => t.children.filter(x => uEq(x.node.rel, 'case')).length > 1
   )
 
 
-  reportIf(`токен позначено error’ом`, (t, i) => t.hasTag('error'))
+  oldReportIf(`токен позначено error’ом`, (t, i) => t.hasTag('error'))
 
-  reportIf('більше однієї стрілки в слово',
+  oldReportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
 
-  RIGHT_POINTED_RELATIONS.forEach(rel => reportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.headIndex > i))
-  LEFT_POINTED_RELATIONS.forEach(rel => reportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.headIndex < i))
+  RIGHT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.headIndex > i))
+  LEFT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.headIndex < i))
 
-  reportIf(`case праворуч`, (t, i) => uEq(t.rel, 'case')
+  oldReportIf(`case праворуч`, (t, i) => uEq(t.rel, 'case')
     && t.headIndex < i
     && !(sentence[i + 1] && sentence[i + 1].interp.isCardinalNumeral())
   )
 
-  reportIf('невідома реляція',
+  oldReportIf('невідома реляція',
     t => t.rel && !ALLOWED_RELATIONS.includes(t.rel as UdMiRelation))
 
-  treedReportIf(`cc не в сурядний`,
+  reportIf(`cc не в сурядний`,
     t => uEq(t.node.rel, 'cc')
       && !t.node.interp.isCoordinating()
       && !g.hasChild(t, 'fixed')
   )
 
-  reportIf(`punct в двокрапку зліва`,
+  oldReportIf(`punct в двокрапку зліва`,
     (t, i) => i !== sentence.length - 1  // not last in sentence
       && t.form === ':'
       && t.interp.isPunctuation()
       && t.headIndex < i)
 
-  xreportIf(`у залежника ccomp немає підмета`,
+  xoldReportIf(`у залежника ccomp немає підмета`,
     (t, i) => t.rel === 'ccomp'
       && !t.isPromoted
       && !sentence.some(xx => g.SUBJECTS.includes(xx.rel) && xx.headIndex === i))
 
-  treedReportIf(`у залежника xcomp є підмет`,
+  reportIf(`у залежника xcomp є підмет`,
     t => uEq(t.node.rel, 'xcomp')
       && !t.node.isGraft
       && t.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
   )
 
-  reportIf('не discourse до частки',
+  oldReportIf('не discourse до частки',
     t => t.rel
       && !['б', 'би', 'не'].includes(t.form.toLowerCase())
       && t.interp.isParticle()
       && !['discourse', 'fixed'])
 
-  xreportIf('не aux у б(би)',
+  xoldReportIf('не aux у б(би)',
     t => CONDITIONAL_AUX_LEMMAS.includes(t.form.toLowerCase())
       && t.interp.isParticle()
       && !['fixed', 'aux', undefined].includes(t.rel))
 
-  reportIf('не advmod в не',
+  oldReportIf('не advmod в не',
     t => t.interp.isParticle()
       && ['не', /*'ні', 'лише'*/].includes(t.form.toLowerCase())
       && !['advmod', undefined].includes(t.rel))
 
-  reportIf('не cc в сурядий на початку речення',
+  oldReportIf('не cc в сурядий на початку речення',
     (t, i) => t.rel && i === 0 && t.interp.isCoordinating() && !['cc'].includes(t.rel))
 
-  reportIf('obj/iobj має прийменник',
+  oldReportIf('obj/iobj має прийменник',
     (t, i) => ['obj', 'iobj'].includes(t.rel) && sentence.some(xx => uEq(xx.rel, 'case') && xx.headIndex === i))
 
-  xreportIf(`:pass-реляція?`,
+  xoldReportIf(`:pass-реляція?`,
     t => !t.isPromoted
       && ['aux', 'csubj', 'nsubj'].includes(t.rel)
       && sentence[t.headIndex]
       && isPassive(sentence[t.headIndex].interp))  // todo: навпаки
 
-  xreportIf(`:obl:agent?`,
+  xoldReportIf(`:obl:agent?`,
     (t, i) => !t.isPromoted
       && t.rel === 'obl'
       && t.interp.isInstrumental()
@@ -574,7 +574,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
 
   for (let leafrel of LEAF_RELATIONS) {
-    treedReportIf(`${leafrel} має залежників`,
+    reportIf(`${leafrel} має залежників`,
       (t, i) => uEq(t.node.rel, leafrel)
         && (['cop', 'aux'].some(x => uEq(t.node.rel, x))
           ? !t.children.every(x => x.node.interp.isPunctuation()
@@ -587,7 +587,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     )
   }
 
-  xreportIf(`obl з неприсудка`,
+  xoldReportIf(`obl з неприсудка`,
     (t, i) => g.OBLIQUES.includes(t.rel)
       && !t.isPromoted
       && !sentence.some(xx => xx.headIndex === i && uEq(xx.rel, 'cop'))
@@ -596,7 +596,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !sentence[t.headIndex].interp.isAdjective()
       && !sentence[t.headIndex].interp.isAdverb())
 
-  treedReportIf(`сполучник виділено розділовим знаком`,
+  reportIf(`сполучник виділено розділовим знаком`,
     (t, i) => t.node.interp.isConjunction()
       && t.children.some(ch => ch.node.rel === 'punct')
       && !t.isRoot()
@@ -604,7 +604,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.node.hasTag('commed_conj')
   )
 
-  treedReportIf(`підмет не в називному`,
+  reportIf(`підмет не в називному`,
     t => uEq(t.node.rel, 'nsubj')
       && !t.node.isGraft
       && g.thisOrGovernedCase(t) !== f.Case.nominative
@@ -613,7 +613,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !g.isQuantitativeAdverbModified(t)
   )
 
-  treedReportIf(`додаток в називному`,
+  reportIf(`додаток в називному`,
     t => ['obj', 'iobj', 'obl'].some(x => uEq(t.node.rel, x))
       && g.thisOrGovernedCase(t) === f.Case.nominative
       && !t.node.interp.isXForeign()
@@ -625,7 +625,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   // disablable
-  xtreedReportIf(`obl без прийменника`,
+  xreportIf(`obl без прийменника`,
     t => t.node.rel === 'obl'
       && !t.node.isPromoted
       && !hasChildrenOfUrel(t, 'case')
@@ -636,12 +636,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       )
   )
 
-  xtreedReportIf(`obj/obl в давальний`,
+  xreportIf(`obj/obl в давальний`,
     t => uEqSome(t.node.rel, ['obj', 'obl'])
       && t.node.interp.isDative()
   )
 
-  treedReportIf(`місцевий без прийменника`,
+  reportIf(`місцевий без прийменника`,
     t => {
       if (!t.node.rel || !t.node.interp.isLocative() || !canActAsNoun(t.node)) {
         return
@@ -657,19 +657,19 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  treedReportIf(`orphan не з Promoted`,
+  reportIf(`orphan не з Promoted`,
     t => uEq(t.node.rel, 'orphan')
       && !t.parent.node.isPromoted
   )
 
-  treedReportIf(`підрядне означальне відкриває що-іменник`,
+  reportIf(`підрядне означальне відкриває що-іменник`,
     t => uEq(t.node.rel, 'acl')
       && t.children.some(x => x.node.form.toLowerCase() === 'що'
         && uEqSome(x.node.rel, ['nsubj'])
       )
   )
 
-  treedReportIf(`cc без conj`,
+  reportIf(`cc без conj`,
     t => uEq(t.node.rel, 'cc')
       && !t.parent.isRoot()
       && !uEq(t.parent.node.rel, 'conj')
@@ -677,7 +677,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   // todo
-  xtreedReportIf(`підрядне без сполучника`,
+  xreportIf(`підрядне без сполучника`,
     t => uEqSome(t.node.rel, g.SUBORDINATE_CLAUSES)
       && !uEq(t.node.rel, 'xcomp')
       // && !t.parent.children[0].node.interp.isConsequential()
@@ -690,7 +690,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.node.rel.endsWith(':2')
   )
 
-  xtreedReportIf(`зворотне має obj/iobj`,
+  xreportIf(`зворотне має obj/iobj`,
     t => !t.isRoot()
       && uEqSome(t.node.rel, ['obj', 'iobj'])
       && t.parent.node.interp.isReversive()
@@ -702,7 +702,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   // coordination
 
-  treedReportIf(`неузгодження відмінків прийменника`,
+  reportIf(`неузгодження відмінків прийменника`,
     (t, i) => uEq(t.node.rel, 'case')
       && (t.node.interp.features.requiredCase as number) !== g.thisOrGovernedCase(t.parent)
       && !t.parent.node.interp.isXForeign()
@@ -710,13 +710,13 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !g.hasChild(t.parent, 'fixed')
   )
 
-  treedReportIf(`неособове має підмет`,
+  reportIf(`неособове має підмет`,
     t => (t.node.interp.isImpersonal() || g.isInfinitive(t))
       && t.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
       && !t.node.isPromoted
   )
 
-  treedReportIf(`вторинна предикація не в називний/орудний прикметник`,
+  reportIf(`вторинна предикація не в називний/орудний прикметник`,
     t => !t.isRoot()
       && t.node.rel.endsWith(':2')
       && !t.node.interp.isAdjective()
@@ -725,7 +725,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.node.isGraft
   )
 
-  xtreedReportIf(`знахідний без прийменника від недієслова`,
+  xreportIf(`знахідний без прийменника від недієслова`,
     t => canActAsNounForObj(t)
       && t.node.interp.isAccusative()
       && !t.isRoot()
@@ -740,7 +740,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   if (roots.length === 1) {
-    xtreedReportIf(`інфінітив — корінь`,
+    xreportIf(`інфінітив — корінь`,
       t => t.isRoot()
         && g.isInfinitive(t)
       // && t.children.some(x => uEq(x.node.rel, 'nsubj'))
@@ -749,7 +749,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     )
   }
 
-  xtreedReportIf(`неузгодження в часі`,
+  xreportIf(`неузгодження в часі`,
     t => uEq(t.node.rel, 'aux')
       && t.node.interp.isVerb()
       && (t.node.interp.hasFeature(f.Tense) || t.parent.node.interp.hasFeature(f.Tense))
@@ -758,14 +758,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.parent.node.interp.isImpersonal()
   )
 
-  xtreedReportIf(`ні допоміжне, ані повнозначне дієслово не має часу`,
+  xreportIf(`ні допоміжне, ані повнозначне дієслово не має часу`,
     t => uEq(t.node.rel, 'aux')
       && t.node.interp.isVerb()
       && (t.node.interp.isInfinitive() || !t.node.interp.hasFeature(f.Tense))
       && (t.parent.node.interp.isInfinitive() || !t.parent.node.interp.getFeature(f.Tense))
   )
 
-  treedReportIf(`неузгодження підмет — прикметник-присудок`,
+  reportIf(`неузгодження підмет — прикметник-присудок`,
     t => uEq(t.node.rel, 'nsubj')
       && t.parent.node.interp.isAdjective()
       && !t.parent.node.isPromoted
@@ -773,7 +773,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !(t.parent.node.interp.isInstrumental() && g.hasCopula(t.parent))
   )
 
-  treedReportIf(`неузгодження прикладки`,
+  reportIf(`неузгодження прикладки`,
     t => uEq(t.node.rel, 'appos')
       && t.node.interp.isNounish()
       && t.parent.node.interp.isNounish()
@@ -795,7 +795,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     // && !t.parent.node.isPromoted
   )
 
-  treedReportIf(`неузгодження однорідних іменників`,
+  reportIf(`неузгодження однорідних іменників`,
     t => uEq(t.node.rel, 'conj')
       && !uEqSome(t.parent.node.rel, ['obl'])
       && t.node.interp.isNounish()
@@ -809,7 +809,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         && g.hasChild(t, 'case'))
   )
 
-  treedReportIf(`неузгодження однорідних прикметників`,
+  reportIf(`неузгодження однорідних прикметників`,
     t => uEq(t.node.rel, 'conj')
       // && !uEqSome(t.parent.node.rel, ['obl'])
       && t.node.interp.isAdjective()
@@ -818,7 +818,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.node.isPromoted
   )
 
-  xtreedReportIf(`неузгодження однорідних дієслів`,
+  xreportIf(`неузгодження однорідних дієслів`,
     t => uEq(t.node.rel, 'conj')
       && t.node.rel !== 'conj:parataxis'
       // && !uEqSome(t.parent.node.rel, ['obl'])
@@ -830,7 +830,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
 
-  treedReportIf(`неузгодження підмет-присудок`,
+  reportIf(`неузгодження підмет-присудок`,
     (t, i) => {
       if (t.isRoot()
         || t.node.hasTag('graft')
@@ -892,7 +892,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  treedReportIf(`неузгодження іменник-прикметник`,
+  reportIf(`неузгодження іменник-прикметник`,
     (t, i) => {
       if (t.isRoot()) {
         return
@@ -922,7 +922,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  xtreedReportIf(`неузгодження`,
+  xreportIf(`неузгодження`,
     (t, i) => {
       if (!t.parent) {
         return
@@ -964,7 +964,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  treedReportIf(`неузгодження істотовості`,
+  reportIf(`неузгодження істотовості`,
     t => uEqSome(t.node.rel, ['amod', 'det', 'nummod'])
       && t.node.interp.hasFeature(f.RequiredAnimacy)
       && t.parent.node.interp.hasFeature(f.Animacy)
@@ -973,17 +973,17 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     // todo: or ranim for promoted adj
   )
 
-  treedReportIf(`неузгодження flat:name`,
+  reportIf(`неузгодження flat:name`,
     t => t.node.rel === 'flat:name'
       && !g.nounNounAgreed(t.parent.node.interp, t.node.interp)
   )
 
-  xtreedReportIf(`неузгодження flat:title`,
+  xreportIf(`неузгодження flat:title`,
     t => t.node.rel === 'flat:title'
       && !g.nounNounAgreed(t.parent.node.interp, t.node.interp)
   )
 
-  xtreedReportIf(`неузгодження однорідних`,
+  xreportIf(`неузгодження однорідних`,
     t => {
       if (!uEq(t.node.rel, 'conj')
         || t.node.rel === 'conj:parataxis'
@@ -1013,31 +1013,31 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  treedReportIf(`gov-реляція між однаковими відмінками`,
+  reportIf(`gov-реляція між однаковими відмінками`,
     t => isGoverning(t.node.rel)
       && t.node.interp.features.case === t.parent.node.interp.features.case
   )
 
-  treedReportIf(`не gov-реляція між різними відмінками`,
+  reportIf(`не gov-реляція між різними відмінками`,
     t => !isGoverning(t.node.rel)
       && ['nummod', 'det:nummod'].some(rel => uEq(t.node.rel, rel))
       && !t.parent.node.interp.isXForeign()
       && t.node.interp.features.case !== t.parent.node.interp.features.case
   )
 
-  treedReportIf(`керівний числівник не в називному/знахідному`,
+  reportIf(`керівний числівник не в називному/знахідному`,
     t => isGoverning(t.node.rel)
       && t.node.interp.features.case !== t.parent.node.interp.features.case
       && ![f.Case.nominative, f.Case.accusative].includes(t.node.interp.features.case)
   )
 
-  xtreedReportIf(`числівник керує одниною`,  // todo
+  xreportIf(`числівник керує одниною`,  // todo
     t => !t.isRoot()
       && isGoverning(t.parent.node.rel)
       && !t.node.interp.isPlural()
   )
 
-  treedReportIf(`кероване числівником не в родовому`,
+  reportIf(`кероване числівником не в родовому`,
     t => {
       let governer = t.children.find(x => isGoverning(x.node.rel))
       if (!governer) {
@@ -1049,7 +1049,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  treedReportIf(`mark не з кореня підрядного`,
+  reportIf(`mark не з кореня підрядного`,
     (t, i) => uEq(t.node.rel, 'mark')
       // && !t.parent.isRoot()
       && (sentenceHasOneRoot && !t.parent.node.rel
@@ -1062,30 +1062,30 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !(i === 0 && t.parent.isRoot())
   )
 
-  treedReportIf(`parataxis під’єднано сполучником`,
+  reportIf(`parataxis під’єднано сполучником`,
     t => uEq(t.node.rel, 'parataxis')
       && t.node.rel !== 'parataxis:discourse'
       && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
   )
 
-  treedReportIf(`xcomp зі сполучником`,
+  reportIf(`xcomp зі сполучником`,
     t => uEq(t.node.rel, 'xcomp')
       // && t.node.rel !== 'parataxis:discourse'
       && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
   )
 
-  treedReportIf(`flat:name не для імені`,
+  reportIf(`flat:name не для імені`,
     t => (t.node.rel === 'flat:name' || t.children.some(x => x.node.rel === 'flat:name'))
       && !t.node.interp.isName()
   )
 
   // todo
-  xtreedReportIf(`речення з _то_ підряне`,
+  xreportIf(`речення з _то_ підряне`,
     t => uEqSome(t.node.rel, g.SUBORDINATE_CLAUSES)
       && t.children.some(x => x.node.interp.lemma === 'то')
   )
 
-  treedReportIf(`заперечення під’єднане не до cop/aux`,
+  reportIf(`заперечення під’єднане не до cop/aux`,
     t => {
       if (!uEq(t.node.rel, 'advmod')
         || !t.node.interp.isNegative()
@@ -1100,18 +1100,18 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  treedReportIf(`parataxis:discourse в одне слово-недієслово`,
+  reportIf(`parataxis:discourse в одне слово-недієслово`,
     t => t.node.rel === 'parataxis:discourse'
       && !t.children.length
       && !t.node.interp.isVerb()
   )
 
-  xtreedReportIf(`discourse у фразу`,
+  xreportIf(`discourse у фразу`,
     t => uEq(t.node.rel, 'discourse')
       && t.children.filter(x => !uEqSome(x.node.rel, ['fixed', 'punct'])).length
   )
 
-  treedReportIf(`кількісний прислівник модифікує множину`,
+  reportIf(`кількісний прислівник модифікує множину`,
     t => t.node.rel === 'advmod:amtgov'
       && t.parent.node.interp.isPlural()
       && !t.parent.node.interp.isNoSingular()
@@ -1120,14 +1120,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   // todo
-  treedReportIf(`числівник модифікує однину`,
+  reportIf(`числівник модифікує однину`,
     t => isNumericModifier(t.node.rel)
       && t.node.interp.isCardinalNumeral()
       && g.isNumAdvAmbig(t.node.interp.lemma)
       && t.parent.node.interp.isSingular()
   )
 
-  xtreedReportIf(`кого.Acc чому.Gen: patient не iobj?`,
+  xreportIf(`кого.Acc чому.Gen: patient не iobj?`,
     t => {
       let obj = t.children.find(x => uEq(x.node.rel, 'obj'))
       let iobj = t.children.find(x => uEq(x.node.rel, 'iobj'))
@@ -1207,14 +1207,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   }
 
   // todo
-  xtreedReportIf(`залежники голови складеного присудка`,
+  xreportIf(`залежники голови складеного присудка`,
     t => t.children.some(x => x.node.interp.isInfinitive()
       && uEqSome(x.node.rel, ['xcomp', 'csubj', 'ccomp'])
     )
       && t.children.some(x => uEqSome(x.node.rel, ['obl']))  // туду
   )
 
-  treedReportIf(`cop без підмета`,
+  reportIf(`cop без підмета`,
     t => uEq(t.node.rel, 'cop')
       && !t.parent.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
       && !t.parent.node.interp.isAdverb()
@@ -1223,19 +1223,19 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !uEq(t.parent.node.rel, 'xcomp')
   )
 
-  treedReportIf(`conj без розділового чи сполучника`,
+  reportIf(`conj без розділового чи сполучника`,
     t => g.isConjWithoutCcOrPunct(t)
       && t.node.rel !== 'conj:svc'
   )
 
-  treedReportIf(`conj без розділового чи сполучника (може conj:svc?)`,
+  reportIf(`conj без розділового чи сполучника (може conj:svc?)`,
     t => g.isConjWithoutCcOrPunct(t)
       && t.node.rel !== 'conj:svc'
       && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
         .includes(t.node.interp.getFeature(f.VerbType))
   )
 
-  treedReportIf(`advcl без сполучування (може advcl:svc?)`,
+  reportIf(`advcl без сполучування (може advcl:svc?)`,
     t => uEq(t.node.rel, 'advcl')
       && t.node.rel !== 'advcl:2'
       && t.node.rel !== 'advcl:svc'
@@ -1247,7 +1247,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       )
   )
 
-  xtreedReportIf(`ccomp:svc-test`,
+  xreportIf(`ccomp:svc-test`,
     t => t.node.rel === 'ccomp'
       && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
         .includes(t.node.interp.getFeature(f.VerbType))
@@ -1257,7 +1257,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       )
   )
 
-  xtreedReportIf(`xcomp:svc-test`,
+  xreportIf(`xcomp:svc-test`,
     t => t.node.rel === 'xcomp'
       && !t.parent.node.interp.isReversive()
       && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
@@ -1270,17 +1270,17 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.parent.node.interp.isAdjective()
   )
 
-  treedReportIf(`compound:svc неочікуваний`,
+  reportIf(`compound:svc неочікуваний`,
     t => t.node.rel === 'compound:svc'
       && !g.isCompounSvcCandidate(t)
   )
 
-  treedReportIf(`кандидат на compound:svc`,
+  reportIf(`кандидат на compound:svc`,
     t => g.isCompounSvcCandidate(t)
       && t.node.rel !== 'compound:svc'
   )
 
-  treedReportIf(`не csubj з модального прислівника `,
+  reportIf(`не csubj з модального прислівника `,
     t => !t.isRoot()
       && t.parent.node.interp.isAdverb()
       && t.node.interp.isInfinitive()
@@ -1290,14 +1290,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  treedReportIf(`неочікувана реляція в прийменник`,
+  reportIf(`неочікувана реляція в прийменник`,
     t => t.node.rel
       && t.node.interp.isPreposition()
       && !uEqSome(t.node.rel, ['case', 'conj', 'fixed'])
       && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
 
-  treedReportIf(`неочікувана реляція в частку`,
+  reportIf(`неочікувана реляція в частку`,
     t => t.node.rel
       && t.node.interp.isParticle()
       && !uEqSome(t.node.rel, ['discourse', 'advmod', 'fixed', 'flat:repeat', 'goeswith'])
@@ -1305,27 +1305,27 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     // && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
 
-  treedReportIf(`неочікувана реляція в вигук`,
+  reportIf(`неочікувана реляція в вигук`,
     t => t.node.rel
       && !t.node.isGraft
       && t.node.interp.isInterjection()
       && !uEqSome(t.node.rel, ['discourse', 'flat:repeat'])
   )
 
-  xtreedReportIf(`неочікувана реляція в символ`,
+  xreportIf(`неочікувана реляція в символ`,
     t => t.node.rel
       && t.node.interp.isSymbol()
       && !uEqSome(t.node.rel, ['discourse'])
   )
 
-  treedReportIf(`неочікувана реляція в :beforeadj`,
+  reportIf(`неочікувана реляція в :beforeadj`,
     t => t.node.rel
       && t.node.interp.isBeforeadj()
       && (t.node.rel !== 'compound'
         || t.parent.node.indexInSentence < t.node.indexInSentence)
   )
 
-  treedReportIf(`:beforeadj не має дефіса-залежника`,
+  reportIf(`:beforeadj не має дефіса-залежника`,
     t => t.node.interp.isBeforeadj()
       && !t.isRoot()
       && !t.children.some(x => /^[−\-\–\—]$/.test(x.node.interp.lemma)
@@ -1333,20 +1333,20 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       )
   )
 
-  treedReportIf(`неочікувана реляція в PUNCT`,
+  reportIf(`неочікувана реляція в PUNCT`,
     t => t.node.rel
       && t.node.interp.isPunctuation()
       && !uEqSome(t.node.rel, ['punct'])
   )
 
-  treedReportIf(`неочікувана реляція в дієприслівник`,
+  reportIf(`неочікувана реляція в дієприслівник`,
     t => t.node.rel
       && t.node.interp.isConverb()
       && !uEqSome(t.node.rel, ['advcl', 'conj', 'parataxis:discourse'])
       && !g.isAdverbialAcl(t)
   )
 
-  treedReportIf(`неочікувана реляція в AUX`,
+  reportIf(`неочікувана реляція в AUX`,
     t => t.node.rel
       && t.node.interp.isAuxillary()
       && !uEqSome(t.node.rel, ['aux', 'cop'])
@@ -1354,19 +1354,19 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     // && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
 
-  treedReportIf(`неочікувана реляція в сурядний`,
+  reportIf(`неочікувана реляція в сурядний`,
     t => t.node.rel
       && t.node.interp.isCoordinating()
       && !uEqSome(t.node.rel, ['cc'])
   )
 
-  treedReportIf(`неочікувана реляція в SCONJ`,
+  reportIf(`неочікувана реляція в SCONJ`,
     t => t.node.rel
       && t.node.interp.isSubordinative()
       && !uEqSome(t.node.rel, ['mark'])
   )
 
-  xtreedReportIf(`неочікувана реляція в іменник`,
+  xreportIf(`неочікувана реляція в іменник`,
     t => t.node.rel
       && t.node.interp.isNoun()
       && !uEqSome(t.node.rel, ['nsubj', 'nmod', 'appos', 'conj', 'obj', 'iobj', 'obl',
@@ -1375,7 +1375,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !uEqSome(t.node.rel, [...CLAUSAL_MODIFIERS])  // todo
   )
 
-  xtreedReportIf(`неочікувана реляція в дієслово`,
+  xreportIf(`неочікувана реляція в дієслово`,
     t => t.node.rel
       && !t.node.isGraft
       && t.node.interp.isVerb()
@@ -1384,7 +1384,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         'parataxis:discourse'])
   )
 
-  treedReportIf(`неочікувана реляція в DET`,
+  reportIf(`неочікувана реляція в DET`,
     t => t.node.rel
       && !t.node.isPromoted
       && toUd(t.node.interp).pos === 'DET'  // todo: .isDet()
@@ -1392,7 +1392,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !isRelativeInRelcl(t)
   )
 
-  xtreedReportIf(`неочікувана реляція в числівник`,
+  xreportIf(`неочікувана реляція в числівник`,
     t => t.node.rel
       && t.node.interp.isCardinalNumeral()
       && !t.node.isPromoted
@@ -1401,7 +1401,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         && uEqSome(t.node.rel, ['det:nummod', 'det:numgov', 'conj']))
   )
 
-  treedReportIf(`неочікувана реляція в кличний іменник`,
+  reportIf(`неочікувана реляція в кличний іменник`,
     t => t.node.rel
       && t.node.interp.isVocative()
       && t.node.interp.isNounish()
@@ -1409,7 +1409,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         'flat:repeat', 'parataxis'])
   )
 
-  treedReportIf(`неочікувана реляція в називний іменник`,
+  reportIf(`неочікувана реляція в називний іменник`,
     t => t.node.rel
       && t.node.interp.isNominative()
       && t.node.interp.isNounish()
@@ -1420,13 +1420,13 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     // todo
   )
 
-  treedReportIf(`неочікувана реляція в :stem`,
+  reportIf(`неочікувана реляція в :stem`,
     t => t.node.rel
       && t.node.interp.isStem()
       && !uEqSome(t.node.rel, ['compound'])
   )
 
-  treedReportIf(`неочікувана реляція в прислівник з іменника`,
+  reportIf(`неочікувана реляція в прислівник з іменника`,
     t => !t.isRoot()
       && t.node.interp.isAdverb()
       && t.parent.node.interp.isNounish()
@@ -1440,7 +1440,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !g.ADVERBS_MODIFYING_NOUNS.includes(t.node.interp.lemma)
   )
 
-  xtreedReportIf(`неочікувана реляція в прислівник`,
+  xreportIf(`неочікувана реляція в прислівник`,
     t => t.node.rel
       && t.node.interp.isAdverb()
       && !t.parent.node.interp.isNounish()
@@ -1450,7 +1450,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  xtreedReportIf(`означення при займеннику`,
+  xreportIf(`означення при займеннику`,
     t => uEqSome(t.node.rel, ['amod', 'det'])
       && t.parent.node.interp.isNoun()
       && t.parent.node.interp.isPronoun()
@@ -1458,7 +1458,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.parent.node.interp.isGeneral()
   )
 
-  treedReportIf(`неочікуваний відмінок obj`,
+  reportIf(`неочікуваний відмінок obj`,
     t => uEqSome(t.node.rel, ['obj'])
       && !t.node.isGraft
       && !(t.node.interp.isForeign() && !t.node.interp.hasCase())
@@ -1471,7 +1471,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.parent.node.interp.isReversive()  // todo
   )
 
-  treedReportIf(`неочікуваний відмінок iobj`,
+  reportIf(`неочікуваний відмінок iobj`,
     t => uEqSome(t.node.rel, ['iobj'])
       && !t.node.isGraft
       && g.thisOrGovernedCase(t) !== f.Case.dative
@@ -1480,7 +1480,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         && g.thisOrGovernedCase(x) === f.Case.genitive))
   )
 
-  treedReportIf(`неочікуваний відмінок obl`,
+  reportIf(`неочікуваний відмінок obl`,
     t => uEqSome(t.node.rel, ['obl'])
       && !t.node.isGraft
       && !(t.node.interp.isForeign() && !t.node.interp.hasCase())
@@ -1490,7 +1490,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !g.isTerasaZaTerasoyu(t)
   )
 
-  treedReportIf(`nummod праворуч`,
+  reportIf(`nummod праворуч`,
     t => isNumericModifier(t.node.rel)
       && node2index.get(t) > node2index.get(t.parent)
       && !(t.parent.node.interp.isGenitive()
@@ -1500,21 +1500,21 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !g.CURRENCY_SYMBOLS.includes(t.parent.node.interp.lemma)
   )
 
-  xtreedReportIf(`підрядне наслідку — головне`,
+  xreportIf(`підрядне наслідку — головне`,
     t => uEqSome(t.node.rel, ['advcl'])
       // todo: generalize
       && t.children.some(x => x.node.interp.lemma === 'тому'
         && x.node.interp.isDemonstrative())
   )
 
-  treedReportIf(`порядковий праворуч`,
+  reportIf(`порядковий праворуч`,
     t => /^\d+$/.test(t.node.form)
       && uEqSome(t.node.rel, ['amod'])
       && t.node.interp.isOrdinalNumeral()
       && t.node.indexInSentence > t.parent.node.indexInSentence
   )
 
-  treedReportIf(`неочікуваний відмінок nmod`,
+  reportIf(`неочікуваний відмінок nmod`,
     t => uEqSome(t.node.rel, ['nmod'])
       && t.node.interp.isAccusative()
       && !g.hasChild(t, 'case')
@@ -1524,7 +1524,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         && t.parent.node.interp.isActive())
   )
 
-  treedReportIf(`неочікуваний відмінок прикметника-присудка`,
+  reportIf(`неочікуваний відмінок прикметника-присудка`,
     t => g.hasChild(t, 'nsubj')
       && t.node.interp.isAdjective()
       && !t.node.isPromoted
@@ -1532,7 +1532,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !(t.node.interp.isInstrumental() && g.hasCopula(t))
   )
 
-  treedReportIf(`родовий прямий додаток без заперечення`,
+  reportIf(`родовий прямий додаток без заперечення`,
     t => uEqSome(t.node.rel, ['obj'])
       && t.parent.node.interp.isVerbial()
       && g.thisOrGovernedCase(t) === f.Case.genitive
@@ -1551,13 +1551,13 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       )
   )
 
-  xtreedReportIf(`вказують як синонім`,
+  xreportIf(`вказують як синонім`,
     t => (t.node.interp.isNounish() || t.node.interp.isAdjective())
       && (t.node.interp.isNominative() || t.node.interp.isAccusative())
       && t.children.some(x => x.node.interp.lemma === 'як')
   )
 
-  xtreedReportIf(`amod в вираз`,
+  xreportIf(`amod в вираз`,
     t => uEq(t.node.rel, 'amod')
       && g.isFeasibleAclRoot(t)
       && t.node.interp.isParticiple()
