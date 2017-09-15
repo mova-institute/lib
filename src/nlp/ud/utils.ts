@@ -199,7 +199,7 @@ function mustHighlightHoles(sentence: Token[]) {
     return false
   }
 
-  if (numRoots / sentence.length < 0.33) {
+  if (numRoots / sentence.length < 0.41) {
     return true
   }
 

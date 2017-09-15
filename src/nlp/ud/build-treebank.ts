@@ -9,6 +9,8 @@ import * as mkdirp from 'mkdirp'
 import * as columnify from 'columnify'
 import * as _ from 'lodash'
 
+import * as g from './uk_grammar'
+
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
 import { tei2tokenStream, tokenStream2sentences, normalizeMorphoForUd } from '../../nlp/utils'
@@ -21,7 +23,7 @@ import { Token } from '../../nlp/token'
 import { MorphInterp } from '../../nlp/morph_interp'
 import { sentence2conllu, uEq } from './utils'
 import { mu } from '../../mu'
-import { validateSentenceSyntax, CORE_COMPLEMENTS } from './validation'
+import { validateSentenceSyntax } from './validation'
 import { zerofillMax } from '../../string_utils'
 import { toSortableDatetime } from '../../date'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
@@ -50,9 +52,10 @@ interface Args {
 class Dataset {
   file: number
   counts = {
-    wordsKept: 0,
-    wordsExported: 0,
-    sentsExported: 0,
+    tokensInUnfinishedSentenses: 0,
+    tokensBlocked: 0,
+    tokensExported: 0,
+    sentencesExported: 0,
   }
   newdoc = false
 }
@@ -133,6 +136,7 @@ function main() {
 
       let numTokens = tokens.length
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
+      let numComplete = numTokens - roots.length + 1
       let isComplete = roots.length === 1
       let percentComplete = 1 - ((roots.length - 1) / (numTokens - 1))
       let hasMorphErrors = tokens.some(x => x.interp.isError())
@@ -155,7 +159,8 @@ function main() {
       if (percentComplete) {
         let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
-          datasetRegistry[dataset].counts.wordsKept += numTokens
+          datasetRegistry[dataset].counts.tokensBlocked += numComplete
+          datasetRegistry[dataset].counts.tokensInUnfinishedSentenses += numTokens
           sentenseErrors.push({
             sentenceId,
             problems: [{ message: 'цикл' }],
@@ -189,13 +194,14 @@ function main() {
         if (args.dryRun) {
           continue
         } else if (args.validOnly && hasProblems) {
-          datasetRegistry[dataset].counts.wordsKept += numTokens
+          datasetRegistry[dataset].counts.tokensBlocked += numComplete
+          datasetRegistry[dataset].counts.tokensInUnfinishedSentenses += numTokens
         } else {
           if (isComplete || args.includeIncomplete) {
-            ++datasetRegistry[dataset].counts.sentsExported
-            datasetRegistry[dataset].counts.wordsExported += numTokens
+            ++datasetRegistry[dataset].counts.sentencesExported
+            datasetRegistry[dataset].counts.tokensExported += numTokens
             if (!args.noStandartizing) {
-              standartizeSentence2ud20(tokens)
+              g.standartizeSentence2ud20(nodes)
             }
 
             let filename = set2filename(outDir, args.datasetSchema, dataset)
@@ -205,7 +211,8 @@ function main() {
             datasetRegistry[dataset].newdoc = false
             annotationalGap = false
           } else {
-            datasetRegistry[dataset].counts.wordsKept += numTokens
+            datasetRegistry[dataset].counts.tokensBlocked += numComplete
+            datasetRegistry[dataset].counts.tokensInUnfinishedSentenses += numTokens
           }
         }
       }
@@ -224,10 +231,10 @@ function main() {
         let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { morphOnly: true })
         fs.writeSync(file, conlluedSentence + '\n\n')
 
-        ++datasetRegistryMorpho[dataset].counts.sentsExported
-        datasetRegistryMorpho[dataset].counts.wordsExported += numTokens
+        ++datasetRegistryMorpho[dataset].counts.sentencesExported
+        datasetRegistryMorpho[dataset].counts.tokensExported += numTokens
       } else {
-        datasetRegistryMorpho[dataset].counts.wordsKept += numTokens
+        datasetRegistryMorpho[dataset].counts.tokensInUnfinishedSentenses += numTokens
       }
     }
   }
@@ -275,26 +282,36 @@ function transposeProblems(problems: any[]) {
 
 //------------------------------------------------------------------------------
 function printStats(datasetRegistry: Dict<Dataset>, header: string) {
-  let stats = Object.entries(datasetRegistry).map(([set, { counts: { wordsKept, wordsExported, sentsExported } }]) => ({
-    set,
-    't kept': wordsKept,
-    't exported': wordsExported,
-    's exported': sentsExported,
-  }))
+  let stats = Object.entries(datasetRegistry)
+    .map(([set, { counts: { tokensBlocked, tokensExported, tokensInUnfinishedSentenses, sentencesExported } }]) => ({
+      set,
+      'blocked': tokensBlocked,
+      'holes': tokensInUnfinishedSentenses - tokensBlocked,
+      'exported': tokensExported,
+      'exported s': sentencesExported,
+    }))
   stats.push({
     set: 'TOTAL',
-    't kept': stats.map(x => x['t kept']).reduce((a, b) => a + b, 0),
-    't exported': stats.map(x => x['t exported']).reduce((a, b) => a + b, 0),
-    's exported': stats.map(x => x['s exported']).reduce((a, b) => a + b, 0),
+    'blocked': stats.map(x => x['blocked']).reduce((a, b) => a + b, 0),
+    'holes': stats.map(x => x['holes']).reduce((a, b) => a + b, 0),
+    'exported': stats.map(x => x['exported']).reduce((a, b) => a + b, 0),
+    'exported s': stats.map(x => x['exported s']).reduce((a, b) => a + b, 0),
   })
 
   console.log(`\n${header}`)
   console.log(columnify(stats, {
     config: {
-      kept: {
+      align: 'right',
+      blocked: {
         align: 'right',
       },
       exported: {
+        align: 'right',
+      },
+      holes: {
+        align: 'right',
+      },
+      'exported s': {
         align: 'right',
       },
     },
@@ -360,7 +377,7 @@ function standartizeMorpho(sentence: Array<Token>) {
     token.interp.setIsAuxillary(false)
 
     if (token.interp.isForeign()) {
-      token.interps = [MorphInterp.fromVesumStr('x:foreign').setLemma(token.interp.lemma)]
+      token.interps = [MorphInterp.fromVesumStr('x:foreign', token.interp.lemma)]
     }
 
     if (token.interp.isTypo()) {
@@ -384,56 +401,6 @@ function standartizeMorpho(sentence: Array<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
-function standartizeSentence2ud20(sentence: Array<Token>) {
-  // let id2i = new Map(sentence.map((t, i) => [t.id, i] as [string, number]))
-
-  let lastToken = last(sentence)
-  let rootIndex = sentence.findIndex(x => !x.hasDeps())
-
-  for (let token of sentence) {
-    // choose (punct) relation from the rigthtest token
-    token.deps = token.deps
-      .sort((a, b) => a.headIndex - b.headIndex)
-      .slice(0, 1)
-
-    // set AUX
-    if (['aux', 'cop'].some(x => uEq(token.rel, x))) {
-      token.interp.setIsAuxillary()
-      if (['б', 'би'].includes(token.interp.lemma)) {
-        token.interp.setIsConditional()
-      }
-    }
-
-    // set the only iobj to obj
-    if (token.rel === 'iobj' && !sentence.some(tt => tt.headIndex === token.headIndex && CORE_COMPLEMENTS.includes(tt.rel))) {
-      token.rel = 'obj'
-    }
-
-    // simple-rename internal rels
-    if (token.hasDeps()) {
-      token.rel = REL_RENAMINGS[token.rel] || token.rel
-    }
-
-    // // move dislocated to its head's head, see docs and https://github.com/UniversalDependencies/docs/issues/345
-    // // internally we annoate it deliberately against UD to preserve more info
-    // if (token.rel === 'dislocated') {
-    //   token.head = sentence[token.head].head
-    //   if (token.head === undefined) {
-    //     console.error(sentence.map(x => x.form).join(' '))
-    //     throw new Error(`"dislocated" from root`)
-    //   }
-    // }
-  }
-
-  // set parataxis punct to the root
-  let thecase = lastToken.interp.isPunctuation()
-    && sentence[lastToken.headIndex]
-    && sentence[lastToken.headIndex].rel === 'parataxis'
-  if (thecase) {
-    lastToken.headIndex = rootIndex
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {

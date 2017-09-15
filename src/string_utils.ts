@@ -22,6 +22,12 @@ export function isAllcaps(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function trimAfterFirst(toBeTrimmed: string, substring: string) {
+  let index = toBeTrimmed.indexOf(substring)
+  return index < 0 ? toBeTrimmed : toBeTrimmed.substr(0, index)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function trimAfterLast(toBeTrimmed: string, substring: string) {
   let index = toBeTrimmed.lastIndexOf(substring)
   return index < 0 ? toBeTrimmed : toBeTrimmed.substr(0, index)

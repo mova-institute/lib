@@ -396,6 +396,7 @@ function main() {
             // && !node.parent.children.some(x => uEq(x.node.rel, 'conj'))
             // && (interp.isNounish() || interp.isAdjective())
             && udInterp.pos === 'DET' && ['його', 'її', 'їх'].includes(interp.lemma)
+            && !parent.interp.isXForeign()
             // && false
           ) {
             interp.features.case = parent.interp.features.case

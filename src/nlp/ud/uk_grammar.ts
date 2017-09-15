@@ -1,8 +1,11 @@
-import { GraphNode } from '../../lib/graph'
+import { GraphNode, walkDepth } from '../../lib/graph'
 import { Token } from '../token'
 import { MorphInterp } from '../morph_interp'
 import * as f from '../morph_features'
 import { uEq, uEqSome } from './utils'
+import { mu } from '../../mu'
+import { last } from '../../lang'
+import { trimAfterFirst } from '../../string_utils'
 
 export type TokenNode = GraphNode<Token>
 export type Node2IndexMap = Map<TokenNode, number>
@@ -257,7 +260,7 @@ export function isNegated(t: TokenNode) {
 ////////////////////////////////////////////////////////////////////////////////
 export function isModalAdv(t: TokenNode) {
   return t.node.interp.isAdverb()
-    && MODAL_ADVS.includes(t.node.interp.lemma)
+    && SOME_MODAL_ADVS.includes(t.node.interp.lemma)
     && (uEqSome(t.node.rel, SUBORDINATE_CLAUSES)
       || uEqSome(t.node.rel, ['parataxis', 'conj'])
       || t.isRoot()
@@ -296,19 +299,103 @@ export function isCompounSvcCandidate(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isInfinitive(t: GraphNode<Token>) {
+export function isInfinitive(t: TokenNode) {
   return t.node.interp.isInfinitive()
     && !t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && !x.node.interp.isInfinitive())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isInfinitiveCop(t: GraphNode<Token>) {
+export function isInfinitiveCop(t: TokenNode) {
   return !t.node.interp.isVerb()
     && t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isInfinitive())
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function hasOwnRelative(t: TokenNode) {
+  let it = walkDepth(t, x => x !== t
+    && uEqSome(x.node.rel, SUBORDINATE_CLAUSES)
+    && !(x.parent.node.interp.isAdverb() && uEqSome(x.node.rel, ['csubj']))
+  )
+
+  return mu(it)
+    .some(x => x.node.interp.isRelative())
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isAdverbialAcl(t: TokenNode) {
+  return t.node.interp.isAdverb() && !t.hasChildren()  // двері праворуч
+    || t.node.interp.isConverb() && !t.hasChildren()  // бокс лежачи
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isFeasibleAclRoot(t: TokenNode) {
+  return t.node.interp.isVerb() && t.node.interp.isInfinitive()
+    || t.children.some(x => uEqSome(x.node.rel, ['mark']))
+    || t.children.some(x => (x.node.rel === 'xcomp' || uEqSome(x.node.rel, ['csubj']))
+      && x.node.interp.isInfinitive())
+    || hasOwnRelative(t)
+    // || t.children.some(x => x.node.interp.isRelative())
+    // || t.node.interp.isParticiple()  // temp
+    || isAdverbialAcl(t)
+    || t.children.some(x => uEq(x.node.rel, 'nsubj'))
+}
 
 
+////////////////////////////////////////////////////////////////////////////////
+const DUMB_DOWN_TO_UNIVERSAL = [
+  'conj:parataxis'
+]
+export function standartizeSentence2ud20(sentence: TokenNode[]) {
+  let lastToken = last(sentence).node
+  let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
+
+  for (let node of sentence) {
+    let t = node.node
+
+    // choose (punct) relation from the rigthtest token
+    t.deps = t.deps
+      .sort((a, b) => a.headIndex - b.headIndex)
+      .slice(0, 1)
+
+    // set AUX and Cond
+    if (uEqSome(t.rel, ['aux', 'cop'])) {
+      t.interp.setIsAuxillary()
+      if (['б', 'би'].includes(t.interp.lemma)) {
+        t.interp.setIsConditional()
+      }
+    }
+
+    // set the only iobj to obj
+    if (uEq(t.rel, 'iobj')
+      && !node.parent.children.some(x => uEqSome(x.node.rel, CORE_COMPLEMENTS))
+    ) {
+      t.rel = 'obj'
+    }
+
+    // remove :spec of internal rels
+    if (DUMB_DOWN_TO_UNIVERSAL.includes(t.rel)) {
+      t.rel = trimAfterFirst(t.rel, ':')
+    }
+
+    // set participle acl to amod
+    if (uEq(t.rel, 'acl')
+      && !isFeasibleAclRoot(node)
+      && t.interp.isParticiple()
+    ) {
+      t.rel = 'amod'
+    }
+  }
+
+  // set parataxis punct to the root
+  if (lastToken.interp.isPunctuation()
+    && uEq(lastToken.rel, 'parataxis')
+  ) {
+    lastToken.headIndex = rootIndex
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 export const SUBORDINATE_CLAUSES = [
   'csubj',
   'ccomp',
@@ -318,70 +405,151 @@ export const SUBORDINATE_CLAUSES = [
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
-export const MODAL_ADVS = `
-важко
-важливо
-варт
-варто
-вільно
-гарно
-дивно
-довше
-дозволено
-досить
-достатньо
-доцільно
-жарко
-запізно
-зручніше
-краще
-легко
-ліпше
-може
-можливо
-можна
-найкраще
-найліпше
-найтяжче
-невільно
-неефективно
-неможливо
-необхідно
-ніяково
-нормально
-потрібно
-правильно
-приємно
-реально
-слід
-сором
-треба
-цікаво
-чемно
-`.trim().split(/\s+/g)
-
+export const SOME_MODAL_ADVS = [
+  'важко',
+  'важливо',
+  'варт',
+  'варто',
+  'вільно',
+  'гарно',
+  'дивно',
+  'довше',
+  'дозволено',
+  'досить',
+  'достатньо',
+  'доцільно',
+  'жарко',
+  'запізно',
+  'зручніше',
+  'краще',
+  'легко',
+  'ліпше',
+  'може',
+  'можливо',
+  'можна',
+  'найкраще',
+  'найліпше',
+  'найтяжче',
+  'невільно',
+  'неефективно',
+  'неможливо',
+  'необхідно',
+  'ніяково',
+  'нормально',
+  'потрібно',
+  'правильно',
+  'приємно',
+  'реально',
+  'слід',
+  'сором',
+  'треба',
+  'цікаво',
+  'чемно',
+]
 
 const NUM_ADV_AMBIG = [
   'багато',
-  'скільки',
   'небагато',
   'скілька',
+  'скільки',
   'скількись',
   'скількі',
 ]
 
 export const QAUNTITATIVE_ADVERBS = [
   ...NUM_ADV_AMBIG,
-  'мало',
-  'чимало',
-  'немало',
-  'менше',
   'більше',
-  'трошки',
+  'мало',
+  'менше',
+  'немало',
   'трохи',
+  'трошки',
+  'чимало',
 ]
-
 
 export const ADVERBS_MODIFYING_NOUNS = [
   'майже',
+]
+
+export const CORE_COMPLEMENTS = [
+  'obj',
+  // 'xcomp',
+  'ccomp',
+]
+
+export const COMPLEMENTS = [
+  ...CORE_COMPLEMENTS,
+  'iobj',
+]
+
+export const OBLIQUES = [
+  'obl',
+  'obl:agent',
+]
+
+export const SUBJECTS = [
+  'nsubj',
+  'csubj',
+]
+
+export const NOMINAL_HEAD_MODIFIERS = [
+  'nmod',
+  'appos',
+  'amod',
+  'nummod',
+  'nummod_gov',
+  'acl',
+  'det',
+  'case',
+  'punct',
+  'conj',
+  'cc',
+  'advmod',
+  'discourse',
+]
+
+export const SOME_FREQUENT_TRANSITIVE_VERBS = [
+  'бажати',
+  'вважати',
+  'вважати',
+  'вимагати',
+  'вирішити',
+  'виходити',
+  'встигнути',
+  'дозволити',
+  'дозволяти',
+  'доручити',
+  'заборонити',
+  'завадити',
+  'змогти',
+  'змусити',
+  'змушувати',
+  'зуміти',
+  'любити',
+  'мати',
+  'могти',
+  'мусити',
+  'переставати',
+  'почати',
+  'починати',
+  'примушувати',
+  'припинити',
+  'пропонувати',
+  'радити',
+  'розуміти',
+  'спробувати',
+  'спробувити',
+  'спробувити',
+  'хотіти',
+  // 'звикнути',
+]
+
+export const SOME_FREQUENT_INTRANSITIVE_VERBS = [
+  'бігти',
+  'вабити',  //
+  'їхати',
+  'поїхати',
+  'приходити',
+  'сідати',
+  'ходити',
 ]

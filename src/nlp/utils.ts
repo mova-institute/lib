@@ -1304,13 +1304,14 @@ export function setTenseIfConverb(interp: MorphInterp, form: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
-  setTenseIfConverb(interp, form)
+  setTenseIfConverb(interp, form)  // redundant?
 
   // set rudundant number
   if ((interp.isNounish() || interp.isAdjective())
     && interp.features.number === undefined
     && interp.features.numberTantum === undefined
-    && interp.hasGender()) {
+    && interp.hasGender()
+  ) {
     interp.setIsSingular()
   }
 
@@ -1319,7 +1320,7 @@ export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
     interp.features.degree = undefined
   }
 
-  // drop it
+  // drop PrepCase
   interp.features.prepositionRequirement = undefined
 }
 

@@ -78,43 +78,6 @@ const ALLOWED_RELATIONS: UdMiRelation[] = [
   'xcomp',
 ]
 
-export const CORE_COMPLEMENTS = [
-  'obj',
-  // 'xcomp',
-  'ccomp',
-]
-
-const COMPLEMENTS = [
-  ...CORE_COMPLEMENTS,
-  'iobj',
-]
-
-const OBLIQUES = [
-  'obl',
-  'obl:agent',
-]
-
-const SUBJECTS = [
-  'nsubj',
-  'csubj',
-]
-
-const NOMINAL_HEAD_MODIFIERS = [
-  'nmod',
-  'appos',
-  'amod',
-  'nummod',
-  'nummod_gov',
-  'acl',
-  'det',
-  'case',
-  'punct',
-  'conj',
-  'cc',
-  'advmod',
-  'discourse',
-]
-
 const LEAF_RELATIONS = [
   'cop',
   'aux',
@@ -326,13 +289,11 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     ,
     `в прийменник`,
     t => t.node.interp.isPreposition() || t.children.some(t2 => uEq(t2.node.rel, 'fixed'))],
-
   [`mark`,
     ``, t => t,
     `в підрядний сполучник`,
     t => t.node.interp.isSubordinative()
       || t.children.length && t.children.every(x => uEq(x.node.rel, 'fixed'))],
-
   [`nsubj:`,
     `з присудка`,
     t => canBePredicateTreed(t),
@@ -366,20 +327,12 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
   ],
   [`aux`,
     `з дієслівного`, t => t.node.interp.isVerbial2()
-      || t.node.interp.isAdverb() && t.children.some(x => SUBJECTS.some(subj => uEq(x.node.rel, subj))),
+      || t.node.interp.isAdverb() && t.children.some(x => g.SUBJECTS.some(subj => uEq(x.node.rel, subj))),
     `в ${AUX_LEMMAS.join('|')}`,
     t => AUX_LEMMAS.includes(t.node.interp.lemma)],
   [`acl`, `з іменника`, t => canActAsNoun(t.node) || t.node.interp.isDemonstrative(),
-    `в присудок (з умовами)`, t => t.node.interp.isVerb() && t.node.interp.isInfinitive()
-      // sic!: not canBePredicate(), special
-      || t.children.some(x => uEqSome(x.node.rel, ['mark']))
-      || t.children.some(x => (x.node.rel === 'xcomp' || uEqSome(x.node.rel, ['csubj']))
-        && x.node.interp.isInfinitive())
-      || hasOwnRelative(t)
-      // || t.children.some(x => x.node.interp.isRelative())
+    `в присудок (з умовами)`, t => g.isFeasibleAclRoot(t)
       || t.node.interp.isParticiple()  // temp
-      || isAdverbialAcl(t)
-      || t.children.some(x => uEq(x.node.rel, 'nsubj'))
   ],
   [`punct`,
     `зі слова`,
@@ -406,6 +359,13 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     t => (t.node.interp.isNominative() || t.node.interp.isInstrumental())
       && (t.node.interp.isNoun() || t.node.interp.isAdjective())
       && !t.node.isGraft
+  ],
+  [`advcl:2`,
+    `з присудка`,
+    t => canBePredicateTreed(t),
+    `в називний/орудний іменник/прикметник`,
+    t => (t.node.interp.isNominative() || t.node.interp.isInstrumental())
+      && (t.node.interp.isNoun() || t.node.interp.isAdjective())
   ]
 ]
 
@@ -499,11 +459,13 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   }
 
-  treedReportIf(`декілька підметів (${SUBJECTS.join('|')})`,
-    t => t.children.filter(x => uEqSome(x.node.rel, SUBJECTS)).length > 1
+  treedReportIf(`декілька підметів (${g.SUBJECTS.join('|')})`,
+    t => t.children.filter(x => uEqSome(x.node.rel, g.SUBJECTS)).length > 1
   )
-  treedReportIf(`декілька прямих додатків (${CORE_COMPLEMENTS.join('|')})`,
-    t => t.children.filter(x => uEqSome(x.node.rel, CORE_COMPLEMENTS)).length > 1
+  treedReportIf(`декілька прямих додатків`,
+    t => t.children.filter(x => uEqSome(x.node.rel, g.CORE_COMPLEMENTS)
+      // || uEq(x.node.rel, 'xcomp') && x.node.rel !== 'xcomp:2'
+    ).length > 1
   )
   treedReportIf(`декілька непрямих додатків`,
     t => t.children.filter(x => uEq(x.node.rel, 'iobj')).length > 1
@@ -566,12 +528,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   xreportIf(`у залежника ccomp немає підмета`,
     (t, i) => t.rel === 'ccomp'
       && !t.isPromoted
-      && !sentence.some(xx => SUBJECTS.includes(xx.rel) && xx.headIndex === i))
+      && !sentence.some(xx => g.SUBJECTS.includes(xx.rel) && xx.headIndex === i))
 
   treedReportIf(`у залежника xcomp є підмет`,
     t => uEq(t.node.rel, 'xcomp')
       && !t.node.isGraft
-      && t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
+      && t.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
   )
 
   reportIf('не discourse до частки',
@@ -625,7 +587,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   }
 
   xreportIf(`obl з неприсудка`,
-    (t, i) => OBLIQUES.includes(t.rel)
+    (t, i) => g.OBLIQUES.includes(t.rel)
       && !t.isPromoted
       && !sentence.some(xx => xx.headIndex === i && uEq(xx.rel, 'cop'))
       && !sentence[t.headIndex].interp.isNounish()
@@ -719,7 +681,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !uEq(t.node.rel, 'xcomp')
       // && !t.parent.children[0].node.interp.isConsequential()
       && !t.children.some(x => uEq(x.node.rel, 'mark'))
-      && !hasOwnRelative(t)
+      && !g.hasOwnRelative(t)
       // && !t.children.some(x => x.node.interp.isRelative())
       && !g.isInfinitive(t)
       && !(uEq(t.node.rel, 'acl') && t.node.interp.isParticiple())
@@ -749,7 +711,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   treedReportIf(`неособове має підмет`,
     t => (t.node.interp.isImpersonal() || g.isInfinitive(t))
-      && t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
+      && t.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
       && !t.node.isPromoted
   )
 
@@ -1234,7 +1196,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     && g.isInfinitive(t.parent)
     // && t.parent.isRoot()
     // || !['acl', 'xcomp', 'c'].some(x => uEq(t.parent.node.rel, x)))
-    && g.MODAL_ADVS.some(form => t.node.interp.lemma === form)
+    && g.SOME_MODAL_ADVS.some(form => t.node.interp.lemma === form)
   )
   if (0 && interests.length) {
     problems.push({
@@ -1253,7 +1215,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   treedReportIf(`cop без підмета`,
     t => uEq(t.node.rel, 'cop')
-      && !t.parent.children.some(x => uEqSome(x.node.rel, SUBJECTS))
+      && !t.parent.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
       && !t.parent.node.interp.isAdverb()
       && !t.parent.node.interp.isAdjective()
       && !t.parent.node.interp.isInstrumental()
@@ -1276,7 +1238,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => uEq(t.node.rel, 'advcl')
       && t.node.rel !== 'advcl:2'
       && t.node.rel !== 'advcl:svc'
-      && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
+      && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative, f.VerbType]
         .includes(t.node.interp.getFeature(f.VerbType))
       && !t.children.some(x => uEqSome(x.node.rel, ['mark'])
         || x.node.interp.isRelative()
@@ -1296,12 +1258,15 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   xtreedReportIf(`xcomp:svc-test`,
     t => t.node.rel === 'xcomp'
+      && !t.parent.node.interp.isReversive()
       && [f.VerbType.indicative, f.VerbType.infinitive, f.VerbType.imperative]
         .includes(t.node.interp.getFeature(f.VerbType))
       && !t.children.some(x => uEqSome(x.node.rel, ['mark'])
         || x.node.interp.isRelative()
         || x.node.interp.isPreposition()  // замість просто зробити
       )
+      && !g.SOME_FREQUENT_TRANSITIVE_VERBS.includes(t.parent.node.interp.lemma)
+      && !t.parent.node.interp.isAdjective()
   )
 
   treedReportIf(`compound:svc неочікуваний`,
@@ -1312,6 +1277,14 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   treedReportIf(`кандидат на compound:svc`,
     t => g.isCompounSvcCandidate(t)
       && t.node.rel !== 'compound:svc'
+  )
+
+  treedReportIf(`не csubj з модального прислівника `,
+    t => !t.isRoot()
+      && t.parent.node.interp.isAdverb()
+      && t.node.interp.isInfinitive()
+      && !uEqSome(t.node.rel, ['csubj', 'conj'])
+      && !t.children.some(x => uEqSome(x.node.rel, ['mark']))
   )
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1369,7 +1342,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => t.node.rel
       && t.node.interp.isConverb()
       && !uEqSome(t.node.rel, ['advcl', 'conj', 'parataxis:discourse'])
-      && !isAdverbialAcl(t)
+      && !g.isAdverbialAcl(t)
   )
 
   treedReportIf(`неочікувана реляція в AUX`,
@@ -1577,14 +1550,18 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       )
   )
 
-  // treedReportIf(`родовий прямий додаток без заперечення`,
-  //   t => t.node.interp.isGenitive()
-  //     && !g.isNegated(t.parent)
-  // )
+  xtreedReportIf(`вказують як синонім`,
+    t => (t.node.interp.isNounish() || t.node.interp.isAdjective())
+      && (t.node.interp.isNominative() || t.node.interp.isAccusative())
+      && t.children.some(x => x.node.interp.lemma === 'як')
+  )
 
-  // treedReportIf(`неочікуване вживання xcomp:2`,
-  //   t =>
-  //   )
+  xtreedReportIf(`amod в вираз`,
+    t => uEq(t.node.rel, 'amod')
+      && g.isFeasibleAclRoot(t)
+      && t.node.interp.isParticiple()
+  )
+
 
   // наістотнення
   // treedReportIf(`obj в родовому`,
@@ -1711,17 +1688,6 @@ function isRelativeInRelcl(node: GraphNode<Token>) {
     .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
 
   return clauseRoot && uEq(clauseRoot.node.rel, 'acl')
-}
-
-//------------------------------------------------------------------------------
-function hasOwnRelative(node: GraphNode<Token>) {
-  let it = walkDepth(node, x => x !== node
-    && uEqSome(x.node.rel, g.SUBORDINATE_CLAUSES)
-    && !(x.parent.node.interp.isAdverb() && uEqSome(x.node.rel, ['csubj']))
-  )
-
-  return mu(it)
-    .some(x => x.node.interp.isRelative())
 }
 
 //------------------------------------------------------------------------------
@@ -1889,10 +1855,4 @@ function isEncolsedInQuotes(node: GraphNode<Token>) {
     && /^["»’”‟]$/.test(last(node.children).node.form)
 
   return ret
-}
-
-//------------------------------------------------------------------------------
-function isAdverbialAcl(t: GraphNode<Token>) {
-  return t.node.interp.isAdverb() && !t.hasChildren()  // двері праворуч
-    || t.node.interp.isConverb() && !t.hasChildren()  // бокс лежачи
 }
