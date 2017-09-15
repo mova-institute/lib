@@ -1031,10 +1031,13 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && ![f.Case.nominative, f.Case.accusative].includes(t.node.interp.features.case)
   )
 
-  xreportIf(`числівник керує одниною`,  // todo
-    t => !t.isRoot()
-      && isGoverning(t.parent.node.rel)
-      && !t.node.interp.isPlural()
+  reportIf(`множинний числівник керує одниною`,
+    t => uEqSome(t.node.rel, ['nummod', 'det:nummod', 'det:numgov'])
+      && !t.parent.node.interp.isPlural()
+      && !t.node.interp.lemma.endsWith('1')
+      && !['один', 'півтора'].includes(t.node.interp.lemma)
+      && !g.canBeDecimalFraction(t)
+      && !t.parent.node.interp.isXForeign()
   )
 
   reportIf(`кероване числівником не в родовому`,
@@ -1117,14 +1120,6 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.parent.node.interp.isNoSingular()
       && !t.parent.node.interp.hasNonpositiveDegree()
       && !['чимало', 'трохи'].includes(t.node.interp.lemma)
-  )
-
-  // todo
-  reportIf(`числівник модифікує однину`,
-    t => isNumericModifier(t.node.rel)
-      && t.node.interp.isCardinalNumeral()
-      && g.isNumAdvAmbig(t.node.interp.lemma)
-      && t.parent.node.interp.isSingular()
   )
 
   xreportIf(`кого.Acc чому.Gen: patient не iobj?`,
@@ -1646,6 +1641,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // кома-риска з-від праворуч
   // між двома inf коли друге без спол не підр зв
   // тобто, цебто, а саме, як-от, або, чи (у значенні “тобто”)
+  // десяткові дроби однина
 
 
 

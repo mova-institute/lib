@@ -340,6 +340,19 @@ export function isFeasibleAclRoot(t: TokenNode) {
     || t.children.some(x => uEq(x.node.rel, 'nsubj'))
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function canBeDecimalFraction(t: TokenNode) {
+  return t.node.interp.isCardinalNumeral()
+    && /^\d+$/.test(t.node.interp.lemma)
+    && t.children.some(x => x.node.interp.isCardinalNumeral()
+      && uEq(x.node.rel, 'compound')
+      && /^\d+$/.test(x.node.interp.lemma)
+      && x.children.length === 1
+      && [',', '.'].includes(x.children[0].node.interp.lemma)
+      && !x.children[0].hasChildren()
+    )
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 const DUMB_DOWN_TO_UNIVERSAL = [
