@@ -1563,6 +1563,13 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && t.node.interp.isParticiple()
   )
 
+  reportIf(`„більш ніж“ не fixed`,
+    t => ['ніж', 'як', 'від', 'чим'].includes(t.node.form)
+      && sentence[t.node.indexInSentence - 1]
+      && ['більше', 'більш'].includes(sentence[t.node.indexInSentence - 1].form)
+      && !uEq(t.node.rel, 'fixed')
+  )
+
 
   // наістотнення
   // treedReportIf(`obj в родовому`,
