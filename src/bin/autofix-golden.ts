@@ -705,18 +705,28 @@ const DROP_ORDER = [
 ]
 //------------------------------------------------------------------------------
 function findClosestFixable(inCorp: MorphInterp, inDict: MorphInterp[]) {
+  let paradigmOmonym = inCorp.getFeature(f.ParadigmOmonym)
+
   let inCorp2 = inCorp.clone().dropFeature(f.ParadigmOmonym)
   let inDict2 = inDict.map(x => x.clone().dropFeature(f.ParadigmOmonym))
 
+  if (inCorp.isCardinalNumeral()) {  // one-time thing
+    inCorp2.dropFeature(f.MorphNumber)
+  }
+
   for (let [i, feature] of DROP_ORDER.entries()) {
-    inCorp2.setFeature(feature, undefined)
-    inDict2.forEach(x => x.setFeature(feature, undefined))
+    inCorp2.dropFeature(feature)
+    inDict2.forEach(x => x.dropFeature(feature))
     let index = inDict2.findIndex(x => inCorp.isAdjectiveAsNoun()
       ? x.featurewiseEquals(inCorp2)
       : x.equals(inCorp2))
     if (index >= 0) {
       if (i > 3) {
-        return inDict[index]
+        let ret = inDict[index].setFeature(f.ParadigmOmonym, paradigmOmonym)
+        if (inCorp.isAdjectiveAsNoun()) {
+          ret.lemma = inCorp.lemma
+        }
+        return ret
       }
       return inCorp
     }
