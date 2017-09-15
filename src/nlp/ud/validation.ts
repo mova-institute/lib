@@ -237,12 +237,6 @@ const POSES_NEVER_ROOT: UdPos[] = [
 
 
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
-
-  [`det:`,
-    `з іменника`,
-    (t, s, i) => canActAsNoun(t) || s.some(tt => tt.rel === 'acl' || tt.headIndex === i) || t.hasTag('adjdet'),
-    `в нечислівниковий DET`,
-    t => toUd(t.interp).pos === 'DET' && !t.interp.isCardinalNumeral() && !t.interp.isOrdinalNumeral()],
   [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.interp.isAdjectivish()],
   [`nummod`, `з іменника`, t => canActAsNoun(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronoun()],
   [`det:numgov`, `з іменника`, t => canActAsNoun(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronoun()],
@@ -278,7 +272,11 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
 
 const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, TreedSentencePredicate][] = [
   // cc не в сурядний is a separate rule
-
+  [`det:`,
+    `з іменника`,
+    t => canActAsNounForObj(t) || t.node.hasTag('adjdet'),
+    `в нечислівниковий DET`,
+    t => toUd(t.node.interp).pos === 'DET' && !t.node.interp.isCardinalNumeral()],
   [`case`,
     `з іменника`,
     t => canActAsNounForObj(t)
@@ -1166,7 +1164,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   let lastToken = last(nodes)
   if (lastToken.node.rel
-    && !/[!?]|...|…/.test(lastToken.node.form)  // todo: add stricter condition
+    && !/[!?]|\.\.\.|…/.test(lastToken.node.form)  // todo: add stricter condition
     && lastToken.node.interp.isPunctuation()
     && !lastToken.parents.some(x => x.isRoot())
     && !lastToken.parents.some(x => x.node.interp.isAbbreviation()
@@ -1642,6 +1640,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // між двома inf коли друге без спол не підр зв
   // тобто, цебто, а саме, як-от, або, чи (у значенні “тобто”)
   // десяткові дроби однина
+  // parataxis починається з великої
 
 
 
