@@ -18,6 +18,7 @@ class SentenceToken extends Token {
 
 const ALLOWED_RELATIONS: UdMiRelation[] = [
   'parataxis:discourse',
+  'parataxis:thatis',
   'advcl:2',
   'xcomp:2',
   'flat:repeat',
@@ -1637,6 +1638,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // вказують як синонім — xcomp:2
   // кома-риска з-від праворуч
   // між двома inf коли друге без спол не підр зв
+  // тобто, цебто, а саме, як-от, або, чи (у значенні “тобто”)
 
 
 
