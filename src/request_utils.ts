@@ -3,9 +3,9 @@ import * as request from 'request'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function fetchText(href: string, options?: request.CoreOptions) {
+export function fetchText(url: string, options?: request.CoreOptions) {
   return new Promise<string>((resolve, reject) => {
-    request(href, options, (err, res, body) => {
+    request(url, options, (err, res, body) => {
       if (err) {
         reject(err)
       }
