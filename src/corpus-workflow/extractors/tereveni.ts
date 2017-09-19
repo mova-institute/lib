@@ -13,7 +13,7 @@ export function* streamDocs(html: string) {
   let posts = [...root.evaluateElements('//div[contains(@class, "post_wrap")]')]
   // console.log(`---${posts.length}----`)
   for (let postRoot of posts) {
-    let title = textOf(postRoot, './/span[contains(@class, "post_id ")]/a/text()')
+    let title = textOf(postRoot, './/span[contains(@class, "post_id ")]/a/text()').trim()
     title = `повідомлення ${title}`
     let url = textOf(postRoot, './/span[contains(@class, "post_id ")]/a/@href')
     let author = textOf(postRoot, './/span[@class="author vcard"]/a/text()')
