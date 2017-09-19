@@ -204,7 +204,6 @@ export const FEATURE_TABLE = [
   { featStr: 'pos', feat: Pos, vesum: Pos.punct, vesumStr: 'punct', mte: 'U' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
-  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.maybe, vesumStr: '&_numr' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
   { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
 
@@ -1025,6 +1024,7 @@ export class MorphInterp {
   isTypo() { return this.features.typo === Typo.yes }
   isImperfect() { return this.features.aspect === Aspect.imperfect }
   isImpersonal() { return this.features.verbType === VerbType.impersonal }
+  isInterogative() { return this.getFeature(PronominalType) === PronominalType.interrogative }
   isNotPersonal() { return this.isImpersonal() || this.isInfinitive() }
   isImperative() { return this.features.verbType === VerbType.imperative }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
