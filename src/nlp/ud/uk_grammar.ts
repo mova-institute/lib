@@ -353,6 +353,11 @@ export function canBeDecimalFraction(t: TokenNode) {
     )
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function isAdvmodParticle(t: TokenNode) {
+  return t.node.interp.isParticle()
+    && ADVMOD_NONADVERBIAL_LEMMAS.includes(t.node.interp.lemma)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 const DUMB_DOWN_TO_UNIVERSAL = [
@@ -407,6 +412,13 @@ export function standartizeSentence2ud20(sentence: TokenNode[]) {
   }
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+export const ADVMOD_NONADVERBIAL_LEMMAS = [
+  'не',
+  'ні',
+  'ані',
+]
 
 ////////////////////////////////////////////////////////////////////////////////
 export const SUBORDINATE_CLAUSES = [
@@ -565,4 +577,19 @@ export const SOME_FREQUENT_INTRANSITIVE_VERBS = [
   'приходити',
   'сідати',
   'ходити',
+]
+
+export const MONTHS = [
+  'січень',
+  'лютий',
+  'березень',
+  'квітень',
+  'травень',
+  'червень',
+  'липень',
+  'серпень',
+  'вересень',
+  'жовтень',
+  'листопад',
+  'грудень',
 ]
