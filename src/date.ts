@@ -19,6 +19,10 @@ const ukMonthMap = new Map([
 
 const dayUkMonthCommaYearRe = /^(\d+)\s+([^,]+),\s+(\d{4})/
 
+////////////////////////////////////////////////////////////////////////////////
+export function fromUnixStr(timestamp: string) {
+  return new Date(Number.parseInt(timestamp) * 1000)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toSortableDatetime(date: Date) {

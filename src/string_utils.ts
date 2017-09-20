@@ -1,4 +1,26 @@
 ////////////////////////////////////////////////////////////////////////////////
+export function singleMatchOrThrow(str: string, regexp: RegExp, groupIndex = 0) {
+  regexp = cloneWithGlobal(regexp)
+  let match = regexp.exec(str)
+  if (!match) {
+    return undefined
+  }
+
+  let ret = match[groupIndex]
+
+  if (regexp.exec(str)) {
+    throw new Error(`More than one match`)
+  }
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function cloneWithGlobal(regexp: RegExp) {
+  return new RegExp(regexp.source, `${regexp.flags}g`)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function firstMatch(str: string, regex: RegExp, groupIndex = 0) {
   let match = str.match(regex)
   if (match) {

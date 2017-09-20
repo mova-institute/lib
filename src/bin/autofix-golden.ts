@@ -9,14 +9,15 @@ import { parseXmlFileSync } from '../xml/utils.node'
 import { last } from '../lang'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
+import { fetchText } from '../request_utils'
 import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
 import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites, walkUpUntil } from '../xml/utils'
-import { toSortableDatetime } from '../date'
+import { toSortableDatetime, fromUnixStr } from '../date'
 import { mu } from '../mu'
-import { startsWithCapital, capitalizeFirst } from '../string_utils'
+import * as strUtils from '../string_utils'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { GraphNode } from '../lib/graph'
@@ -25,6 +26,7 @@ import { toUd } from '../nlp/ud/tagset'
 import { PREDICATES } from '../nlp/ud/uk_grammar'
 import * as g from '../nlp/uk_grammar'
 import * as g2 from '../nlp/ud/uk_grammar'
+import * as tereveni from '../corpus-workflow/extractors/tereveni'
 
 
 
@@ -51,7 +53,7 @@ function prepareIds(path: string) {
 }
 
 //------------------------------------------------------------------------------
-function main() {
+async function main() {
   let args = minimist(process.argv.slice(2), {
     boolean: [
       'tranformIds',
@@ -92,6 +94,7 @@ function main() {
       killEmptyElements(root)
       insertSb(root)
       swapSb(root)
+      await addDocMeta(root)
       // renameStructures(root)
 
       {
@@ -595,7 +598,7 @@ function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer
     return
   }
 
-  if (interp.isProper() && !startsWithCapital(interp.lemma)) {
+  if (interp.isProper() && !strUtils.startsWithCapital(interp.lemma)) {
     // console.error(`lowercase lemma for proper "${token.form}" #${token.id}`)
     // interp.lemma = capitalizeFirst(interp.lemma)
   }
@@ -688,6 +691,8 @@ const DROP_ORDER = [
   f.Slang,
   f.VuAlternativity,
 
+  f.NounNumeral,
+
   f.NounType,
   f.Degree,
   f.Pronoun,
@@ -702,6 +707,8 @@ const DROP_ORDER = [
   f.NumberTantum,
   f.OrdinalNumeral,
   f.RequiredAnimacy,
+
+  // f.Pos,
 ]
 //------------------------------------------------------------------------------
 function findClosestFixable(inCorp: MorphInterp, inDict: MorphInterp[]) {
@@ -885,6 +892,42 @@ function splitFractions(tokens: AbstractElement[], idSequence: number) {
   }
 
   return idSequence
+}
+
+//------------------------------------------------------------------------------
+async function addDocMeta(root: AbstractElement) {
+  for (let docEl of root.evaluateElements('//doc')) {
+    let attributes = docEl.attributesObj()
+    if (!attributes.src) {
+      continue
+    }
+
+    if (!attributes.author || !attributes.date) {
+      if (attributes.src.includes('facebook.com')) {
+        // let meta = await getFbPostMeta(attributes.src)
+        // console.log(meta)
+        // attributes = { ...attributes, ...meta }
+      } else if (attributes.src.includes('tereveni.org')) {
+        let html = await fetchText(attributes.src)
+        let meta = mu(tereveni.streamDocs(html)).find(x => x.url === attributes.src)
+        console.log(meta)
+        attributes.author = meta.author
+        attributes.date = meta.date
+        attributes.title = meta.title
+      }
+    }
+    docEl.setAttributes(attributes)
+  }
+}
+
+//------------------------------------------------------------------------------
+async function getFbPostMeta(url: string) {
+  let html = await fetchText(url)
+  console.log(html.substr(0, 100))
+  let author = strUtils.singleMatchOrThrow(html, /ownerName:"(.+?)",/, 1)
+  let dateStr = strUtils.singleMatchOrThrow(html, /data-utime="(\d+)"/, 1)
+  let date = toSortableDatetime(fromUnixStr(dateStr))
+  return { author, date }
 }
 
 /*
