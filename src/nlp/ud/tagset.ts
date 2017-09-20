@@ -354,7 +354,7 @@ export class UdFeats {
 //------------------------------------------------------------------------------
 function mapFeatureValue2Ud(featureName, value) {
   if (value === undefined) {
-    return
+    return undefined
   }
   let feature = featureName2objMap.get(featureName)
   if (!feature) {
