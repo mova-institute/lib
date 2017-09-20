@@ -12,9 +12,6 @@ import { PREDICATES, isNumericModifier, isGoverning } from './uk_grammar'
 import * as g from './uk_grammar'
 
 
-class SentenceToken extends Token {
-  index: number
-}
 
 const ALLOWED_RELATIONS: UdMiRelation[] = [
   'parataxis:discourse',
@@ -106,30 +103,6 @@ const RIGHT_POINTED_RELATIONS = [
   'list',
   // 'parataxis',
 ]
-
-const POS_ALLOWED_RELS = {
-  // 'DET': [
-  //   'det',
-  //   'det:numgov',
-  //   'det:nummod',
-  // ],
-  // 'PUNCT': [
-  //   'punct',
-  //   'goeswith',
-  //   'discourse',
-  // ],
-  // 'SCONJ': [
-  //   'mark',
-  // ],
-  // 'NUM': [
-  //   'nummod',
-  //   'nummod:gov',
-  //   'compound',
-  //   'flat',
-  //   'appos',
-  //   'conj',
-  // ],
-}
 
 const DISCOURSE_DESTANATIONS = [
   'PART',
@@ -451,7 +424,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
     if (messageFrom && predicateFrom) {
       oldReportIf(`${relName} не ${messageFrom}`,
-        (t, i) => relMatcher(t.rel)
+        t => relMatcher(t.rel)
           && !sentence[t.headIndex].interp0().isXForeign()
           && !predicateFrom(sentence[t.headIndex], sentence, t.headIndex))
     }
@@ -522,7 +495,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
 
-  oldReportIf(`токен позначено error’ом`, (t, i) => t.hasTag('error'))
+  oldReportIf(`токен позначено error’ом`, t => t.hasTag('error'))
 
   oldReportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
@@ -1412,7 +1385,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !isRelativeInRelcl(t)
   )
 
-  xreportIf(`неочікувана реляція в числівник`,
+  xreportIf(`неочікувана реляція в кількісний числівник`,
     t => t.node.rel
       && t.node.interp.isCardinalNumeral()
       && !t.node.isPromoted
@@ -1636,7 +1609,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   reportIf2(`вказівне _тому_ вжите як часове`,
-    ({ t, pr, c, n, l }) => l === 'тому'
+    ({ t, pr, n, l }) => l === 'тому'
       && t.interp.isDemonstrative()
       && (uEq(pr, 'obl') || g.hasChild(n, 'obl'))
   )
@@ -1656,13 +1629,13 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   // яке, що
   xreportIf2(`неузгодження acl`,
-    ({ r, t, i, pl, c }) => uEq(r, 'acl')
+    ({ r, c }) => uEq(r, 'acl')
       && c.some(x => x.node.interp.lemma === 'який')
     // &&
   )
 
-  reportIf2(`_ тест: числівники`,
-    ({ r, t, i, pl, c }) => t.indexInSentence < sentence.length - 1
+  reportIf2(`_тест: числівники`,
+    ({ t, i }) => t.indexInSentence < sentence.length - 1
       && i.isCardinalNumerish()
       && (t.indexInSentence === 0
         || !sentence[t.indexInSentence - 1].interp.isCardinalNumerish())
@@ -1804,10 +1777,6 @@ function isRelativeInRelcl(node: GraphNode<Token>) {
 }
 
 //------------------------------------------------------------------------------
-function descendantIndexes(node: GraphNode<Token>) {
-}
-
-//------------------------------------------------------------------------------
 function hasChildrenOfUrel(node: GraphNode<Token>, urel: string) {
   return node.children.some(x => uEq(x.node.rel, urel))
 }
@@ -1875,13 +1844,6 @@ function isContentWord(token: Token) {
 //------------------------------------------------------------------------------
 function isPassive(interp: MorphInterp) {
   return /*interp.isImpersonal() ||*/ interp.isPassive()
-}
-
-//------------------------------------------------------------------------------
-function getSubtree(i: number, childrenMap: number[][]) {
-  let ret = [i, ...childrenMap[i]]
-  childrenMap[i].forEach(x => ret.push(...getSubtree(x, childrenMap)))
-  return [...new Set(ret)].sort()
 }
 
 //------------------------------------------------------------------------------

@@ -361,7 +361,8 @@ export function isAdvmodParticle(t: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const DUMB_DOWN_TO_UNIVERSAL = [
-  'conj:parataxis'
+  'conj:parataxis',
+  'obl:agent',
 ]
 export function standartizeSentence2ud20(sentence: TokenNode[]) {
   let lastToken = last(sentence).node

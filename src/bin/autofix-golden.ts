@@ -6,7 +6,6 @@ import * as glob from 'glob'
 import * as minimist from 'minimist'
 import * as _ from 'lodash'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { last } from '../lang'
 import { AbstractElement } from 'xmlapi'
 import { MorphInterp } from '../nlp/morph_interp'
 import { fetchText } from '../request_utils'
@@ -14,7 +13,7 @@ import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
 import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
-import { removeNamespacing, autofixSomeEntitites, walkUpUntil } from '../xml/utils'
+import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime, fromUnixStr } from '../date'
 import { mu } from '../mu'
 import * as strUtils from '../string_utils'
@@ -451,7 +450,6 @@ async function main() {
           }
 
           if (g2.isQuantitativeAdverbModifierCandidate(node)) {
-            let degree = interp.getFeature(f.Degree)
             token.rel = 'advmod:amtgov'
             if (node.parent.node.interp.isPlural()
               && interp.lemma === 'багато'
@@ -1032,8 +1030,8 @@ const TRANSFORMS = {
     toChange.push(t)
     toChange.forEach(tt => tt.node.interp.setIsGenitive())
   },
-  toCc(t: GraphNode<Token>) {
-  }
+  // toCc(t: GraphNode<Token>) {
+  // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

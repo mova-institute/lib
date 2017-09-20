@@ -61,13 +61,6 @@ class Dataset {
 }
 
 //------------------------------------------------------------------------------
-const REL_RENAMINGS = {
-  'conj:parataxis': 'conj',
-  'conj:repeat': 'conj',
-  'obl:agent': 'obl',
-}
-
-//------------------------------------------------------------------------------
 function getArgs() {
   return minimist(process.argv.slice(2), {
     boolean: [
