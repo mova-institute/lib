@@ -17,13 +17,9 @@ export enum Pos {
 export enum Pronoun {
   yes,
 }
-export enum OrdinalNumeral {
-  yes,
-  maybe,
-}
-export enum AdjectiveAsNoun {
-  yes,
-}
+export enum OrdinalNumeral { yes }
+export enum AdjectiveAsNoun { yes }
+export enum NounNumeral { yes }
 
 
 ///// Nominal /////
@@ -223,6 +219,7 @@ export type Feature = Abbreviation
   | MorphNumber
   | N2adjness
   | NameType
+  | NounNumeral
   | NounType
   | NumberTantum
   | NumeralForm

@@ -11,7 +11,7 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctType, PunctSide,
+  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctType, PunctSide, NounNumeral,
   Feature, NONGRAMMATICAL_FEATURES
 } from './morph_features'
 
@@ -35,6 +35,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [MorphNumber, 'number'],
   [N2adjness, 'n2adjness'],
   [NameType, 'nameType'],
+  [NounNumeral, 'nounNumeral'],
   [NounType, 'nounType'],
   [NumberTantum, 'numberTantum'],
   [NumeralForm, 'numeralForm'],
@@ -205,6 +206,7 @@ export const FEATURE_TABLE = [
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
   { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
+  { featStr: 'nounNumeral', feat: NounNumeral, vesum: NounNumeral.yes, vesumStr: '&_numr' },
   { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
 
   { featStr: 'gender', feat: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
@@ -460,6 +462,7 @@ export class Features {
   grammaticalAnimacy: GrammaticalAnimacy
   n2adjness: N2adjness
   nameType: NameType
+  nounNumeral: NounNumeral
   nounType: NounType
   number: MorphNumber
   numberTantum: NumberTantum
@@ -983,6 +986,7 @@ export class MorphInterp {
   isAdjectivish() { return this.features.pos === Pos.adjective }  // todo: rename properly <^
   isAdverb() { return this.features.pos === Pos.adverb }
   isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
+  isCardinalNumerish() { return this.isCardinalNumeral() || this.isNounNumeral() }
   isConjunction() { return this.features.pos === Pos.conjunction }
   isNoun() { return this.features.pos === Pos.noun }
   isParticle() { return this.features.pos === Pos.particle }
@@ -1007,7 +1011,7 @@ export class MorphInterp {
   isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
   isN2Adj() { return this.features.n2adjness === N2adjness.yes }
 
-  canBeOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes || this.features.ordinalNumeral === OrdinalNumeral.maybe }
+  canBeOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
   isAbbreviation() { return this.features.abbreviation === Abbreviation.yes }
   isActive() { return this.features.voice === Voice.active }
   isAnimate() { return this.features.animacy === Animacy.animate }
@@ -1064,6 +1068,7 @@ export class MorphInterp {
   isConsequential() { return this.features.partType === PartType.consequential }
   isInstant() { return this.otherFlags.has('instant') }
   isUninflectable() { return this.features.inflectability === Inflectability.no }
+  isNounNumeral() { return this.features.nounNumeral === NounNumeral.yes }
 
   isNonparticipleAdj() { return this.isAdjective() && !this.isParticiple() }
 

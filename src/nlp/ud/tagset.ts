@@ -428,6 +428,9 @@ export function toUd(interp: MorphInterp) {
     } else {
       pos = 'NOUN'
     }
+    if (interp.isNounNumeral()) {
+      features.NumType = 'Card'
+    }
   }
 
   // treat numerals
