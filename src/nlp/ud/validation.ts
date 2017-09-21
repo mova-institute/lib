@@ -14,18 +14,19 @@ import * as g from './uk_grammar'
 
 
 const ALLOWED_RELATIONS: UdMiRelation[] = [
-  'parataxis:discourse',
-  'parataxis:thatis',
   'advcl:2',
-  'xcomp:2',
-  'flat:repeat',
-  'appos:nonnom',
-  'advmod:amtgov',
   'advcl:svc',
-  'conj:svc',
-  'xcomp:svc',
+  'advmod:amtgov',
+  'appos:nonnom',
   'ccomp:svc',
   'compound:svc',
+  'conj:svc',
+  'flat:conjpack',
+  'flat:repeat',
+  'parataxis:discourse',
+  'parataxis:thatis',
+  'xcomp:2',
+  'xcomp:svc',
 
   'acl',
   'advcl',
@@ -1641,6 +1642,11 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         || !sentence[t.indexInSentence - 1].interp.isCardinalNumerish())
       && (sentence[t.indexInSentence + 1].interp.isCardinalNumerish()
         || t.interp.isNounNumeral())
+  )
+
+  reportIf2(`flat:conjpack не з conj`,
+    ({ r, pr }) => r === 'flat:conjpack'
+      && !uEq(pr, 'conj')
   )
 
 
