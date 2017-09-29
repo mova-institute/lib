@@ -36,7 +36,7 @@ function main() {
       mkdirpSync(dest)
 
       let tokenStream = mu(tei2tokenStream(root))
-        .transform(x => x.form = x.correctedForm())
+        .transform(x => x.form = x.getForm())
       let sentenceStream = tokenStream2sentences(tokenStream)
       let chunks = mu(sentenceStream)
         .map(x => x.tokens)
@@ -56,8 +56,6 @@ function main() {
       throw e
     }
   }
-
-
 }
 
 if (require.main === module) {

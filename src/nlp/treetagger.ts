@@ -92,5 +92,5 @@ export function build4TreeTagger(args: Args) {
 
 //------------------------------------------------------------------------------
 function isJohojiji(interp: MorphInterp) {
-  return (interp.lemma === 'його' || interp.lemma === 'її') && interp.isAdjective() && interp.isPronoun()
+  return (interp.lemma === 'його' || interp.lemma === 'її') && interp.isAdjective() && interp.isPronominal()
 }

@@ -53,7 +53,7 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
 
     lines.push([
       i + 1,
-      token.form,
+      token.getForm(),
       token.interp.lemma,
       pos,
       xpos,
@@ -121,7 +121,7 @@ export function* tokenStream2bratPlaintext(stream: Iterable<Token[]>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tokenSentence2bratPlaintext(sentence: Token[]) {
-  return sentence.filter(x => x.isWord()).map(x => x.form).join(' ')
+  return sentence.filter(x => x.isWord()).map(x => x.getForm()).join(' ')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ export function* tokenStream2brat(sentences: Token[][]) {
 
 //------------------------------------------------------------------------------
 function mustHighlightHoles(sentence: Token[]) {
-  let numRoots = mu(sentence).count(x => !x.rel)
+  let numRoots = mu(sentence).count(x => !x.hasDeps())
   if (numRoots === 1) {
     return false
   }

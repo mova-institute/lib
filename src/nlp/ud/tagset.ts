@@ -423,7 +423,7 @@ export function toUd(interp: MorphInterp) {
   if (interp.isNounish()) {
     if (interp.isProper()) {
       pos = 'PROPN'
-    } else if (interp.isPronoun()) {
+    } else if (interp.isPronominal()) {
       pos = 'PRON'
     } else {
       pos = 'NOUN'
@@ -436,7 +436,7 @@ export function toUd(interp: MorphInterp) {
   // treat numerals
   if (interp.isCardinalNumeral()) {
     features.NumType = 'Card'
-    if (interp.isPronoun()) {
+    if (interp.isPronominal()) {
       pos = 'DET'
     }
   } else if (interp.isOrdinalNumeral()) {
@@ -468,7 +468,7 @@ export function toUd(interp: MorphInterp) {
       features.Person = '0'
     }
   } else if (interp.isAdjective() && !interp.isAdjectiveAsNoun()) {
-    if (interp.isPronoun()) {
+    if (interp.isPronominal()) {
       pos = 'DET'
     } else if (interp.isParticiple()) {
       features.VerbForm = 'Part'

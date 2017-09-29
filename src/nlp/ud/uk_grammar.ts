@@ -64,6 +64,8 @@ export const TEMPORAL_ACCUSATIVES = [
   'час',
   'безліч',
   'р.',
+  'місяць',
+  'півгодини',
 ]
 
 export const GENDERLESS_PRONOUNS = [
@@ -94,6 +96,7 @@ const VALENCY_HAVING_ADJECTIVES = [
   'доступний',
   'ненависний',
   'ближчий',
+  'радий',
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -199,22 +202,25 @@ export function isPunctInParenthes(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isTerasaZaTerasoyu(t: TokenNode) {
+export function isDenUDen(t: TokenNode) {
   // console.log(t.node.indexInSentence)
-  return t.node.interp.isNounish()
+  return (t.node.interp.isNounish() || t.node.interp.isAdjective() && t.node.interp.isPronominal())
     && t.node.interp.isNominative()
     // && t.children.length === 1  // experimental
+    && t.children.every(x => x.node.indexInSentence > t.node.indexInSentence)
+    && t.children.length === 1
     && t.children.some(x => uEq(x.node.rel, 'nmod')
-      && x.node.indexInSentence > t.node.indexInSentence
-      && x.children.some(xx => uEq(xx.node.rel, 'case'))
-      && x.node.interp.isNounish()
+      // && x.node.indexInSentence > t.node.indexInSentence
+      // && x.children.some(xx => uEq(xx.node.rel, 'case'))
+      && (x.node.interp.isNounish() || x.node.interp.isAdjective() && x.node.interp.isPronominal())
       && x.node.interp.lemma === t.node.interp.lemma
+      && x.node.interp.getFeature(f.Case) !== t.node.interp.getFeature(f.Case)
     )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function nounAdjectiveAgreed(noun: TokenNode, adjective: TokenNode) {
-  return noun.node.interp.getFeature(f.Case) === adjective.node.interp.getFeature(f.Case)
+  return thisOrGovernedCase(noun) === adjective.node.interp.getFeature(f.Case)
     && (adjective.node.interp.isPlural() && noun.node.interp.isPlural()
       || noun.node.interp.getFeature(f.Gender) === adjective.node.interp.getFeature(f.Gender)
       || adjective.node.interp.isPlural() && noun.node.interp.isSingular() && hasChild(noun, 'conj')
@@ -235,6 +241,11 @@ export function hasCopula(t: TokenNode) {
 ////////////////////////////////////////////////////////////////////////////////
 export function hasChild(t: TokenNode, rel: string) {
   return t.children.some(x => uEqSome(x.node.rel, [rel]))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function hasSiblink(t: TokenNode, rel: string) {
+  return t.parent && t.parent.children.some(x => x !== t && uEqSome(x.node.rel, [rel]))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -329,7 +340,8 @@ export function isAdverbialAcl(t: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isFeasibleAclRoot(t: TokenNode) {
-  return t.node.interp.isVerb() && t.node.interp.isInfinitive()
+  return isInfinitive(t)
+    || isInfinitiveCop(t)
     || t.children.some(x => uEqSome(x.node.rel, ['mark']))
     || t.children.some(x => (x.node.rel === 'xcomp' || uEqSome(x.node.rel, ['csubj']))
       && x.node.interp.isInfinitive())
@@ -370,6 +382,8 @@ export function standartizeSentence2ud20(sentence: TokenNode[]) {
 
   for (let node of sentence) {
     let t = node.node
+
+    // todo? set obj from rev to obl
 
     // choose (punct) relation from the rigthtest token
     t.deps = t.deps
@@ -593,4 +607,18 @@ export const MONTHS = [
   'жовтень',
   'листопад',
   'грудень',
+]
+
+export const COMPARATIVE_ADVS = [
+  'більше',
+  'більш',
+  'менш',
+  'менше'
+]
+
+export const COMPARATIVE_SCONJS = [
+  'ніж',
+  'як',
+  // 'від',
+  'чим'
 ]

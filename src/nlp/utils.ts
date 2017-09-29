@@ -1142,7 +1142,7 @@ export function* polishXml2verticalStream(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2plaintext(stream: Iterable<Token>) {
+export function* tokenStream2plaintext(stream: Iterable<Token>, corrected = true) {
   let space = ''
   for (let token of stream) {
     if (token.isGlue()) {
@@ -1150,7 +1150,7 @@ export function* tokenStream2plaintext(stream: Iterable<Token>) {
     } else if (token.getStructureName() === 'paragraph') {  // todo
       space = '\n'
     } else if (token.isWord()) {
-      yield space + token.form
+      yield space + token.getForm(corrected)
       space = token.gluedNext ? '' : ' '
     }
   }

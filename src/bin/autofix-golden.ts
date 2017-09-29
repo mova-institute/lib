@@ -29,7 +29,7 @@ import * as tereveni from '../corpus-workflow/extractors/tereveni'
 
 
 
-const REPLACE_RE = /#>(\S+)/
+const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
 
 
 // temp
@@ -252,11 +252,13 @@ async function main() {
           if (token.comment) {
             let match = token.comment.match(REPLACE_RE)
             if (match) {
-              let tag = match[1].replace('&amp;', '&')  // sometimes it's copyped from xml
+              let [, tag, lemma] = match
+              tag = tag.replace('&amp;', '&')  // sometimes it's copyped from xml
+              lemma = lemma || interp.lemma
               if (tag.startsWith(':')) {
-                interp.setFromVesumStr(tag.substr(1), interp.lemma)
+                interp.setFromVesumStr(tag.substr(1), lemma)
               } else {
-                interp.resetFromVesumStr(tag, interp.lemma)
+                interp.resetFromVesumStr(tag, lemma)
               }
             }
             token.comment = token.comment.replace(REPLACE_RE, '').trim()
@@ -269,16 +271,37 @@ async function main() {
               a.headId === b.headId && a.relation === b.relation)
           }
 
-          if (interp.isX()) {
-            interp.lemma = token.correctedForm()
-          }
-
-          if (token.correctedForm() !== token.form) {
+          if (token.getForm() !== token.form) {
             interp.setIsTypo(false)
           }
 
           if (token.rel && interp.isPunctuation()) {
             token.rel = 'punct'
+          }
+
+          if (interp.isX()) {
+            interp.lemma = token.correctedForm()
+          }
+
+          if (!interp.lemma.includes('’')
+            && (
+              interp.isParticle()
+              || interp.isConjunction()
+              || interp.isPreposition()
+              || interp.isAdverb()
+              || interp.isInterjection()
+              || interp.isUninflectable()
+            )
+            || interp.isPunctuation()
+            || interp.isSymbol()
+            || interp.isX()
+            || interp.isError()
+          ) {
+            if (strUtils.isAllLower(interp.lemma)) {
+              // interp.lemma = token.getForm().toLowerCase()
+            } else {
+
+            }
           }
 
           if (uEqSome(token.rel, ['cc']) && interp.lemma === 'бути') {
@@ -303,6 +326,7 @@ async function main() {
             && token.interp.isNegative()
             && !token.isPromoted
             && !node.children.some(x => uEq(x.node.rel, 'fixed'))
+            && !uEqSome(token.rel, ['fixed', 'parataxis', 'conj:parataxis', 'conj'])
           ) {
             token.rel = 'advmod'
           }
@@ -460,6 +484,16 @@ async function main() {
             }
           }
 
+          if (uEqSome(token.rel, ['obj'/* , 'iobj' */])
+            // && parent.interp.isAdjective()
+            && parent.interp.isVerbial()
+            // && parent.interp.isReversive()
+            && interp.isInstrumental()
+          ) {
+            // token.rel = 'obl'
+            // console.log(token.id)
+          }
+
           // ↓↓↓↓ breaks the tree, keep last!
 
           if (interp.isBeforeadj()
@@ -590,7 +624,7 @@ function renameStructures(root: AbstractElement) {
 function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer: MorphAnalyzer) {
   let token = node.node
   let interp = node.node.interp
-  token.form = token.correctedForm()
+  token.form = token.getForm()
 
   if (interp.isForeign()) {
     return

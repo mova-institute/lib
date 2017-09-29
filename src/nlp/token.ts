@@ -30,6 +30,9 @@ export type TokenTag =
   | 'conj_no_cc'
   | 'no_qmark'
   | 'no_dash'
+  | 'inf_prep'
+  | 'multi_names'
+  | 'prepless_obl'
 
 export interface Dependency {
   relation: string
@@ -170,8 +173,10 @@ export class Token {
     return !!this.deps.length
   }
 
-  correctedForm() {
-    return this.getAttribute('correct') || this.form
+  getForm(corrected = true) {
+    return corrected
+      ? this.getAttribute('correct') || this.form
+      : this.form
   }
 
   toString() {

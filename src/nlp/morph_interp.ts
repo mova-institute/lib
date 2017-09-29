@@ -667,7 +667,7 @@ export class MorphInterp {
       this.features.pos = Pos.verb
     }
 
-    if (this.isPronoun() && this.features.polarity === Polarity.negative) {
+    if (this.isPronominal() && this.features.polarity === Polarity.negative) {
       this.features.pronominalType = PronominalType.negative
       this.features.polarity = undefined
     }
@@ -763,7 +763,7 @@ export class MorphInterp {
       return trimTrailingDash('M' + form + type + gender + morphNumber + morphCase + requiredAnimacy)
     }
 
-    if (this.isPronoun()) {
+    if (this.isPronominal()) {
       let type = this.isPossessive()
         ? 'p'
         : map2mte(PronominalType, this.features.pronominalType)
@@ -991,7 +991,7 @@ export class MorphInterp {
   isNoun() { return this.features.pos === Pos.noun }
   isParticle() { return this.features.pos === Pos.particle }
   isPreposition() { return this.features.pos === Pos.preposition }
-  isPronoun() { return this.features.pronoun !== undefined }
+  isPronominal() { return this.features.pronoun !== undefined }
   isPunctuation() { return this.features.pos === Pos.punct }
   isConverb() { return this.features.verbType === VerbType.converb }
   isVerb() { return this.features.pos === Pos.verb }
@@ -1052,6 +1052,7 @@ export class MorphInterp {
   isPresent() { return this.features.tense === Tense.present }
   isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
   isSuperlative() { return this.features.degree === Degree.superlative }  // todo: tantum?
+  isComparative() { return this.features.degree === Degree.comparative }  // todo: tantum?
   isSubordinative() { return this.features.conjunctionType === ConjunctionType.subordinative }
   isName() { return this.features.nameType !== undefined }
   isFirstname() { return this.features.nameType === NameType.first }

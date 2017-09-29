@@ -44,6 +44,11 @@ export function isAllcaps(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isAllLower(str: string) {
+  return str === str.toLowerCase()
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function trimAfterFirst(toBeTrimmed: string, substring: string) {
   let index = toBeTrimmed.indexOf(substring)
   return index < 0 ? toBeTrimmed : toBeTrimmed.substr(0, index)

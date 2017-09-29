@@ -247,6 +247,7 @@ function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
 
   if (sentenseHoles.length) {
     let comparator = algo.chainComparators<any>(
+      // (a, b) => b.tokens.filter(x => x.hasDeps()).length - a.tokens.filter(x => x.hasDeps()).length,
       (a, b) => (a.problems[0].indexes.length - 1) / a.tokens.length
         - (b.problems[0].indexes.length - 1) / b.tokens.length,
       (a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length,
@@ -328,9 +329,9 @@ function formatProblemsHtml(sentenceProblems: any[]) {
 
         for (let j = 0; j < tokens.length; ++j) {
           if (indexes.includes(j)) {
-            body += `<span class="error">${escape(tokens[j].toString())}</span> `
+            body += `<span class="error">${escape(tokens[j].getForm())}</span> `
           } else {
-            body += `${tokens[j]} `
+            body += `${tokens[j].getForm()} `
           }
         }
       } else {
