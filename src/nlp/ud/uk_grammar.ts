@@ -6,103 +6,24 @@ import { uEq, uEqSome } from './utils'
 import { mu } from '../../mu'
 import { last } from '../../lang'
 import { trimAfterFirst } from '../../string_utils'
+import { UdMiRelation } from './syntagset'
+import { UdPos } from './tagset'
 
 export type TokenNode = GraphNode<Token>
 export type Node2IndexMap = Map<TokenNode, number>
 
 
-export const CURRENCY_SYMBOLS = [
-  '₴',
-  '$',
-  '€',
-]
-
-export const WORDS_WITH_INS_VALENCY = [
-  'даний',
-  'одмітний',
-  'переповнений',
-  'засмічений',
-  'узятий',
-  'зацікавлений',
-
-  'володіти',
-  'задовольнитися',
-  'зробитися',
-
-  'рискувати',
-  'пожертвувати',
-  'курувати',
-  'керувати',
-  'тхнути',
-  'тягнути',
-  'нехтувати',
-  'називати',
-  'дихнути',
-  'нехтувати',
-  'пахнути',
-]
-
-export const PREPS_HEADABLE_BY_NUMS = [
-  'близько',
-  'понад',
-]
-
-export const TEMPORAL_ACCUSATIVES = [
-  'вечір',
-  'година',
-  'день',
-  'доба',
-  'ніч',
-  'раз',
-  'рік',
-  'секунда',
-  'тиждень',
-  'хвилина',
-  'хвилинка',
-  'ранок',
-  'мить',
-  'час',
-  'безліч',
-  'р.',
-  'місяць',
-  'півгодини',
-]
-
-export const GENDERLESS_PRONOUNS = [
-  'абихто',
-  'будь-хто',  // прибрати після розділу
-  'ви',
-  'вони',  // todo: ns?
-  'дехто',
-  'дещо',  // ніякий?
-  'ми',
-  'ніхто',
-  'ніщо',  // середній?
-  'себе',
-  'ти',
-  'хто-небудь',  // прибрати після розділу
-  'хтось',
-  'я',
-]
-
-export const EMPTY_ANIMACY_NOUNS = [
-  'себе',
-  'ся',
-]
-
-const VALENCY_HAVING_ADJECTIVES = [
-  'властивий',
-  'потрібний',
-  'доступний',
-  'ненависний',
-  'ближчий',
-  'радий',
-]
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isValencyHavingAdjective(t: Token) {
   return t.interp.isAdjective()
     && VALENCY_HAVING_ADJECTIVES.includes(t.interp.lemma)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isInfValencyAdjective(t: Token) {
+  return t.interp.isAdjective()
+    && INF_VALENCY_ADJECTIVES.includes(t.interp.lemma)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -322,6 +243,11 @@ export function isInfinitiveCop(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isInfinitiveAnalytically(t: TokenNode) {
+  return isInfinitive(t) || isInfinitiveCop(t)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function hasOwnRelative(t: TokenNode) {
   let it = walkDepth(t, x => x !== t
     && uEqSome(x.node.rel, SUBORDINATE_CLAUSES)
@@ -358,8 +284,10 @@ export function canBeDecimalFraction(t: TokenNode) {
     && /^\d+$/.test(t.node.interp.lemma)
     && t.children.some(x => x.node.interp.isCardinalNumeral()
       && uEq(x.node.rel, 'compound')
+      && x.node.indexInSentence === t.node.indexInSentence + 2
       && /^\d+$/.test(x.node.interp.lemma)
       && x.children.length === 1
+      && x.children[0].node.indexInSentence === t.node.indexInSentence + 1
       && [',', '.'].includes(x.children[0].node.interp.lemma)
       && !x.children[0].hasChildren()
     )
@@ -369,6 +297,15 @@ export function canBeDecimalFraction(t: TokenNode) {
 export function isAdvmodParticle(t: TokenNode) {
   return t.node.interp.isParticle()
     && ADVMOD_NONADVERBIAL_LEMMAS.includes(t.node.interp.lemma)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function canBeAsSomethingForXcomp2(t: TokenNode) {
+  return t.node.interp.isNounish()
+    && [f.Case.nominative, f.Case.accusative].includes(t.node.interp.getFeature(f.Case))
+    && t.children.some(x => x.node.interp.lemma === 'як'
+      && x.node.indexInSentence< t.node.indexInSentence
+    )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -416,6 +353,12 @@ export function standartizeSentence2ud20(sentence: TokenNode[]) {
       && t.interp.isParticiple()
     ) {
       t.rel = 'amod'
+    }
+
+    // todo: test
+    if (t.interp.isParticiple()) {
+      node.children.filter(x => uEq(x.node.rel, 'aux'))
+        .forEach(x => x.node.rel = 'cop')
     }
   }
 
@@ -621,4 +564,277 @@ export const COMPARATIVE_SCONJS = [
   'як',
   // 'від',
   'чим'
+]
+
+export const ALLOWED_RELATIONS: UdMiRelation[] = [
+  'advcl:2',
+  'advcl:cmp',
+  'advcl:svc',
+  'advmod:a',
+  'advmod:amtgov',
+  'appos:nonnom',
+  'ccomp:svc',
+  'compound:svc',
+  'conj:svc',
+  'flat:conjpack',
+  'flat:repeat',
+  'parataxis:discourse',
+  'parataxis:thatis',
+  'parataxis:newsent',
+  'xcomp:2',
+  'xcomp:svc',
+
+  'acl',
+  'advcl',
+  'advmod',
+  'amod',
+  'appos',
+  'aux:pass',
+  'aux',
+  'case',
+  'cc',
+  'ccomp',
+  'compound',
+  'conj:parataxis',
+  'conj:repeat',
+  'conj',
+  'cop',
+  'csubj:pass',
+  'csubj',
+  'det:numgov',
+  'det:nummod',
+  'det',
+  'discourse',
+  'dislocated',
+  'expl',
+  'fixed',
+  'flat:foreign',
+  'flat:name',
+  'flat:title',
+  'flat',
+  'goeswith',
+  'iobj',
+  'list',
+  'mark',
+  'nmod',
+  'nsubj:pass',
+  'nsubj',
+  'nummod:gov',
+  'nummod',
+  'obj',
+  'obl:agent',
+  'obl',
+  'orphan',
+  'parataxis',
+  'punct',
+  'reparandum',
+  'root',
+  'vocative',
+  'xcomp',
+]
+export const LEAF_RELATIONS = [
+  'cop',
+  'aux',
+  'expl',
+  'fixed',
+  // 'flat',
+  'goeswith',
+  'punct',
+]
+
+export const LEFT_POINTED_RELATIONS = [
+  // 'case',  // treated separately
+  'cc',
+  'reparandum',
+]
+
+export const RIGHT_POINTED_RELATIONS = [
+  'appos',
+  'conj',
+  // 'dislocated',
+  'fixed',
+  'flat',
+  'flat:foreign',
+  'flat:name',
+  'list',
+  // 'parataxis',
+]
+
+export const DISCOURSE_DESTANATIONS = [
+  'PART',
+  'SYM',
+  'INTJ',
+  'ADV',  // temp
+]
+
+export const COPULA_LEMMAS = [
+  'бути',
+  'бувати',
+  'бувши',
+  'будучи',
+]
+
+export const CONDITIONAL_AUX_LEMMAS = [
+  'б',
+  'би',
+]
+
+export const AUX_LEMMAS = [
+  ...COPULA_LEMMAS,
+  ...CONDITIONAL_AUX_LEMMAS,
+]
+
+export const CLAUSAL_MODIFIERS = [
+  'acl',
+  'advcl',
+  'csubj',
+  'ccomp',
+  'xcomp',
+]
+
+export const EXPL_FORMS = [
+  'собі',
+  'воно',
+  'це',
+  'то',
+]
+
+export const CLAUSE_RELS = [
+  'csubj',
+  'ccomp',
+  'xcomp',
+  'advcl',
+  'acl',
+  'parataxis',
+]
+
+export const MARK_ROOT_RELS = [
+  ...SUBORDINATE_CLAUSES,
+  'appos',
+  'parataxis:discourse',
+]
+
+export const CONTINUOUS_REL = [
+  'csubj',
+  'ccomp',
+  // 'xcomp',
+  'advcl',
+  // 'acl',
+  'parataxis',
+  'flat',
+  'fixed',
+  'compound',
+]
+
+
+export const POSES_NEVER_ROOT: UdPos[] = [
+  // 'ADP',
+  'AUX',
+  // 'CCONJ',
+  // 'SCONJ',
+  // 'NUM',
+  // 'PART',
+  'PUNCT',
+]
+
+export const CURRENCY_SYMBOLS = [
+  '₴',
+  '$',
+  '€',
+]
+
+export const WORDS_WITH_INS_VALENCY = [
+  // 'даний',
+  // 'одмітний',
+  // 'переповнений',
+  // 'засмічений',
+  // 'узятий',
+  // 'зацікавлений',
+
+  // 'володіти',
+  // 'задовольнитися',
+  // 'зробитися',
+
+  // 'рискувати',
+  // 'пожертвувати',
+  // 'тхнути',
+  // 'тягнути',
+  // 'називати',
+  // 'дихнути',
+  // 'нехтувати',
+  // 'пахнути',
+
+  'курувати',
+  'керувати',
+  'нехтувати',
+  'відати',
+]
+
+export const PREPS_HEADABLE_BY_NUMS = [
+  'близько',
+  'понад',
+]
+
+export const TEMPORAL_ACCUSATIVES = [
+  'вечір',
+  'година',
+  'день',
+  'доба',
+  'ніч',
+  'раз',
+  'рік',
+  'секунда',
+  'тиждень',
+  'хвилина',
+  'хвилинка',
+  'ранок',
+  'мить',
+  'час',
+  'безліч',
+  'р.',
+  'місяць',
+  'півгодини',
+]
+
+export const GENDERLESS_PRONOUNS = [
+  'абихто',
+  'будь-хто',  // прибрати після розділу
+  'ви',
+  'вони',  // todo: ns?
+  'дехто',
+  'дещо',  // ніякий?
+  'ми',
+  'ніхто',
+  'ніщо',  // середній?
+  'себе',
+  'ти',
+  'хто-небудь',  // прибрати після розділу
+  'хтось',
+  'я',
+]
+
+export const EMPTY_ANIMACY_NOUNS = [
+  'себе',
+  'ся',
+]
+
+const VALENCY_HAVING_ADJECTIVES = [
+  'властивий',
+  'потрібний',
+  'доступний',
+  'ненависний',
+  'ближчий',
+]
+
+const INF_VALENCY_ADJECTIVES = [
+  'готовий',
+  'здатний',
+  'радий',
+  'неспроможний',
+  'неготовий',
+]
+
+export const QUANTIF_PREP = [
+  'понад',
+  'близько',
 ]

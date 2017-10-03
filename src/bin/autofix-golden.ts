@@ -23,8 +23,8 @@ import { GraphNode } from '../lib/graph'
 import { uEq, uEqSome } from '../nlp/ud/utils'
 import { toUd } from '../nlp/ud/tagset'
 import { PREDICATES } from '../nlp/ud/uk_grammar'
-import * as g from '../nlp/uk_grammar'
-import * as g2 from '../nlp/ud/uk_grammar'
+import * as g2 from '../nlp/uk_grammar'
+import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus-workflow/extractors/tereveni'
 
 
@@ -65,6 +65,10 @@ async function main() {
 
   if (args.tranformIds) {
     var ids = prepareIds(path)
+  }
+
+  if (args.tranformIdsInline) {
+    ids = new Set(args.tranformIdsInline.trim().split(/\s+/g))
   }
 
   let idSequence: number
@@ -280,7 +284,7 @@ async function main() {
           }
 
           if (interp.isX()) {
-            interp.lemma = token.correctedForm()
+            interp.lemma = token.getForm()
           }
 
           if (!interp.lemma.includes('’')
@@ -358,7 +362,7 @@ async function main() {
           if (!node.isRoot()
             && interp.isPreposition()
             && !uEqSome(token.rel, ['conj', 'flat:title', 'fixed'])
-            && !g2.hasChild(node, 'fixed')
+            && !g.hasChild(node, 'fixed')
           ) {
             token.rel = 'case'
           }
@@ -383,7 +387,21 @@ async function main() {
             }
           }
 
-          if (g2.isGoverning(token.rel)
+          if (interp.isCardinalNumeral()
+            && interp.isPronominal()
+            && uEq(token.rel, 'nummod')
+          ) {
+            token.rel = 'det'
+          }
+
+          if (g.canBeDecimalFraction(node)
+            && token.rel === 'nummod'
+            && parent.interp.getFeature(f.Case) !== interp.getFeature(f.Case)
+          ) {
+            token.rel = 'nummod:gov'
+          }
+
+          if (g.isGoverning(token.rel)
             && token.interp.features.case === node.parent.node.interp.features.case
           ) {
             if (node.parent.children.some(x => x.node.interp.isPreposition()
@@ -393,6 +411,10 @@ async function main() {
                 ? 'det:nummod'
                 : 'nummod'
             }
+          }
+
+          if (interp.isAdjective() && uEq(token.rel, 'punct')) {
+            token.rel = 'amod'
           }
 
           if (uEq(token.rel, 'discourse')
@@ -412,7 +434,7 @@ async function main() {
             interp.setIsPronoun()
           }
 
-          if (!g2.isGoverning(token.rel)
+          if (!g.isGoverning(token.rel)
             && (uEq(token.rel, 'det')
               // || uEq(token.rel, 'amod')
             )
@@ -454,7 +476,7 @@ async function main() {
           }
 
           if (interp.isAbbreviation() && interp.lemma.endsWith('.')) {
-            if (g.isInflecable(interp.features.pos)) {
+            if (g2.isInflecable(interp.features.pos)) {
               interp.setIsUninflectable()
             } else {
               interp.setIsUninflectable(false)
@@ -469,11 +491,11 @@ async function main() {
             interp.dropFeature(f.RequiredAnimacy)
           }
 
-          if (g2.isNegativeExistentialPseudosubject(node)) {
+          if (g.isNegativeExistentialPseudosubject(node)) {
             node.node.rel = 'obj'
           }
 
-          if (g2.isQuantitativeAdverbModifierCandidate(node)) {
+          if (g.isQuantitativeAdverbModifierCandidate(node)) {
             token.rel = 'advmod:amtgov'
             if (node.parent.node.interp.isPlural()
               && interp.lemma === 'багато'
@@ -494,7 +516,39 @@ async function main() {
             // console.log(token.id)
           }
 
+          if (token.rel === 'xcomp' && !g.isInfinitiveAnalytically(node)) {
+            token.rel = 'ccomp'
+          }
+
           // ↓↓↓↓ breaks the tree, keep last!
+
+
+          // switch compound numerals from flat to compound
+          if (uEq(token.rel, 'nummod') /* || uEq(token.rel, 'amod') && interp.isOrdinalNumeral() */) {
+            let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
+              .sort((a, b) => a.node.indexInSentence - b.node.indexInSentence)
+            let newHead = _.last(flatChildren)
+            // let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
+            if (newHead) {
+              if (!newHead.node.interp.isCardinalNumeral()) {
+                // throw new Error()
+                console.error(`Not numeral ${newHead.node.id}`)
+                continue
+              }
+              newHead.node.deps.forEach(x => {
+                x.headId = node.parent.node.id
+                x.relation = token.rel
+              });
+              [node, ...node.children].filter(x => x !== newHead)
+                .forEach(x => x.node.deps.forEach(xx => {
+                  xx.headId = newHead.node.id
+                  if (x.node.interp.isCardinalNumeral()) {
+                    xx.relation = 'compound'
+                  }
+                }))
+            }
+            continue
+          }
 
           if (interp.isBeforeadj()
             && !node.isRoot()
@@ -636,7 +690,7 @@ function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer
   }
 
   // missing case
-  if (g.inflectsCase(interp.features.pos)
+  if (g2.inflectsCase(interp.features.pos)
     && !interp.isBeforeadj()
     && !interp.isStem()
     && !interp.isForeign()
@@ -662,7 +716,7 @@ function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer
   if (interp.isNounish()) {
     // missing gender for noun
     if (!interp.hasGender()
-      && !g2.GENDERLESS_PRONOUNS.includes(interp.lemma) && !(
+      && !g.GENDERLESS_PRONOUNS.includes(interp.lemma) && !(
         interp.isNoSingular() || interp.isSingular() && interp.features.person === 1
       )
     ) {
@@ -672,7 +726,7 @@ function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer
 
   // missing animacy
   if (interp.isNounish() && !interp.hasAnimacy()
-    && !g2.EMPTY_ANIMACY_NOUNS.includes(interp.lemma)
+    && !g.EMPTY_ANIMACY_NOUNS.includes(interp.lemma)
     && !(interp.features.pronominalType === f.PronominalType.personal
       && interp.features.person === 3
     )
@@ -1064,8 +1118,9 @@ const TRANSFORMS = {
     toChange.push(t)
     toChange.forEach(tt => tt.node.interp.setIsGenitive())
   },
-  // toCc(t: GraphNode<Token>) {
-  // }
+  toObl(t: GraphNode<Token>) {
+    t.node.rel = 'obl'
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

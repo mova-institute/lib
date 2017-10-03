@@ -15,6 +15,8 @@ export type Structure =
   | 'line'
 
 export type TokenTag =
+  | 'bad'
+
   | 'promoted'
   | 'graft'
 
@@ -33,6 +35,7 @@ export type TokenTag =
   | 'inf_prep'
   | 'multi_names'
   | 'prepless_obl'
+  | 'xcomp_mark'
 
 export interface Dependency {
   relation: string

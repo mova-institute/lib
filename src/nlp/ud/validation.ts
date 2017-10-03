@@ -1,5 +1,5 @@
 import { Token } from '../token'
-import { toUd, UdPos } from './tagset'
+import { toUd } from './tagset'
 import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
 import { GraphNode, walkDepth } from '../../lib/graph'
@@ -14,225 +14,34 @@ import * as _ from 'lodash'
 
 
 
-const ALLOWED_RELATIONS: UdMiRelation[] = [
-  'advcl:2',
-  'advcl:svc',
-  'advmod:amtgov',
-  'appos:nonnom',
-  'ccomp:svc',
-  'compound:svc',
-  'conj:svc',
-  'flat:conjpack',
-  'flat:repeat',
-  'parataxis:discourse',
-  'parataxis:thatis',
-  'xcomp:2',
-  'xcomp:svc',
-
-  'acl',
-  'advcl',
-  'advmod',
-  'amod',
-  'appos',
-  'aux:pass',
-  'aux',
-  'case',
-  'cc',
-  'ccomp',
-  'compound',
-  'conj:parataxis',
-  'conj:repeat',
-  'conj',
-  'cop',
-  'csubj:pass',
-  'csubj',
-  'det:numgov',
-  'det:nummod',
-  'det',
-  'discourse',
-  'dislocated',
-  'expl',
-  'fixed',
-  'flat:foreign',
-  'flat:name',
-  'flat:title',
-  'flat',
-  'goeswith',
-  'iobj',
-  'list',
-  'mark',
-  'nmod',
-  'nsubj:pass',
-  'nsubj',
-  'nummod:gov',
-  'nummod',
-  'obj',
-  'obl:agent',
-  'obl',
-  'orphan',
-  'parataxis',
-  'punct',
-  'reparandum',
-  'root',
-  'vocative',
-  'xcomp',
-]
-
-const LEAF_RELATIONS = [
-  'cop',
-  'aux',
-  'expl',
-  'fixed',
-  // 'flat',
-  'goeswith',
-  'punct',
-]
-
-const LEFT_POINTED_RELATIONS = [
-  // 'case',  // treated separately
-  'cc',
-  'reparandum',
-]
-
-const RIGHT_POINTED_RELATIONS = [
-  'appos',
-  'conj',
-  // 'dislocated',
-  'fixed',
-  'flat',
-  'flat:foreign',
-  'flat:name',
-  'list',
-  // 'parataxis',
-]
-
-const DISCOURSE_DESTANATIONS = [
-  'PART',
-  'SYM',
-  'INTJ',
-  'ADV',  // temp
-]
-
-const COPULA_LEMMAS = [
-  'бути',
-  'бувати',
-  'бувши',
-  'будучи',
-]
-
-const CONDITIONAL_AUX_LEMMAS = [
-  'б',
-  'би',
-]
-
-const AUX_LEMMAS = [
-  ...COPULA_LEMMAS,
-  ...CONDITIONAL_AUX_LEMMAS,
-]
-
-const CLAUSAL_MODIFIERS = [
-  'acl',
-  'advcl',
-  'csubj',
-  'ccomp',
-  'xcomp',
-]
-
-const EXPL_FORMS = [
-  'собі',
-  'воно',
-  'це',
-  'то',
-]
-
-const CC_HEAD_RELS = [
-  'conj',
-  'parataxis',
-  'conj:parataxis',
-]
-
-const NON_CHAINABLE_RELS = [
-  'aux',
-  'fixed',
-]
-
-const NEVER_CONJUNCT_POS = [
-  'CCONJ',
-  'PART',
-  'PUNCT',
-  'SCONJ',
-  'AUX',
-]
-
-const CLAUSE_RELS = [
-  'csubj',
-  'ccomp',
-  'xcomp',
-  'advcl',
-  'acl',
-  'parataxis',
-]
-
-const MARK_ROOT_RELS = [
-  ...g.SUBORDINATE_CLAUSES,
-  'appos',
-  'parataxis:discourse',
-]
-
-const CONTINUOUS_REL = [
-  'csubj',
-  'ccomp',
-  // 'xcomp',
-  'advcl',
-  // 'acl',
-  'parataxis',
-  'flat',
-  'fixed',
-  'compound',
-]
-
-
-const POSES_NEVER_ROOT: UdPos[] = [
-  // 'ADP',
-  'AUX',
-  // 'CCONJ',
-  // 'SCONJ',
-  // 'NUM',
-  // 'PART',
-  'PUNCT',
-]
-
-
-
-
 const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
-  [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.interp.isAdjectivish()],
+  [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.interp.isAdjective()],
   [`nummod`, `з іменника`, t => canActAsNoun(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronominal()],
   [`det:numgov`, `з іменника`, t => canActAsNoun(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronominal()],
   [`discourse`,
     undefined,
     undefined,
-    `в ${DISCOURSE_DESTANATIONS.join('|')} чи fixed`,
-    (t, s, i) => DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
+    `в ${g.DISCOURSE_DESTANATIONS.join('|')} чи fixed`,
+    (t, s, i) => g.DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
   [`cop`,
     `з недієслівного`,
     (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i),
-    `в ${COPULA_LEMMAS.join(' ')}`,
-    t => COPULA_LEMMAS.includes(t.interp.lemma)],
+    `в ${g.COPULA_LEMMAS.join(' ')}`,
+    t => g.COPULA_LEMMAS.includes(t.interp.lemma)],
   // [`obl:agent`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => canActAsNoun(t)],
   [`vocative`,
     undefined, //`з присудка`,
     (t, s, i) => canBePredicateOld(t, s, i),
     `в кличний іменник`,
     t => t.interp.isXForeign()
-      || canActAsNoun(t) && (t.interp.isVocative() || t.hasTag('nomvoc'))],
+      || canActAsNoun(t) && (t.interp.isVocative()
+      || t.hasTag('nomvoc'))],
   [`expl`,
     `з присудка`,
     (t, s, i) => canBePredicateOld(t, s, i),
-    `в ${EXPL_FORMS.join('|')} — іменники`,
-    t => EXPL_FORMS.includes(t.form.toLowerCase()) && t.interp.isNounish()],
+    `в ${g.EXPL_FORMS.join('|')} — іменники`,
+    t => g.EXPL_FORMS.includes(t.form.toLowerCase()) && t.interp.isNounish()],
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
-  [`ccomp`, `з присудка`, (t, s, i) => canBePredicateOld(t, s, i), `в присудок`, (t, s, i) => canBePredicateOld(t, s, i)],
   [`advcl:`, ``, (t, s, i) => canBePredicateOld(t, s, i), `в присудок`, (t, s, i) => canBePredicateOld(t, s, i)],
   [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
@@ -297,13 +106,15 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
   ],
   [`nmod`, `з іменника`, t => canActAsNoun(t.node) || g.isDenUDen(t) /* temp */,
     `в іменник`,
-    t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && isRelativeInRelcl(t)
+    t => canActAsNounForObj(t)
+      || t.node.interp.lemma === 'який' && isRelativeInRelcl(t)
+      || g.isDenUDen(t.parent)  // temp
   ],
   [`aux`,
     `з дієслівного`, t => t.node.interp.isVerbial2()
       || t.node.interp.isAdverb() && t.children.some(x => g.SUBJECTS.some(subj => uEq(x.node.rel, subj))),
-    `в ${AUX_LEMMAS.join('|')}`,
-    t => AUX_LEMMAS.includes(t.node.interp.lemma)],
+    `в ${g.AUX_LEMMAS.join('|')}`,
+    t => g.AUX_LEMMAS.includes(t.node.interp.lemma)],
   [`acl`, `з іменника`, t => canActAsNoun(t.node) || t.node.interp.isDemonstrative(),
     `в присудок (з умовами)`, t => g.isFeasibleAclRoot(t)
       || t.node.interp.isParticiple()  // temp
@@ -321,18 +132,27 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
     `з :foreign`, t => t.node.interp.isForeign(),
     `у :foreign`, t => t.node.interp.isForeign()],
   [`xcomp:`,
-    `з присудка`,
-    t => canBePredicate(t),
-    `в інфінітив`,
-    t => g.isInfinitive(t) || g.isInfinitiveCop(t)
+    `з присудка / валентного прикметника`,
+    t => canBePredicate(t) || g.isInfValencyAdjective(t.node),
+    `в інфінітив - присудок`,
+    t => g.isInfinitiveAnalytically(t) && canBePredicate(t)
+  ],
+  [`ccomp`,
+    `з присудка / валентного прикметника`,
+    t => canBePredicate(t)
+      || g.isInfinitiveAnalytically(t) && g.isInfValencyAdjective(t.node),
+    `в присудок (тест: фінітний)`,
+    t => canBePredicate(t)
+      && !g.isInfinitiveAnalytically(t)
   ],
   [`xcomp:2`,
     `з присудка`,
     t => canBePredicate(t),
-    `в називний/орудний іменник/прикметник`,
-    t => (t.node.interp.isNominative() || t.node.interp.isInstrumental())
-      && (t.node.interp.isNoun() || t.node.interp.isAdjective())
-      && !t.node.isGraft
+    `в називний/орудний іменник/прикметник чи в „як щось“`,
+    t => ((t.node.interp.isNominative() || t.node.interp.isInstrumental())
+      && (t.node.interp.isNoun() || t.node.interp.isAdjective()))
+      || g.canBeAsSomethingForXcomp2(t)
+      || t.node.isGraft
   ],
   [`advcl:2`,
     `з присудка`,
@@ -414,7 +234,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // invalid roots
   if (sentenceHasOneRoot) {
     let udPos = toUd(roots[0].node.interp).pos
-    if (POSES_NEVER_ROOT.includes(udPos)) {
+    if (g.POSES_NEVER_ROOT.includes(udPos)) {
       problems.push({ indexes: [node2index.get(roots[0])], message: `${udPos} як корінь` })
     }
   }
@@ -465,6 +285,29 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   }
 
+  // ~~~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~~~
+
+  xreportIf2(`_тест: числівники`,
+    ({ t, i }) => t.indexInSentence < sentence.length - 1
+      && i.isCardinalNumerish()
+      && (t.indexInSentence === 0
+        || !sentence[t.indexInSentence - 1].interp.isCardinalNumerish())
+      && (sentence[t.indexInSentence + 1].interp.isCardinalNumerish()
+        || t.interp.isNounNumeral())
+  )
+
+  xreportIf2(`_тест: складений порядковий`,
+    ({ t, i }) => t.indexInSentence > 0
+      && i.isOrdinalNumeral()
+      && sentence[t.indexInSentence - 1].interp.isCardinalNumerish()
+    // && (t.indexInSentence === 0
+    //   || !sentence[t.indexInSentence - 1].interp.isCardinalNumerish())
+    // && (sentence[t.indexInSentence + 1].interp.isCardinalNumerish()
+    //   || t.interp.isNounNumeral())
+  )
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   reportIf(`декілька підметів (${g.SUBJECTS.join('|')})`,
     t => t.children.filter(x => uEqSome(x.node.rel, g.SUBJECTS)).length > 1
   )
@@ -509,8 +352,8 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   oldReportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
 
-  RIGHT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.headIndex > i))
-  LEFT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.headIndex < i))
+  g.RIGHT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.headIndex > i))
+  g.LEFT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.headIndex < i))
 
   oldReportIf(`case праворуч`, (t, i) => uEq(t.rel, 'case')
     && t.headIndex < i
@@ -518,7 +361,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   oldReportIf('невідома реляція',
-    t => t.rel && !ALLOWED_RELATIONS.includes(t.rel as UdMiRelation))
+    t => t.rel && !g.ALLOWED_RELATIONS.includes(t.rel as UdMiRelation))
 
   reportIf(`cc не в сурядний`,
     t => uEq(t.node.rel, 'cc')
@@ -550,14 +393,15 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !['discourse', 'fixed'])
 
   xoldReportIf('не aux у б(би)',
-    t => CONDITIONAL_AUX_LEMMAS.includes(t.form.toLowerCase())
+    t => g.CONDITIONAL_AUX_LEMMAS.includes(t.form.toLowerCase())
       && t.interp.isParticle()
       && !['fixed', 'aux', undefined].includes(t.rel))
 
-  oldReportIf('не advmod в не',
-    t => t.interp.isParticle()
-      && ['не', /*'ні', 'лише'*/].includes(t.form.toLowerCase())
-      && !['advmod', undefined].includes(t.rel))
+  reportIf('не advmod в не',
+    t => t.node.interp.isParticle()
+      && !g.hasChild(t, 'fixed')
+      && ['не', /*'ні', 'лише'*/].includes(t.node.form.toLowerCase())
+      && !['advmod', undefined].includes(t.node.rel))
 
   oldReportIf('не cc в сурядий на початку речення',
     (t, i) => t.rel && i === 0 && t.interp.isCoordinating() && !['cc'].includes(t.rel))
@@ -577,7 +421,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !hasDependantWhich(i, xx => uEq(xx.rel, 'case')))
 
 
-  for (let leafrel of LEAF_RELATIONS) {
+  for (let leafrel of g.LEAF_RELATIONS) {
     reportIf(`${leafrel} має залежників`,
       t => uEq(t.node.rel, leafrel)
         && (['cop', 'aux'].some(x => uEq(t.node.rel, x))
@@ -630,7 +474,11 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   reportIf(`місцевий без прийменника`,
     t => {
-      if (!t.node.rel || !t.node.interp.isLocative() || !canActAsNoun(t.node)) {
+      if (!t.node.rel
+        || uEq(t.node.rel, 'fixed')
+        || !t.node.interp.isLocative()
+        || !canActAsNoun(t.node)
+      ) {
         return
       }
       let p = t
@@ -701,15 +549,6 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => (t.node.interp.isImpersonal() || g.isInfinitive(t))
       && t.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
       && !t.node.isPromoted
-  )
-
-  reportIf(`вторинна предикація не в називний/орудний прикметник`,
-    t => !t.isRoot()
-      && t.node.rel.endsWith(':2')
-      && !t.node.interp.isAdjective()
-      && !t.node.interp.isNominative()
-      && !t.node.interp.isInstrumental()
-      && !t.node.isGraft
   )
 
   xreportIf(`знахідний без прийменника від недієслова`,
@@ -1012,6 +851,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && ['nummod', 'det:nummod'].some(rel => uEq(t.node.rel, rel))
       && !t.parent.node.interp.isXForeign()
       && t.node.interp.features.case !== t.parent.node.interp.features.case
+      && !g.canBeDecimalFraction(t)  // todo
   )
 
   reportIf(`керівний числівник не в називному/знахідному`,
@@ -1046,7 +886,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       // && !t.parent.isRoot()
       && (sentenceHasOneRoot && !t.parent.node.rel
         || t.parent.node.rel
-        && !uEqSome(t.parent.node.rel, MARK_ROOT_RELS)
+        && !uEqSome(t.parent.node.rel, g.MARK_ROOT_RELS)
         && !(uEq(t.parent.node.rel, 'conj')
           && g.SUBORDINATE_CLAUSES.some(x => uEq(t.parent.parent.node.rel, x))
         )
@@ -1069,7 +909,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   reportIf(`xcomp зі сполучником`,
     t => uEq(t.node.rel, 'xcomp')
       // && t.node.rel !== 'parataxis:discourse'
-      && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
+      && t.children.some(x => uEqSome(x.node.rel, [/* 'cc',  */'mark']))
+      && !g.canBeAsSomethingForXcomp2(t)
+      && !t.node.hasTag('xcomp_mark')
   )
 
   reportIf(`flat:name не для імені`,
@@ -1133,7 +975,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // continuity/projectivity
 
   for (let token of nodes) {
-    if (uEqSome(token.node.rel, CONTINUOUS_REL)) {
+    if (uEqSome(token.node.rel, g.CONTINUOUS_REL)) {
       let rootFromHere = token.root()
 
       let indexes = mu(walkDepth(token))
@@ -1291,7 +1133,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => t.node.rel
       && t.node.interp.isParticle()
       && !uEqSome(t.node.rel, ['discourse', 'advmod', 'fixed', 'flat:repeat', 'goeswith'])
-      && !(uEqSome(t.node.rel, ['aux']) && CONDITIONAL_AUX_LEMMAS.includes(t.node.interp.lemma))
+      && !(uEqSome(t.node.rel, ['aux']) && g.CONDITIONAL_AUX_LEMMAS.includes(t.node.interp.lemma))
     // && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
 
@@ -1363,7 +1205,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !uEqSome(t.node.rel, ['nsubj', 'nmod', 'appos', 'conj', 'obj', 'iobj', 'obl',
         'flat:title', 'flat:name', 'xcomp:2', 'flat:repeat', 'parataxis:discourse'])
       && !(uEqSome(t.node.rel, ['advcl']) && t.children.some(x => uEqSome(x.node.rel, ['mark'])))
-      && !uEqSome(t.node.rel, [...CLAUSAL_MODIFIERS])  // todo
+      && !uEqSome(t.node.rel, [...g.CLAUSAL_MODIFIERS])  // todo
   )
 
   xreportIf(`неочікувана реляція в дієслово`,
@@ -1371,7 +1213,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !t.node.isGraft
       && t.node.interp.isVerb()
       && !t.node.interp.isAuxillary()
-      && !uEqSome(t.node.rel, [...CLAUSAL_MODIFIERS, 'parataxis', 'conj', 'flat:repeat',
+      && !uEqSome(t.node.rel, [...g.CLAUSAL_MODIFIERS, 'parataxis', 'conj', 'flat:repeat',
         'parataxis:discourse'])
   )
 
@@ -1548,9 +1390,21 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   reportIf(`питальний займенник без „?“`,
     t => !t.isRoot()
       && t.node.interp.isInterogative()
+      && !thisOrConjHead(t, x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
+      && !thisOrConjHead(t.parent, x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
       && !mu(t.walkThisAndUp0())
-        .some(x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
+      //   .some(x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
       && !t.node.hasTag('no_qmark')
+  )
+
+  reportIf(`непитальний займенник з „?“`,
+    t => !t.isRoot()
+      && (t.node.interp.isRelative() || t.node.interp.isIndefinite())
+      // && !t.node.interp.isInterogative()
+      && thisOrConjHead(t, x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
+    // && mu(t.walkThisAndUp0())
+    //   .some(x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
+    // && !t.node.hasTag('no_qmark')
   )
 
   reportIf(`неочікувана голова advmod`,
@@ -1569,13 +1423,20 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         && ['приблизно', 'майже'].includes(t.node.interp.lemma))
   )
 
-  reportIf(`не flat:title в „№“`,
+  xreportIf(`не flat:title в „№“`,
     t => t.node.interp.lemma.includes('№')
       && !t.isRoot()
       && !uEqSome(t.node.rel, ['flat:title', 'conj'])
   )
 
-  reportIf(`тест: еліпс наперед`,
+  reportIf(`не flat:title з „№“ в числівник`,
+    t => !t.isRoot()
+      && t.parent.node.interp.lemma.includes('№')
+      && t.node.interp.isCardinalNumeral()
+      && !uEqSome(t.node.rel, ['flat:title'])
+  )
+
+  reportIf(`_тест: еліпс наперед`,
     t => t.node.comment
       && t.node.comment.includes('еліпс наперед')
   )
@@ -1613,15 +1474,6 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     ({ r, c }) => uEq(r, 'acl')
       && c.some(x => x.node.interp.lemma === 'який')
     // &&
-  )
-
-  xreportIf2(`_тест: числівники`,
-    ({ t, i }) => t.indexInSentence < sentence.length - 1
-      && i.isCardinalNumerish()
-      && (t.indexInSentence === 0
-        || !sentence[t.indexInSentence - 1].interp.isCardinalNumerish())
-      && (sentence[t.indexInSentence + 1].interp.isCardinalNumerish()
-        || t.interp.isNounNumeral())
   )
 
   reportIf2(`flat:conjpack не з conj`,
@@ -1667,7 +1519,8 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // disablable
   // only temporals allowed
   xreportIf(`неорудний obl без прийменника`,
-    t => t.node.rel === 'obl'
+    t => uEq(t.node.rel, 'obl')
+      && t.node.rel !== 'obl:agent'
       && !t.node.hasTag('prepless_obl')
       && !t.node.isPromoted
       && !hasChildrenOfUrel(t, 'case')
@@ -1678,7 +1531,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       )
   )
 
-  reportIf(`орудний obl без прийменника`,
+  xreportIf(`орудний obl без прийменника`,
     t => uEq(t.node.rel, 'obl')
       && t.node.rel !== 'obl:agent'
       && !t.node.hasTag('prepless_obl')
@@ -1693,9 +1546,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && !(t.node.interp.isForeign() && !t.node.interp.hasCase())
       && g.thisOrGovernedCase(t) !== f.Case.accusative
       && g.thisOrGovernedCase(t) !== f.Case.genitive
-      // && !(g.thisOrGovernedCase(t) === f.Case.instrumental
-      //   && g.WORDS_WITH_INS_VALENCY.includes(t.parent.node.interp.lemma)
-      // )
+      && !(g.thisOrGovernedCase(t) === f.Case.instrumental
+        && g.WORDS_WITH_INS_VALENCY.includes(t.parent.node.interp.lemma)  // ~
+      )
       // legacy
       && !(t.node.interp.isDative()
         && !t.parent.children.some(x => uEq(x.node.rel, 'iobj'))
@@ -1725,6 +1578,16 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         || g.thisOrGovernedCase(t) === f.Case.vocative
       )
       && !g.isDenUDen(t)
+  )
+
+  reportIf(`cop/aux в наказовому`,
+    t => uEqSome(t.node.rel, ['cop', 'aux'])
+      && t.node.interp.isImperative()
+  )
+
+  reportIf(`наказовий має cop/aux`,
+    t => t.node.interp.isImperative()
+      && t.children.some(x => uEqSome(x.node.rel, ['cop', 'aux']))
   )
 
   // **********
@@ -1800,7 +1663,6 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // використовувати ліс як декорації — ліс і декорації узгод у відм.
   // cop в дієприсл?
   // звик опікуватися мамою сам
-  // не flat:title в №
   // нам вдалося Inf — csubj vs ccomp
   // не оповідатиму, що сталося — тут навпаки що що — іменник
   // більш практичний, ніж політичний — advcl з практичний!
@@ -1845,7 +1707,11 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // закривні розділові зі своїх боків
   // будь ласка
   // стала роллю — щоб не obj замість xcomp:2
-
+  // ins obj з якимоось ще obj
+  // NON_CHAINABLE_RELS
+  // const NEVER_CONJUNCT_POS = [ 'PUNCT', 'SCONJ' ]
+  // ins valency навпаки
+  // однакове в дробах
 
 
 
@@ -1894,7 +1760,7 @@ function isRelativeInRelcl(node: GraphNode<Token>) {
     return false
   }
   let clauseRoot = mu(node.walkUp0())
-    .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
+    .find(x => uEqSome(x.node.rel, g.CLAUSE_RELS))
 
   if (!clauseRoot) {
     return false
@@ -1906,7 +1772,7 @@ function isRelativeInRelcl(node: GraphNode<Token>) {
 
   if (clauseRoot.node.interp.isInfinitive()) {
     clauseRoot = mu(clauseRoot.walkUp0())
-      .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
+      .find(x => uEqSome(x.node.rel, g.CLAUSE_RELS))
   }
 
   return clauseRoot && uEq(clauseRoot.node.rel, 'acl')
@@ -1924,27 +1790,6 @@ function thisOrConjHead(node: GraphNode<Token>, predicate: TreedSentencePredicat
       return predicate(t)
     }
   }
-}
-
-//------------------------------------------------------------------------------
-function thisOrTravelUp(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
-  const allowed = ['conj', 'flat']
-  while (node) {
-    if (predicate(node)) {
-      return true
-    }
-    node = allowed.some(x => uEq(node.parent.node.rel, x)) && node.parent
-  }
-  return false
-}
-
-//------------------------------------------------------------------------------
-function isLocativeWithoutImmediatePrep(t: GraphNode<Token>) {
-  return t.node.rel
-    && canActAsNounForObj(t)
-    && !uEq(t.node.rel, 'det')
-    && t.node.interp.isLocative()
-    && !t.children.some(x => uEq(x.node.rel, 'case'))
 }
 
 //------------------------------------------------------------------------------
@@ -1993,20 +1838,23 @@ function isContinuous(array: Array<number>) {
 }
 
 //------------------------------------------------------------------------------
-function canBePredicate(node: GraphNode<Token>) {
-  let token = node.node
+function canBePredicate(t: GraphNode<Token>) {
+  let token = t.node
   let interp = token.interp
   return token.isPromoted
-    || node.isRoot()
+    || t.isRoot()
     || uEq(token.rel, 'parataxis')
     || interp.isXForeign()
-    || interp.isVerbial2()
-    || interp.isAdverb()
-    || (node.children.some(x => uEq(x.node.rel, 'cop'))
-      && (interp.isNounish() || interp.isAdjective())
-      && (interp.isNominative() || interp.isInstrumental() || interp.isLocative())
-    )
-    || ((interp.isNounish() || interp.isAdjective()) && interp.isNominative())
+    || interp.isVerbial()
+    // || interp.isAdverb()
+    || g.hasChild(t, 'nsubj')
+    || g.hasChild(t, 'csubj')
+    || g.hasChild(t, 'cop')
+  // || (t.children.some(x => uEq(x.node.rel, 'cop'))
+  //   && (interp.isNounish() || interp.isAdjective())
+  //   && (interp.isNominative() || interp.isInstrumental() || interp.isLocative())
+  // )
+  // || ((interp.isNounish() || interp.isAdjective()) && interp.isNominative())
 }
 
 //------------------------------------------------------------------------------
@@ -2023,7 +1871,7 @@ function canBePredicateOld(token: Token, sentence: Token[], index: number) {
       && (token.interp.isNominative() || token.interp.isInstrumental() || token.interp.isLocative())
     )
     || ((token.interp.isNounish() || token.interp.isAdjective()) && token.interp.isNominative())
-    || CLAUSAL_MODIFIERS.includes(token.rel)
+    || g.CLAUSAL_MODIFIERS.includes(token.rel)
 }
 
 //------------------------------------------------------------------------------
@@ -2044,11 +1892,6 @@ function canActAsNounForObj(node: GraphNode<Token>) {
     || node.node.interp.lemma === 'той'
     && node.node.interp.isDemonstrative()
 }
-
-//------------------------------------------------------------------------------
-// function isNounishEllipticOrMeta(node: GraphNode<Token>) {
-//   return isNounishOrElliptic(node.node) || isEncolsedInQuotes(node)
-// }
 
 //------------------------------------------------------------------------------
 function isActualParticiple(token: Token, sentence: Token[], index: number) {
