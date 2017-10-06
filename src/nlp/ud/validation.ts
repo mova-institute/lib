@@ -7,6 +7,7 @@ import { MorphInterp } from '../morph_interp'
 import * as f from '../morph_features'
 import { last } from '../../lang'
 import { uEq, uEqSome } from './utils'
+import { startsWithCapital } from '../../string_utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { PREDICATES, isNumericModifier, isGoverning } from './uk_grammar'
 import * as g from './uk_grammar'
@@ -35,7 +36,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
     `в кличний іменник`,
     t => t.interp.isXForeign()
       || canActAsNoun(t) && (t.interp.isVocative()
-      || t.hasTag('nomvoc'))],
+        || t.hasTag('nomvoc'))],
   [`expl`,
     `з присудка`,
     (t, s, i) => canBePredicateOld(t, s, i),
@@ -750,46 +751,11 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     }
   )
 
-  xreportIf(`неузгодження`,
-    t => {
-      if (!t.parent) {
-        return
-      }
-      let dep = t.node.interp
-      let head = t.parent.node.interp
-
-      let ret = ['amod', 'det'].includes(t.node.rel)
-        && dep.isAdjective()
-        // && head.isNounish()
-        && !head.isXForeign()
-        && !t.parent.node.isGraft
-        && !t.parent.children.some(xx => isGoverning(xx.node.rel))
-        && (
-          dep.features.case !== g.thisOrGovernedCase(t.parent)
-          || (dep.isPlural() && !head.isPlural() && !t.parent.children.some(x => x.node.rel === 'conj'))
-          || (dep.isSingular() && dep.features.gender !== head.features.gender)
-        )
-      // ret = false //////////////////////////////
-      if (ret) {
-        return true
-      }
-
-      // amod det nummod conj // nsubj appos acl
-
-      // ret = ret || x.node.rel === 'nummod'
-      //   && (dep.hasGender() && dep.features.gender !== head.features.gender
-      //     || dep.features.case !== head.features.case
-      //   )
-
-      // ret = ret || x.node.rel === 'conj'
-      //   && dep.features.pos === head.features.pos
-      //   && !dep.isBeforeadj()
-      //   && !x.parent.children.some(xx => isNumgov(xx.node.rel))
-      //   && (dep.hasCase() && dep.features.case !== head.features.case
-      //   )
-
-      return ret
-    }
+  reportIf2(`неузгодження родів іменника-числівника`,
+    ({ r, i, pi }) => uEq(r, 'nummod')
+      && i.hasFeature(f.Gender)
+      && i.getFeature(f.Gender) !== pi.getFeature(f.Gender)
+      && !pi.isXForeign()
   )
 
   reportIf(`неузгодження істотовості`,
@@ -897,6 +863,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   reportIf(`parataxis під’єднано сполучником`,
     t => uEq(t.node.rel, 'parataxis')
       && t.node.rel !== 'parataxis:discourse'
+      && t.node.rel !== 'parataxis:thatis'
       && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
   )
 
@@ -1588,6 +1555,19 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   reportIf(`наказовий має cop/aux`,
     t => t.node.interp.isImperative()
       && t.children.some(x => uEqSome(x.node.rel, ['cop', 'aux']))
+  )
+
+  xreportIf2(`велика літера не власна`,
+    ({ t, i }) => t.indexInSentence > 0
+      && startsWithCapital(t.getForm())
+      && !i.isProper()
+      && !i.isAbbreviation()
+  )
+
+  reportIf2(`не родовий однини після десяткового`,
+    ({ r, n, pi }) => uEq(r, 'nummod')
+      && g.canBeDecimalFraction(n)
+      && (pi.isPlural() || pi.getFeature(f.Case) !== f.Case.genitive)
   )
 
   // **********

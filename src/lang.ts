@@ -204,3 +204,8 @@ export function parseIntStrict(str: string) {
   }
   throw new Error(`Not a number string: "${str}"`)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function wiith<T>(value: T, f: (value: T) => any) {
+  return f(value)
+}

@@ -4,7 +4,7 @@ import { MorphInterp } from '../morph_interp'
 import * as f from '../morph_features'
 import { uEq, uEqSome } from './utils'
 import { mu } from '../../mu'
-import { last } from '../../lang'
+import { last, wiith } from '../../lang'
 import { trimAfterFirst } from '../../string_utils'
 import { UdMiRelation } from './syntagset'
 import { UdPos } from './tagset'
@@ -128,14 +128,16 @@ export function isDenUDen(t: TokenNode) {
   return (t.node.interp.isNounish() || t.node.interp.isAdjective() && t.node.interp.isPronominal())
     && t.node.interp.isNominative()
     // && t.children.length === 1  // experimental
-    && t.children.every(x => x.node.indexInSentence > t.node.indexInSentence)
-    && t.children.length === 1
-    && t.children.some(x => uEq(x.node.rel, 'nmod')
-      // && x.node.indexInSentence > t.node.indexInSentence
-      // && x.children.some(xx => uEq(xx.node.rel, 'case'))
-      && (x.node.interp.isNounish() || x.node.interp.isAdjective() && x.node.interp.isPronominal())
-      && x.node.interp.lemma === t.node.interp.lemma
-      && x.node.interp.getFeature(f.Case) !== t.node.interp.getFeature(f.Case)
+    && wiith(t.children.filter(x => !x.node.interp.isPunctuation()), c =>
+      c.every(x => x.node.indexInSentence > t.node.indexInSentence)
+      && c.length === 1
+      && c.some(x => uEq(x.node.rel, 'nmod')
+        // && x.node.indexInSentence > t.node.indexInSentence
+        // && x.children.some(xx => uEq(xx.node.rel, 'case'))
+        && (x.node.interp.isNounish() || x.node.interp.isAdjective() && x.node.interp.isPronominal())
+        && x.node.interp.lemma === t.node.interp.lemma
+        && x.node.interp.getFeature(f.Case) !== t.node.interp.getFeature(f.Case)
+      )
     )
 }
 
@@ -304,7 +306,7 @@ export function canBeAsSomethingForXcomp2(t: TokenNode) {
   return t.node.interp.isNounish()
     && [f.Case.nominative, f.Case.accusative].includes(t.node.interp.getFeature(f.Case))
     && t.children.some(x => x.node.interp.lemma === 'як'
-      && x.node.indexInSentence< t.node.indexInSentence
+      && x.node.indexInSentence < t.node.indexInSentence
     )
 }
 
