@@ -8,7 +8,7 @@ import { mu } from '../../mu'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Sentence2conlluParams {
-  xpos?: 'mte' | 'upos'
+  xpos?: 'mte' | 'upos' | 'ud'
   morphOnly?: boolean
 }
 export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options: Sentence2conlluParams = {}) {
@@ -28,6 +28,9 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
 
   tokens.forEach((token, i) => {
     let { pos, features } = toUd(token.interp)
+
+    let udFeatureStr = udFeatures2conlluString(features)
+
     let misc = [`Id=${token.id}`]
     if (token.opensParagraph) {
       misc.push('NewPar=Yes')
@@ -42,11 +45,17 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
       misc.push('SpaceAfter=No')
     }
 
+
     let xpos: string
     if (options.xpos === 'mte') {
       xpos = token.interp.toMte()
     } else if (options.xpos === 'upos') {
       xpos = pos
+    } else if (options.xpos === 'ud'){
+      xpos = `POS=${pos}`
+      if (udFeatureStr) {
+        xpos += `|${udFeatureStr}`
+      }
     } else {
       xpos = '_'
     }
@@ -57,7 +66,7 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
       token.interp.lemma,
       pos,
       xpos,
-      udFeatures2conlluString(features) || '_',
+      udFeatureStr || '_',
       options.morphOnly ? '_' : (token.headIndex === undefined ? 0 : token.headIndex + 1),
       options.morphOnly ? '_' : (token.rel || 'root'),
       '_',
