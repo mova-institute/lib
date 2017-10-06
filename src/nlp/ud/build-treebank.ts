@@ -39,11 +39,13 @@ interface Args {
   oneSet: string
 
   datasetSchema: string
+  datasetReroute: string  // --datasetReroute "->train test->train"
   reportHoles: boolean
   reportErrors: 'all' | 'complete' | 'none'
   validOnly: boolean
   morphonlyThreshold: string
   xpos: any
+
 
   id2bratPath: string
 }
@@ -82,8 +84,9 @@ function getArgs() {
     default: {
       reportErrors: 'all',
       reportHoles: true,
-      datasetSchema: 'mi',
+      datasetSchema: '',
       morphonlyThreshold: '0',
+      datasetReroute: '',
     }
   }) as Args
 }
@@ -101,6 +104,10 @@ function main() {
   let id2bratPath = args.id2bratPath
     ? parseJsonFromFile(args.id2bratPath)
     : {}
+
+  let rerouteMap = createDatasetRerouteMap(args.datasetReroute)
+  console.log(`Reroutes:`)
+  console.log(rerouteMap)
 
   mkdirp.sync(outDir)
 
@@ -124,7 +131,7 @@ function main() {
     for (let { sentenceId, dataset, tokens, nodes, opensParagraph,
       opensDocument, currenctDocument, followsGap } of sentenceStream) {
 
-      dataset = args.oneSet || dataset || 'unassigned'
+      dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
       datasetRegistry[dataset] = datasetRegistry[dataset] || new Dataset()
 
       let numTokens = tokens.length
@@ -197,7 +204,7 @@ function main() {
               g.standartizeSentence2ud20(nodes)
             }
 
-            let filename = set2filename(outDir, args.datasetSchema, dataset)
+            let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
             let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
@@ -393,6 +400,12 @@ function standartizeMorpho(sentence: Array<Token>) {
       token.interp.features.number = undefined
     }
   }
+}
+
+//------------------------------------------------------------------------------
+function createDatasetRerouteMap(definition: string) {
+  let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as [string, string][]
+  return new Map<string, string>(pairs)
 }
 
 
