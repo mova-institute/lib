@@ -32,7 +32,7 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
     let udFeatureStr = udFeatures2conlluString(features)
 
     let misc = [`Id=${token.id}`]
-    if (token.opensParagraph) {
+    if (i && token.opensParagraph) {
       misc.push('NewPar=Yes')
     }
     if (token.isPromoted) {

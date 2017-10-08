@@ -128,7 +128,7 @@ function main() {
       .transform(x => x.interp && g.denormalizeInterp(x.interp))
     let sentenceStream = tokenStream2sentences(tokenStream)
     let annotationalGap = false
-    for (let { sentenceId, dataset, tokens, nodes, opensParagraph,
+    for (let { sentenceId, dataset, tokens, nodes,
       opensDocument, currenctDocument, followsGap } of sentenceStream) {
 
       dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
@@ -149,7 +149,7 @@ function main() {
 
       let sentenceLevelData = {
         'sent_id': sentenceId,
-        'newpar': opensParagraph || undefined,
+        'newpar': tokens[0].opensParagraph || undefined,
         'newdoc': opensDocument || undefined,
         'gap': (followsGap || annotationalGap && !opensDocument) || undefined
       } as any

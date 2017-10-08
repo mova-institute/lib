@@ -995,6 +995,7 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
 
     let structureType = structureElementName2type.get(name)
     if (structureType) {
+      // console.log(structureType, entering)
       yield Token.structure(structureType, !entering, el.attributesObj())
       continue
     }
@@ -1172,7 +1173,6 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
 
   let opensDocument = false
   let opensParagraph = false
-  let newTokenLevelParagraph = false
   let glueNext = false
   let followsGap = false
   let skip = false  // todo: gap
@@ -1182,10 +1182,9 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     let nodes = sentenceArray2TreeNodes(tokens)
     let ret = {
       sentenceId,
-      tokens,
+      tokens: tokens,
       nodes,
       dataset,
-      opensParagraph,
       opensDocument,
       followsGap: followsGap && !opensDocument,
       currenctDocument
@@ -1193,8 +1192,6 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
 
     tokens = []
     opensDocument = false
-    opensParagraph = false
-    newTokenLevelParagraph = false
     followsGap = false
     skip = false
 
@@ -1204,11 +1201,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   for (let [token, nextToken] of mu(stream).window(2)) {
     if (token.getStructureName() === 'paragraph') {
       if (!token.isClosing()) {
-        if (tokens.length) {
-          newTokenLevelParagraph = true
-        } else {
-          opensParagraph = true
-        }
+        opensParagraph = true
       }
     } else if (token.getStructureName() === 'document') {
       if (token.isClosing() && tokens.length && !skip) {
@@ -1230,9 +1223,9 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
       sentenceId = token.id
       dataset = token.getAttribute('set') || dataset
     } else if (token.isWord()) {
-      token.opensParagraph = newTokenLevelParagraph
+      token.opensParagraph = opensParagraph
+      opensParagraph = false
       tokens.push(token)
-      newTokenLevelParagraph = false
     } else if (token.isGlue() && tokens.length) {
       last(tokens).gluedNext = true
     } else if (token.getStructureName() === 'gap') {

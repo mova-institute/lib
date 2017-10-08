@@ -99,8 +99,8 @@ function* streamVertical(root: AbstractElement, docMeta) {
   let tokenStream = tei2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))
   let first = true
-  for (let { sentenceId, tokens, opensParagraph } of sentenceStream) {
-    if (!first && opensParagraph) {
+  for (let { sentenceId, tokens } of sentenceStream) {
+    if (!first && tokens[0].opensParagraph) {
       yield '</p>'
       yield '<p>'
     }
