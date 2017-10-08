@@ -58,7 +58,13 @@ class DatasetDescriptor {
     tokensExported: 0,
     sentencesExported: 0,
   }
-  currentDocId: string
+  curDocId: string
+  curParId: string
+
+  update(curDocId: string, curParId: string) {
+    this.curDocId = curDocId
+    this.curParId = curParId
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -127,12 +133,11 @@ function main() {
     let sentenceStream = tokenStream2sentences(tokenStream)
     let annotationalGap = false
 
-    for (let { sentenceId, dataset, tokens, nodes, opensDocument,
-      currentDocument, currentParagraph, followsGap } of sentenceStream
+    for (let { sentenceId, dataset, tokens, nodes, document,
+      paragraph } of sentenceStream
     ) {
-      dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
-      setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
 
+      // ~~~ bake some vars from sentence stream data
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
       let numComplete = tokens.length - roots.length + 1
       let isComplete = roots.length === 1
@@ -144,17 +149,25 @@ function main() {
         annotationalGap = true
         continue
       }
+      let curDocId = document.getAttribute('id')
+      let curParId = paragraph.getAttribute('id')
+
+      dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
+      setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
+      let opensDoc = setRegistry[dataset].curDocId !== curDocId
+      let opensPar = setRegistry[dataset].curParId !== curParId
+      setRegistry[dataset].update(curDocId, curParId)
 
       let sentenceLevelData = {
         'sent_id': sentenceId,
-        'newpar id': tokens[0].opensParagraph && currentParagraph.getAttribute('id') || undefined,
-        'newdoc id': opensDocument && currentDocument.getAttribute('id') || undefined,
-        'gap': (followsGap || annotationalGap && !opensDocument) || undefined,
-      } as any
-
-      if (opensDocument) {
-        sentenceLevelData.doc_title = currentDocument.getAttribute('title') || undefined
+        'newpar id': opensPar && curParId || undefined,
+        'newdoc id': opensDoc && curDocId || undefined,
+        // 'gap': (followsGap || annotationalGap && !opensDoc) || undefined,
       }
+      if (opensDoc) {
+        sentenceLevelData['doc_title'] = document.getAttribute('title') || ''
+      }
+
 
       if (completionRatio) {
         let bratPath = id2bratPath[tokens[0].id] || ''
@@ -208,7 +221,6 @@ function main() {
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
             let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
-            setRegistry[dataset].currentDocId = currentDocument.getAttribute('id')
             annotationalGap = false
           } else {
             setRegistry[dataset].counts.tokensBlocked += numComplete

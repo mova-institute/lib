@@ -236,7 +236,7 @@ async function main() {
 
       let documentTokens = mu(mixml2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
-      for (let { sentenceId, dataset, nodes, opensDocument } of sentenceStream) {
+      for (let { sentenceId, dataset, nodes } of sentenceStream) {
         let roots = nodes.filter(x => x.isRoot())
         let sentenceHasOneRoot = roots.length === 1
 
