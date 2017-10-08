@@ -114,6 +114,10 @@ async function main() {
         if (0) {
           idSequence = splitFractions(tokenEls, idSequence)
         }
+
+        for (let tokenEl of tokenEls) {
+          // insertGlueIfNeeded(tokenEl)
+        }
       }
 
       // do safe transforms
@@ -232,7 +236,7 @@ async function main() {
 
       let documentTokens = mu(tei2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
-      for (let { sentenceId, dataset, nodes, opensParagraph, opensDocument } of sentenceStream) {
+      for (let { sentenceId, dataset, nodes, opensDocument } of sentenceStream) {
         let roots = nodes.filter(x => x.isRoot())
         let sentenceHasOneRoot = roots.length === 1
 
@@ -933,6 +937,21 @@ function token2stringRaw(id: string, form: string, lemma: string, tag: string) {
 //------------------------------------------------------------------------------
 function token2string(token: Token) {
   return token2stringRaw(token.id, token.form, token.interp.lemma, token.interp.toVesumStr())
+}
+
+//------------------------------------------------------------------------------
+function insertGlueIfNeeded(el: AbstractElement) {
+  if (el.firstElementChild().text() === ','
+    && el.previousElementSibling()
+    // && el.nextElementSibling()
+    && el.previousElementSibling().localName() !== 'g'
+    // && el.nextElementSibling().localName() !== 'g'
+    // && /\d+/.test(el.previousElementSibling().firstElementChild().text())
+    // && /\d+/.test(el.nextElementSibling().firstElementChild().text())
+  ) {
+    el.insertBefore(el.document().createElement('g'))
+    // el.insertAfter(el.document().createElement('g'))
+  }
 }
 
 //------------------------------------------------------------------------------
