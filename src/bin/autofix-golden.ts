@@ -11,7 +11,7 @@ import { MorphInterp } from '../nlp/morph_interp'
 import { fetchText } from '../request_utils'
 import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
-import { serializeMiDocument, setTenseIfConverb, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
+import { serializeMiDocument, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime, fromUnixStr } from '../date'
@@ -116,7 +116,6 @@ async function main() {
         }
       }
 
-
       // do safe transforms
       let interpEls = root.evaluateElements('//w_/w')
       for (let interpEl of interpEls) {
@@ -135,6 +134,7 @@ async function main() {
           console.error(e.message)
           continue
         }
+
         let interpsInDict = analyzer.tag(form)
         let presentInDict = interpsInDict.some(dictInterp => dictInterp.featurewiseEquals(interp))
         // console.log(presentInDict)
@@ -194,7 +194,7 @@ async function main() {
         }
 
         // advps without tense
-        setTenseIfConverb(interp, form)
+        g.setTenseIfConverb(interp, form)
 
         // if (isNoninfl(interp)) {
         //   let oldLemma = interp.lemma
@@ -247,7 +247,7 @@ async function main() {
           })
         }
 
-        for (let [index, [node, nextNode]] of mu(nodes).window(2).entries()) {
+        for (let [index, [prevNode, node, nextNode]] of mu(nodes).window(2, 1).entries()) {
           let token = node.node
           let parent = node.parent && node.parent.node
           let interp = token.interp
@@ -768,7 +768,7 @@ const DROP_ORDER = [
 
   f.Alternativity,
   f.Badness,
-  f.Colloquial,
+  f.Colloquiality,
   f.Foreign,
   f.Formality,
   f.N2adjness,
@@ -1120,6 +1120,15 @@ const TRANSFORMS = {
   },
   toObl(t: GraphNode<Token>) {
     t.node.rel = 'obl'
+  },
+  toDash(t: GraphNode<Token>) {
+    t.node.interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
+  },
+  toNDash(t: GraphNode<Token>) {
+    t.node.interp.setFeature(f.PunctuationType, f.PunctuationType.ndash)
+  },
+  toHyphen(t: GraphNode<Token>) {
+    t.node.interp.setFeature(f.PunctuationType, f.PunctuationType.hyphen)
   }
 }
 

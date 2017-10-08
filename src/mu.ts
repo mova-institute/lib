@@ -104,8 +104,14 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
-  window(n: number) {
-    let buf = [...this.take(n - 1)]
+  window(n: number, focus = 0) {
+    // assures focus-ith element is defined
+    // [undefined, focus, next]
+    // [prev, focus, next]
+    // [prev, focus, undefined]
+
+    let buf = new Array<T>(focus)
+    buf.push(...this.take(n - 1 - focus))
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
@@ -113,7 +119,7 @@ export class Mu<T> implements Iterable<T> {
         yield [...buf]
         buf.shift()
       }
-      while (buf.length) {
+      while (buf.length > focus) {
         yield [...buf]
         buf.shift()
       }

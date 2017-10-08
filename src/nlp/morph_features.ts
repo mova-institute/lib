@@ -154,7 +154,7 @@ export enum Rarity {
 export enum Slang {
   yes,
 }
-export enum Colloquial {
+export enum Colloquiality {
   yes,
 }
 export enum Badness {
@@ -188,12 +188,16 @@ export enum Foreign { yes }
 export enum Formality { yes }
 export enum Typo { yes }
 
-export enum PunctType {
-  quoute,
-  mdash,
+export enum PunctuationType {
+  bullet,
+  dash,
+  ellipsis,
+  hyphen,
+  ndash,
+  quote,
 }
 
-export enum PunctSide {
+export enum PunctuationSide {
   open,
   close,
 }
@@ -207,7 +211,7 @@ export type Feature = Abbreviation
   | Badness
   | Beforeadj
   | Case
-  | Colloquial
+  | Colloquiality
   | ConjunctionType
   | Degree
   | Dimin
@@ -234,8 +238,8 @@ export type Feature = Abbreviation
   | PrepositionRequirement
   | PronominalType
   | Pronoun
-  | PunctSide
-  | PunctType
+  | PunctuationSide
+  | PunctuationType
   | Rarity
   | Reflexivity
   | RequiredAnimacy
@@ -265,7 +269,7 @@ export const NONGRAMMATICAL_FEATURES = [
   Alternativity,
   Auto,
   Badness,
-  Colloquial,
+  Colloquiality,
   Foreign,
   Formality,
   N2adjness,

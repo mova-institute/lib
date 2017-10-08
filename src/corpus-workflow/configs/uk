@@ -200,12 +200,12 @@ ATTRIBUTE prontype {
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE punctside {
-  LABEL "бік пунктуації"
-  MULTIVALUE yes
-  MULTISEP "|"
-  TYPE "FD_FGD"
-}
+#ATTRIBUTE punctside {
+#  LABEL "бік пунктуації"
+#  MULTIVALUE yes
+#  MULTISEP "|"
+#  TYPE "FD_FGD"
+#}
 
 ATTRIBUTE puncttype {
   LABEL "тип пунктуації"
@@ -281,6 +281,10 @@ ATTRIBUTE tag  {
   FROMATTR pos
   TYPE index
   TRANSQUERY yes
+}
+
+ATTRIBUTE spaceafter  {
+  LABEL "пробіл після"
 }
 
 ATTRIBUTE id {

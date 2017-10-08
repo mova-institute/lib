@@ -311,11 +311,87 @@ export function canBeAsSomethingForXcomp2(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const DUMB_DOWN_TO_UNIVERSAL = [
-  'conj:parataxis',
-  'obl:agent',
-]
-export function standartizeSentence2ud20(sentence: TokenNode[]) {
+export function setTenseIfConverb(interp: MorphInterp, form: string) {
+  if (interp.isConverb()) {
+    if (/ши(с[ья])?$/.test(form)) {
+      interp.features.tense = f.Tense.past
+    }
+    else if (/чи(с[ья])?$/.test(form)) {
+      interp.features.tense = f.Tense.present
+    } else {
+      let msg = `Bad ending for converb "${form}"`
+      console.error(msg)
+      // throw new Error(msg)
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function denormalizeInterp(interp: MorphInterp) {
+  if (
+    (interp.isVerb() || interp.isAdjective() || interp.isNoun())
+    && interp.hasGender()
+    && !interp.hasNumber()
+  ) {
+    interp.setIsSingular()
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function standartizeMorphoForUd21(interp: MorphInterp, form: string) {
+  denormalizeInterp(interp)
+
+  setTenseIfConverb(interp, form)  // redundant?
+
+  // remove degree from &noun
+  if (interp.isAdjectiveAsNoun()) {
+    interp.dropFeature(f.Degree)
+  }
+
+  // drop features
+  interp.dropFeature(f.PrepositionRequirement)
+  interp.dropFeature(f.Formality)
+  interp.dropFeature(f.VerbReversivity)
+  interp.dropFeature(f.PunctuationSide)
+
+  interp.dropFeature(f.Rarity)
+  interp.dropFeature(f.Oddness)
+  interp.dropFeature(f.Colloquiality)
+
+  // temp
+  if (interp.isPunctuation()
+    && form === '—'  // m-dash
+    && !interp.hasFeature(f.PunctuationType)
+  ) {
+    interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
+  }
+
+  // we're not sure there's a need for that
+  if (interp.getFeature(f.PunctuationType) === f.PunctuationType.ellipsis) {
+    interp.dropFeature(f.PunctuationType)
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const SUBRELS_TO_EXPORT = new Set([
+  'admod:amntgov',
+  'advcl:sp',
+  'advcl:svc',
+  'ccomp:svc',
+  'compound:svc',
+  'conj:svc',
+  'det:numgov',
+  'det:nummod',
+  'flat:foreign',
+  'flat:name',
+  'flat:repeat',
+  'flat:title',
+  'nummod:gov',
+  'parataxis:discourse',
+  'parataxis:newsent',
+  'xcomp:sp',
+])
+export function standartizeSentence2ud21(sentence: TokenNode[]) {
   let lastToken = last(sentence).node
   let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
 
@@ -344,8 +420,8 @@ export function standartizeSentence2ud20(sentence: TokenNode[]) {
       t.rel = 'obj'
     }
 
-    // remove :spec of internal rels
-    if (DUMB_DOWN_TO_UNIVERSAL.includes(t.rel)) {
+    // remove non-exportable subrels
+    if (t.rel && !SUBRELS_TO_EXPORT.has(t.rel)) {
       t.rel = trimAfterFirst(t.rel, ':')
     }
 
@@ -362,6 +438,8 @@ export function standartizeSentence2ud20(sentence: TokenNode[]) {
       node.children.filter(x => uEq(x.node.rel, 'aux'))
         .forEach(x => x.node.rel = 'cop')
     }
+
+    standartizeMorphoForUd21(t.interp, t.form)
   }
 
   // set parataxis punct to the root
@@ -569,62 +647,61 @@ export const COMPARATIVE_SCONJS = [
 ]
 
 export const ALLOWED_RELATIONS: UdMiRelation[] = [
-  'advcl:2',
+  'advcl:sp',
   'advcl:cmp',
   'advcl:svc',
   'advmod:a',
   'advmod:amtgov',
   'appos:nonnom',
+  'aux:pass',
   'ccomp:svc',
   'compound:svc',
+  'conj:parataxis',
+  'conj:repeat',
   'conj:svc',
+  'csubj:pass',
+  'det:numgov',
+  'det:nummod',
   'flat:conjpack',
+  'flat:foreign',
+  'flat:name',
   'flat:repeat',
+  'flat:title',
+  'nsubj:pass',
+  'nummod:gov',
+  'obl:agent',
   'parataxis:discourse',
-  'parataxis:thatis',
   'parataxis:newsent',
-  'xcomp:2',
-  'xcomp:svc',
+  'parataxis:thatis',
+  'xcomp:sp',
 
   'acl',
   'advcl',
   'advmod',
   'amod',
   'appos',
-  'aux:pass',
   'aux',
   'case',
   'cc',
   'ccomp',
   'compound',
-  'conj:parataxis',
-  'conj:repeat',
   'conj',
   'cop',
-  'csubj:pass',
   'csubj',
-  'det:numgov',
-  'det:nummod',
   'det',
   'discourse',
   'dislocated',
   'expl',
   'fixed',
-  'flat:foreign',
-  'flat:name',
-  'flat:title',
   'flat',
   'goeswith',
   'iobj',
   'list',
   'mark',
   'nmod',
-  'nsubj:pass',
   'nsubj',
-  'nummod:gov',
   'nummod',
   'obj',
-  'obl:agent',
   'obl',
   'orphan',
   'parataxis',

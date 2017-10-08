@@ -5,7 +5,7 @@ import {
 import * as f from './morph_features'
 import { groupTableBy, arr2indexMap, stableSort } from '../algo'
 import { IStringMorphInterp } from './interfaces'
-import { setTenseIfConverb } from './utils'
+import { setTenseIfConverb } from './ud/uk_grammar'
 
 import { mu } from '../mu'
 const wu: Wu.WuStatic = require('wu')

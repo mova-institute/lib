@@ -36,8 +36,8 @@ export type Ud20UniversalRelation =
   | 'xcomp'
 
 export type Ud20MiSpecificRelation =
-  | 'advcl:2'
   | 'advcl:cmp'
+  | 'advcl:sp'
   | 'advcl:svc'
   | 'advmod:a'
   | 'advmod:amtgov'
@@ -60,10 +60,9 @@ export type Ud20MiSpecificRelation =
   | 'nummod:gov'
   | 'obl:agent'
   | 'parataxis:discourse'
-  | 'parataxis:thatis'
-  | 'xcomp:2'
-  | 'xcomp:svc'
   | 'parataxis:newsent'
+  | 'parataxis:thatis'
+  | 'xcomp:sp'
 
 
 export type UdMiRelation = Ud20UniversalRelation | Ud20MiSpecificRelation

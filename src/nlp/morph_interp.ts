@@ -6,12 +6,12 @@ import { isOddball, zipLongest } from '../lang'
 import { compare } from '../algo'
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, GrammaticalAnimacy,
-  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquial, ConjunctionType,
+  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquiality, ConjunctionType,
   Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctType, PunctSide, NounNumeral,
+  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctuationType, PunctuationSide, NounNumeral,
   Feature, NONGRAMMATICAL_FEATURES
 } from './morph_features'
 
@@ -27,7 +27,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Beforeadj, 'beforeadj'],
   [Case, 'case'],
   [Inflectability, 'inflectability'],
-  [Colloquial, 'colloquial'],
+  [Colloquiality, 'colloquial'],
   [Degree, 'degree'],
   [Dimin, 'dimin'],
   [Gender, 'gender'],
@@ -50,8 +50,8 @@ export const featureObj2nameMap = new Map<any, string>([
   [PronominalType, 'pronominalType'],
   [Pronoun, 'pronoun'],
   [GrammaticalAnimacy, 'grammaticalAnimacy'],
-  [PunctType, 'punctType'],
-  [PunctSide, 'punctSide'],
+  [PunctuationType, 'punctType'],
+  [PunctuationSide, 'punctSide'],
   [Rarity, 'rarity'],
   [Reflexivity, 'reflexivity'],
   [RequiredAnimacy, 'requiredAnimacy'],
@@ -77,7 +77,7 @@ const NONGRAMMATIACAL_FEATURES = [
   Auto,
   Badness,
   Inflectability,  // ~
-  Colloquial,
+  Colloquiality,
   Formality,  // ~
   N2adjness,
   NameType,
@@ -109,7 +109,7 @@ export const FEATURE_TABLE = [
   { featStr: 'verbRevesivity', feat: VerbReversivity, vesum: VerbReversivity.yes, vesumStr: 'rev' },
 
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
-  { featStr: 'colloquial', feat: Colloquial, vesum: Colloquial.yes, vesumStr: 'coll' },
+  { featStr: 'colloquial', feat: Colloquiality, vesum: Colloquiality.yes, vesumStr: 'coll' },
   { featStr: 'slang', feat: Slang, vesum: Slang.yes, vesumStr: 'slang' },
   { featStr: 'bad', feat: Badness, vesum: Badness.yes, vesumStr: 'bad' },
 
@@ -251,11 +251,15 @@ export const FEATURE_TABLE = [
 
   { featStr: 'partType', feat: PartType, vesum: PartType.consequential, vesumStr: 'conseq' },
 
-  { featStr: 'punctType', feat: PunctType, vesum: PunctType.quoute, vesumStr: 'quote' },
-  { featStr: 'punctType', feat: PunctType, vesum: PunctType.mdash, vesumStr: 'mdash' },
+  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.quote, vesumStr: 'quote' },
+  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.ellipsis, vesumStr: 'ellipsis' },
+  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.hyphen, vesumStr: 'hyphen' },
+  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.dash, vesumStr: 'dash' },
+  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.ndash, vesumStr: 'ndash' },
+  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.bullet, vesumStr: 'bullet' },
 
-  { featStr: 'punctSide', feat: PunctSide, vesum: PunctSide.open, vesumStr: 'open' },
-  { featStr: 'punctSide', feat: PunctSide, vesum: PunctSide.close, vesumStr: 'close' },
+  { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.open, vesumStr: 'open' },
+  { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.close, vesumStr: 'close' },
 
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
@@ -396,8 +400,8 @@ export const FEATURE_ORDER = {
   ],
   [Pos.punct]: [
     Pos,
-    PunctType,
-    PunctSide,
+    PunctuationType,
+    PunctuationSide,
   ],
   [Pos.x]: [
     Pos,
@@ -435,7 +439,7 @@ export const FEATURE_ORDER = {
 }
 
 for (let pos of Object.keys(FEATURE_ORDER)) {
-  FEATURE_ORDER[pos].push(Colloquial, Rarity, Badness, Oddness, Auto, SemanticOmonym, ParadigmOmonym)
+  FEATURE_ORDER[pos].push(Colloquiality, Rarity, Badness, Oddness, Auto, SemanticOmonym, ParadigmOmonym)
 }
 
 const POSWISE_COMPARATORS = {}
@@ -453,7 +457,7 @@ export class Features {
   beforeadj: Beforeadj
   case: Case
   inflectability: Inflectability
-  colloquial: Colloquial
+  colloquial: Colloquiality
   conjunctionType: ConjunctionType
   degree: Degree
   foreign: Foreign
@@ -477,8 +481,8 @@ export class Features {
   prepositionRequirement: PrepositionRequirement
   pronominalType: PronominalType
   pronoun: Pronoun
-  punctType: PunctType
-  punctSide: PunctSide
+  punctType: PunctuationType
+  punctSide: PunctuationSide
   rarity: Rarity
   reflexivity: Reflexivity
   requiredAnimacy: RequiredAnimacy
@@ -923,7 +927,7 @@ export class MorphInterp {
   //   // todo
   // }
 
-  denormalize() {
+  denormalize() {  // todo: remove
     if (
       (this.isVerb() || this.isAdjective() || this.isNoun())
       && this.hasGender()
@@ -1063,14 +1067,13 @@ export class MorphInterp {
   isIndefinite() { return this.features.pronominalType === PronominalType.indefinite }
   isGeneral() { return this.features.pronominalType === PronominalType.general }
   isRelative() { return this.features.pronominalType === PronominalType.relative }
-  isQuote() { return this.features.punctType === PunctType.quoute }
-  isOpeningPunctuation() { return this.features.punctSide === PunctSide.open }
-  isClosingPunctuation() { return this.features.punctSide === PunctSide.close }
+  isQuote() { return this.features.punctType === PunctuationType.quote }
   isConsequential() { return this.features.partType === PartType.consequential }
   isInstant() { return this.otherFlags.has('instant') }
   isUninflectable() { return this.features.inflectability === Inflectability.no }
   isNounNumeral() { return this.features.nounNumeral === NounNumeral.yes }
-
+  isGrammaticallyAnimate() { return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.animate }
+  isGrammaticallyInanimate() { return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.inanimate }
   isNonparticipleAdj() { return this.isAdjective() && !this.isParticiple() }
 
 
@@ -1086,7 +1089,7 @@ export class MorphInterp {
 
   isProper() { return this.features.nounType === NounType.proper }
   isBad() { return this.features.badness === Badness.yes }
-  isColloquial() { return this.features.colloquial === Colloquial.yes }
+  isColloquial() { return this.features.colloquial === Colloquiality.yes }
   isRare() { return this.features.rarity === Rarity.rare }
 
   isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }

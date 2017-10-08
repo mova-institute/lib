@@ -1,12 +1,12 @@
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
-  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquial, ConjunctionType,
+  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquiality, ConjunctionType,
   Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
-  PartType, PunctType, PunctSide, VerbReversivity,
+  PartType, PunctuationType, PunctuationSide, VerbReversivity,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
@@ -39,8 +39,7 @@ export type UdOrth = 'Khark'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
 export type UdPartType = 'Prs' | 'Conseq'
 export type UdPolite = 'Form'
-export type UdPunctType = 'Quot' | 'Mdash'
-export type UdPunctSide = 'Ini' | 'Fin'
+export type UdPunctType = 'Quot' | 'Ellip' | 'Hyph' | 'Dash' | 'Ndash' | 'Bull'
 export type UdUninflect = UdBoolean
 export type UdReversivity = UdBoolean
 export type UdPos =
@@ -109,8 +108,8 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [Typo, 'Typo'],
   [Alternativity, 'Orth'],
   [PartType, 'PartType'],
-  [PunctSide, 'PunctSide'],
-  [PunctType, 'PunctType'],
+  [PunctuationSide, 'PunctSide'],
+  [PunctuationType, 'PunctType'],
   [Inflectability, 'Uninflect'],
   [VerbReversivity, 'Reverse'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
@@ -270,14 +269,13 @@ const partTypeMap = new Map<PartType, UdPartType>([
   [PartType.consequential, 'Conseq'],
 ])
 
-const punctTypeMap = new Map<PunctType, UdPunctType>([
-  [PunctType.quoute, 'Quot'],
-  [PunctType.mdash, 'Mdash'],
-])
-
-const punctSideMap = new Map<PunctSide, UdPunctSide>([
-  [PunctSide.open, 'Ini'],
-  [PunctSide.close, 'Fin'],
+const punctTypeMap = new Map<PunctuationType, UdPunctType>([
+  [PunctuationType.quote, 'Quot'],
+  [PunctuationType.ellipsis, 'Ellip'],
+  [PunctuationType.hyphen, 'Hyph'],
+  [PunctuationType.dash, 'Dash'],
+  [PunctuationType.ndash, 'Ndash'],
+  [PunctuationType.bullet, 'Bull'],
 ])
 
 /*
@@ -309,8 +307,7 @@ const mapMap = new Map<any, any>([
   [Formality, politeMap],
   [Alternativity, orthoMap],
   [PartType, partTypeMap],
-  [PunctType, punctTypeMap],
-  [PunctSide, punctSideMap],
+  [PunctuationType, punctTypeMap],
 ])
 
 
@@ -339,7 +336,6 @@ export class UdFeats {
   Poss: UdBoolean
   PrepCase: UdPrepCase
   PronType: UdPronType
-  PunctSide: UdPunctSide
   PunctType: UdPunctType
   Reflex: UdBoolean
   Style: UdStyle
@@ -378,7 +374,7 @@ function mapFeatureValue2Ud(featureName, value) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toUd(interp: MorphInterp) {
-  interp.denormalize()
+  interp.denormalize()  // todo: remove
 
   // throw on not supported
   if (interp.isEmphatic()) {

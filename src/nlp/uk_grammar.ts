@@ -1,6 +1,6 @@
 import {
   NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, GrammaticalAnimacy,
-  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquial, ConjunctionType,
+  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquiality, ConjunctionType,
   Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,

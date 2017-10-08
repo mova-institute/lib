@@ -30,7 +30,7 @@ export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta: Cor
       yield toyield
     } else {
       let { form, lemma, upos, feats, rel } = tok.token
-      yield token2verticalLine(form, lemma, upos, makeObject(feats) as any, rel)
+      yield token2verticalLine(form, lemma, upos, feats as any, rel, tok.token.misc.SpaceAfter !== 'No')
     }
   }
 

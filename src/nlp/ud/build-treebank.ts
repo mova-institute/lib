@@ -13,7 +13,7 @@ import * as g from './uk_grammar'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
-import { tei2tokenStream, tokenStream2sentences, normalizeMorphoForUd } from '../../nlp/utils'
+import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
 import * as algo from '../../algo'
 import { parseJsonFromFile } from '../../utils.node'
 import { last } from '../../lang'
@@ -125,7 +125,7 @@ function main() {
 
     let root = parseXmlFileSync(xmlPath)
     let tokenStream = mu(tei2tokenStream(root, args.datasetSchema))
-      .transform(x => x.interp && x.interp.denormalize())
+      .transform(x => x.interp && g.denormalizeInterp(x.interp))
     let sentenceStream = tokenStream2sentences(tokenStream)
     let annotationalGap = false
     for (let { sentenceId, dataset, tokens, nodes, opensParagraph,
@@ -138,7 +138,9 @@ function main() {
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
       let numComplete = numTokens - roots.length + 1
       let isComplete = roots.length === 1
-      let percentComplete = 1 - ((roots.length - 1) / (numTokens - 1))
+      let percentComplete = numTokens === 1
+        ? 1
+        : 1 - ((roots.length - 1) / (numTokens - 1))
       let hasMorphErrors = tokens.some(x => x.interp.isError())
       if (hasMorphErrors) {
         annotationalGap = true
@@ -201,7 +203,7 @@ function main() {
             ++datasetRegistry[dataset].counts.sentencesExported
             datasetRegistry[dataset].counts.tokensExported += numTokens
             if (!args.noStandartizing) {
-              g.standartizeSentence2ud20(nodes)
+              g.standartizeSentence2ud21(nodes)
             }
 
             let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
@@ -372,7 +374,7 @@ function set2filename(dir: string, setSchema: string, setName: string) {
 // const FOREIGN = MorphInterp.fromVesumStr('x:foreign')
 function standartizeMorpho(sentence: Array<Token>) {
   for (let token of sentence) {
-    normalizeMorphoForUd(token.interp, token.form)
+    g.standartizeMorphoForUd21(token.interp, token.form)
 
     // token.interp.killNongrammaticalFeatures()
     token.interp.setIsAuxillary(false)

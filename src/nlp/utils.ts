@@ -12,7 +12,7 @@ import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
 import { MorphInterp, compareTags } from './morph_interp'
-import { Tense } from './morph_features'
+import * as f from './morph_features'
 import {
   WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
   PUNC_GLUED_BEFORE, PUNC_GLUED_AFTER, NO_GLUE_PUNC, WCHAR_UK,
@@ -1028,7 +1028,9 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
         case 'sb':  // todo
           tok = Token.structure('sentence', true)
           let attributes = el.attributesObj()
-          if (sentenceSetSchema) {
+          if (sentenceSetSchema === '') {
+            attributes.set = el.attributeUp('dataset')
+          } else if (sentenceSetSchema) {
             let attrName = `dataset-${sentenceSetSchema}`
             attributes.set = el.attributeUp(attrName)
           }
@@ -1173,6 +1175,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   let newTokenLevelParagraph = false
   let glueNext = false
   let followsGap = false
+  let skip = false  // todo: gap
 
   const makeYield = () => {
     initLocalHeadIndexes(tokens, sentenceId)
@@ -1193,6 +1196,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     opensParagraph = false
     newTokenLevelParagraph = false
     followsGap = false
+    skip = false
 
     return ret
   }
@@ -1207,7 +1211,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
         }
       }
     } else if (token.getStructureName() === 'document') {
-      if (token.isClosing() && tokens.length) {
+      if (token.isClosing() && tokens.length && !skip) {
         yield makeYield()
         // throw new Error(`No sentence boundary at the end of document ${currenctDocument.id}`)
       }
@@ -1216,11 +1220,15 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
         opensDocument = true
       }
     } else if (token.isSentenceBoundary()) {
-      if (tokens.length) {
+      if (token.hasTag('skip' as any)) {
+        skip = true
+      }
+
+      if (tokens.length && !skip) {
         yield makeYield()
       }
       sentenceId = token.id
-      dataset = token.getAttribute('set')
+      dataset = token.getAttribute('set') || dataset
     } else if (token.isWord()) {
       token.opensParagraph = newTokenLevelParagraph
       tokens.push(token)
@@ -1232,7 +1240,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     }
   }
 
-  if (tokens.length) {
+  if (tokens.length && !skip) {
     yield makeYield()
   }
 }
@@ -1285,45 +1293,6 @@ export function serializeMiDocument(root: AbstractElement, prettify = false) {
 
   return ret
 }
-
-////////////////////////////////////////////////////////////////////////////////
-export function setTenseIfConverb(interp: MorphInterp, form: string) {
-  if (interp.isConverb()) {
-    if (/ши(с[ья])?$/.test(form)) {
-      interp.features.tense = Tense.past
-    }
-    else if (/чи(с[ья])?$/.test(form)) {
-      interp.features.tense = Tense.present
-    } else {
-      let msg = `Bad ending for converb "${form}"`
-      console.error(msg)
-      // throw new Error(msg)
-    }
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function normalizeMorphoForUd(interp: MorphInterp, form: string) {
-  setTenseIfConverb(interp, form)  // redundant?
-
-  // set rudundant number
-  if ((interp.isNounish() || interp.isAdjective())
-    && interp.features.number === undefined
-    && interp.features.numberTantum === undefined
-    && interp.hasGender()
-  ) {
-    interp.setIsSingular()
-  }
-
-  // remove degree from &noun
-  if (interp.isAdjectiveAsNoun()) {
-    interp.features.degree = undefined
-  }
-
-  // drop PrepCase
-  interp.features.prepositionRequirement = undefined
-}
-
 
 
 //------------------------------------------------------------------------------

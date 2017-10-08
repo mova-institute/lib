@@ -1,3 +1,50 @@
+//------------------------------------------------------------------------------
+function insertGlueAroundIfNeeded(el: AbstractElement) {
+  if (el.text() === '-'
+    && el.previousElementSibling()
+    && el.nextElementSibling()
+    && el.previousElementSibling().localName() !== 'g'
+    && el.nextElementSibling().localName() !== 'g'
+  ) {
+
+  }
+}
+
+if (prevNode
+  && prevNode.node.gluedNext
+  && token.gluedNext
+  && /[–—]/.test(token.form)
+  && !interp.hasFeature(f.PunctuationType)
+) {
+  interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
+}
+
+// if (!interp.hasFeature(f.PunctuationType)
+//   && interp.isPunctuation()
+//   && token.form === '-'
+//   // && prevNode
+//   // && prevNode.node.gluedNext
+//   // && token.gluedNext
+// ) {
+//   interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
+// }
+
+for (let tokenEl of tokenEls) {
+  let docEl = tokenEl.evaluateElement('ancestor::doc[1]')
+  // console.log(docEl.attribute('id'))
+
+  if (tokenEl.firstElementChild().text() === '-'
+    && tokenEl.previousElementSibling()
+    && tokenEl.nextElementSibling()
+    && tokenEl.previousElementSibling().localName() !== 'g'
+    && tokenEl.nextElementSibling().localName() !== 'g'
+    && '14fn 1h4e 1imh 1i47 1jlq 1ken 1rea'.split(' ').includes(docEl.attribute('id'))
+  ) {
+    tokenEl.insertBefore(tokenEl.document().createElement('g'))
+    tokenEl.insertAfter(tokenEl.document().createElement('g'))
+  }
+}
+
 // if (token.rel === 'xcomp'
 //   && !interp.isVerb()
 //   && !g2.isInfinitive(node)

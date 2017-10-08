@@ -2,8 +2,9 @@
 // import { parseIntStrict, buildObject } from '../../lang'
 import { mu, Mu } from '../../mu'
 import { UdPos } from './tagset'
+import { makeObject } from '../../lang'
+import { Dict } from '../../types'
 // import { UdMiRelation } from './syntagset'
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,11 +13,11 @@ export interface ConlluToken {
   lemma: string
   upos: UdPos
   xpos: string
-  feats: [string, string][]
+  feats: Dict<string>
   head: string
   rel: string
   deps: [number, string][]
-  misc: [string, string][]
+  misc: Dict<string>
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,9 +80,9 @@ export function* streamparseConllu(lines: Iterable<string>) {
 //------------------------------------------------------------------------------
 function parseUdKeyvalues(keyvals: string) {
   if (!keyvals) {
-    return []
+    return makeObject<string>([])
   }
-  return keyvals.split('|').map(x => x.split('=')) as [string, string][]
+  return makeObject(keyvals.split('|').map(x => x.split('=')) as [string, string][])
 }
 
 //------------------------------------------------------------------------------
