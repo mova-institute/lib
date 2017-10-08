@@ -3,6 +3,7 @@ import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { tokenStream2plaintextString } from '../utils'
 import { mu } from '../../mu'
+import * as _ from 'lodash'
 
 
 
@@ -13,7 +14,8 @@ export interface Sentence2conlluParams {
 }
 export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options: Sentence2conlluParams = {}) {
   let comments = new Array<string>()
-  for (let [k, v] of Object.entries(sentenceLevelData)) {
+  let pairs = _.sortBy(Object.entries(sentenceLevelData), 0)
+  for (let [k, v] of pairs) {
     if (v === undefined) {
       continue
     } else if (v === true) {
@@ -51,7 +53,7 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
       xpos = token.interp.toMte()
     } else if (options.xpos === 'upos') {
       xpos = pos
-    } else if (options.xpos === 'ud'){
+    } else if (options.xpos === 'ud') {
       xpos = `POS=${pos}`
       if (udFeatureStr) {
         xpos += `|${udFeatureStr}`
