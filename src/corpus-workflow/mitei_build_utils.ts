@@ -4,7 +4,7 @@ import { sync as globSync } from 'glob'
 
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { applyMiTeiDocTransforms, tokenizeTei, morphInterpret, interpretedTeiDoc2sketchVertical2 } from '../nlp/utils'
+import { applyMiTeiDocTransforms, tokenizeMixml, morphInterpret, interpretedTeiDoc2sketchVertical2 } from '../nlp/utils'
 import { mu } from '../mu'
 import { $d } from '../nlp/mi_tei_document'
 
@@ -21,7 +21,7 @@ export function buildMiteiVertical(miteiPath: string, analyzer: MorphAnalyzer, v
     let meta = doc.getMeta()
 
     if (!meta || !meta.disamb) {
-      tokenizeTei(root, analyzer)
+      tokenizeMixml(root, analyzer)
       morphInterpret(root, analyzer)
     }
 

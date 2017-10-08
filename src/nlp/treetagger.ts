@@ -4,7 +4,7 @@ import { sync as globSync } from 'glob'
 import { mu } from '../mu'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { linesStreamSync } from '../utils.node'
-import { tei2tokenStream } from '../nlp/utils'
+import { mixml2tokenStream } from '../nlp/utils'
 import { iterateDictCorpVizLines } from '../nlp/vesum_utils'
 import { NS } from '../xml/utils'
 import { startsWithCapital } from '../string_utils'
@@ -27,7 +27,7 @@ export function build4TreeTagger(args: Args) {
   let newStandardFiles = globSync(join(args.corpusPath, '*.xml'))
   mu(newStandardFiles)
     .map(x => parseXmlFileSync(x))
-    .map(x => mu(tei2tokenStream(x)))
+    .map(x => mu(mixml2tokenStream(x)))
     .forEach(x => x.forEach(tok => {
       if (tok.isWord()) {
         let interp = tok.interps[0]

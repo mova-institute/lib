@@ -24,7 +24,7 @@ import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
 import * as nlpStatic from '../nlp/static'
 import {
-  tokenizeTei, tei2tokenStream, token2sketchVertical, morphInterpret,
+  tokenizeMixml, mixml2tokenStream, token2sketchVertical, morphInterpret,
   autofixDirtyText, polishXml2verticalStream, normalizeWebParaSafe,
 } from '../nlp/utils'
 import { mu, Mu } from '../mu'
@@ -339,10 +339,10 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
     root.evaluateNodes('//s')
       .filter(x => !x.text().trim())
       .forEach(x => x.remove() && console.log('rm'))
-    tokenizeTei(root, analyzer)
+    tokenizeMixml(root, analyzer)
     morphInterpret(root, analyzer)
     writeSync(verticalFile, `<doc reference_title="${basename(path).slice(0, -'.uk.xml'.length)}">\n`)
-    mu(tei2tokenStream(root))
+    mu(mixml2tokenStream(root))
       .map(x => token2sketchVertical(x))
       .chunk(3000)
       .forEach(x => writeSync(verticalFile, x.join('\n') + '\n'))

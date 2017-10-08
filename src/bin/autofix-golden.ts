@@ -11,7 +11,7 @@ import { MorphInterp } from '../nlp/morph_interp'
 import { fetchText } from '../request_utils'
 import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
-import { serializeMiDocument, tokenStream2sentences, tei2tokenStream } from '../nlp/utils'
+import { serializeMiDocument, tokenStream2sentences, mixml2tokenStream } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime, fromUnixStr } from '../date'
@@ -234,7 +234,7 @@ async function main() {
         id2el.set(id, el)
       }
 
-      let documentTokens = mu(tei2tokenStream(root)).toArray()
+      let documentTokens = mu(mixml2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
       for (let { sentenceId, dataset, nodes, opensDocument } of sentenceStream) {
         let roots = nodes.filter(x => x.isRoot())

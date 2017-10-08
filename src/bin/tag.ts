@@ -4,7 +4,7 @@ import { ioArgsPlain } from '../cli_utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { readTillEnd } from '../stream_utils.node'
 import {
-  tokenizeTei, morphInterpret, numerateTokensGently, tei2tokenStream, string2tokenStream,
+  tokenizeMixml, morphInterpret, numerateTokensGently, mixml2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, autofixDirtyText, normalizeCorpusText,
   newline2Paragraph, tokenStream2cg, morphReinterpret, token2sketchVertical,
   applyMiTeiDocTransforms,
@@ -133,7 +133,7 @@ function main(args: Args) {
         newline2Paragraph(root)
       }
 
-      tokenizeTei(root, analyzer)
+      tokenizeMixml(root, analyzer)
 
       if (!args.tokenize) {
         morphInterpret(root, analyzer, args.mte)
@@ -194,7 +194,7 @@ function main(args: Args) {
           if (args.apply) {
             applyMiTeiDocTransforms(root)
           }
-          var tokenStream = mu(tei2tokenStream(root))
+          var tokenStream = mu(mixml2tokenStream(root))
         } catch (e) {
           tokenStream = string2tokenStream(inputStr, analyzer)
         }

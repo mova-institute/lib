@@ -9,7 +9,7 @@ import * as mkdirp from 'mkdirp'
 import * as columnify from 'columnify'
 
 import { parseXmlFileSync } from '../xml/utils.node'
-import { tei2tokenStream, tokenStream2sentences } from '../nlp/utils'
+import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
 import { AbstractElement } from 'xmlapi'
 import { last } from '../lang'
 import { trimExtension } from '../string_utils'
@@ -96,7 +96,7 @@ function main() {
 function* streamVertical(root: AbstractElement, docMeta) {
   yield `<doc ${keyvalue2attributesNormalized(docMeta)}>`
   yield '<p>'
-  let tokenStream = tei2tokenStream(root)
+  let tokenStream = mixml2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))
   let first = true
   for (let { sentenceId, tokens } of sentenceStream) {
@@ -122,7 +122,7 @@ function* streamVertical(root: AbstractElement, docMeta) {
 
 //------------------------------------------------------------------------------
 function* stream4vec(root: AbstractElement) {
-  let tokenStream = tei2tokenStream(root)
+  let tokenStream = mixml2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))
   for (let { tokens } of sentenceStream) {
     tokens = tokens.filter(x => !x.interp.isPunctuation())

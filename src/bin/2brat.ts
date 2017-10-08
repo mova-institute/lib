@@ -7,7 +7,7 @@ import * as glob from 'glob'
 
 import { mu } from '../mu'
 import { tokenStream2brat, tokenStream2bratPlaintext } from '../nlp/ud/utils'
-import { tei2tokenStream, tokenStream2sentences } from '../nlp/utils'
+import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
 import { Token } from '../nlp/token'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { parseIntStrict } from '../lang'
@@ -35,7 +35,7 @@ function main() {
       let dest = join(args.dest, base)
       mkdirpSync(dest)
 
-      let tokenStream = mu(tei2tokenStream(root))
+      let tokenStream = mu(mixml2tokenStream(root))
         .transform(x => x.form = x.getForm())
       let sentenceStream = tokenStream2sentences(tokenStream)
       let chunks = mu(sentenceStream)

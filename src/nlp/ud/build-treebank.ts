@@ -13,7 +13,7 @@ import * as g from './uk_grammar'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
-import { tei2tokenStream, tokenStream2sentences } from '../../nlp/utils'
+import { mixml2tokenStream, tokenStream2sentences } from '../../nlp/utils'
 import * as algo from '../../algo'
 import { parseJsonFromFile } from '../../utils.node'
 import { last } from '../../lang'
@@ -124,7 +124,7 @@ function main() {
     console.log(`exporting ${basename}`)
 
     let root = parseXmlFileSync(xmlPath)
-    let tokenStream = mu(tei2tokenStream(root, args.datasetSchema))
+    let tokenStream = mu(mixml2tokenStream(root, args.datasetSchema))
       .transform(x => x.interp && g.denormalizeInterp(x.interp))
     let sentenceStream = tokenStream2sentences(tokenStream)
     let annotationalGap = false

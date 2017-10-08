@@ -183,7 +183,7 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
 ////////////////////////////////////////////////////////////////////////////////
 const TOSKIP = new Set(['w', 'mi:w_', 'w_', 'abbr', 'mi:sb', 'sb'])
 
-export function tokenizeTei(root: AbstractElement, tagger: MorphAnalyzer) {
+export function tokenizeMixml(root: AbstractElement, tagger: MorphAnalyzer) {
   let subroots = [...root.evaluateNodes('//tei:title|//tei:text', NS)]
   if (!subroots.length) {
     subroots = [root]
@@ -587,7 +587,7 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
 
 ////////////////////////////////////////////////////////////////////////////////
 export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
-  // let stream = tei2tokenStream(sourceRoot)
+  // let stream = mixml2tokenStream(sourceRoot)
   for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
     let n = miwSource.attribute('n')
     let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${n}"]`, NS)
@@ -859,7 +859,7 @@ export function token2sketchVertical(token: Token) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenizedTeiDoc2sketchVertical(
+export function* tokenizedMixml2sketchVertical(
   root: AbstractElement, analyzer: MorphAnalyzer, meta: any = {}) {
 
   yield `<doc ${xmlutils.keyvalue2attributesNormalized(meta)}>`
@@ -888,7 +888,7 @@ export function* interpretedTeiDoc2sketchVertical(root: AbstractElement, meta: a
 ////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVertical2(root: AbstractElement, meta: any = {}) {
   yield `<doc ${keyvalue2attributesNormalized(meta)}>`
-  yield* mu(tei2tokenStream(root)).map(x => token2sketchVertical(x))
+  yield* mu(mixml2tokenStream(root)).map(x => token2sketchVertical(x))
   yield `</doc>`
 }
 
@@ -989,7 +989,7 @@ const structureElementName2type = new Map<string, Structure>([
 ])
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: string) {
+export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: string) {
   for (let { el, entering } of iterateCorpusTokens(root)) {
     let name = el.localName()
 
