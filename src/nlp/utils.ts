@@ -1166,13 +1166,13 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentences(stream: Iterable<Token>) {
   let buf = new Array<Token>()
-  let currenctDocument: Token
+  let currentDocument: Token
+  let currentParagraph: Token
   let sentenceId: string;
   let dataset: string;
 
   let opensDocument = false
   let opensParagraph = false
-  let glueNext = false
   let followsGap = false
   let skip = false  // todo: gap
 
@@ -1186,7 +1186,8 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
       dataset,
       opensDocument,
       followsGap: followsGap && !opensDocument,
-      currenctDocument
+      currentDocument,
+      currentParagraph,
     }
 
     buf = []
@@ -1200,6 +1201,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   for (let [token, nextToken] of mu(stream).window(2)) {
     if (token.getStructureName() === 'paragraph') {
       if (!token.isClosing()) {
+        currentParagraph = token
         opensParagraph = true
       }
     } else if (token.getStructureName() === 'document') {
@@ -1208,7 +1210,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
         // throw new Error(`No sentence boundary at the end of document ${currenctDocument.id}`)
       }
       if (!token.isClosing()) {
-        currenctDocument = token
+        currentDocument = token
         opensDocument = true
       }
     } else if (token.isSentenceBoundary()) {

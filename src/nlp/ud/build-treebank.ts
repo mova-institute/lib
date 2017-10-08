@@ -16,12 +16,11 @@ import { escape } from '../../xml/utils'
 import { mixml2tokenStream, tokenStream2sentences } from '../../nlp/utils'
 import * as algo from '../../algo'
 import { parseJsonFromFile } from '../../utils.node'
-import { last } from '../../lang'
+// import { last } from '../../lang'
 import { Dict } from '../../types'
-// import { toUdString, toUd } from './tagset'
 import { Token } from '../../nlp/token'
 import { MorphInterp } from '../../nlp/morph_interp'
-import { sentence2conllu, uEq } from './utils'
+import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
 import { validateSentenceSyntax } from './validation'
 import { zerofillMax } from '../../string_utils'
@@ -51,7 +50,7 @@ interface Args {
 }
 
 //------------------------------------------------------------------------------
-class Dataset {
+class DatasetDescriptor {
   file: number
   counts = {
     tokensInUnfinishedSentenses: 0,
@@ -59,7 +58,7 @@ class Dataset {
     tokensExported: 0,
     sentencesExported: 0,
   }
-  newdoc = false
+  currentDocId: string
 }
 
 //------------------------------------------------------------------------------
@@ -106,18 +105,17 @@ function main() {
     : {}
 
   let rerouteMap = createDatasetRerouteMap(args.datasetReroute)
-  console.log(`Reroutes:`)
-  console.log(rerouteMap)
+  console.log(`Reroutes:`, rerouteMap)
 
   mkdirp.sync(outDir)
 
-  const analyzer = createMorphAnalyzerSync()
-
+  let analyzer = createMorphAnalyzerSync()
   let openedFiles = {} as any
-  let datasetRegistry = {} as Dict<Dataset>
-  let datasetRegistryMorpho = {} as Dict<Dataset>
+  let setRegistry = {} as Dict<DatasetDescriptor>
+  let setRegistryMorpho = {} as Dict<DatasetDescriptor>
   let sentenseErrors = []
   let sentenseHoles = []
+
   for (let xmlPath of xmlPaths) {
     let basename = path.basename(xmlPath)
 
@@ -128,19 +126,19 @@ function main() {
       .transform(x => x.interp && g.denormalizeInterp(x.interp))
     let sentenceStream = tokenStream2sentences(tokenStream)
     let annotationalGap = false
-    for (let { sentenceId, dataset, tokens, nodes,
-      opensDocument, currenctDocument, followsGap } of sentenceStream) {
 
+    for (let { sentenceId, dataset, tokens, nodes, opensDocument,
+      currentDocument, currentParagraph, followsGap } of sentenceStream
+    ) {
       dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
-      datasetRegistry[dataset] = datasetRegistry[dataset] || new Dataset()
+      setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
 
-      let numTokens = tokens.length
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
-      let numComplete = numTokens - roots.length + 1
+      let numComplete = tokens.length - roots.length + 1
       let isComplete = roots.length === 1
-      let percentComplete = numTokens === 1
+      let completionRatio = tokens.length === 1
         ? 1
-        : 1 - ((roots.length - 1) / (numTokens - 1))
+        : 1 - ((roots.length - 1) / (tokens.length - 1))
       let hasMorphErrors = tokens.some(x => x.interp.isError())
       if (hasMorphErrors) {
         annotationalGap = true
@@ -149,20 +147,20 @@ function main() {
 
       let sentenceLevelData = {
         'sent_id': sentenceId,
-        'newpar': tokens[0].opensParagraph || undefined,
-        'newdoc': opensDocument || undefined,
-        'gap': (followsGap || annotationalGap && !opensDocument) || undefined
+        'newpar id': tokens[0].opensParagraph && currentParagraph.getAttribute('id') || undefined,
+        'newdoc id': opensDocument && currentDocument.getAttribute('id') || undefined,
+        'gap': (followsGap || annotationalGap && !opensDocument) || undefined,
       } as any
-      if (opensDocument) {
-        sentenceLevelData.doc_title = currenctDocument.getAttribute('title') || undefined
-      }
-      // todo: consider making newpar on gaps
 
-      if (percentComplete) {
+      if (opensDocument) {
+        sentenceLevelData.doc_title = currentDocument.getAttribute('title') || undefined
+      }
+
+      if (completionRatio) {
         let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
-          datasetRegistry[dataset].counts.tokensBlocked += numComplete
-          datasetRegistry[dataset].counts.tokensInUnfinishedSentenses += numTokens
+          setRegistry[dataset].counts.tokensBlocked += numComplete
+          setRegistry[dataset].counts.tokensInUnfinishedSentenses += tokens.length
           sentenseErrors.push({
             sentenceId,
             problems: [{ message: 'цикл' }],
@@ -196,12 +194,12 @@ function main() {
         if (args.dryRun) {
           continue
         } else if (args.validOnly && hasProblems) {
-          datasetRegistry[dataset].counts.tokensBlocked += numComplete
-          datasetRegistry[dataset].counts.tokensInUnfinishedSentenses += numTokens
+          setRegistry[dataset].counts.tokensBlocked += numComplete
+          setRegistry[dataset].counts.tokensInUnfinishedSentenses += tokens.length
         } else {
           if (isComplete || args.includeIncomplete) {
-            ++datasetRegistry[dataset].counts.sentencesExported
-            datasetRegistry[dataset].counts.tokensExported += numTokens
+            ++setRegistry[dataset].counts.sentencesExported
+            setRegistry[dataset].counts.tokensExported += tokens.length
             if (!args.noStandartizing) {
               g.standartizeSentence2ud21(nodes)
             }
@@ -210,11 +208,11 @@ function main() {
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
             let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
-            datasetRegistry[dataset].newdoc = false
+            setRegistry[dataset].currentDocId = currentDocument.getAttribute('id')
             annotationalGap = false
           } else {
-            datasetRegistry[dataset].counts.tokensBlocked += numComplete
-            datasetRegistry[dataset].counts.tokensInUnfinishedSentenses += numTokens
+            setRegistry[dataset].counts.tokensBlocked += numComplete
+            setRegistry[dataset].counts.tokensInUnfinishedSentenses += tokens.length
           }
         }
       }
@@ -223,27 +221,27 @@ function main() {
         continue
       }
 
-      datasetRegistryMorpho[dataset] = datasetRegistryMorpho[dataset] || new Dataset()
+      setRegistryMorpho[dataset] = setRegistryMorpho[dataset] || new DatasetDescriptor()
 
       let morphonlyThreshold = Number.parseFloat(args.morphonlyThreshold)
-      if (percentComplete >= morphonlyThreshold) {
+      if (completionRatio >= morphonlyThreshold) {
         standartizeMorpho(tokens)
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
         let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { morphOnly: true })
         fs.writeSync(file, conlluedSentence + '\n\n')
 
-        ++datasetRegistryMorpho[dataset].counts.sentencesExported
-        datasetRegistryMorpho[dataset].counts.tokensExported += numTokens
+        ++setRegistryMorpho[dataset].counts.sentencesExported
+        setRegistryMorpho[dataset].counts.tokensExported += tokens.length
       } else {
-        datasetRegistryMorpho[dataset].counts.tokensInUnfinishedSentenses += numTokens
+        setRegistryMorpho[dataset].counts.tokensInUnfinishedSentenses += tokens.length
       }
     }
   }
 
   writeErrors(sentenseErrors, sentenseHoles, outDir)
-  printStats(datasetRegistry, 'synt')
-  printStats(datasetRegistryMorpho, 'morpho')
+  printStats(setRegistry, 'synt')
+  printStats(setRegistryMorpho, 'morpho')
   console.log()
 }
 
@@ -284,7 +282,7 @@ function transposeProblems(problems: any[]) {
 }
 
 //------------------------------------------------------------------------------
-function printStats(datasetRegistry: Dict<Dataset>, header: string) {
+function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
   let stats = Object.entries(datasetRegistry)
     .map(([set, { counts: { tokensBlocked, tokensExported, tokensInUnfinishedSentenses, sentencesExported } }]) => ({
       set,
@@ -409,6 +407,11 @@ function createDatasetRerouteMap(definition: string) {
   let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as [string, string][]
   return new Map<string, string>(pairs)
 }
+
+//------------------------------------------------------------------------------
+// function expandSentenceStream() {
+
+// }
 
 
 ////////////////////////////////////////////////////////////////////////////////

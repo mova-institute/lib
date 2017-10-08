@@ -1,3 +1,18 @@
+;[...root.evaluateElements('//sb')].forEach(sb => {
+  if (!sb.nextElementSibling()) {
+    if (sb.parent().evaluateElement('following-sibling::p')
+      && sb.parent().evaluateElement('following-sibling::p').firstElementChild()
+      && sb.parent().evaluateElement('following-sibling::p').firstElementChild().localName() === 'w_'
+    ) {
+      sb.parent().evaluateElement('following-sibling::p').firstElementChild().insertBefore(sb)
+      // sb.insertBefore()
+    } else {
+      sb.remove()
+    }
+  }
+});
+
+
 //------------------------------------------------------------------------------
 function insertGlueAroundIfNeeded(el: AbstractElement) {
   if (el.text() === '-'
