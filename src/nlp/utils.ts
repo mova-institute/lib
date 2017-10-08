@@ -995,7 +995,6 @@ export function* tei2tokenStream(root: AbstractElement, sentenceSetSchema?: stri
 
     let structureType = structureElementName2type.get(name)
     if (structureType) {
-      // console.log(structureType, entering)
       yield Token.structure(structureType, !entering, el.attributesObj())
       continue
     }
@@ -1166,7 +1165,7 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentences(stream: Iterable<Token>) {
-  let tokens = new Array<Token>()
+  let buf = new Array<Token>()
   let currenctDocument: Token
   let sentenceId: string;
   let dataset: string;
@@ -1178,11 +1177,11 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   let skip = false  // todo: gap
 
   const makeYield = () => {
-    initLocalHeadIndexes(tokens, sentenceId)
-    let nodes = sentenceArray2TreeNodes(tokens)
+    initLocalHeadIndexes(buf, sentenceId)
+    let nodes = sentenceArray2TreeNodes(buf)
     let ret = {
       sentenceId,
-      tokens: tokens,
+      tokens: buf,
       nodes,
       dataset,
       opensDocument,
@@ -1190,7 +1189,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
       currenctDocument
     }
 
-    tokens = []
+    buf = []
     opensDocument = false
     followsGap = false
     skip = false
@@ -1204,7 +1203,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
         opensParagraph = true
       }
     } else if (token.getStructureName() === 'document') {
-      if (token.isClosing() && tokens.length && !skip) {
+      if (token.isClosing() && buf.length && !skip) {
         yield makeYield()
         // throw new Error(`No sentence boundary at the end of document ${currenctDocument.id}`)
       }
@@ -1217,7 +1216,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
         skip = true
       }
 
-      if (tokens.length && !skip) {
+      if (buf.length && !skip) {
         yield makeYield()
       }
       sentenceId = token.id
@@ -1225,15 +1224,15 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     } else if (token.isWord()) {
       token.opensParagraph = opensParagraph
       opensParagraph = false
-      tokens.push(token)
-    } else if (token.isGlue() && tokens.length) {
-      last(tokens).gluedNext = true
+      buf.push(token)
+    } else if (token.isGlue() && buf.length) {
+      last(buf).gluedNext = true
     } else if (token.getStructureName() === 'gap') {
       followsGap = true
     }
   }
 
-  if (tokens.length && !skip) {
+  if (buf.length && !skip) {
     yield makeYield()
   }
 }
