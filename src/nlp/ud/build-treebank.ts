@@ -65,6 +65,16 @@ class DatasetDescriptor {
     this.curDocId = curDocId
     this.curParId = curParId
   }
+
+  accountExported(numTokens: number) {
+    ++this.counts.sentencesExported
+    this.counts.tokensExported += numTokens
+  }
+
+  accountBlocked(numComplete: number, numTotal: number) {
+    this.counts.tokensBlocked += numComplete
+    this.counts.tokensInUnfinishedSentenses += numTotal
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -158,22 +168,21 @@ function main() {
       let opensPar = setRegistry[dataset].curParId !== curParId
       setRegistry[dataset].update(curDocId, curParId)
 
-      let sentenceLevelData = {
+      let sentenceLevelInfo = {
         'sent_id': sentenceId,
         'newpar id': opensPar && curParId || undefined,
         'newdoc id': opensDoc && curDocId || undefined,
         // 'gap': (followsGap || annotationalGap && !opensDoc) || undefined,
       }
       if (opensDoc) {
-        sentenceLevelData['doc_title'] = document.getAttribute('title') || ''
+        sentenceLevelInfo['doc_title'] = document.getAttribute('title') || ''
       }
 
 
       if (completionRatio) {
         let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
-          setRegistry[dataset].counts.tokensBlocked += numComplete
-          setRegistry[dataset].counts.tokensInUnfinishedSentenses += tokens.length
+          setRegistry[dataset].accountBlocked(numComplete, tokens.length)
           sentenseErrors.push({
             sentenceId,
             problems: [{ message: 'цикл' }],
@@ -206,25 +215,23 @@ function main() {
 
         if (args.dryRun) {
           continue
-        } else if (args.validOnly && hasProblems) {
-          setRegistry[dataset].counts.tokensBlocked += numComplete
-          setRegistry[dataset].counts.tokensInUnfinishedSentenses += tokens.length
+        }
+
+        if (args.validOnly && hasProblems) {
+          setRegistry[dataset].accountBlocked(numComplete, tokens.length)
         } else {
           if (isComplete || args.includeIncomplete) {
-            ++setRegistry[dataset].counts.sentencesExported
-            setRegistry[dataset].counts.tokensExported += tokens.length
+            setRegistry[dataset].accountExported(tokens.length)
             if (!args.noStandartizing) {
               g.standartizeSentence2ud21(nodes)
             }
-
             let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-            let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { xpos: args.xpos })
+            let conlluedSentence = sentence2conllu(tokens, sentenceLevelInfo, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
             annotationalGap = false
           } else {
-            setRegistry[dataset].counts.tokensBlocked += numComplete
-            setRegistry[dataset].counts.tokensInUnfinishedSentenses += tokens.length
+            setRegistry[dataset].accountBlocked(numComplete, tokens.length)
           }
         }
       }
@@ -240,13 +247,11 @@ function main() {
         standartizeMorpho(tokens)
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentenceLevelData, { morphOnly: true })
+        let conlluedSentence = sentence2conllu(tokens, sentenceLevelInfo, { morphOnly: true })
         fs.writeSync(file, conlluedSentence + '\n\n')
-
-        ++setRegistryMorpho[dataset].counts.sentencesExported
-        setRegistryMorpho[dataset].counts.tokensExported += tokens.length
+        setRegistryMorpho[dataset].accountExported(tokens.length)
       } else {
-        setRegistryMorpho[dataset].counts.tokensInUnfinishedSentenses += tokens.length
+        setRegistryMorpho[dataset].accountBlocked(0, tokens.length)
       }
     }
   }
