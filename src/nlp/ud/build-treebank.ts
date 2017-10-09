@@ -179,7 +179,6 @@ function main() {
         'sent_id': sentenceId,
         'newpar id': opensPar && curParId || undefined,
         'newdoc id': opensDoc && curDocId || undefined,
-        // 'gap': (followsGap || annotationalGap && !opensDoc) || undefined,
       }
       if (opensDoc) {
         sentLevelInfo['doc_title'] = document.getAttribute('title') || ''
