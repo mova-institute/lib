@@ -11,7 +11,10 @@ import { MorphInterp } from '../nlp/morph_interp'
 import { fetchText } from '../request_utils'
 import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
-import { serializeMiDocument, tokenStream2sentences, mixml2tokenStream } from '../nlp/utils'
+import {
+  serializeMiDocument, tokenStream2sentences, mixml2tokenStream,
+  tokenStream2plaintextString
+} from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime, fromUnixStr } from '../date'
@@ -1021,6 +1024,19 @@ async function addDocMeta(root: AbstractElement) {
         attributes.title = meta.title
       }
     }
+
+    if (!attributes.title) {
+      let numWords = 0
+      let stream = mu(mixml2tokenStream(docEl))
+        .filter(x => x.isWord() || x.isGlue())
+        .take(7)
+        // .takeUntil(() => numWords++ > 6)
+      let title = tokenStream2plaintextString(stream)
+      title = `[${title}…]`
+      attributes['title'] = title
+      attributes['tags'] = 'autotitle'
+    }
+
     docEl.setAttributes(attributes)
   }
 }
