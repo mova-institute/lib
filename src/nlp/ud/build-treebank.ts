@@ -60,8 +60,12 @@ class DatasetDescriptor {
   }
   curDocId: string
   curParId: string
+  followsAnnotationalGap = false
 
   update(curDocId: string, curParId: string) {
+    if (this.curDocId !== curDocId) {
+      this.followsAnnotationalGap = false
+    }
     this.curDocId = curDocId
     this.curParId = curParId
   }
@@ -69,11 +73,13 @@ class DatasetDescriptor {
   accountExported(numTokens: number) {
     ++this.counts.sentencesExported
     this.counts.tokensExported += numTokens
+    this.followsAnnotationalGap = false
   }
 
   accountBlocked(numComplete: number, numTotal: number) {
     this.counts.tokensBlocked += numComplete
     this.counts.tokensInUnfinishedSentenses += numTotal
+    this.followsAnnotationalGap = true
   }
 }
 
@@ -131,6 +137,7 @@ function main() {
   let setRegistryMorpho = {} as Dict<DatasetDescriptor>
   let sentenseErrors = []
   let sentenseHoles = []
+  let prevSet: string
 
   for (let xmlPath of xmlPaths) {
     let basename = path.basename(xmlPath)
@@ -168,15 +175,19 @@ function main() {
       let opensPar = setRegistry[dataset].curParId !== curParId
       setRegistry[dataset].update(curDocId, curParId)
 
-      let sentenceLevelInfo = {
+      let sentLevelInfo = {
         'sent_id': sentenceId,
         'newpar id': opensPar && curParId || undefined,
         'newdoc id': opensDoc && curDocId || undefined,
         // 'gap': (followsGap || annotationalGap && !opensDoc) || undefined,
       }
       if (opensDoc) {
-        sentenceLevelInfo['doc_title'] = document.getAttribute('title') || ''
+        sentLevelInfo['doc_title'] = document.getAttribute('title') || ''
+      } else if (prevSet !== dataset) {
+        Object.values(setRegistry).forEach(set => set.followsAnnotationalGap = false)
       }
+      prevSet = dataset
+
 
 
       if (completionRatio) {
@@ -221,13 +232,17 @@ function main() {
           setRegistry[dataset].accountBlocked(numComplete, tokens.length)
         } else {
           if (isComplete || args.includeIncomplete) {
+            let sentLevelInfoSynt = { ...sentLevelInfo }
+            if (setRegistry[dataset].followsAnnotationalGap) {
+              sentLevelInfoSynt['annotation_gap'] = true
+            }
             setRegistry[dataset].accountExported(tokens.length)
             if (!args.noStandartizing) {
               g.standartizeSentence2ud21(nodes)
             }
             let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-            let conlluedSentence = sentence2conllu(tokens, sentenceLevelInfo, { xpos: args.xpos })
+            let conlluedSentence = sentence2conllu(tokens, sentLevelInfoSynt, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
             annotationalGap = false
           } else {
@@ -247,7 +262,7 @@ function main() {
         standartizeMorpho(tokens)
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentenceLevelInfo, { morphOnly: true })
+        let conlluedSentence = sentence2conllu(tokens, sentLevelInfo, { morphOnly: true })
         fs.writeSync(file, conlluedSentence + '\n\n')
         setRegistryMorpho[dataset].accountExported(tokens.length)
       } else {
