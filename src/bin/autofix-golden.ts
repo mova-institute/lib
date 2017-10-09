@@ -527,6 +527,21 @@ async function main() {
             token.rel = 'ccomp'
           }
 
+          if (interp.hasFeature(f.PunctuationType) && !interp.isPunctuation()) {
+            interp.dropFeature(f.PunctuationType)
+          }
+          // interp.dropFeature(f.PunctuationSide)
+
+          if (token.getForm(false) === token.getForm(true)
+            && [f.Pos.adverb, f.Pos.conjunction, f.Pos.interjection,
+            f.Pos.particle, f.Pos.preposition, f.Pos.punct, f.Pos.sym]
+              .includes(interp.getFeature(f.Pos))
+            && !(interp.lemma.endsWith('.') && !token.form.endsWith('.'))
+          ) {
+            // interp.lemma = token.form.replace('\'', '’').toLocaleLowerCase()
+          }
+
+
           // ↓↓↓↓ breaks the tree, keep last!
 
 
@@ -1007,7 +1022,7 @@ async function addDocMeta(root: AbstractElement) {
   for (let docEl of root.evaluateElements('//doc')) {
     let attributes = docEl.attributesObj()
     if (!attributes.src) {
-      continue
+      // continue
     }
 
     if (!attributes.author || !attributes.date) {
@@ -1030,11 +1045,19 @@ async function addDocMeta(root: AbstractElement) {
       let stream = mu(mixml2tokenStream(docEl))
         .filter(x => x.isWord() || x.isGlue())
         .take(7)
-        // .takeUntil(() => numWords++ > 6)
+      // .takeUntil(() => numWords++ > 6)
       let title = tokenStream2plaintextString(stream)
       title = `[${title}…]`
       attributes['title'] = title
       attributes['tags'] = 'autotitle'
+    }
+
+    if (!attributes['tags']
+      && (!attributes['src']
+        || !attributes['src'].includes('facebook.com') && !attributes['src'].includes('tereveni')
+      )
+    ) {
+      attributes['tags'] = 'genre:'
     }
 
     docEl.setAttributes(attributes)

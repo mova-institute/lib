@@ -353,8 +353,10 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   oldReportIf('більше однієї стрілки в слово',
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
 
-  g.RIGHT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} ліворуч`, (tok, i) => tok.rel === rel && tok.headIndex > i))
-  g.LEFT_POINTED_RELATIONS.forEach(rel => oldReportIf(`${rel} праворуч`, (tok, i) => tok.rel === rel && tok.headIndex < i))
+  g.RIGHT_POINTED_RELATIONS.forEach(rel => reportIf2(`${rel} ліворуч`,
+    ({ r, t }) => uEq(r, rel) && t.headIndex > t.indexInSentence))
+  g.LEFT_POINTED_RELATIONS.forEach(rel => reportIf2(`${rel} праворуч`,
+    ({ r, t }) => uEq(r, rel) && t.headIndex < t.indexInSentence))
 
   oldReportIf(`case праворуч`, (t, i) => uEq(t.rel, 'case')
     && t.headIndex < i
@@ -1121,7 +1123,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => t.node.rel
       && t.node.interp.isBeforeadj()
       && (t.node.rel !== 'compound'
-        || t.parent.node.indexInSentence < t.node.indexInSentence)
+        || t.parent.node.indexInSentence < t.node.indexInSentence
+        || !t.parent.node.interp.isAdjective()
+      )
   )
 
   reportIf(`:beforeadj не має дефіса-залежника`,
@@ -1311,12 +1315,12 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
         && t.node.interp.isInfinitive()
         && t.parent.parent.children.some(x => x.node.interp.isNegative())
       )
-    // && t.parent.node.interp.lemma !== 'немати'
-    && (t.node.interp.isAnimate()
-      || analyzer.tag(t.node.form).some(x => x.isAccusative()
-        && x.equalsByLemmaAndFeatures(t.node.interp, [f.Case, f.Gender, f.Animacy])
+      // && t.parent.node.interp.lemma !== 'немати'
+      && (t.node.interp.isAnimate()
+        || analyzer.tag(t.node.form).some(x => x.isAccusative()
+          && x.equalsByLemmaAndFeatures(t.node.interp, [f.Case, f.Gender, f.Animacy])
+        )
       )
-    )
   )
 
   reportIf2(`:animish з запереченням`,
@@ -1574,6 +1578,11 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     ({ r, n, pi }) => uEq(r, 'nummod')
       && g.canBeDecimalFraction(n)
       && (pi.isPlural() || pi.getFeature(f.Case) !== f.Case.genitive)
+  )
+
+  reportIf2(`числівник має неочікувані (?) залежники`,
+    ({ r, c }) => uEq(r, 'nummod')
+      && c.some(x => !uEqSome(x.node.rel, ['compound']))
   )
 
   // **********

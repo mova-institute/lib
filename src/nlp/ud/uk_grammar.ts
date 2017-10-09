@@ -730,13 +730,9 @@ export const LEFT_POINTED_RELATIONS = [
 export const RIGHT_POINTED_RELATIONS = [
   'appos',
   'conj',
-  // 'dislocated',
   'fixed',
   'flat',
-  'flat:foreign',
-  'flat:name',
   'list',
-  // 'parataxis',
 ]
 
 export const DISCOURSE_DESTANATIONS = [
