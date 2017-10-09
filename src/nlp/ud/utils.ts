@@ -14,8 +14,7 @@ export interface Sentence2conlluParams {
 }
 export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options: Sentence2conlluParams = {}) {
   let comments = new Array<string>()
-  let pairs = _.sortBy(Object.entries(sentenceLevelData), 0)
-  for (let [k, v] of pairs) {
+  for (let [k, v] of Object.entries(sentenceLevelData)) {
     if (v === undefined) {
       continue
     } else if (v === true) {
