@@ -1,3 +1,119 @@
+const TRANSFORMS = {
+  toPart(el: AbstractElement) {
+    el.firstElementChild().setAttribute('ana', 'part')
+  },
+  toConjSubord(el: AbstractElement) {
+    el.firstElementChild().setAttribute('ana', 'conj:subord')
+  },
+  toAccusative(t: GraphNode<Token>) {
+    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
+    toChange.push(t)
+    toChange.forEach(tt => tt.node.interp.setIsAccusative())
+  },
+  toGenitive(t: GraphNode<Token>) {
+    let toChange = t.children.filter(x => uEq(x.node.rel, 'amod') || uEq(x.node.rel, 'det'))
+    toChange.push(t)
+    toChange.forEach(tt => tt.node.interp.setIsGenitive())
+  },
+  toObl(t: GraphNode<Token>) {
+    t.node.rel = 'obl'
+  },
+  toDash(t: GraphNode<Token>) {
+    t.node.interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
+  },
+  toNDash(t: GraphNode<Token>) {
+    t.node.interp.setFeature(f.PunctuationType, f.PunctuationType.ndash)
+  },
+  toHyphen(t: GraphNode<Token>) {
+    t.node.interp.setFeature(f.PunctuationType, f.PunctuationType.hyphen)
+  }
+}
+
+/*
+
+//------------------------------------------------------------------------------
+function switch2globalIds(root: AbstractElement) {
+  let tokens = [...root.evaluateElements('//w_')]
+
+  let n2id = new Map<string, string>(
+    tokens.map(x => [x.attribute('n'), x.attribute('id')] as [string, string])
+  )
+
+  for (let token of tokens) {
+    let dep = token.attribute('dep')
+    if (dep) {
+      dep = dep.replace(/\d+/g, x => n2id.get(x))
+      token.setAttribute('dep', dep)
+    }
+  }
+  for (let token of tokens) {
+    token.removeAttribute('n')
+  }
+}
+
+//------------------------------------------------------------------------------
+function convertPcToW(root: AbstractElement) {
+  mu(root.evaluateElements('//pc'))
+    .forEach(pc => {
+      let word = root.document().createElement('w_').setAttributes(pc.attributesObj())
+      let interp = root.document().createElement('w').setAttributes({
+        lemma: pc.text(),
+        ana: 'punct'
+      })
+      interp.text(pc.text())
+      word.appendChild(interp)
+      pc.insertAfter(word)
+      pc.remove()
+    })
+}
+
+//------------------------------------------------------------------------------
+function sideQuotes(root: AbstractElement) {
+  mu(root.evaluateElements('//w_'))
+    .filter(x => x.firstElementChild().attribute('lemma') === '"')
+    .forEach(interpEl => {
+      let isOpeninig = interpEl.nextElementSibling()
+        && interpEl.nextElementSibling().localName() === 'g'
+        && !(interpEl.nextElementSibling().firstElementChild()
+          && interpEl.nextElementSibling().firstElementChild().attribute('ana').startsWith('punct'))
+      let isClosing = interpEl.previousElementSibling()
+        && interpEl.previousElementSibling().localName() === 'g'
+        && !(interpEl.previousElementSibling().firstElementChild()
+          && interpEl.previousElementSibling().firstElementChild().attribute('ana').startsWith('punct'))
+      if (isOpeninig === isClosing) {
+        console.error(`fooooo id ${interpEl.attribute('id')}`)
+      } else if (isOpeninig) {
+        interpEl.firstElementChild().setAttribute('ana', 'punct:quote:open')
+      } else if (isClosing) {
+        interpEl.firstElementChild().setAttribute('ana', 'punct:quote:close')
+      }
+    })
+}
+
+// split tokens
+
+tokens.forEach(el => {
+  let t = $t(el)
+
+  let interps = [...el.elementChildren()]
+  if (interps.length === 1) {
+    let form = t.text()
+    let lemma = t.lemmaIfUnamb()
+    if ((!lemma || !lemma.startsWith('будь-')) && /[^\-\d]-[^\-]/.test(form)) {
+      if (!analyzer.tag(form).length) {
+        el.insertBefore(el.firstElementChild().firstChild())
+        el.remove()
+      }
+    }
+  }
+})
+tokenizeTei(root, analyzer)
+morphInterpret(root, analyzer)
+
+
+
+*/
+
 ;[...root.evaluateElements('//sb')].forEach(sb => {
   if (!sb.nextElementSibling()) {
     if (sb.parent().evaluateElement('following-sibling::p')
