@@ -289,18 +289,18 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   // ~~~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~~~
 
   xreportIf2(`_тест: числівники`,
-    ({ t, i }) => t.indexInSentence < sentence.length - 1
+    ({ t, i }) => t.index < sentence.length - 1
       && i.isCardinalNumerish()
-      && (t.indexInSentence === 0
-        || !sentence[t.indexInSentence - 1].interp.isCardinalNumerish())
-      && (sentence[t.indexInSentence + 1].interp.isCardinalNumerish()
+      && (t.index === 0
+        || !sentence[t.index - 1].interp.isCardinalNumerish())
+      && (sentence[t.index + 1].interp.isCardinalNumerish()
         || t.interp.isNounNumeral())
   )
 
   xreportIf2(`_тест: складений порядковий`,
-    ({ t, i }) => t.indexInSentence > 0
+    ({ t, i }) => t.index > 0
       && i.isOrdinalNumeral()
-      && sentence[t.indexInSentence - 1].interp.isCardinalNumerish()
+      && sentence[t.index - 1].interp.isCardinalNumerish()
     // && (t.indexInSentence === 0
     //   || !sentence[t.indexInSentence - 1].interp.isCardinalNumerish())
     // && (sentence[t.indexInSentence + 1].interp.isCardinalNumerish()
@@ -354,9 +354,9 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
 
   g.RIGHT_POINTED_RELATIONS.forEach(rel => reportIf2(`${rel} ліворуч`,
-    ({ r, t }) => uEq(r, rel) && t.headIndex > t.indexInSentence))
+    ({ r, t }) => uEq(r, rel) && t.headIndex > t.index))
   g.LEFT_POINTED_RELATIONS.forEach(rel => reportIf2(`${rel} праворуч`,
-    ({ r, t }) => uEq(r, rel) && t.headIndex < t.indexInSentence))
+    ({ r, t }) => uEq(r, rel) && t.headIndex < t.index))
 
   oldReportIf(`case праворуч`, (t, i) => uEq(t.rel, 'case')
     && t.headIndex < i
@@ -859,7 +859,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
           && g.SUBORDINATE_CLAUSES.some(x => uEq(t.parent.parent.node.rel, x))
         )
       )
-      && !(t.node.indexInSentence === 0 && t.parent.isRoot())
+      && !(t.node.index === 0 && t.parent.isRoot())
   )
 
   reportIf(`parataxis під’єднано сполучником`,
@@ -1123,7 +1123,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => t.node.rel
       && t.node.interp.isBeforeadj()
       && (t.node.rel !== 'compound'
-        || t.parent.node.indexInSentence < t.node.indexInSentence
+        || t.parent.node.index < t.node.index
         || !t.parent.node.interp.isAdjective()
       )
   )
@@ -1132,7 +1132,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => t.node.interp.isBeforeadj()
       && !t.isRoot()
       && !t.children.some(x => /^[−\-\–\—]$/.test(x.node.interp.lemma)
-        && x.node.indexInSentence > t.node.indexInSentence
+        && x.node.index > t.node.index
       )
       && !t.node.hasTag('no_dash')
   )
@@ -1283,7 +1283,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     t => /^\d+$/.test(t.node.form)
       && uEqSome(t.node.rel, ['amod'])
       && t.node.interp.isOrdinalNumeral()
-      && t.node.indexInSentence > t.parent.node.indexInSentence
+      && t.node.index > t.parent.node.index
   )
 
   reportIf(`неочікуваний відмінок nmod`,
@@ -1291,7 +1291,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && t.node.interp.isAccusative()
       && !g.hasChild(t, 'case')
       && !t.children.some(x => x.node.interp.lemma === '/'
-        && x.node.indexInSentence < t.node.indexInSentence)
+        && x.node.index < t.node.index)
       && !(t.parent.node.interp.isParticiple()
         && t.parent.node.interp.isActive())
   )
@@ -1343,8 +1343,8 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
 
   reportIf(`„більш/менш ніж“ не fixed`,
     t => g.COMPARATIVE_SCONJS.includes(t.node.form)
-      && sentence[t.node.indexInSentence - 1]
-      && g.COMPARATIVE_ADVS.includes(sentence[t.node.indexInSentence - 1].form)
+      && sentence[t.node.index - 1]
+      && g.COMPARATIVE_ADVS.includes(sentence[t.node.index - 1].form)
       && !uEq(t.node.rel, 'fixed')
   )
 
@@ -1568,7 +1568,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   )
 
   xreportIf2(`велика літера не власна`,
-    ({ t, i }) => t.indexInSentence > 0
+    ({ t, i }) => t.index > 0
       && startsWithCapital(t.getForm())
       && !i.isProper()
       && !i.isAbbreviation()

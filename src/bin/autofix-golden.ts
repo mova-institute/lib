@@ -548,7 +548,7 @@ async function main() {
           // switch compound numerals from flat to compound
           if (uEq(token.rel, 'nummod') /* || uEq(token.rel, 'amod') && interp.isOrdinalNumeral() */) {
             let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
-              .sort((a, b) => a.node.indexInSentence - b.node.indexInSentence)
+              .sort((a, b) => a.node.index - b.node.index)
             let newHead = _.last(flatChildren)
             // let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
             if (newHead) {
@@ -577,7 +577,7 @@ async function main() {
             && !(uEq(token.rel, 'compound') && parent.interp.isBeforeadj())
             && !(uEq(token.rel, 'compound')
               && parent.interp.isAdjective()
-              && token.indexInSentence < parent.indexInSentence)
+              && token.index < parent.index)
           ) {
             // console.log(token)
 
@@ -592,7 +592,7 @@ async function main() {
               let toChange = [token, ...middlers]
               for (let [i, t] of toChange.entries()) {
                 t.deps = [{ relation: 'compound', headId: newHead.id }]
-                nodes[t.indexInSentence + 1].node.deps[0].headId = t.id
+                nodes[t.index + 1].node.deps[0].headId = t.id
               }
             }
           }

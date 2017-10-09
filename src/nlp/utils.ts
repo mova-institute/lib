@@ -1242,7 +1242,7 @@ function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
   let changed = new Set<string>()
   for (let [i, token] of sentence.entries()) {
-    token.indexInSentence = i
+    token.index = i
     for (let dep of token.deps) {
       if (!changed.has(token.id)) {
         dep.headIndex = id2i.get(token.deps[0].headId)

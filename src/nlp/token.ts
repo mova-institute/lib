@@ -56,7 +56,7 @@ export class Token {
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
   tags = new Array<TokenTag>()
-  indexInSentence: number
+  index: number
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
     let ret = new Token()

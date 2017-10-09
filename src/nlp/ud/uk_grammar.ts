@@ -129,7 +129,7 @@ export function isDenUDen(t: TokenNode) {
     && t.node.interp.isNominative()
     // && t.children.length === 1  // experimental
     && wiith(t.children.filter(x => !x.node.interp.isPunctuation()), c =>
-      c.every(x => x.node.indexInSentence > t.node.indexInSentence)
+      c.every(x => x.node.index > t.node.index)
       && c.length === 1
       && c.some(x => uEq(x.node.rel, 'nmod')
         // && x.node.indexInSentence > t.node.indexInSentence
@@ -178,7 +178,7 @@ export function isDeceimalFraction(t: TokenNode) {
     && t.children.some(x => /^\d+$/.test(x.node.form)
       && x.children.length === 1
       && [',', '.'].includes(x.children[0].node.form)
-      && x.node.indexInSentence < t.node.indexInSentence
+      && x.node.index < t.node.index
     )
 }
 
@@ -217,7 +217,7 @@ export function isConjWithoutCcOrPunct(t: TokenNode) {
     && !t.children.some(x => uEqSome(x.node.rel, ['cc'])
       || uEq(x.node.rel, 'punct')
       && /[,;/–—\-]/.test(x.node.interp.lemma)
-      && x.node.indexInSentence < t.node.indexInSentence
+      && x.node.index < t.node.index
     )
     && !t.node.hasTag('conj_no_cc')
 }
@@ -286,10 +286,10 @@ export function canBeDecimalFraction(t: TokenNode) {
     && /^\d+$/.test(t.node.interp.lemma)
     && t.children.some(x => x.node.interp.isCardinalNumeral()
       && uEq(x.node.rel, 'compound')
-      && x.node.indexInSentence === t.node.indexInSentence + 2
+      && x.node.index === t.node.index + 2
       && /^\d+$/.test(x.node.interp.lemma)
       && x.children.length === 1
-      && x.children[0].node.indexInSentence === t.node.indexInSentence + 1
+      && x.children[0].node.index === t.node.index + 1
       && [',', '.'].includes(x.children[0].node.interp.lemma)
       && !x.children[0].hasChildren()
     )
@@ -306,7 +306,7 @@ export function canBeAsSomethingForXcomp2(t: TokenNode) {
   return t.node.interp.isNounish()
     && [f.Case.nominative, f.Case.accusative].includes(t.node.interp.getFeature(f.Case))
     && t.children.some(x => x.node.interp.lemma === 'як'
-      && x.node.indexInSentence < t.node.indexInSentence
+      && x.node.index < t.node.index
     )
 }
 
