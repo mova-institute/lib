@@ -2,17 +2,19 @@ import * as path from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 
-import { FolderSavedMap } from '../../folder_saved_map.node'
-import { FileSavedSet } from '../../file_saved_set.node'
-import { matchAll, sleep } from '../../lang';
+import { FsMap } from '../../fs_map'
+import { sleep } from '../../lang';
 import { fetchText } from './utils'
 import { parseHtml } from '../../xml/utils.node'
+import { mu } from '../../mu'
 
 
 
 interface Args {
   workspace: string
-  lastPage: number
+  offset: number
+  step: number
+  streakLength: number
 }
 
 const baseUrl = 'http://wz.lviv.ua'
@@ -24,7 +26,10 @@ if (require.main === module) {
       'lastPage': ['last-page'],
     },
     default: {
-      lastPage: 13467,
+      workspace: './vz',
+      step: 15,
+      offset: 0,
+      streakLength: 30,
     },
   }) as any
 
@@ -34,41 +39,44 @@ if (require.main === module) {
 
 async function main(args: Args) {
   try {
-    let fetchedArticlesDir = path.join(args.workspace, 'vz/fetched_articles')
+    let fetchedArticlesDir = path.join(args.workspace, 'data')
     mkdirpSync(fetchedArticlesDir)
-    let indexesRegistry = new FileSavedSet<number>(
-      path.join(args.workspace, 'vz/fully_fetched_indexes.txt'))
-    let articleRegistry = new FolderSavedMap(fetchedArticlesDir, '**/*.html')
+    let articleRegistry = new FsMap(fetchedArticlesDir)
 
-    for (let i = 0; i <= args.lastPage; ++i) {
-      if (indexesRegistry.has(i)) {
-        continue
-      }
-      console.log(`fetching index ${i}`)
+    for (let i = args.offset; ; i += args.step) {
+      console.log(`fetching offset ${i} ==========================================`)
 
-      let root = parseHtml(await fetchText(`${baseUrl}/archive?start=${i * 10}`))
-      let hrefs = root.evaluateAttributes('//div[@class="blog-article"]//a[@itemprop="url"]/@href')
+      let root = parseHtml(await fetchText(`${baseUrl}/archive?start=${i}`))
+      let hrefs = mu(root.evaluateAttributes('//div[@class="blog-article"]//a[@itemprop="url"]/@href'))
         .map(x => x.value().substr(1))
+        .toArray()
 
-      let errorOccured = false
+      if (!hrefs.length) {
+        console.error(`End of archive`)
+        break
+      }
+
+      let savedSomething = false
       for (let href of hrefs) {
         try {
           let filename = `${href}.html`
           if (articleRegistry.has(filename)) {
             continue
           }
-          console.log(`fetching ${filename}`)
+          process.stdout.write(`fetching ${filename}`)
           let content = await fetchText(`${baseUrl}/${href}`)
           articleRegistry.set(filename, content)
+          process.stdout.write(` ✔\n`)
+          savedSomething = true
         } catch (e) {
-          errorOccured = true
-          console.error()
+          console.error(` ✖️`)
           await sleep(3000)
           continue
         }
       }
-      if (!errorOccured) {
-        indexesRegistry.add(i)
+
+      if (!savedSomething && args.streakLength > 0 && !args.streakLength--) {
+        break
       }
     }
   } catch (e) {

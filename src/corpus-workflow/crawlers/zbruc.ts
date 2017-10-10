@@ -2,26 +2,25 @@ import * as path from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 
-import { FolderSavedMap } from '../../folder_saved_map.node'
-import { matchAll, sleep } from '../../lang';
+import { FsMap } from '../../fs_map'
 import { fetchText } from './utils'
-import { parseHtml } from '../../xml/utils.node'
 
 
 
 interface Args {
   workspace: string
-  lastNode: number
+  latestNode: number
+  oldestNode: number
 }
 
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     alias: {
-      'workspace': ['ws'],
       'lastNode': ['last-node'],
     },
     default: {
-      lastNode: 56850,
+      oldestNode: 56850,
+      workspace: './zbruc'
     },
   }) as any
 
@@ -31,11 +30,11 @@ if (require.main === module) {
 
 async function main(args: Args) {
   try {
-    let fetchedArticlesDir = path.join(args.workspace, 'zbruc/fetched_articles')
+    let fetchedArticlesDir = path.join(args.workspace, 'data')
     mkdirpSync(fetchedArticlesDir)
-    let articleRegistry = new FolderSavedMap(fetchedArticlesDir, '*.html')
+    let articleRegistry = new FsMap(fetchedArticlesDir)
 
-    for (let i = 950; i <= args.lastNode; ++i) {
+    for (let i = Math.max(950, args.oldestNode); i <= args.latestNode; ++i) {
       if (articleRegistry.has(`${i}.html`)) {
         continue
       }

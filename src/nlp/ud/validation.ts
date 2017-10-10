@@ -409,7 +409,6 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
   oldReportIf('не cc в сурядий на початку речення',
     (t, i) => t.rel && i === 0 && t.interp.isCoordinating() && !['cc'].includes(t.rel))
 
-
   xoldReportIf(`:pass-реляція?`,
     t => !t.isPromoted
       && ['aux', 'csubj', 'nsubj'].includes(t.rel)

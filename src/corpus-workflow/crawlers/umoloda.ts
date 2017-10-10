@@ -3,14 +3,15 @@ import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
-import { FolderSavedMap } from '../../folder_saved_map.node'
-import { matchAll, sleep } from '../../lang';
+import { FsMap } from '../../fs_map'
+import { matchAll } from '../../lang';
 import { fetchText } from './utils'
 
 
 interface Args {
   workspace: string
-  seed: number
+  todaysNumber: number
+  oldNumber: number
 }
 
 const articleHrefRe = new RegExp(String.raw`<a\s.*href="/number/(\d+)/(\d+)/(\d+)/"`, 'g')
@@ -21,8 +22,8 @@ if (require.main === module) {
       workspace: ['ws'],
     },
     default: {
-      seed: 3127,
-      workspace: '.'
+      oldNumber: 3127,
+      workspace: './umoloda'
     },
   }) as any
 
@@ -32,12 +33,12 @@ if (require.main === module) {
 
 async function main(args: Args) {
   try {
-    let fetchedArticlesDir = path.join(args.workspace, 'umoloda/fetched_articles')
+    let fetchedArticlesDir = path.join(args.workspace, 'data')
     mkdirpSync(fetchedArticlesDir)
-    let numbersRegistry = new FileSavedSet<number>(path.join(args.workspace, 'umoloda/fully_fetched_numbers.txt'))
-    let articleRegistry = new FolderSavedMap(fetchedArticlesDir)
-    let curNumber = args.seed + 1
-    while (--curNumber) {
+    let numbersRegistry = new FileSavedSet<number>(path.join(args.workspace, 'fully_fetched_numbers.txt'))
+    let articleRegistry = new FsMap(fetchedArticlesDir)
+    let curNumber = args.todaysNumber
+    while (curNumber-- >= args.oldNumber) {
       if (numbersRegistry.has(curNumber)) {
         continue
       }

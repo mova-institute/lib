@@ -1,3 +1,22 @@
+// from chtyvo grabber
+
+/*loop:
+for (let format of extensionPriority) {
+  for (let extension of [format, `${format}.zip`]) {
+    let dataUrl = root.evaluateAttributes('//table[@class="books"]//a/@href')
+      .map(x => parse(x.value()))
+      .find(x => x && x.path.endsWith(`.${extension}`))
+    if (dataUrl) {
+      let filish = dataUrl.pathname.substr(1)
+      if (!pages.has(filish)) {
+        await pages.setStream(filish, get(dataUrl.href))
+        console.log(`saved ${filish}`)
+      }
+      break loop
+    }
+  }
+}*/
+
 const TRANSFORMS = {
   toPart(el: AbstractElement) {
     el.firstElementChild().setAttribute('ana', 'part')

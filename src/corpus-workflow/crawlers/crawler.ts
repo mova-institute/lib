@@ -1,23 +1,17 @@
 import { join } from 'path'
-import { exec } from 'child_process'
-import { moveCursor } from 'readline'
 import { FileSavedSet } from '../../file_saved_set.node'
-import { FolderSavedMap } from '../../folder_saved_map.node'
+import { FsMap } from '../../fs_map'
 import { fetchText } from './utils'
-import { parseHtml } from '../../xml/utils.node'
 import { matchAll, sleep } from '../../lang'
 import { resolve, parse, Url } from 'url'
-import { AbstractElement } from 'xmlapi'
 
 
-// export type LinkExtractor = (html: string) => string[]
-export type LinkExtractor = (root: AbstractElement) => string[]
 export type StringPredicate = (value: string) => any
 export type UrlPredicate = (value: Url) => any
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Crawler {
-  private saved: FolderSavedMap
+  private saved: FsMap
   private visited: FileSavedSet<string>
   private failed: FileSavedSet<string>
   private visiting = new Set<string>()
@@ -25,16 +19,13 @@ export class Crawler {
   private isUrlToSave: UrlPredicate
   private isUrlToFollow: UrlPredicate[]
 
-  private followUrlsExtractor: LinkExtractor
-  private saveUrlsExtractor: LinkExtractor
-
   private timeout = 0
   private numRetries = 5
 
   constructor(workspacePath: string) {
     this.visited = new FileSavedSet(join(workspacePath, 'processed'))
     this.failed = new FileSavedSet(join(workspacePath, 'failed'))
-    this.saved = new FolderSavedMap(join(workspacePath, 'saved'), '**/*.html')
+    this.saved = new FsMap(join(workspacePath, 'data'))
     // this.saved = new FolderSavedMap(join(workspacePath, 'saved'), '**/*.html')
     // console.log(this.saved)
   }

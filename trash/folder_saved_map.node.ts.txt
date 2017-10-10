@@ -1,5 +1,5 @@
 import { Stream } from 'stream'
-import { createWriteStream, writeFileSync } from 'fs'
+import { createWriteStream } from 'fs'
 import { join, relative, dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 import { sync as globSync } from 'glob'

@@ -4,9 +4,9 @@ import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
-import { FolderSavedMap } from '../../folder_saved_map.node'
 import { matchAll, sleep } from '../../lang';
 import { fetchText } from './utils'
+
 
 
 interface Args {
@@ -14,10 +14,7 @@ interface Args {
   seed: number
 }
 
-
-
 type LinkExtractor = (html: string) => string[]
-type StringPredicate = (value: string) => boolean
 class Crawler {
   private visited: FileSavedSet<string>
   private visiting = new Set<string>()
@@ -70,10 +67,10 @@ const articleSavePath = new RegExp(String.raw`/uk/article/(.+)`)
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     alias: {
-      'workspace': ['ws'],
+      workspace: ['ws'],
     },
     default: {
-      'seed': 3055,
+      workspace: './den'
     },
   }) as any
 
@@ -83,10 +80,10 @@ if (require.main === module) {
 
 async function main(args: Args) {
   try {
-    let fetchedArticlesDir = path.join(args.workspace, 'den/fetched_articles')
+    let fetchedArticlesDir = path.join(args.workspace, 'data')
     mkdirpSync(fetchedArticlesDir)
 
-    let crawler = new Crawler(path.join(args.workspace, 'den/fully_fetched_urls.txt'))
+    let crawler = new Crawler(path.join(args.workspace, 'fully_fetched_urls.txt'))
       .setSaveLinkExtractor(content => {
         return matchAll(content, articleHrefRe).map(x => basUrl + x[1])
       })

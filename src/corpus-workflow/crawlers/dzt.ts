@@ -3,8 +3,7 @@ import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
-import { FolderSavedMap } from '../../folder_saved_map.node'
-import { matchAll, sleep } from '../../lang';
+import { FsMap } from '../../fs_map'
 import { fetchText } from './utils'
 import { parseHtml } from '../../xml/utils.node'
 
@@ -38,7 +37,7 @@ async function main(args: Args) {
     mkdirpSync(fetchedArticlesDir)
 
     let numbersRegistry = new FileSavedSet<number>(path.join(args.workspace, 'dzt/fully_fetched_numbers.txt'))
-    let articleRegistry = new FolderSavedMap(fetchedArticlesDir, '**/*.html')
+    let articleRegistry = new FsMap(fetchedArticlesDir)
 
     for (let i = 293; i <= args.lastNumber; ++i) {
       if (numbersRegistry.has(i)) {
