@@ -4,6 +4,7 @@ import { Crawler } from './crawler'
 
 
 interface Args {
+  saveDir: string
   workspace: string
   seed: string
 }
@@ -31,7 +32,8 @@ if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     default: {
       seed: 'http://tyzhden.ua/Archive',
-      workspace: './tyzhden',
+      saveDir: 'saved_web',
+      workspace: 'tyzhden',
     },
   }) as any
 
@@ -40,12 +42,13 @@ if (require.main === module) {
 
 
 async function main(args: Args) {
-  const re = new RegExp(String.raw`^(${cats.join('|')})/\d+$`)
+  const re = new RegExp(String.raw`^/(${cats.join('|')})/\d+$`)
   try {
-    let crawler = new Crawler(args.workspace)
-      .setUrlsToFollow([x => !x.path.endsWith('/PrintView')
-        && x.hostname === 'tyzhden.ua'
-        && !/^(Gallery|Video|Author)\b/.test(x.path)
+    let crawler = new Crawler(args.saveDir, args.workspace)
+      .setUrlsToFollow([
+        x => !x.path.endsWith('/PrintView')
+          && x.hostname === 'tyzhden.ua'
+          && !/\/(Gallery|Video|Author)\//.test(x.path)
       ])
       .setUrlsToSave(x => re.test(x.path) && x.hostname === 'tyzhden.ua')
     await crawler.seed([args.seed])

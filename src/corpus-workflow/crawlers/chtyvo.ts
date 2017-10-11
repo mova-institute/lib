@@ -4,7 +4,7 @@ import { readFileSync } from 'fs'
 import * as minimist from 'minimist'
 
 import { FsMap } from '../../fs_map'
-import { fetchText } from './utils'
+import { fetchText } from '../../request_utils'
 import { tryParseHtml } from '../../xml/utils.node'
 import { get } from 'request'
 

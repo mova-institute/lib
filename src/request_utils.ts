@@ -1,21 +1,59 @@
+import { firstMatch } from './string_utils'
+
+import * as conv from 'iconv-lite'
 import * as request from 'request'
+import { CoreOptions, RequestResponse } from 'request'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function fetchText(url: string, options?: request.CoreOptions) {
-  return new Promise<string>((resolve, reject) => {
+export function fetch(url: string, options?: CoreOptions) {
+  return new Promise<RequestResponse>((resolve, reject) => {
     request(url, options, (err, res, body) => {
       if (err) {
         reject(err)
       }
-      resolve(body)
+      resolve(res)
     })
   })
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function fetchJson(href: string, options?: request.CoreOptions) {
+export async function fetchText(url: string, options?: CoreOptions) {
+  options = {
+    gzip: true,
+    forever: true,
+    ...options,
+    encoding: null,
+  }
+
+  let response = await fetch(url, options)
+  let encoding = firstMatch(response.headers['content-type'] as string,
+    /.*\bcharset=([\w\-]+)/, 1)
+  if (encoding) {
+    if (conv.encodingExists(encoding)) {
+      return conv.decode(response.body, encoding)
+    }
+    throw new Error(`Unsupported encoding "${encoding}"`)
+  } else {
+    // assume utf8 to get html
+    let asUtf8 = conv.decode(response.body, 'utf8')
+    encoding = firstMatch(asUtf8,
+      /<meta\s[^>]*http-equiv\s*=\s*['"]\s*Content-Type\s*['"]\s*[^>]*charset\s*=\s*([\w\-]+)/i, 1)
+    if (encoding) {
+      if (/utf-?8/i.test(encoding)) {
+        return asUtf8
+      } else if (conv.encodingExists(encoding)) {
+        return conv.decode(response.body, encoding)
+      }
+      throw new Error(`Unsupported encoding "${encoding}"`)
+    }
+    throw new Error(`Cannot guess encoding`)
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function fetchJson(href: string, options?: CoreOptions) {
   let resStr = await fetchText(href, options)
   let ret: {}
   try {

@@ -14,7 +14,7 @@ const DOMAINS = [
 
 async function main() {
   // 'health|culture|society|travel|columns'
-  let crawler = new Crawler(process.argv[2] || 'pravda')
+  let crawler = new Crawler(process.argv[3] || 'saved_wev', process.argv[2] || 'pravda')
     .setUrlsToSave(({ pathname, hash, hostname, protocol }) => {
       // if (hostname === 'life.pravda.com.ua') {
 
@@ -33,7 +33,7 @@ async function main() {
         && !x.search
         && !x.hash
         && x.protocol === 'http:',
-        x => x
+      x => x
         && DOMAINS.includes(x.hostname)
         && /^\/archives\/year_\d+\/$/.test(x.pathname)
         && !x.search

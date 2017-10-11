@@ -1,7 +1,7 @@
 import { join } from 'path'
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'
-import { fetchText } from './utils'
+import { fetchText } from '../../request_utils'
 import { matchAll, sleep } from '../../lang'
 import { resolve, parse, Url } from 'url'
 
@@ -22,10 +22,10 @@ export class Crawler {
   private timeout = 0
   private numRetries = 5
 
-  constructor(workspacePath: string) {
-    this.visited = new FileSavedSet(join(workspacePath, 'processed'))
-    this.failed = new FileSavedSet(join(workspacePath, 'failed'))
-    this.saved = new FsMap(join(workspacePath, 'data'))
+  constructor(saveDir: string, workspaceDir: string) {
+    this.visited = new FileSavedSet(join(workspaceDir, 'processed'))
+    this.failed = new FileSavedSet(join(workspaceDir, 'failed'))
+    this.saved = new FsMap(saveDir)
     // this.saved = new FolderSavedMap(join(workspacePath, 'saved'), '**/*.html')
     // console.log(this.saved)
   }
@@ -60,7 +60,7 @@ export class Crawler {
       process.stderr.write(`processing ${urlStr} `)
       let content: string
       if (this.isUrlToSave(url) && this.saved.has(fileishUrl)) {
-        process.stderr.write(` skipped\n`)
+        process.stderr.write(` exists\n`)
       } else {
         try {
           await sleep(this.timeout / 2 + Math.random() * this.timeout)

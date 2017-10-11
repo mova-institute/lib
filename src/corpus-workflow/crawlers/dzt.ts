@@ -4,7 +4,7 @@ import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'
-import { fetchText } from './utils'
+import { fetchText } from '../../request_utils'
 import { parseHtml } from '../../xml/utils.node'
 
 

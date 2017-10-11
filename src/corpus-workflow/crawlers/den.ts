@@ -5,11 +5,12 @@ import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
 import { matchAll, sleep } from '../../lang';
-import { fetchText } from './utils'
+import { fetchText } from '../../request_utils'
 
 
 
 interface Args {
+  saveDir: string
   workspace: string
   seed: number
 }
@@ -66,11 +67,9 @@ const articleSavePath = new RegExp(String.raw`/uk/article/(.+)`)
 
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
-    alias: {
-      workspace: ['ws'],
-    },
     default: {
-      workspace: './den'
+      workspace: 'den',
+      saveDir: 'saved_web',
     },
   }) as any
 
@@ -80,8 +79,7 @@ if (require.main === module) {
 
 async function main(args: Args) {
   try {
-    let fetchedArticlesDir = path.join(args.workspace, 'data')
-    mkdirpSync(fetchedArticlesDir)
+    mkdirpSync(args.saveDir)
 
     let crawler = new Crawler(path.join(args.workspace, 'fully_fetched_urls.txt'))
       .setSaveLinkExtractor(content => {
@@ -105,8 +103,8 @@ async function main(args: Args) {
         + `&archive_date%5Bvalue%5D%5Byear%5D=${year}`
       try {
         await crawler.seed(seedUrl, (url, content) => {
-          let saveTo = url.match(articleSavePath)![1]
-          saveTo = path.join(fetchedArticlesDir, saveTo) + '.html'
+          let saveTo = url.match(articleSavePath)[1]
+          saveTo = path.join(args.saveDir, saveTo) + '.html'
           console.log(`saving to ${saveTo}`)
           mkdirpSync(path.dirname(saveTo))
           fs.writeFileSync(saveTo, content, 'utf8')
