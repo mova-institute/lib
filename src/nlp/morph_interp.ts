@@ -752,8 +752,8 @@ export class MorphInterp {
       return 'Y'
     }
 
-    if (this.isBeforeadj()) {
-      return 'Ab'
+    if (this.isBeforeadj() || this.isStem()) {
+      return 'A'
     }
 
     if (this.isCardinalNumeral() || this.isOrdinalNumeral()) {
@@ -768,9 +768,14 @@ export class MorphInterp {
     }
 
     if (this.isPronominal()) {
-      let type = this.isPossessive()
-        ? 'p'
-        : map2mte(PronominalType, this.features.pronominalType)
+      let type: string
+      if (this.isPossessive()) {
+        type = 'p'
+      } else if (this.isReflexive()) {
+        type = 'x'
+      } else {
+        type = map2mte(PronominalType, this.features.pronominalType)
+      }
       let possessiveness = this.isPossessive() ? 'p' : '-'
       let person = map2mteOrDash(Person, this.features.person)
       let gender = map2mteOrDash(Gender, this.features.gender)
