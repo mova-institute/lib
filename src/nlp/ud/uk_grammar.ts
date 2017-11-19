@@ -366,6 +366,10 @@ export function standartizeMorphoForUd21(interp: MorphInterp, form: string) {
     interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
   }
 
+  if (interp.isForeign()) {
+    interp.setFromVesumStr('x:foreign', interp.lemma)
+  }
+
   // we're not sure there's a need for that
   if (interp.getFeature(f.PunctuationType) === f.PunctuationType.ellipsis) {
     interp.dropFeature(f.PunctuationType)
@@ -425,6 +429,11 @@ export function standartizeSentence2ud21(sentence: TokenNode[]) {
       t.rel = trimAfterFirst(t.rel, ':')
     }
 
+    // set :pass
+    if (isPassive(node)) {
+      t.rel += `:pass`
+    }
+
     // set participle acl to amod
     if (uEq(t.rel, 'acl')
       && !isFeasibleAclRoot(node)
@@ -448,6 +457,22 @@ export function standartizeSentence2ud21(sentence: TokenNode[]) {
   ) {
     lastToken.headIndex = rootIndex
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isPassive(t: TokenNode) {
+  if (uEqSome(t.node.rel, SUBJECTS)) {
+    if (t.parent.node.interp.isPassive()) {
+      return true
+    }
+    if (t.parent.children.some(x => uEq(x.node.rel, 'xcomp')
+      && x.node.rel !== 'xcomp:sp'
+      && x.node.interp.isPassive())
+    ) {
+      return true
+    }
+  }
+  return false
 }
 
 
