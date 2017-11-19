@@ -188,7 +188,6 @@ function main() {
       prevSet = dataset
 
 
-
       if (completionRatio) {
         let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
