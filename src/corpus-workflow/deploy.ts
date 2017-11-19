@@ -22,6 +22,10 @@ interface Args {
   subcorpConfig?: string
   alignmentPath: string[]
   name?: string
+  user: string
+  host: string
+  corporaPath: string
+  bonitoDataPath: string
 }
 
 
@@ -39,10 +43,10 @@ if (require.main === module) {
 
 //------------------------------------------------------------------------------
 function main(args: Args) {
-  const user = process.env.MI_CORP_USER
-  const hostname = process.env.MI_CORP_HOST
-  const remoteCorpora = process.env.MI_CORPORA_PATH
-  const bonitoDataPath = process.env.MI_BONITO_DATA_PATH
+  const user = args.user || process.env.MI_CORP_USER
+  const hostname = args.host || process.env.MI_CORP_HOST
+  const remoteCorpora = args.corporaPath || process.env.MI_CORPORA_PATH
+  const bonitoDataPath = args.bonitoDataPath || process.env.MI_BONITO_DATA_PATH
 
   if (!user || !hostname || !remoteCorpora || !bonitoDataPath) {
     throw new Error(`Environment variables not set`)
