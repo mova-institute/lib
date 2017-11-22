@@ -78,6 +78,7 @@
     "glob": "^7.0.5",
     "html-entities": "^1.2.0",
     "iconv-lite": "^0.4.19",
+    "json-stable-stringify": "^1.0.1",
     "libxmljs": "^0.18.7",
     "lodash": "^4.15.0",
     "lodash.capitalize": "^4.2.1",
