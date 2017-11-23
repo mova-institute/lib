@@ -21,6 +21,9 @@ export class ServerAdmin {
 
 
   start() {
+    // fool BMC to leave FANA alone
+    // (zero threshold is inclusive and triggers a panic when the fan is turned off)
+    execSync('sudo ipmitool sensor thresh FANA lower 99999 99999 99999')
     // turn off FANA
     execSync('sudo ipmitool raw 0x30 0x70 0x66 0x01 0x01 0x01')
 

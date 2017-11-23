@@ -30,7 +30,7 @@ export function toSortableDatetime(date: Date) {
   let mm = zerofill(date.getMinutes(), 2)
   let ss = zerofill(date.getSeconds(), 2)
 
-  return `${toSortableDate(date)}_${hh}:${mm}:${ss}`
+  return `${toSortableDate(date)} ${hh}:${mm}:${ss}`
 }
 
 ////////////////////////////////////////////////////////////////////////////////
