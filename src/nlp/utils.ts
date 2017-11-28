@@ -1029,10 +1029,10 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
           tok = Token.structure('sentence', true)
           let attributes = el.attributesObj()
           if (sentenceSetSchema === '') {
-            attributes.set = el.attributeUp('dataset')
+            // attributes.set = el.attributeUp('dataset')
           } else if (sentenceSetSchema) {
             let attrName = `dataset-${sentenceSetSchema}`
-            attributes.set = el.attributeUp(attrName)
+            // attributes.set = el.attributeUp(attrName)
           }
           tok.setAttributes(attributes)
           break
