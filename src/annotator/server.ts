@@ -69,7 +69,7 @@ app.all('/api/*', async (req: IReq, res: express.Response) => {
   }
 })
 
-app.listen(8001)
+app.listen(process.argv[2])
 
 
 
