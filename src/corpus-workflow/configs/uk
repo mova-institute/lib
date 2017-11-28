@@ -325,13 +325,13 @@ STRUCTURE doc {
     LABEL "тип"
     MULTIVALUE yes
     MULTISEP "|"
-    HIERARCHICAL "::"
+#    HIERARCHICAL "::"
   }
   ATTRIBUTE domain {
     LABEL "галузь"
     MULTIVALUE yes
     MULTISEP "|"
-    HIERARCHICAL "::"
+#    HIERARCHICAL "::"
   }
   ATTRIBUTE disamb {
     LABEL "уоднозначнення"
