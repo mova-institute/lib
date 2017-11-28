@@ -15,7 +15,7 @@ import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
 import { mixml2tokenStream, tokenStream2sentences } from '../../nlp/utils'
 import * as algo from '../../algo'
-import { parseJsonFromFile } from '../../utils.node'
+import { parseJsonFileSync } from '../../utils.node'
 // import { last } from '../../lang'
 import { Dict } from '../../types'
 import { Token } from '../../nlp/token'
@@ -123,7 +123,7 @@ function main() {
   }
 
   let id2bratPath = args.id2bratPath
-    ? parseJsonFromFile(args.id2bratPath)
+    ? parseJsonFileSync(args.id2bratPath)
     : {}
 
   let rerouteMap = createDatasetRerouteMap(args.datasetReroute)

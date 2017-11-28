@@ -15,7 +15,7 @@ import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
-import { writeFileSyncMkdirp, parseJsonFromFile, write2jsonFile } from '../utils.node'
+import { writeFileSyncMkdirp, parseJsonFileSync, write2jsonFile } from '../utils.node'
 import { parseXmlFileSync } from '../xml/utils.node'
 // import { conlluToken2vertical } from './extractors/conllu'
 import { buildMiteiVertical } from './mitei_build_utils'
@@ -31,7 +31,7 @@ import { mu, Mu } from '../mu'
 import { uniq } from '../algo'
 import { AsyncTaskRunner } from '../lib/async_task_runner'
 import { UdpipeApiClient } from '../nlp/ud/udpipe_api_client'
-import { conlluAndMeta2vertical } from './tovert'
+import { conlluStrAndMeta2vertical } from './tovert'
 
 
 interface Args {
@@ -203,7 +203,7 @@ async function doUdpipeStage(args: Args) {
       await runner.run(async () => {
         console.log(`udpiped ${i} docs (${toFloorPercent(i, paraFiles.length)}%), doing ${paraPath}`)
 
-        let paragraphs = parseJsonFromFile(paraPath)
+        let paragraphs = parseJsonFileSync(paraPath)
         let conllu = await udpipe.tag(paragraphs2UdpipeInput(paragraphs))
         writeFileSyncMkdirp(conlluPath, conllu)
       })
@@ -228,9 +228,9 @@ function doVerticalStage(args: Args) {
     console.log(`verted ${i} docs (${toFloorPercent(i, conlluFiles.length)}%), doing ${conlluPath}`)
 
     let metaPath = join(outDir, 'meta', `${relativePath}.json`)
-    let meta = parseJsonFromFile(metaPath)
+    let meta = parseJsonFileSync(metaPath)
     let conlluStr = fs.readFileSync(conlluPath, 'utf8')
-    let vrtLines = conlluAndMeta2vertical(conlluStr.split('\n'), meta)
+    let vrtLines = conlluStrAndMeta2vertical(conlluStr, meta)
     writeFileSyncMkdirp(outPath, mu(vrtLines).join('\n', true))
   }
 }

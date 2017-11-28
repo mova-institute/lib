@@ -1,17 +1,23 @@
 #!/usr/bin/env node
 
+import * as glob from 'glob'
+import * as minimist from 'minimist'
+
 import { writeFileSync } from 'fs'
 import { join } from 'path'
 
-import * as glob from 'glob'
 
 
+interface Args {
 
-function main() {
-  const args: any = require('minimist')(process.argv.slice(2))
+}
+
+
+async function main() {
+  const args: Args = minimist(process.argv.slice(2)) as any
 
 }
 
 if (require.main === module) {
-  main()
+  main().catch(e => console.error(e))
 }

@@ -8,7 +8,12 @@ import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta: CorpusDoc) {
+export function* conlluStrAndMeta2vertical(conlluLines: string, meta: CorpusDoc, formOnly = false) {
+  yield* conlluAndMeta2vertical(conlluLines.split('\n'), meta, formOnly)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta: CorpusDoc, formOnly = false) {
   let { authors, author, date, title, url } = meta
   author = author || authors.join('; ')
   let exportedMeta = { author, date, title, url }
@@ -29,11 +34,17 @@ export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta: Cor
       toyield += '>'
       yield toyield
     } else {
-      let { form, lemma, upos, feats, rel } = tok.token
-      yield token2verticalLine(form, lemma, upos, feats as any, rel, tok.token.misc.SpaceAfter !== 'No')
+      if (formOnly) {
+        yield tok.token.form
+      } else {
+        let { form, lemma, upos, feats, rel } = tok.token
+        yield token2verticalLine(form, lemma, upos, feats as any, rel, tok.token.misc.SpaceAfter !== 'No')
+      }
+      if (tok.token.misc.SpaceAfter === 'No') {
+        yield '<g/>'
+      }
     }
   }
 
   yield `</doc>`
 }
-

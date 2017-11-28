@@ -118,7 +118,7 @@ export function openSyncMkdirp(filePath: string, flags: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseJsonFromFile(filePath: string) {
+export function parseJsonFileSync(filePath: string) {
   let fileStr = fs.readFileSync(filePath, 'utf8')
   let ret = JSON.parse(fileStr)
   return ret
@@ -128,4 +128,20 @@ export function parseJsonFromFile(filePath: string) {
 export function write2jsonFile(filePath: string, obj: any) {
   let json = JSON.stringify(obj)
   fs.writeFileSync(filePath, json)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function joinToStream(strings: Iterable<string>, stream: NodeJS.WriteStream, joiner = '', trailing = false) {
+  let isFirst = true
+  for (let x of strings) {
+    if (!isFirst) {
+      stream.write(joiner)
+    } else {
+      isFirst = false
+    }
+    stream.write(x)
+  }
+  if (trailing) {
+    stream.write(joiner)
+  }
 }

@@ -54,15 +54,16 @@ export async function fetchText(url: string, options?: CoreOptions) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function fetchJson(href: string, options?: CoreOptions) {
-  let resStr = await fetchText(href, options)
-  let ret: {}
-  try {
-    ret = JSON.parse(resStr)
-  } catch (e) {
-    if (true || e instanceof SyntaxError) {
-      console.error(resStr)
-      throw e
-    }
-  }
-  return ret as any
+  let resStr = await fetch(href, options)
+  return JSON.parse(resStr.body)
+  // let ret
+  // try {
+  //   ret = JSON.parse(resStr.body)
+  // } catch (e) {
+  //   if (true || e instanceof SyntaxError) {
+  //     console.error(resStr)
+  //     throw e
+  //   }
+  // }
+  // return ret as any
 }

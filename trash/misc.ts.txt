@@ -1,3 +1,22 @@
+////////////////////////////////////////////////////////////////////////////////
+export function forEachLine2(stream: NodeJS.ReadableStream, f: (line: string, cb: () => void) => void) {
+  return new Promise<void>((resolve, reject) => {
+    let rl = createInterface({ input: stream })
+
+    let onLine = async (line: string) => {
+      console.log(`onLine`)
+      // rl.pause()
+      await f(line, () => rl.once('line', onLine))
+      // rl.resume()
+      // rl.once('line', onLine)
+    }
+
+    rl.once('line', onLine)
+      .on('close', () => resolve())
+  })
+}
+
+
 // from chtyvo grabber
 
 /*loop:
