@@ -1,51 +1,53 @@
 import { readFileSync } from 'fs'
 import * as fs from 'fs'
 import * as path from 'path'
-import { createInterface, ReadLine } from 'readline'
+import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
-import { last } from './lang'
+// import { StreamDataIterator } from './lib/nextify/stream_data_iterator';
 
 const lineIterator = require('n-readlines')
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-// export async function* forEachLineSuper(stream: NodeJS.ReadableStream): Iterable<Promise<string>> {
-//   let endPromise = promiseEnd(stream)
-//   let buf = ''
-//   while (true) {
-//     let chunk = await Promise.race([endPromise, promiseData(stream)])
-//     if (!chunk) {
-//       if (buf) {
-//         yield buf
-//       }
-//       return
-//     }
-
-//     let lines = chunk.split('\n')
-//     if (lines.length === 1) {
-//       buf += chunk
-//     } else {
-//       yield buf + chunk[0]
-//       for (let i = 1; i < lines.length - 1; ++i) {
-//         yield lines[i]
-//       }
-//       buf = last(lines)
-//     }
+////////////////////////////////////////////////////////////////////////////////
+// export async function* lines(readable: NodeJS.ReadableStream, newline: string | RegExp = '\n') {
+//   let leftover: string
+//   for await (let chunk of new StreamDataIterator<string>(readable)) {
+//     let splitted = chunk.split(newline)
+//     leftover = splitted.pop()
+//     yield* splitted
 //   }
+//   yield leftover
 // }
 
-// function promiseData(stream: NodeJS.ReadableStream) {
-//   return new Promise<string>((resolve, reject) => {
-//     stream.once('data', chunk => resolve(chunk))
-//   })
-// }
+////////////////////////////////////////////////////////////////////////////////
+export function linesCb(
+  readable: NodeJS.ReadableStream,
+  callback: (lineBulk: string[], ready: () => void) => void,
+  newline: string | RegExp = '\n'
+) {
+  return new Promise<void>((resolve, reject) => {
+    let leftover = ''
 
-// function promiseEnd(stream: NodeJS.ReadableStream) {
-//   return new Promise<void>((resolve, reject) => {
-//     stream.once('end', () => resolve())
-//   })
-// }
+    const consumer = (chunk: string) => {
+      readable.pause()
+
+      let splitted = (leftover + chunk).split(newline)
+      if (splitted.length === 1) {
+        leftover = splitted[0]
+      } else if (splitted.length) {
+        leftover = splitted.pop()
+        callback(splitted, () => {
+          readable.resume()
+        })
+      }
+    }
+
+    readable.on('data', consumer).on('end', () => {
+      callback([leftover], () => resolve())
+    })
+  })
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => void) {
