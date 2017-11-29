@@ -1,8 +1,6 @@
 import { CorpusDoc } from './doc_meta'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
-import { makeObject } from '../lang'
 import { token2verticalLine } from './ud'
-// import { UdPos, UdFeats } from '../nlp/ud/tagset'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 
@@ -15,7 +13,7 @@ export function* conlluStrAndMeta2vertical(conlluLines: string, meta: CorpusDoc,
 ////////////////////////////////////////////////////////////////////////////////
 export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta: CorpusDoc, formOnly = false) {
   let { authors, author, date, title, url } = meta
-  author = author || authors.join('; ')
+  author = author || authors && authors.join('; ')
   let exportedMeta = { author, date, title, url }
 
   yield `<doc ${keyvalue2attributesNormalized(exportedMeta)}>`
@@ -25,7 +23,6 @@ export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta: Cor
       if (tok.structure.type === Structure.document) {
         continue
       }
-
       let toyield = '<'
       if (!tok.structure.opening) {
         toyield += '/'

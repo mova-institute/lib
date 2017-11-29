@@ -19,7 +19,7 @@ export class AsyncTaskRunner<Result> {
   private concurrency = cpus().length
   private race: Promise<WrappedResult<Result>>
 
-  async run(taskFunc: TaskFunc<Result>) {
+  async startRunning(taskFunc: TaskFunc<Result>) {
     let ret: Result
 
     if (this.tasks.size === this.concurrency) {

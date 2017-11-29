@@ -200,7 +200,7 @@ async function doUdpipeStage(args: Args) {
     let conlluPath = join(outDir, 'conllu', `${basePath}.conllu`)
 
     if (!fs.existsSync(conlluPath)) {
-      await runner.run(async () => {
+      await runner.startRunning(async () => {
         console.log(`udpiped ${i} docs (${toFloorPercent(i, paraFiles.length)}%), doing ${paraPath}`)
 
         let paragraphs = parseJsonFileSync(paraPath)

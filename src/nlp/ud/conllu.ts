@@ -75,6 +75,12 @@ export function* streamparseConllu(lines: Iterable<string>) {
       yield makeToken(token)
     }
   }
+  if (insidePar) {
+    yield makeStructure(Structure.paragraph, false)
+  }
+  if (insideDoc) {
+    yield makeStructure(Structure.document, false)
+  }
 }
 
 //------------------------------------------------------------------------------

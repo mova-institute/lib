@@ -1,23 +1,22 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { forEachLine2, parseJsonFileSync, joinToStream } from '../../utils.node'
+import { parseJsonFileSync, joinToStream } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 
-import * as glob from 'glob'
 import * as minimist from 'minimist'
-import * as lineReader from 'line-reader'  // todo: learn how it works
+import * as lineReader from 'line-reader'
 
-import { writeFileSync } from 'fs'
+import * as os from 'os'
 import * as path from 'path'
-import { error } from 'util';
-import { sleep } from '../../lang';
+import { AsyncTaskRunner } from '../../lib/async_task_runner';
 
 
 
 interface Args {
   basePath: string
   udpipeUrl: string
+  concurrency?: number
 }
 
 
@@ -26,24 +25,37 @@ async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
+  let runner = new AsyncTaskRunner<void>()
+  let concurrency = args.concurrency || Math.max(1, os.cpus().length - 3)
+  runner.setConcurrency(concurrency)
+
 
   lineReader.eachLine(process.stdin, async (paraPath, last, cb) => {
     let paragraphs = parseJsonFileSync(paraPath) as string[]
     let meta = parseJsonFileSync(paraPath2metaPath(paraPath, args.basePath))
-    console.error(meta)
 
-    let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
-    let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
-    joinToStream(vertStream, process.stdout, '\n', true)
+    if (!paragraphs || !paragraphs.length) {
+      console.error(`Paragraphs are empty or invalid`, paragraphs)
+      return
+    }
+
+    if (!meta) {
+      console.error(`Meta is empty or invalid`)
+    }
+
+    await runner.startRunning(async () => {
+      let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
+      let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
+      joinToStream(vertStream, process.stdout, '\n', true)
+    })
+
     cb()
   })
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function paraPath2metaPath(paraPath: string, base: string) {
-  let relative = path.relative(base, paraPath)
-  relative = relative.substr(relative.indexOf('para/') + 'para/'.length)
-  return path.join(base, 'meta', relative)
+  return path.join(base, paraPath.substr(base.length).replace(/(^|\/)para\//, '$1meta/'))
 }
 
 ///////////////////////////////////////////////////////////////////////////////
