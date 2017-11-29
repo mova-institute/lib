@@ -7,7 +7,6 @@ import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import * as minimist from 'minimist'
 import * as lineReader from 'line-reader'
 
-import * as os from 'os'
 import * as path from 'path'
 import { AsyncTaskRunner } from '../../lib/async_task_runner';
 
@@ -26,8 +25,9 @@ async function main() {
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
   let runner = new AsyncTaskRunner<void>()
-  let concurrency = args.concurrency || Math.max(1, os.cpus().length - 3)
-  runner.setConcurrency(concurrency)
+  if (args.concurrency) {
+    runner.setConcurrency(args.concurrency)
+  }
 
 
   lineReader.eachLine(process.stdin, async (paraPath, last, cb) => {
