@@ -15,16 +15,11 @@ import { sleep } from '../lang'
 import { toUdString } from '../nlp/ud/tagset'
 import { MorphInterp } from '../nlp/morph_interp'
 import * as glob from 'glob'
-import { parseUmolodaArticle } from '../corpus-workflow/extractors/umoloda'
-import { parseDztArticle } from '../corpus-workflow/extractors/dzt'
-import { parseDenArticle } from '../corpus-workflow/extractors/den'
-import { parseZbrucArticle } from '../corpus-workflow/extractors/zbruc'
-import { parseTyzhdenArticle } from '../corpus-workflow/extractors/tyzhden'
-import { fetchText } from '../corpus-workflow/crawlers/utils'
 import { mu } from '../mu'
 import * as _ from 'lodash'
 import { CatStream } from '../cat_stream'
 import { execSync, spawnSync, spawn, exec } from 'child_process'
+import { StreamDataIterator } from '../lib/nextify/stream_data_iterator';
 
 // export const config: ClientConfig = {
 //   host: 'localhost',
@@ -39,31 +34,16 @@ import { execSync, spawnSync, spawn, exec } from 'child_process'
 
 
 
+
+async function main() {
+  for await (let chunk of new StreamDataIterator<Buffer>(process.stdin)) {
+    console.log(chunk.byteLength)
+  }
+}
+
+
+
 main()
-
-function main() {
-  let files = glob.sync('/Users/msklvsk/Downloads/*.alignment.xml')
-  let s = new CatStream(files)
-  // let ws = fs.createWriteStream('/Users/msklvsk/Downloads/test1.txt')
-  // s.pipe(process.stdout)
-  let cp = exec('wc -l')
-  cp.on('close', (code) => {
-    console.log(`grep process exited with code ${code}`);
-  })
-  cp.stdout.pipe(process.stdout)
-  s.pipe(cp.stdin)
-}
-
-function docCreator(xmlstr: string) {
-  return new LibxmljsDocument(libxmljs.parseXmlString(xmlstr))
-}
-
-function htmlDocCreator(xmlstr: string) {
-  return new LibxmljsDocument(libxmljs.parseHtml(xmlstr))
-}
-
-
-
 
 
 

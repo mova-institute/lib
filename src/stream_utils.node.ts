@@ -1,4 +1,6 @@
 import { Readable } from 'stream'
+import { StreamDataIterator } from './lib/nextify/stream_data_iterator'
+import { Buffer } from 'buffer'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
@@ -30,4 +32,24 @@ export function readTillEnd(istream: Readable): Promise<string> {
       .on('end', () => resolve(ret))
 
   })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// experiment
+export async function* binLines(
+  readable: NodeJS.ReadableStream,
+  separator: Buffer | number,
+) {
+  let lines = new Array<Buffer>()
+  for await (let chunk of new StreamDataIterator<Buffer>(process.stdin)) {
+    for (let i = chunk.indexOf(separator); i >= 0; i = chunk.indexOf(separator, i)) {
+      let a = new DataView(chunk.buffer, 3, 5)
+
+      lines.push(chunk)
+    }
+    // console.log(chunk.byteLength)
+    yield lines
+
+    lines = []
+  }
 }
