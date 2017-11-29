@@ -1,5 +1,7 @@
 import { AbstractNode, AbstractElement } from 'xmlapi'
 
+
+
 // todo: move out
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
@@ -7,7 +9,6 @@ export const NS = {
   tei: 'http://www.tei-c.org/ns/1.0',
   mi: 'http://mova.institute/ns/corpora/0.1',
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -133,6 +134,40 @@ export function keyvalue2attributesNormalized(obj: any) {
       return `${key}="${value}"`
     })
     .join(' ')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// only supports well-formed, no extra spaces tags, with "-quoted attributes
+export function parseTagStr(value: string) {
+  let match = value.match(/<(\/)?(\w+)((?:\s+\w+="[^"]+")*)*>/)
+  if (match) {
+    let [, closer, name, attributes] = match
+    if (closer) {
+      return { name, closing: true }
+    } else if (attributes) {
+      attributes = attributes.trim()  // todo: remove?
+      return {
+        name,
+        closing: false,
+        attributes: parseAttributeStr(attributes),
+      }
+    } else {
+      return { name, closing: false }
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function parseAttributeStr(value: string) {
+  let ret = new Array<[string, string]>()
+
+  let re = /(\w+)="([^"]+)"\s*/g
+  let matchArray
+  while ((matchArray = re.exec(value)) !== null) {
+    ret.push([matchArray[1], matchArray[2]])
+  }
+
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
