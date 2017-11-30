@@ -33,7 +33,7 @@ export class AsyncTaskRunner<Result> {
   }
 
   setConcurrency(value: number) {
-    this.concurrency = value
+    this.concurrency = value || cpus().length
     return this
   }
 

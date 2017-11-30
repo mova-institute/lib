@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
-import { linesCb } from '../../utils.node';
+import { linesAsync, ignorePipeErrors } from '../../utils.node';
 
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
+  ignorePipeErrors()
   process.stdin.setEncoding('utf8')
 
   let insideGap = false
-  await linesCb(process.stdin, async (lines, ready) => {
+  await linesAsync(process.stdin, lines => {
     for (let line of lines) {
       if (insideGap) {
         if (!line.startsWith('1')) {
@@ -25,7 +26,6 @@ async function main() {
         }
       }
     }
-    ready()
   })
 }
 

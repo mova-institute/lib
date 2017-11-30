@@ -35,29 +35,29 @@ const lineIterator = require('n-readlines')
 //   }, newline)
 // }
 ////////////////////////////////////////////////////////////////////////////////
-export function linesCb(
+export function linesAsync(
   readable: NodeJS.ReadableStream,
-  callback: (lineBulk: string[], ready: () => void) => void,
+  callback: (lineBulk: string[]) => void,
   newline: string | RegExp = '\n'
 ) {
   return new Promise<void>((resolve, reject) => {
     let leftover = ''
 
-    const consumer = (chunk: string) => {
+    const consumer = async (chunk: string) => {
       let splitted = (leftover + chunk).split(newline)
       if (splitted.length === 1) {
         leftover = splitted[0]
       } else if (splitted.length) {
         leftover = splitted.pop()
         readable.pause()
-        callback(splitted, () => {
-          readable.resume()
-        })
+        await callback(splitted)
+        readable.resume()
       }
     }
 
-    readable.on('data', consumer).on('end', () => {
-      callback([leftover], () => resolve())
+    readable.on('data', consumer).on('end', async () => {
+      await callback([leftover])
+      resolve()
     })
   })
 }

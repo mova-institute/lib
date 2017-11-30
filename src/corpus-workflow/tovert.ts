@@ -13,10 +13,11 @@ export function* conlluStrAndMeta2vertical(conlluLines: string, meta?: CorpusDoc
 ////////////////////////////////////////////////////////////////////////////////
 export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta?: CorpusDoc, formOnly = false) {
   if (meta) {
-    let { authors, author, date, title, url } = meta
-    author = author || authors && authors.join('; ')
-    let exportedMeta = { author, date, title, url }
-    yield `<doc ${keyvalue2attributesNormalized(exportedMeta)}>`
+    // let { authors, author, date, title, url } = meta
+    // author = author || authors && authors.join('; ')
+    // let exportedMeta = { author, date, title, url }
+    // yield `<doc ${keyvalue2attributesNormalized(exportedMeta)}>`
+    yield `<doc ${keyvalue2attributesNormalized(meta)}>`
   } else {
     yield '<doc>'
   }
