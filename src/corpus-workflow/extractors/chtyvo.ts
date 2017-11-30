@@ -345,6 +345,7 @@ function normalizeText(str: string) {
 
 /*
 
-find . -name "*.zip" | while read filename; do unzip -o -d "`dirname "$filename"`" "$filename"; done;
+find . -name "*.zip" | while read filename; do unzip -ou -d "`dirname "$filename"`" "$filename"; done;
+
 
 */
