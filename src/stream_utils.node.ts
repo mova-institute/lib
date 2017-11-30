@@ -2,6 +2,16 @@ import { Readable } from 'stream'
 import { StreamDataIterator } from './lib/nextify/stream_data_iterator'
 import { Buffer } from 'buffer'
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function write(to: NodeJS.WriteStream, what: string) {
+  if (!to.write(what, undefined)) {
+    return new Promise<void>((resolve, reject) => {
+      to.once('drain', resolve)
+    })
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
   return new Promise((resolve, reject) => {
