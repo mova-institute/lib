@@ -1,5 +1,6 @@
 import { UdPos, UdFeats } from '../nlp/ud/tagset'
 import { trimAfterLast } from '../string_utils'
+import { escape } from '../xml/utils';
 
 ////////////////////////////////////////////////////////////////////////////////
 export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats,
@@ -8,7 +9,7 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
 
-  let ret = `${form}\t${lemma}\t`
+  let ret = `${escape(form)}\t${escape(lemma)}\t`
   ret += [
     upos,
     domesticatedPos,
