@@ -1,5 +1,7 @@
 import { AbstractNode, AbstractElement } from 'xmlapi'
 
+import * as he from 'he'
+
 
 
 // todo: move out
@@ -17,13 +19,8 @@ export function cantBeXml(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function escape(value: string) {   // todo
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
+export function escape(value: string) {   // todo: call he everywhere directly
+  return he.escape(value)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

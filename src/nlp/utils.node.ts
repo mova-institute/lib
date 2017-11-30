@@ -1,7 +1,7 @@
 import { markWordwiseDiff, normalizeCorpusText } from './utils'
 import { parseXml } from '../xml/utils.node'
 import { LibxmljsElement } from 'xmlapi-libxmljs'
-import { AllHtmlEntities } from 'html-entities'
+import * as he from 'he'
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,14 +24,13 @@ export function normalizeCorpusTextTxt(xmlstr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const entities = new AllHtmlEntities()
 const mustEscapeInText = new Set(['lt', 'amp'])
 export function normalizeEntities(text: string) {  // todo: wait for libxmljs issues resolved
   text = text.replace(/&(\w+);/g, (match, p1) => {
     if (mustEscapeInText.has(p1)) {
       return match
     }
-    let decoded = entities.decode(match)
+    let decoded = he.escape(match)
     if (/^\s$/.test(decoded)) {  // todo: wait for unicode
       return ''
     }
