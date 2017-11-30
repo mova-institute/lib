@@ -21,6 +21,20 @@ const lineIterator = require('n-readlines')
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
+// export function linesCbNonempty(
+//   readable: NodeJS.ReadableStream,
+//   callback: (lineBulk: string[], ready: () => void) => void,
+//   newline: string | RegExp = '\n'
+// ) {
+//   linesCb(readable, (line, ready) => {
+//     if (line) {
+//       callback(line, ready)
+//     } else {
+//       ready()
+//     }
+//   }, newline)
+// }
+////////////////////////////////////////////////////////////////////////////////
 export function linesCb(
   readable: NodeJS.ReadableStream,
   callback: (lineBulk: string[], ready: () => void) => void,
@@ -30,13 +44,12 @@ export function linesCb(
     let leftover = ''
 
     const consumer = (chunk: string) => {
-      readable.pause()
-
       let splitted = (leftover + chunk).split(newline)
       if (splitted.length === 1) {
         leftover = splitted[0]
       } else if (splitted.length) {
         leftover = splitted.pop()
+        readable.pause()
         callback(splitted, () => {
           readable.resume()
         })
