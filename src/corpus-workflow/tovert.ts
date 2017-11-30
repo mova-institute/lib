@@ -6,17 +6,20 @@ import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conlluStrAndMeta2vertical(conlluLines: string, meta: CorpusDoc, formOnly = false) {
+export function* conlluStrAndMeta2vertical(conlluLines: string, meta?: CorpusDoc, formOnly = false) {
   yield* conlluAndMeta2vertical(conlluLines.split('\n'), meta, formOnly)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta: CorpusDoc, formOnly = false) {
-  let { authors, author, date, title, url } = meta
-  author = author || authors && authors.join('; ')
-  let exportedMeta = { author, date, title, url }
-
-  yield `<doc ${keyvalue2attributesNormalized(exportedMeta)}>`
+export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta?: CorpusDoc, formOnly = false) {
+  if (meta) {
+    let { authors, author, date, title, url } = meta
+    author = author || authors && authors.join('; ')
+    let exportedMeta = { author, date, title, url }
+    yield `<doc ${keyvalue2attributesNormalized(exportedMeta)}>`
+  } else {
+    yield '<doc>'
+  }
 
   for (let tok of streamparseConllu(conlluLines)) {
     if (tok.structure) {
