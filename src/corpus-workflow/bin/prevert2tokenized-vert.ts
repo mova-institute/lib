@@ -9,9 +9,11 @@ import { parseTagStr } from '../../xml/utils';
 import { last, makeObject } from '../../lang';
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils';
 import { CorpusDoc } from '../doc_meta';
+import { mu } from '../../mu';
+import { write } from '../../stream_utils.node';
 
 import * as minimist from 'minimist'
-import { mu } from '../../mu';
+import * as he from 'he'
 
 
 
@@ -33,11 +35,11 @@ async function main() {
   // state
   let docMeta: Array<[string, string]>
   let paragraphs = new Array<string>()
-  let paragrapMetas = new Array<Dict<string>>()
+  // let paragrapMetas = new Array<Dict<string>>()
   let curPar = ''
 
   await linesAsync(process.stdin, async nodes => {
-    for (let nodeStr of nodes) {
+    for await (let nodeStr of nodes) {
       if (!nodeStr) {
         continue
       }
@@ -46,13 +48,15 @@ async function main() {
         if (tag.isClosing) {
           if (tag.name === 'doc') {
             await runner.startRunning(async () => {
-              let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
               let meta = makeObject(docMeta) as any as CorpusDoc  // temp!
+              let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
               let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
-              joinToStream(vertStream, process.stdout, '\n', true)
+              let toWrite = mu(vertStream).join('\n', true)
+              await write(process.stdout, toWrite)
+              // await joinToStream(vertStream, process.stdout, '\n', true)
             })
             paragraphs = []
-            paragrapMetas = []
+            // paragrapMetas = []
           } else if (tag.name === 'p') {
             paragraphs.push(normalizeParagraph(curPar))
             curPar = ''
@@ -69,7 +73,8 @@ async function main() {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function normalizeParagraph(p: string) {
-  let ret = normalizeWebParaSafe(p)
+  let ret = he.unescape(p)
+  ret = normalizeWebParaSafe(p)
   ret = fixLatinGlyphMisspell(ret)
 
   return ret
