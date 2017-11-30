@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesAsync, joinToStream, ignorePipeErrors } from '../../utils.node'
+import { linesAsync, ignorePipeErrors, joinAndWrite } from '../../utils.node'
 import { Dict } from '../../types';
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client';
 import { AsyncTaskRunner } from '../../lib/async_task_runner';
@@ -51,9 +51,7 @@ async function main() {
               let meta = makeObject(docMeta) as any as CorpusDoc  // temp!
               let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
               let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
-              let toWrite = mu(vertStream).join('\n', true)
-              await write(process.stdout, toWrite)
-              // await joinToStream(vertStream, process.stdout, '\n', true)
+              await joinAndWrite(vertStream, process.stdout, '\n', true)
             })
             paragraphs = []
             // paragrapMetas = []

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFileSync, joinToStream, linesAsync } from '../../utils.node'
+import { parseJsonFileSync, linesAsync, joinAndWrite } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 
 import * as minimist from 'minimist'
@@ -37,7 +37,6 @@ async function main() {
         console.error(`Paragraphs are empty or invalid`, paragraphs)
         return
       }
-
       if (!meta) {
         console.error(`Meta is empty or invalid`)
       }
@@ -45,7 +44,7 @@ async function main() {
       await runner.startRunning(async () => {
         let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
         let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
-        joinToStream(vertStream, process.stdout, '\n', true)
+        await joinAndWrite(vertStream, process.stdout, '\n', true)
       })
     }
   })

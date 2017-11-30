@@ -4,6 +4,7 @@ import * as path from 'path'
 import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
 import { write } from './stream_utils.node';
+import { mu } from './mu';
 // import { StreamDataIterator } from './lib/nextify/stream_data_iterator';
 
 const lineIterator = require('n-readlines')
@@ -146,8 +147,13 @@ export function write2jsonFile(filePath: string, obj: any) {
   fs.writeFileSync(filePath, json)
 }
 
-////////////////////////////////////////////////////////////////////////////////
-export async function joinToStream(strings: Iterable<string>, stream: NodeJS.WriteStream, joiner = '', trailing = false) {
+//////////////////////////////////////////////////////////////////////////////
+export async function joinToStream(
+  strings: Iterable<string>,
+  stream: NodeJS.WriteStream,
+  joiner = '',
+  trailing = false
+) {
   let isFirst = true
   for await (let x of strings) {
     if (!isFirst) {
@@ -160,4 +166,14 @@ export async function joinToStream(strings: Iterable<string>, stream: NodeJS.Wri
   if (trailing) {
     await write(stream, joiner)
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function joinAndWrite(
+  what: Iterable<string>,
+  where: NodeJS.WriteStream,
+  joiner: string,
+  trailing = false
+) {
+  await write(where, mu(what).join(joiner, trailing))
 }
