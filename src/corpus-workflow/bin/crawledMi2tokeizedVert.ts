@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFileSync, linesAsync, joinAndWrite } from '../../utils.node'
+import { parseJsonFile, linesAsync, joinAndWrite } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 
 import * as minimist from 'minimist'
@@ -30,8 +30,8 @@ async function main() {
 
   linesAsync(process.stdin, async paraPaths => {
     for await (let paraPath of paraPaths) {
-      let paragraphs = parseJsonFileSync(paraPath) as string[]
-      let meta = parseJsonFileSync(paraPath2metaPath(paraPath, args.basePath))
+      let paragraphs = await parseJsonFile(paraPath) as string[]
+      let meta = await parseJsonFile(paraPath2metaPath(paraPath, args.basePath))
 
       if (!paragraphs || !paragraphs.length) {
         console.error(`Paragraphs are empty or invalid`, paragraphs)

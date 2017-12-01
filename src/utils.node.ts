@@ -1,14 +1,16 @@
+import { write } from './stream_utils.node';
+import { mu } from './mu';
+
 import { readFileSync } from 'fs'
 import * as fs from 'fs'
 import * as path from 'path'
 import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
-import { write } from './stream_utils.node';
-import { mu } from './mu';
-// import { StreamDataIterator } from './lib/nextify/stream_data_iterator';
+import { promisify } from 'util'
 
 const lineIterator = require('n-readlines')
 
+const readFile = promisify(fs.readFile)
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,6 +134,13 @@ export function writeFileSyncMkdirp(filePath: string, value: string) {
 export function openSyncMkdirp(filePath: string, flags: string) {
   mkdirpSync(path.dirname(filePath))
   return fs.openSync(filePath, flags)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function parseJsonFile(filePath: string) {
+  let fileStr = await readFile(filePath, 'utf8')
+  let ret = JSON.parse(fileStr)
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
