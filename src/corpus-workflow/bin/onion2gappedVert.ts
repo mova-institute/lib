@@ -1,29 +1,30 @@
 #!/usr/bin/env node
 
-import { ignorePipeErrors, linesBackpressed } from '../../utils.node';
+import { ignorePipeErrors, linesBackpressedStd } from '../../utils.node';
 import { writeBackpressed } from '../../stream_utils.node';
 
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function main() {  // todo: make it binary and faster
+async function main() {  // todo: make it binary thus faster
   ignorePipeErrors()
 
   let insideGap = false
-  await linesBackpressed(process.stdin, process.stdout, (line, write) => {
+  await linesBackpressedStd((line, write) => {
     if (line.startsWith('1')) {
       insideGap = true
-    } else if (insideGap) {
-      write(`<gap type="dupe"/>\n`)
-      insideGap = false
     } else {
+      if (insideGap) {
+        write(`<gap type="dupe"/>\n`)
+        insideGap = false
+      }
       write(`${line.substr(2)}\n`)
     }
   })
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// bin alternative in development
+// bin alternative (in development)
 async function main2() {
   ignorePipeErrors()
 

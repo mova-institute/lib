@@ -122,8 +122,16 @@ export function linesBackpressed(
     const writer = (what: string) => writeBackpressed(dest, source, what)
     createInterface(source)
       .on('line', line => listener(line, writer))
-      .on('end', () => resolve())
+      .on('end', resolve)
+      .on('error', reject)
   })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function linesBackpressedStd(
+  listener: (line: string, write: (what: string) => void) => void,
+) {
+  return linesBackpressed(process.stdin, process.stdout, listener)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -131,7 +139,8 @@ export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => 
   return new Promise<void>((resolve, reject) => {
     createInterface(stream)
       .on('line', f)
-      .on('close', () => resolve())
+      .on('close', resolve)
+      .on('error', reject)
   })
 }
 
