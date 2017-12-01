@@ -1,4 +1,4 @@
-import { write } from './stream_utils.node';
+import { writePromiseDrain, writeBackpressed } from './stream_utils.node';
 import { mu } from './mu';
 
 import { readFileSync } from 'fs'
@@ -39,7 +39,7 @@ const readFile = promisify(fs.readFile)
 //   }, newline)
 // }
 ////////////////////////////////////////////////////////////////////////////////
-export function linesAsync(
+export function linesAsync(  // todo: rerwrite with async iterators once avail
   readable: NodeJS.ReadableStream,
   callback: (lineBulk: string[]) => void,
   newline: string | RegExp = '\n'
@@ -67,9 +67,69 @@ export function linesAsync(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function chunksAsync(  // todo: rerwrite with async iterators once avail
+  readable: NodeJS.ReadableStream,
+  callback: (chunkBulk: Buffer[]) => void,
+  splitter: Buffer
+) {
+  if (splitter.length !== 1) {
+    throw new Error(`Only 1-byte splitters are currently supported`)
+  }
+
+  return new Promise<void>((resolve, reject) => {
+    let leftover = Buffer.allocUnsafe(0)
+
+    const consumer = async (chunk: Buffer) => {
+      let ret = new Array<Buffer>()
+      let start = 0
+      let end = -1
+      while ((end = chunk.indexOf(splitter, start)) >= 0) {
+        if (leftover.length) {
+          ret.push(Buffer.concat([leftover, chunk], leftover.length + end))
+          // await callback(Buffer.concat([leftover, chunk], leftover.length + end))
+          leftover = Buffer.allocUnsafe(0)
+        } else {
+          ret.push(chunk.slice(start, end))
+          // await callback(chunk.slice(start, end))
+        }
+        start = end + splitter.length
+      }
+
+      if (start < chunk.length) {
+        leftover = Buffer.allocUnsafe(chunk.length - start)
+        chunk.copy(leftover, 0, start)
+      }
+
+      readable.pause()
+      await callback(ret)
+      readable.resume()
+    }
+
+    readable.on('data', consumer).on('end', async () => {
+      await callback([leftover])
+      resolve()
+    })
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function linesBackpressed(
+  source: NodeJS.ReadableStream,
+  dest: NodeJS.WriteStream,
+  listener: (line: string, write: (what: string) => void) => void,
+) {
+  return new Promise<void>((resolve, reject) => {
+    const writer = (what: string) => writeBackpressed(dest, source, what)
+    createInterface(source)
+      .on('line', line => listener(line, writer))
+      .on('end', () => resolve())
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => void) {
   return new Promise<void>((resolve, reject) => {
-    createInterface({ input: stream })
+    createInterface(stream)
       .on('line', f)
       .on('close', () => resolve())
   })
@@ -166,14 +226,14 @@ export async function joinToStream(
   let isFirst = true
   for await (let x of strings) {
     if (!isFirst) {
-      await write(stream, joiner)
+      await writePromiseDrain(stream, joiner)
     } else {
       isFirst = false
     }
-    await write(stream, x)
+    await writePromiseDrain(stream, x)
   }
   if (trailing) {
-    await write(stream, joiner)
+    await writePromiseDrain(stream, joiner)
   }
 }
 
@@ -184,5 +244,5 @@ export async function joinAndWrite(
   joiner: string,
   trailing = false
 ) {
-  await write(where, mu(what).join(joiner, trailing))
+  await writePromiseDrain(where, mu(what).join(joiner, trailing))
 }

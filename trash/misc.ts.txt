@@ -1,3 +1,45 @@
+async function main0() {
+  ignorePipeErrors()
+  process.stdin.setEncoding('utf8')
+
+  let insideGap = false
+  await linesAsync(process.stdin, async lines => {
+    for (let line of lines) {
+      if (line.startsWith('1')) {
+        insideGap = true
+      } else if (insideGap) {
+        writeBackpressed(process.stdout, process.stdin, `<gap type="dupe"/>\n`)
+        insideGap = false
+      } else {
+        writeBackpressed(process.stdout, process.stdin, `${line.substr(2)}\n`)
+      }
+    }
+  })
+}
+
+async function main1() {
+  const binNewline = Buffer.from('\n')
+  const binOne = Buffer.from('1')
+  const binGap = Buffer.from('<gap type="dupe"/>\n')
+
+  ignorePipeErrors()
+
+  let insideGap = false
+  await chunksAsync(process.stdin, async bufs => {
+    for (let buf of bufs) {
+      if (buf.readUInt8(0) === 49) {
+        insideGap = true
+      } else if (insideGap) {
+        writeBackpressed(process.stdout, process.stdin, binGap)
+        insideGap = false
+      } else {
+        writeBackpressed(process.stdout, process.stdin, buf.slice(2))
+        writeBackpressed(process.stdout, process.stdin, binNewline)
+      }
+    }
+  }, binNewline)
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function forEachLine2(stream: NodeJS.ReadableStream, f: (line: string, cb: () => void) => void) {
   return new Promise<void>((resolve, reject) => {

@@ -1,30 +1,22 @@
 #!/usr/bin/env node
 
-import { linesAsync, ignorePipeErrors } from '../../utils.node';
+import { ignorePipeErrors, linesBackpressed } from '../../utils.node';
 
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function main() {
+async function main() {  // todo: make binary and faster
   ignorePipeErrors()
-  process.stdin.setEncoding('utf8')
 
   let insideGap = false
-  await linesAsync(process.stdin, lines => {
-    for (let line of lines) {
-      if (insideGap) {
-        if (!line.startsWith('1')) {
-          insideGap = false
-          process.stdout.write(`${line.substr(2)}\n`)
-        }
-      } else {
-        if (line.startsWith('1')) {
-          insideGap = true
-          process.stdout.write(`<gap type="dupe"/>\n`)
-        } else {
-          process.stdout.write(`${line.substr(2)}\n`)
-        }
-      }
+  await linesBackpressed(process.stdin, process.stdout, (line, write) => {
+    if (line.startsWith('1')) {
+      insideGap = true
+    } else if (insideGap) {
+      write(`<gap type="dupe"/>\n`)
+      insideGap = false
+    } else {
+      write(`${line.substr(2)}\n`)
     }
   })
 }
