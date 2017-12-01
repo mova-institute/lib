@@ -1,16 +1,13 @@
 #!/usr/bin/env node
 
 import { linesAsync, ignorePipeErrors, joinAndWrite } from '../../utils.node'
-import { Dict } from '../../types';
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client';
 import { AsyncTaskRunner } from '../../lib/async_task_runner';
 import { conlluStrAndMeta2vertical } from '../tovert';
 import { parseTagStr } from '../../xml/utils';
-import { last, makeObject } from '../../lang';
+import { makeObject } from '../../lang';
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils';
 import { CorpusDoc } from '../doc_meta';
-import { mu } from '../../mu';
-import { write } from '../../stream_utils.node';
 
 import * as minimist from 'minimist'
 import * as he from 'he'
