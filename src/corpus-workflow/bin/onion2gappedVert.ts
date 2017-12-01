@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
 import { ignorePipeErrors, linesBackpressed } from '../../utils.node';
+import { writeBackpressed } from '../../stream_utils.node';
 
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function main() {  // todo: make binary and faster
+async function main() {  // todo: make it binary and faster
   ignorePipeErrors()
 
   let insideGap = false
@@ -17,6 +18,28 @@ async function main() {  // todo: make binary and faster
       insideGap = false
     } else {
       write(`${line.substr(2)}\n`)
+    }
+  })
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// bin alternative in development
+async function main2() {
+  ignorePipeErrors()
+
+  const binNewline = Buffer.from('\n')
+  const binOne = Buffer.from('1')
+  const binGap = Buffer.from('<gap type="dupe"/>\n')
+
+  process.stdin.on('data', (buf: Buffer) => {
+    let start = 0
+    let end = -1
+    while ((end = buf.indexOf(binNewline, start)) >= 0) {
+      writeBackpressed(process.stdout, process.stdin, buf.slice(0, start))
+      start = end + 1
+      if (start < buf.length) {
+
+      }
     }
   })
 }
