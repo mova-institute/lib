@@ -30,8 +30,20 @@ async function main() {
 
   linesAsync(process.stdin, async paraPaths => {
     for await (let paraPath of paraPaths) {
-      let paragraphs = await parseJsonFile(paraPath) as string[]
-      let meta = await parseJsonFile(paraPath2metaPath(paraPath, args.basePath))
+      if (!paraPath) {
+        continue
+      }
+
+      try {
+        var paragraphs = await parseJsonFile(paraPath) as string[]
+        var meta = await parseJsonFile(paraPath2metaPath(paraPath, args.basePath))
+      } catch (e) {
+        if (e.code === 'ENOENT') {
+          console.error(e.message)
+        } else {
+          throw e
+        }
+      }
 
       if (!paragraphs || !paragraphs.length) {
         console.error(`Paragraphs are empty or invalid`, paragraphs)
