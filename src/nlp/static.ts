@@ -26,15 +26,6 @@ export const SYMBOL_RE = new RegExp(r`^([@#$*+×÷=<>♥∙·❤❄~←→↑↓
 export const LITERAL_SMILE_RE = /^:\w+:$/
 export const HASHTAG_RE = new RegExp(`^#${WORDCHAR}$`)
 
-
-//(?:(?=\w)(?<!\w)|(?<=\w)(?!\w))
-
-const diacritics = [
-  ['і', '\u{308}', 'ї'],
-  ['и', '\u{306}', 'й'],
-  // ['', '', ''],
-]
-
 export const APOSTROPES_REPLACE_RE = new RegExp(r`[${APOSTROPES}]`)
 export const NUMERAL_PREFIXED_TOKEN_RE = new RegExp(r`^(\d+)-([${APOSTROPES}${LETTER_UK}]+)$`)
 
