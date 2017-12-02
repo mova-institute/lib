@@ -48,7 +48,7 @@
     "@types/glob": "^5.0.33",
     "@types/iconv-lite": "0.0.1",
     "@types/libxmljs": "^0.14.30",
-    "@types/lodash": "^4.14.85",
+    "@types/lodash": "^4.14.86",
     "@types/lodash.groupby": "^4.6.0",
     "@types/lodash.sortby": "^4.7.2",
     "@types/minimist": "^1.2.0",
