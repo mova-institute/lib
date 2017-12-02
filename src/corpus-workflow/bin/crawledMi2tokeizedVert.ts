@@ -23,7 +23,7 @@ async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner<void>()
+  let runner = new AsyncTaskRunner()
   if (args.concurrency) {
     runner.setConcurrency(args.concurrency)
   }

@@ -192,7 +192,7 @@ async function doUdpipeStage(args: Args) {
   let inputRoot = join(outDir, 'para')
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner<void>()
+  let runner = new AsyncTaskRunner()
 
   let paraFiles = globInforming(inputRoot)
   for (let [i, paraPath] of paraFiles.entries()) {

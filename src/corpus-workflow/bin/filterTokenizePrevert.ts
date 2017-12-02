@@ -31,7 +31,7 @@ async function main() {
   let builder = new PrevertDocBuilder()
   let analyzer = createMorphAnalyzerSync()
   // let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner<void>().setConcurrency(args.concurrency)
+  let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
 
   await linesAsync(process.stdin, async nodes => {
     for await (let nodeStr of nodes) {

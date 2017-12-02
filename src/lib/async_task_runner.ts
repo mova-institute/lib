@@ -13,7 +13,7 @@ interface WrappedResult<T> {
 export type TaskFunc<Result> = () => Promise<Result>
 
 ////////////////////////////////////////////////////////////////////////////////
-export class AsyncTaskRunner<Result> {
+export class AsyncTaskRunner<Result = void> {
   private idGenerator = new UnsignedIntCycle()
   private tasks = new Map<number, Promise<WrappedResult<Result>>>()
   private concurrency = cpus().length
