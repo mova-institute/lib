@@ -10,6 +10,12 @@ export class PrevertDocBuilder {
   private paragraphs = new Array<string>()
   private curPar = ''
 
+  reset() {
+    this.meta = undefined
+    this.paragraphs = []
+    this.curPar = ''
+  }
+
   // node is an element of split for /(<[^>]+>)/
   feedNode(node: string) {
     if (!node) {
@@ -20,10 +26,12 @@ export class PrevertDocBuilder {
     if (tag) {
       if (tag.isClosing) {
         if (tag.name === 'doc') {
-          return {
+          let ret = {
             paragraphs: this.paragraphs,
             meta: this.meta
           }
+          this.reset()
+          return ret
         } else if (tag.name === 'p') {
           this.paragraphs.push(normalizeParagraph(this.curPar))
           this.curPar = ''
@@ -42,6 +50,8 @@ function normalizeParagraph(p: string) {
   let ret = he.unescape(p)
   ret = normalizeWebParaSafe(p)
   ret = fixLatinGlyphMisspell(ret)
+
+  ret = ret.replace(/[^0\.!?]{4,}/g, '')
 
   return ret
 }
