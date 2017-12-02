@@ -54,7 +54,7 @@ export function forEachLine2(stream: NodeJS.ReadableStream, f: (line: string, cb
     }
 
     rl.once('line', onLine)
-      .on('close', () => resolve())
+      .on('close', resolve)
   })
 }
 
