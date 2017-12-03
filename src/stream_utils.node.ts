@@ -22,7 +22,7 @@ export function writeBackpressed(
 ) {
   if (!to.write(what) && !backpress.isPaused()) {
     backpress.pause()
-    to.once('drain', () => backpress.resume())  // todo: wtf??
+    to.once('drain', () => backpress.resume())  // =bind!
   }
 }
 
