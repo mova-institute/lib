@@ -5,12 +5,6 @@ import * as he from "he"
 
 
 
-interface Token {
-  form: string
-  spaceAfter: boolean
-  opensParagraph: boolean
-}
-
 const MIDDLE_PADDER = '\t_'.repeat(7) + '\t'
 
 ////////////////////////////////////////////////////////////////////////////////
