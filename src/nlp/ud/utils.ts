@@ -79,10 +79,10 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2conllu(stream: Iterable<[Token, Token]>) {
+export function* tokenStream2conllu(stream: Iterable<Token>) {
   let tokenIndex = 1
   let sentenceId = 1
-  for (let [token, nextToken] of stream) {
+  for (let [token, nextToken] of mu(stream).window(2)) {
     if (tokenIndex === 1 && !token.isSentenceStartDeprecated()) {
       yield sentenceIdLine(sentenceId++)
     }

@@ -216,7 +216,7 @@ function main(args: Args) {
             .forEach(x => output.write(x.join('\n') + '\n'))
           // .forEach(x => output.write(x + '\n'))
         } else if (args.format === 'conllu') {
-          for (let line of tokenStream2conllu(tokenStream.window(2) as any)) {
+          for (let line of tokenStream2conllu(tokenStream)) {
             output.write(line + '\n')
           }
         } else if (args.format === 'brat') {
