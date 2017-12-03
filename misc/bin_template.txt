@@ -13,12 +13,13 @@ interface Args {
 
 }
 
-
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(e => console.error(e))
 }
