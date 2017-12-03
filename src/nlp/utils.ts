@@ -15,7 +15,6 @@ import { MorphInterp, compareTags } from './morph_interp'
 import * as f from './morph_features'
 import {
   WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
-  PUNC_GLUED_BEFORE, PUNC_GLUED_AFTER, NO_GLUE_PUNC, WCHAR_UK,
 } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
