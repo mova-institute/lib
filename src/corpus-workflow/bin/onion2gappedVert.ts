@@ -11,7 +11,9 @@ async function main() {  // todo: make it binary thus faster
   let insideGap = false
   await linesBackpressedStd((line, write) => {
     if (line.startsWith('1')) {
-      insideGap = true
+      if (!line.startsWith(`1\t<doc `)) {
+        insideGap = true
+      }
     } else {
       if (insideGap) {
         write(`<gap type="dupe"/>\n`)
