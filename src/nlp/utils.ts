@@ -27,7 +27,7 @@ import { XmlFormatter } from '../xml/xml_formatter'
 
 import * as uniq from 'lodash.uniq'
 import * as sortedUniq from 'lodash.sorteduniq'
-import { GraphNode } from "../lib/graph";
+import { GraphNode } from "../lib/graph"
 
 const wu: Wu.WuStatic = require('wu')
 

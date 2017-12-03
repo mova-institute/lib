@@ -1,5 +1,5 @@
-import { writePromiseDrain, writeBackpressed } from './stream_utils.node';
-import { mu } from './mu';
+import { writePromiseDrain, writeBackpressed } from './stream_utils.node'
+import { mu } from './mu'
 
 import { readFileSync } from 'fs'
 import * as fs from 'fs'

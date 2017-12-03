@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesAsync, joinToStream, ignorePipeErrors } from '../../utils.node';
+import { linesAsync, joinToStream, ignorePipeErrors } from '../../utils.node'
 import { conlluStrAndMeta2vertical } from '../tovert'
 
 

@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
 import { linesAsync, ignorePipeErrors, joinAndWrite } from '../../utils.node'
-import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client';
-import { AsyncTaskRunner } from '../../lib/async_task_runner';
-import { conlluStrAndMeta2vertical } from '../tovert';
-import { makeObject } from '../../lang';
-import { CorpusDoc } from '../doc_meta';
+import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
+import { AsyncTaskRunner } from '../../lib/async_task_runner'
+import { conlluStrAndMeta2vertical } from '../tovert'
+import { makeObject } from '../../lang'
+import { CorpusDoc } from '../doc_meta'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 
 import * as minimist from 'minimist'
-import { PrevertDocBuilder } from '../prevert_doc_builder';
-import { compact } from 'lodash';
-import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer';
-import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE } from '../../nlp/static';
+import { PrevertDocBuilder } from '../prevert_doc_builder'
+import { compact } from 'lodash'
+import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
+import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE } from '../../nlp/static'
 
 
 
