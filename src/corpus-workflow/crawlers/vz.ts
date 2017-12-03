@@ -3,7 +3,7 @@ import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 
 import { FsMap } from '../../fs_map'
-import { sleep } from '../../lang';
+import { sleep } from '../../lang'
 import { fetchText } from '../../request_utils'
 import { parseHtml } from '../../xml/utils.node'
 import { mu } from '../../mu'
