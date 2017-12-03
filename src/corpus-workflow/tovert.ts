@@ -1,6 +1,6 @@
 import { CorpusDoc } from './doc_meta'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
-import { token2verticalLine } from './ud'
+import { tokenObj2verticalLine } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
@@ -41,8 +41,7 @@ export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta?: Co
         // with multiple cols tags can be distinguished, but not with a single col
         yield escape(tok.token.form)
       } else {
-        let { form, lemma, upos, feats, rel } = tok.token
-        yield token2verticalLine(form, lemma, upos, feats as any, rel, tok.token.misc.SpaceAfter !== 'No')
+        yield tokenObj2verticalLine(tok.token)
       }
       if (tok.token.misc.SpaceAfter === 'No') {
         yield '<g/>'

@@ -9,6 +9,7 @@ import { Dict } from '../../types'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface ConlluToken {
+  index: number
   form: string
   lemma: string
   upos: UdPos
@@ -66,13 +67,7 @@ export function* streamparseConllu(lines: Iterable<string>) {
         yield makeStructure(Structure.sentence, true)
         insideSent = true
       }
-      let [, form, lemma, upos, xpos, featsStr, head, rel, , miscStr] = line.split('\t').map(x => x === '_' ? '' : x)
-
-      let feats = parseUdKeyvalues(featsStr)
-      let misc = parseUdKeyvalues(miscStr)
-
-      let token = { form, lemma, upos, xpos, feats, head, rel, misc } as ConlluToken
-      yield makeToken(token)
+      yield makeToken(parseConlluTokenLine(line))
     }
   }
   if (insidePar) {
@@ -81,6 +76,18 @@ export function* streamparseConllu(lines: Iterable<string>) {
   if (insideDoc) {
     yield makeStructure(Structure.document, false)
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function parseConlluTokenLine(value: string) {
+  let [indexStr, form, lemma, upos, xpos, featsStr, head, rel, , miscStr] =
+    value.split('\t').map(x => x === '_' ? '' : x)
+
+  let index = Number.parseInt(indexStr)
+  let feats = parseUdKeyvalues(featsStr)
+  let misc = parseUdKeyvalues(miscStr)
+
+  return { index, form, lemma, upos, xpos, feats, head, rel, misc } as ConlluToken
 }
 
 //------------------------------------------------------------------------------

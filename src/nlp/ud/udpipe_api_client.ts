@@ -23,7 +23,7 @@ export class UdpipeApiClient {
     return res.result as string
   }
 
-  async tag(plaintext: string) {
+  async tokTagPlaintext(plaintext: string) {
     let res = await fetchJson(this.endpoint, {
       agent: this.agent,
       method: 'post',
@@ -36,7 +36,7 @@ export class UdpipeApiClient {
     return res.result as string
   }
 
-  async parse(plaintext: string) {
+  async tokTagParsePlaintext(plaintext: string) {
     let res = await fetchJson(this.endpoint, {
       agent: this.agent,
       method: 'post',
@@ -48,5 +48,23 @@ export class UdpipeApiClient {
       }
     })
     return res.result as string
+  }
+
+  async tagParseConnlu(conllu: string) {
+    try {
+      let res = await fetchJson(this.endpoint, {
+        agent: this.agent,
+        method: 'post',
+        formData: {
+          tagger: '',
+          parser: '',
+          data: conllu,
+        }
+      })
+      return res.result as string
+    } catch (e) {
+      // console.error()
+      throw e
+    }
   }
 }

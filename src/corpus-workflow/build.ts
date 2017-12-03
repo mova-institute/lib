@@ -204,7 +204,7 @@ async function doUdpipeStage(args: Args) {
         console.log(`udpiped ${i} docs (${toFloorPercent(i, paraFiles.length)}%), doing ${paraPath}`)
 
         let paragraphs = parseJsonFileSync(paraPath)
-        let conllu = await udpipe.tag(paragraphs2UdpipeInput(paragraphs))
+        let conllu = await udpipe.tokTagPlaintext(paragraphs2UdpipeInput(paragraphs))
         writeFileSyncMkdirp(conlluPath, conllu)
       })
     }

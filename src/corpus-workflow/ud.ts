@@ -1,7 +1,13 @@
 import { UdPos, UdFeats } from '../nlp/ud/tagset'
 import { trimAfterLast } from '../string_utils'
+import { ConlluToken } from '../nlp/ud/conllu'
 
 
+////////////////////////////////////////////////////////////////////////////////
+export function tokenObj2verticalLine(token: ConlluToken) {
+  return token2verticalLine(token.form, token.lemma, token.upos, token.feats as any,
+    token.rel, token.misc.SpaceAfter !== 'No')
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats,
