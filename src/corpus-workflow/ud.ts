@@ -1,4 +1,4 @@
-import { UdPos, UdFeats } from '../nlp/ud/tagset'
+import { UdPos, UdFeats, ud2conlluishString } from '../nlp/ud/tagset'
 import { trimAfterLast } from '../string_utils'
 import { ConlluToken } from '../nlp/ud/conllu'
 
@@ -13,11 +13,13 @@ export function tokenObj2verticalLine(token: ConlluToken) {
 export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats,
   rel: string, gluedNext = false, id?: string
 ) {
+  let tag = ud2conlluishString(upos, feats)
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
 
-  let ret = `${form}\t${lemma}\t`
+  let ret = `${form}\t${lemma}\t${tag}\t`
   ret += [
+    // tag,
     upos,
     domesticatedPos,
     feats.Abbr,

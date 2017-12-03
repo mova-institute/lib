@@ -53,6 +53,11 @@ ATTRIBUTE lemma_lc  {
   TRANSQUERY yes
 }
 
+ATTRIBUTE tag {
+  LABEL "повна мітка"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE pos {
   LABEL "ЧМ"
   MULTIVALUE yes
@@ -268,19 +273,6 @@ ATTRIBUTE urel {
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
-}
-
-ATTRIBUTE tag  {
-#  LABEL "лема (мал. літерами)"
-  MULTIVALUE yes
-  MULTISEP "|"
-  DYNAMIC utf8lowercase
-  DYNLIB internal
-  ARG1 "C"
-  FUNTYPE s
-  FROMATTR pos
-  TYPE index
-  TRANSQUERY yes
 }
 
 ATTRIBUTE spaceafter  {

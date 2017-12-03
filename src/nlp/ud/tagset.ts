@@ -496,7 +496,7 @@ export function toUd(interp: MorphInterp) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const comparator = new Intl.Collator('en', { sensitivity: 'base' }).compare
-export function udFeatures2conlluString(features) {
+export function udFeatures2conlluString(features: UdFeats) {
   return Object.keys(features)
     .sort(comparator)
     .map(key => `${key}=${features[key]}`)
@@ -504,6 +504,17 @@ export function udFeatures2conlluString(features) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function ud2conlluishString(pos: UdPos, features: UdFeats) {
+  let ret = pos
+  let featuresConllu = udFeatures2conlluString(features)
+  if (featuresConllu) {
+    ret += `|${featuresConllu}`
+  }
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function toUdString(interp: MorphInterp) {
   return udFeatures2conlluString(toUd(interp).features)
 }
+
