@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFile, linesAsync, joinAndWrite } from '../../utils.node'
+import { parseJsonFile, linesBackpressedStd } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 
 import * as minimist from 'minimist'
 
 import * as path from 'path'
-import { AsyncTaskRunner } from '../../lib/async_task_runner';
+import { AsyncTaskRunner } from '../../lib/async_task_runner'
+import { mu } from '../../mu'
 
 
 
@@ -28,37 +29,35 @@ async function main() {
     runner.setConcurrency(args.concurrency)
   }
 
-  linesAsync(process.stdin, async paraPaths => {
-    for await (let paraPath of paraPaths) {
-      if (!paraPath) {
-        continue
-      }
-
-      try {
-        var paragraphs = await parseJsonFile(paraPath) as string[]
-        var meta = await parseJsonFile(paraPath2metaPath(paraPath, args.basePath))
-      } catch (e) {
-        if (e.code === 'ENOENT') {
-          console.error(e.message)
-        } else {
-          throw e
-        }
-      }
-
-      if (!paragraphs || !paragraphs.length) {
-        console.error(`Paragraphs are empty or invalid`, paragraphs)
-        return
-      }
-      if (!meta) {
-        console.error(`Meta is empty or invalid`)
-      }
-
-      await runner.startRunning(async () => {
-        let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
-        let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
-        await joinAndWrite(vertStream, process.stdout, '\n', true)
-      })
+  linesBackpressedStd(async (paraPath, write) => {
+    if (!paraPath) {
+      return
     }
+
+    try {
+      var paragraphs = await parseJsonFile(paraPath) as string[]
+      var meta = await parseJsonFile(paraPath2metaPath(paraPath, args.basePath))
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        console.error(e.message)
+      } else {
+        throw e
+      }
+    }
+
+    if (!paragraphs || !paragraphs.length) {
+      console.error(`Paragraphs are empty or invalid`, paragraphs)
+      return
+    }
+    if (!meta) {
+      console.error(`Meta is empty or invalid`)
+    }
+
+    await runner.startRunning(async () => {
+      let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
+      let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
+      write(mu(vertStream).join('\n', true))
+    })
   })
 }
 
