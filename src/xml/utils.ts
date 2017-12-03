@@ -136,20 +136,14 @@ export function keyvalue2attributesNormalized(obj: any) {
 ////////////////////////////////////////////////////////////////////////////////
 // only supports well-formed, no extra spaces tags, with "-quoted attributes
 export function parseTagStr(value: string) {
-  let match = value.match(/^<(\/)?(\w+)((?:\s+\w+="[^"]+")*)*>$/)
+  let match = value.match(/^<(\/)?(\w+)((?:\s+\w+="[^"]+")*)*\s*(\/)?\s*>$/)
   if (match) {
-    let [, closer, name, attributes] = match
-    if (closer) {
-      return { name, isClosing: true, attributes: undefined }
-    } else if (attributes) {
-      attributes = attributes.trim()  // todo: remove?
-      return {
-        name,
-        isClosing: false,
-        attributes: parseAttributeStr(attributes),
-      }
-    } else {
-      return { name, isClosing: false, attributes: undefined }
+    let [, closer, name, attributes, empty] = match
+    return {
+      name,
+      isClosing: !!closer,
+      attributes: attributes && attributes.trim() || undefined,
+      empty: !!empty,
     }
   }
 }
