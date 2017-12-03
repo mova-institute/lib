@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { ignorePipeErrors, linesBackpressedStd } from '../../utils.node'
-import { writeBackpressed } from '../../stream_utils.node'
 
 
 
