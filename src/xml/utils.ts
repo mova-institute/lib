@@ -142,7 +142,7 @@ export function parseTagStr(value: string) {
     return {
       name,
       isClosing: !!closer,
-      attributes: attributes && attributes.trim() || undefined,
+      attributes: attributes && parseAttributeStr(attributes.trim()) || undefined,
       empty: !!empty,
     }
   }
