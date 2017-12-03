@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { ignorePipeErrors, linesBackpressedStd } from '../../utils.node';
-import { writeBackpressed } from '../../stream_utils.node';
+import { ignorePipeErrors, linesBackpressedStd } from '../../utils.node'
+import { writeBackpressed } from '../../stream_utils.node'
 
 
 
@@ -23,27 +23,6 @@ async function main() {  // todo: make it binary thus faster
   })
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// bin alternative (in development)
-async function main2() {
-  ignorePipeErrors()
-
-  const binNewline = Buffer.from('\n')
-  const binOne = Buffer.from('1')
-  const binGap = Buffer.from('<gap type="dupe"/>\n')
-
-  process.stdin.on('data', (buf: Buffer) => {
-    let start = 0
-    let end = -1
-    while ((end = buf.indexOf(binNewline, start)) >= 0) {
-      writeBackpressed(process.stdout, process.stdin, buf.slice(0, start))
-      start = end + 1
-      if (start < buf.length) {
-
-      }
-    }
-  })
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
