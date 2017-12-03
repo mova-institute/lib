@@ -4,7 +4,7 @@ import { linesAsync, ignorePipeErrors, joinAndWrite } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { makeObject } from '../../lang'
+import { makeObject, renprop } from '../../lang'
 import { CorpusDoc } from '../doc_meta'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 
@@ -55,6 +55,8 @@ async function main() {
           console.error(`SKIPPING: doc:${metaObj.id} — no paragraphs`)
           continue
         }
+
+        renprop(metaObj, 'id', 'spider-id')
 
         // await runner.startRunning(async () => {
         //   let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))

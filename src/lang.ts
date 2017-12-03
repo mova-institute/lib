@@ -15,6 +15,12 @@ export function buildObject<ValueType>(kevalues: [string, ValueType][]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function renprop(obj: any, oldName: string, newName:string) {
+  obj[newName] = obj[oldName]
+  delete obj[oldName]
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function match(str: string, re: RegExp) {
   let ret = str.match(re)
   if (ret) {
