@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesBackpressedStd } from '../../utils.node';
+import { linesBackpressedStd } from '../../utils.node'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'

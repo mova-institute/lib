@@ -1168,8 +1168,8 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   let curDoc: Token
   let curPar: Token
   let nextPar: Token
-  let sentenceId: string;
-  let dataset: string;
+  let sentenceId: string
+  let dataset: string
 
   let opensParagraph = false
   let followsGap = false
