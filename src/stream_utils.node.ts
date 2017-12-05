@@ -27,6 +27,11 @@ export function writeBackpressed(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function writeBackpressedStd(what: string | Buffer) {
+  return writeBackpressed(process.stdout, process.stdin, what)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
   return new Promise((resolve, reject) => {
 

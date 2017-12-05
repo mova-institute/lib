@@ -262,3 +262,32 @@ export function commonPrefixDestructive(strings: string[]) {
 
   return commonPrefix(strings[0], last(strings))
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function uniformSubarray<T>(array: Array<T>, ratio: number) {
+  let ret = new Array<T>()
+  for (let i = 0; i < array.length; ++i) {
+    if (Math.floor(i * ratio) >= ret.length) {
+      ret.push(array[i])
+    }
+  }
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function uniformSubarray2<T>(array: Array<T>, n: number) {
+  return uniformSubarray(array, n / array.length)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function deleteIndexes<T>(array: Array<T>, indexes: number[]) {
+  indexes.sort(numericCompare)
+  let ii = 0
+  return array.filter((x, i) => {
+    if (i === indexes[ii]) {
+      ++ii
+      return false
+    }
+    return true
+  })
+}

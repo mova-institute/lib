@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFile, linesBackpressedStd } from '../../utils.node'
+import { parseJsonFile, linesAsyncStd } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
-
-import * as minimist from 'minimist'
-
-import * as path from 'path'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { mu } from '../../mu'
+import { filterPlainParagraphsExtra } from '../filter'
+import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
+import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
+import { mapInplace } from '../../lang'
+import { writeBackpressedStd } from '../../stream_utils.node'
+
+import * as minimist from 'minimist'
+import * as path from 'path'
 
 
 
@@ -24,19 +28,17 @@ async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner()
-  if (args.concurrency) {
-    runner.setConcurrency(args.concurrency)
-  }
+  let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
+  let analyzer = createMorphAnalyzerSync()
 
-  linesBackpressedStd(async (paraPath, write) => {
+  await linesAsyncStd(async paraPath => {
     if (!paraPath) {
       return
     }
-
     try {
       var paragraphs = await parseJsonFile(paraPath) as string[]
-      var meta = await parseJsonFile(paraPath2metaPath(paraPath, args.basePath))
+      let metaPath = paraPath2metaPath(paraPath, args.basePath)
+      var meta = await parseJsonFile(metaPath)
     } catch (e) {
       if (e.code === 'ENOENT') {
         console.error(e.message)
@@ -44,6 +46,8 @@ async function main() {
         throw e
       }
     }
+
+    mapInplace(paragraphs, normalizeParagraph)
 
     if (!paragraphs || !paragraphs.length) {
       console.error(`Paragraphs are empty or invalid`, paragraphs)
@@ -53,10 +57,17 @@ async function main() {
       console.error(`Meta is empty or invalid`)
     }
 
+    let { docValid, filteredParagraphs, gapFollowerIndexes } =
+      filterPlainParagraphsExtra(paragraphs, analyzer)
+    if (!docValid) {
+      return
+    }
+    // writeBackpressedStd(mu(filteredParagraphs).join('\n\n', true))
+
     await runner.startRunning(async () => {
-      let conllu = await udpipe.tokenize(paragraphs.join('\n\n'))
-      let vertStream = conlluStrAndMeta2vertical(conllu, meta, true)
-      write(mu(vertStream).join('\n', true))
+      let conllu = await udpipe.tokenize(filteredParagraphs.join('\n\n'))
+      let vertStream = conlluStrAndMeta2vertical(conllu, meta, true, gapFollowerIndexes)
+      writeBackpressedStd(mu(vertStream).join('\n', true))
     })
   })
 }
@@ -64,6 +75,14 @@ async function main() {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function paraPath2metaPath(paraPath: string, base: string) {
   return path.join(base, paraPath.substr(base.length).replace(/(^|\/)para\//, '$1meta/'))
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function normalizeParagraph(p: string) {
+  let ret = normalizeWebParaSafe(p)
+  ret = fixLatinGlyphMisspell(ret)
+
+  return ret
 }
 
 ///////////////////////////////////////////////////////////////////////////////

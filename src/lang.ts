@@ -1,4 +1,5 @@
 import { Dict } from './types'
+import { arr2indexObj } from './algo'
 
 
 
@@ -15,7 +16,7 @@ export function buildObject<ValueType>(kevalues: [string, ValueType][]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function renprop(obj: any, oldName: string, newName:string) {
+export function renprop(obj: any, oldName: string, newName: string) {
   obj[newName] = obj[oldName]
   delete obj[oldName]
 }
@@ -214,4 +215,11 @@ export function parseIntStrict(str: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function wiith<T>(value: T, f: (value: T) => any) {
   return f(value)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function mapInplace<T>(array: Array<T>, f: (element: T) => T) {
+  for (let i = 0; i < array.length; ++i) {
+    array[i] = f(array[i])
+  }
 }

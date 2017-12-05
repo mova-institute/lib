@@ -4,16 +4,27 @@ import { tokenObj2verticalLine } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
+import { last } from '../lang';
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conlluStrAndMeta2vertical(conlluLines: string, meta?: CorpusDoc, formOnly = false) {
-  yield* conlluAndMeta2vertical(conlluLines.split('\n'), meta, formOnly)
+export function* conlluStrAndMeta2vertical(
+  conlluLines: string,
+  meta?: CorpusDoc,
+  formOnly = false,
+  pGapIndexes = Array<number>(),
+) {
+  yield* conlluAndMeta2vertical(conlluLines.split('\n'), meta, formOnly, pGapIndexes)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta?: CorpusDoc, formOnly = false) {
+export function* conlluAndMeta2vertical(
+  conlluLines: Iterable<string>,
+  meta?: CorpusDoc,
+  formOnly = false,
+  pGapIndexes = Array<number>(),
+) {
   if (meta) {
     // let { authors, author, date, title, url } = meta
     // author = author || authors && authors.join('; ')
@@ -24,10 +35,25 @@ export function* conlluAndMeta2vertical(conlluLines: Iterable<string>, meta?: Co
     yield '<doc>'
   }
 
+  let pCount = 0
+  let gapPointer = 0
   for (let tok of streamparseConllu(conlluLines)) {
     if (tok.structure) {
       if (tok.structure.type === Structure.document) {
         continue
+      } else if (tok.structure.type === Structure.paragraph && pGapIndexes.length) {
+        if (tok.structure.opening) {
+          if (pGapIndexes[gapPointer] === 0) {
+            yield '<gap type="filter"/>'
+            ++gapPointer
+          }
+        } else {
+          ++pCount
+          if (pCount === pGapIndexes[gapPointer]) {
+            yield '<gap type="filter"/>'
+            ++gapPointer
+          }
+        }
       }
       let toyield = '<'
       if (!tok.structure.opening) {

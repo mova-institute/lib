@@ -39,7 +39,7 @@ const readFile = promisify(fs.readFile)
 //   }, newline)
 // }
 ////////////////////////////////////////////////////////////////////////////////
-export function linesAsync(  // todo: rerwrite with async iterators once avail
+export function linesBulkAsync(  // todo: rerwrite with async iterators once avail
   readable: NodeJS.ReadableStream,
   callback: (lineBulk: string[]) => void,
   newline: string | RegExp = '\n'
@@ -66,6 +66,26 @@ export function linesAsync(  // todo: rerwrite with async iterators once avail
   })
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function linesAsync(  // todo: rerwrite with async iterators once avail
+  readable: NodeJS.ReadableStream,
+  callback: (line: string) => void,
+  newline: string | RegExp = '\n'
+) {
+  return linesBulkAsync(readable, async lineBulk => {
+    for await (let line of lineBulk) {
+      await callback(line)
+    }
+  }, newline)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function linesAsyncStd(
+  callback: (line: string) => void,
+  newline: string | RegExp = '\n'
+) {
+  return linesAsync(process.stdin, callback, newline)
+}
 ////////////////////////////////////////////////////////////////////////////////
 export function chunksAsync(  // todo: rerwrite with async iterators once avail
   readable: NodeJS.ReadableStream,
@@ -209,6 +229,7 @@ export function openSyncMkdirp(filePath: string, flags: string) {
 export async function parseJsonFile(filePath: string) {
   let fileStr = await readFile(filePath, 'utf8')
   let ret = JSON.parse(fileStr)
+  // console.error(ret)
   return ret
 }
 

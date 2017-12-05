@@ -51,7 +51,7 @@ function normalizeParagraph(p: string) {
   ret = normalizeWebParaSafe(p)
   ret = fixLatinGlyphMisspell(ret)
 
-  ret = ret.replace(/[^0\.!?]{4,}/g, '')
+  // ret = ret.replace(/([^0\.!?]){4,}/g, '')
 
   return ret
 }
