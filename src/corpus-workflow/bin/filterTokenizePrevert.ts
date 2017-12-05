@@ -42,7 +42,15 @@ async function main() {
           continue
         }
 
+        if (!metaObj) {
+          console.error(`No meta!`)
+        }
+
         renprop(metaObj, 'id', 'spider-id')
+
+        // debug
+        // await joinAndWrite(filteredParagraphs, process.stdout, '\n\n', true)
+        // continue
 
         await runner.startRunning(async () => {
           let conllu = await udpipe.tokenize(filteredParagraphs.join('\n\n'))

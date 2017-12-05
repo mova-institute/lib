@@ -61,10 +61,14 @@ async function main() {
       filterPlainParagraphsExtra(paragraphs, analyzer, {
         filterPreviews: false,
       })
+
     if (!docValid) {
       return
     }
+
+    // debug
     // writeBackpressedStd(mu(filteredParagraphs).join('\n\n', true))
+    // return
 
     await runner.startRunning(async () => {
       let conllu = await udpipe.tokenize(filteredParagraphs.join('\n\n'))
