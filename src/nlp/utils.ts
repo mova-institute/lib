@@ -672,7 +672,7 @@ export function removeHypenation(str: string, analyzer: MorphAnalyzer) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function removeInvisibles(value: string) {
-  return value.replace(/[\t\u{0}\u{200B}-\u{200F}\u{202A}-\u{202E}\u{2060}]/gu, '')
+  return value.replace(/[\u0000-\u0008\u000E-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060]/gu, '')
 }
 
 ////////////////////////////////////////////////////////////////////////////////

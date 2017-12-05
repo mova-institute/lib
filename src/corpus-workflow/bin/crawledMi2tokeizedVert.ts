@@ -58,7 +58,9 @@ async function main() {
     }
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
-      filterPlainParagraphsExtra(paragraphs, analyzer)
+      filterPlainParagraphsExtra(paragraphs, analyzer, {
+        filterPreviews: false,
+      })
     if (!docValid) {
       return
     }
