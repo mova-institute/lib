@@ -3,6 +3,7 @@ export interface RegistryFileParams {
   name: string
   title: string
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFile(params: RegistryFileParams) {
   if (params.name.includes('/')) {
@@ -15,11 +16,7 @@ NAME "${params.title}"
 #INFO "Корпус української (випробовування)"   # todo: say mova intitute some day
 INFOHREF "https://mova.institute/corpus"
 MAINTAINER "corpus@mova.institute"
-TAGSETDOC "http://nl.ijs.si/ME/V4/msd/html/msd-uk.html"
-
-PATH "/srv/corpora/manatee/${params.name}"
-SUBCDEF "/srv/corpora/registry/${params.name}_sub"
-VERTICAL "|echo"
+TAGSETDOC "http://universaldependencies.org"    # todo
 
 
 LANGUAGE "Ukrainian"
@@ -57,7 +54,7 @@ ATTRIBUTE lemma {
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE  lemma_lc  {
+ATTRIBUTE lemma_lc  {
   LABEL "лема (мал. літерами)"
   MULTIVALUE yes
   MULTISEP "|"
@@ -70,19 +67,245 @@ ATTRIBUTE  lemma_lc  {
   TRANSQUERY yes
 }
 
-ATTRIBUTE tag {
-  LABEL "морфмітка"
+ATTRIBUTE pos {
+  LABEL "ЧМ"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE tag2 {
-  LABEL "морфмітка (службова)"
+ATTRIBUTE pos2 {
+  LABEL "українізована ЧМ"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
 }
+
+ATTRIBUTE abbr {
+  LABEL "скорочення"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE animacy {
+  LABEL "істотовість"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE animacy_gram {
+  LABEL "граматична істотовість"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE aspect {
+  LABEL "вид"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE case {
+  LABEL "відмінок"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE degree {
+  LABEL "ступінь"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE foreign {
+  LABEL "чужинність"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE gender {
+  LABEL "рід"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE hyph {
+  LABEL "передрисковість"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE mood {
+  LABEL "спосіб"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE nametype {
+  LABEL "тим імені"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE number {
+  LABEL "число"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE numform {
+  LABEL "запис числівника"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE numtype {
+  LABEL "тип числівника"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE parttype {
+  LABEL "тип частки"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE person {
+  LABEL "особа"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE poss {
+  LABEL "присвійність"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE prepcase {
+  LABEL ""
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE prontype {
+  LABEL "займенниковий тип"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+#ATTRIBUTE punctside {
+#  LABEL "бік пунктуації"
+#  MULTIVALUE yes
+#  MULTISEP "|"
+#  TYPE "FD_FGD"
+#}
+
+ATTRIBUTE puncttype {
+  LABEL "тип пунктуації"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE reflex {
+  LABEL "зворотність"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE reverse {
+  LABEL "зворотність дієслова"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE tense {
+  LABEL "час"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE variant {
+  LABEL "форма прикметника"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE verbform {
+  LABEL "форма дієслова"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE voice {
+  LABEL "стан"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE rel {
+  LABEL "реляція"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE urel {
+  LABEL "універсальна реляція"
+  MULTIVALUE yes
+  MULTISEP "|"
+  TYPE "FD_FGD"
+}
+
+ATTRIBUTE tag  {
+#  LABEL "лема (мал. літерами)"
+  MULTIVALUE yes
+  MULTISEP "|"
+  DYNAMIC utf8lowercase
+  DYNLIB internal
+  ARG1 "C"
+  FUNTYPE s
+  FROMATTR pos
+  TYPE index
+  TRANSQUERY yes
+}
+
+ATTRIBUTE spaceafter  {
+  LABEL "пробіл після"
+}
+
+ATTRIBUTE id {
+  LABEL "номер токена"
+  TYPE "FD_FGD"
+}
+
 
 
 ################################################################################
@@ -92,6 +315,7 @@ ATTRIBUTE tag2 {
 STRUCTURE doc {
   DISPLAYEND ""
 
+  ATTRIBUTE id
   ATTRIBUTE reference_title {
     LABEL "джерело"
   }
@@ -115,13 +339,13 @@ STRUCTURE doc {
     LABEL "тип"
     MULTIVALUE yes
     MULTISEP "|"
-    HIERARCHICAL "::"
+#    HIERARCHICAL "::"
   }
   ATTRIBUTE domain {
     LABEL "галузь"
     MULTIVALUE yes
     MULTISEP "|"
-    HIERARCHICAL "::"
+#    HIERARCHICAL "::"
   }
   ATTRIBUTE disamb {
     LABEL "уоднозначнення"
@@ -137,15 +361,20 @@ STRUCTURE doc {
   }
 }
 STRUCTURE p {
-  #DISPLAYTAG 0
-  #DISPLAYBEGIN "_EMPTY_"
-  #DISPLAYEND "❡"
+  ATTRIBUTE id
 }
-#STRUCTURE s
+STRUCTURE s {
+  ATTRIBUTE id {
+    LABEL "код речення"
+  }
+}
 STRUCTURE g {
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
 }
+#STRUCTURE gap {
+#  LABEL "пропуск"
+#}
 
 
 ################################################################################
@@ -167,15 +396,15 @@ DEFAULTATTR word
 
 # todo ATTRDOC, ATTRDOCLABEL,
 
-FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,doc.comment,doc.wordcount,doc.url"
+FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,doc.comment,doc.wordcount,s.id,doc.url"
 STRUCTATTRLIST "doc.reference_title,doc.author,doc.date,doc.type"
 SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
 #FREQTTATTRS ""
-WPOSLIST ",іменник,N.*,дієслово,V.*,прикметник,A.*,займенник,P.*,прислівник,R.*,прийменник,S.*,сполучник,C.*,числівник,M.*,частка,Q.*,вигук,I.*,скорочення,Y.*,розділовий,U.*,залишок,X.*"
+WPOSLIST ",іменник,noun|propn,дієслово,verb,прикметник,adj,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,розділовий,punct,залишок,x"
+`
 
-  `.trim()
 
-
+  corpus = corpus.trim()
   let subcorpus = `
 
 *FREQLISTATTRS word lc lemma lemma_lc tag tag2
