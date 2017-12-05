@@ -130,7 +130,7 @@ function main(args: Args) {
         }
         console.log(tolog)
         let inputStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
-        let i = 0;
+        let i = 0
         for (let doc of specificModule.streamDocs(inputStr)) {
           let docId = join(relPath, zerofill(i++, 4))
           processDoc(args, doc, outDir, docId, analyzer)
