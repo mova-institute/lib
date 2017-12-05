@@ -47,12 +47,6 @@ export function* conlluAndMeta2vertical(
             yield '<gap type="filter"/>'
             ++gapPointer
           }
-        } else {
-          ++pCount
-          if (pCount === pGapIndexes[gapPointer]) {
-            yield '<gap type="filter"/>'
-            ++gapPointer
-          }
         }
       }
       let toyield = '<'
@@ -62,6 +56,17 @@ export function* conlluAndMeta2vertical(
       toyield += ['doc', 'p', 's'][tok.structure.type as number]
       toyield += '>'
       yield toyield
+
+      if (tok.structure.type === Structure.paragraph
+        && !tok.structure.opening
+        && pGapIndexes.length
+      ) {
+        ++pCount
+        if (pCount === pGapIndexes[gapPointer]) {
+          yield '<gap type="filter"/>'
+          ++gapPointer
+        }
+      }
     } else {
       if (formOnly) {
         // with multiple cols tags can be distinguished, but not with a single col
