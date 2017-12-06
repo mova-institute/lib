@@ -268,11 +268,11 @@ export async function joinToStream(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function joinAndWrite(
+export async function writeJoin(
   what: Iterable<string>,
   where: NodeJS.WriteStream,
   joiner: string,
   trailing = false
 ) {
-  await writePromiseDrain(where, mu(what).join(joiner, trailing))
+  return writePromiseDrain(where, mu(what).join(joiner, trailing))
 }
