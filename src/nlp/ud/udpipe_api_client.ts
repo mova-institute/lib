@@ -1,4 +1,6 @@
-import { fetchJson } from '../../request_utils'
+import { reqJson } from '../../request_utils'
+import * as request from 'request-promise-native'
+
 import { Agent } from 'http'
 
 
@@ -12,7 +14,7 @@ export class UdpipeApiClient {
   }
 
   async tokenize(plaintext: string) {
-    let res = await fetchJson(this.endpoint, {
+    let res = await reqJson(this.endpoint, {
       agent: this.agent,
       method: 'post',
       formData: {
@@ -24,7 +26,7 @@ export class UdpipeApiClient {
   }
 
   async tokTagPlaintext(plaintext: string) {
-    let res = await fetchJson(this.endpoint, {
+    let res = await reqJson(this.endpoint, {
       agent: this.agent,
       method: 'post',
       formData: {
@@ -37,7 +39,7 @@ export class UdpipeApiClient {
   }
 
   async tokTagParsePlaintext(plaintext: string) {
-    let res = await fetchJson(this.endpoint, {
+    let res = await reqJson(this.endpoint, {
       agent: this.agent,
       method: 'post',
       formData: {
@@ -52,7 +54,7 @@ export class UdpipeApiClient {
 
   async tagParseConnlu(conllu: string) {
     try {
-      let res = await fetchJson(this.endpoint, {
+      let res = await reqJson(this.endpoint, {
         agent: this.agent,
         method: 'post',
         formData: {

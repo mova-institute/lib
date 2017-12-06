@@ -1,22 +1,10 @@
 import { firstMatch } from './string_utils'
 
 import * as conv from 'iconv-lite'
-import * as request from 'request'
+import * as request from 'request-promise-native'
 import { CoreOptions, RequestResponse } from 'request'
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-export function fetch(url: string, options?: CoreOptions) {
-  return new Promise<RequestResponse>((resolve, reject) => {
-    request(url, options, (err, res, body) => {
-      if (err) {
-        reject(err)
-      }
-      resolve(res)
-    })
-  })
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function fetchText(url: string, options?: CoreOptions) {
@@ -27,7 +15,7 @@ export async function fetchText(url: string, options?: CoreOptions) {
     encoding: null,
   }
 
-  let response = await fetch(url, options)
+  let response = await request(url, options)
   let encoding = firstMatch(response.headers['content-type'] as string,
     /.*\bcharset=([\w\-]+)/, 1)
   if (encoding) {
@@ -53,17 +41,7 @@ export async function fetchText(url: string, options?: CoreOptions) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export async function fetchJson(href: string, options?: CoreOptions) {
-  let resStr = await fetch(href, options)
-  return JSON.parse(resStr.body)
-  // let ret
-  // try {
-  //   ret = JSON.parse(resStr.body)
-  // } catch (e) {
-  //   if (true || e instanceof SyntaxError) {
-  //     console.error(resStr)
-  //     throw e
-  //   }
-  // }
-  // return ret as any
+export async function reqJson(url: string, options?: CoreOptions) {
+  let resStr = await request(url, options)
+  return JSON.parse(resStr)
 }
