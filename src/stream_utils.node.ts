@@ -7,7 +7,7 @@ export function writePromiseDrain(
   to: NodeJS.WriteStream,
   what: string | Buffer,
 ) {
-  if (!to.write(what, undefined)) {
+  if (!to.write(what)) {
     return new Promise<void>((resolve, reject) => {
       to.once('drain', resolve)
     })
@@ -22,7 +22,7 @@ export function writeBackpressed(
 ) {
   if (!to.write(what) && !backpress.isPaused()) {
     backpress.pause()
-    to.once('drain', () => backpress.resume())  // =bind!
+    to.once('drain', () => backpress.resume())  // =bind?
   }
 }
 
