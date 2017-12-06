@@ -16,7 +16,7 @@ export class PrevertDocBuilder {
     this.curPar = ''
   }
 
-  // node is an element of split for /(<[^>]+>)/
+  // node is an element of split for ~ /(<[^>]+>)/
   feedNode(node: string) {
     if (!node) {
       return

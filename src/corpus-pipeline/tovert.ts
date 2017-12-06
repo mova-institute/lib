@@ -4,7 +4,6 @@ import { tokenObj2verticalLine } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
-import { last } from '../lang';
 
 
 
