@@ -11,7 +11,7 @@ export function writePromiseDrain(
 ) {
   if (!to.write(what)) {
     return new Promise<void>((resolve, reject) => {
-      to.once('drain', resolve)
+      to.once('drain', resolve).once('error', reject)
     })
   }
 }

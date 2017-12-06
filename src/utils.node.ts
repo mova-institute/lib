@@ -39,7 +39,7 @@ const readFile = promisify(fs.readFile)
 //   }, newline)
 // }
 ////////////////////////////////////////////////////////////////////////////////
-export function linesBulkAsync(  // todo: rerwrite with async iterators once avail
+export function lineBulksAsync(  // todo: rerwrite with async iterators once avail
   readable: NodeJS.ReadableStream,
   callback: (lineBulk: string[]) => void,
   newline: string | RegExp = '\n'
@@ -57,16 +57,19 @@ export function linesBulkAsync(  // todo: rerwrite with async iterators once ava
         try {
           await callback(splitted)
         } catch {
-          reject()  // todo
+          return reject()  // todo
         }
         readable.resume()
       }
     }
 
-    readable.on('data', consumer).on('end', async () => {
-      await callback([leftover])
-      resolve()
-    })
+    readable
+      .on('error', reject)
+      .on('data', consumer)
+      .on('end', async () => {
+        await callback([leftover])
+        resolve()
+      })
   })
 }
 
@@ -76,7 +79,7 @@ export function linesAsync(  // todo: rerwrite with async iterators once avail
   callback: (line: string) => void,
   newline: string | RegExp = '\n'
 ) {
-  return linesBulkAsync(readable, async lineBulk => {
+  return lineBulksAsync(readable, async lineBulk => {
     for await (let line of lineBulk) {
       await callback(line)
     }

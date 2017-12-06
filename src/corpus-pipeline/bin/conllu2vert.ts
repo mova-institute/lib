@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesBulkAsync, joinToStream, ignorePipeErrors } from '../../utils.node'
+import { lineBulksAsync, joinToStream, ignorePipeErrors } from '../../utils.node'
 import { conlluStrAndMeta2vertical } from '../tovert'
 
 
@@ -9,7 +9,7 @@ import { conlluStrAndMeta2vertical } from '../tovert'
 async function main() {
   ignorePipeErrors()
   process.stdin.setEncoding('utf8')
-  linesBulkAsync(process.stdin, docs => {
+  lineBulksAsync(process.stdin, docs => {
     for (let docConlluStr of docs) {
       if (docConlluStr) {
         let stream = conlluStrAndMeta2vertical(docConlluStr)
