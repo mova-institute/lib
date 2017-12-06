@@ -51,7 +51,7 @@ export class Vert2ConlluBuilder {
       } else if (tag.name === 'doc') {
         // this.meta = tag.attributes
       } else if (tag.name === 's') {
-        this.buf.push(`# sent id=${this.sentIdGen++}`)
+        this.buf.push(`# sent_id = ${++this.sentIdGen}`)
         this.curTokNum = 0
       } else if (tag.name === 'p') {
         if (!last(this.buf)) {
