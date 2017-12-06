@@ -9,13 +9,11 @@ const MIDDLE_PADDER = '\t_'.repeat(7) + '\t'
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Vert2ConlluBuilder {
-  // private meta: Array<[string, string]>
   private buf = new Array<string>()
   private sentIdGen = 0
   private curTokNum: number
 
   reset() {
-    // this.meta = undefined
     this.buf = []
   }
 
