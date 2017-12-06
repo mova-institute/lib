@@ -647,10 +647,11 @@ export class MorphAnalyzer {
 
   private lookup(token: string) {
     let interps = this.dictCache.get(token).map(x => x.clone())
+    // let interps = this.lookupRaw(token)
+    //   .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
     if (!this.keepParadigmOmonyms) {
       interps.forEach(x => x.features.paradigmOmonym = undefined)
     }
-    // return this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
     return interps
   }
 
