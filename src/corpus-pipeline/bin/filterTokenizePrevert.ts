@@ -40,9 +40,9 @@ async function main() {
       if (!docValid) {
         return
       }
-
       if (!metaObj) {
         console.error(`No meta!`)
+        return
       }
 
       renprop(metaObj, 'id', 'spider-id')
