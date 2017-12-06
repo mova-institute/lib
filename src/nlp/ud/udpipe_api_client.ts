@@ -13,15 +13,16 @@ export class UdpipeApiClient {
   constructor(private endpoint: string) {
   }
 
-  async tokenize(plaintext: string) {
+  async tokenizeParagraphs(paragraphs: string[]) {
     let res = await reqJson(this.endpoint, {
       agent: this.agent,
       method: 'post',
       formData: {
         tokenizer: '',
-        data: plaintext,
+        data: paragraphs.join('\n\n') + '\n',
       }
     })
+
     return res.result as string
   }
 

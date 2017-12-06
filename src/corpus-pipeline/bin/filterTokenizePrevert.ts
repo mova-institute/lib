@@ -48,9 +48,8 @@ async function main() {
       renprop(metaObj, 'id', 'spider-id')
 
       await runner.startRunning(async () => {
-        let toUdpipe = filteredParagraphs.join('\n\n')
         try {
-          var conllu = await udpipe.tokenize(toUdpipe)
+          var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
         } catch (e) {
           console.error(e)
           return

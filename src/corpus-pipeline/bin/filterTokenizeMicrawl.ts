@@ -65,11 +65,10 @@ async function main() {
     }
 
     await runner.startRunning(async () => {
-      let toUdpipe = filteredParagraphs.join('\n\n')
       try {
-        var conllu = await udpipe.tokenize(toUdpipe)
+        var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
       } catch {
-        console.error(`Udpipe error for ${toUdpipe}`)
+        console.error(`Udpipe error for`, filteredParagraphs)
         return
       }
       let vertStream = conlluStrAndMeta2vertical(conllu, meta, true, gapFollowerIndexes)

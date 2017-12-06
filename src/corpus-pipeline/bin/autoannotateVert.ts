@@ -35,7 +35,7 @@ async function main() {
         let myLines = lines
         lines = []
 
-        let conllu = await udpipe.tagParseConnlu(inputConlluLines.join('\n'))
+        let conllu = await udpipe.tagParseConnlu(inputConlluLines.join('\n') + '\n')
         let conlluTokens = mu(conllu.split('\n')).filter(x => /^\d/.test(x))
         for (let l of myLines) {
           if (l.startsWith('<')) {
