@@ -1,7 +1,6 @@
 import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE, WCHAR_UK, WCHAR_OTHER, WORDCHAR_UK_RE } from "../nlp/static"
 import { MorphAnalyzer } from "../nlp/morph_analyzer/morph_analyzer"
-import { compact } from "lodash"
-import { mapInplace, last } from "../lang"
+import { last } from "../lang"
 import { tokenizeUkNew, tokenizeUk } from "../nlp/utils"
 
 import { mu } from "../mu"
@@ -24,7 +23,6 @@ const regexesKillingParagraph: [RegExp, string][] = [
   [/Этот e-mail адрес защищен от спам-ботов|Переведено сервисом/, 'ru junk'],
   [caseCollisionRe, 'case collision'],
   // [,],
-  // [,],
 ]
 const regexesKillingDoc: [RegExp, string][] = [
   [/[Ђћџ]/, `possible encoding error`],
@@ -32,10 +30,6 @@ const regexesKillingDoc: [RegExp, string][] = [
 const functionsKillingParagraph: [(p: string) => boolean, string][] = [
   [p => ruSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `ru but not uk`],
   [p => beSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `be but not uk`],
-  // [p => ,],
-  // [p => ,],
-  // [p => ,],
-  // [p => ,],
   // [p => ,],
 ]
 
@@ -109,9 +103,6 @@ export function filterPlainParagraphs(
         return { docValid: false, filteredIndexes: filtered }
       }
     }
-    // if (pp[i] === undefined) {
-    //   console.error(before)
-    // }
 
     let unescaped = he.unescape(pp[i])
     if (unescaped.length != pp[i].length) {
@@ -148,11 +139,6 @@ export function filterPlainParagraphs(
       }
     }
   }
-
-  // pp = compact(pp)
-
-  // mapInplace(pp, x => x.trim())
-  // pp = compact(pp)
 
   return { docValid: true, filteredIndexes: filtered }
 }
