@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFile, linesAsyncStd } from '../../utils.node'
+import { parseJsonFile, linesAsyncStd, writeJoin } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
-import { mu } from '../../mu'
 import { filterPlainParagraphsExtra } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
-import { writeBackpressedStd } from '../../stream_utils.node'
 
 import * as minimist from 'minimist'
 import * as path from 'path'
@@ -66,14 +64,16 @@ async function main() {
       return
     }
 
-    // debug
-    // writeBackpressedStd(mu(filteredParagraphs).join('\n\n', true))
-    // return
-
     await runner.startRunning(async () => {
-      let conllu = await udpipe.tokenize(filteredParagraphs.join('\n\n'))
+      let toUdpipe = filteredParagraphs.join('\n\n')
+      try {
+        var conllu = await udpipe.tokenize(toUdpipe)
+      } catch {
+        console.error(`Udpipe error for ${toUdpipe}`)
+        return
+      }
       let vertStream = conlluStrAndMeta2vertical(conllu, meta, true, gapFollowerIndexes)
-      writeBackpressedStd(mu(vertStream).join('\n', true))
+      await writeJoin(vertStream, process.stdout, '\n', true)
     })
   })
 }
