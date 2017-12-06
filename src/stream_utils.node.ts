@@ -1,5 +1,7 @@
-import { Readable } from 'stream'
 import { StreamDataIterator } from './lib/nextify/stream_data_iterator'
+
+import { Readable } from 'stream'
+import { WriteStream } from "fs"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,20 +17,20 @@ export function writePromiseDrain(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function writeBackpressed(
-  to: NodeJS.WriteStream,
-  backpress: NodeJS.ReadableStream,
+export function writeBackpressing(
+  to: NodeJS.WritableStream,
+  backpressee: NodeJS.ReadableStream,
   what: string | Buffer,
 ) {
-  if (!to.write(what) && !backpress.isPaused()) {
-    backpress.pause()
-    to.once('drain', () => backpress.resume())  // =bind?
+  if (!to.write(what) && !backpressee.isPaused()) {
+    backpressee.pause()
+    to.once('drain', () => backpressee.resume())  // =bind?
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function writeBackpressedStd(what: string | Buffer) {
-  return writeBackpressed(process.stdout, process.stdin, what)
+  return writeBackpressing(process.stdout, process.stdin, what)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,13 +7,18 @@ import { Vert2ConlluBuilder } from '../vert2conllu_builder'
 import { mu } from '../../mu'
 import { tokenObj2verticalLine } from '../ud'
 import { parseConlluTokenLine } from '../../nlp/ud/conllu'
+import { BackpressingWriter } from '../../lib/node/backpressing_writer'
 
 import * as minimist from 'minimist'
+
+import * as fs from 'fs'
+import { Buffer } from 'buffer';
 
 
 
 interface Args {
   udpipeUrl: string
+  offsetFile: string
   concurrency?: number
 }
 
@@ -25,26 +30,34 @@ async function main() {
   let builder = new Vert2ConlluBuilder()
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
+  let offsetWriter = new BackpressingWriter(fs.createWriteStream(args.offsetFile), process.stdin)
 
   let lines = new Array<string>()
+  let offset = 0
   await linesBackpressedStd(async (line, write) => {
     lines.push(line)
-    let inputConlluLines = builder.feedLine(line)
-    if (inputConlluLines) {
+    let inputAsConllu = builder.feedLine(line)
+    if (inputAsConllu) {
+      let myLines = lines
+      lines = []
       await runner.startRunning(async () => {
-        let myLines = lines
-        lines = []
-
-        let conllu = await udpipe.tagParseConnlu(inputConlluLines.join('\n') + '\n')
+        let conllu = await udpipe.tagParseConnlu(inputAsConllu.join('\n') + '\n')
         let conlluTokens = mu(conllu.split('\n')).filter(x => /^\d/.test(x))
+        let docByteLen = 0
         for (let l of myLines) {
+          let toWrite: string
           if (l.startsWith('<')) {
-            write(l)
+            toWrite = l
           } else {
-            write(tokenObj2verticalLine(parseConlluTokenLine(conlluTokens.first())))
+            toWrite = tokenObj2verticalLine(parseConlluTokenLine(conlluTokens.first()))
           }
-          write('\n')
+          toWrite += '\n'
+          let bytes = Buffer.from(toWrite)
+          write(bytes)
+          docByteLen += bytes.length
         }
+        offsetWriter.write(`${offset}\t${docByteLen}\n`)
+        offset += docByteLen
       })
     }
   })

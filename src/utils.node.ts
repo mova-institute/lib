@@ -1,4 +1,4 @@
-import { writePromiseDrain, writeBackpressed } from './stream_utils.node'
+import { writePromiseDrain, writeBackpressing } from './stream_utils.node'
 import { mu } from './mu'
 
 import { readFileSync } from 'fs'
@@ -54,7 +54,11 @@ export function linesBulkAsync(  // todo: rerwrite with async iterators once ava
       } else if (splitted.length) {
         leftover = splitted.pop()
         readable.pause()
-        await callback(splitted)
+        try {
+          await callback(splitted)
+        } catch {
+          reject()  // todo
+        }
         readable.resume()
       }
     }
@@ -136,10 +140,10 @@ export function chunksAsync(  // todo: rerwrite with async iterators once avail
 export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WriteStream,
-  listener: (line: string, write: (what: string) => void) => void,
+  listener: (line: string, write: (what: string | Buffer) => void) => void,
 ) {
   return new Promise<void>((resolve, reject) => {
-    const writer = (what: string) => writeBackpressed(dest, source, what)
+    const writer = (what: string | Buffer) => writeBackpressing(dest, source, what)
     createInterface(source)
       .on('line', line => listener(line, writer))
       .on('end', resolve)
@@ -149,7 +153,7 @@ export function linesBackpressed(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
-  listener: (line: string, write: (what: string) => void) => void,
+  listener: (line: string, write: (what: string | Buffer) => void) => void,
 ) {
   return linesBackpressed(process.stdin, process.stdout, listener)
 }
