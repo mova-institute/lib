@@ -1,6 +1,5 @@
 import { CorpusDoc } from '../doc_meta'
 import { parseHtml } from '../../xml/utils.node'
-// import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 import { textOf, textsOf } from './utils'
 
 
