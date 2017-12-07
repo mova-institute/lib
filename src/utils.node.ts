@@ -210,7 +210,7 @@ export function linesSyncArray(filePath: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function ignorePipeErrors() {
+export function exitOnStdoutPipeError() {
   process.stdout.on('error', err => {
     if (err.code === 'EPIPE') {
       //console.error(err.stack)

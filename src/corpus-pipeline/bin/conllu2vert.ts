@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-import { lineBulksAsync, joinToStream, ignorePipeErrors } from '../../utils.node'
+import { lineBulksAsync, joinToStream, exitOnStdoutPipeError } from '../../utils.node'
 import { conlluStrAndMeta2vertical } from '../tovert'
 
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
-  ignorePipeErrors()
+  exitOnStdoutPipeError()
   process.stdin.setEncoding('utf8')
   lineBulksAsync(process.stdin, docs => {
     for (let docConlluStr of docs) {

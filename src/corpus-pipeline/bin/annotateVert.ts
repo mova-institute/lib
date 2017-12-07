@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesBackpressedStd, ignorePipeErrors, linesAsyncStd } from '../../utils.node'
+import { linesBackpressedStd, exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { Vert2ConlluBuilder } from '../vert2conllu_builder'
@@ -25,7 +25,7 @@ interface Args {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
-  ignorePipeErrors()
+  exitOnStdoutPipeError()
   const args: Args = minimist(process.argv.slice(2)) as any
 
   let builder = new Vert2ConlluBuilder()

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { ignorePipeErrors, linesBackpressedStd } from '../../utils.node'
+import { exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
 
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {  // todo: make it binary thus faster
-  ignorePipeErrors()
+  exitOnStdoutPipeError()
 
   let insideGap = false
   await linesBackpressedStd((line, write) => {
