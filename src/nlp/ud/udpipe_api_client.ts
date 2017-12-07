@@ -70,4 +70,7 @@ export class UdpipeApiClient {
       throw e
     }
   }
+  tagParseConnluLines(lines: string[]) {
+    return this.tagParseConnlu(lines.join('\n') + '\n')
+  }
 }

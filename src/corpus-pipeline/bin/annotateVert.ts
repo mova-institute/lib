@@ -42,7 +42,7 @@ async function main() {
       let myLines = lines
       lines = []
       await runner.startRunning(async () => {
-        let conllu = await udpipe.tagParseConnlu(inputAsConllu.join('\n') + '\n')
+        let conllu = await udpipe.tagParseConnluLines(inputAsConllu)
         let conlluTokens = mu(conllu.split('\n')).filter(x => /^\d/.test(x))
         let docByteLen = 0
         for (let l of myLines) {
@@ -50,7 +50,13 @@ async function main() {
           if (l.startsWith('<')) {
             toWrite = l
           } else {
-            toWrite = tokenObj2verticalLine(parseConlluTokenLine(conlluTokens.first()))
+            let conlluTokenLine = conlluTokens.first()
+            if (!conlluTokenLine) {
+              console.error(`ERROR: conlluTokens.first() === "${conlluTokenLine}", lines:`)
+              console.error(inputAsConllu)
+              return
+            }
+            toWrite = tokenObj2verticalLine(parseConlluTokenLine(conlluTokenLine))
           }
           toWrite += '\n'
           let bytes = Buffer.from(toWrite)
