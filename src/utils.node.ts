@@ -56,8 +56,8 @@ export function lineBulksAsync(  // todo: rerwrite with async iterators once ava
         readable.pause()
         try {
           await callback(splitted)
-        } catch {
-          return reject()  // todo
+        } catch (e) {
+          return reject(e)
         }
         readable.resume()
       }
