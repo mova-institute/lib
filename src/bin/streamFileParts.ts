@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesAsyncStd } from '../utils.node';
+import { linesAsyncStd, ignorePipeErrors } from '../utils.node';
 
 import * as fs from 'fs'
 
@@ -8,6 +8,8 @@ import * as fs from 'fs'
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
+  ignorePipeErrors()
+
   let file = process.argv[2]
   await linesAsyncStd(async line => {
     if (!line) {
