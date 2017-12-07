@@ -14,8 +14,7 @@ async function main() {
       return
     }
 
-    let [offset, length] = line.match(/^(\d+)\s+(\d+)/)
-      .slice(1).map(x => Number.parseInt(x))
+    let [offset, length] = line.match(/^(\d+)\s+(\d+)/).slice(1).map(x => Number(x))
     let readStream = fs.createReadStream(file, {
       start: offset,
       end: offset + length - 1,
