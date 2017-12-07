@@ -110,6 +110,16 @@ export function replaceCaseAware(str: string, substr: string | RegExp, newSubStr
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function replaceLoop(str: string, pattern: RegExp | string, replacer: string) {
+  let ret: string
+  while ((ret = str.replace(pattern, replacer)) !== str) {
+    str = ret
+  }
+  return ret
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 export function uppercaseMask(str: string) {
   let uppercase = str.toUpperCase()
   return [...uppercase].map((x, i) => x === str.charAt(i))

@@ -2,6 +2,7 @@ import { parseTagStr } from "../xml/utils"
 import { last } from "../lang"
 
 import * as he from "he"
+import { replaceLoop } from "../string_utils";
 
 
 
@@ -24,6 +25,9 @@ export class Vert2ConlluBuilder {
       return
     }
 
+    if (line.startsWith('<')) {
+      line = replaceLoop(line, /("[^"]*)\\"/g, '$1&quot;')
+    }
     let tag = parseTagStr(line)
     if (tag) {
       if (tag.name === 'gap') {
