@@ -155,7 +155,7 @@ export function parseAttributeStr(value: string) {
   let re = /(\w+)="([^"]+)"\s*/g
   let matchArray
   while ((matchArray = re.exec(value)) !== null) {
-    ret.push([matchArray[1], matchArray[2]])
+    ret.push([matchArray[1], unescape(matchArray[2])])
   }
 
   return ret
