@@ -53,8 +53,8 @@ export class UdpipeApiClient {
       agent: this.agent,
       method: 'post',
       formData,
-    }) as string
-    res = res.replace(/\t\t\t/g, '\t_\t_\t')  // hack for literal underscore
-    return res
+    })
+    res = res.result.replace(/\t\t\t/g, '\t_\t_\t')  // hack for literal underscore
+    return res as string
   }
 }
