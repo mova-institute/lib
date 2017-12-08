@@ -18,7 +18,7 @@ export class FsMap {
     return new Promise<void>((resolve, reject) => {
       value
         .on('error', function (err) {
-          console.log(err)
+          console.error(err)
           reject(err)
         })
         .once('end', () => {
