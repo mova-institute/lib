@@ -34,7 +34,8 @@ async function main() {
   let offsetWriter = new BackpressingWriter(fs.createWriteStream(args.offsetFile), process.stdin)
 
   let lines = new Array<string>()
-  let offset = 0
+  let bytesOut = 0
+  let docCount = 0
   await linesAsyncStd(async line => {
     lines.push(line)
     let inputAsConllu = builder.feedLine(line)
@@ -42,32 +43,44 @@ async function main() {
       let myLines = lines
       lines = []
       await runner.startRunning(async () => {
-        let conllu = await udpipe.tagParseConnluLines(inputAsConllu)
-        let conlluTokens = mu(conllu.split('\n')).filter(x => /^\d/.test(x))
-        let docByteLen = 0
-        for (let l of myLines) {
-          let toWrite: string
-          if (l.startsWith('<')) {
-            toWrite = l
-          } else {
-            let conlluTokenLine = conlluTokens.first()
-            if (!conlluTokenLine) {
-              console.error(`ERROR: conlluTokens.first() === "${conlluTokenLine}", lines:`)
-              console.error(inputAsConllu)
-              return
-            }
-            toWrite = tokenObj2verticalLine(parseConlluTokenLine(conlluTokenLine))
-          }
-          toWrite += '\n'
-          let bytes = Buffer.from(toWrite)
+        try {
+          var conllu = await udpipe.tagParseConnluLines(inputAsConllu)
+          var taggedVert = mergeConlluIntoVert(myLines, conllu.split('\n'))
+          var bytes = Buffer.from(taggedVert)
           await writePromiseDrain(process.stdout, bytes)
-          docByteLen += bytes.length
+          offsetWriter.write(`${bytesOut}\t${bytes.length}\n`)
+          bytesOut += bytes.length
+        } catch (e) {
+          console.error(`ERROR at doc ${docCount}`)
+          console.error(e)
+          console.error(`**** lines: ${lines.join('\n')}\n\n`)
+          console.error(`**** conllu: ${conllu}\n\n`)
+          console.error(`**** taggedVert: ${taggedVert}\n\n`)
+          return
         }
-        offsetWriter.write(`${offset}\t${docByteLen}\n`)
-        offset += docByteLen
       })
+      ++docCount
     }
   })
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function mergeConlluIntoVert(vertLines: string[], conlluLines: string[]) {
+  let ret = ''
+  let conlluTokens = mu(conlluLines).filter(x => /^\d/.test(x))
+  for (let l of vertLines) {
+    if (l.startsWith('<')) {
+      ret += l
+    } else {
+      let conlluTokenLine = conlluTokens.first()
+      if (!conlluTokenLine) {
+        throw new Error(`Unmergable`)
+      }
+      ret += tokenObj2verticalLine(parseConlluTokenLine(conlluTokenLine))
+    }
+    ret += '\n'
+  }
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
