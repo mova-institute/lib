@@ -1,13 +1,11 @@
 import { writeBackpressing } from "../../stream_utils.node"
 
-import { WriteStream } from "fs"
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class BackpressingWriter {
   constructor(
-    private dest: NodeJS.WriteStream | WriteStream,
+    private dest: NodeJS.WritableStream,
     private backpressee: NodeJS.ReadableStream
   ) {
   }

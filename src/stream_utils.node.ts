@@ -1,12 +1,11 @@
 import { StreamDataIterator } from './lib/nextify/stream_data_iterator'
 
 import { Readable } from 'stream'
-import { WriteStream } from "fs"
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function writePromiseDrain(
-  to: NodeJS.WriteStream,
+  to: NodeJS.WritableStream,
   what: string | Buffer,
 ) {
   if (!to.write(what)) {

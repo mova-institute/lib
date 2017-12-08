@@ -142,7 +142,7 @@ export function chunksAsync(  // todo: rerwrite with async iterators once avail
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressed(
   source: NodeJS.ReadableStream,
-  dest: NodeJS.WriteStream,
+  dest: NodeJS.WritableStream,
   listener: (line: string, write: (what: string | Buffer) => void) => void,
 ) {
   return new Promise<void>((resolve, reject) => {
@@ -213,7 +213,6 @@ export function linesSyncArray(filePath: string) {
 export function exitOnStdoutPipeError() {
   process.stdout.on('error', err => {
     if (err.code === 'EPIPE') {
-      //console.error(err.stack)
       process.exit(0)
     }
   })
@@ -256,7 +255,7 @@ export function write2jsonFile(filePath: string, obj: any) {
 //////////////////////////////////////////////////////////////////////////////
 export async function joinToStream(
   strings: Iterable<string>,
-  stream: NodeJS.WriteStream,
+  stream: NodeJS.WritableStream,
   joiner = '',
   trailing = false
 ) {
@@ -277,7 +276,7 @@ export async function joinToStream(
 ////////////////////////////////////////////////////////////////////////////////
 export async function writeJoin(
   what: Iterable<string>,
-  where: NodeJS.WriteStream,
+  where: NodeJS.WritableStream,
   joiner: string,
   trailing = false
 ) {
