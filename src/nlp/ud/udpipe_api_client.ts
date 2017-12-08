@@ -1,8 +1,6 @@
 import { reqJson } from '../../request_utils'
-import * as request from 'request-promise-native'
 
 import { Agent } from 'http'
-import { CoreOptions } from 'request';
 
 
 
