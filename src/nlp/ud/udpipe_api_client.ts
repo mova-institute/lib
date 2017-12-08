@@ -2,6 +2,7 @@ import { reqJson } from '../../request_utils'
 import * as request from 'request-promise-native'
 
 import { Agent } from 'http'
+import { CoreOptions } from 'request';
 
 
 
@@ -13,64 +14,49 @@ export class UdpipeApiClient {
   constructor(private endpoint: string) {
   }
 
-  async tokenizeParagraphs(paragraphs: string[]) {
-    let res = await reqJson(this.endpoint, {
-      agent: this.agent,
-      method: 'post',
-      formData: {
-        tokenizer: '',
-        data: paragraphs.join('\n\n') + '\n',
-      }
+  tokenizeParagraphs(paragraphs: string[]) {
+    return this.requestConllu({
+      tokenizer: '',
+      data: paragraphs.join('\n\n') + '\n',
     })
-
-    return res.result as string
   }
 
-  async tokTagPlaintext(plaintext: string) {
-    let res = await reqJson(this.endpoint, {
-      agent: this.agent,
-      method: 'post',
-      formData: {
-        tokenizer: '',
-        tagger: '',
-        data: plaintext,
-      }
+  tokTagPlaintext(plaintext: string) {
+    return this.requestConllu({
+      tokenizer: '',
+      tagger: '',
+      data: plaintext,
     })
-    return res.result as string
   }
 
-  async tokTagParsePlaintext(plaintext: string) {
-    let res = await reqJson(this.endpoint, {
-      agent: this.agent,
-      method: 'post',
-      formData: {
-        tokenizer: '',
-        tagger: '',
-        parser: '',
-        data: plaintext,
-      }
+  tokTagParsePlaintext(plaintext: string) {
+    return this.requestConllu({
+      tokenizer: '',
+      tagger: '',
+      parser: '',
+      data: plaintext,
     })
-    return res.result as string
   }
 
-  async tagParseConnlu(conllu: string) {
-    try {
-      let res = await reqJson(this.endpoint, {
-        agent: this.agent,
-        method: 'post',
-        formData: {
-          tagger: '',
-          parser: '',
-          data: conllu,
-        }
-      })
-      return res.result as string
-    } catch (e) {
-      // console.error()
-      throw e
-    }
+  tagParseConnlu(conllu: string) {
+    return this.requestConllu({
+      tagger: '',
+      parser: '',
+      data: conllu,
+    })
   }
+
   tagParseConnluLines(lines: string[]) {
     return this.tagParseConnlu(lines.join('\n') + '\n')
+  }
+
+  private async requestConllu(formData: any) {
+    let res = await reqJson(this.endpoint, {
+      agent: this.agent,
+      method: 'post',
+      formData,
+    }) as string
+    res = res.replace(/\t\t\t/g, '\t_\t_\t')  // hack for literal underscore
+    return res
   }
 }

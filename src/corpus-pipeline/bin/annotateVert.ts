@@ -55,7 +55,7 @@ async function main() {
         } catch (e) {
           console.error(`ERROR at doc ${docCount}`)
           console.error(e)
-          console.error(`**** lines: ${lines.join('\n')}\n\n`)
+          console.error(`**** lines: ${myLines.join('\n')}\n\n`)
           console.error(`**** conllu: ${conllu}\n\n`)
           console.error(`**** taggedVert: ${taggedVert}\n\n`)
           return
