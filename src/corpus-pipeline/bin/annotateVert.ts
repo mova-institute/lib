@@ -14,6 +14,7 @@ import * as minimist from 'minimist'
 
 import * as fs from 'fs'
 import { Buffer } from 'buffer';
+import { AwaitingWriter } from '../../lib/node/awaiting_writer';
 
 
 
@@ -25,13 +26,14 @@ interface Args {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
-  exitOnStdoutPipeError()
   const args: Args = minimist(process.argv.slice(2)) as any
+  exitOnStdoutPipeError()
 
   let builder = new Vert2ConlluBuilder()
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
-  let offsetWriter = new BackpressingWriter(fs.createWriteStream(args.offsetFile), process.stdin)
+  let outputWriter = new AwaitingWriter(process.stdout)
+  let offsetWriter = new AwaitingWriter(fs.createWriteStream(args.offsetFile))
 
   let lines = new Array<string>()
   let bytesOut = 0
@@ -47,8 +49,8 @@ async function main() {
           var conllu = await udpipe.tagParseConnluLines(inputAsConllu)
           var taggedVert = mergeConlluIntoVert(myLines, conllu.split('\n'))
           var bytes = Buffer.from(taggedVert)
-          await writePromiseDrain(process.stdout, bytes)
-          offsetWriter.write(`${bytesOut}\t${bytes.length}\n`)
+          await outputWriter.write(bytes)
+          await offsetWriter.write(`${bytesOut}\t${bytes.length}\n`)
           bytesOut += bytes.length
         } catch (e) {
           console.error(`ERROR at doc ${docCount}`)
