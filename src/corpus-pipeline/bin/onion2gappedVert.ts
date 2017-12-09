@@ -1,25 +1,43 @@
 #!/usr/bin/env node
 
 import { exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
+import { BackpressingWriter } from '../../lib/node/backpressing_writer';
+
+import * as fs from 'fs'
 
 
+
+const gapTagBytes = Buffer.from(`<gap type="dupe"/>\n`)
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function main() {  // todo: make it binary thus faster
+async function main() {
   exitOnStdoutPipeError()
 
+  let offsetWriter = new BackpressingWriter(
+    fs.createWriteStream(process.argv[2]), process.stdin)
+
   let insideGap = false
-  await linesBackpressedStd((line, write) => {
+  let docStartOffset = 0
+  let curOffset = 0
+  await linesBackpressedStd(async (line, write) => {
     if (line.startsWith('1')) {
-      if (!line.startsWith(`1\t<doc `)) {
+      if (!/^1\t<doc[\s>]/.test(line)) {
         insideGap = true
       }
     } else {
       if (insideGap) {
-        write(`<gap type="dupe"/>\n`)
+        write(gapTagBytes)
+        curOffset += gapTagBytes.length
         insideGap = false
       }
-      write(`${line.substr(2)}\n`)
+      let outLine = `${line.substr(2)}\n`
+      let bytes = Buffer.from(outLine)
+      write(bytes)
+      curOffset += bytes.length
+      if (/^<\/doc>/.test(outLine)) {
+        offsetWriter.write(`${docStartOffset}\t${curOffset - docStartOffset}\n`)
+        docStartOffset = curOffset
+      }
     }
   })
 }
