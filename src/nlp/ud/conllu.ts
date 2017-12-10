@@ -2,7 +2,7 @@
 // import { parseIntStrict, buildObject } from '../../lang'
 import { mu, Mu } from '../../mu'
 import { UdPos } from './tagset'
-import { makeObject } from '../../lang'
+import { makeObject, mapInplace } from '../../lang'
 import { Dict } from '../../types'
 // import { UdMiRelation } from './syntagset'
 
@@ -80,8 +80,9 @@ export function* streamparseConllu(lines: Iterable<string>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function parseConlluTokenLine(value: string) {
-  let [indexStr, form, lemma, upos, xpos, featsStr, head, rel, , miscStr] =
-    value.split('\t').map(x => x === '_' ? '' : x)
+  let split = value.split('\t')
+  mapInplace(split, x => x === '_' ? '' : x, 3)
+  let [indexStr, form, lemma, upos, xpos, featsStr, head, rel, , miscStr] = split
 
   let index = Number.parseInt(indexStr)
   let feats = parseUdKeyvalues(featsStr)
