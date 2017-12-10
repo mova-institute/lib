@@ -87,7 +87,10 @@ async function main(args: Args) {
       }
       let dataUrls = root.evaluateAttributes('//table[@class="books"]//a/@href')
         .map(x => x.value())
-        .filter(x => !!x && /\/authors\/.*\./.test(x) && !x.endsWith('.djvu'))
+        .filter(x => !!x
+          && /\/authors\/.*\./.test(x)
+          && !['pdf', 'djvu'].some(xx => x.endsWith(`.${xx}`))
+        )
         .map(x => parse(x))
       for (let dataUrl of [...dataUrls].sort()) {
         let filish = dataUrl.pathname.substr(1)

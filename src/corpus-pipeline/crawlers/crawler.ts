@@ -12,8 +12,8 @@ export type UrlPredicate = (value: Url) => any
 ////////////////////////////////////////////////////////////////////////////////
 export class Crawler {
   private saved: FsMap
-  private visited: FileSavedSet<string>
-  private failed: FileSavedSet<string>
+  private visited: /* FileSaved */Set<string>
+  private failed: /* FileSaved */Set<string>
   private visiting = new Set<string>()
 
   private isUrlToSave: UrlPredicate
@@ -22,12 +22,15 @@ export class Crawler {
   private timeout = 0
   private numRetries = 5
 
-  constructor(saveDir: string, workspaceDir: string) {
-    this.visited = new FileSavedSet(join(workspaceDir, 'processed'))
-    this.failed = new FileSavedSet(join(workspaceDir, 'failed'))
+  constructor(saveDir: string/* , workspaceDir: string */) {
+    // this.visited = new FileSavedSet(join(workspaceDir, 'processed'))
+    // this.failed = new FileSavedSet(join(workspaceDir, 'failed'))
+    this.visited = new Set()
+    this.failed = new Set()
     this.saved = new FsMap(saveDir)
     // this.saved = new FolderSavedMap(join(workspacePath, 'saved'), '**/*.html')
     // console.log(this.saved)
+
   }
 
   setUrlsToSave(pred: UrlPredicate) {

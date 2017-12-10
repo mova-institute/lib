@@ -82,7 +82,7 @@ interface SpecificModule {
 
 //------------------------------------------------------------------------------
 function getOutDir(args: Args) {
-  return join(args.workspace, 'build', args.out || args.part)
+  return join(args.workspace, args.out || args.part)
 }
 
 //------------------------------------------------------------------------------

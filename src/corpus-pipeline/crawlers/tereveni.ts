@@ -5,7 +5,7 @@ import { Crawler } from './crawler'
 
 
 async function main() {
-  let crawler = new Crawler(process.argv[2] || 'tereveni')
+  let crawler = new Crawler('saved_web')
     .setUrlsToSave(({ pathname }) => isForumPage(pathname))
     .setUrlsToFollow([
       x => isForumPage(x.pathname),

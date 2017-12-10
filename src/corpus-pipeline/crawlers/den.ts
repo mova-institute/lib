@@ -17,13 +17,13 @@ interface Args {
 
 type LinkExtractor = (html: string) => string[]
 class Crawler {
-  private visited: FileSavedSet<string>
+  private visited = new Set<string>()//: FileSavedSet<string>
   private visiting = new Set<string>()
   private saveLinkExtractor: LinkExtractor
   private followLinkExtractor: LinkExtractor
 
   constructor(visitedRegistryFilename: string) {
-    this.visited = new FileSavedSet(visitedRegistryFilename)
+    // this.visited = new FileSavedSet(visitedRegistryFilename)
   }
 
   setSaveLinkExtractor(extractor: LinkExtractor) {
@@ -36,7 +36,7 @@ class Crawler {
     return this
   }
 
-  async seed(url: string, onSave: (url: string, content: string) => void) {
+  async seed(url: string, onSave?: (url: string, content: string) => void) {
     if (this.visited.has(url) || this.visiting.has(url)) {
       return
     }
@@ -46,10 +46,18 @@ class Crawler {
     // await sleep(100)
     let content = await fetchText(url)
     for (let link of this.saveLinkExtractor(content)) {
-      if (!this.visited.has(link)) {
-        onSave(link, await fetchText(link))
-        this.visited.add(link)
+      let saveTo = link.match(articleSavePath)[1]
+      saveTo = path.join('saved_web/day.kyiv.ua', saveTo) + '.html'
+      if (fs.existsSync(saveTo)) {
+        // console.log(`skipping ${saveTo}`)
+      } else {
+        console.log(`saving to ${saveTo}`)
+        mkdirpSync(path.dirname(saveTo))
+        fs.writeFileSync(saveTo, await fetchText(link), 'utf8')
       }
+
+      // onSave(link, await fetchText(link))
+      this.visited.add(link)
     }
     for (let link of this.followLinkExtractor(content)) {
       await this.seed(link, onSave)
@@ -69,7 +77,7 @@ if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
     default: {
       workspace: 'den',
-      saveDir: 'saved_web',
+      saveDir: 'saved_web/day.kyiv.ua',
     },
   }) as any
 
@@ -102,13 +110,7 @@ async function main(args: Args) {
       let seedUrl = `http://day.kyiv.ua/uk/archivenewspaper?archive_date%5Bvalue%5D%5Bmonth%5D=${month}`
         + `&archive_date%5Bvalue%5D%5Byear%5D=${year}`
       try {
-        await crawler.seed(seedUrl, (url, content) => {
-          let saveTo = url.match(articleSavePath)[1]
-          saveTo = path.join(args.saveDir, saveTo) + '.html'
-          console.log(`saving to ${saveTo}`)
-          mkdirpSync(path.dirname(saveTo))
-          fs.writeFileSync(saveTo, content, 'utf8')
-        })
+        await crawler.seed(seedUrl)
       } catch (e) {
         if (e.code === 'Z_BUF_ERROR') {
           console.error(e)

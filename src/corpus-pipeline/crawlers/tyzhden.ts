@@ -44,7 +44,7 @@ if (require.main === module) {
 async function main(args: Args) {
   const re = new RegExp(String.raw`^/(${cats.join('|')})/\d+$`)
   try {
-    let crawler = new Crawler(args.saveDir, args.workspace)
+    let crawler = new Crawler(args.saveDir)
       .setUrlsToFollow([
         x => !x.path.endsWith('/PrintView')
           && x.hostname === 'tyzhden.ua'

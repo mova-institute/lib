@@ -14,7 +14,7 @@ const DOMAINS = [
 
 async function main() {
   // 'health|culture|society|travel|columns'
-  let crawler = new Crawler(process.argv[3] || 'saved_wev', process.argv[2] || 'pravda')
+  let crawler = new Crawler('saved_web')
     .setUrlsToSave(({ pathname, hash, hostname, protocol }) => {
       // if (hostname === 'life.pravda.com.ua') {
 
