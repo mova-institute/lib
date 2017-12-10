@@ -12,13 +12,15 @@ import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
 import { CatStream } from '../cat_stream'
 import { execPipe } from '../child_process.node'
 import { mu } from '../mu'
+import { parseJsonFileSync } from '../utils.node';
+import { generateRegistryFile } from './registry_file_builder';
 
 
 
 interface Args {
   vertical: string | string[]
   verticalList: string
-  config: string
+  registryJson: string
   subcorpConfig?: string
   alignmentPath: string[]
   name?: string
@@ -52,8 +54,8 @@ function main(args: Args) {
     throw new Error(`Environment variables not set`)
   }
 
-  let configPaths = arrayed(args.config)
-  let config = configPaths.map(x => readFileSync(x, 'utf8')).join('\n')
+  let configJson = parseJsonFileSync(args.registryJson)
+  let config = generateRegistryFile(configJson).corpus
   let verticalPaths: string[]
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)

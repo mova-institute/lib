@@ -1,21 +1,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
-  name: string
+  // name: string
   title: string
+  hasGaps: boolean
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFile(params: RegistryFileParams) {
-  if (params.name.includes('/')) {
-    throw new Error()
-  }
-
   let corpus = `
 
 NAME "${params.title}"
 #INFO "Корпус української (випробовування)"   # todo: say mova intitute some day
 INFOHREF "https://mova.institute/corpus"
-MAINTAINER "corpus@mova.institute"
+MAINTAINER "org@mova.institute"
 TAGSETDOC "http://universaldependencies.org"    # todo
 
 
@@ -65,6 +62,11 @@ ATTRIBUTE lemma_lc  {
   FROMATTR lemma
   TYPE index
   TRANSQUERY yes
+}
+
+ATTRIBUTE tag {
+  LABEL "повна мітка"
+  TYPE "FD_FGD"
 }
 
 ATTRIBUTE pos {
@@ -152,7 +154,7 @@ ATTRIBUTE mood {
 }
 
 ATTRIBUTE nametype {
-  LABEL "тим імені"
+  LABEL "тип імені"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
@@ -284,19 +286,6 @@ ATTRIBUTE urel {
   TYPE "FD_FGD"
 }
 
-ATTRIBUTE tag  {
-#  LABEL "лема (мал. літерами)"
-  MULTIVALUE yes
-  MULTISEP "|"
-  DYNAMIC utf8lowercase
-  DYNLIB internal
-  ARG1 "C"
-  FUNTYPE s
-  FROMATTR pos
-  TYPE index
-  TRANSQUERY yes
-}
-
 ATTRIBUTE spaceafter  {
   LABEL "пробіл після"
 }
@@ -371,10 +360,18 @@ STRUCTURE s {
 STRUCTURE g {
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
-}
-#STRUCTURE gap {
-#  LABEL "пропуск"
-#}
+}`
+  if (params.hasGaps) {
+    corpus += `
+STRUCTURE gap {
+  LABEL "пропуск"
+  ATTRIBUTE type {
+    LABEL "тип"
+  }
+}`
+  }
+  corpus += `
+
 
 
 ################################################################################
@@ -397,7 +394,7 @@ DEFAULTATTR word
 # todo ATTRDOC, ATTRDOCLABEL,
 
 FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,doc.comment,doc.wordcount,s.id,doc.url"
-STRUCTATTRLIST "doc.reference_title,doc.author,doc.date,doc.type"
+STRUCTATTRLIST "doc.title,doc.author,doc.date,doc.type"
 SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
 #FREQTTATTRS ""
 WPOSLIST ",іменник,noun|propn,дієслово,verb,прикметник,adj,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,розділовий,punct,залишок,x"
