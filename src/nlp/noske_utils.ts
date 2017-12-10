@@ -1,11 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 export function keyvalue2attributesNormalized(obj: any) {
   return Object.keys(obj)
-    .filter(key => key.trim() && obj[key] !== undefined && obj[key] !== null /* todo: wut? */)
+    .filter(key => key.trim() && obj[key] !== undefined && obj[key] !== null)
     .map(key => {
-      let value = obj[key].toString().replace(/\s+/g, ' ').trim()
-      value = value.replace(/"/g, '\\"')
+      key = key.replace(/-/g, '_')  // compilecorp doesn't accept dashes
+      let value = obj[key]
+        .toString()
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/"/g, '\\"')  // compilecorp uses this escape, not entities
       return `${key}="${value}"`
-    })
-    .join(' ')
+    }).join(' ')
 }
