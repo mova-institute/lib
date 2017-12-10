@@ -14,9 +14,9 @@ export type TaskFunc<Result> = () => Promise<Result>
 
 ////////////////////////////////////////////////////////////////////////////////
 export class AsyncTaskRunner<Result = void> {
+  private concurrency = cpus().length
   private idGenerator = new UnsignedIntCycle()
   private tasks = new Map<number, Promise<WrappedResult<Result>>>()
-  private concurrency = cpus().length
   private race: Promise<WrappedResult<Result>>
 
   async startRunning(taskFunc: TaskFunc<Result>) {
