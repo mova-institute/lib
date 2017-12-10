@@ -143,7 +143,7 @@ ATTRIBUTE mood {
 }
 
 ATTRIBUTE nametype {
-  LABEL "тим імені"
+  LABEL "тип імені"
   MULTIVALUE yes
   MULTISEP "|"
   TYPE "FD_FGD"
@@ -350,9 +350,12 @@ STRUCTURE g {
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
 }
-#STRUCTURE gap {
-#  LABEL "пропуск"
-#}
+STRUCTURE gap {
+  LABEL "пропуск"
+  ATTRIBUTE type {
+    LABEL "тип"
+  }
+}
 
 
 ################################################################################
