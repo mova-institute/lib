@@ -47,29 +47,35 @@ export function lineBulksAsync(  // todo: rerwrite with async iterators once ava
   return new Promise<void>((resolve, reject) => {
     let leftover = ''
 
-    const consumer = async (chunk: string) => {
-      let splitted = (leftover + chunk).split(newline)
-      if (splitted.length === 1) {
-        leftover = splitted[0]
-      } else if (splitted.length) {
+    const onData = async (chunk: string) => {
+      leftover += chunk
+      let splitted = leftover.split(newline)
+      if (splitted.length > 1) {
         leftover = splitted.pop()
         readable.pause()
         try {
           await callback(splitted)
         } catch (e) {
-          return reject(e)
+          readable  // todo: investigate if this is necessary
+            .removeListener('error', reject)
+            .removeListener('data', onData)
+            .removeListener('end', onEnd)
+          reject(e)
+        } finally {
+          readable.resume()
         }
-        readable.resume()
       }
+    }
+
+    const onEnd = async () => {
+      await callback([leftover])
+      resolve()
     }
 
     readable
       .on('error', reject)
-      .on('data', consumer)
-      .on('end', async () => {
-        await callback([leftover])
-        resolve()
-      })
+      .on('data', onData)
+      .on('end', onEnd)
   })
 }
 
@@ -281,4 +287,9 @@ export async function writeJoin(
   trailing = false
 ) {
   return writePromiseDrain(where, mu(what).join(joiner, trailing))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function writeGetLength(what: string, where: NodeJS.WritableStream) {
+
 }
