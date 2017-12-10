@@ -45,7 +45,7 @@ async function main() {
         return
       }
 
-      renprop(metaObj, 'id', 'spider-id')
+      renprop(metaObj, 'id', 'spider_id')
 
       await runner.startRunning(async () => {
         try {
