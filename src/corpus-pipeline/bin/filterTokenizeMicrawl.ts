@@ -7,7 +7,7 @@ import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { filterPlainParagraphsExtra } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
-import { mapInplace } from '../../lang'
+import { mapInplace, renprop, renpropIfExists } from '../../lang'
 
 import * as minimist from 'minimist'
 import * as path from 'path'
@@ -53,7 +53,10 @@ async function main() {
     }
     if (!meta) {
       console.error(`Meta is empty or invalid`)
+      return
     }
+
+    renpropIfExists(meta, 'datetime', 'date')  // remove after micrawl rebuild
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
       filterPlainParagraphsExtra(paragraphs, analyzer, {

@@ -22,6 +22,13 @@ export function renprop(obj: any, oldName: string, newName: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function renpropIfExists(obj: any, oldName: string, newName: string) {
+  if (oldName in obj) {
+    renprop(obj, oldName, newName)
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function match(str: string, re: RegExp) {
   let ret = str.match(re)
   if (ret) {
@@ -218,8 +225,12 @@ export function wiith<T>(value: T, f: (value: T) => any) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function mapInplace<T>(array: Array<T>, f: (element: T) => T) {
-  for (let i = 0; i < array.length; ++i) {
+export function mapInplace<T>(
+  array: Array<T>,
+  f: (element: T) => T,
+  start = 0,
+) {
+  for (let i = start; i < array.length; ++i) {
     array[i] = f(array[i])
   }
 }
