@@ -10,7 +10,11 @@ export function writePromiseDrain(
 ) {
   if (!to.write(what)) {
     return new Promise<void>((resolve, reject) => {
-      to.once('drain', resolve).once('error', reject)
+      to.on('error', reject)
+        .once('drain', () => {
+          resolve()
+          to.removeListener('error', reject)
+        })
     })
   }
 }
