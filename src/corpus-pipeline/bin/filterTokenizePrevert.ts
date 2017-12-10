@@ -63,7 +63,7 @@ async function main() {
         await writeJoin(vertStream, process.stdout, '\n', true)
       })
     }
-  }, /(<\/?\w+(?:(?:\s+\w+="[^"]*")*)*\s*\/?\s*>)/)
+  }, /(<\/?[\w\-]+(?:(?:\s+[\w\-]+="[^"]*")*)*\s*\/?\s*>)/)
 }
 
 
