@@ -13,6 +13,7 @@ export async function fetchText(url: string, options?: CoreOptions) {
     forever: true,
     ...options,
     encoding: null,
+    resolveWithFullResponse: true,
   }
 
   let response = await request(url, options)
