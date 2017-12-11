@@ -20,7 +20,6 @@ import { AwaitingWriter } from '../../lib/node/awaiting_writer';
 
 interface Args {
   udpipeUrl: string
-  offsetFile: string
   concurrency?: number
 }
 
@@ -33,12 +32,14 @@ async function main() {
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
   let outputWriter = new AwaitingWriter(process.stdout)
-  let offsetWriter = new AwaitingWriter(fs.createWriteStream(args.offsetFile))
 
   let lines = new Array<string>()
-  let bytesOut = 0
   let docCount = 0
   await linesAsyncStd(async line => {
+    if (!line) {
+      console.error(`ERROR: Unexpected empty line at doc ${docCount}`)
+      return
+    }
     lines.push(line)
     let inputAsConllu = builder.feedLine(line)
     if (inputAsConllu) {
@@ -50,14 +51,9 @@ async function main() {
           var taggedVert = mergeConlluIntoVert(myLines, conllu.split('\n'))
           var bytes = Buffer.from(taggedVert)
           await outputWriter.write(bytes)
-          await offsetWriter.write(`${bytesOut}\t${bytes.length}\n`)
-          bytesOut += bytes.length
         } catch (e) {
           console.error(`ERROR at doc ${docCount}`)
           console.error(e)
-          console.error(`**** lines: ${myLines.join('\n')}\n\n`)
-          console.error(`**** conllu: ${conllu}\n\n`)
-          console.error(`**** taggedVert: ${taggedVert}\n\n`)
           return
         }
       })
