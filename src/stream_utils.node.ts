@@ -12,8 +12,8 @@ export function writePromiseDrain(
     return new Promise<void>((resolve, reject) => {
       to.on('error', reject)
         .once('drain', () => {
-          resolve()
           to.removeListener('error', reject)
+          resolve()
         })
     })
   }
