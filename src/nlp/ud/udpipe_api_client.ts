@@ -5,11 +5,12 @@ import { Agent } from 'http'
 
 
 export class UdpipeApiClient {
-  private agent = new Agent({
-    keepAlive: true,
-  })
-
-  constructor(private endpoint: string) {
+  constructor(
+    private endpoint: string,
+    private agent = new Agent({
+      keepAlive: true,
+    })
+  ) {
   }
 
   tokenizeParagraphs(paragraphs: string[]) {
@@ -40,6 +41,13 @@ export class UdpipeApiClient {
     return this.requestConllu({
       tagger: '',
       parser: '',
+      data: conllu,
+    })
+  }
+
+  tagConnlu(conllu: string) {
+    return this.requestConllu({
+      tagger: '',
       data: conllu,
     })
   }

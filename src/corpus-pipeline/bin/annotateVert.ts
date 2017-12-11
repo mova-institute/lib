@@ -6,7 +6,7 @@ import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { Vert2ConlluBuilder } from '../vert2conllu_builder'
 import { mu } from '../../mu'
 import { tokenObj2verticalLine } from '../ud'
-import { parseConlluTokenLine } from '../../nlp/ud/conllu'
+import { parseConlluTokenLine, parseConlluTokenCells } from '../../nlp/ud/conllu'
 import { BackpressingWriter } from '../../lib/node/backpressing_writer'
 import { writePromiseDrain } from '../../stream_utils.node';
 
@@ -15,11 +15,13 @@ import * as minimist from 'minimist'
 import * as fs from 'fs'
 import { Buffer } from 'buffer';
 import { AwaitingWriter } from '../../lib/node/awaiting_writer';
+import { ApiClient } from '../../nlp/api_client';
 
 
 
 interface Args {
   udpipeUrl: string
+  tdozatUrl: string
   concurrency?: number
 }
 
@@ -29,7 +31,7 @@ async function main() {
   exitOnStdoutPipeError()
 
   let builder = new Vert2ConlluBuilder()
-  let udpipe = new UdpipeApiClient(args.udpipeUrl)
+  let api = new ApiClient(args.udpipeUrl, args.tdozatUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
   let outputWriter = new AwaitingWriter(process.stdout)
 
@@ -47,8 +49,8 @@ async function main() {
       lines = []
       await runner.startRunning(async () => {
         try {
-          var conllu = await udpipe.tagParseConnluLines(inputAsConllu)
-          var taggedVert = mergeConlluIntoVert(myLines, conllu.split('\n'))
+          var conllu = await api.tagParseConnluLines(inputAsConllu)
+          var taggedVert = mergeConlluIntoVert(myLines, conllu)
           var bytes = Buffer.from(taggedVert)
           await outputWriter.write(bytes)
         } catch (e) {
@@ -63,18 +65,18 @@ async function main() {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function mergeConlluIntoVert(vertLines: string[], conlluLines: string[]) {
+function mergeConlluIntoVert(vertLines: string[], conlluCells: string[][]) {
   let ret = ''
-  let conlluTokens = mu(conlluLines).filter(x => /^\d/.test(x))
+  let conlluTokenLines = mu(conlluCells)
   for (let l of vertLines) {
     if (l.startsWith('<')) {
       ret += l
     } else {
-      let conlluTokenLine = conlluTokens.first()
+      let conlluTokenLine = conlluTokenLines.first()
       if (!conlluTokenLine) {
         throw new Error(`Unmergable`)
       }
-      ret += tokenObj2verticalLine(parseConlluTokenLine(conlluTokenLine))
+      ret += tokenObj2verticalLine(parseConlluTokenCells(conlluTokenLine))
     }
     ret += '\n'
   }

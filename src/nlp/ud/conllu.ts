@@ -80,9 +80,13 @@ export function* streamparseConllu(lines: Iterable<string>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function parseConlluTokenLine(value: string) {
-  let split = value.split('\t')
-  mapInplace(split, x => x === '_' ? '' : x, 3)
-  let [indexStr, form, lemma, upos, xpos, featsStr, head, rel, , miscStr] = split
+  return parseConlluTokenCells(value.split('\t'))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function parseConlluTokenCells(value: string[]) {
+  mapInplace(value, x => x === '_' ? '' : x, 3)
+  let [indexStr, form, lemma, upos, xpos, featsStr, head, rel, , miscStr] = value
 
   let index = Number.parseInt(indexStr)
   let feats = parseUdKeyvalues(featsStr)
