@@ -1,14 +1,17 @@
 import { parse } from 'url'
-import { readFileSync, existsSync } from 'fs'
+import * as fs from 'fs'
+import * as path from 'path'
 
 import { decode } from 'iconv-lite'
 import { AbstractElement } from 'xmlapi'
 
 import { execSync2String } from '../../child_process.node'
-import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
+import { parseHtmlFileSync, parseHtml, parseXml } from '../../xml/utils.node'
 import { autofixDirtyText } from '../../nlp/utils'
 import { mu } from '../../mu'
 import { CorpusDoc } from '../doc_meta'
+import { execSync } from 'child_process';
+import { trimExtension } from '../../string_utils';
 
 const detectCharacterEncoding = require('detect-character-encoding');
 
@@ -37,7 +40,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
   let metaPath = `${basePath}.meta.html`
 
   try {
-    let format = ['txt', 'htm', 'fb2', 'doc'].find(x => existsSync(`${basePath}.${x}`))
+    let format = ['txt', 'htm', 'fb2', 'doc'].find(x => fs.existsSync(`${basePath}.${x}`))
     if (!format) {
       // console.log(`format not supported ${basePath}`)
       return
@@ -59,23 +62,13 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
 
     if (format === 'doc') {
       if (!docFormatBooktypes.find(x => x === meta.documentType)) {
+        console.error(`Forbidden genre for a .doc`)
         return
       }
-      let content = execSync2String(`textutil -stdout -convert html ${dataPath}`)
-      if (hasSmashedEncoding(content)) {
-        console.log(`bad encoding`)
-        return
+      let paragraphs = extractParsFromDocWithLibre(dataPath)
+      if (paragraphs) {
+        yield { paragraphs, ...meta } as CorpusDoc
       }
-      // console.log(`${'#'.repeat(80)}\n${content.slice(-100)}${'#'.repeat(80)}\n`)
-      content = content.replace(/<head>[\s\S]*<\/head>/, '')  // needed
-      // console.log(content)
-      let root = parseHtml(content)
-      let paragraphs = mu(root.evaluateElements('//p'))
-        .map(x => (x.text().trim()))
-        .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
-        .toArray()
-      // console.log(paragraphs.length)
-      yield { paragraphs, ...meta } as CorpusDoc
 
       return
     }
@@ -225,7 +218,7 @@ function hasSmashedEncoding(str: string) {
 
 //------------------------------------------------------------------------------
 function readFileSyncAutodetect(path: string) {
-  let bytes = readFileSync(path)
+  let bytes = fs.readFileSync(path)
   let encoding = detectCharacterEncoding(bytes).encoding
   let content = decode(bytes, encoding)
   if (!hasSmashedEncoding(content)) {
@@ -251,6 +244,30 @@ function normalizeText(str: string) {
   let ret = autofixDirtyText(str)
   ret = killReferences(ret)
   return ret.trim()
+}
+
+//------------------------------------------------------------------------------
+function extractParsFromDocWithLibre(filePath: string) {
+  execSync(`soffice --headless --convert-to html `  // hangs for xhtml
+    + `"${filePath}" --outdir tmp`)
+  let convertedPath = path.basename(filePath)
+  convertedPath = trimExtension(convertedPath)
+  convertedPath = path.join('tmp', `${convertedPath}.html`)
+  let content = fs.readFileSync(convertedPath, 'utf8')
+  fs.unlinkSync(convertedPath)
+  if (hasSmashedEncoding(content)) {
+    console.log(`bad encoding`)
+    return
+  }
+  content = content.replace(/<head>[\s\S]*<\/head>/, '')  // needed
+  content = content.replace(/<br[^>]>/g, ' ')
+  let root = parseHtml(content)
+  let paragraphs = mu(root.evaluateElements('//p|//li'))
+    .map(x => (x.text().trim()))
+    .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+    .toArray()
+
+  return paragraphs
 }
 
 
