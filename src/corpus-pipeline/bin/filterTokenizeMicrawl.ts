@@ -56,8 +56,6 @@ async function main() {
       return
     }
 
-    renpropIfExists(meta, 'datetime', 'date')  // remove after micrawl rebuild
-
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
       filterPlainParagraphsExtra(paragraphs, analyzer, {
         filterPreviews: false,
