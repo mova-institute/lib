@@ -15,7 +15,7 @@ import * as minimist from 'minimist'
 
 interface Args {
   udpipeUrl: string
-  concurrency?: number
+  udpipeConcurrency?: number
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -28,7 +28,7 @@ async function main() {
   let builder = new PrevertDocBuilder()
   let analyzer = createMorphAnalyzerSync()
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
+  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
 
   await linesAsyncStd(async nodeStr => {
     let doc = builder.feedNode(nodeStr)

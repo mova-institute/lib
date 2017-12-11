@@ -17,7 +17,7 @@ import * as path from 'path'
 interface Args {
   basePath: string
   udpipeUrl: string
-  concurrency?: number
+  udpipeConcurrency?: number
 }
 
 
@@ -26,7 +26,7 @@ async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
+  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
   let analyzer = createMorphAnalyzerSync()
 
   await linesAsyncStd(async paraPath => {
