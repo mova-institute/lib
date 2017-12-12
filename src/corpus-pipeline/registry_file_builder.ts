@@ -1,8 +1,13 @@
+import * as path from 'path'
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
   // name: string
   title: string
   hasGaps: boolean
+  path?: string
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -399,6 +404,10 @@ SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
 #FREQTTATTRS ""
 WPOSLIST ",іменник,noun|propn,дієслово,verb,прикметник,adj,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,розділовий,punct,залишок,x"
 `
+
+  if (params.path) {
+    corpus += `\nPATH "${path.resolve(params.path)}"`
+  }
 
 
   corpus = corpus.trim()
