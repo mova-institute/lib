@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesBackpressedStd } from '../../utils.node'
+import { linesBackpressedStd, exitOnStdoutPipeError } from '../../utils.node'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -17,6 +17,8 @@ interface Args {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
+  exitOnStdoutPipeError()
+
   const args: Args = minimist(process.argv.slice(2), {
     boolean: ['lemma', 'noLc']
   }) as any
@@ -24,7 +26,7 @@ async function main() {
   let firstInSent = true
   await linesBackpressedStd((line, write) => {
     if (!line.includes('\t')) {
-      if (/^<s[> ]/.test(line)) {
+      if (/^<\/s>/.test(line)) {
         write('\n')
         firstInSent = true
       }
@@ -41,10 +43,11 @@ async function main() {
     }
     if (!firstInSent) {
       write(' ')
-      firstInSent = false
     }
 
     write(word)
+
+    firstInSent = false
   })
 }
 
