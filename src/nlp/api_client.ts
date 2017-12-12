@@ -3,7 +3,7 @@ import { UdpipeApiClient } from './ud/udpipe_api_client'
 import * as request from 'request-promise-native'
 
 import { Agent } from 'http'
-import { mu } from '../mu';
+import { mu, Mu } from '../mu';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,9 @@ export class ApiClient {
   async tagParseConnluLines(lines: string[]) {
     // temp while tdozat is not ready
     let res = await this.udpipeClient.tagParseConnluLines(lines)
-    return res.split('\n').map(x => x.split('\t'))
+    return mu(res.split('\n'))
+      .filter(x => /^\d/.test(x))
+      .map(x => x.split('\t'))
 
     // let tokened = lines.join('\n') + '\n'
     // let tagged = await this.udpipeClient.tagConnlu(tokened)

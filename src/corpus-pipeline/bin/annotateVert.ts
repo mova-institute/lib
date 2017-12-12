@@ -4,7 +4,7 @@ import { linesBackpressedStd, exitOnStdoutPipeError, linesAsyncStd } from '../..
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { Vert2ConlluBuilder } from '../vert2conllu_builder'
-import { mu } from '../../mu'
+import { mu, Mu } from '../../mu'
 import { tokenObj2verticalLine } from '../ud'
 import { parseConlluTokenLine, parseConlluTokenCells } from '../../nlp/ud/conllu'
 import { BackpressingWriter } from '../../lib/node/backpressing_writer'
@@ -65,7 +65,7 @@ async function main() {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function mergeConlluIntoVert(vertLines: string[], conlluCells: string[][]) {
+function mergeConlluIntoVert(vertLines: string[], conlluCells: Mu<string[]>) {
   let ret = ''
   let conlluTokenLines = mu(conlluCells)
   for (let l of vertLines) {
