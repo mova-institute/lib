@@ -19,7 +19,7 @@ async function main() {
   let insideGap = false
   let docStartOffset = 0
   let curOffset = 0
-  await linesBackpressedStd(async (line, write) => {
+  await linesBackpressedStd((line, write) => {
     if (line.startsWith('1')) {
       if (!/^1\t<doc[\s>]/.test(line)) {
         insideGap = true
