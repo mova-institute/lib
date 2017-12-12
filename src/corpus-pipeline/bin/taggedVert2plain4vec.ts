@@ -12,19 +12,19 @@ import { join } from 'path'
 
 interface Args {
   lemma: boolean
-  noLc: boolean
+  lowercase: boolean
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function main() {
+function main() {
   exitOnStdoutPipeError()
 
   const args: Args = minimist(process.argv.slice(2), {
-    boolean: ['lemma', 'noLc']
+    boolean: ['lemma', 'lowercase`']
   }) as any
 
   let firstInSent = true
-  await linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, write) => {
     if (!line.includes('\t')) {
       if (/^<\/s>/.test(line)) {
         write('\n')
@@ -38,7 +38,7 @@ async function main() {
     }
 
     let word = args.lemma ? lemma : form
-    if (!args.noLc) {
+    if (args.lowercase) {
       word = word.toLowerCase()
     }
     if (!firstInSent) {
@@ -53,5 +53,5 @@ async function main() {
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
-  main().catch(e => console.error(e))
+  main()
 }

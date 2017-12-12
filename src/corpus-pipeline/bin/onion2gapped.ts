@@ -10,7 +10,7 @@ import * as fs from 'fs'
 const gapTagBytes = Buffer.from(`<gap type="dupe"/>\n`)
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function main() {
+function main() {
   exitOnStdoutPipeError()
 
   let offsetWriter = new BackpressingWriter(
@@ -19,7 +19,7 @@ async function main() {
   let insideGap = false
   let docStartOffset = 0
   let curOffset = 0
-  await linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, write) => {
     if (line.startsWith('1')) {
       if (!/^1\t<doc[\s>]/.test(line)) {
         insideGap = true
@@ -45,5 +45,5 @@ async function main() {
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
-  main().catch(e => console.error(e))
+  main()
 }
