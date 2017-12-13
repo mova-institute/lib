@@ -10,8 +10,14 @@ export function tokenObj2verticalLine(token: ConlluToken) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function token2verticalLine(form: string, lemma: string, upos: UdPos, feats: UdFeats,
-  rel: string, gluedNext = false, id?: string
+export function token2verticalLine(
+  form: string,
+  lemma: string,
+  upos: UdPos,
+  feats: UdFeats,
+  rel: string,
+  gluedNext = false,
+  id?: string,
 ) {
   let tag = ud2conlluishString(upos, feats)
   let domesticatedPos = domesticateUdPos(upos)
@@ -19,7 +25,6 @@ export function token2verticalLine(form: string, lemma: string, upos: UdPos, fea
 
   let ret = `${form}\t${lemma}\t${tag}\t`
   ret += [
-    // tag,
     upos,
     domesticatedPos,
     feats.Abbr,
