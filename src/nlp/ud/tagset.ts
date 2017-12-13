@@ -514,6 +514,12 @@ export function ud2conlluishString(pos: UdPos, features: UdFeats) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function toConlluishString(interp: MorphInterp) {
+  let { pos, features } = toUd(interp)
+  return ud2conlluishString(pos, features)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function toUdString(interp: MorphInterp) {
   return udFeatures2conlluString(toUd(interp).features)
 }

@@ -234,6 +234,7 @@ export class MorphAnalyzer {
   private numeralMap = new CachedValue<NumeralMapObj[]>(this.buildNumeralMap.bind(this))
   private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)/*.denormalize()*/))
+  private dictCacheUnlim: Map<string, MorphInterp[]>
 
   constructor(private dictionary: Dictionary) {
     this.buildNumeralMap()
@@ -251,6 +252,15 @@ export class MorphAnalyzer {
 
   setKeepParadigmOmonyms(value = true) {
     this.keepParadigmOmonyms = value
+    return this
+  }
+
+  setUseUnlimCache(value = true) {
+    if (value) {
+      this.dictCacheUnlim = new Map()
+    } else {
+      this.dictCacheUnlim = undefined
+    }
     return this
   }
 
@@ -646,9 +656,18 @@ export class MorphAnalyzer {
   }
 
   private lookup(token: string) {
-    // let interps = this.dictCache.get(token).map(x => x.clone())
-    let interps = this.lookupRaw(token)
-      .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+    if (this.dictCacheUnlim) {
+      var interps = this.dictCacheUnlim.get(token)
+      if (!interps) {
+        interps = this.lookupRaw(token)
+          .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+        this.dictCacheUnlim.set(token, interps)
+      }
+      interps = interps.map(x => x.clone())
+    } else {
+      interps = this.lookupRaw(token)
+        .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
+    }
     if (!this.keepParadigmOmonyms) {
       interps.forEach(x => x.features.paradigmOmonym = undefined)
     }

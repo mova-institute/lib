@@ -6,6 +6,7 @@ import * as path from 'path'
 export interface RegistryFileParams {
   // name: string
   title: string
+  hasDictTags: boolean
   hasGaps: boolean
   path?: string
 }
@@ -38,8 +39,6 @@ ATTRIBUTE word {
 
 ATTRIBUTE lc {
   LABEL "слово (мал. літерами)"
-  MULTIVALUE yes
-  MULTISEP "|"
   DYNAMIC utf8lowercase
   DYNLIB internal
   ARG1 "C"
@@ -51,15 +50,11 @@ ATTRIBUTE lc {
 
 ATTRIBUTE lemma {
   LABEL "лема"
-  MULTIVALUE yes
-  MULTISEP  "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE lemma_lc  {
   LABEL "лема (мал. літерами)"
-  MULTIVALUE yes
-  MULTISEP "|"
   DYNAMIC utf8lowercase
   DYNLIB internal
   ARG1 "C"
@@ -76,218 +71,156 @@ ATTRIBUTE tag {
 
 ATTRIBUTE pos {
   LABEL "ЧМ"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE pos2 {
   LABEL "українізована ЧМ"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE abbr {
   LABEL "скорочення"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE animacy {
   LABEL "істотовість"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE animacy_gram {
   LABEL "граматична істотовість"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE aspect {
   LABEL "вид"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE case {
   LABEL "відмінок"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE degree {
   LABEL "ступінь"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE foreign {
   LABEL "чужинність"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE gender {
   LABEL "рід"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE hyph {
   LABEL "передрисковість"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE mood {
   LABEL "спосіб"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE nametype {
   LABEL "тип імені"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE number {
   LABEL "число"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE numform {
   LABEL "запис числівника"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE numtype {
   LABEL "тип числівника"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE parttype {
   LABEL "тип частки"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE person {
   LABEL "особа"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE poss {
   LABEL "присвійність"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE prepcase {
   LABEL ""
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE prontype {
   LABEL "займенниковий тип"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 #ATTRIBUTE punctside {
 #  LABEL "бік пунктуації"
-#  MULTIVALUE yes
-#  MULTISEP "|"
 #  TYPE "FD_FGD"
 #}
 
 ATTRIBUTE puncttype {
   LABEL "тип пунктуації"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE reflex {
   LABEL "зворотність"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE reverse {
   LABEL "зворотність дієслова"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE tense {
   LABEL "час"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE variant {
   LABEL "форма прикметника"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE verbform {
   LABEL "форма дієслова"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE voice {
   LABEL "стан"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE rel {
   LABEL "реляція"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE urel {
   LABEL "універсальна реляція"
-  MULTIVALUE yes
-  MULTISEP "|"
   TYPE "FD_FGD"
 }
 
@@ -298,8 +231,25 @@ ATTRIBUTE spaceafter  {
 ATTRIBUTE id {
   LABEL "номер токена"
   TYPE "FD_FGD"
+}`
+  if (params.hasDictTags) {
+    corpus += `
+
+ATTRIBUTE lemma_dic {
+  LABEL "лема зі словника"
+  TYPE "FD_FGD"
+  MULTIVALUE yes
+  MULTISEP "|"
 }
 
+ATTRIBUTE tag_dic {
+  LABEL "повна мітка зі словника"
+  TYPE "FD_FGD"
+  MULTIVALUE yes
+  MULTISEP "-"
+}`
+  }
+  corpus += `
 
 
 ################################################################################
