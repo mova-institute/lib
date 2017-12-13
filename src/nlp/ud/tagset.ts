@@ -9,7 +9,7 @@ import {
   PartType, PunctuationType, PunctuationSide, VerbReversivity,
 } from '../morph_features'
 
-import { MorphInterp, featureName2objMap, featureObj2nameMap } from '../morph_interp'
+import { MorphInterp, featureName2objMap } from '../morph_interp'
 
 
 export type UdBoolean = 'Yes'

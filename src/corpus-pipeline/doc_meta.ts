@@ -27,7 +27,7 @@ export interface CorpusDocumentAttributes {
 }
 
 export class DocMeta {
-  constructor(private referenceTitle: string) {
+  constructor() {
 
   }
 

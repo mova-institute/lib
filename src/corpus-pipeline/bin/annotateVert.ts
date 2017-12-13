@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 
-import { linesBackpressedStd, exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
-import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
+import { exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { Vert2ConlluBuilder } from '../vert2conllu_builder'
 import { mu, Mu } from '../../mu'
 import { tokenObj2verticalLine } from '../ud'
-import { parseConlluTokenLine, parseConlluTokenCells, ConlluToken } from '../../nlp/ud/conllu'
-import { BackpressingWriter } from '../../lib/node/backpressing_writer'
-import { writePromiseDrain } from '../../stream_utils.node'
+import { parseConlluTokenCells } from '../../nlp/ud/conllu'
 import { AwaitingWriter } from '../../lib/node/awaiting_writer'
 import { ApiClient } from '../../nlp/api_client'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
@@ -17,7 +14,6 @@ import { toConlluishString } from '../../nlp/ud/tagset';
 
 import * as minimist from 'minimist'
 
-import * as fs from 'fs'
 import * as os from 'os'
 import { Buffer } from 'buffer'
 
@@ -78,7 +74,6 @@ function mergeConlluIntoVert(
   analyzer: MorphAnalyzer,
 ) {
   let ret = ''
-  let prevTok: ConlluToken
   let conlluTokens = mu(conlluCells).map(x => parseConlluTokenCells(x)).window(2)
   for (let l of vertLines) {
     if (l.startsWith('<')) {

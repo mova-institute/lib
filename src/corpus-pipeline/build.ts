@@ -15,19 +15,18 @@ import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
-import { writeFileSyncMkdirp, parseJsonFileSync, write2jsonFile } from '../utils.node'
+import { writeFileSyncMkdirp, parseJsonFileSync } from '../utils.node'
 import { parseXmlFileSync } from '../xml/utils.node'
 // import { conlluToken2vertical } from './extractors/conllu'
 import { buildMiteiVertical } from './mitei_build_utils'
 import { trimExtension, zerofill, toFloorPercent } from '../string_utils'
 import { StanfordTaggerClient } from '../nlp/stanford_tagger_client'
 import * as nlpUtils from '../nlp/utils'
-import * as nlpStatic from '../nlp/static'
 import {
   tokenizeMixml, mixml2tokenStream, token2sketchVertical, morphInterpret,
   autofixDirtyText, polishXml2verticalStream, normalizeWebParaSafe,
 } from '../nlp/utils'
-import { mu, Mu } from '../mu'
+import { mu } from '../mu'
 import { uniq } from '../algo'
 import { AsyncTaskRunner } from '../lib/async_task_runner'
 import { UdpipeApiClient } from '../nlp/ud/udpipe_api_client'
@@ -301,16 +300,6 @@ function isConsideredUkrainan(paragraphs: string[], analyzer: MorphAnalyzer) {
 }
 
 //------------------------------------------------------------------------------
-function mainOld(args: Args) {
-  // console.log(args.part)
-  // process.exit(0)
-  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
-  // let verticalFile = createVerticalFile(args.workspace, args.part)
-  let func = partName2function[args.part]
-  func(args.workspace, analyzer, args)
-}
-
-//------------------------------------------------------------------------------
 async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyzer) {
   console.log(`Now bulding Ukrainian side of parallel corpora`)
 
@@ -468,17 +457,6 @@ function writeDocMetaAndParagraphs(meta: any, paragraphs: string[], analyzer: Mo
     fs.writeSync(verticalFile, '</p>\n')
   }
   fs.writeSync(verticalFile, `</doc>\n`)
-}
-
-//------------------------------------------------------------------------------
-function umolodaFilenameComparator(a: string, b: string) {
-  return Number(trimExtension(basename(a)).split('_')[2]) -
-    Number(trimExtension(basename(b)).split('_')[2])
-}
-
-//------------------------------------------------------------------------------
-function htmlDocCreator(html: string) {
-  return new LibxmljsDocument(parseHtmlString(html))
 }
 
 //------------------------------------------------------------------------------

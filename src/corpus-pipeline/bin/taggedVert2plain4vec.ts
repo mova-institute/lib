@@ -2,11 +2,7 @@
 
 import { linesBackpressedStd, exitOnStdoutPipeError } from '../../utils.node'
 
-import * as glob from 'glob'
 import * as minimist from 'minimist'
-
-import * as fs from 'fs'
-import { join } from 'path'
 
 
 

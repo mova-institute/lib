@@ -7,7 +7,7 @@ import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { filterPlainParagraphsExtra } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
-import { mapInplace, renprop, renpropIfExists } from '../../lang'
+import { mapInplace } from '../../lang'
 
 import * as minimist from 'minimist'
 import * as path from 'path'

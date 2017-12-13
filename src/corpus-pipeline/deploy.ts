@@ -1,19 +1,16 @@
 #!/usr/bin/env node
 
-import { readFileSync, existsSync } from 'fs'
-import { basename } from 'path'
-import * as readline from 'readline'
-import * as minimist from 'minimist'
-
-import * as glob from 'glob'
-
 import { r, arrayed } from '../lang'
 import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
 import { CatStream } from '../cat_stream'
 import { execPipe } from '../child_process.node'
-import { mu } from '../mu'
-import { parseJsonFileSync } from '../utils.node';
-import { generateRegistryFile } from './registry_file_builder';
+import { parseJsonFileSync } from '../utils.node'
+import { generateRegistryFile } from './registry_file_builder'
+
+import { readFileSync, existsSync } from 'fs'
+import { basename } from 'path'
+import * as readline from 'readline'
+import * as minimist from 'minimist'
 
 
 
