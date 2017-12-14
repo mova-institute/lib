@@ -234,7 +234,8 @@ export class MorphAnalyzer {
   private numeralMap = new CachedValue<NumeralMapObj[]>(this.buildNumeralMap.bind(this))
   private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)/*.denormalize()*/))
-  private dictCacheUnlim: Map<string, MorphInterp[]>
+  private dictCacheNaive = new Map<string, MorphInterp[]>()  // ~800K / first GB
+  private naiveCacheLimit = 0
 
   constructor(private dictionary: Dictionary) {
     this.buildNumeralMap()
@@ -255,12 +256,14 @@ export class MorphAnalyzer {
     return this
   }
 
-  setUseUnlimCache(value = true) {
-    if (value) {
-      this.dictCacheUnlim = new Map()
-    } else {
-      this.dictCacheUnlim = undefined
-    }
+  setNaiveCacheLimit(value: number) {
+    this.naiveCacheLimit = value
+    return this
+  }
+
+  setDebugNaiveCache() {
+    const f = () => console.error(`cache size: ${this.dictCacheNaive.size} items`)
+    setInterval(f, 5 * 60 * 1000)
     return this
   }
 
@@ -656,12 +659,14 @@ export class MorphAnalyzer {
   }
 
   private lookup(token: string) {
-    if (this.dictCacheUnlim) {
-      var interps = this.dictCacheUnlim.get(token)
+    if (this.naiveCacheLimit) {
+      var interps = this.dictCacheNaive.get(token)
       if (!interps) {
         interps = this.lookupRaw(token)
           .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
-        this.dictCacheUnlim.set(token, interps)
+        if (this.dictCacheNaive.size <= this.naiveCacheLimit) {
+          this.dictCacheNaive.set(token, interps)
+        }
       }
       interps = interps.map(x => x.clone())
     } else {
