@@ -8,6 +8,7 @@ export function keyvalue2attributesNormalized(obj: any) {
         .toString()
         .replace(/\s+/g, ' ')
         .trim()
+        .replace(/\\$/, '\\ ')  // todo
         .replace(/"/g, '\\"')  // compilecorp uses this escape, not entities
       return `${key}="${value}"`
     }).join(' ')
