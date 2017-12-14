@@ -22,7 +22,7 @@ import { Buffer } from 'buffer'
 interface Args {
   udpipeUrl: string
   tdozatUrl: string
-  concurrency?: number
+  udpipeConcurrency?: number
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -30,12 +30,12 @@ async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
   exitOnStdoutPipeError()
 
-  args.concurrency = args.concurrency || Math.max(1, os.cpus().length - 1)
+  args.udpipeConcurrency = args.udpipeConcurrency || Math.max(1, os.cpus().length - 1)
 
   let builder = new Vert2ConlluBuilder()
   let api = new ApiClient(args.udpipeUrl, args.tdozatUrl)
-  let runner = new AsyncTaskRunner().setConcurrency(args.concurrency)
-  let analyzer = createMorphAnalyzerSync().setUseUnlimCache()
+  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
+  let analyzer = createMorphAnalyzerSync()
   let outputWriter = new AwaitingWriter(process.stdout)
 
   let lines = new Array<string>()
@@ -85,15 +85,11 @@ function mergeConlluIntoVert(
       }
       ret += tokenObj2verticalLine(tok)
 
-      let dictInterps = analyzer.tag(tok.form, nextTok.form)
+      let dictInterps = analyzer.tag(tok.form, nextTok && nextTok.form)
       ret += '\t'
       ret += dictInterps
-        .map(x => x.lemma)
-        .join('|')
-      ret += '\t'
-      ret += dictInterps
-        .map(x => toConlluishString(x))
-        .join('-')
+        .map(x => `${x.lemma}/${toConlluishString(x)}`)
+        .join(';')
     }
     ret += '\n'
   }

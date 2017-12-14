@@ -19,7 +19,7 @@ export function token2verticalLine(
   gluedNext = false,
   id?: string,
 ) {
-  let tag = ud2conlluishString(upos, feats)
+  let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
 

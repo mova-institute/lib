@@ -235,18 +235,18 @@ ATTRIBUTE id {
   if (params.hasDictTags) {
     corpus += `
 
-ATTRIBUTE lemma_dic {
-  LABEL "лема зі словника"
-  TYPE "FD_FGD"
-  MULTIVALUE yes
-  MULTISEP "|"
-}
+#ATTRIBUTE lemma_dic {
+#  LABEL "лема зі словника"
+#  TYPE "FD_FGD"
+#  MULTIVALUE yes
+#  MULTISEP "|"
+#}
 
 ATTRIBUTE tag_dic {
   LABEL "повна мітка зі словника"
   TYPE "FD_FGD"
   MULTIVALUE yes
-  MULTISEP "-"
+  MULTISEP ";"
 }`
   }
   corpus += `
