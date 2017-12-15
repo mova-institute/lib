@@ -20,8 +20,11 @@ function main() {
   let docStartOffset = 0
   let curOffset = 0
   linesBackpressedStd((line, write) => {
-    if (line.startsWith('1')) {
-      if (!/^1\t<doc[\s>]/.test(line)) {
+    let isMarkedAsDupe = line.startsWith('1')
+    let payload = line.substr(2)
+
+    if (isMarkedAsDupe) {
+      if (!/^<doc[\s>]/.test(payload)) {
         insideGap = true
       }
     } else {
@@ -30,7 +33,7 @@ function main() {
         curOffset += gapTagBytes.length
         insideGap = false
       }
-      let outLine = `${line.substr(2)}\n`
+      let outLine = `${payload}\n`
       let bytes = Buffer.from(outLine)
       write(bytes)
       curOffset += bytes.length
