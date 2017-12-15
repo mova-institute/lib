@@ -34,7 +34,8 @@ async function main(args: Args) {
     mkdirpSync(fetchedArticlesDir)
     let articleRegistry = new FsMap(fetchedArticlesDir)
 
-    for (let i = Math.max(950, args.oldestNode); i <= args.latestNode; ++i) {
+    let min = Math.max(950, args.oldestNode)
+    for (let i = args.latestNode; i > min; --i) {
       if (articleRegistry.has(`${i}.html`)) {
         continue
       }
@@ -43,7 +44,7 @@ async function main(args: Args) {
       try {
         content = await fetchText(`http://zbruc.eu/node/${i}`)
       } catch (e) {
-        console.error(`EXCEPTION ${e.message || ''}`)
+        console.error(e)
         continue
       }
       articleRegistry.set(`${i}.html`, content)
