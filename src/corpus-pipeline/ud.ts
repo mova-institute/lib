@@ -6,7 +6,7 @@ import { ConlluToken } from '../nlp/ud/conllu'
 ////////////////////////////////////////////////////////////////////////////////
 export function tokenObj2verticalLine(token: ConlluToken) {
   return token2verticalLine(token.form, token.lemma, token.upos, token.feats as any,
-    token.rel, token.misc.SpaceAfter !== 'No')
+    token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,12 +16,15 @@ export function token2verticalLine(
   upos: UdPos,
   feats: UdFeats,
   rel: string,
+  index: number,
+  head: number,
   gluedNext = false,
   id?: string,
 ) {
   let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
+  let relativeHead = prepareRelativeHead(head, index)
 
   let ret = `${form}\t${lemma}\t${tag}\t`
   ret += [
@@ -56,9 +59,10 @@ export function token2verticalLine(
     feats.Voice,
     rel,
     urel,
+    relativeHead,
     gluedNext ? 'no' : '',
     id,
-  ].map(x => x || '').join('\t').toLowerCase()
+  ].map(x => x === undefined ? '' : x).join('\t').toLowerCase()
 
   return ret
 }
@@ -82,4 +86,15 @@ function prepareUrel(rel: string | undefined) {
     ret = trimAfterLast(rel, ':')
   }
   return ret
+}
+
+//------------------------------------------------------------------------------
+function prepareRelativeHead(head: number, index: number) {
+  if (head === 0) {
+    return 0
+  }
+  if (head === undefined) {
+    return ''
+  }
+  return head - index
 }

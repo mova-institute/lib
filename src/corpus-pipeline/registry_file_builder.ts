@@ -224,6 +224,11 @@ ATTRIBUTE urel {
   TYPE "FD_FGD"
 }
 
+ATTRIBUTE head {
+  LABEL "голова"
+  TYPE "FD_FGD"
+}
+
 ATTRIBUTE spaceafter  {
   LABEL "пробіл після"
 }

@@ -102,7 +102,7 @@ function* streamVertical(root: AbstractElement, docMeta) {
     for (let token of tokens) {
       let { pos, features } = toUd(token.interp)
       yield token2verticalLine(token.form, token.interp.lemma,
-        pos, features, token.rel, token.gluedNext, token.getAttribute('id'))
+        pos, features, token.rel, token.index, token.headIndex, token.getAttribute('id'))
       if (token.gluedNext) {
         yield '<g/>'
       }

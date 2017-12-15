@@ -15,7 +15,7 @@ export interface ConlluToken {
   upos: UdPos
   xpos: string
   feats: Dict<string>
-  head: string
+  head: number
   rel: string
   deps: [number, string][]
   misc: Dict<string>
@@ -86,9 +86,10 @@ export function parseConlluTokenLine(value: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function parseConlluTokenCells(value: string[]) {
   mapInplace(value, x => x === '_' ? '' : x, 3)
-  let [indexStr, form, lemma, upos, xpos, featsStr, head, rel, , miscStr] = value
+  let [indexStr, form, lemma, upos, xpos, featsStr, headStr, rel, , miscStr] = value
 
   let index = Number.parseInt(indexStr)
+  let head = Number.parseInt(headStr)
   let feats = parseUdKeyvalues(featsStr)
   let misc = parseUdKeyvalues(miscStr)
 
