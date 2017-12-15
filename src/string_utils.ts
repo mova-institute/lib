@@ -206,3 +206,8 @@ export function toFloorPercent(nominator: number, denominator: number, aftercomm
   let exp = 10 ** aftercomma
   return (Math.floor(nominator / denominator * exp * 100) / exp).toFixed(aftercomma)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function joinAsRe(parts: string[], flags = '') {
+  return new RegExp(parts.join('|'), flags)
+}

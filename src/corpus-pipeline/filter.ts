@@ -1,6 +1,6 @@
 import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE, WCHAR_UK, WCHAR_OTHER, WORDCHAR_UK_RE } from "../nlp/static"
 import { MorphAnalyzer } from "../nlp/morph_analyzer/morph_analyzer"
-import { last } from "../lang"
+import { last, r } from "../lang"
 import { tokenizeUkNew, tokenizeUk } from "../nlp/utils"
 
 import { mu } from "../mu"
@@ -27,6 +27,10 @@ const regexesKillingParagraph: [RegExp, string][] = [
 const regexesKillingDoc: [RegExp, string][] = [
   [/[Ђћџ]/, `possible encoding error`],
 ]
+const wordsKillingDocRe = new RegExp(`^(${[
+  'ьй',
+  'ьм',
+].join('')})$`, 'i')
 const functionsKillingParagraph: [(p: string) => boolean, string][] = [
   [p => ruSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `ru but not uk`],
   [p => beSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `be but not uk`],
@@ -36,19 +40,46 @@ const functionsKillingParagraph: [(p: string) => boolean, string][] = [
 const substringsKillingParagrph = [
   'електронна адреса захищена від спам-ботів. вам потрібно увімкнути JavaScript',
   'Этот e-mail адрес защищен от спам-ботов',
-  'Переведено сервисом'
+  'Переведено сервисом',
+  'Ваш броузер застарів',
+  // 'головна :: про автора',
+  '::',
+  '</embed></object>',
+  // '',
 ].map(x => x.toLowerCase())
+
+const titleRegsKillingDoc = [
+  /^Перегляд вихідного коду сторінки/
+]
+
+const urlsKillingDoc = new RegExp([
+  r`http://om.net.ua/14/14_9/14_9006_J--motivatsionnie-sostoyaniya.html`,
+].join('|'))
 
 const defaultOptions = {
   filterPreviews: true,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function filterPlainParagraphs(
+export function filterParagraphedDoc(
   pp: string[],
+  meta: any,
   analyzer: MorphAnalyzer,
   options = defaultOptions,
 ) {
+  if (meta) {
+    if (meta.title) {
+      for (let re of titleRegsKillingDoc) {
+        if (re.test(meta.title)) {
+          return { docValid: false, filteredIndexes: [] }
+        }
+      }
+    }
+    if (urlsKillingDoc.test(meta.url)) {
+      return { docValid: false, filteredIndexes: [] }
+    }
+  }
+
   let filtered = new Array<number>()
 
   let before = pp.slice()
@@ -104,8 +135,9 @@ export function filterPlainParagraphs(
       }
     }
 
-    let unescaped = he.unescape(pp[i])
-    if (unescaped.length != pp[i].length) {
+    let prepared = pp[i].replace(/&\s*(\S+)\s*;/g, '&$1;')
+    let unescaped = he.unescape(prepared)
+    if (unescaped.length != prepared.length) {
       reportRmPar(i, p, 'html markup')
       filtered.push(i)
       continue ploop
@@ -115,6 +147,13 @@ export function filterPlainParagraphs(
     let naiveSplit = mu(tokenizeUk(pp[i]))
       .map(x => x.token)
       .toArray()
+
+    let stopword = naiveSplit.find(x => wordsKillingDocRe.test(x))
+    if (stopword) {
+      reportRmDoc(i, p, `met "${stopword}"`)
+      return { docValid: false, filteredIndexes: filtered }
+    }
+
     let isSuspicious = [ruSpecLettersRe, /[ђњџћүө¤≥]/].some(x => x.test(pp[i]))
     if (isSuspicious) {
       let numNondict = mu(naiveSplit).count(x => !analyzer.tag(x).length)
@@ -161,15 +200,16 @@ export function filterTokenizedParagraphs(pp: string[][], analyzer: MorphAnalyze
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function filterPlainParagraphsExtra(
+export function filterParagraphedDocExtra(
   paragraphs: string[],
+  meta: any,
   analyzer: MorphAnalyzer,
   options = defaultOptions,
 ) {
   let filteredParagraphs = new Array<string>()
   let gapFollowerIndexes = new Array<number>()
 
-  let { docValid, filteredIndexes } = filterPlainParagraphs(paragraphs, analyzer, options)
+  let { docValid, filteredIndexes } = filterParagraphedDoc(paragraphs, meta, analyzer, options)
   if (!docValid) {
     return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes }
   }

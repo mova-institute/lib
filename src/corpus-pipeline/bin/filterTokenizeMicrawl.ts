@@ -4,7 +4,7 @@ import { conlluStrAndMeta2vertical } from '../tovert'
 import { parseJsonFile, linesAsyncStd, writeJoin } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
-import { filterPlainParagraphsExtra } from '../filter'
+import { filterParagraphedDocExtra } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
@@ -57,7 +57,7 @@ async function main() {
     }
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
-      filterPlainParagraphsExtra(paragraphs, analyzer, {
+      filterParagraphedDocExtra(paragraphs, meta, analyzer, {
         filterPreviews: false,
       })
 

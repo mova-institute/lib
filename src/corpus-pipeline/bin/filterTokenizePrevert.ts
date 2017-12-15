@@ -3,7 +3,7 @@
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
-import { filterPlainParagraphsExtra } from '../filter'
+import { filterParagraphedDocExtra } from '../filter'
 import { linesAsyncStd, exitOnStdoutPipeError, writeJoin, } from '../../utils.node'
 import { makeObject, renprop } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
@@ -36,7 +36,7 @@ async function main() {
       let { meta, paragraphs } = doc
       let metaObj = meta && makeObject(meta)
       let { docValid, filteredParagraphs, gapFollowerIndexes } =
-        filterPlainParagraphsExtra(paragraphs, analyzer)
+        filterParagraphedDocExtra(paragraphs, meta, analyzer)
       if (!docValid) {
         return
       }
