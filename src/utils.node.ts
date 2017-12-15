@@ -97,6 +97,7 @@ export function linesAsyncStd(
   callback: (line: string) => void,
   newline: string | RegExp = '\n'
 ) {
+  process.stdin.setEncoding('utf8')
   return linesAsync(process.stdin, callback, newline)
 }
 ////////////////////////////////////////////////////////////////////////////////

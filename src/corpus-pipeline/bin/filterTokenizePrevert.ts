@@ -23,7 +23,6 @@ async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
   exitOnStdoutPipeError()
-  process.stdin.setEncoding('utf8')
 
   let builder = new PrevertDocBuilder()
   let analyzer = createMorphAnalyzerSync()
