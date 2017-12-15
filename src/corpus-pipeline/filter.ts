@@ -24,13 +24,16 @@ const regexesKillingParagraph: [RegExp, string][] = [
   [caseCollisionRe, 'case collision'],
   // [,],
 ]
+
 const regexesKillingDoc: [RegExp, string][] = [
   [/[Ђћџ]/, `possible encoding error`],
 ]
+
 const wordsKillingDocRe = new RegExp(`^(${[
   'ьй',
   'ьм',
 ].join('')})$`, 'i')
+
 const functionsKillingParagraph: [(p: string) => boolean, string][] = [
   [p => ruSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `ru but not uk`],
   [p => beSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `be but not uk`],
@@ -38,18 +41,21 @@ const functionsKillingParagraph: [(p: string) => boolean, string][] = [
 ]
 
 const substringsKillingParagrph = [
+  '�',
   'електронна адреса захищена від спам-ботів. вам потрібно увімкнути JavaScript',
   'Этот e-mail адрес защищен от спам-ботов',
   'Переведено сервисом',
   'Ваш броузер застарів',
   // 'головна :: про автора',
-  '::',
+  ' :: ',
   '</embed></object>',
+  '',
   // '',
 ].map(x => x.toLowerCase())
 
 const titleRegsKillingDoc = [
-  /^Перегляд вихідного коду сторінки/
+  /^Перегляд вихідного коду сторінки/,
+  /�/,
 ]
 
 const urlsKillingDoc = new RegExp([
