@@ -202,7 +202,7 @@ export function createObject2(keys: string[], values: any[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function makeObject<T>(keyvaluePairs: any[][] /* todo */) {
+export function makeObject<T>(keyvaluePairs: [string, T][] /* todo */) {
   let ret: { [key: string]: T } = {}
   for (let [key, value] of keyvaluePairs) {
     ret[key] = value
