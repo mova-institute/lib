@@ -124,7 +124,7 @@ function main(args: Args) {
         }
         ++docCounter
       } else if (specificModule.streamDocs) {
-        if (fs.existsSync(join(outDir, 'meta', args.part === 'chtyvo' ? relPath : dirname(relPath)))) {
+        if (fs.existsSync(join(outDir, 'meta', relPath))) {
           continue
         }
         console.log(tolog)
@@ -154,7 +154,13 @@ function getMetaParaPaths(outDir: string, relpath: string) {
 }
 
 //------------------------------------------------------------------------------
-function processDoc(args: Args, doc: CorpusDoc, outDir: string, relpath: string, analyzer?: MorphAnalyzer) {
+function processDoc(
+  args: Args,
+  doc: CorpusDoc,
+  outDir: string,
+  relpath: string,
+  analyzer?: MorphAnalyzer,
+) {
   let [metaPath, paraPath] = getMetaParaPaths(outDir, relpath)
 
   if (!doc) {
