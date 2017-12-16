@@ -291,6 +291,7 @@ export async function writeJoin(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function writeGetLength(what: string, where: NodeJS.WritableStream) {
-
+export function logErrAndExit(e) {
+  console.error(e)
+  process.exit(1)
 }

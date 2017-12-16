@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFile, linesAsyncStd, writeJoin } from '../../utils.node'
+import { parseJsonFile, linesAsyncStd, writeJoin, logErrAndExit } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { filterParagraphedDocExtra } from '../filter'
@@ -93,5 +93,5 @@ function normalizeParagraph(p: string) {
 
 ///////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
-  main().catch(e => console.error(e))
+  main().catch(logErrAndExit)
 }
