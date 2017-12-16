@@ -13,7 +13,7 @@ const lengthThreshold = 60000
 const ukSpecLettersRe = /[ґїєі]/i
 const ruSpecLettersRe = /[эёъы]/i
 const beSpecLettersRe = /[ў]/i
-const previewAbruptRe = /(…|\.{3,})[)\]]?\s*(читати більше|\|\s*детальніше| Показати повністю)?\s*$/i
+const previewAbruptRe = /(…|\.{3,})[)\]]?\s*((читати|дізнатися) більше|\|\s*детальніше|Показати повністю)?\s*$/i
 const caseCollisionRe = new RegExp(
   `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`)
 const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i')
@@ -44,6 +44,7 @@ const functionsKillingParagraph: [(p: string) => boolean, string][] = [
 const substringsKillingDoc = [
   'указанньїх',
   '�',
+  '[quote="',
 ]
 
 const substringsKillingParagrph = [
@@ -68,9 +69,12 @@ const titleRegsKillingDoc = [
   /�/,
 ]
 
+const urlsRegsKillingDoc = [
+  /�/,
+]
+
 const urlsKillingDoc = new RegExp([
   r`http://om.net.ua/14/14_9/14_9006_J--motivatsionnie-sostoyaniya.html`,
-  r`�`
 ].join('|'))
 
 const defaultOptions = {
@@ -89,6 +93,14 @@ export function filterParagraphedDoc(
       for (let re of titleRegsKillingDoc) {
         if (re.test(meta.title)) {
           reportRmDoc(`killed by title regex: ${re.source}`)
+          return { docValid: false, filteredIndexes: [] }
+        }
+      }
+    }
+    if (meta.url) {
+      for (let re of urlsRegsKillingDoc) {
+        if (re.test(meta.url)) {
+          reportRmDoc(`killed by url regex: ${re.source}`)
           return { docValid: false, filteredIndexes: [] }
         }
       }

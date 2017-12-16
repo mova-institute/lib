@@ -45,6 +45,7 @@ async function main() {
       }
 
       renprop(metaObj, 'id', 'spider_id')
+      metaObj.title = metaObj.title || '(без назви)'
 
       await runner.startRunning(async () => {
         try {
