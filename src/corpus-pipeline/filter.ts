@@ -6,13 +6,14 @@ import { tokenizeUkNew, tokenizeUk } from "../nlp/utils"
 import { mu } from "../mu"
 import { uniformSubarray2, uniformSubarray, deleteIndexes, numericCompare } from "../algo"
 import * as he from "he";
+import { isTitlecase } from "../string_utils";
 
 
 const lengthThreshold = 60000
 const ukSpecLettersRe = /[ґїєі]/i
 const ruSpecLettersRe = /[эёъы]/i
 const beSpecLettersRe = /[ў]/i
-const previewAbruptRe = /(…|\.{3,})[)\]]?\s*(читати більше|\|\s*детальніше)?\s*$/i
+const previewAbruptRe = /(…|\.{3,})[)\]]?\s*(читати більше|\|\s*детальніше| Показати повністю)?\s*$/i
 const caseCollisionRe = new RegExp(
   `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`)
 const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i')
@@ -40,9 +41,15 @@ const functionsKillingParagraph: [(p: string) => boolean, string][] = [
   // [p => ,],
 ]
 
-const substringsKillingParagrph = [
+const substringsKillingDoc = [
+  'указанньїх',
   '�',
+]
+
+const substringsKillingParagrph = [
   'електронна адреса захищена від спам-ботів. вам потрібно увімкнути JavaScript',
+  'Потрібно включити	javascript',
+  'Ця сторінка використовує	JavaScript',
   'Этот e-mail адрес защищен от спам-ботов',
   'Переведено сервисом',
   'Ваш броузер застарів',
@@ -50,6 +57,9 @@ const substringsKillingParagrph = [
   ' :: ',
   '</embed></object>',
   '',
+  'class="wikitable"',
+  '[[File:',
+  '[[Media:',
   // '',
 ].map(x => x.toLowerCase())
 
@@ -60,6 +70,7 @@ const titleRegsKillingDoc = [
 
 const urlsKillingDoc = new RegExp([
   r`http://om.net.ua/14/14_9/14_9006_J--motivatsionnie-sostoyaniya.html`,
+  r`�`
 ].join('|'))
 
 const defaultOptions = {
@@ -77,6 +88,7 @@ export function filterParagraphedDoc(
     if (meta.title) {
       for (let re of titleRegsKillingDoc) {
         if (re.test(meta.title)) {
+          reportRmDoc(`killed by title regex: ${re.source}`)
           return { docValid: false, filteredIndexes: [] }
         }
       }
@@ -87,11 +99,43 @@ export function filterParagraphedDoc(
   }
 
   let filtered = new Array<number>()
+  let internalHypens = new Array<string>()
 
   let before = pp.slice()
   ploop:
   for (let i = 0; i < pp.length; ++i) {
     let p = pp[i]
+
+    for (let s of substringsKillingDoc) {
+      if (p.includes(s)) {
+        reportRmDoc(`killed by substring: ${s}`)
+        return { docValid: false, filteredIndexes: filtered }
+      }
+    }
+
+    for (let [re, message] of regexesKillingDoc) {
+      if (re.test(p)) {
+        reportRmDoc(message)
+        return { docValid: false, filteredIndexes: filtered }
+      }
+    }
+
+    let naiveSplit = mu(tokenizeUk(pp[i]))
+      .map(x => x.token)
+      .toArray()
+
+    internalHypens.push(...findInternalHypenations(naiveSplit, analyzer))
+    if (internalHypens.length > 1) {
+      reportRmDoc(`Too many internal hypens ${internalHypens}`)
+      return { docValid: false, filteredIndexes: filtered }
+    }
+
+    let stopword = naiveSplit.find(x => wordsKillingDocRe.test(x))
+    if (stopword) {
+      reportRmDoc(`met "${stopword}"`)
+      return { docValid: false, filteredIndexes: filtered }
+    }
+
 
     if (p.length > lengthThreshold) {
       reportRmPar(i, pp[i], `longer than ${lengthThreshold} chars (${p.length})`)
@@ -128,16 +172,9 @@ export function filterParagraphedDoc(
 
     for (let substr of substringsKillingParagrph) {
       if (p.toLowerCase().includes(substr)) {
-        reportRmPar(i, p, 'substring trigger')
+        reportRmPar(i, p, `killed by substring: ${substr}`)
         filtered.push(i)
         continue ploop
-      }
-    }
-
-    for (let [re, message] of regexesKillingDoc) {
-      if (re.test(p)) {
-        reportRmDoc(i, p, message)
-        return { docValid: false, filteredIndexes: filtered }
       }
     }
 
@@ -147,17 +184,6 @@ export function filterParagraphedDoc(
       reportRmPar(i, p, 'html markup')
       filtered.push(i)
       continue ploop
-    }
-
-
-    let naiveSplit = mu(tokenizeUk(pp[i]))
-      .map(x => x.token)
-      .toArray()
-
-    let stopword = naiveSplit.find(x => wordsKillingDocRe.test(x))
-    if (stopword) {
-      reportRmDoc(i, p, `met "${stopword}"`)
-      return { docValid: false, filteredIndexes: filtered }
     }
 
     let isSuspicious = [ruSpecLettersRe, /[ђњџћүө¤≥]/].some(x => x.test(pp[i]))
@@ -194,9 +220,24 @@ function reportRmPar(i: number, p: string, reason: string) {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function reportRmDoc(i: number, p: string, reason: string) {
-  console.error(`👎 removing doc ${i}: ${reason.toUpperCase()}`)
-  console.error(`\t${p/* .substr(0, 100) */}`)
+function reportRmDoc(reason: string) {
+  console.error(`👎 removing doc: ${reason}`)
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function findInternalHypenations(tokens: string[], analyzer: MorphAnalyzer) {
+  return mu(tokens).window(3).filter(([l, m, r]) =>
+    m === '-'
+    && l
+    && r
+    && l.toLowerCase() !== r.toLowerCase()
+    && !(isTitlecase(l) && isTitlecase(r))
+    && !analyzer.hasInterps(l + m + r)
+    && !['улю-лю', 'ку-рі', 'кіо-кушинкай', 'офф-лайн'].includes((l + m + r).toLowerCase())
+    && !analyzer.hasInterps(l)
+    && !analyzer.hasInterps(r)
+    && analyzer.hasInterps(l + r)
+  ).map(x => x.join(''))
 }
 
 

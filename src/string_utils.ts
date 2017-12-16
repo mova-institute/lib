@@ -211,3 +211,7 @@ export function toFloorPercent(nominator: number, denominator: number, aftercomm
 export function joinAsRe(parts: string[], flags = '') {
   return new RegExp(parts.join('|'), flags)
 }
+////////////////////////////////////////////////////////////////////////////////
+export function isTitlecase(str: string) {
+  return isAllcaps(str[0]) && isAllLower(str.substr(1))
+}

@@ -644,6 +644,10 @@ export class MorphAnalyzer {
     return ret
   }
 
+  hasInterps(token: string, nextToken?: string) {
+    return !!this.tag(token, nextToken).length
+  }
+
   private lookupRaw(token: string) {
     let ret = this.dictionary.lookup(token)
     if (this.expandAdjectivesAsNouns) {
