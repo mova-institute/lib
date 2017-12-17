@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { linesBackpressedStd, exitOnStdoutPipeError } from '../../utils.node'
+import { unescape } from 'he'
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -19,7 +20,7 @@ function main() {
     if (!firstInSent) {
       write(' ')
     }
-    write(line)
+    write(unescape(line))
     firstInSent = false
   })
 }
