@@ -13,7 +13,7 @@ const lengthThreshold = 60000
 const ukSpecLettersRe = /[ґїєі]/i
 const ruSpecLettersRe = /[эёъы]/i
 const beSpecLettersRe = /[ў]/i
-const previewAbruptRe = /(…|\.{3,})[)\]]?\s*((читати|дізнатися) більше|\|\s*детальніше|Показати повністю)?\s*$/i
+const previewAbruptRe = /(…|\.{3,})[)\]]?\s*((читати|дізнатися) більше|\|\s*детальніше|(Читати|Показати) повністю)?\s*$/i
 const caseCollisionRe = new RegExp(
   `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`)
 const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i')
@@ -23,6 +23,7 @@ const regexesKillingParagraph: [RegExp, string][] = [
   [/([^0)])\1{4}/, `long char repeating`],
   [/Этот e-mail адрес защищен от спам-ботов|Переведено сервисом/, 'ru junk'],
   [caseCollisionRe, 'case collision'],
+  [/\[\s*детальніше\s*\]\s*$/i, 'preview button'],
   // [,],
 ]
 
