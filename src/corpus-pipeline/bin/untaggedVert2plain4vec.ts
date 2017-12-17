@@ -8,20 +8,22 @@ import { unescape } from 'he'
 function main() {
   exitOnStdoutPipeError()
 
-  let firstInSent = true
+  let newContextOn = new RegExp(process.argv[2] || /^<\/doc>/)
+
+  let firstInContext = true
   linesBackpressedStd((line, write) => {
     if (line.startsWith('<')) {
-      if (/^<\/s>/.test(line)) {
+      if (newContextOn.test(line)) {
         write('\n')
-        firstInSent = true
+        firstInContext = true
       }
       return
     }
-    if (!firstInSent) {
+    if (!firstInContext) {
       write(' ')
     }
     write(unescape(line))
-    firstInSent = false
+    firstInContext = false
   })
 }
 
