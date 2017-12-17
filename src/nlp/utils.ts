@@ -680,7 +680,7 @@ export function removeInvisibles(value: string) {
 export function normalizeWebParaSafe(value: string) {
   let ret = removeInvisibles(value)
     .replace(/[\s\n\r]+/g, ' ')
-    .replace(/[\u00AD]/g, '')
+    .replace(/[\u00AD\u0301]/g, '')  // soft hypen and stress
 
   ret = normalizeDiacritics(ret)
 
