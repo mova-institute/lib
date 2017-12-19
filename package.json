@@ -51,6 +51,7 @@
     "@types/he": "^0.5.29",
     "body-parser": "^1.18.2",
     "camelcase": "^3.0.0",
+    "chalk": "^2.3.0",
     "columnify": "^1.5.4",
     "cookie-parser": "^1.4.3",
     "dawgjs": "^0.1.3",

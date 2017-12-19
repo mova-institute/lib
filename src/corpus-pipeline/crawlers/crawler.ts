@@ -3,6 +3,9 @@ import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request_utils'
 import { matchAll, sleep } from '../../lang'
+
+import * as chalk from 'chalk'
+
 import { resolve, parse, Url } from 'url'
 
 
@@ -69,29 +72,31 @@ export class Crawler {
           await sleep(this.timeout / 2 + Math.random() * this.timeout)
           // process.stderr.write(`fetching `)
           // let timeout = setTimeout(() => exec(`say 'Stupid website!' -v Karen`), 2000)
+          process.stderr.write(' ')
           content = await Promise.race([fetchText(urlStr), sleep(1000)])
           for (let i = 0; !content && i < this.numRetries; ++i) {
+            process.stderr.write(chalk.default.bold(`×`))
             await sleep(500)
-            process.stderr.write(` retrying`)
             content = await Promise.race([fetchText(urlStr), sleep(2000)])
           }
           if (!content) {
             // exec(`say 'auch!' -v Karen`)
-            process.stderr.write(` ✖️\n`)
+            process.stderr.write(`✖️\n`)
             this.failed.add(urlStr)
             return
           }
           // clearTimeout(timeout)
         } catch (e) {
           console.error(`error fetching ${urlStr}`)
+          console.error(e.code)
           return
         }
 
         if (url && this.isUrlToSave(url)) {
           this.saved.set(fileishUrl, content)
-          process.stderr.write(` ✔\n`)
+          process.stderr.write(`✔\n`)
         } else {
-          process.stderr.write(` fetched \n`)
+          process.stderr.write(chalk.default.bold(`+\n`))
         }
       }
 
