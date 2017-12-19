@@ -2,7 +2,10 @@ import { tryParseHtml } from '../../xml/utils.node'
 import { zerofill } from '../../string_utils'
 import { parseIntStrict, last } from '../../lang'
 import { mu } from '../../mu'
-import { textOf, textsOf, ogValue, canonical, GENITIVE_UK_MON_MAP } from './utils'
+import {
+  textOf, textsOf, ogValue, canonical,
+  GENITIVE_UK_MON_MAP, brbr2paragraphs,
+} from './utils'
 import { CorpusDoc } from '../doc_meta'
 
 import * as Url from 'url'
@@ -105,32 +108,6 @@ function getDate(root: AbstractElement, xpath: string) {
   return ret
 }
 
-//------------------------------------------------------------------------------
-function brbr2paragraphs(root: AbstractElement) {
-  if (!root) {
-    return []
-  }
-  let ret = new Array<string>()
-  let nodes = [...root.evaluateNodes('.//text() | .//br')]
-  let buf = ''
-  for (let node of nodes) {
-    if (node.isText()) {
-      buf += node.text().trim()
-    } else if (node.isElement() && node.asElement().localName() === 'br') {
-      buf = buf.trim()
-      if (buf) {
-        ret.push(buf)
-        buf = ''
-      }
-    }
-  }
-  buf = buf.trim()
-  if (buf) {
-    ret.push(buf)
-  }
-
-  return ret
-}
 
 //------------------------------------------------------------------------------
 function trimCopyrightish(paragraphs: string[]) {

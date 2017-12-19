@@ -42,6 +42,33 @@ export function textOf(root: AbstractElement, xpath: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function textsOf(root: AbstractElement, xpath: string) {
   return mu(root.evaluateElements(xpath))
-    .map(x => x.text())
-    .toArray()
+  .map(x => x.text())
+  .toArray()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function brbr2paragraphs(root: AbstractElement) {
+  if (!root) {
+    return []
+  }
+  let ret = new Array<string>()
+  let nodes = [...root.evaluateNodes('.//text() | .//br')]
+  let buf = ''
+  for (let node of nodes) {
+    if (node.isText()) {
+      buf += node.text().trim()
+    } else if (node.isElement() && node.asElement().localName() === 'br') {
+      buf = buf.trim()
+      if (buf) {
+        ret.push(buf)
+        buf = ''
+      }
+    }
+  }
+  buf = buf.trim()
+  if (buf) {
+    ret.push(buf)
+  }
+
+  return ret
 }
