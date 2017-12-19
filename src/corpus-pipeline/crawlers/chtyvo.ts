@@ -7,6 +7,9 @@ import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request_utils'
 import { tryParseHtml } from '../../xml/utils.node'
 import { get } from 'request'
+import { arr2indexMap } from '../../algo';
+import * as _ from 'lodash';
+import { trimAfterFirst, trimAfterLast, trimBeforeFirst, trimBeforeLast } from '../../string_utils';
 
 
 interface Args {
@@ -18,7 +21,8 @@ interface Args {
 
 
 const baseHref = 'http://chtyvo.org.ua/'
-const extensionPriority = [
+
+const extensionPriorityKeyer = arr2indexMap([
   'fb2',
   'html',
   'htm',
@@ -29,7 +33,7 @@ const extensionPriority = [
   'mobi',
   'pdf',
   'djvu',
-]
+])
 
 if (require.main === module) {
   const args: Args = minimist(process.argv.slice(2), {
@@ -85,22 +89,40 @@ async function main(args: Args) {
         console.error('✖️')
         continue
       }
-      let dataUrls = root.evaluateAttributes('//table[@class="books"]//a/@href')
+      let dataUrls = [...root.evaluateAttributes('//table[@class="books"]//a/@href')
         .map(x => x.value())
         .filter(x => !!x
           && /\/authors\/.*\./.test(x)
-          && !['pdf', 'djvu'].some(xx => x.endsWith(`.${xx}`))
+          && !['djvu'].some(xx => x.endsWith(`.${xx}`))
         )
-        .map(x => parse(x))
-      for (let dataUrl of [...dataUrls].sort()) {
-        let filish = dataUrl.pathname.substr(1)
-        if (!pages.has(filish)
-          && (!filish.endsWith('.zip') || !pages.has(filish.slice(0, -4)))
-          // && !filish.endsWith('.pdf')  // temp
-        ) {
-          await pages.setStream(filish, get(dataUrl.href))
-          console.log(`saved ${filish}`)
+        .map(x => parse(x))]
+
+      if (!dataUrls.length) {
+        console.error(`No data urls`)
+        continue
+      }
+
+      let dataUrl = _.minBy(dataUrls, x => {
+        let path = x.pathname
+        if (path.endsWith('.zip')) {
+          path = path.slice(0, -4)
         }
+        let last = trimBeforeLast(path, '/')
+        let extension = trimBeforeFirst(last, '.')
+        return extensionPriorityKeyer.get(extension)
+      })
+
+      if (!dataUrl) {
+        console.error(`Cannot choose url`, dataUrls.map(x => x.href))
+        continue
+      }
+
+      let filish = dataUrl.pathname.substr(1)
+      if (!pages.has(filish)
+        && (!filish.endsWith('.zip') || !pages.has(filish.slice(0, -4)))
+      ) {
+        await pages.setStream(filish, get(dataUrl.href))
+        console.log(`saved ${filish}`)
       }
     }
   }
