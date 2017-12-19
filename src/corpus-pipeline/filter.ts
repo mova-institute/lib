@@ -240,7 +240,7 @@ function reportRmDoc(reason: string) {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function findInternalHypenations(tokens: string[], analyzer: MorphAnalyzer) {
   return mu(tokens).window(3).filter(([l, m, r]) =>
-    m === '-'
+    (m === '-' || m === '¬')
     && l
     && r
     && l.toLowerCase() !== r.toLowerCase()
