@@ -1,6 +1,7 @@
 #!/usr/bin / env node
 
 import { Crawler } from './crawler'
+import { toSortableDateParts } from '../../date';
 
 
 
@@ -12,7 +13,9 @@ async function main() {
   let crawler = new Crawler('saved_web')
     .setUrlsToSave(({ pathname, hash, hostname, protocol }) => {
       let ret = !hash
-        && /^\/a\//.test(pathname)
+        && /^\/a\/([^/]+\/)?\d+\.html/.test(pathname)
+        && !pathname.startsWith('/a/news/news')
+        && !pathname.includes('.html/')
         && DOMAINS.includes(hostname)
         && !DOMAINS.some(x => pathname.includes(x))
         && protocol === 'https:'
@@ -28,9 +31,15 @@ async function main() {
         && x.protocol === 'https:',
     ])
 
-  await crawler.seed([
-    'https://www.radiosvoboda.org/',
-  ])
+
+  let toSeed = new Array<string>()
+  let earliest = new Date(2001, 4, 1).getTime()
+  let cur = new Date().getTime()
+  while (cur > earliest) {
+    let [y, m, d] = toSortableDateParts(new Date(cur))
+    await crawler.seed([`https://www.radiosvoboda.org/z/630/${y}/${m}/${d}`])
+    cur -= 24 * 3600
+  }
 }
 
 if (require.main === module) {

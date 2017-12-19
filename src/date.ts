@@ -34,8 +34,18 @@ export function toSortableDatetime(date: Date) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function toSortableDateParts(date: Date) {
+  return [
+    date.getFullYear(),
+    zerofill(date.getMonth() + 1, 2),
+    zerofill(date.getDate(), 2),
+  ]
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function toSortableDate(date: Date) {
-  return `${date.getFullYear()}-${zerofill(date.getMonth() + 1, 2)}-${zerofill(date.getDate(), 2)}`
+  let [y, m, d] = toSortableDateParts(date)
+  return `${y}-${m}-${d}`
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +57,6 @@ export function nowSortableDatetime() {
 export function isDayUkMonthCommaYear(value: string) {
   return dayUkMonthCommaYearRe.test(value)
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // '20 жовтня, 1998' —> Date
