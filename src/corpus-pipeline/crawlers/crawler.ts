@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request_utils'
@@ -6,6 +5,7 @@ import { matchAll, sleep } from '../../lang'
 
 import * as chalk from 'chalk'
 
+import * as path from 'path'
 import { resolve, parse, Url } from 'url'
 
 
@@ -93,7 +93,15 @@ export class Crawler {
         }
 
         if (url && this.isUrlToSave(url)) {
-          this.saved.set(fileishUrl, content)
+          try {
+            this.saved.set(fileishUrl, content)
+          } catch (e) {
+            if (e.code === 'ENAMETOOLONG') {
+              console.error(`Name too long, not writing`)
+              continue
+            }
+            throw e
+          }
           process.stderr.write(`✔\n`)
         } else {
           process.stderr.write(chalk.default.bold(`+\n`))

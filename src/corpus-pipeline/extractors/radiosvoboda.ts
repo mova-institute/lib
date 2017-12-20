@@ -15,13 +15,20 @@ export function extract(html: string) {
 
   let url = canonical(root)
   let title = ogValue(root, 'title')
-  let date = firstMatch(html, /"datePublished":"([^"]+)"/)
+  let date = firstMatch(html, /"datePublished":"([\d\-]+)"/, 1)
   let author = metaProperty(root, 'Author')
 
   let body = root.evaluateElement('//div[@class="body-container"]//div[@class="wsw"]')
+  if (!body) {
+    return
+  }
   let paragraphs = textsOf(body, './p')
   if (!paragraphs.length) {
     paragraphs = brbr2paragraphs(body)
+    let junkI = paragraphs.findIndex(x => x.startsWith('Матеріали до теми:'))
+    if (junkI !== -1) {
+      paragraphs.splice(junkI)
+    }
   }
 
   if ([url, title, date, paragraphs[0]].some(x => !x)) {

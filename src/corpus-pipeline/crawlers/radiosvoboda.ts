@@ -19,6 +19,7 @@ async function main() {
         && DOMAINS.includes(hostname)
         && !DOMAINS.some(x => pathname.includes(x))
         && protocol === 'https:'
+        && !pathname.includes('%')
       return ret
     })
     .setUrlsToFollow([
