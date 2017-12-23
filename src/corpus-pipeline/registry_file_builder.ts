@@ -33,12 +33,12 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
 ################################################################################
 
 ATTRIBUTE word {
-  LABEL "слово"
+  LABEL "слово (word)"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE lc {
-  LABEL "слово (мал. літерами)"
+  LABEL "слово (мал. літерами) (lc)"
   DYNAMIC utf8lowercase
   DYNLIB internal
   ARG1 "C"
@@ -49,12 +49,12 @@ ATTRIBUTE lc {
 }
 
 ATTRIBUTE lemma {
-  LABEL "лема"
+  LABEL "лема (lemma)"
   TYPE "FD_FGD"
 }
 
 ATTRIBUTE lemma_lc  {
-  LABEL "лема (мал. літерами)"
+  LABEL "лема (мал. літерами) (lemma_lc)"
   DYNAMIC utf8lowercase
   DYNLIB internal
   ARG1 "C"
@@ -62,181 +62,46 @@ ATTRIBUTE lemma_lc  {
   FROMATTR lemma
   TYPE index
   TRANSQUERY yes
-}
-
-ATTRIBUTE tag {
-  LABEL "повна мітка"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE pos {
-  LABEL "ЧМ"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE pos2 {
-  LABEL "українізована ЧМ"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE abbr {
-  LABEL "скорочення"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE animacy {
-  LABEL "істотовість"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE animacy_gram {
-  LABEL "граматична істотовість"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE aspect {
-  LABEL "вид"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE case {
-  LABEL "відмінок"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE degree {
-  LABEL "ступінь"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE foreign {
-  LABEL "чужинність"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE gender {
-  LABEL "рід"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE hyph {
-  LABEL "передрисковість"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE mood {
-  LABEL "спосіб"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE nametype {
-  LABEL "тип імені"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE number {
-  LABEL "число"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE numform {
-  LABEL "запис числівника"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE numtype {
-  LABEL "тип числівника"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE parttype {
-  LABEL "тип частки"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE person {
-  LABEL "особа"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE poss {
-  LABEL "присвійність"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE prepcase {
-  LABEL ""
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE prontype {
-  LABEL "займенниковий тип"
-  TYPE "FD_FGD"
-}
-
-#ATTRIBUTE punctside {
-#  LABEL "бік пунктуації"
-#  TYPE "FD_FGD"
-#}
-
-ATTRIBUTE puncttype {
-  LABEL "тип пунктуації"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE reflex {
-  LABEL "зворотність"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE reverse {
-  LABEL "зворотність дієслова"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE tense {
-  LABEL "час"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE variant {
-  LABEL "форма прикметника"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE verbform {
-  LABEL "форма дієслова"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE voice {
-  LABEL "стан"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE rel {
-  LABEL "реляція"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE urel {
-  LABEL "універсальна реляція"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE head {
-  LABEL "голова"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE spaceafter  {
-  LABEL "пробіл після"
-}
-
-ATTRIBUTE id {
-  LABEL "номер токена"
-  TYPE "FD_FGD"
 }`
+
+  let attrs = [
+    ['tag', 'повна мітка'],
+    ['pos', 'ЧМ'],
+    ['pos2', 'українізована ЧМ'],
+    ['abbr', 'скорочення'],
+    ['animacy', 'істотовість'],
+    ['animacy_gram', 'граматична істотовість'],
+    ['aspect', 'вид'],
+    ['case', 'відмінок'],
+    ['degree', 'ступінь'],
+    ['foreign', 'чужинність'],
+    ['gender', 'рід'],
+    ['hyph', 'передрисковість'],
+    ['mood', 'спосіб'],
+    ['nametype', 'тип імені'],
+    ['number', 'число'],
+    ['numform', 'запис числівника'],  // del
+    ['numtype', 'тип числівника'],
+    ['parttype', 'тип частки'],
+    ['person', 'особа'],
+    ['poss', 'присвійність'],
+    ['prepcase', 'prepcase'],  // del
+    ['prontype', 'займенниковий тип'],
+    ['puncttype', 'тип пунктуації'],
+    ['reflex', 'зворотність'],
+    ['reverse', 'зворотність дієслова'],
+    ['tense', 'час'],
+    ['variant', 'форма прикметника'],
+    ['verbform', 'форма дієслова'],
+    ['voice', 'стан'],
+    ['rel', 'реляція'],
+    ['urel', 'універсальна реляція'],
+    ['head', 'голова'],
+    ['spaceafter', 'пробіл після'],
+    ['id', 'код токена'],
+  ]
+
+  corpus += attrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
   if (params.hasDictTags) {
     corpus += `
 
@@ -392,6 +257,14 @@ const uiSettings = {
   use_noflash: '0',
 }
 
+//------------------------------------------------------------------------------
+function positionalAttr(name: string, label: string) {
+  return `
+ATTRIBUTE ${name} {
+  LABEL "${label} (${name})"
+  TYPE "FD_FGD"
+}`
+}
 
 /*
 
