@@ -492,7 +492,7 @@ msgstr "Сортованих токенів"
 #: cmpltmpl/sort.py:266 cmpltmpl/sort.py:365 cmpltmpl/sort.py:461
 #: cmpltmpl/sort.py:557
 msgid "Backward"
-msgstr "За спаданням"
+msgstr "Ззаду наперед"
 
 #: cmpltmpl/sort.py:290
 msgid "Multilevel sort"
