@@ -16,7 +16,7 @@ export function generateRegistryFile(params: RegistryFileParams) {
   let corpus = `
 
 NAME "${params.title}"
-#INFO "Корпус української (випробовування)"   # todo: say mova intitute some day
+#INFO "Корпус української (випробовування)"
 INFOHREF "https://mova.institute/corpus"
 MAINTAINER "org@mova.institute"
 TAGSETDOC "http://universaldependencies.org"    # todo
@@ -80,12 +80,12 @@ ATTRIBUTE lemma_lc  {
     ['mood', 'спосіб'],
     ['nametype', 'тип імені'],
     ['number', 'число'],
-    ['numform', 'запис числівника'],  // del
+    // ['numform', 'запис числівника'],  // del
     ['numtype', 'тип числівника'],
     ['parttype', 'тип частки'],
     ['person', 'особа'],
     ['poss', 'присвійність'],
-    ['prepcase', 'prepcase'],  // del
+    // ['prepcase', 'prepcase'],  // del
     ['prontype', 'займенниковий тип'],
     ['puncttype', 'тип пунктуації'],
     ['reflex', 'зворотність'],
