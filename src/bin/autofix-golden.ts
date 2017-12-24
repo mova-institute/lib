@@ -637,6 +637,7 @@ async function main() {
       fs.writeFileSync(file, content)
     } catch (e) {
       console.error(`Error in file "${file}"`)
+      console.error(e)
       throw e
     }
   }
@@ -1022,7 +1023,7 @@ async function addDocMeta(root: AbstractElement) {
   for (let docEl of root.evaluateElements('//doc')) {
     let attributes = docEl.attributesObj()
     if (!attributes.src) {
-      // continue
+      continue
     }
 
     if (!attributes.author || !attributes.date) {
