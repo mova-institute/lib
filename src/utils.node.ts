@@ -7,6 +7,7 @@ import * as path from 'path'
 import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
 import { promisify } from 'util'
+import { BackpressingWriter } from './lib/node/backpressing_writer';
 
 const lineIterator = require('n-readlines')
 
@@ -150,20 +151,23 @@ export function chunksAsync(  // todo: rerwrite with async iterators once avail
 export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
-  listener: (line: string, write: (what: string | Buffer) => void) => void,
+  listener: (line: string, writer: BackpressingWriter) => void,
 ) {
   return new Promise<void>((resolve, reject) => {
-    const writer = (what: string | Buffer) => writeBackpressing(dest, source, what)
-    createInterface(source)
-      .on('line', line => listener(line, writer))
-      .on('end', resolve)
+    let writer = new BackpressingWriter(dest, source)
+    createInterface({ input: source })
       .on('error', reject)
+      .on('line', line => listener(line, writer))
+      .on('end', () => {
+        writer.flush()
+        resolve()
+      })
   })
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
-  listener: (line: string, write: (what: string | Buffer) => void) => void,
+  listener: (line: string, writer: BackpressingWriter) => void,
 ) {
   return linesBackpressed(process.stdin, process.stdout, listener)
 }

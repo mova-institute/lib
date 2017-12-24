@@ -11,20 +11,21 @@ function main() {
   let newContextOn = new RegExp(process.argv[2] || /^<\/doc>/)
 
   let firstInContext = true
-  linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, writer) => {
     if (line.startsWith('<')) {
       if (newContextOn.test(line)) {
-        write('\n')
+        writer.write('\n')
         firstInContext = true
       }
       return
     }
     if (!firstInContext) {
-      write(' ')
+      writer.write(' ')
     }
-    write(unescape(line))
+    writer.write(unescape(line))
     firstInContext = false
   })
+  process.stdout.write('\n')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
