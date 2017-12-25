@@ -14,5 +14,12 @@ export function extract(html: string) {
   let author = textOf(root, '//a[contains(@class, "author_")]/text()')
   let paragraphs = textsOf(root, '//div[contains(@class, "body_gzn")]/p')
 
-  return { url, date, title, author, paragraphs: [...paragraphs] } as CorpusDoc
+  return {
+    url,
+    date,
+    title,
+    author,
+    paragraphs: [...paragraphs],
+    source: 'Дзеркало тижня',
+  } as CorpusDoc
 }

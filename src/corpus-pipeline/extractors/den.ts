@@ -36,5 +36,13 @@ export function extract(html: string) {
     + '|//div[contains(@property, "articlebody")]/center/p'
   let paragraphs = textsOf(root, pXpath)
 
-  return { url, date, description, title, author, paragraphs } as CorpusDoc
+  return {
+    url,
+    date,
+    description,
+    title,
+    author,
+    paragraphs,
+    source: 'День',
+  } as CorpusDoc
 }

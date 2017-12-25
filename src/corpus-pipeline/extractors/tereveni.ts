@@ -23,7 +23,14 @@ export function* streamDocs(html: string) {
     let postEntry = postRoot.evaluateElement('.//div[contains(@class, "post entry-content")]')
     let paragraphs = getPostParagraphs(postEntry)
 
-    let toyield = { title, url, author, date, paragraphs } as CorpusDoc
+    let toyield = {
+      title,
+      url,
+      author,
+      date,
+      paragraphs,
+      source: 'Теревені',
+    } as CorpusDoc
     yield toyield
   }
 }

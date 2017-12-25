@@ -10,7 +10,12 @@ export function* streamDocs(wikiExtractorFileStr: string) {
     text = text.replace(/\s*(\(\)|\([,;][^)]*\)|formula_\d+)/g, '').trim()
     if (text) {
       let paragraphs = text.split(/\n{2,}/).map(x => x.replace(/\n+/g, ' '))
-      yield { url, title, paragraphs } as CorpusDoc
+      yield {
+        url,
+        title,
+        paragraphs,
+        source: 'Вікіпедія',
+      } as CorpusDoc
     } else {
       console.error(`no content for "${title}"`)
     }

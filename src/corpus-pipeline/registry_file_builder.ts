@@ -142,6 +142,12 @@ STRUCTURE doc {
     MULTIVALUE yes
     MULTISEP "|"
   }
+  ATTRIBUTE chtyvo_section {
+    LABEL "розділ (для Чтива)"
+  }
+  ATTRIBUTE chtyvo_type {
+    LABEL "тип (для Чтива)"
+  }
   ATTRIBUTE type {
     LABEL "тип"
     MULTIVALUE yes
@@ -153,9 +159,6 @@ STRUCTURE doc {
     MULTIVALUE yes
     MULTISEP "|"
 #    HIERARCHICAL "::"
-  }
-  ATTRIBUTE disamb {
-    LABEL "уоднозначнення"
   }
   ATTRIBUTE wordcount {
     LABEL "кількість слів"
@@ -196,7 +199,7 @@ STRUCTURE gap {
 ########################          View        ##################################
 ################################################################################
 
-SHORTREF "=doc.reference_title"
+SHORTREF "=doc.title"
 
 HARDCUT "2000"
 MAXKWIC "100"
@@ -211,9 +214,9 @@ DEFAULTATTR word
 
 # todo ATTRDOC, ATTRDOCLABEL,
 
-FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.type,doc.domain,doc.comment,doc.wordcount,s.id,doc.url"
-STRUCTATTRLIST "doc.title,doc.author,doc.date,doc.type"
-SUBCORPATTRS "doc.title,doc.author|doc.date,doc.type"
+FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.domain,doc.comment,doc.wordcount,s.id,doc.url"
+#STRUCTATTRLIST "doc.title,doc.author,doc.date"
+SUBCORPATTRS "doc.title,doc.author|doc.date"
 #FREQTTATTRS ""
 WPOSLIST ",іменник,noun|propn,дієслово,verb,прикметник,adj,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,розділовий,punct,залишок,x"
 `

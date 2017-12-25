@@ -63,6 +63,13 @@ export function extract(html: string) {
     && (paragraphs.length > 1 || author !== 'The Economist')
 
   if (isValid) {
-    return { url, date, title, author, paragraphs } as CorpusDoc
+    return {
+      url,
+      date,
+      title,
+      author,
+      paragraphs,
+      source: 'Тиждень',
+    } as CorpusDoc
   }
 }

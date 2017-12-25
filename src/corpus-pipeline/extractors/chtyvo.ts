@@ -50,7 +50,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
     console.log(`processing ${dataPath}`)
 
     let metaRoot = parseHtmlFileSync(metaPath)
-    let meta = extractMeta(metaRoot)
+    let meta = extractMeta(metaRoot) as any
     if (meta.isForeign) {
       console.log(`foreign`)
       return
@@ -59,6 +59,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
       console.log(`no title`)
       return
     }
+    meta.source = 'Чтиво'
 
     if (format === 'doc') {
       if (!docFormatBooktypes.find(x => x === meta.documentType)) {
@@ -170,7 +171,7 @@ function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
   if (originalAutor === 'народ Український') {
     originalAutor = 'народ'
   }
-  let documentType = getTextByClassName(root, 'div', 'book_type') as chtyvoSection
+  let documentType = getTextByClassName(root, 'div', 'book_type')
   let section = root.evaluateString(
     `string(//table[@class="books"]//strong[text()="Розділ:"]/parent::*/following-sibling::td/a/text())`)
   let urlStr = root.evaluateString('string(//meta[@property="og:url"]/@content)')
@@ -185,16 +186,13 @@ function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
   }
 
   return {
-    reference_title: referenceTitle,
     title,
     date: translator ? undefined : year,
     author: translator || originalAutor,
     original_author: translator && originalAutor || undefined,
-    type: 'невизначені' as 'невизначені',  // todo
     domain: section === 'Історична' ? 'історія' : undefined,
-    disamb: 'жодного' as 'жодного',  // todo
-    documentType,
-    section,
+    chtyvo_type: documentType,
+    chtyvo_section: section,
     url: urlStr,
     isForeign,
   }

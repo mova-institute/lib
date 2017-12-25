@@ -25,5 +25,12 @@ export function extract(html: string) {
     console.error([url, title, date, author])
   }
 
-  return { url, title, date, author, paragraphs } as CorpusDoc
+  return {
+    url,
+    title,
+    date,
+    author,
+    paragraphs,
+    source: 'Високий Замок',
+  } as CorpusDoc
 }

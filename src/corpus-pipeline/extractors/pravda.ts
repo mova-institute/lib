@@ -88,7 +88,14 @@ export function extract(html: string) {
       author = undefined
     }
 
-    return { title, author, url: url.href, date, paragraphs } as CorpusDoc
+    return {
+      title,
+      author,
+      url: url.href,
+      date,
+      paragraphs,
+      source: 'Українська правда',
+    } as CorpusDoc
   }
 }
 

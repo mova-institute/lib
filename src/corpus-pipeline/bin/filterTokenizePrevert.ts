@@ -44,8 +44,7 @@ async function main() {
         return
       }
 
-      renprop(metaObj, 'id', 'spider_id')
-      metaObj.title = metaObj.title || '(без назви)'
+      normalizeMeta(metaObj)
 
       await runner.startRunning(async () => {
         try {
@@ -64,6 +63,13 @@ async function main() {
       })
     }
   }, /(<\/?[\w\-]+(?:(?:\s+[\w\-]+="[^"]*")*)*\s*\/?\s*>)/)
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function normalizeMeta(meta) {
+  renprop(meta, 'id', 'spider_id')
+  meta.title = meta.title || '[без назви]'
+  meta.source = 'загальний інтернет'
 }
 
 

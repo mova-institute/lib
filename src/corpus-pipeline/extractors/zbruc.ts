@@ -42,6 +42,13 @@ export function extract(html: string) {
   }
 
   if (url) {
-    return { url, date, title, author, paragraphs } as CorpusDoc
+    return {
+      url,
+      date,
+      title,
+      author,
+      paragraphs,
+      source: 'Збруч',
+    } as CorpusDoc
   }
 }

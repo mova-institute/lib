@@ -37,5 +37,12 @@ export function extract(html: string) {
   }
 
 
-  return { url, title, date, author, paragraphs } as CorpusDoc
+  return {
+    url,
+    title,
+    date,
+    author,
+    paragraphs,
+    source: 'Радіо Свобода',
+  } as CorpusDoc
 }

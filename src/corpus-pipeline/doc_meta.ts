@@ -1,6 +1,7 @@
 export interface CorpusDoc {
   paragraphs: string[]
   title: string
+  source: string
   url?: string
   authors?: string[]
   date?: string

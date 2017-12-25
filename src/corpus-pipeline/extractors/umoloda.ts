@@ -54,6 +54,7 @@ export function extract(html: string) {
     date,
     author,
     paragraphs,
+    source: 'Україна молода',
   } as CorpusDoc
 }
 
