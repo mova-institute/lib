@@ -2555,6 +2555,9 @@ msgstr "✗"
 msgid "Overlaps"
 msgstr "Без перетинів"
 
+msgid "Sub-hits"
+msgstr "Без перетинів"
+
 #: cmpltmpl/document.py:4127
 msgid "Lexical Computing logo"
 msgstr "Логотип Lexical Computing"
