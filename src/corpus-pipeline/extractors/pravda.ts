@@ -53,7 +53,13 @@ export function extract(html: string) {
     }
 
     trimCopyrightish(paragraphs)
-    return { title, date, url: url.href, paragraphs }
+    return {
+      title,
+      date,
+      url: url.href,
+      paragraphs,
+      source: 'Українська правда'
+    }
   } else {
     let date = getDate(root, '//div[@class="post_news__date"]')
     if (!date) {
