@@ -431,7 +431,7 @@ export function standartizeSentence2ud21(sentence: TokenNode[]) {
 
     // set :pass
     if (isPassive(node)) {
-      t.rel += `:pass`
+      // t.rel += `:pass`
     }
 
     // set participle acl to amod
