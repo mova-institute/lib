@@ -1,31 +1,41 @@
-import { iterateDictCorpVizLines } from '../vesum_utils'
+#!/usr/bin/env node
+
+import { logErrAndExit, exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
+import { iterateDictCorpVizLines, DictCorpVizIterator } from '../vesum_utils'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { standartizeMorphoForUd21 } from './uk_grammar'
+import { write } from 'fs';
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-export function* mivesum2Udpipe(lines: Iterable<string>) {
-  for (let { form, tag, lemma } of iterateDictCorpVizLines(lines)) {
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+async function main() {
+  exitOnStdoutPipeError()
+  let iterator = new DictCorpVizIterator()
+  linesBackpressedStd((line, writer) => {
+    let { form, tag, lemma } = iterator.feedLine(line)
     let interp = MorphInterp.fromVesumStr(tag, lemma)
-    // interp.killNongrammaticalFeatures()
     standartizeMorphoForUd21(interp, form)
-
     try {
       let udTag = toUd(interp)
 
-      yield [
+      writer.write([
         form,
         lemma,
         udTag.pos,
         '_',  // no xpostag
         udFeatures2conlluString(udTag.features) || '_',
-      ].join('\t')
+      ].join('\t'))
+      writer.write('\n')
     } catch (e) {
       if (!e.message.startsWith('Emphatic pronoun conversion is not implemented')) {
         throw e
       }
     }
-  }
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+if (require.main === module) {
+  main().catch(logErrAndExit)
 }

@@ -3,6 +3,7 @@
 import { ioArgs } from '../cli_utils'
 import { readTillEnd } from '../stream_utils.node'
 import { parseXml } from '../xml/utils.node'
+import { BackpressingWriter } from '../lib/node/backpressing_writer';
 
 const args = require('minimist')(process.argv.slice(2), {
   boolean: [
@@ -23,6 +24,7 @@ let func = moduleObj[funcName]
 
 
 ioArgs(filename1, filename2, async (input, output) => {
+  let writer = new BackpressingWriter(output, input)
   try {
     let inputStr: any = await readTillEnd(input)
     if (args.v) {
@@ -46,9 +48,9 @@ ioArgs(filename1, filename2, async (input, output) => {
       let res = func(inputStr)
       if (typeof res === 'object' && Symbol.iterator in res) {
         for (let line of res) {
-          output.write(line)
+          writer.write(line)
           // if (!args.byline) {
-          output.write('\n')
+          writer.write('\n')
           // }
         }
       }

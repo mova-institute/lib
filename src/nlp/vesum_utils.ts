@@ -45,23 +45,40 @@ const NONLEMMA_PADDING = '  '
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* iterateDictCorpVizLines(lines: Iterable<string>) {
-  let lineIndex = -1
-  let lemma
-  let lemmaTag
-  for (let line of lines) {
-    ++lineIndex
+export class DictCorpVizIterator {
+  private lineIndex = -1
+  private lemma: string
+  private lemmaTag: string
+
+  feedLine(line: string) {
+    ++this.lineIndex
     let isLemma = !line.startsWith(' ')
     let l = line.trim()
     if (l) {
       l = l.replace(/'/g, '’');  // fix apostrophe
       let [form, tag] = l.split(' ')
       if (isLemma) {
-        lemma = form
-        lemmaTag = tag
+        this.lemma = form
+        this.lemmaTag = tag
       }
-      yield { form, tag, lemma, lemmaTag, isLemma, line, lineIndex }
+      return {
+        form,
+        tag,
+        lemma: this.lemma,
+        lemmaTag: this.lemmaTag,
+        isLemma,
+        line,
+        lineIndex: this.lineIndex
+      }
     }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* iterateDictCorpVizLines(lines: Iterable<string>) {
+  let iterator = new DictCorpVizIterator()
+  for (let line of lines) {
+    yield iterator.feedLine(line)
   }
 }
 
