@@ -62,8 +62,8 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
     meta.source = 'Чтиво'
 
     if (format === 'doc') {
-      if (!docFormatBooktypes.find(x => x === meta.documentType)) {
-        console.error(`Forbidden genre for a .doc`)
+      if (meta.documentType && !docFormatBooktypes.find(x => x === meta.documentType)) {
+        console.error(`Forbidden genre for a .doc: ${meta.documentType}`)
         return
       }
       let paragraphs = extractParsFromDocWithLibre(dataPath)
@@ -246,7 +246,7 @@ function normalizeText(str: string) {
 
 //------------------------------------------------------------------------------
 function extractParsFromDocWithLibre(filePath: string) {
-  execSync(`soffice --headless --convert-to html `  // hangs for xhtml
+  execSync(`timeout 60s soffice --headless --convert-to html `  // hangs for xhtml
     + `"${filePath}" --outdir tmp`)
   let convertedPath = path.basename(filePath)
   convertedPath = trimExtension(convertedPath)
