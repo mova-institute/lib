@@ -23,12 +23,14 @@ const regexesKillingParagraph: [RegExp, string][] = [
   [/([^0)])\1{4}/, `long char repeating`],
   [/Этот e-mail адрес защищен от спам-ботов|Переведено сервисом/, 'ru junk'],
   [caseCollisionRe, 'case collision'],
-  [/\[\s*детальніше\s*\]\s*$/i, 'preview button'],
+  [/\[\s*детальніше\s*\]/i, 'preview button'],
+  [/\[\s*читати далі...\s*\]/i, 'preview button'],
   // [,],
 ]
 
 const regexesKillingDoc: [RegExp, string][] = [
   [/[Ђћџ]/, `possible encoding error`],
+  [/\[(\w+)\][^[]*\[\/\1\]/i, 'bb code'],
 ]
 
 const wordsKillingDocRe = new RegExp(`^(${[
@@ -46,6 +48,8 @@ const substringsKillingDoc = [
   'указанньїх',
   '�',
   '[quote="',
+  'page={{',
+  '[[Special:',
 ]
 
 const substringsKillingParagrph = [
