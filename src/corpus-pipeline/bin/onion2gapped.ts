@@ -13,7 +13,7 @@ function main() {
   exitOnStdoutPipeError()
 
   let insideGap = false
-  linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, writer) => {
     let isMarkedAsDupe = line.startsWith('1')
     let payload = line.substr(2)
 
@@ -23,10 +23,10 @@ function main() {
       }
     } else {
       if (insideGap) {
-        write(gapTagBytes)
+        writer.write(gapTagBytes)
         insideGap = false
       }
-      write(`${payload}\n`)
+      writer.write(`${payload}\n`)
     }
   })
 }

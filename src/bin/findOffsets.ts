@@ -15,10 +15,10 @@ function main() {
   let curOffset = 0
   let lastOffset = 0
   let lastHit: string
-  linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, writer) => {
     if (findRe.test(line)) {
       if (curOffset) {
-        write(`${lastOffset}\t${curOffset - lastOffset}\t${lastHit}\n`)
+        writer.write(`${lastOffset}\t${curOffset - lastOffset}\t${lastHit}\n`)
         lastOffset = curOffset
       }
       lastHit = line

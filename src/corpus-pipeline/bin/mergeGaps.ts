@@ -9,17 +9,17 @@ function main() {
   exitOnStdoutPipeError()
 
   let currGapTypes = []
-  linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, writer) => {
     let match = line.match(/^<gap type="([^"]+)"/)
     if (match) {
       currGapTypes.push(match[1])
     } else {
       if (currGapTypes.length) {
-        write(`<gap type="${currGapTypes.join(' ')}"/>\n`)
+        writer.write(`<gap type="${currGapTypes.join(' ')}"/>\n`)
         currGapTypes = []
       }
-      write(line)
-      write('\n')
+      writer.write(line)
+      writer.write('\n')
     }
   })
 }

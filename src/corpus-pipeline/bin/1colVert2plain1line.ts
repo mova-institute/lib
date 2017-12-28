@@ -8,9 +8,10 @@ import { unescape } from 'he'
 function main() {
   exitOnStdoutPipeError()
 
-  linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, writer) => {
     if (!line.startsWith('<')) {
-      write(unescape(line) + ' ')
+      writer.write(unescape(line))
+      writer.write(' ')
     }
   })
 }

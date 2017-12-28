@@ -20,10 +20,10 @@ function main() {
   }) as any
 
   let firstInSent = true
-  linesBackpressedStd((line, write) => {
+  linesBackpressedStd((line, writer) => {
     if (!line.includes('\t')) {
       if (/^<\/s>/.test(line)) {
-        write('\n')
+        writer.write('\n')
         firstInSent = true
       }
       return
@@ -38,10 +38,10 @@ function main() {
       word = word.toLowerCase()
     }
     if (!firstInSent) {
-      write(' ')
+      writer.write(' ')
     }
 
-    write(word)
+    writer.write(word)
 
     firstInSent = false
   })
