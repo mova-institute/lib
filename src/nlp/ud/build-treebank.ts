@@ -260,7 +260,10 @@ function main() {
         standartizeMorpho(tokens)
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentLevelInfo, { morphOnly: true })
+        let conlluedSentence = sentence2conllu(tokens, sentLevelInfo, {
+          morphOnly: true,
+          xpos: args.xpos,
+        })
         fs.writeSync(file, conlluedSentence + '\n\n')
         setRegistryMorpho[dataset].accountExported(tokens.length)
       } else {
