@@ -5,12 +5,12 @@ import { randomBytes } from 'crypto'
 ////////////////////////////////////////////////////////////////////////////////
 export async function genAccessToken() {
   return new Promise((resolve, reject) => {
-    randomBytes(48, (e, buf) => {
+    randomBytes(64, (e, buf) => {
       if (e) {
         reject(e)
       }
       else {
-        resolve(buf.toString('hex'))
+        resolve(buf.toString('base64'))
       }
     })
   })
