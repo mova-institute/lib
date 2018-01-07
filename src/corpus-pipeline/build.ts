@@ -7,8 +7,6 @@ import { existsSync, openSync, closeSync, writeSync } from 'fs'
 
 import { sync as globSync } from 'glob'
 import { sync as mkdirpSync } from 'mkdirp'
-import { parseHtmlString } from 'libxmljs'
-import { LibxmljsDocument } from 'xmlapi-libxmljs'
 import * as minimist from 'minimist'
 
 import { CorpusDoc } from './doc_meta'
