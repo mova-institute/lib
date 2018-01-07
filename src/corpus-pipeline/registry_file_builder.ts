@@ -1,6 +1,44 @@
 import * as path from 'path'
+import { clone } from 'lodash'
 
+export type PositionalAttrs = [string, string, string[]][]
 
+export const positionalAttrsBase = [
+  ['tag', 'повна мітка'],
+  ['pos', 'ЧМ'],
+  ['pos2', 'українізована ЧМ'],
+  ['abbr', 'скорочення'],
+  ['animacy', 'істотовість'],
+  ['animacy_gram', 'граматична істотовість'],
+  ['aspect', 'вид'],
+  ['case', 'відмінок'],
+  ['degree', 'ступінь'],
+  ['foreign', 'чужинність'],
+  ['gender', 'рід'],
+  ['hyph', 'передрисковість'],
+  ['mood', 'спосіб'],
+  ['nametype', 'тип імені'],
+  ['number', 'число'],
+  // ['numform', 'запис числівника'],  // del
+  ['numtype', 'тип числівника'],
+  ['parttype', 'тип частки'],
+  ['person', 'особа'],
+  ['poss', 'присвійність'],
+  // ['prepcase', 'prepcase'],  // del
+  ['prontype', 'займенниковий тип'],
+  ['puncttype', 'тип пунктуації'],
+  ['reflex', 'зворотність'],
+  ['reverse', 'зворотність дієслова'],
+  ['tense', 'час'],
+  ['variant', 'форма прикметника'],
+  ['verbform', 'форма дієслова'],
+  ['voice', 'стан'],
+  ['rel', 'реляція'],
+  ['urel', 'універсальна реляція'],
+  ['head', 'голова'],
+  ['index', 'номер в реченні'],
+  ['spaceafter', 'пробіл після'],
+] as PositionalAttrs
 
 ///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
@@ -8,18 +46,25 @@ export interface RegistryFileParams {
   title: string
   hasDictTags: boolean
   hasGaps: boolean
+  hasTokenIds: boolean
   path?: string
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function generateRegistryFile(params: RegistryFileParams) {
+export function generateRegistryFiles(params: RegistryFileParams) {
+  let positionalAttrs = clone(positionalAttrsBase)
+  if (params.hasTokenIds) {
+    positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
+  }
+
+
   let corpus = `
 
 NAME "${params.title}"
 #INFO "Корпус української (випробовування)"
 INFOHREF "https://mova.institute/corpus"
 MAINTAINER "org@mova.institute"
-TAGSETDOC "http://universaldependencies.org"    # todo
+TAGSETDOC "http://universaldependencies.org/guidelines.html"
 
 
 LANGUAGE "Ukrainian"
@@ -64,44 +109,9 @@ ATTRIBUTE lemma_lc  {
   TRANSQUERY yes
 }`
 
-  let attrs = [
-    ['tag', 'повна мітка'],
-    ['pos', 'ЧМ'],
-    ['pos2', 'українізована ЧМ'],
-    ['abbr', 'скорочення'],
-    ['animacy', 'істотовість'],
-    ['animacy_gram', 'граматична істотовість'],
-    ['aspect', 'вид'],
-    ['case', 'відмінок'],
-    ['degree', 'ступінь'],
-    ['foreign', 'чужинність'],
-    ['gender', 'рід'],
-    ['hyph', 'передрисковість'],
-    ['mood', 'спосіб'],
-    ['nametype', 'тип імені'],
-    ['number', 'число'],
-    // ['numform', 'запис числівника'],  // del
-    ['numtype', 'тип числівника'],
-    ['parttype', 'тип частки'],
-    ['person', 'особа'],
-    ['poss', 'присвійність'],
-    // ['prepcase', 'prepcase'],  // del
-    ['prontype', 'займенниковий тип'],
-    ['puncttype', 'тип пунктуації'],
-    ['reflex', 'зворотність'],
-    ['reverse', 'зворотність дієслова'],
-    ['tense', 'час'],
-    ['variant', 'форма прикметника'],
-    ['verbform', 'форма дієслова'],
-    ['voice', 'стан'],
-    ['rel', 'реляція'],
-    ['urel', 'універсальна реляція'],
-    ['head', 'голова'],
-    ['spaceafter', 'пробіл після'],
-    ['id', 'код токена'],
-  ]
 
-  corpus += attrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
+
+  corpus += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
   if (params.hasDictTags) {
     corpus += `
 
@@ -261,12 +271,11 @@ const uiSettings = {
 }
 
 //------------------------------------------------------------------------------
-function positionalAttr(name: string, label: string) {
-  return `
-ATTRIBUTE ${name} {
-  LABEL "${label} (${name})"
-  TYPE "FD_FGD"
-}`
+function positionalAttr(name: string, label: string, options: string[] = []) {
+  let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} (${name})"\n  TYPE "FD_FGD"`
+  ret += options.map(x => `\n  ${x}`)
+  ret += '\n}'
+  return ret
 }
 
 /*

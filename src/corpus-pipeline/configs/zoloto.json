@@ -1,4 +1,5 @@
 {
   "title": "золотий",
-  "hasGaps": false
+  "hasGaps": false,
+  "hasTokenIds": true
 }

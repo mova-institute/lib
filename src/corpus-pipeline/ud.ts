@@ -16,7 +16,7 @@ export function token2verticalLine(
   upos: UdPos,
   feats: UdFeats,
   rel: string,
-  index: number,
+  sentIndex: number,
   head: number,
   gluedNext = false,
   id?: string,
@@ -24,10 +24,9 @@ export function token2verticalLine(
   let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
-  let relativeHead = prepareRelativeHead(head, index)
+  let relativeHead = prepareRelativeHead(head, sentIndex)
 
-  let ret = `${form}\t${lemma}\t${tag}\t`
-  ret += [
+  let featsArray = [
     upos,
     domesticatedPos,
     feats.Abbr,
@@ -60,9 +59,16 @@ export function token2verticalLine(
     rel,
     urel,
     relativeHead,
+    sentIndex + 1,
     gluedNext ? 'no' : '',
-    id,
-  ].map(x => x === undefined ? '' : x).join('\t').toLowerCase()
+  ]
+
+  if (id !== undefined) {
+    featsArray.push(id)
+  }
+
+  let ret = `${form}\t${lemma}\t${tag}\t`
+  ret += featsArray.map(x => x === undefined ? '' : x).join('\t').toLowerCase()
 
   return ret
 }
