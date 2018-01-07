@@ -4486,3 +4486,6 @@ msgstr ""
 #: cmpltmpl/wsketch_form.py:415
 msgid "Show longest-commonest match"
 msgstr "Показувати найдовше-найчастіший збіг"
+
+msgid "Total frequency"
+msgstr "Загальна частота"
