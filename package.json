@@ -90,8 +90,7 @@
     "rimraf": "^2.6.2",
     "tlds": "^1.199.0",
     "tmp": "^0.0.33",
-    "wu": "^2.1.0",
-    "xmlapi-libxmljs": "^0.0.9"
+    "wu": "^2.1.0"
   },
   "optionalDependencies": {
     "detect-character-encoding": "^0.2.1"
