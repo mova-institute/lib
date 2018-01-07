@@ -56,10 +56,11 @@ export function token2verticalLine(
     feats.Variant,
     feats.VerbForm,
     feats.Voice,
+    sentIndex + 1,
     rel,
     urel,
+    head + 1,
     relativeHead,
-    sentIndex + 1,
     gluedNext ? 'no' : '',
   ]
 

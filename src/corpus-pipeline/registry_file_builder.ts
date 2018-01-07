@@ -33,10 +33,11 @@ export const positionalAttrsBase = [
   ['variant', 'форма прикметника'],
   ['verbform', 'форма дієслова'],
   ['voice', 'стан'],
+  ['index', 'номер в реченні'],
   ['rel', 'реляція'],
   ['urel', 'універсальна реляція'],
-  ['head', 'голова'],
-  ['index', 'номер в реченні'],
+  ['head', 'номер голови'],
+  ['relhead', 'відстань до голови'],
   ['spaceafter', 'пробіл після'],
 ] as PositionalAttrs
 
