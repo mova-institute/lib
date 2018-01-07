@@ -73,7 +73,12 @@ function main() {
       }
     })
 
-  app.listen(config.port, () => console.log(`mi-api listening on ${config.port}`))
+  let server = app.listen(config.port, () => console.log(`mi-api listening on ${config.port}`))
+
+  process.on('SIGINT', () => {
+    console.error(`Shutting down gracefully…`)
+    server.close()
+  })
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
