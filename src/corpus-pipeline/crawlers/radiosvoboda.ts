@@ -33,7 +33,6 @@ async function main() {
     ])
 
 
-  let toSeed = new Array<string>()
   let earliest = new Date(2001, 4, 1).getTime()
   let cur = new Date().getTime()
   while (cur > earliest) {
@@ -45,15 +44,4 @@ async function main() {
 
 if (require.main === module) {
   main()
-}
-
-
-//------------------------------------------------------------------------------
-function getUrlsToSaveReForSections(sections: string[]) {
-  return new RegExp(`^\/(${sections.join('|')})\/\d{4}\/\d+\/\d+\/\d+\/$`)
-}
-
-//------------------------------------------------------------------------------
-function normalizePravdaUrl(url: string) {
-
 }

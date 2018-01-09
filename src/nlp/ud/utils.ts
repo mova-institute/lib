@@ -3,7 +3,6 @@ import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { tokenStream2plaintextString } from '../utils'
 import { mu } from '../../mu'
-import * as _ from 'lodash'
 
 
 

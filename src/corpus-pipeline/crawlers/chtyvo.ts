@@ -9,7 +9,7 @@ import { tryParseHtml } from '../../xml/utils.node'
 import { get } from 'request'
 import { arr2indexMap } from '../../algo';
 import * as _ from 'lodash';
-import { trimAfterFirst, trimAfterLast, trimBeforeFirst, trimBeforeLast } from '../../string_utils';
+import { trimBeforeFirst, trimBeforeLast } from '../../string_utils';
 
 
 interface Args {

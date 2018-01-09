@@ -53,14 +53,3 @@ async function main() {
 if (require.main === module) {
   main()
 }
-
-
-//------------------------------------------------------------------------------
-function getUrlsToSaveReForSections(sections: string[]) {
-  return new RegExp(`^\/(${sections.join('|')})\/\d{4}\/\d+\/\d+\/\d+\/$`)
-}
-
-//------------------------------------------------------------------------------
-function normalizePravdaUrl(url: string) {
-
-}
