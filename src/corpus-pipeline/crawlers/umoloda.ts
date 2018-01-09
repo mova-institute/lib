@@ -4,8 +4,8 @@ import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'
-import { matchAll } from '../../lang'
 import { fetchText } from '../../request_utils'
+import { matchAll } from '../../string_utils'
 
 
 interface Args {

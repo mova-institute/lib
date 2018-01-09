@@ -46,19 +46,6 @@ export function matchNth(str: string, re: RegExp, n: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function matchAll(str: string, re: RegExp) {
-  let ret: RegExpExecArray[] = []
-
-  let match: RegExpExecArray | null
-  while (match = re.exec(str)) {
-    ret.push(match)
-  }
-
-  return ret
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
 export function arrayed(value: any | any[]) {
   if (Array.isArray(value)) {
     return value

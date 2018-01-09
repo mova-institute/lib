@@ -1,12 +1,13 @@
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request_utils'
-import { matchAll, sleep } from '../../lang'
+import { sleep } from '../../lang'
 
 import * as chalk from 'chalk'
 
 import * as path from 'path'
 import { resolve, parse, Url } from 'url'
+import { matchAll } from '../../string_utils'
 
 
 export type StringPredicate = (value: string) => any

@@ -1,4 +1,21 @@
 ////////////////////////////////////////////////////////////////////////////////
+export function matchAll(str: string, re: RegExp) {
+  return [...matchAll2(str, re)]
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* matchAll2(str: string, re: RegExp) {
+  if (!re.flags.includes('g')) {
+    throw new Error(`Global regex exepected`)
+  }
+
+  let match: RegExpExecArray | null
+  while ((match = re.exec(str)) !== null) {
+    yield match
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function singleMatchOrThrow(str: string, regexp: RegExp, groupIndex = 0) {
   regexp = cloneWithGlobal(regexp)
   let match = regexp.exec(str)
@@ -110,6 +127,16 @@ export function regexMatchIndexes(str: string, regex: RegExp) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function regexMatchIndexes(str: string, regex: RegExp) {
+  let ret = new Array<number>()
+  let match: RegExpExecArray | null
+  while (match = regex.exec(str)) {
+    ret.push(match.index)
+  }
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 /** replaceCaseAware('ГагаГа', /г/ig, 'ґ') === 'ҐаґаҐа' */
 export function replaceCaseAware(str: string, substr: string | RegExp, newSubStr: string) {
   return str.replace(substr as any, (match) => {  // todo
@@ -129,7 +156,6 @@ export function replaceLoop(str: string, pattern: RegExp | string, replacer: str
   }
   return ret
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 export function uppercaseMask(str: string) {

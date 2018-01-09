@@ -4,8 +4,9 @@ import { sync as mkdirpSync } from 'mkdirp'
 import * as minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
-import { matchAll, sleep } from '../../lang'
+import { sleep } from '../../lang'
 import { fetchText } from '../../request_utils'
+import { matchAll } from '../../string_utils'
 
 
 
