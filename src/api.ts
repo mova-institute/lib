@@ -20,9 +20,11 @@ const AUTH_COOKIE = 'accessToken'
 const CONTINUETO_COOKIE = 'continueTo'
 const globalCookie: CookieOptions = {
   domain: '.mova.institute',
+  maxAge: 1000 * 3600 * 24 * 100,
 }
 const apiCookie: CookieOptions = {
   domain: 'api.mova.institute',
+  maxAge: 1000 * 3600 * 24 * 100,
 }
 const httponlyGlobalCookie: CookieOptions = {
   ...globalCookie,
