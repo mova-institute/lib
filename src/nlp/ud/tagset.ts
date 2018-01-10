@@ -331,6 +331,7 @@ export class UdFeats {
   Number: UdNumber
   NumForm: UdNumForm
   NumType: UdNumType
+  Orth: UdOrth
   PartType: UdPartType
   Person: UdPerson
   Poss: UdBoolean
@@ -340,6 +341,7 @@ export class UdFeats {
   Reflex: UdBoolean
   Style: UdStyle
   Tense: UdTense
+  Uninflect: UdUninflect
   Variant: UdVariant
   VerbForm: UdVerbForm
   Voice: UdVoice

@@ -1,38 +1,41 @@
 import * as path from 'path'
 import { clone } from 'lodash'
+import { Dict } from '../types';
 
-export type PositionalAttrs = [string, string, string[]][]
 
-export const positionalAttrsBase = [
-  ['tag', 'повна мітка'],
+
+type PositionalAttrs = [string, string, string[]][]
+
+const positionalAttrsBase = [
   ['pos', 'ЧМ'],
-  ['pos2', 'українізована ЧМ'],
-  ['abbr', 'скорочення'],
+  ['upos', 'універсальна ЧМ'],
+  ['abbr', 'скороченість'],
   ['animacy', 'істотовість'],
   ['animacy_gram', 'граматична істотовість'],
-  ['aspect', 'вид'],
+  ['aspect', 'вид дієслова'],
   ['case', 'відмінок'],
-  ['degree', 'ступінь'],
+  ['degree', 'ступінь порівняння'],
   ['foreign', 'чужинність'],
   ['gender', 'рід'],
   ['hyph', 'передрисковість'],
-  ['mood', 'спосіб'],
+  ['mood', 'спосіб дієслова'],
   ['nametype', 'тип імені'],
   ['number', 'число'],
-  // ['numform', 'запис числівника'],  // del
   ['numtype', 'тип числівника'],
+  ['orth', 'правопис'],
   ['parttype', 'тип частки'],
   ['person', 'особа'],
   ['poss', 'присвійність'],
-  // ['prepcase', 'prepcase'],  // del
   ['prontype', 'займенниковий тип'],
   ['puncttype', 'тип пунктуації'],
   ['reflex', 'зворотність'],
-  ['reverse', 'зворотність дієслова'],
+  // ['reverse', 'зворотність дієслова'],
   ['tense', 'час'],
+  ['uninflect', 'невідмінюваність'],
   ['variant', 'форма прикметника'],
-  ['verbform', 'форма дієслова'],
-  ['voice', 'стан'],
+  ['verbform', 'тип дієслова'],
+  ['voice', 'стан дієслова'],
+  ['tag', 'повна мітка'],
   ['index', 'номер в реченні'],
   ['rel', 'реляція'],
   ['urel', 'універсальна реляція'],
@@ -77,54 +80,36 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
 ################################################################################
 #####################          Positionals        ##############################
 ################################################################################
-
-ATTRIBUTE word {
-  LABEL "словоформа (word)"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE lc {
-  LABEL "словоформа (мал. літерами) (lc)"
-  DYNAMIC utf8lowercase
-  DYNLIB internal
-  ARG1 "C"
-  FUNTYPE s
-  FROMATTR word
-  TYPE index
-  TRANSQUERY yes
-}
-
-ATTRIBUTE lemma {
-  LABEL "лема (lemma)"
-  TYPE "FD_FGD"
-}
-
-ATTRIBUTE lemma_lc  {
-  LABEL "лема (мал. літерами) (lemma_lc)"
-  DYNAMIC utf8lowercase
-  DYNLIB internal
-  ARG1 "C"
-  FUNTYPE s
-  FROMATTR lemma
-  TYPE index
-  TRANSQUERY yes
-}`
-
-
+`
+  corpus += positionalAttr('word', 'словоформа')
+  corpus += positionalAttr('lc', 'словоформа мал. літерами', {
+    dynamic: 'utf8lowercase',
+    dynlib: 'internal',
+    arg1: 'C',
+    funtype: 's',
+    fromattr: 'word',
+    type: 'index',
+    transquery: 'yes',
+  })
+  corpus += positionalAttr('lemma', 'лема')
+  corpus += positionalAttr('lemma_lc', 'лема мал. літерами', {
+    dynamic: 'utf8lowercase',
+    dynlib: 'internal',
+    arg1: 'C',
+    funtype: 's',
+    fromattr: 'lemma',
+    type: 'index',
+    transquery: 'yes',
+  })
 
   corpus += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
   if (params.hasDictTags) {
-    corpus += `
-
-ATTRIBUTE tag_dic {
-  LABEL "повна мітка зі словника"
-  TYPE "FD_FGD"
-  MULTIVALUE yes
-  MULTISEP ";"
-}`
+    corpus += positionalAttr('tag_dic', 'повна мітка зі словника', {
+      multivalue: 'yes',
+      multisep: ';'
+    })
   }
   corpus += `
-
 
 ################################################################################
 #####################          Structures        ###############################
@@ -229,7 +214,7 @@ FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.domain,doc.commen
 #STRUCTATTRLIST "doc.title,doc.author,doc.date"
 SUBCORPATTRS "doc.title,doc.author|doc.date"
 #FREQTTATTRS ""
-WPOSLIST ",іменник,noun|propn,дієслово,verb,прикметник,adj,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,розділовий,punct,залишок,x"
+WPOSLIST ",іменник,noun|propn|pron,дієслово,verb,прикметник,adj|det,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,символ,sym,розділовий,punct,залишок,x"
 `
 
   if (params.path) {
@@ -272,9 +257,12 @@ const uiSettings = {
 }
 
 //------------------------------------------------------------------------------
-function positionalAttr(name: string, label: string, options: string[] = []) {
-  let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} (${name})"\n  TYPE "FD_FGD"`
-  ret += options.map(x => `\n  ${x}`)
+function positionalAttr(name: string, label: string, options: Dict<string> = {}) {
+  options.type = 'FD_FGD'
+  let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} [${name}]"`
+  for (let [k, v] of Object.entries(options)) {
+    ret += `\n  ${k.toUpperCase()} "${v}"`
+  }
   ret += '\n}'
   return ret
 }

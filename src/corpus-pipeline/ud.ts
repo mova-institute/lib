@@ -21,14 +21,15 @@ export function token2verticalLine(
   gluedNext = false,
   id?: string,
 ) {
-  let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
   let domesticatedPos = domesticateUdPos(upos)
   let urel = prepareUrel(rel)
   let relativeHead = prepareRelativeHead(head, sentIndex)
+  let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
 
-  let featsArray = [
-    upos,
+  let ret = `${form}\t${lemma}\t`
+  ret += feats2line([
     domesticatedPos,
+    upos,
     feats.Abbr,
     feats.Animacy,
     feats['Animacy[gram]'],
@@ -41,52 +42,47 @@ export function token2verticalLine(
     feats.Mood,
     feats.NameType,
     feats.Number,
-    // feats.NumForm,
     feats.NumType,
+    feats.Orth,
     feats.PartType,
     feats.Person,
     feats.Poss,
-    // feats.PrepCase,
     feats.PronType,
-    // feats.PunctSide,
     feats.PunctType,
     feats.Reflex,
-    feats.Reverse,
+    // feats.Reverse,
     feats.Tense,
+    feats.Uninflect,
     feats.Variant,
     feats.VerbForm,
     feats.Voice,
+  ])
+  ret += `\t${tag}\t`
+  ret += feats2line([
     sentIndex + 1,
     rel,
     urel,
     head + 1,
     relativeHead,
     gluedNext ? 'no' : '',
-  ]
-
+  ])
   if (id !== undefined) {
-    featsArray.push(id)
+    ret += `\t${id}`
   }
-
-  let ret = `${form}\t${lemma}\t${tag}\t`
-  ret += featsArray.map(x => x === undefined ? '' : x).join('\t').toLowerCase()
 
   return ret
 }
 
 //------------------------------------------------------------------------------
 function domesticateUdPos(upos: UdPos) {
-  let ret = upos
-  if (ret === 'DET') {
-    ret = 'ADJ'
-  } else if (ret === 'PROPN') {
-    ret = 'NOUN'
-  }
-
-  return ret
+  return {
+    'DET': 'ADJ',
+    'PROPN': 'NOUN',
+    'PRON': 'NOUN',
+  }[upos] || upos
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function prepareUrel(rel: string | undefined) {
   let ret: string
   if (rel) {
@@ -95,7 +91,7 @@ function prepareUrel(rel: string | undefined) {
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function prepareRelativeHead(head: number, index: number) {
   if (head === 0) {
     return 0
@@ -104,4 +100,9 @@ function prepareRelativeHead(head: number, index: number) {
     return ''
   }
   return head - index
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function feats2line(feats: (string | number)[]) {
+  return feats.map(x => x === undefined ? '' : x).join('\t').toLowerCase()
 }
