@@ -25,6 +25,7 @@ export function token2verticalLine(
   let urel = prepareUrel(rel)
   let relativeHead = prepareRelativeHead(head, sentIndex)
   let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
+  let nameType = feats.NameType || (upos === 'PROPN' && 'Oth') || ''
 
   let ret = `${form}\t${lemma}\t`
   ret += feats2line([
@@ -40,7 +41,7 @@ export function token2verticalLine(
     feats.Gender,
     feats.Hyph,
     feats.Mood,
-    feats.NameType,
+    nameType,
     feats.Number,
     feats.NumType,
     feats.Orth,
