@@ -1,4 +1,4 @@
-import { UdPos, UdFeats, ud2conlluishString, UdNumType } from '../nlp/ud/tagset'
+import { UdPos, UdFeats, ud2conlluishString, UdNumType, UdVerbForm } from '../nlp/ud/tagset'
 import { trimAfterLast } from '../string_utils'
 import { ConlluToken } from '../nlp/ud/conllu'
 
@@ -21,7 +21,7 @@ export function token2verticalLine(
   gluedNext = false,
   id?: string,
 ) {
-  let domesticatedPos = domesticateUdPos(upos, feats.NumType)
+  let domesticatedPos = domesticateUdPos(upos, feats.NumType, feats.VerbForm)
   let urel = prepareUrel(rel)
   let relativeHead = prepareRelativeHead(head, sentIndex)
   let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
@@ -75,7 +75,7 @@ export function token2verticalLine(
 }
 
 //------------------------------------------------------------------------------
-function domesticateUdPos(upos: UdPos, numType: UdNumType) {
+function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVerbForm): UdPos {
   if (upos === 'PROPN' || upos ==='PRON') {
     return 'NOUN'
   }
@@ -85,6 +85,13 @@ function domesticateUdPos(upos: UdPos, numType: UdNumType) {
     }
     return 'ADJ'
   }
+  if (upos === 'AUX') {
+    if (verbForm) {
+      return 'VERB'
+    }
+    return 'PART'
+  }
+
   return upos
 }
 
