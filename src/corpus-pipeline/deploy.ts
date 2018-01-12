@@ -186,7 +186,8 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
       + `rm -rfv "${manateePath}/${name}"`
       + ` && mv "${manateePath}/${tempName}" "${manateePath}/${name}"`
       + ` && mv "${tempConfigPath}" "${registryPath}/${name}"`
-      + ` && sudo -u www-data rm -rfv "${remoteParams.bonitoDataPath}/cache/${name}"`
+      + ` && sudo -u www-data rm -rf "${remoteParams.bonitoDataPath}/cache/${name}"`
+      + ` && sudo -u kontext rm -rf "/srv/corpora/kontext/redis-conc-cache/${name}"`
     if (params.subcorpConfig) {
       command += ` && mv "${tempSubcorpConfigPath}" "${newSubcorpConfigPath}"`
     }
