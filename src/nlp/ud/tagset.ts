@@ -35,7 +35,7 @@ export type UdPolarity = 'Pos' | 'Neg'
 export type UdVariant = 'Short' | 'Uncontr'
 export type UdStyle = 'Coll' | 'Rare' | 'Odd'
 export type UdTypo = UdBoolean
-export type UdOrth = 'Khark'
+export type UdOrth = 'Alt'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
 export type UdPartType = 'Prs' | 'Conseq'
 export type UdPolite = 'Form'
@@ -261,7 +261,7 @@ const politeMap = new Map<Formality, UdPolite>([
 ])
 
 const orthoMap = new Map<Alternativity, UdOrth>([
-  [Alternativity.yes, 'Khark'],
+  [Alternativity.yes, 'Alt'],
 ])
 
 const partTypeMap = new Map<PartType, UdPartType>([
