@@ -52,6 +52,7 @@ export interface RegistryFileParams {
   hasGaps: boolean
   hasTokenIds: boolean
   path?: string
+  vertical?: string
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -116,67 +117,95 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
 ################################################################################
 
 STRUCTURE doc {
-  DISPLAYEND ""
-
-  ATTRIBUTE id
-  ATTRIBUTE reference_title {
-    LABEL "джерело"
+  ATTRIBUTE id {
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE title {
     LABEL "назва"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE date {
     LABEL "час появи"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE author {
     LABEL "автор"
     MULTIVALUE yes
     MULTISEP "|"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE original_author {
     LABEL "автор первотвору"
     MULTIVALUE yes
     MULTISEP "|"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE chtyvo_section {
     LABEL "розділ (для Чтива)"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE chtyvo_type {
     LABEL "тип (для Чтива)"
+    TYPE file64
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE source {
+    LABEL "джерело"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE type {
     LABEL "тип"
     MULTIVALUE yes
     MULTISEP "|"
 #    HIERARCHICAL "::"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE domain {
     LABEL "галузь"
     MULTIVALUE yes
     MULTISEP "|"
 #    HIERARCHICAL "::"
-  }
-  ATTRIBUTE wordcount {
-    LABEL "кількість слів"
+    TYPE file64
+    DEFAULTVALUE ""
   }
   ATTRIBUTE url {
     LABEL "посилання"
+    TYPE file64
+    DEFAULTVALUE ""
   }
-  ATTRIBUTE comment {
-    LABEL "коментар"
+  ATTRIBUTE wordcount {
+    LABEL "кількість слів"
+    TYPE file64
+    DEFAULTVALUE ""
   }
 }
 STRUCTURE p {
-  ATTRIBUTE id
+  ATTRIBUTE id {
+    LABEL "код абзаца"
+    TYPE file64
+    DEFAULTVALUE ""
+  }
 }
 STRUCTURE s {
   ATTRIBUTE id {
     LABEL "код речення"
+    TYPE file64
+    DEFAULTVALUE ""
   }
 }
 STRUCTURE g {
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
+  TYPE file64
+  DEFAULTVALUE ""
 }`
   if (params.hasGaps) {
     corpus += `
@@ -184,6 +213,8 @@ STRUCTURE gap {
   LABEL "пропуск"
   ATTRIBUTE type {
     LABEL "тип"
+    TYPE file64
+    DEFAULTVALUE ""
   }
 }`
   }
@@ -219,6 +250,10 @@ WPOSLIST ",іменник,noun|propn|pron,дієслово,verb,прикметн
 
   if (params.path) {
     corpus += `\nPATH "${path.resolve(params.path)}"`
+  }
+
+  if (params.vertical) {
+    corpus += `\VERTICAL "${path.resolve(params.vertical)}"`
   }
 
 
@@ -259,7 +294,7 @@ const uiSettings = {
 //------------------------------------------------------------------------------
 function positionalAttr(name: string, label: string, options: Dict<string> = {}) {
   options.type = 'FD_FGD'
-  let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} [${name}]"`
+  let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} [${name}]"\n  DEFAULTVALUE ""`
   for (let [k, v] of Object.entries(options)) {
     ret += `\n  ${k.toUpperCase()} "${v}"`
   }
