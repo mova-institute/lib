@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-import { exitOnStdoutPipeError, linesBackpressed, linesAsyncStd, linesBackpressedStd } from '../../utils.node'
+import { exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { Vert2ConlluBuilder } from '../vert2conllu_builder'
 import { mu, Mu } from '../../mu'
 import { tokenObj2verticalLine } from '../ud'
 import { parseConlluTokenCells } from '../../nlp/ud/conllu'
-import { AwaitingWriter } from '../../lib/node/awaiting_writer'
 import { ApiClient } from '../../nlp/api_client'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer';
@@ -16,7 +15,6 @@ import { BackpressingWriter } from '../../lib/node/backpressing_writer'
 import * as minimist from 'minimist'
 
 import * as os from 'os'
-import { Buffer } from 'buffer'
 
 
 
@@ -37,15 +35,11 @@ async function main() {
   let api = new ApiClient(args.udpipeUrl, args.tdozatUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
   let analyzer = createMorphAnalyzerSync()
-  // let writer = new AwaitingWriter(process.stdout)
   let writer = new BackpressingWriter(process.stdout, process.stdin)
 
   let lines = new Array<string>()
-  let lineNum = -1
   await linesAsyncStd(async (line/* , writer */) => {
-    ++lineNum
     if (!line) {
-      console.error(`ERROR: Unexpected empty line ${lineNum}`)
       return
     }
     lines.push(line)
