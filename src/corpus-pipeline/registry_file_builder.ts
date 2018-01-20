@@ -35,7 +35,7 @@ const positionalAttrsBase = [
   ['variant', 'форма прикметника'],
   ['verbform', 'тип дієслова'],
   ['voice', 'стан дієслова'],
-  ['tag', 'повна мітка'],
+  ['tag', 'повна міта'],
   ['index', 'номер в реченні'],
   ['rel', 'реляція'],
   ['urel', 'універсальна реляція'],
@@ -105,7 +105,7 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
 
   corpus += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
   if (params.hasDictTags) {
-    corpus += positionalAttr('tag_dic', 'повна мітка зі словника', {
+    corpus += positionalAttr('tag_dic', 'повна міта зі словника', {
       multivalue: 'yes',
       multisep: ';'
     })
@@ -253,7 +253,7 @@ WPOSLIST ",іменник,noun|propn|pron,дієслово,verb,прикметн
   }
 
   if (params.vertical) {
-    corpus += `\VERTICAL "${path.resolve(params.vertical)}"`
+    corpus += `\nVERTICAL "${path.resolve(params.vertical)}"`
   }
 
 
