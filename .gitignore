@@ -1,6 +1,7 @@
 node_modules/
 npm-debug.log
-lib/*
+lib/**/*.js
+lib/**/*.d.ts
 lib5/*
 !lib5/package.json
 !lib/package.json
