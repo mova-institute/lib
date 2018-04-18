@@ -51,6 +51,7 @@ export interface RegistryFileParams {
   hasDictTags: boolean
   hasGaps: boolean
   hasTokenIds: boolean
+  subcorpAttrs: string
   path?: string
   vertical?: string
 }
@@ -117,47 +118,41 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
 ################################################################################
 
 STRUCTURE doc {
+  TYPE file64
   ATTRIBUTE id {
-    TYPE file64
+    LABEL "код документа"
     DEFAULTVALUE ""
   }
   ATTRIBUTE title {
     LABEL "назва"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE date {
     LABEL "час появи"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE author {
     LABEL "автор"
     MULTIVALUE yes
     MULTISEP "|"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE original_author {
     LABEL "автор первотвору"
     MULTIVALUE yes
     MULTISEP "|"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE chtyvo_section {
     LABEL "розділ (для Чтива)"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE chtyvo_type {
     LABEL "тип (для Чтива)"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE source {
     LABEL "джерело"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE type {
@@ -165,7 +160,6 @@ STRUCTURE doc {
     MULTIVALUE yes
     MULTISEP "|"
 #    HIERARCHICAL "::"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE domain {
@@ -173,47 +167,44 @@ STRUCTURE doc {
     MULTIVALUE yes
     MULTISEP "|"
 #    HIERARCHICAL "::"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE url {
     LABEL "посилання"
-    TYPE file64
     DEFAULTVALUE ""
   }
   ATTRIBUTE wordcount {
     LABEL "кількість слів"
-    TYPE file64
     DEFAULTVALUE ""
   }
 }
 STRUCTURE p {
+  TYPE file64
   ATTRIBUTE id {
     LABEL "код абзаца"
-    TYPE file64
     DEFAULTVALUE ""
   }
 }
 STRUCTURE s {
+  TYPE file64
   ATTRIBUTE id {
     LABEL "код речення"
-    TYPE file64
     DEFAULTVALUE ""
   }
 }
 STRUCTURE g {
+  TYPE file64
   DISPLAYTAG 0
   DISPLAYBEGIN "_EMPTY_"
-  TYPE file64
   DEFAULTVALUE ""
 }`
   if (params.hasGaps) {
     corpus += `
 STRUCTURE gap {
+  TYPE file64
   LABEL "пропуск"
   ATTRIBUTE type {
     LABEL "тип"
-    TYPE file64
     DEFAULTVALUE ""
   }
 }`
@@ -241,11 +232,16 @@ DEFAULTATTR word
 
 # todo ATTRDOC, ATTRDOCLABEL,
 
-FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.domain,doc.comment,doc.wordcount,s.id,doc.url"
+FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.domain,doc.wordcount,s.id,doc.url"
 #STRUCTATTRLIST "doc.title,doc.author,doc.date"
-SUBCORPATTRS "doc.title,doc.author|doc.date"
+SUBCORPATTRS "`
+  corpus += params.subcorpAttrs
+    ? params.subcorpAttrs
+    : 'doc.source,doc.chtyvo_section,doc.chtyvo_type,doc.title,doc.author,doc.original_author,doc.date'
+  corpus += `"
 #FREQTTATTRS ""
-WPOSLIST ",іменник,noun|propn|pron,дієслово,verb,прикметник,adj|det,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,символ,sym,розділовий,punct,залишок,x"
+#WPOSLIST ",іменник,noun|propn|pron,дієслово,verb,прикметник,adj|det,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,символ,sym,розділовий,punct,залишок,x"
+WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,прикметник,.+(ADJ|DET).*,прислівник,.+ADV.*,прийменник,.+ADP.*,сполучник,.+[CS]CONJ.*,числівник,.+NUM.*,частка,.+PART.*,вигук,.+INTJ.*,символ,.+SYM.*,розділовий,.+PUNCT.*,залишок,.+X.*"
 `
 
   if (params.path) {

@@ -263,9 +263,9 @@ export function isRegularizedFlowElement(el: AbstractElement) {
   return ret
 }
 
-const elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g', 'sb', 'doc', 'gap'])
 ////////////////////////////////////////////////////////////////////////////////
-export function iterateCorpusTokens(root: AbstractElement) {
+export function iterateCorpusTokens(root: AbstractElement,
+  elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g', 'sb', 'doc', 'gap'])) {
   return mu((function* () {
     let iterator = traverseDepthGen2(root)
     let pointer = iterator.next()

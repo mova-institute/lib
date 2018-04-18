@@ -1,5 +1,6 @@
 {
   "title": "золотий",
   "hasGaps": false,
-  "hasTokenIds": true
+  "hasTokenIds": true,
+  "subcorpAttrs": "doc.title,doc.author|doc.date"
 }

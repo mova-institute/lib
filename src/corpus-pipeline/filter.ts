@@ -72,6 +72,7 @@ const substringsKillingParagrph = [
 const titleRegsKillingDoc = [
   /^Перегляд вихідного коду сторінки/,
   /�/,
+  /\\"/,
 ]
 
 const urlsRegsKillingDoc = [
