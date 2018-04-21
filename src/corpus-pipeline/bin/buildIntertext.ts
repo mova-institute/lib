@@ -13,11 +13,11 @@ import * as mkdirp from 'mkdirp'
 
 import * as path from 'path'
 import * as fs from 'fs'
-import { countNumMatches, matchAll, matchAll2, firstMatch } from '../../string_utils';
-import { DefaultMap } from '../../data_structures';
-import { flatten } from 'lodash';
-import { streamparseConllu } from '../../nlp/ud/conllu';
+import { countNumMatches } from '../../string_utils';
+import { DefaultMap, HashSet } from '../../data_structures';
+import { streamparseConllu, getCol, ConlluField } from '../../nlp/ud/conllu';
 import { buildMap } from '../../lang';
+import { generateRegistryFile } from '../registry_file_builder';
 
 
 
@@ -130,13 +130,13 @@ async function therest(alignFiles: string[]) {
   let langFeatsArr = buildMap(
     mu(langFeats).map(([lang, set]) => [lang, [...set].sort()] as [string, string[]])  // todo
   )
-  console.error(langFeatsArr)
+
   console.error(`Generating vertical files…`)
 
+  let langPairs = new HashSet<string[]>()
   for (let alignFile of alignFiles) {
-    let { alignDoc, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
+    let { leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
       prepareFromAlignment(alignFile)
-
 
     console.error(`processing "${leftLang}_${rightLang}" alignment file: ${alignFile}`)
 
@@ -148,7 +148,9 @@ async function therest(alignFiles: string[]) {
       let sentIds = getSentIdsFromIntertextDoc(doc as AbstractElement)
       let outDir = 'vertical'
       mkdirp.sync(outDir)
-      let destVertical = path.join(outDir, `${lang}_${oppositeLang}`)
+      langPairs.add([lang as string, oppositeLang as string])
+      let corporaId = `${lang}_${oppositeLang}`
+      let destVertical = path.join(outDir, corporaId)
 
       let vertStream = conlluStrAndMeta2vertical(conllu, {
         meta: {
@@ -168,6 +170,21 @@ async function therest(alignFiles: string[]) {
       ws.close()
     }
   }
+
+  console.error(`Generating registry files…`)
+
+  let registry = process.env['MANATEE_REGISTRY']
+  if (!registry) {
+    throw new Error(`MANATEE_REGISTRY env var not set`)
+  }
+  for (let [lang, alignedLang] of langPairs) {
+    let corporaId = `${lang}_${alignedLang}`
+    let registryFile = generateRegistryFile({
+      title: corporaId,
+      langCode: lang,
+    })
+    fs.writeFileSync(path.join(registry, corporaId), registryFile)
+  }
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -182,8 +199,25 @@ function getFeatsFromConllu(conllu: Iterable<string>, set = new Set<string>()) {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function getFeatsFromConllu2(conllu: Iterable<string>, set = new Set<string>()) {
+  for (let line of conllu) {
+    let feats = getCol(line, ConlluField.feats)
+    if (feats && feats !== '_') {
+      feats.split('|')
+        .map(x => x.match(/^([^=]+)=/)[1])
+        .forEach(x => set.add(x))
+    }
+  }
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function getLangsFromAlignmentPath(alignFilePath: string) {
+  return path.basename(alignFilePath).match(/\.(\w+)\.(\w+)(\.alignment)?\.xml$/).slice(1)
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function prepareFromAlignment(alignFilePath: string) {
-  let [, leftLang, rightLang] = path.basename(alignFilePath).match(/\.(\w+)\.(\w+)(\.alignment)?\.xml$/)
+  let [leftLang, rightLang] = getLangsFromAlignmentPath(alignFilePath)
   let alignDoc = parseXmlFileSync(alignFilePath)
   let linkGrpEl = alignDoc.evaluateElement('//linkGrp')
   let leftDocPath = linkGrpEl.attribute('fromDoc')

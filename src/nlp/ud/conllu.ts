@@ -8,7 +8,7 @@ import { Dict } from '../../types'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export enum Field {
+export enum ConlluField {
   id,
   form,
   lemma,
@@ -45,7 +45,7 @@ export interface StructureToken {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function getCol(line: string, col: Field) {
+export function getCol(line: string, col: ConlluField) {
   return line.split('\t')[col]
 }
 

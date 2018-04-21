@@ -1,6 +1,7 @@
 import * as path from 'path'
 import { clone } from 'lodash'
 import { Dict } from '../types';
+import { indexTableByColumn } from '../algo';
 
 
 
@@ -44,26 +45,73 @@ const positionalAttrsBase = [
 
 ///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
-  // name: string
   title: string
-  language: string
-  hasDictTags: boolean
-  hasGaps: boolean
-  hasTokenIds: boolean
-  subcorpAttrs: string
+  langCode: string
+  hasDictTags?: boolean
+  hasGaps?: boolean
+  hasTokenIds?: boolean
   path?: string
   vertical?: string
+  subcorpAttrs?: string
 }
 
+let langMetas = indexTableByColumn([
+  {
+    code: 'uk',
+    name: 'Ukrainian',
+    locale: 'uk_UA',
+    nonwordre: '[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*',
+  },
+  {
+    code: 'fr',
+    name: 'French',
+    locale: 'fr_FR',
+  },
+  {
+    code: 'cs',
+    name: 'Czech',
+    locale: 'cz_CZ',
+    // nonwordre: '',
+  },
+  {
+    code: 'pl',
+    name: 'Polish',
+    locale: 'pl_PL',
+    // nonwordre: '',
+  },
+  {
+    code: 'de',
+    name: 'German',
+    locale: 'de_DE',
+    // nonwordre: '',
+  },
+  {
+    code: 'en',
+    name: 'English',
+    locale: 'en_US',
+  },
+  // {
+  //   code: '',
+  //   name: '',
+  //   locale: '',
+  //   nonwordre: '',
+  // },
+], 'code')
+
 ////////////////////////////////////////////////////////////////////////////////
-export function generateRegistryFiles(params: RegistryFileParams) {
+export function generateRegistryFile(params: RegistryFileParams) {
+  let langMeta = langMetas.get(params.langCode)
+  if (!langMeta) {
+    throw new Error(`Missing lang meta for "${params.langCode}"`)
+  }
+
   let positionalAttrs = clone(positionalAttrsBase) as any[]
   if (params.hasTokenIds) {
     positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
   }
 
 
-  let corpus = `
+  let ret = `
 
 NAME "${params.title}"
 INFOHREF "https://mova.institute/corpus"
@@ -71,18 +119,18 @@ MAINTAINER "org@mova.institute"
 TAGSETDOC "http://universaldependencies.org/guidelines.html"
 
 
-LANGUAGE "Ukrainian"
+LANGUAGE "${langMeta.name}"
 ENCODING "utf8"
-LOCALE "uk_UA.UTF-8"
-NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*"
+LOCALE "${langMeta.locale}.UTF-8"
+${attrOrNothing('NONWORDRE', langMeta.nonwordre)}
 
 
 ################################################################################
 #####################          Positionals        ##############################
 ################################################################################
 `
-  corpus += positionalAttr('word', 'словоформа')
-  corpus += positionalAttr('lc', 'словоформа мал. літерами', {
+  ret += positionalAttr('word', 'словоформа')
+  ret += positionalAttr('lc', 'словоформа мал. літерами', {
     dynamic: 'utf8lowercase',
     dynlib: 'internal',
     arg1: 'C',
@@ -91,8 +139,8 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
     type: 'index',
     transquery: 'yes',
   })
-  corpus += positionalAttr('lemma', 'лема')
-  corpus += positionalAttr('lemma_lc', 'лема мал. літерами', {
+  ret += positionalAttr('lemma', 'лема')
+  ret += positionalAttr('lemma_lc', 'лема мал. літерами', {
     dynamic: 'utf8lowercase',
     dynlib: 'internal',
     arg1: 'C',
@@ -102,14 +150,14 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
     transquery: 'yes',
   })
 
-  corpus += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
+  ret += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
   if (params.hasDictTags) {
-    corpus += positionalAttr('tag_dic', 'повна міта зі словника', {
+    ret += positionalAttr('tag_dic', 'повна міта зі словника', {
       multivalue: 'yes',
       multisep: ';'
     })
   }
-  corpus += `
+  ret += `
 
 ################################################################################
 #####################          Structures        ###############################
@@ -197,7 +245,7 @@ STRUCTURE g {
   DEFAULTVALUE ""
 }`
   if (params.hasGaps) {
-    corpus += `
+    ret += `
 STRUCTURE gap {
   TYPE file64
   LABEL "пропуск"
@@ -207,7 +255,7 @@ STRUCTURE gap {
   }
 }`
   }
-  corpus += `
+  ret += `
 
 
 
@@ -233,39 +281,30 @@ DEFAULTATTR word
 FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.domain,doc.wordcount,s.id,doc.url"
 #STRUCTATTRLIST "doc.title,doc.author,doc.date"
 SUBCORPATTRS "`
-  corpus += params.subcorpAttrs
+  ret += params.subcorpAttrs
     ? params.subcorpAttrs
     : 'doc.source,doc.chtyvo_section,doc.chtyvo_type,doc.title,doc.author,doc.original_author,doc.date'
-  corpus += `"
+  ret += `"
 #FREQTTATTRS ""
 #WPOSLIST ",іменник,noun|propn|pron,дієслово,verb,прикметник,adj|det,прислівник,adv,прийменник,adp,сполучник,cconj|sconj,числівник,num,частка,part,вигук,intj,символ,sym,розділовий,punct,залишок,x"
 WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,прикметник,.+(ADJ|DET).*,прислівник,.+ADV.*,прийменник,.+ADP.*,сполучник,.+[CS]CONJ.*,числівник,.+NUM.*,частка,.+PART.*,вигук,.+INTJ.*,символ,.+SYM.*,розділовий,.+PUNCT.*,залишок,.+X.*"
 `
 
   if (params.path) {
-    corpus += `\nPATH "${path.resolve(params.path)}"`
+    ret += `\nPATH "${path.resolve(params.path)}"`
   }
 
   if (params.vertical) {
-    corpus += `\nVERTICAL "${path.resolve(params.vertical)}"`
+    ret += `\nVERTICAL "${path.resolve(params.vertical)}"`
   }
 
 
-  corpus = corpus.trim()
-  let subcorpus = `
+  ret = ret.trim()
 
-*FREQLISTATTRS word lc lemma lemma_lc tag tag2
-
-=до30ті
-  -CQL-
-  <doc date="[0-9]{4}.*" & date<="1932">
-
-  `.trim()
-
-  return { corpus, subcorpus }
+  return ret
 }
 
-
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const uiSettings = {
   uilang: 'uk',
   attrs: 'word',
@@ -285,7 +324,7 @@ const uiSettings = {
   use_noflash: '0',
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function positionalAttr(name: string, label: string, options: Dict<string> = {}) {
   options.type = 'FD_FGD'
   let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} [${name}]"\n  DEFAULTVALUE ""`
@@ -296,27 +335,10 @@ function positionalAttr(name: string, label: string, options: Dict<string> = {})
   return ret
 }
 
-/*
-
-
-
-
-reference_title
-title назва
-date дата
-author автор
-original_author автор первотвору
-url посилання
-disamb уоднозначнення    жодного|часткове-правила|руками-Політехніка|руками-стандарт
-type тип    художня проза|поезія|публіцистика|закон (НПА)||
-
-domain галузь спорт|економіка|мистецтво|історія|
-
-хххх    оповідання|стаття|роман|
-
-wordcount
-comment
-
-// proofread
-
-*/
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function attrOrNothing(name: string, value: string) {
+  if (value) {
+    return `${name.toUpperCase()} "${value}"`
+  }
+  return ''
+}

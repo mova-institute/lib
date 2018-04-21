@@ -5,7 +5,7 @@ import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
 import { CatStream } from '../cat_stream'
 import { execPipe } from '../child_process.node'
 import { parseJsonFileSync } from '../utils.node'
-import { generateRegistryFiles } from './registry_file_builder'
+import { generateRegistryFile } from './registry_file_builder'
 
 import { readFileSync, existsSync } from 'fs'
 import { basename } from 'path'
@@ -52,7 +52,7 @@ function main(args: Args) {
   }
 
   let configJson = parseJsonFileSync(args.registryJson)
-  let config = generateRegistryFiles(configJson).corpus
+  let config = generateRegistryFile(configJson)
   let verticalPaths: string[]
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)

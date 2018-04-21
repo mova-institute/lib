@@ -130,6 +130,11 @@ export function groupTableBy<T>(table: T[], groupProp: string | number | symbol)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function indexTableByColumn<T>(table: T[], propName: string) {
+  return new Map(table.map(x => [x[propName], x] as [string, T]))
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function indexTableByColumns(table: Object[], propNames: any[]) {
   let ret = new Map()
 
