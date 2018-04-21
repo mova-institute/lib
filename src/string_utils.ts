@@ -1,4 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
+export function countNumMatches(str: string, re: RegExp) {
+  let match = str.match(re)
+  if (!match) {
+    return 0
+  }
+  return match.length
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function matchAll(str: string, re: RegExp) {
   return [...matchAll2(str, re)]
 }
@@ -114,16 +123,6 @@ export function titlecase(str: string, splitter = /[\s\-]\S/g) {
   }
   regexMatchIndexes(str, splitter).forEach(i => chars[i + 1] = chars[i + 1].toUpperCase())
   return chars.join('')
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function regexMatchIndexes(str: string, regex: RegExp) {
-  let ret = new Array<number>()
-  let match: RegExpExecArray | null
-  while (match = regex.exec(str)) {
-    ret.push(match.index)
-  }
-  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////

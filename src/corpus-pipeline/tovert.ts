@@ -1,6 +1,6 @@
 import { CorpusDoc } from './doc_meta'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
-import { tokenObj2verticalLine } from './ud'
+import { tokenObj2verticalLineUk, tokenObj2verticalLineGeneric } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
@@ -8,28 +8,32 @@ import { escape } from 'he'
 
 
 ////////////////////////////////////////////////////////////////////////////////
+export interface ConlluAndMeta2verticalOptions {
+  formOnly?: boolean
+  meta?: CorpusDoc
+  pGapIndexes?: Array<number>
+  featsOrder?: Array<string>
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function* conlluStrAndMeta2vertical(
   conlluLines: string,
-  meta?: CorpusDoc,
-  formOnly = false,
-  pGapIndexes = Array<number>(),
+  options: ConlluAndMeta2verticalOptions = {},
 ) {
-  yield* conlluAndMeta2vertical(conlluLines.split('\n'), meta, formOnly, pGapIndexes)
+  yield* conlluAndMeta2vertical(conlluLines.split('\n'), options)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* conlluAndMeta2vertical(
   conlluLines: Iterable<string>,
-  meta?: CorpusDoc,
-  formOnly = false,
-  pGapIndexes = Array<number>(),
+  options: ConlluAndMeta2verticalOptions = {},
 ) {
-  if (meta) {
+  if (options.meta) {
     // let { authors, author, date, title, url } = meta
     // author = author || authors && authors.join('; ')
     // let exportedMeta = { author, date, title, url }
     // yield `<doc ${keyvalue2attributesNormalized(exportedMeta)}>`
-    yield `<doc ${keyvalue2attributesNormalized(meta)}>`
+    yield `<doc ${keyvalue2attributesNormalized(options.meta)}>`
   } else {
     yield '<doc>'
   }
@@ -40,9 +44,12 @@ export function* conlluAndMeta2vertical(
     if (tok.structure) {
       if (tok.structure.type === Structure.document) {
         continue
-      } else if (tok.structure.type === Structure.paragraph && pGapIndexes.length) {
+      } else if (tok.structure.type === Structure.paragraph
+        && options.pGapIndexes
+        && options.pGapIndexes.length
+      ) {
         if (tok.structure.opening) {
-          if (pGapIndexes[gapPointer] === 0) {
+          if (options.pGapIndexes[gapPointer] === 0) {
             yield '<gap type="filter"/>'
             ++gapPointer
           }
@@ -58,20 +65,25 @@ export function* conlluAndMeta2vertical(
 
       if (tok.structure.type === Structure.paragraph
         && !tok.structure.opening
-        && pGapIndexes.length
+        && options.pGapIndexes
+        && options.pGapIndexes.length
       ) {
         ++pCount
-        if (pCount === pGapIndexes[gapPointer]) {
+        if (pCount === options.pGapIndexes[gapPointer]) {
           yield '<gap type="filter"/>'
           ++gapPointer
         }
       }
     } else {
-      if (formOnly) {
+      if (options.formOnly) {
         // with multiple cols tags can be distinguished, but not with a single col
         yield escape(tok.token.form)
       } else {
-        yield tokenObj2verticalLine(tok.token)
+        if (options.featsOrder) {
+          yield tokenObj2verticalLineGeneric(tok.token, options.featsOrder)
+        } else {
+          yield tokenObj2verticalLineUk(tok.token)
+        }
       }
       if (tok.token.misc.SpaceAfter === 'No') {
         yield '<g/>'

@@ -72,7 +72,11 @@ async function main() {
         console.error(`Udpipe error for`, filteredParagraphs)
         return
       }
-      let vertStream = conlluStrAndMeta2vertical(conllu, meta, true, gapFollowerIndexes)
+      let vertStream = conlluStrAndMeta2vertical(conllu, {
+        meta,
+        formOnly: true,
+        pGapIndexes: gapFollowerIndexes,
+      })
       await writeJoin(vertStream, process.stdout, '\n', true)
     })
   })

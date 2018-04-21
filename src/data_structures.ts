@@ -126,7 +126,7 @@ export class NumeratedSet<T> {  // todo move somewhere
     return ret
   }
 
-  constructor(mapConstructor: { new (): IMap<T, number> } = Map) {
+  constructor(mapConstructor: { new(): IMap<T, number> } = Map) {
     this.ids = new mapConstructor()
   }
 
@@ -173,23 +173,22 @@ export class CachedFunctionResult<T> {
   }
 }
 
-// todo: bring inheritance version back when es6 minifier comes out
 // ////////////////////////////////////////////////////////////////////////////////
-// export class DefaultMap<K, V> extends Map<K, V> {
-//   constructor(
-//     private v: { new (): V; },
-//     iterable?: Iterable<[K, V]>) {
+export class DefaultMap<K, V> extends Map<K, V> {
+  constructor(
+    private v: { new(): V; },
+    iterable?: Iterable<[K, V]>
+  ) {
+    super(iterable)
+  }
 
-//     super(iterable)
-//   }
+  get(key: K) {
+    if (!super.has(key)) {
+      let ret = new this.v()
+      super.set(key, ret)
+      return ret
+    }
 
-//   get(key: K) {
-//     let ret = super.get(key)
-//     if (!ret) {
-//       ret = new this.v()
-//       super.set(key, ret)
-//     }
-
-//     return ret
-//   }
-// }
+    return super.get(key)
+  }
+}

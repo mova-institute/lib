@@ -58,7 +58,11 @@ async function main() {
           return
         }
         let vertStream = conlluStrAndMeta2vertical(
-          conllu, metaObj as any, true, gapFollowerIndexes)
+          conllu, {
+            meta: metaObj as any,
+            formOnly: true,
+            pGapIndexes: gapFollowerIndexes
+          })
         await writeJoin(vertStream, process.stdout, '\n', true)
       })
     }

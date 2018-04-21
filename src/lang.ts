@@ -7,10 +7,19 @@ import { arr2indexObj } from './algo'
 export const r = String.raw
 
 ////////////////////////////////////////////////////////////////////////////////
-export function buildObject<ValueType>(kevalues: [string, ValueType][]) {
+export function buildObject<ValueType>(kevalues: Iterable<[string, ValueType]>) {
   let ret = {} as Dict<ValueType>
   for (let [key, value] of kevalues) {
     ret[key] = value
+  }
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function buildMap<KeyType, ValueType>(kevalues: Iterable<[KeyType, ValueType]>) {
+  let ret = new Map <KeyType, ValueType>()
+  for (let [key, value] of kevalues) {
+    ret.set(key, value)
   }
   return ret
 }

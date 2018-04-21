@@ -233,7 +233,7 @@ function doVerticalStage(args: Args) {
     let metaPath = join(outDir, 'meta', `${relativePath}.json`)
     let meta = parseJsonFileSync(metaPath)
     let conlluStr = fs.readFileSync(conlluPath, 'utf8')
-    let vrtLines = conlluStrAndMeta2vertical(conlluStr, meta)
+    let vrtLines = conlluStrAndMeta2vertical(conlluStr, { meta })
     writeFileSyncMkdirp(outPath, mu(vrtLines).join('\n', true))
   }
 }

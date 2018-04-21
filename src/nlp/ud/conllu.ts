@@ -8,6 +8,20 @@ import { Dict } from '../../types'
 
 
 ////////////////////////////////////////////////////////////////////////////////
+export enum Field {
+  id,
+  form,
+  lemma,
+  upos,
+  xpos,
+  feats,
+  head,
+  depsrel,
+  deps,
+  misc,
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export interface ConlluToken {
   index: number
   form: string
@@ -28,6 +42,11 @@ export const enum Structure { document, paragraph, sentence }
 export interface StructureToken {
   type: Structure
   opening: boolean
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function getCol(line: string, col: Field) {
+  return line.split('\t')[col]
 }
 
 ////////////////////////////////////////////////////////////////////////////////

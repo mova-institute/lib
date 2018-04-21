@@ -4,7 +4,7 @@ import { exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { Vert2ConlluBuilder } from '../vert2conllu_builder'
 import { mu, Mu } from '../../mu'
-import { tokenObj2verticalLine } from '../ud'
+import { tokenObj2verticalLineUk } from '../ud'
 import { parseConlluTokenCells } from '../../nlp/ud/conllu'
 import { ApiClient } from '../../nlp/api_client'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
@@ -79,7 +79,7 @@ function mergeConlluIntoVert(
       if (!tok) {
         throw new Error(`Unmergable`)
       }
-      ret += tokenObj2verticalLine(tok)
+      ret += tokenObj2verticalLineUk(tok)
 
       let dictInterps = analyzer.tag(tok.form, nextTok && nextTok.form)
       ret += '\t'

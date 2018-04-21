@@ -4,13 +4,19 @@ import { ConlluToken } from '../nlp/ud/conllu'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenObj2verticalLine(token: ConlluToken) {
-  return token2verticalLine(token.form, token.lemma, token.upos, token.feats as any,
+export function tokenObj2verticalLineUk(token: ConlluToken) {
+  return token2verticalLineUk(token.form, token.lemma, token.upos, token.feats as any,
     token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function token2verticalLine(
+export function tokenObj2verticalLineGeneric(token: ConlluToken, featsOrder: Array<string>) {
+  return token2verticalLineGeneric(token.form, token.lemma, token.upos, token.feats as any,
+    featsOrder, token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function token2verticalLineUk(
   form: string,
   lemma: string,
   upos: UdPos,
@@ -57,6 +63,44 @@ export function token2verticalLine(
     feats.Variant,
     feats.VerbForm,
     feats.Voice,
+  ])
+  ret += `\t${tag}\t`
+  ret += feats2line([
+    sentIndex + 1,
+    rel,
+    urel,
+    head + 1,
+    relativeHead,
+    gluedNext ? 'no' : '',
+  ])
+  if (id !== undefined) {
+    ret += `\t${id}`
+  }
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function token2verticalLineGeneric(
+  form: string,
+  lemma: string,
+  upos: UdPos,
+  feats: UdFeats,
+  featsOrder: Array<string>,
+  rel: string,
+  sentIndex: number,
+  head: number,
+  gluedNext = false,
+  id?: string,
+) {
+  let urel = prepareUrel(rel)
+  let relativeHead = prepareRelativeHead(head, sentIndex)
+  let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
+
+  let ret = `${form}\t${lemma}\t`
+  ret += feats2line([
+    upos,
+    ...featsOrder.map(x => feats[x])
   ])
   ret += `\t${tag}\t`
   ret += feats2line([

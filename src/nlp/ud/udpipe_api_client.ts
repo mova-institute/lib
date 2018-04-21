@@ -1,16 +1,20 @@
 import { reqJson } from '../../request_utils'
 
-import { Agent } from 'http'
-
 
 
 export class UdpipeApiClient {
   constructor(
     private endpoint: string,
-    private agent = new Agent({
-      keepAlive: true,
-    })
+    private model?,
   ) {
+  }
+
+  tokenizeSentencesAndParagraphs(paragraphs: string[]) {
+    return this.requestConllu({
+      tokenizer: '',
+      input: 'horizontal',
+      data: paragraphs.join('\n\n') + '\n',
+    })
   }
 
   tokenizeParagraphs(paragraphs: string[]) {
@@ -37,6 +41,16 @@ export class UdpipeApiClient {
     })
   }
 
+  tokTagParseHorizontal(plaintext: string) {
+    return this.requestConllu({
+      tokenizer: 'presegmented',
+      tagger: '',
+      parser: '',
+      input: 'horizontal',
+      data: plaintext,
+    })
+  }
+
   tagParseConnlu(conllu: string) {
     return this.requestConllu({
       tagger: '',
@@ -57,8 +71,11 @@ export class UdpipeApiClient {
   }
 
   private async requestConllu(formData: any) {
+    if (this.model) {
+      formData.model = this.model
+    }
+
     let res = await reqJson(this.endpoint, {
-      agent: this.agent,
       method: 'post',
       formData,
     })

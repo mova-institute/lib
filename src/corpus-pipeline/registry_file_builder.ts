@@ -4,8 +4,6 @@ import { Dict } from '../types';
 
 
 
-type PositionalAttrs = [string, string, string[]][]
-
 const positionalAttrsBase = [
   ['pos', 'ЧМ'],
   ['upos', 'універсальна ЧМ'],
@@ -42,12 +40,13 @@ const positionalAttrsBase = [
   ['head', 'номер голови'],
   ['relhead', 'відстань до голови'],
   ['spaceafter', 'пробіл після'],
-] as PositionalAttrs
+]
 
 ///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
   // name: string
   title: string
+  language: string
   hasDictTags: boolean
   hasGaps: boolean
   hasTokenIds: boolean
@@ -58,7 +57,7 @@ export interface RegistryFileParams {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFiles(params: RegistryFileParams) {
-  let positionalAttrs = clone(positionalAttrsBase)
+  let positionalAttrs = clone(positionalAttrsBase) as any[]
   if (params.hasTokenIds) {
     positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
   }
@@ -67,7 +66,6 @@ export function generateRegistryFiles(params: RegistryFileParams) {
   let corpus = `
 
 NAME "${params.title}"
-#INFO "Корпус української (випробовування)"
 INFOHREF "https://mova.institute/corpus"
 MAINTAINER "org@mova.institute"
 TAGSETDOC "http://universaldependencies.org/guidelines.html"
