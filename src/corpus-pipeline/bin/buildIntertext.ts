@@ -323,9 +323,9 @@ async function therest(alignFiles: string[], params: Dict<string>) {
   for (let [lang, alignedLang] of langPairs) {
     let corporaId = `${lang}_${alignedLang}`
     console.error(`Indexing ${corporaId}…`)
-    // execSync(`compilecorp --recompile-corpus --no-ske --no-align ${corporaId}`, {
-    //   // stdio: 'inherit'
-    // })
+    execSync(`compilecorp --recompile-corpus --no-ske --no-align ${corporaId}`, {
+      // stdio: 'inherit'
+    })
   }
 
   console.error(`Creating unified alignment files…`)
