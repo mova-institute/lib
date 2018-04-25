@@ -12,14 +12,14 @@ export function execSync2String(command: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function execPipe(command: string, stdin?: NodeJS.ReadableStream, stdout?: NodeJS.WritableStream) {
   return new Promise<number>((resolve, reject) => {
-    let cp = exec(command)
+    let child = exec(command)
       .on('close', resolve)
       .on('error', reject)
     if (stdin) {
-      stdin.pipe(cp.stdin)
+      stdin.pipe(child.stdin)
     }
     if (stdout) {
-      cp.stdout.pipe(stdout)
+      child.stdout.pipe(stdout)
     }
   })
 }
