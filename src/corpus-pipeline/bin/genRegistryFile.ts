@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { generateRegistryFile } from '../registry_file_builder';
+import { generateRegistryFileUk } from '../registry_file_builder';
 
 import * as minimist from 'minimist'
 
@@ -10,7 +10,7 @@ import * as minimist from 'minimist'
 function main() {
   const args = minimist(process.argv.slice(2)) as any
   delete args._
-  let res = generateRegistryFile(args)
+  let res = generateRegistryFileUk(args)
   process.stdout.write(res)
 }
 

@@ -109,7 +109,7 @@ export function token2verticalLineGeneric(
     urel,
     head + 1,
     relativeHead,
-    gluedNext ? 'no' : '',
+    // gluedNext ? 'no' : '',
   ])
   if (id !== undefined) {
     ret += `\t${id}`

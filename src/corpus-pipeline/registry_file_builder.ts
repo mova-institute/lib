@@ -1,7 +1,8 @@
 import * as path from 'path'
 import { clone } from 'lodash'
 import { Dict } from '../types';
-import { indexTableByColumn } from '../algo';
+import { mu } from '../mu';
+
 
 
 
@@ -55,56 +56,16 @@ export interface RegistryFileParams {
   subcorpAttrs?: string
 }
 
-let langMetas = indexTableByColumn([
-  {
-    code: 'uk',
-    name: 'Ukrainian',
-    locale: 'uk_UA',
-    nonwordre: '[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*',
-  },
-  {
-    code: 'fr',
-    name: 'French',
-    locale: 'fr_FR',
-  },
-  {
-    code: 'cs',
-    name: 'Czech',
-    locale: 'cz_CZ',
-    // nonwordre: '',
-  },
-  {
-    code: 'pl',
-    name: 'Polish',
-    locale: 'pl_PL',
-    // nonwordre: '',
-  },
-  {
-    code: 'de',
-    name: 'German',
-    locale: 'de_DE',
-    // nonwordre: '',
-  },
-  {
-    code: 'en',
-    name: 'English',
-    locale: 'en_US',
-  },
-  // {
-  //   code: '',
-  //   name: '',
-  //   locale: '',
-  //   nonwordre: '',
-  // },
-], 'code')
+///////////////////////////////////////////////////////////////////////////////
+export const STRUCTURE_G = `STRUCTURE g {
+  TYPE file64
+  DISPLAYTAG 0
+  DISPLAYBEGIN "_EMPTY_"
+  DEFAULTVALUE ""
+}\n`
 
 ////////////////////////////////////////////////////////////////////////////////
-export function generateRegistryFile(params: RegistryFileParams) {
-  let langMeta = langMetas.get(params.langCode)
-  if (!langMeta) {
-    throw new Error(`Missing lang meta for "${params.langCode}"`)
-  }
-
+export function generateRegistryFileUk(params: RegistryFileParams) {
   let positionalAttrs = clone(positionalAttrsBase) as any[]
   if (params.hasTokenIds) {
     positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
@@ -119,10 +80,10 @@ MAINTAINER "org@mova.institute"
 TAGSETDOC "http://universaldependencies.org/guidelines.html"
 
 
-LANGUAGE "${langMeta.name}"
+LANGUAGE "Ukrainian"
 ENCODING "utf8"
-LOCALE "${langMeta.locale}.UTF-8"
-${attrOrNothing('NONWORDRE', langMeta.nonwordre)}
+LOCALE "uk_UA.UTF-8"
+NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*"
 
 
 ################################################################################
@@ -238,12 +199,8 @@ STRUCTURE s {
     DEFAULTVALUE ""
   }
 }
-STRUCTURE g {
-  TYPE file64
-  DISPLAYTAG 0
-  DISPLAYBEGIN "_EMPTY_"
-  DEFAULTVALUE ""
-}`
+${STRUCTURE_G}`
+
   if (params.hasGaps) {
     ret += `
 STRUCTURE gap {
@@ -298,11 +255,35 @@ WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,при
     ret += `\nVERTICAL "${path.resolve(params.vertical)}"`
   }
 
-
   ret = ret.trim()
 
   return ret
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function renderFeatvals(featvals: Dict<string>) {
+  return mu(Object.entries(featvals))
+    .filter(x => x[1] !== undefined)
+    .map(([k, v]) => attr(k, v))
+    .join('\n', true)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function positionalAttrGeneric(name: string, options: Dict<string> = {}) {
+  let ret = `ATTRIBUTE ${name}`
+
+  let keys = Object.keys(options)
+  if (!keys.length) {
+    return ret
+  }
+
+  ret += ` {`
+  ret += mu(keys).map(x => `\n  ${x.toUpperCase()} "${options[x]}"`)
+  ret += `\n}`
+
+  return ret
+}
+
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const uiSettings = {
@@ -336,9 +317,14 @@ function positionalAttr(name: string, label: string, options: Dict<string> = {})
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function attr(name: string, value: string) {
+  return `${name.toUpperCase()} "${value}"`
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function attrOrNothing(name: string, value: string) {
   if (value) {
-    return `${name.toUpperCase()} "${value}"`
+    return attr(name, value)
   }
   return ''
 }
