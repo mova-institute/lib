@@ -4,7 +4,6 @@ import { mu, Mu } from '../../mu'
 import { UdPos } from './tagset'
 import { makeObject, mapInplace } from '../../lang'
 import { Dict } from '../../types'
-// import { UdMiRelation } from './syntagset'
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +35,14 @@ export interface ConlluToken {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export class ConlluMultitoken {
+  indexFrom: number
+  surfaceForm: string
+  tokens = Array<ConlluToken>()
+  misc: Dict<string>
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export const enum Structure { document, paragraph, sentence }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +70,8 @@ export function* streamparseConllu(lines: Iterable<string>) {
   let insideDoc = false
   let insidePar = false
   let insideSent = false
+  let multitoken: ConlluMultitoken
+  let multitokenLastToken: number
 
   for (let line of lines) {
     line = line.trim()
@@ -86,7 +95,32 @@ export function* streamparseConllu(lines: Iterable<string>) {
         yield makeStructure(Structure.sentence, true)
         insideSent = true
       }
-      yield makeToken(parseConlluTokenLine(line))
+
+      if (/^\d+\./.test(line)) {  // skip empty nodes
+        continue
+      }
+
+      let multitokenMatch = line.match(/^(\d+)-(\d+)/)
+      if (multitokenMatch) {
+        if (multitoken) {
+          throw new Error(`Logic error: Malformed CONLL-U`)
+        }
+        multitoken = new ConlluMultitoken()
+        let temp = parseConlluTokenLine(line)
+        multitoken.surfaceForm = temp.form
+        multitoken.misc = temp.misc
+        multitoken.indexFrom = Number.parseInt(multitokenMatch[1])
+        multitokenLastToken = Number.parseInt(multitokenMatch[2])
+      } else if (multitoken) {
+        let subtoken = parseConlluTokenLine(line)
+        multitoken.tokens.push(subtoken)
+        if (subtoken.index === multitokenLastToken) {
+          yield makeMultitoken(multitoken)
+          multitoken = undefined
+        }
+      } else {
+        yield makeToken(parseConlluTokenLine(line))
+      }
     }
   }
   if (insidePar) {
@@ -127,7 +161,8 @@ function parseUdKeyvalues(keyvals: string) {
 function makeStructure(type: Structure, opening: boolean) {
   return {
     structure: { type, opening } as StructureToken,
-    token: undefined as ConlluToken
+    token: undefined as ConlluToken,
+    multitoken: undefined as ConlluMultitoken,
   }
 }
 
@@ -135,6 +170,16 @@ function makeStructure(type: Structure, opening: boolean) {
 function makeToken(token: ConlluToken) {
   return {
     structure: undefined as StructureToken,
-    token
+    token,
+    multitoken: undefined as ConlluMultitoken,
+  }
+}
+
+//------------------------------------------------------------------------------
+function makeMultitoken(multitoken: ConlluMultitoken) {
+  return {
+    structure: undefined as StructureToken,
+    token: undefined as ConlluToken,
+    multitoken,
   }
 }

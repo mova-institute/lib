@@ -1,6 +1,8 @@
 import { UdPos, UdFeats, ud2conlluishString, UdNumType, UdVerbForm } from '../nlp/ud/tagset'
 import { trimAfterLast } from '../string_utils'
-import { ConlluToken } from '../nlp/ud/conllu'
+import { ConlluToken, ConlluMultitoken } from '../nlp/ud/conllu'
+
+import * as _ from 'lodash'
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -10,10 +12,30 @@ export function tokenObj2verticalLineUk(token: ConlluToken) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenObj2verticalLineGeneric(token: ConlluToken, featsOrder: Array<string>) {
-  return token2verticalLineGeneric(token.form, token.lemma, token.upos, token.feats as any,
+export function tokenOrMulti2verticalLineGeneric(
+  token: ConlluToken,
+  multitoken: ConlluMultitoken,
+  featsOrder: Array<string>,
+) {
+  if (token) {
+    return tokenObj2verticalColsGeneric(token, featsOrder)
+      .join('\t')
+  }
+
+  let rows = multitoken.tokens.map(x => tokenObj2verticalColsGeneric(x, featsOrder))
+  const MULTISEP = '||'
+  let cols = _.unzip(rows).map(x => _.uniq(x).sort().join(MULTISEP))
+  cols[0] = multitoken.surfaceForm  // todo: do not assume
+
+  return cols.join('\t')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function tokenObj2verticalColsGeneric(token: ConlluToken, featsOrder: Array<string>, ) {
+  return token2verticalColsGeneric(token.form, token.lemma, token.upos, token.feats as any,
     featsOrder, token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 export function token2verticalLineUk(
@@ -81,7 +103,7 @@ export function token2verticalLineUk(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function token2verticalLineGeneric(
+export function token2verticalColsGeneric(
   form: string,
   lemma: string,
   upos: UdPos,
@@ -97,22 +119,23 @@ export function token2verticalLineGeneric(
   let relativeHead = prepareRelativeHead(head, sentIndex)
   let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
 
-  let ret = `${form}\t${lemma}\t`
-  ret += feats2line([
-    upos,
-    ...featsOrder.map(x => feats[x])
-  ])
-  ret += `\t${tag}\t`
-  ret += feats2line([
-    sentIndex + 1,
-    rel,
-    urel,
-    head + 1,
-    relativeHead,
-    // gluedNext ? 'no' : '',
-  ])
+  let ret = [
+    form,
+    lemma,
+    prepareFeatValue(upos),
+    ...featsOrder.map(x => prepareFeatValue(feats[x])),
+    tag,
+    ...[
+      sentIndex + 1,
+      rel,
+      urel,
+      head + 1,
+      relativeHead,
+      // gluedNext ? 'no' : '',
+    ].map(x => prepareFeatValue(x))
+  ]
   if (id !== undefined) {
-    ret += `\t${id}`
+    ret.push(id)
   }
 
   return ret
@@ -120,7 +143,7 @@ export function token2verticalLineGeneric(
 
 //------------------------------------------------------------------------------
 function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVerbForm): UdPos {
-  if (upos === 'PROPN' || upos ==='PRON') {
+  if (upos === 'PROPN' || upos === 'PRON') {
     return 'NOUN'
   }
   if (upos === 'DET') {
@@ -160,6 +183,11 @@ function prepareRelativeHead(head: number, index: number) {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function prepareFeatValue(feat: (string | number)) {
+  return feat === undefined ? '' : feat.toString().toLowerCase()
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function feats2line(feats: (string | number)[]) {
-  return feats.map(x => x === undefined ? '' : x).join('\t').toLowerCase()
+  return feats.map(x => prepareFeatValue(x)).join('\t')
 }

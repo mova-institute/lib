@@ -319,12 +319,11 @@ async function therest(alignFiles: string[], params: Dict<string>) {
       ],
     )
       .map(x => positionalAttrGeneric(x, {
+        multivalue: 'yes',
+        multisep: '||',
       }))
       .join('\n', true)
     registryFile += registryStructures
-    // registryFile += mu(['doc', 'p', 's'])
-    //   .map(x => `STRUCTURE ${x}`)
-    //   .join('\n', true)
     registryFile += STRUCTURE_G
 
     fs.writeFileSync(path.join(registry, corporaId), registryFile)

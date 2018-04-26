@@ -498,19 +498,19 @@ export function toUd(interp: MorphInterp) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const comparator = new Intl.Collator('en', { sensitivity: 'base' }).compare
-export function udFeatures2conlluString(features: UdFeats) {
+export function udFeatures2conlluString(features: UdFeats, separator = '|') {
   return Object.keys(features)
     .sort(comparator)
     .map(key => `${key}=${features[key]}`)
-    .join('|')
+    .join(separator)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function ud2conlluishString(pos: UdPos, features: UdFeats) {
+export function ud2conlluishString(pos: UdPos, features: UdFeats, separator = '|') {
   let ret = pos
-  let featuresConllu = udFeatures2conlluString(features)
+  let featuresConllu = udFeatures2conlluString(features, separator)
   if (featuresConllu) {
-    ret += `|${featuresConllu}`
+    ret += `${separator}${featuresConllu}`
   }
   return ret
 }

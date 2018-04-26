@@ -252,3 +252,8 @@ export function joinAsRe(parts: string[], flags = '') {
 export function isTitlecase(str: string) {
   return isAllcaps(str[0]) && isAllLower(str.substr(1))
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function getColumn(line: string, col: number, separator = '\t') {
+  return line.split(separator, col)[col]
+}

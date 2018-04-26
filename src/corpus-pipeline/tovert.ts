@@ -1,6 +1,6 @@
 import { CorpusDoc } from './doc_meta'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
-import { tokenObj2verticalLineUk, tokenObj2verticalLineGeneric } from './ud'
+import { tokenObj2verticalLineUk, tokenOrMulti2verticalLineGeneric } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
@@ -80,12 +80,12 @@ export function* conlluAndMeta2vertical(
         yield escape(tok.token.form)
       } else {
         if (options.featsOrder) {
-          yield tokenObj2verticalLineGeneric(tok.token, options.featsOrder)
+          yield tokenOrMulti2verticalLineGeneric(tok.token, tok.multitoken, options.featsOrder)
         } else {
           yield tokenObj2verticalLineUk(tok.token)
         }
       }
-      if (tok.token.misc.SpaceAfter === 'No') {
+      if ((tok.token || tok.multitoken).misc.SpaceAfter === 'No') {
         yield '<g/>'
       }
     }

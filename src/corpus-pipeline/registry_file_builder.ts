@@ -278,7 +278,7 @@ export function positionalAttrGeneric(name: string, options: Dict<string> = {}) 
   }
 
   ret += ` {`
-  ret += mu(keys).map(x => `\n  ${x.toUpperCase()} "${options[x]}"`)
+  ret += keys.map(x => `\n  ${x.toUpperCase()} "${options[x]}"`).join('\n')
   ret += `\n}`
 
   return ret
