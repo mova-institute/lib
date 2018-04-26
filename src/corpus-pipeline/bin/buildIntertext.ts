@@ -290,8 +290,12 @@ async function therest(alignFiles: string[], params: Dict<string>) {
     let langFeats = langFeatsArr.get(lang)
       .map(x => adaptFeatName(x))
 
+    let abbrs = [langMeta.ukAbbr, alignedLangMeta.ukAbbr]
+    if (alignedLangMeta.code === 'uk') {
+      abbrs.reverse()
+    }
     let registryFile = renderFeatvals({
-      name: `${langMeta.ukNameMasc} бік ${langMeta.ukAbbr}-${alignedLangMeta.ukAbbr}`,
+      name: `${langMeta.ukNameMasc} бік ${abbrs[0]}-${abbrs[1]}`,
       path: path.resolve(`${registry}/../manatee/${corporaId}`),
       vertical: path.resolve('vertical', corporaId),
       // infohref: '',
