@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-
-import { logErrAndExit, writeJoin, linesSync } from '../../utils.node'
+import { logErrAndExit, linesSync } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { AbstractElement } from 'xmlapi'
@@ -16,7 +15,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { countNumMatches } from '../../string_utils';
 import { DefaultMap, HashSet } from '../../data_structures';
-import { streamparseConllu, getCol, ConlluField } from '../../nlp/ud/conllu';
+import { getCol, ConlluField } from '../../nlp/ud/conllu';
 import { buildMap } from '../../lang';
 import { renderFeatvals, STRUCTURE_G, positionalAttrGeneric } from '../registry_file_builder';
 import { indexTableByColumn } from '../../algo';
@@ -33,35 +32,47 @@ interface Args {
 const langMetas = indexTableByColumn([
   {
     code: 'uk',
+    ukNameMasc: 'український',
+    ukAbbr: 'укр',
     name: 'Ukrainian',
     locale: 'uk_UA',
     nonwordre: '[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*',
   },
   {
     code: 'fr',
+    ukNameMasc: 'французький',
+    ukAbbr: 'фр',
     name: 'French',
     locale: 'fr_FR',
   },
   {
     code: 'cs',
+    ukNameMasc: 'чеський',
+    ukAbbr: 'чес',
     name: 'Czech',
     locale: 'cs_CZ',
     // nonwordre: '',
   },
   {
     code: 'pl',
+    ukNameMasc: 'польський',
+    ukAbbr: 'пол',
     name: 'Polish',
     locale: 'pl_PL',
     // nonwordre: '',
   },
   {
     code: 'de',
+    ukNameMasc: 'німецький',
+    ukAbbr: 'нім',
     name: 'German',
     locale: 'de_DE',
     // nonwordre: '',
   },
   {
     code: 'en',
+    ukNameMasc: 'англійський',
+    ukAbbr: 'англ',
     name: 'English',
     locale: 'en_US',
   },
@@ -271,15 +282,16 @@ async function therest(alignFiles: string[], params: Dict<string>) {
     let corporaId = `${lang}_${alignedLang}`
 
     let langMeta = langMetas.get(lang)
-    if (!langMeta) {
-      throw new Error(`Missing lang meta for "${lang}"`)
+    let alignedLangMeta = langMetas.get(alignedLang)
+    if (!langMeta || !alignedLangMeta) {
+      throw new Error(`Missing lang meta for "${lang}" or "${alignedLangMeta}`)
     }
 
     let langFeats = langFeatsArr.get(lang)
       .map(x => adaptFeatName(x))
 
     let registryFile = renderFeatvals({
-      name: corporaId,
+      name: `${langMeta.ukNameMasc} бік ${langMeta.ukAbbr}-${alignedLangMeta.ukAbbr}`,
       path: path.resolve(`${registry}/../manatee/${corporaId}`),
       vertical: path.resolve('vertical', corporaId),
       // infohref: '',
@@ -386,17 +398,6 @@ function adaptFeatName(val: string) {
   return val.toLowerCase()
     .replace(']', '')
     .replace('[', '_')
-}
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function getFeatsFromConllu(conllu: Iterable<string>, set = new Set<string>()) {
-  for (let { token } of streamparseConllu(conllu)) {
-    if (token) {
-      for (let feat in token.feats) {
-        set.add(feat)
-      }
-    }
-  }
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
