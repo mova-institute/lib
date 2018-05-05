@@ -74,6 +74,7 @@ function main() {
       if (!docMeta.href) {
         docMeta.url = docRoot.attribute('src')
       }
+      docMeta['ext_title'] = buildExtTitle(docMeta)
 
       let vertical = mu(streamVertical(docRoot, docMeta)).join('\n', true)
       fs.writeFileSync(outPathVertical, vertical)
@@ -85,6 +86,15 @@ function main() {
       fs.writeFileSync(outPathVector, forvecForms)
     }
   }
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function buildExtTitle(meta) {
+  let ret = meta.author || '(без автора)'
+  ret += ' — '
+  ret += meta.title || '(без назви)'
+
+  return ret
 }
 
 //------------------------------------------------------------------------------

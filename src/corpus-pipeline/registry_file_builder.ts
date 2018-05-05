@@ -134,6 +134,10 @@ STRUCTURE doc {
     LABEL "назва"
     DEFAULTVALUE ""
   }
+  ATTRIBUTE ext_title {
+    LABEL "широка назва"
+    DEFAULTVALUE ""
+  }
   ATTRIBUTE date {
     LABEL "час появи"
     DEFAULTVALUE ""
