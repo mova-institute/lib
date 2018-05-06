@@ -16,7 +16,7 @@ import * as fs from 'fs'
 import { countNumMatches } from '../../string_utils';
 import { DefaultMap, HashSet } from '../../data_structures';
 import { getCol, ConlluField } from '../../nlp/ud/conllu';
-import { buildMap } from '../../lang';
+import { buildMap, createObject2 } from '../../lang';
 import { renderFeatvals, STRUCTURE_G, positionalAttrGeneric } from '../registry_file_builder';
 import { indexTableByColumn } from '../../algo';
 import { execSync } from 'child_process';
@@ -24,14 +24,17 @@ import { Dict } from '../../types';
 
 
 
-interface Args {
-
+interface CliArgs {
+  meta?: string
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const langMetas = indexTableByColumn([
   {
     code: 'uk',
+    ukName: 'українська',
+    ukNameGen: 'українській',
+    ukNameDat: 'української',
     ukNameMasc: 'український',
     ukAbbr: 'укр',
     name: 'Ukrainian',
@@ -40,6 +43,9 @@ const langMetas = indexTableByColumn([
   },
   {
     code: 'fr',
+    ukName: 'французька',
+    ukNameGen: 'французької',
+    ukNameDat: 'французькій',
     ukNameMasc: 'французький',
     ukAbbr: 'фр',
     name: 'French',
@@ -47,6 +53,9 @@ const langMetas = indexTableByColumn([
   },
   {
     code: 'cs',
+    ukName: 'чеська',
+    ukNameGen: 'чеської',
+    ukNameDat: 'чеській',
     ukNameMasc: 'чеський',
     ukAbbr: 'чес',
     name: 'Czech',
@@ -55,6 +64,9 @@ const langMetas = indexTableByColumn([
   },
   {
     code: 'pl',
+    ukName: 'польська',
+    ukNameGen: 'польської',
+    ukNameDat: 'польській',
     ukNameMasc: 'польський',
     ukAbbr: 'пол',
     name: 'Polish',
@@ -63,6 +75,9 @@ const langMetas = indexTableByColumn([
   },
   {
     code: 'de',
+    ukName: 'німецька',
+    ukNameGen: 'німецької',
+    ukNameDat: 'німецькій',
     ukNameMasc: 'німецький',
     ukAbbr: 'нім',
     name: 'German',
@@ -71,13 +86,27 @@ const langMetas = indexTableByColumn([
   },
   {
     code: 'en',
+    ukName: 'англійська',
+    ukNameGen: 'англійської',
+    ukNameDat: 'англійській',
     ukNameMasc: 'англійський',
     ukAbbr: 'англ',
     name: 'English',
     locale: 'en_US',
   },
+  {
+    code: 'se',
+    ukName: 'шведська',
+    ukNameGen: 'шведської',
+    ukNameDat: 'шведській',
+    name: 'шведський',
+    locale: 'se_SE',
+    // nonwordre: '',
+  },
   // {
   //   code: '',
+  //   ukName: '',
+  //   ukNameDat: '',
   //   name: '',
   //   locale: '',
   //   nonwordre: '',
@@ -147,14 +176,32 @@ ATTRIBUTE lemma_lc {
 `
 const registryStructures = `
 STRUCTURE doc {
-  ATTRIBUTE title
-  ATTRIBUTE wordcount
+  ATTRIBUTE title_uk {
+    LABEL "назва (українською)"
+  }
+  ATTRIBUTE original_language {
+    LABEL "мова первотвору"
+  }
+  ATTRIBUTE is_original {
+    LABEL "є первотвором"
+  }
+  ATTRIBUTE original_author_uk {
+    LABEL "автор первотвору (ім’я українською)"
+  }
+  ATTRIBUTE translator_uk {
+    LABEL "перекладач"
+  }
+  ATTRIBUTE wordcount {
+    LABEL "кількість токенів"
+    MAXLISTSIZE 0
+  }
 }
 STRUCTURE p {
-  ATTRIBUTE id
 }
 STRUCTURE s {
-  ATTRIBUTE id
+  ATTRIBUTE id {
+    LABEL "код речення"
+  }
 }
 `
 
@@ -178,6 +225,9 @@ async function annotate(alignFiles: string[]) {
     let { alignDoc, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
       prepareFromAlignment(alignFile)
 
+    if (leftLang === 'cs' || rightLang === 'cs') {
+      continue
+    }
 
     console.error(`processing "${leftLang}_${rightLang}" alignment file: ${alignFile}`)
 
@@ -234,12 +284,36 @@ async function therest(alignFiles: string[], params: Dict<string>) {
 
   console.error(`Generating vertical files…`)
 
+  let metaTable = indexTableByColumn(
+    parseSeparatedValues(linesSync(params.meta)).toArray(), 'intertext_id')
+
   let langPairs = new HashSet<string[]>()
   for (let alignFile of alignFiles) {
-    let { leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
+    let { intertextId, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
       prepareFromAlignment(alignFile)
 
+    if (leftLang === 'cs' || rightLang === 'cs') {
+      continue
+    }
+
     console.error(`processing texts from ${alignFile}`)
+
+    if (!metaTable.has(intertextId)) {
+      let message = `Intertext id "${intertextId}" is missing from the meta table`
+      // throw new Error(message)
+      console.error(message)
+      continue
+    }
+    let metaRecord = metaTable.get(intertextId)
+    if (!metaRecord['title_uk']) {
+      console.error(`title_uk is missing from ${intertextId} meta`)
+    }
+    if (!metaRecord['original_language']) {
+      let message = `original_language is missing from ${intertextId} meta`
+      throw new Error(message)
+      // console.error(message)
+    }
+    // console.error(metaRecord)
 
     for (let [doc, docName, lang, oppositeLang] of [
       [leftDoc, leftDocName, leftLang, rightLang],
@@ -253,10 +327,19 @@ async function therest(alignFiles: string[], params: Dict<string>) {
       let corporaId = `${lang}_${oppositeLang}`
       let destVertical = path.join(outDir, corporaId)
 
+      let meta = {
+        ...subobject(metaRecord, [
+          'title_uk',
+          'original_language',
+          'original_author_uk',
+          'translator_uk',
+        ]),
+        is_original: yesNoUk(metaRecord['original_language'] === lang),
+      }
+      meta['original_language'] = langMetas.get(meta['original_language']).ukName
+
       let vertStream = conlluStrAndMeta2vertical(conllu, {
-        meta: {
-          title: leftDocName,
-        } as any,
+        meta: meta as any,
         featsOrder: langFeatsArr.get(lang as string)
       })
       let sIdx = 0
@@ -295,7 +378,7 @@ async function therest(alignFiles: string[], params: Dict<string>) {
       abbrs.reverse()
     }
     let registryFile = renderFeatvals({
-      name: `${langMeta.ukNameMasc} бік ${abbrs[0]}-${abbrs[1]}`,
+      name: `${langMeta.ukName} паралельна ${alignedLangMeta.ukNameDat}`,
       path: path.resolve(`${registry}/../manatee/${corporaId}`),
       vertical: path.resolve('vertical', corporaId),
       // infohref: '',
@@ -416,13 +499,32 @@ function getFeatsFromConllu2(conllu: Iterable<string>, set = new Set<string>()) 
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function getLangsFromAlignmentPath(alignFilePath: string) {
-  return path.basename(alignFilePath).match(/\.(\w+)\.(\w+)(\.alignment)?\.xml$/).slice(1)
+function subobject(from, props: Iterable<string>, filter = (x) => !!x) {
+  let ret = {}
+  for (let prop of props) {
+    if (prop in from && filter(from[prop])) {
+      ret[prop] = from[prop]
+    }
+  }
+
+  return ret
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function yesNoUk(val: boolean) {
+  return val ? 'так' : 'ні'
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function parseAlignmentPath(alignFilePath: string) {
+  return path.basename(alignFilePath)
+    .match(/^(.+)\.(\w+)\.(\w+)\.alignment\.xml$/)
+    .slice(1)
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function prepareFromAlignment(alignFilePath: string) {
-  let [leftLang, rightLang] = getLangsFromAlignmentPath(alignFilePath)
+  let [intertextId, leftLang, rightLang] = parseAlignmentPath(alignFilePath)
   let alignDoc = parseXmlFileSync(alignFilePath)
   let linkGrpEl = alignDoc.evaluateElement('//linkGrp')
   let leftDocPath = linkGrpEl.attribute('fromDoc')
@@ -433,6 +535,7 @@ function prepareFromAlignment(alignFilePath: string) {
   let rigtDoc = parseXmlFileSync(rightDocPath)
 
   return {
+    intertextId,
     alignDoc,
     leftLang,
     rightLang,
@@ -466,6 +569,13 @@ function getSentIdsFromIntertextDoc(root: AbstractElement) {
   return ([...root.evaluateElements('.//s')] as AbstractElement[])
     .filter(x => x.text().trim())
     .map(x => x.attribute('id'))
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function parseSeparatedValues(lines: Iterable<string>, separator: string | RegExp = '\t') {
+  let linesIt = mu(lines)
+  let keys = linesIt.first().split(separator)
+  return linesIt.map(l => createObject2(keys, l.split(separator)))
 }
 
 ////////////////////////////////////////////////////////////////////////////////

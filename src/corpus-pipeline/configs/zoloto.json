@@ -1,6 +1,6 @@
 {
   "langCode": "uk",
-  "title": "золотий",
+  "title": "Золотий",
   "hasGaps": false,
   "hasTokenIds": true,
   "subcorpAttrs": "doc.title,doc.author|doc.date"

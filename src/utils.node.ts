@@ -200,7 +200,7 @@ export function* linesStreamSync(filename: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* linesSync(filename: string) {  // todo: do not buffer file
-  for (let line of readFileSync(filename, 'utf8').split('\n')) {
+  for (let line of readFileSync(filename, 'utf8').split(/\r?\n/)) {
     yield line
   }
 }
