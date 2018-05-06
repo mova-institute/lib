@@ -33,8 +33,8 @@ const langMetas = indexTableByColumn([
   {
     code: 'uk',
     ukName: 'українська',
-    ukNameGen: 'українській',
-    ukNameDat: 'української',
+    ukNameGen: 'української',
+    ukNameDat: 'українській',
     ukNameMasc: 'український',
     ukAbbr: 'укр',
     name: 'Ukrainian',
