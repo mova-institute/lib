@@ -27,8 +27,7 @@ import * as uniq from 'lodash.uniq'
 import * as sortedUniq from 'lodash.sorteduniq'
 import { GraphNode } from '../lib/graph'
 import { AbstractElement } from '../xml/xmlapi/abstract_element';
-
-const wu: Wu.WuStatic = require('wu')
+import { AbstractDocument } from '../xml/xmlapi/abstract_document';
 
 
 
@@ -488,7 +487,7 @@ export function* dictFormLemmaTag(lines: Array<string>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement) {
-  let wordPairs = wu.zip(mine.evaluateElements('//mi:w_', NS), theirs.evaluateElements('//mi:w_', NS))
+  let wordPairs = Mu.zip(mine.evaluateElements('//mi:w_', NS), theirs.evaluateElements('//mi:w_', NS))
   let numDiffs = 0
   for (let [mineW, theirW] of wordPairs) {
     if (!$t(mineW).isEquallyInterpreted($t(theirW))) {

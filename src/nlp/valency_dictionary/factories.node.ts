@@ -60,7 +60,7 @@ function createTsvIt(path: string) {
   return mu(linesSync(path))
     .map(x => x.trim())
     .filter(x => x)
-    .skip()
+    .drop()
     .entries()
 }
 

@@ -1,13 +1,12 @@
 import { AbstractDocument } from './abstract_document';
 import { AbstractElement } from './abstract_element';
 import { AbstractAttribute } from './abstract_attribute';
-
-const wu: Wu.WuStatic = require('wu');
+import { mu, Mu } from '../../mu';
 
 
 
 export type XmlapiXpathResult = boolean | number | string | AbstractNode
-  | Wu.WuIterable<AbstractNode | AbstractAttribute>;
+  | Mu<AbstractNode | AbstractAttribute>;
 
 
 export abstract class AbstractNode {
@@ -55,17 +54,17 @@ export abstract class AbstractNode {
   abstract parent(): AbstractElement;
 
   ancestors() {
-    return wu(this._ancestors());
+    return mu(this._ancestors());
   }
 
   abstract previousSibling(): AbstractNode;
 
   previousSiblings() {
-    return wu(this._previousSiblings());
+    return mu(this._previousSiblings());
   }
 
   previousElementSiblings() {
-    return this.previousSiblings().filter(x => x.isElement()) as Wu.WuIterable<AbstractElement>;
+    return this.previousSiblings().filter(x => x.isElement()) as Mu<AbstractElement>;
   }
 
   previousElementSibling() {
@@ -75,11 +74,11 @@ export abstract class AbstractNode {
   abstract nextSibling(): AbstractNode;
 
   nextSiblings() {
-    return wu(this._nextSiblings());
+    return mu(this._nextSiblings());
   }
 
   nextElementSiblings() {
-    return this.nextSiblings().filter(x => x.isElement()) as Wu.WuIterable<AbstractElement>;
+    return this.nextSiblings().filter(x => x.isElement()) as Mu<AbstractElement>;
   }
 
   nextElementSibling() {
@@ -116,11 +115,11 @@ export abstract class AbstractNode {
 
   abstract evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult;
   abstract evaluateNode(xpath: string, nsMap?: Object): AbstractNode;
-  abstract evaluateNodes(xpath: string, nsMap?: Object): Wu.WuIterable<AbstractNode>;
+  abstract evaluateNodes(xpath: string, nsMap?: Object): Mu<AbstractNode>;
   abstract evaluateElement(xpath: string, nsMap?: Object): AbstractElement;
-  abstract evaluateElements(xpath: string, nsMap?: Object): Wu.WuIterable<AbstractElement>;
+  abstract evaluateElements(xpath: string, nsMap?: Object): Mu<AbstractElement>;
   abstract evaluateAttribute(xpath: string, nsMap?: Object): AbstractAttribute;
-  abstract evaluateAttributes(xpath: string, nsMap?: Object): Wu.WuIterable<AbstractAttribute>;
+  abstract evaluateAttributes(xpath: string, nsMap?: Object): Mu<AbstractAttribute>;
 
   evaluateBoolean(xpath: string, nsMap?: Object) {
     let ret = this.evaluate(xpath, nsMap);

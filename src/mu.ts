@@ -26,6 +26,10 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
+  static zip<T>(...iterables: (Iterable<T> | T)[]): Mu<Array<T>> {
+    throw new Error(`Not implemented`)
+  }
+
   constructor(iterable: Iterable<T>) {
     this.iterator = iterable[Symbol.iterator]()
   }
@@ -288,7 +292,7 @@ export class Mu<T> implements Iterable<T> {
     }
   }
 
-  skip(n = 1) {
+  drop(n = 1) {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {

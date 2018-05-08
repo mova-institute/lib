@@ -3,9 +3,8 @@ import { WebapiAttribute } from './webapi_attribute';
 import { nodeOrElementOrNull } from './utils';
 import { mixin } from '../xmlapi/utils';
 import { AbstractElement } from '../xmlapi/abstract_element';
-
-
-const wu: Wu.WuStatic = require('wu');
+import { Mu } from '../../mu';
+import { wrappedOrNull } from '../../lang';
 
 
 
@@ -143,9 +142,9 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
   name: () => string;
   attributeUp: (name: string) => string;
   prependChild: () => WebapiNode;
-  children: () => Wu.WuIterable<WebapiNode | WebapiElement>;
-  rchildren: () => Wu.WuIterable<WebapiNode | WebapiElement>;
-  elementChildren: () => Wu.WuIterable<WebapiElement>;
+  children: () => Mu<WebapiNode | WebapiElement>;
+  rchildren: () => Mu<WebapiNode | WebapiElement>;
+  elementChildren: () => Mu<WebapiElement>;
   elementChild: (index: number) => WebapiElement;
   countChildren: () => number;
   countElementChildren: () => number;

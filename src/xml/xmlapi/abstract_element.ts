@@ -1,8 +1,6 @@
 import { AbstractNode } from './abstract_node';
 import { AbstractAttribute } from './abstract_attribute';
-import { NS_XML } from '../utils';
-
-const wu: Wu.WuStatic = require('wu');
+import { mu, Mu } from '../../mu';
 
 
 
@@ -31,15 +29,15 @@ export abstract class AbstractElement extends AbstractNode {
    * children
    */
 
-  children(): Wu.WuIterable<AbstractNode> {
+  children(): Mu<AbstractNode> {
     if (!this.firstChild()) {
-      return wu([]);
+      return mu([]);
     }
-    return wu.chain([this.firstChild()], this.firstChild().nextSiblings());
+    return Mu.chain([this.firstChild()], this.firstChild().nextSiblings());
   }
 
   elementChildren() {
-    return this.children().filter(x => x.isElement()) as Wu.WuIterable<AbstractElement>;
+    return this.children().filter(x => x.isElement()) as Mu<AbstractElement>;
   }
 
   abstract firstChild(): AbstractNode;
@@ -60,11 +58,11 @@ export abstract class AbstractElement extends AbstractNode {
     return this.rchildren().filter(x => x.isElement()).next().value as AbstractElement || null;
   }
 
-  rchildren(): Wu.WuIterable<AbstractNode> {
+  rchildren(): Mu<AbstractNode> {
     if (!this.lastChild()) {
-      return wu([]);
+      return mu([]);
     }
-    return wu.chain([this.lastChild()], this.lastChild().previousSiblings());
+    return Mu.chain([this.lastChild()], this.lastChild().previousSiblings());
   }
 
   countChildren() {
@@ -147,7 +145,7 @@ export abstract class AbstractElement extends AbstractNode {
    */
 
   lang() {  // ancestor-or-self::*[@xml:lang][1]/@xml:lang
-    return wu.chain([this], this.ancestors())
+    return Mu.chain([this], this.ancestors())
       .map(x => x.attribute('lang'))
       .find(x => x !== null);
   }

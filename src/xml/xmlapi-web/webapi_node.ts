@@ -4,10 +4,8 @@ import { WebapiAttribute } from './webapi_attribute';
 import { nodeOrElement, nodeOrElementOrNull, nodeOrElementOrAttribute,
   generateFromXpathResultIterator, generateFromXpathResultSnapshot, isNode } from './utils';
 import { AbstractNode, XmlapiXpathResult } from '../xmlapi/abstract_node';
-import { wrappedOrNull, isOddball } from '../xmlapi/utils';
-
-
-const wu: Wu.WuStatic = require('wu');
+import { wrappedOrNull, isOddball, NS_XML } from '../xmlapi/utils';
+import { mu, Mu } from '../../mu';
 
 
 
@@ -101,10 +99,10 @@ export class WebapiNode extends AbstractNode {
         return nodeOrElementOrNull(result.singleNodeValue);
       case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
       case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
-        return wu(generateFromXpathResultIterator(result)).map(x => nodeOrElementOrAttribute(x));
+        return mu(generateFromXpathResultIterator(result)).map(x => nodeOrElementOrAttribute(x));
       case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
       case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
-        return wu(generateFromXpathResultSnapshot(result)).map(x => nodeOrElementOrAttribute(x));
+        return mu(generateFromXpathResultSnapshot(result)).map(x => nodeOrElementOrAttribute(x));
       default:
         throw new Error('Unexpected XPath result type');
     }
@@ -145,7 +143,7 @@ export class WebapiNode extends AbstractNode {
     return new WebapiAttribute(wrapee);
   }
 
-  evaluateNodes(xpath: string, nsMap?: Object): Wu.WuIterable<AbstractNode> {
+  evaluateNodes(xpath: string, nsMap?: Object): Mu<AbstractNode> {
     return this._evaluateManyOrdered(xpath, nsMap).map(x => {
       if (!isNode(x)) {
         throw new Error('Xpath result is not a list of attributes');
@@ -183,7 +181,7 @@ export class WebapiNode extends AbstractNode {
   protected _evaluateManyOrdered(xpath: string, nsMap?: Object) {
     let result = this.wrapee.ownerDocument.evaluate(
       xpath, this.wrapee, createNsResolver(nsMap), XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-    return wu(generateFromXpathResultIterator(result));
+    return mu(generateFromXpathResultIterator(result));
   }
 }
 

@@ -5,8 +5,7 @@ import { nodeOrElement, nodeOrElementOrNull, isNode, nodeOrElementOrAttribute } 
 import { wrappedOrNull } from '../../lang';
 import { AbstractNode, XmlapiXpathResult } from '../xmlapi/abstract_node';
 import { isOddball } from '../xmlapi/utils';
-
-const wu = require('wu');
+import { mu, Mu } from '../../mu';
 
 
 
@@ -88,7 +87,7 @@ export class LibxmljsNode extends AbstractNode {
   evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult {
     let result = this.wrapee.find(xpath, nsMap);
     if (Array.isArray(result)) {
-      return wu((function* () {
+      return mu((function* () {
         for (let node of result) {
           yield nodeOrElementOrAttribute(node);
         }
@@ -140,7 +139,7 @@ export class LibxmljsNode extends AbstractNode {
         throw new Error('XPath result is not a list of nodes');
       }
       return nodeOrElement(x);
-    }) as Wu.WuIterable<LibxmljsNode>;  // todo: why not inferred?
+    }) as Mu<LibxmljsNode>;  // todo: why not inferred?
   }
 
   evaluateElements(xpath: string, nsMap?: Object) {
@@ -149,7 +148,7 @@ export class LibxmljsNode extends AbstractNode {
         throw new Error('XPath result is not a list of elements');
       }
       return new LibxmljsElement(x);
-    }) as Wu.WuIterable<LibxmljsElement>;  // todo: why not inferred?
+    }) as Mu<LibxmljsElement>;  // todo: why not inferred?
   }
 
   evaluateAttributes(xpath: string, nsMap?: Object) {
@@ -158,7 +157,7 @@ export class LibxmljsNode extends AbstractNode {
         throw new Error('XPath result is not a list of attributes');
       }
       return new LibxmljsAttribute(x);
-    }) as Wu.WuIterable<LibxmljsAttribute>;  // todo: why not inferred?
+    }) as Mu<LibxmljsAttribute>;  // todo: why not inferred?
   }
 
   clone() {
@@ -175,6 +174,6 @@ export class LibxmljsNode extends AbstractNode {
     if (!Array.isArray(result)) {
       throw new Error('XPath result is not a list');
     }
-    return wu(result);
+    return mu(result);
   }
 }

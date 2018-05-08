@@ -3,6 +3,7 @@ import { LibxmljsAttribute } from './libxmljs_attribute';
 import { nodeOrElementOrNull } from './utils';
 import { AbstractElement } from '../xmlapi/abstract_element';
 import { mixin } from '../xmlapi/utils';
+import { Mu } from '../../mu';
 
 
 
@@ -144,9 +145,9 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   name: () => string;
   attributeUp: (name: string) => string;
   prependChild: () => LibxmljsNode;
-  children: () => Wu.WuIterable<LibxmljsNode>;
-  rchildren: () => Wu.WuIterable<LibxmljsNode>;
-  elementChildren: () => Wu.WuIterable<LibxmljsElement>;
+  children: () => Mu<LibxmljsNode>;
+  rchildren: () => Mu<LibxmljsNode>;
+  elementChildren: () => Mu<LibxmljsElement>;
   elementChild: (index: number) => LibxmljsElement;
   firstElementChild: () => LibxmljsElement;
   setAttributes: (keyvalue: Object) => LibxmljsElement;

@@ -6,10 +6,7 @@ import * as f from './morph_features'
 import { groupTableBy, arr2indexMap, stableSort } from '../algo'
 import { IStringMorphInterp } from './interfaces'
 import { setTenseIfConverb } from './ud/uk_grammar'
-
 import { mu } from '../mu'
-const wu: Wu.WuStatic = require('wu')
-
 
 
 
@@ -135,7 +132,7 @@ let expandableFlags = [
   /:subord|:coord/g,
 ]
 export function* expandDictCorpViz(lines: Iterable<string>) {
-  lines = wu(lines).map(x => {
+  lines = mu(lines).map(x => {
     let beforeadj = x.match(/^.* adj:beforeadj/)
     if (beforeadj) {
       return beforeadj[0]
@@ -158,7 +155,7 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
 }
 
 //------------------------------------------------------------------------------
-// function* expandLexeme(lexeme: Wu.WuIterable<string>) {
+// function* expandLexeme(lexeme: Mu<string>) {
 //   let lemmaLine = lexeme.next()
 //   if (!lemmaLine.done) {
 //     yield lemmaLine.value
@@ -185,7 +182,7 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* domesticateDictCorpViz(fileStr: string) {
-  let lines = wu(fileStr.split('\n'))
+  let lines = mu(fileStr.split('\n'))
     .filter(x => !/^\s*$/.test(x))
     .map(x => x.replace(/'/g, '’'))
 
