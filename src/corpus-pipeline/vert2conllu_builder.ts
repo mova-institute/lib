@@ -1,8 +1,8 @@
-import { parseTagStr } from "../xml/utils"
-import { last } from "../lang"
+import { parseTagStr } from '../xml/utils'
+import { last } from '../lang'
 
-import * as he from "he"
-import { replaceLoop } from "../string_utils";
+import * as he from 'he'
+import { replaceLoop } from '../string_utils'
 
 
 

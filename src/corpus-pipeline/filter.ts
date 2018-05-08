@@ -1,12 +1,12 @@
-import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE, WCHAR_UK, WCHAR_OTHER, WORDCHAR_UK_RE } from "../nlp/static"
-import { MorphAnalyzer } from "../nlp/morph_analyzer/morph_analyzer"
-import { last, r } from "../lang"
-import { tokenizeUkNew, tokenizeUk } from "../nlp/utils"
+import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE, WCHAR_UK, WCHAR_OTHER, WORDCHAR_UK_RE } from '../nlp/static'
+import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
+import { last, r } from '../lang'
+import { tokenizeUkNew, tokenizeUk } from '../nlp/utils'
 
-import { mu } from "../mu"
-import { uniformSubarray2, uniformSubarray, deleteIndexes, numericCompare } from "../algo"
-import * as he from "he";
-import { isTitlecase } from "../string_utils";
+import { mu } from '../mu'
+import { uniformSubarray2, uniformSubarray, deleteIndexes, numericCompare } from '../algo'
+import * as he from 'he'
+import { isTitlecase } from '../string_utils'
 
 
 const lengthThreshold = 60000

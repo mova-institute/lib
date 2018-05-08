@@ -1,8 +1,8 @@
 import * as pg from 'pg'
 import { Request, Response } from 'express'
 
-import { PgClient } from "../../postrges";
-import { sendError } from "./utils";
+import { PgClient } from '../../postrges'
+import { sendError } from './utils'
 
 
 

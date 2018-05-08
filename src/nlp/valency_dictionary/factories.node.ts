@@ -1,10 +1,10 @@
-import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE } from "../static";
-import { ValencyDict, Valency } from "./valency_dictionary";
-import { mu } from "../../mu";
-import { r } from "../../lang";
-import { linesSync } from "../../utils.node";
+import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE } from '../static'
+import { ValencyDict, Valency } from './valency_dictionary'
+import { mu } from '../../mu'
+import { r } from '../../lang'
+import { linesSync } from '../../utils.node'
 import * as path from 'path'
-import { removeAccent } from "../utils";
+import { removeAccent } from '../utils'
 
 
 

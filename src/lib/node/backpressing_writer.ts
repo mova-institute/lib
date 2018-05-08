@@ -1,4 +1,4 @@
-import { writeBackpressing } from "../../stream_utils.node"
+import { writeBackpressing } from '../../stream_utils.node'
 
 
 

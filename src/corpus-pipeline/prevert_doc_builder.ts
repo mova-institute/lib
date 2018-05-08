@@ -1,6 +1,6 @@
-import { parseTagStr } from "../xml/utils"
-import * as he from "he"
-import { normalizeWebParaSafe, fixLatinGlyphMisspell } from "../nlp/utils"
+import { parseTagStr } from '../xml/utils'
+import * as he from 'he'
+import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../nlp/utils'
 
 
 
