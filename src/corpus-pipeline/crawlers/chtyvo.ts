@@ -7,9 +7,9 @@ import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request_utils'
 import { tryParseHtml } from '../../xml/utils.node'
 import { get } from 'request'
-import { arr2indexMap } from '../../algo';
-import * as _ from 'lodash';
-import { trimBeforeFirst, trimBeforeLast } from '../../string_utils';
+import { arr2indexMap } from '../../algo'
+import * as _ from 'lodash'
+import { trimBeforeFirst, trimBeforeLast } from '../../string_utils'
 
 
 interface Args {

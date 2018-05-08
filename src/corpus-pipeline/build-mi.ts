@@ -15,7 +15,7 @@ import { toUd } from '../nlp/ud/tagset'
 import { token2verticalLineUk } from './ud'
 import { mu } from '../mu'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
-import { standartizeMorphoForUd21 } from '../nlp/ud/uk_grammar';
+import { standartizeMorphoForUd21 } from '../nlp/ud/uk_grammar'
 
 
 

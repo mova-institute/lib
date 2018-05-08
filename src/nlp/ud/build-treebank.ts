@@ -26,8 +26,8 @@ import { validateSentenceSyntax } from './validation'
 import { zerofillMax, toPercent } from '../../string_utils'
 import { toSortableDatetime } from '../../date'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
-import { ukComparator } from '../static';
-import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node';
+import { ukComparator } from '../static'
+import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 
 
 

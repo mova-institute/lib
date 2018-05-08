@@ -9,8 +9,8 @@ import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { autofixDirtyText } from '../../nlp/utils'
 import { mu } from '../../mu'
 import { CorpusDoc } from '../doc_meta'
-import { execSync } from 'child_process';
-import { trimExtension } from '../../string_utils';
+import { execSync } from 'child_process'
+import { trimExtension } from '../../string_utils'
 
 const detectCharacterEncoding = require('detect-character-encoding');
 

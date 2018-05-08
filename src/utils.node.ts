@@ -7,7 +7,7 @@ import * as path from 'path'
 import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
 import { promisify } from 'util'
-import { BackpressingWriter } from './lib/node/backpressing_writer';
+import { BackpressingWriter } from './lib/node/backpressing_writer'
 
 const lineIterator = require('n-readlines')
 

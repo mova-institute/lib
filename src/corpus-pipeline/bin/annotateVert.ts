@@ -8,8 +8,8 @@ import { tokenObj2verticalLineUk } from '../ud'
 import { parseConlluTokenCells } from '../../nlp/ud/conllu'
 import { ApiClient } from '../../nlp/api_client'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
-import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer';
-import { toConlluishString } from '../../nlp/ud/tagset';
+import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
+import { toConlluishString } from '../../nlp/ud/tagset'
 import { BackpressingWriter } from '../../lib/node/backpressing_writer'
 
 import * as minimist from 'minimist'

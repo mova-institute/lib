@@ -5,7 +5,7 @@ import { iterateDictCorpVizLines, DictCorpVizIterator } from '../vesum_utils'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { standartizeMorphoForUd21 } from './uk_grammar'
-import { write } from 'fs';
+import { write } from 'fs'
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

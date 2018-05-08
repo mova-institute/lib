@@ -8,10 +8,10 @@ import * as passport from 'passport'
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth'
 
 import { PgClient } from './postrges'
-import { genAccessToken } from './crypto';
-import { parseJsonFileSync } from './utils.node';
-import { pgTransactionWrap } from './lib/express/pg';
-import { sendError } from './lib/express/utils';
+import { genAccessToken } from './crypto'
+import { parseJsonFileSync } from './utils.node'
+import { pgTransactionWrap } from './lib/express/pg'
+import { sendError } from './lib/express/utils'
 
 
 

@@ -1,7 +1,7 @@
 import * as path from 'path'
 import { clone } from 'lodash'
-import { Dict } from '../types';
-import { mu } from '../mu';
+import { Dict } from '../types'
+import { mu } from '../mu'
 
 
 

@@ -13,14 +13,14 @@ import * as minimist from 'minimist'
 
 import * as path from 'path'
 import * as fs from 'fs'
-import { countNumMatches } from '../../string_utils';
-import { DefaultMap, HashSet } from '../../data_structures';
-import { getCol, ConlluField } from '../../nlp/ud/conllu';
-import { buildMap, createObject2 } from '../../lang';
-import { renderFeatvals, STRUCTURE_G, positionalAttrGeneric } from '../registry_file_builder';
-import { indexTableByColumn } from '../../algo';
-import { execSync } from 'child_process';
-import { Dict } from '../../types';
+import { countNumMatches } from '../../string_utils'
+import { DefaultMap, HashSet } from '../../data_structures'
+import { getCol, ConlluField } from '../../nlp/ud/conllu'
+import { buildMap, createObject2 } from '../../lang'
+import { renderFeatvals, STRUCTURE_G, positionalAttrGeneric } from '../registry_file_builder'
+import { indexTableByColumn } from '../../algo'
+import { execSync } from 'child_process'
+import { Dict } from '../../types'
 
 
 

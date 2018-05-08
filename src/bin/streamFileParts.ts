@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesAsyncStd, exitOnStdoutPipeError } from '../utils.node';
+import { linesAsyncStd, exitOnStdoutPipeError } from '../utils.node'
 
 import * as fs from 'fs'
 

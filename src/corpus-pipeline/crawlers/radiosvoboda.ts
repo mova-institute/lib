@@ -1,7 +1,7 @@
 #!/usr/bin / env node
 
 import { Crawler } from './crawler'
-import { toSortableDateParts } from '../../date';
+import { toSortableDateParts } from '../../date'
 
 
 
