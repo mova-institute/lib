@@ -39,7 +39,9 @@ export function createValencyDictFromKotsybaTsvs(directory: string) {
       .match(nounVerbFormsRe)
       .map(x => x.replace(/#/g, ''))
 
-    forms.forEach(x => ret.gerund2verb.get(x).addAll(baseVerbs))
+    if (baseVerbs.some(x => ret.hasVerb(x))) {
+      forms.forEach(x => ret.gerund2verb.get(x).addAll(baseVerbs))
+    }
   }
 
   // console.error(ret.buildStats())

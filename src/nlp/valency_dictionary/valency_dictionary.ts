@@ -93,24 +93,6 @@ export class ValencyDict {
     let percentAmbigVerbs = numAmbigVerbs / numVerbTotal
     let percentAmbigGerunds = numAmbigGerunds / numGerundsTotal
 
-    // if (numAmbigGerunds !== mu(this.gerund2verb.keys()).count(x => this.isAmbigiousGerund(x))) {
-    //   throw 'poppo'
-    // }
-
-    // console.error(
-    //   mu(this.gerund2verb.keys())
-    //     .filter(x => this.isAmbigiousGerund(x))
-    //     .map(x => this.lookupGerund(x).toArray())
-    //     .take(100)
-    //     .toArray()
-    // )
-
-    // let show = mu(this.gerund2verb.keys()).filter(x => this.isAmbigiousGerund(x)
-    //   && (this.isUnambIntransGerund(x) || this.isUnambTransitiveGerund(x)))
-    //   .toArray()
-
-    // console.error(show)
-
     return {
       numVerbTotal,
       numGerundsTotal,
