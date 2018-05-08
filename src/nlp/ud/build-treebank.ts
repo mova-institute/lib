@@ -167,7 +167,7 @@ function main() {
       for (let token of tokens) {
         if (token.interp.isVerb()) {
           ++numVerbsTotal
-          if (valencyDict.has(token.interp.lemma)) {
+          if (valencyDict.hasVerb(token.interp.lemma)) {
             ++numVerbsCoveredByValencyDict
           } else {
             verbsUncoveredByValencyDict.add(token.interp.lemma)

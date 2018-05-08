@@ -191,6 +191,15 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
+  flattenShallowNaive() {
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        yield* x
+      }
+    })())
+  }
+
   flatten(shallow = false): Mu<any> {
     const thiss = this
     return mu((function* () {

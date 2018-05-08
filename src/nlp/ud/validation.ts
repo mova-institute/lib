@@ -1594,34 +1594,50 @@ export function validateSentenceSyntax(
     reportIf(`неперехідне дієслово має додаток`,
       t => uEqSome(t.node.rel, ['obj'])
         && t.parent.node.interp.isVerb()
-        && valencyDict.isIntransitiveOnly(t.parent.node.interp.lemma)
+        && valencyDict.isUnambIntransVerb(t.parent.node.interp.lemma)
         && !(uEq(t.node.rel, 'obj') && t.node.interp.isDative())
         && !t.node.interp.isGenitive()
     )
 
     reportIf(`перехідне дієслово не має додатка`,
       t => t.node.interp.isVerb()
-        && valencyDict.isAccusativeOnly(t.node.interp.lemma)
+        && valencyDict.isUnambAccVerb(t.node.interp.lemma)
         && !t.children.some(x => uEqSome(x.node.rel, g.CORE_COMPLEMENTS))
         && !t.children.some(x => uEq(x.node.rel, 'iobj')
           && x.node.interp.isDative())
     )
 
-    const iohojiji = ['його', 'її', 'їх']
-    reportIf(`${iohojiji.join('/')}-прикметник замість іменника`,
-      t => iohojiji.includes(t.node.form.toLowerCase())
+    const johojiji = ['його', 'її', 'їх']
+    reportIf(`${johojiji.join('/')}-прикметник замість іменника`,
+      t => johojiji.includes(t.node.form.toLowerCase())
         && t.node.interp.isAdjective()
         && t.parent
         && t.parent.node.interp.isNoun()
-        && valencyDict.isTransitiveOnlyGerund(t.parent.node.interp.lemma)
+        && valencyDict.isUnambTransitiveGerund(t.parent.node.interp.lemma)
     )
 
-    reportIf(`${iohojiji.join('/')}-іменник замість прикметника`,
-      t => iohojiji.includes(t.node.form.toLowerCase())
+    reportIf(`${johojiji.join('/')}-прикметник замість іменника (потенційно)`,
+      t => johojiji.includes(t.node.form.toLowerCase())
+        && t.node.interp.isAdjective()
+        && t.parent
+        && t.parent.node.interp.isNoun()
+        && valencyDict.isAmbigiousGerund(t.parent.node.interp.lemma)
+    )
+
+    reportIf(`${johojiji.join('/')}-іменник замість прикметника`,
+      t => johojiji.includes(t.node.form.toLowerCase())
         && t.node.interp.isNoun()
         && t.parent
         && t.parent.node.interp.isNoun()
-        && valencyDict.isIntransitiveOnlyGerund(t.parent.node.interp.lemma)
+        && valencyDict.isUnambIntransGerund(t.parent.node.interp.lemma)
+    )
+
+    reportIf(`${johojiji.join('/')}-іменник замість прикметника (потенційно)`,
+      t => johojiji.includes(t.node.form.toLowerCase())
+        && t.node.interp.isNoun()
+        && t.parent
+        && t.parent.node.interp.isNoun()
+        && valencyDict.isAmbigiousGerund(t.parent.node.interp.lemma)
     )
   }
 

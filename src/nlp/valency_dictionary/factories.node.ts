@@ -25,7 +25,7 @@ export function createValencyDictFromKotsybaTsvs(directory: string) {
 
     forms = forms.map(x => normalizeForm(x))
     let trans = decodeTransitivity(cols[13])
-    forms.forEach(x => ret.valencies.get(x).add(trans))
+    forms.forEach(x => ret.valencies.get(x).addAll(trans))
   }
   console.error(`read dict with ${ret.valencies.size} entries`)
 
@@ -39,8 +39,10 @@ export function createValencyDictFromKotsybaTsvs(directory: string) {
       .match(nounVerbFormsRe)
       .map(x => x.replace(/#/g, ''))
 
-    forms.forEach(x => ret.noun2verb.get(x).addAll(baseVerbs))
+    forms.forEach(x => ret.gerund2verb.get(x).addAll(baseVerbs))
   }
+
+  // console.error(ret.buildStats())
 
   return ret
 }
@@ -67,13 +69,14 @@ function createTsvIt(path: string) {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function decodeTransitivity(val: string) {
   if (val.startsWith('0') || !val.trim()) {
-    return Valency.intransitive
+    return [Valency.intransitive]
   }
   if (val === 'acc_opt' || val === 'acc|' || val === '?') {
-    return Valency.optional
+    // return Valency.optional
+    return [Valency.accusative, Valency.intransitive]
   }
   if (/^acc($|:|&|_)/.test(val)) {
-    return Valency.accusative
+    return [Valency.accusative]
   }
 
   throw new Error(`Cannot parse "${val}" as transitivity value`)
