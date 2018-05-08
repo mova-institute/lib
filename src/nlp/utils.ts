@@ -7,7 +7,6 @@ import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
 import { r, makeObject, last, parseIntStrict } from '../lang'
 import { uniqueSmall as unique, uniqueJson, arr2indexObj } from '../algo'
-import { AbstractNode, AbstractElement, AbstractDocument, DocCreator } from 'xmlapi'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
@@ -27,6 +26,7 @@ import { XmlFormatter } from '../xml/xml_formatter'
 import * as uniq from 'lodash.uniq'
 import * as sortedUniq from 'lodash.sorteduniq'
 import { GraphNode } from '../lib/graph'
+import { AbstractElement } from '../xml/xmlapi/abstract_element';
 
 const wu: Wu.WuStatic = require('wu')
 

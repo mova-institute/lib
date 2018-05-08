@@ -16,7 +16,6 @@ import * as glob from 'glob'
 import { mu } from '../mu'
 import * as _ from 'lodash'
 import { CatStream } from '../cat_stream'
-import { execSync, spawnSync, spawn, exec } from 'child_process'
 import { StreamDataIterator } from '../lib/nextify/stream_data_iterator'
 
 // export const config: ClientConfig = {

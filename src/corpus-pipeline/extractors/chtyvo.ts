@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import { decode } from 'iconv-lite'
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { autofixDirtyText } from '../../nlp/utils'

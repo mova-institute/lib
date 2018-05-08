@@ -1,4 +1,4 @@
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { mu } from '../../mu'
 
 
