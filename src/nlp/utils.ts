@@ -26,8 +26,8 @@ import { XmlFormatter } from '../xml/xml_formatter'
 import * as uniq from 'lodash.uniq'
 import * as sortedUniq from 'lodash.sorteduniq'
 import { GraphNode } from '../lib/graph'
-import { AbstractElement } from '../xml/xmlapi/abstract_element';
-import { AbstractDocument } from '../xml/xmlapi/abstract_document';
+import { AbstractElement } from '../xml/xmlapi/abstract_element'
+import { AbstractDocument } from '../xml/xmlapi/abstract_document'
 
 
 

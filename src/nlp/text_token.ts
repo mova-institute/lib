@@ -3,8 +3,8 @@ import { traverseDocumentOrderEl, nextElDocumentOrder } from '../xml/utils'
 import { wrappedOrNull } from '../lang'
 import { IStringMorphInterp } from './interfaces'
 import { uniq } from '../algo'
-import { AbstractElement } from '../xml/xmlapi/abstract_element';
-import { AbstractNode } from '../xml/xmlapi/abstract_node';
+import { AbstractElement } from '../xml/xmlapi/abstract_element'
+import { AbstractNode } from '../xml/xmlapi/abstract_node'
 
 
 

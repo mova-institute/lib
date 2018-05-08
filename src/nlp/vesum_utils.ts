@@ -52,7 +52,7 @@ export class DictCorpVizIterator {
     let isLemma = !line.startsWith(' ')
     let l = line.trim()
     if (l) {
-      l = l.replace(/'/g, '’');  // fix apostrophe
+      l = l.replace(/'/g, '’')  // fix apostrophe
       let [form, tag] = l.split(' ')
       if (isLemma) {
         this.lemma = form
@@ -319,7 +319,7 @@ export function presentTagsForDisambOneBlock(interps: IStringMorphInterp[]) {
 
 //------------------------------------------------------------------------------
 function alignTagList(flags: string[][]) {
-  let ret = new Array<Array<Array<string>>>();  // [pos][tag][flag]
+  let ret = new Array<Array<Array<string>>>()  // [pos][tag][flag]
 
   let poses = groupTableBy(flags, 0)
   for (let posAgg of poses.values()) {

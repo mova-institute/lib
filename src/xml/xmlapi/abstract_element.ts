@@ -1,6 +1,6 @@
-import { AbstractNode } from './abstract_node';
-import { AbstractAttribute } from './abstract_attribute';
-import { mu, Mu } from '../../mu';
+import { AbstractNode } from './abstract_node'
+import { AbstractAttribute } from './abstract_attribute'
+import { mu, Mu } from '../../mu'
 
 
 
@@ -10,19 +10,19 @@ export abstract class AbstractElement extends AbstractNode {
    * names
    */
 
-  abstract localName(): string;
-  abstract prefixedName(): string;
+  abstract localName(): string
+  abstract prefixedName(): string
 
   name() {
-    let ns = this.namespaceUri();
+    let ns = this.namespaceUri()
     if (ns) {
-      return '{' + ns + '}' + this.localName();
+      return '{' + ns + '}' + this.localName()
     }
-    return this.localName();
+    return this.localName()
   }
 
-  abstract namespaceUri(): string;
-  abstract namespacePrefix(): string;
+  abstract namespaceUri(): string
+  abstract namespacePrefix(): string
 
 
   /*
@@ -31,51 +31,51 @@ export abstract class AbstractElement extends AbstractNode {
 
   children(): Mu<AbstractNode> {
     if (!this.firstChild()) {
-      return mu([]);
+      return mu([])
     }
-    return Mu.chain([this.firstChild()], this.firstChild().nextSiblings());
+    return Mu.chain([this.firstChild()], this.firstChild().nextSiblings())
   }
 
   elementChildren() {
-    return this.children().filter(x => x.isElement()) as Mu<AbstractElement>;
+    return this.children().filter(x => x.isElement()) as Mu<AbstractElement>
   }
 
-  abstract firstChild(): AbstractNode;
+  abstract firstChild(): AbstractNode
 
   firstElementChild() {
-    return this.elementChildren().next().value || null;
+    return this.elementChildren().next().value || null
   }
 
-  abstract child(index: number): AbstractNode;
+  abstract child(index: number): AbstractNode
 
   elementChild(index: number) {
-    return this.elementChildren().drop(index).next().value || null;  // todo: wait for method in wu
+    return this.elementChildren().drop(index).next().value || null  // todo: wait for method in wu
   }
 
-  abstract lastChild(): AbstractNode;
+  abstract lastChild(): AbstractNode
 
   lastElementChild() {
-    return this.rchildren().filter(x => x.isElement()).next().value as AbstractElement || null;
+    return this.rchildren().filter(x => x.isElement()).next().value as AbstractElement || null
   }
 
   rchildren(): Mu<AbstractNode> {
     if (!this.lastChild()) {
-      return mu([]);
+      return mu([])
     }
-    return Mu.chain([this.lastChild()], this.lastChild().previousSiblings());
+    return Mu.chain([this.lastChild()], this.lastChild().previousSiblings())
   }
 
   countChildren() {
-    return this.children().length();  // todo: wait for .count() in wu
+    return this.children().length()  // todo: wait for .count() in wu
   }
 
   countElementChildren() {
-    return this.children().filter(x => x.isElement()).length();  // todo: wait for .count() in wu
+    return this.children().filter(x => x.isElement()).length()  // todo: wait for .count() in wu
   }
 
   clear() {
     for (let child = this.firstChild(); child; child = this.firstChild()) {
-      child.remove();
+      child.remove()
     }
   }
 
@@ -86,27 +86,27 @@ export abstract class AbstractElement extends AbstractNode {
 
   prependChild(child: AbstractNode) {
     if (this.firstChild()) {
-      this.firstChild().insertBefore(child);
+      this.firstChild().insertBefore(child)
     } else {
-      this.appendChild(child);  // see http://stackoverflow.com/a/13723325/5271870
+      this.appendChild(child)  // see http://stackoverflow.com/a/13723325/5271870
     }
-    return child;
+    return child
   }
 
-  abstract appendChild(child: AbstractNode): AbstractNode;
+  abstract appendChild(child: AbstractNode): AbstractNode
 
 
   /*
    * attributes
    */
 
-  abstract hasAttributes(): boolean;
-  abstract attributes(): AbstractAttribute[];
-  abstract attributeNs(nsUri: string, localName: string): string;
-  abstract attribute(name: string): string;
-  abstract setAttribute(name: string, value: string | number): AbstractElement;
-  abstract removeAttribute(name: string);
-  abstract renameAttributeIfExists(nameOld: string, nameNew: string);
+  abstract hasAttributes(): boolean
+  abstract attributes(): AbstractAttribute[]
+  abstract attributeNs(nsUri: string, localName: string): string
+  abstract attribute(name: string): string
+  abstract setAttribute(name: string, value: string | number): AbstractElement
+  abstract removeAttribute(name: string)
+  abstract renameAttributeIfExists(nameOld: string, nameNew: string)
 
   // attributeDefault(name: string, defaultValue = '') {
   //   let ret = this.attribute(name)
@@ -118,19 +118,19 @@ export abstract class AbstractElement extends AbstractNode {
 
   attributeUp(name: string) {
     for (let cursor = this as AbstractElement /* wut?? */; cursor; cursor = cursor.parent()) {
-      let value = cursor.attribute(name);
+      let value = cursor.attribute(name)
       if (value !== null) {
-        return value;
+        return value
       }
     }
   }
 
   setAttributes(keyvalue: Object): AbstractElement {  // todo: remove return typing when ts 2.0 comes out, see https://github.com/Microsoft/TypeScript/issues/3694
     for (let key of Object.keys(keyvalue)) {
-      this.setAttribute(key, keyvalue[key]);
+      this.setAttribute(key, keyvalue[key])
     }
 
-    return this;
+    return this
   }
 
   attributesObj() {
@@ -147,31 +147,31 @@ export abstract class AbstractElement extends AbstractNode {
   lang() {  // ancestor-or-self::*[@xml:lang][1]/@xml:lang
     return Mu.chain([this], this.ancestors())
       .map(x => x.attribute('lang'))
-      .find(x => x !== null);
+      .find(x => x !== null)
   }
 
-  abstract buildNsMap(): { [prefix: string]: string };
+  abstract buildNsMap(): { [prefix: string]: string }
 
   unwrap() {
     while (this.firstChild()) {
-      this.insertBefore(this.firstChild());  // todo: test webapi without remove()
+      this.insertBefore(this.firstChild())  // todo: test webapi without remove()
     }
 
-    return this.remove() as AbstractElement;
+    return this.remove() as AbstractElement
   }
 
   rewrap(replacement: AbstractElement) {
     while (this.firstChild()) {
-      replacement.appendChild(this.firstChild());
+      replacement.appendChild(this.firstChild())
     }
-    this.replace(replacement);
+    this.replace(replacement)
 
-    return replacement;
+    return replacement
   }
 
   // serializeChildren() {
   //   return [...this.children().map(x => x.serialize())].join('');  // todo add join to wu
   // }
 
-  abstract clone(): AbstractElement;
+  abstract clone(): AbstractElement
 }

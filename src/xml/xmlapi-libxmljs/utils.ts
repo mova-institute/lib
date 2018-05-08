@@ -1,6 +1,6 @@
-import { LibxmljsElement } from './libxmljs_element';
-import { LibxmljsNode } from './libxmljs_node';
-import { LibxmljsAttribute } from './libxmljs_attribute';
+import { LibxmljsElement } from './libxmljs_element'
+import { LibxmljsNode } from './libxmljs_node'
+import { LibxmljsAttribute } from './libxmljs_attribute'
 
 
 
@@ -8,37 +8,37 @@ import { LibxmljsAttribute } from './libxmljs_attribute';
 export function nodeOrElement(wrapee): LibxmljsNode | LibxmljsElement {
   switch (wrapee.type()) {
     case 'element':
-      return new LibxmljsElement(wrapee);
+      return new LibxmljsElement(wrapee)
     case 'text':
     case 'cdata':
     case 'comment':
-      return new LibxmljsNode(wrapee);
+      return new LibxmljsNode(wrapee)
     default:
-      throw new Error('Unexpected node type');
+      throw new Error('Unexpected node type')
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElementOrNull(wrapee): LibxmljsNode | LibxmljsElement {
   if (!wrapee) {
-    return null;
+    return null
   }
-  return nodeOrElement(wrapee);
+  return nodeOrElement(wrapee)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElementOrAttribute(wrapee): LibxmljsNode | LibxmljsElement | LibxmljsAttribute {
   switch (wrapee.type()) {
     case 'element':
-      return new LibxmljsElement(wrapee);
+      return new LibxmljsElement(wrapee)
     case 'text':
     case 'cdata':
     case 'comment':
-      return new LibxmljsNode(wrapee);
+      return new LibxmljsNode(wrapee)
     case 'attribute':
-      return new LibxmljsAttribute(wrapee);
+      return new LibxmljsAttribute(wrapee)
     default:
-      throw new Error('Unexpected node type');
+      throw new Error('Unexpected node type')
   }
 }
 
@@ -49,10 +49,10 @@ export function isNode(wrapee) {
     case 'text':
     case 'cdata':
     case 'comment':
-      return true;
+      return true
     case 'attribute':
-      return false;
+      return false
     default:
-      throw new Error('Unexpected node type');
+      throw new Error('Unexpected node type')
   }
 }

@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { parseHtmlString } from 'libxmljs'
-import { LibxmljsDocument } from './xmlapi-libxmljs/libxmljs_document';
-import { LibxmljsElement } from './xmlapi-libxmljs/libxmljs_element';
+import { LibxmljsDocument } from './xmlapi-libxmljs/libxmljs_document'
+import { LibxmljsElement } from './xmlapi-libxmljs/libxmljs_element'
 
 
 
