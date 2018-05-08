@@ -88,7 +88,7 @@
     ],
     "radix": true,
     "semicolon": [
-      false,
+      true,
       "never"
     ],
     "switch-default": true,
