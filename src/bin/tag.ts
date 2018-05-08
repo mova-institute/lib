@@ -122,7 +122,7 @@ function main(args: Args) {
       let root = parseXml(inputStr)
 
       if (args.reinterpret) {
-        morphReinterpret([...root.evaluateElements('//mi:w_|w_', NS)], analyzer)
+        morphReinterpret(root.evaluateElements('//mi:w_|w_', NS).toArray(), analyzer)
       }
 
       if (args.autofix) {

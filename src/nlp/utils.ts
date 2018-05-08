@@ -192,7 +192,7 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
 const TOSKIP = new Set(['w', 'mi:w_', 'w_', 'abbr', 'mi:sb', 'sb'])
 
 export function tokenizeMixml(root: AbstractElement, tagger: MorphAnalyzer) {
-  let subroots = [...root.evaluateNodes('//tei:title|//tei:text', NS)]
+  let subroots = root.evaluateNodes('//tei:title|//tei:text', NS).toArray()
   if (!subroots.length) {
     subroots = [root]
   }
@@ -504,8 +504,9 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
 
 ////////////////////////////////////////////////////////////////////////////////
 export function firstNWords(n: number, from: AbstractElement) {
-  let words = [...from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS)
-    .map(x => x.firstElementChild().text())]  //todo
+  let words = from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS)
+    .map(x => x.firstElementChild().text())
+    .toArray()  //todo
   return words
 }
 
@@ -521,7 +522,7 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 
 
     // select unambig dict interps
-    if ([...miw.elementChildren()].length === 1 && !miw.attribute('disamb')) {
+    if (miw.elementChildren().length() === 1 && !miw.attribute('disamb')) {
       miw.setAttribute('disamb', 0)
     }
 
@@ -547,7 +548,7 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sortInterps(root: AbstractElement) {
-  for (let miw of [...root.evaluateElements('//mi:w_', NS)]) {
+  for (let miw of root.evaluateElements('//mi:w_', NS).toArray()) {
 
     let disambIndex = Number.parseInt(miw.attribute('disamb'))
     let disambElem
@@ -566,7 +567,7 @@ export function sortInterps(root: AbstractElement) {
     })
 
     if (disambElem) {
-      miw.setAttribute('disamb', [...miw.elementChildren()].indexOf(disambElem))
+      miw.setAttribute('disamb', miw.elementChildren().toArray().indexOf(disambElem))
     }
   }
 
@@ -576,7 +577,7 @@ export function sortInterps(root: AbstractElement) {
 ////////////////////////////////////////////////////////////////////////////////
 export function untag(root: AbstractElement) {
   let doc = root.document()
-  for (let miw of [...root.evaluateElements('//mi:w_', NS)]) {
+  for (let miw of root.evaluateElements('//mi:w_', NS).toArray()) {
     let replacer = doc.createElement('w')
     replacer.text(miw.firstElementChild().text())
     miw.replace(replacer)

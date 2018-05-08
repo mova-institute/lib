@@ -108,7 +108,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
         '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
         .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
         .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
-      let paragraphs = [...paragraphsIt]
+      let paragraphs = paragraphsIt.toArray()
 
       yield { paragraphs, ...meta } as CorpusDoc
     } else if (format === 'txt') {

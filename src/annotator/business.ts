@@ -38,8 +38,8 @@ export function nextTaskStep(type: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function markResolveConflicts(hisName: string, his: AbstractElement, herName: string, her: AbstractElement) {
   const XPATH = `//mi:w_[@mark='reviewed']`
-  let hisWords = [...his.evaluateElements(XPATH, NS)]
-  let herWords = [...her.evaluateElements(XPATH, NS)]
+  let hisWords = his.evaluateElements(XPATH, NS).toArray()
+  let herWords = her.evaluateElements(XPATH, NS).toArray()
 
   if (hisWords.length !== herWords.length) {
     throw new Error('markResolveConflicts for docs with uneven word count is not implemented')

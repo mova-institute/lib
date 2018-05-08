@@ -119,7 +119,7 @@ export class TextToken {
   keepOnlyDisambed() {
     let indexes = this.getDisambIndexes()
     if (indexes.length) {
-      let interpElems = [...this.elem.children()]
+      let interpElems = this.elem.children().toArray()
       for (let i = 0; i < interpElems.length; ++i) {
         if (indexes.indexOf(i) === -1) {
           interpElems[i].remove()

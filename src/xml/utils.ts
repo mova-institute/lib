@@ -357,7 +357,7 @@ function callbackIfElement(cb?: (el: AbstractElement) => TraverseDirective) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function sortChildElements(el: AbstractElement, compare: (a: AbstractElement, b: AbstractElement) => number) {
-  let childrenSorted = [...el.elementChildren()].sort(compare)
+  let childrenSorted = el.elementChildren().toArray().sort(compare)
   for (let child of childrenSorted) {
     el.appendChild(child.remove())
   }

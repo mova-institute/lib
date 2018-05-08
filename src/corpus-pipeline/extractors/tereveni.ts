@@ -10,7 +10,7 @@ import { textOf } from './utils'
 ////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(html: string) {
   let root = parseHtml(html)
-  let posts = [...root.evaluateElements('//div[contains(@class, "post_wrap")]')]
+  let posts = root.evaluateElements('//div[contains(@class, "post_wrap")]').toArray()
   // console.log(`---${posts.length}----`)
   for (let postRoot of posts) {
     let title = textOf(postRoot, './/span[contains(@class, "post_id ")]/a/text()').trim()

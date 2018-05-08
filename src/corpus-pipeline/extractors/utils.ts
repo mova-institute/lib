@@ -52,7 +52,7 @@ export function brbr2paragraphs(root: AbstractElement) {
     return []
   }
   let ret = new Array<string>()
-  let nodes = [...root.evaluateNodes('.//text() | .//br')]
+  let nodes = root.evaluateNodes('.//text() | .//br').toArray()
   let buf = ''
   for (let node of nodes) {
     if (node.isText()) {

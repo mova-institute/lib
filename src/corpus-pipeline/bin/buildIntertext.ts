@@ -550,9 +550,9 @@ function prepareFromAlignment(alignFilePath: string) {
 function intertextDoc2HorizontalPlaintext(root: AbstractElement) {
   let ret = ''
   // let ids = new Array<string>()
-  let pEls = ([...root.evaluateElements('//p')] as AbstractElement[])
+  let pEls = (root.evaluateElements('//p').toArray())
   for (let pEl of pEls) {
-    let sentEls = [...pEl.evaluateElements('.//s')] as AbstractElement[]
+    let sentEls = pEl.evaluateElements('.//s').toArray()
     if (!sentEls.length) {
       continue
     }
@@ -566,7 +566,7 @@ function intertextDoc2HorizontalPlaintext(root: AbstractElement) {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getSentIdsFromIntertextDoc(root: AbstractElement) {
-  return ([...root.evaluateElements('.//s')] as AbstractElement[])
+  return (root.evaluateElements('.//s').toArray())
     .filter(x => x.text().trim())
     .map(x => x.attribute('id'))
 }

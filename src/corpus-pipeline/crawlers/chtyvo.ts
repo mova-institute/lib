@@ -89,13 +89,14 @@ async function main(args: Args) {
         console.error('✖️')
         continue
       }
-      let dataUrls = [...root.evaluateAttributes('//table[@class="books"]//a/@href')
+      let dataUrls = root.evaluateAttributes('//table[@class="books"]//a/@href')
         .map(x => x.value())
         .filter(x => !!x
           && /\/authors\/.*\./.test(x)
           && !['djvu', 'pdf'].some(xx => x.endsWith(`.${xx}`))
         )
-        .map(x => parse(x))]
+        .map(x => parse(x))
+        .toArray()
 
       if (!dataUrls.length) {
         console.error(`No data urls`)

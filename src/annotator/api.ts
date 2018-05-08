@@ -252,7 +252,7 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
     if (isReinterpNeeded(task)) {
       let root = parseXml(task.content)
       if (task.step === 'annotate') {
-        morphReinterpret([...root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)], analyzer)
+        morphReinterpret(root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS).toArray(), analyzer)
       } else {
         morphReinterpretGently(root, analyzer)
       }
@@ -462,7 +462,7 @@ async function onReviewConflicts(task, client: PgClient) {
           step: 'resolve',
           fragmentStart: fragment.index,
           fragmentEnd: fragment.index,
-          name: [...firstNWords(4, markedDoc.root())].join(' '),  // todo
+          name: firstNWords(4, markedDoc.root()).join(' '),  // todo
         }, 'id')
 
         await client.insert('fragment_version', {

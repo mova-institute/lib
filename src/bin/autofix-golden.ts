@@ -104,7 +104,7 @@ async function main() {
       // renameStructures(root)
 
       {
-        let tokenEls = [...root.evaluateElements('//w_')]
+        let tokenEls = root.evaluateElements('//w_').toArray()
         // remove redundant attributes
         if (1) {
           for (let w of tokenEls) {
@@ -213,14 +213,14 @@ async function main() {
 
         saveInterp(interpEl, interp)
       }
-      tokenCount += [...root.evaluateElements('//w_')].length
+      tokenCount += root.evaluateElements('//w_').length()
 
       // assign id's
       if (idSequence !== undefined) {
         const xpath = ['doc', 'p', 'sb', 's', 'w_', 'pc']
           .map(x => `//${x}[not(@id)]`)
           .join('|')
-        let tokenEls = [...root.evaluateElements(xpath)]
+        let tokenEls = root.evaluateElements(xpath).toArray()
         for (let token of tokenEls) {
           token.setAttribute('id', id2str(idSequence++))
         }
@@ -682,7 +682,7 @@ function renameStructures(root: AbstractElement) {
       x.remove()
     })
 
-  // let elems = [...root.evaluateElements('chunk').filter(x => !x.ancestors().find(xx => xx.localName() === 'chunk'))]
+  // let elems = root.evaluateElements('chunk').filter(x => !x.ancestors().find(xx => xx.localName() === 'chunk')).toArray()
   // elems.forEach(x => x)
 
   const DOC_META_ATTRS = [
@@ -873,7 +873,7 @@ function insertSb(root: AbstractElement) {
 
 //------------------------------------------------------------------------------
 function swapSb(root: AbstractElement) {
-  for (let sb of [...root.evaluateElements('//sb')]) {
+  for (let sb of root.evaluateElements('//sb').toArray()) {
     let next = sb.nextElementSibling()
     if (next && next.localName() === 'g') {
       next.insertAfter(sb)

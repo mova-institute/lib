@@ -53,7 +53,7 @@ function main() {
     console.log(`verticalizing ${basename}`)
 
     let root = parseXmlFileSync(xmlPath)
-    let docRoots = [...root.evaluateElements('//doc[not(ancestor::doc)]')]
+    let docRoots = root.evaluateElements('//doc[not(ancestor::doc)]').toArray()
     if (!docRoots.length) {
       docRoots = [root]
     }
