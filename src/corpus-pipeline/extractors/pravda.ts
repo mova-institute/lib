@@ -9,7 +9,7 @@ import {
 import { CorpusDoc } from '../doc_meta'
 
 import * as Url from 'url'
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 
 
 

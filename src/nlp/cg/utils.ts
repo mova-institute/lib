@@ -1,4 +1,4 @@
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { mixml2tokenStream, tokenStream2cg } from '../utils'
 import { mu } from '../../mu'
 

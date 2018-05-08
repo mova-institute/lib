@@ -9,7 +9,7 @@ import * as mkdirp from 'mkdirp'
 
 import { parseXmlFileSync } from '../xml/utils.node'
 import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { trimExtension } from '../string_utils'
 import { toUd } from '../nlp/ud/tagset'
 import { token2verticalLineUk } from './ud'

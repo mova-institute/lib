@@ -1,7 +1,5 @@
 /* tslint:disable:no-unused-variable no-unused-imports */
 
-// import {INode, IElement, IDocument} from 'xmlapi'
-import { LibxmljsDocument, LibxmljsElement } from 'xmlapi-libxmljs'
 import { readFileSync } from 'fs'
 import * as fs from 'fs'
 // import {dirname} from 'path'

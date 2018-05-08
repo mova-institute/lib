@@ -1,5 +1,5 @@
-import { AbstractNode, AbstractElement } from 'xmlapi'
-
+import { AbstractElement } from './xmlapi/abstract_element'
+import { AbstractNode } from './xmlapi/abstract_node'
 import * as he from 'he'
 
 

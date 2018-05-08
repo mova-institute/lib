@@ -2,10 +2,10 @@ import { adoptMorphDisambs } from '../nlp/utils'
 import { markWordwiseDiffStr } from '../nlp/utils.node'
 import { encloseInRootNs, removeRoot, removeXmlns } from '../xml/utils'
 import { parseXml } from '../xml/utils.node'
+import { AbstractElement } from '../xml/xmlapi/abstract_element'
+import { LibxmljsDocument } from '../xml/xmlapi-libxmljs/libxmljs_document'
 import * as business from './business'
 
-import { LibxmljsDocument } from 'xmlapi-libxmljs'
-import { AbstractElement } from 'xmlapi'
 
 
 

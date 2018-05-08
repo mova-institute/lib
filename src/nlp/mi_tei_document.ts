@@ -1,5 +1,5 @@
-import { AbstractElement } from 'xmlapi'
 import { $t } from './text_token'
+import { AbstractElement } from '../xml/xmlapi/abstract_element';
 
 
 

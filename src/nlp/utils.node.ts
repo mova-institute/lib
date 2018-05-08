@@ -1,6 +1,6 @@
 import { markWordwiseDiff, normalizeCorpusText } from './utils'
 import { parseXml } from '../xml/utils.node'
-import { LibxmljsElement } from 'xmlapi-libxmljs'
+import { LibxmljsElement } from '../xml/xmlapi-libxmljs/libxmljs_element'
 import * as he from 'he'
 
 

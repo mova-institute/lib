@@ -1,5 +1,5 @@
 import { encloseInRoot, encloseInRootNs } from '../xml/utils'
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { NS } from '../xml/utils'
 import { $t, TextToken } from '../nlp/text_token'
 

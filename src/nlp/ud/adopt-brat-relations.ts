@@ -10,7 +10,7 @@ import { trimExtension } from '../../string_utils'
 import { firstMatch } from '../../string_utils'
 import { serializeMiDocument } from '../../nlp/utils'
 import { parseBratFile } from './utils'
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { toSortableDatetime } from '../../date'
 
 import * as glob from 'glob'

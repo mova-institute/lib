@@ -2,7 +2,7 @@ import { CorpusDoc } from '../doc_meta'
 import { parseHtml } from '../../xml/utils.node'
 import { traverseDepth } from '../../xml/utils'
 import { toSortableDate } from '../../date'
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { textOf } from './utils'
 
 

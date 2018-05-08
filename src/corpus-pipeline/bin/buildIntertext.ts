@@ -3,7 +3,7 @@
 import { logErrAndExit, linesSync } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { parseXmlFileSync } from '../../xml/utils.node'
-import { AbstractElement } from 'xmlapi'
+import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { mu, Mu } from '../../mu'
 
