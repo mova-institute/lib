@@ -12,7 +12,7 @@ import { CorpusDoc } from '../doc_meta'
 import { execSync } from 'child_process'
 import { trimExtension } from '../../string_utils'
 
-const detectCharacterEncoding = require('detect-character-encoding');
+const detectCharacterEncoding = require('detect-character-encoding')
 
 
 
