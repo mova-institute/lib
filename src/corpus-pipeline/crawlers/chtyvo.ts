@@ -42,7 +42,7 @@ if (require.main === module) {
     },
     default: {
       workspace: '.',
-      oldNumPages: 554,
+      oldNumPages: 0,
       satartWithPage: 1,
     },
   }) as any
@@ -52,7 +52,7 @@ if (require.main === module) {
 
 
 async function main(args: Args) {
-  let fetchedPagesDir = join(args.workspace, 'chtyvo/data')
+  let fetchedPagesDir = join(args.workspace, 'chtyvo', 'data')
   let pages = new FsMap(fetchedPagesDir)
   let fetchThroughPage = args.curNumPages - args.oldNumPages
   for (let i = args.satartWithPage; i <= fetchThroughPage; ++i) {
@@ -93,7 +93,7 @@ async function main(args: Args) {
         .map(x => x.value())
         .filter(x => !!x
           && /\/authors\/.*\./.test(x)
-          && !['djvu'].some(xx => x.endsWith(`.${xx}`))
+          && !['djvu', 'pdf'].some(xx => x.endsWith(`.${xx}`))
         )
         .map(x => parse(x))]
 

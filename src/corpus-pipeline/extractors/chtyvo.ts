@@ -5,8 +5,7 @@ import * as path from 'path'
 import { decode } from 'iconv-lite'
 import { AbstractElement } from 'xmlapi'
 
-import { execSync2String } from '../../child_process.node'
-import { parseHtmlFileSync, parseHtml, parseXml } from '../../xml/utils.node'
+import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
 import { autofixDirtyText } from '../../nlp/utils'
 import { mu } from '../../mu'
 import { CorpusDoc } from '../doc_meta'
@@ -40,7 +39,14 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
   let metaPath = `${basePath}.meta.html`
 
   try {
-    let format = ['txt', 'htm', 'fb2', 'doc'].find(x => fs.existsSync(`${basePath}.${x}`))
+    let format = [
+      'fb2',
+      'html',
+      'htm',
+      'txt',
+      'doc',
+      'rtf',
+    ].find(x => fs.existsSync(`${basePath}.${x}`))
     if (!format) {
       // console.log(`format not supported ${basePath}`)
       return
@@ -95,7 +101,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
       yield { paragraphs, ...meta } as CorpusDoc
     }
     // else if (true) { continue }
-    else if (format === 'htm') {
+    else if (format === 'htm' || format === 'html') {
       let root = parseHtml(content)
       let paragraphsIt = root.evaluateElements(
         // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
@@ -114,7 +120,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
 
       yield { paragraphs, ...meta } as CorpusDoc
     } else {
-      console.log(`skipping (format not supported yet)`)
+      console.log(`skipping (format "${format}" not supported yet)`)
     }
   } catch (e) {
     console.error(`errr ${metaPath}`)
