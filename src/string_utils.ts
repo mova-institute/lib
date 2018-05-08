@@ -83,7 +83,7 @@ export function trimAfterFirst(toBeTrimmed: string, substring: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function trimBeforeFirst(toBeTrimmed: string, substring: string) {
   let index = toBeTrimmed.indexOf(substring)
-  return index < 0 ? toBeTrimmed : toBeTrimmed.substr(index+1)
+  return index < 0 ? toBeTrimmed : toBeTrimmed.substr(index + 1)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ export function trimAfterLast(toBeTrimmed: string, substring: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function trimBeforeLast(toBeTrimmed: string, substring: string) {
   let index = toBeTrimmed.lastIndexOf(substring)
-  return index < 0 ? toBeTrimmed : toBeTrimmed.substr(index+1)
+  return index < 0 ? toBeTrimmed : toBeTrimmed.substr(index + 1)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -255,5 +255,5 @@ export function isTitlecase(str: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function getColumn(line: string, col: number, separator = '\t') {
-  return line.split(separator, col)[col]
+  return line.split(separator, col + 1)[col]
 }

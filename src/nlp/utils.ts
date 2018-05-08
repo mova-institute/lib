@@ -42,6 +42,16 @@ const WORD_TAGS = new Set([W, W_])
 
 
 ////////////////////////////////////////////////////////////////////////////////
+export function normalizeApostrophes(val: string, to = '’') {
+  return val.replace(/['’`]/g, to)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function removeAccent(val: string) {
+  return val.replace(/\u0301/g, '')
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function normalizeDiacritics(str: string) {
   return str
     .replace(/і\u{308}/gui, x => startsWithCapital(x) ? 'Ї' : 'ї')

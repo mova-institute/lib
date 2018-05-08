@@ -12,6 +12,7 @@ import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { PREDICATES, isNumericModifier, isGoverning } from './uk_grammar'
 import * as g from './uk_grammar'
 import * as _ from 'lodash'
+import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 
 
 
@@ -189,7 +190,11 @@ type SentencePredicate2 = (t: Token, s: Token[], i: number/*, node: GraphNode<To
 type TreedSentencePredicate = (t: GraphNode<Token>) => any
 type TreedSentencePredicate2 = (a: ReoprtIf2Arg) => any
 ////////////////////////////////////////////////////////////////////////////////
-export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: MorphAnalyzer) {
+export function validateSentenceSyntax(
+  nodes: GraphNode<Token>[],
+  analyzer: MorphAnalyzer,
+  valencyDict?: ValencyDict,
+) {
 
   let problems = new Array<Problem>()
 
@@ -1584,6 +1589,42 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
       && c.some(x => !uEqSome(x.node.rel, ['compound']))
   )
 
+
+  if (valencyDict) {
+    reportIf(`неперехідне дієслово має додаток`,
+      t => uEqSome(t.node.rel, ['obj'])
+        && t.parent.node.interp.isVerb()
+        && valencyDict.isIntransitiveOnly(t.parent.node.interp.lemma)
+        && !(uEq(t.node.rel, 'obj') && t.node.interp.isDative())
+        && !t.node.interp.isGenitive()
+    )
+
+    reportIf(`перехідне дієслово не має додатка`,
+      t => t.node.interp.isVerb()
+        && valencyDict.isAccusativeOnly(t.node.interp.lemma)
+        && !t.children.some(x => uEqSome(x.node.rel, g.CORE_COMPLEMENTS))
+        && !t.children.some(x => uEq(x.node.rel, 'iobj')
+          && x.node.interp.isDative())
+    )
+
+    const iohojiji = ['його', 'її', 'їх']
+    reportIf(`${iohojiji.join('/')}-прикметник замість іменника`,
+      t => iohojiji.includes(t.node.form.toLowerCase())
+        && t.node.interp.isAdjective()
+        && t.parent
+        && t.parent.node.interp.isNoun()
+        && valencyDict.isTransitiveOnlyGerund(t.parent.node.interp.lemma)
+    )
+
+    reportIf(`${iohojiji.join('/')}-іменник замість прикметника`,
+      t => iohojiji.includes(t.node.form.toLowerCase())
+        && t.node.interp.isNoun()
+        && t.parent
+        && t.parent.node.interp.isNoun()
+        && valencyDict.isIntransitiveOnlyGerund(t.parent.node.interp.lemma)
+    )
+  }
+
   // **********
 
 
@@ -1745,6 +1786,7 @@ export function validateSentenceSyntax(nodes: GraphNode<Token>[], analyzer: Morp
     )
 
   */
+
 
 
   return problems

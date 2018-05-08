@@ -173,7 +173,7 @@ export class CachedFunctionResult<T> {
   }
 }
 
-// ////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 export class DefaultMap<K, V> extends Map<K, V> {
   constructor(
     private v: { new(): V; },
@@ -190,5 +190,18 @@ export class DefaultMap<K, V> extends Map<K, V> {
     }
 
     return super.get(key)
+  }
+
+  getRaw(key: K) {
+    return super.get(key)
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+export class CoolSet<T> extends Set<T> {
+  addAll(iterable: Iterable<T>) {
+    for (let val of iterable) {
+      this.add(val)
+    }
   }
 }

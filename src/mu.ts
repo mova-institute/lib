@@ -38,16 +38,6 @@ export class Mu<T> implements Iterable<T> {
     return Mu.chain<TT>(this as any, ...iterables)    // todo
   }
 
-  enumerate() {
-    let i = 0
-    const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        yield [i++, x] as [number, T]
-      }
-    })())
-  }
-
   chunk(n: number) {
     let buf: T[] = []
     const thiss = this
@@ -147,7 +137,7 @@ export class Mu<T> implements Iterable<T> {
     let i = 0
     return mu((function* () {
       for (let x of thiss) {
-        yield [i, x] as [number, T]
+        yield [i++, x] as [number, T]
       }
     })())
   }
@@ -298,11 +288,11 @@ export class Mu<T> implements Iterable<T> {
     }
   }
 
-  skip(n: number) {
+  skip(n = 1) {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
-        if (--n > 0) {
+        if (--n >= 0) {
           continue
         }
         yield x

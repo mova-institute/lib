@@ -23,9 +23,11 @@ import { MorphInterp } from '../../nlp/morph_interp'
 import { sentence2conllu } from './utils'
 import { mu } from '../../mu'
 import { validateSentenceSyntax } from './validation'
-import { zerofillMax } from '../../string_utils'
+import { zerofillMax, toPercent } from '../../string_utils'
 import { toSortableDatetime } from '../../date'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
+import { ukComparator } from '../static';
+import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node';
 
 
 
@@ -47,6 +49,8 @@ interface Args {
 
 
   id2bratPath: string
+
+  valencyDict: string
 }
 
 //------------------------------------------------------------------------------
@@ -132,12 +136,18 @@ function main() {
   mkdirp.sync(outDir)
 
   let analyzer = createMorphAnalyzerSync()
+  let valencyDict = args.valencyDict ?
+    createValencyDictFromKotsybaTsvs(args.valencyDict)
+    : undefined
   let openedFiles = {} as any
   let setRegistry = {} as Dict<DatasetDescriptor>
   let setRegistryMorpho = {} as Dict<DatasetDescriptor>
   let sentenseErrors = []
   let sentenseHoles = []
   let prevSet: string
+  let numVerbsCoveredByValencyDict = 0
+  let numVerbsTotal = 0
+  let verbsUncoveredByValencyDict = new Set<string>()
 
   for (let xmlPath of xmlPaths) {
     let basename = path.basename(xmlPath)
@@ -153,6 +163,17 @@ function main() {
     for (let { sentenceId, dataset, tokens, nodes, document,
       paragraph } of sentenceStream
     ) {
+      // count some stats
+      for (let token of tokens) {
+        if (token.interp.isVerb()) {
+          ++numVerbsTotal
+          if (valencyDict.has(token.interp.lemma)) {
+            ++numVerbsCoveredByValencyDict
+          } else {
+            verbsUncoveredByValencyDict.add(token.interp.lemma)
+          }
+        }
+      }
 
       // ~~~ bake some vars from sentence stream data
       let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
@@ -210,7 +231,7 @@ function main() {
 
         let hasProblems = false
         if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
-          let problems = validateSentenceSyntax(nodes, analyzer)
+          let problems = validateSentenceSyntax(nodes, analyzer, valencyDict)
           hasProblems = !!problems.length
           if (hasProblems && args.reportErrors) {
             sentenseErrors.push({
@@ -275,6 +296,12 @@ function main() {
   writeErrors(sentenseErrors, sentenseHoles, outDir)
   printStats(setRegistry, 'synt')
   printStats(setRegistryMorpho, 'morpho')
+
+  let valencyCoverage = toPercent(numVerbsCoveredByValencyDict, numVerbsTotal, 2)
+  console.error(`\n${numVerbsCoveredByValencyDict}/${numVerbsTotal} (${valencyCoverage}%) verb hits covered by valency dict`)
+  console.error(`Uncovered are ${verbsUncoveredByValencyDict.size} lemmas`)
+  // console.error(mu(verbsUncoveredByValencyDict).toArray().sort(ukComparator).join('\n'))
+
   console.log()
 }
 

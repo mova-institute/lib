@@ -1,5 +1,6 @@
 import { r } from '../lang'
 
+export const ukComparator = new Intl.Collator('uk-UA').compare
 
 export const APOSTROPES = '\'"*`’‘'
 
