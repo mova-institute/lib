@@ -51,7 +51,7 @@
     "encoding": true,
     // "import-spacing": true,
     // "interface-over-type-literal": true,
-    "newline-before-return": true,
+    "newline-before-return": false,
     // "newline-per-chained-call": true,
     // "new-parens": true,
     "no-reference-import": true,

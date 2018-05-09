@@ -1,4 +1,4 @@
-// todo: really, thiss?
+/* tslint:disable:no-this-assignment */
 
 export function mu<T>(iterable: Iterable<T> = []) {
   return new Mu(iterable)
@@ -195,7 +195,7 @@ export class Mu<T> implements Iterable<T> {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
-        yield* x
+        yield* x as any
       }
     })())
   }
