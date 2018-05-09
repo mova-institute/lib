@@ -49,8 +49,7 @@ export class LibxmljsNode extends AbstractNode {
   text(value?: string) {
     if (value !== undefined) {
       this.wrapee.text(value)
-    }
-    else {
+    } else {
       return this.wrapee.text()
     }
   }
@@ -69,6 +68,7 @@ export class LibxmljsNode extends AbstractNode {
 
   remove() {
     this.wrapee.remove()
+
     return this
   }
 
@@ -87,7 +87,7 @@ export class LibxmljsNode extends AbstractNode {
   evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult {
     let result = this.wrapee.find(xpath, nsMap)
     if (Array.isArray(result)) {
-      return mu((function* () {
+      return mu((function*() {
         for (let node of result) {
           yield nodeOrElementOrAttribute(node)
         }
@@ -148,7 +148,7 @@ export class LibxmljsNode extends AbstractNode {
         throw new Error('XPath result is not a list of elements')
       }
       return new LibxmljsElement(x)
-    }) as Mu<LibxmljsElement>  // todo: why not inferred?
+    })
   }
 
   evaluateAttributes(xpath: string, nsMap?: Object) {
@@ -157,7 +157,7 @@ export class LibxmljsNode extends AbstractNode {
         throw new Error('XPath result is not a list of attributes')
       }
       return new LibxmljsAttribute(x)
-    }) as Mu<LibxmljsAttribute>  // todo: why not inferred?
+    })
   }
 
   clone() {
@@ -169,7 +169,7 @@ export class LibxmljsNode extends AbstractNode {
   }
 
   protected _evaluateMany(xpath, nsMap?) {
-    let result: any[] = this.wrapee.find(xpath, nsMap) || []
+    let result: Array<any> = this.wrapee.find(xpath, nsMap) || []
 
     if (!Array.isArray(result)) {
       throw new Error('XPath result is not a list')

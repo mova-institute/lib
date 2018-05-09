@@ -48,7 +48,7 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
     par.suffixes = par.suffixes.map(x => allSuffixes.id(x))
   }
 
-  let linearizedParadigms = paradigms.map(x => linearizeParadigm(x))
+  let linearizedParadigms = paradigms.map(linearizeParadigm)
 
   return {
     words: allWords,

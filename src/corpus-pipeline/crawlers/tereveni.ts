@@ -13,7 +13,7 @@ async function main() {
     ])
 
   await crawler.seed([
-    'http://tereveni.org/index'
+    'http://tereveni.org/index',
   ])
 }
 

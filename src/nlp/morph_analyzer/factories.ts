@@ -8,8 +8,8 @@ import { readStringMapDawg } from 'dawgjs/factories'
 export function createMorphAnalyser(
   wordsBuf: ArrayBuffer,
   paradigmsBuf: ArrayBuffer,
-  suffixes: string[],
-  tags: string[]) {
+  suffixes: Array<string>,
+  tags: Array<string>) {
 
   let paradigms = new Array<Uint16Array>()
   let paradigmsView = new DataView(paradigmsBuf)

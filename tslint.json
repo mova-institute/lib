@@ -151,7 +151,7 @@
     "no-duplicate-imports": true,
     "no-mergeable-namespace": true,
     "no-require-imports": true,
-    "prefer-readonly": true,
+    "prefer-readonly": false,
     "trailing-comma": [
       true,
       {

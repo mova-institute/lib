@@ -7,7 +7,6 @@ import { Mu } from '../../mu'
 
 
 
-
 @mixin(AbstractElement)
 export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   constructor(wrapee) {
@@ -76,7 +75,8 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   }
 
   attributes() {
-    return this.wrapee.attrs().map(x => new LibxmljsAttribute(x)) as LibxmljsAttribute[]
+    return this.wrapee.attrs()
+      .map(x => new LibxmljsAttribute(x)) as Array<LibxmljsAttribute>
   }
 
   attribute(name: string) {
@@ -90,6 +90,7 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
     if (attr) {
       return attr.value()
     }
+
     return null
   }
 
@@ -99,6 +100,7 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
     } else {
       this.wrapee.attr({ [name]: value.toString() })
     }
+
     return this as LibxmljsElement  // todo
   }
 

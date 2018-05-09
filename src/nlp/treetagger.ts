@@ -26,7 +26,7 @@ export function build4TreeTagger(args: Args) {
   console.log(`Building 2+1…`)
   let newStandardFiles = globSync(join(args.corpusPath, '*.xml'))
   mu(newStandardFiles)
-    .map(x => parseXmlFileSync(x))
+    .map(parseXmlFileSync)
     .map(x => mu(mixml2tokenStream(x)))
     .forEach(x => x.forEach(tok => {
       if (tok.isWord()) {

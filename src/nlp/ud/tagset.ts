@@ -312,7 +312,6 @@ const mapMap = new Map<any, any>([
 
 
 
-
 /* tslint:disable:variable-name */
 export class UdFeats {
   // POS: UdPos

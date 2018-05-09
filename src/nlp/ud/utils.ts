@@ -119,7 +119,7 @@ function sentenceIdLine(id: number | string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2bratPlaintext(stream: Iterable<Token[]>) {
+export function* tokenStream2bratPlaintext(stream: Iterable<Array<Token>>) {
   for (let sentence of stream) {
     let toyield = tokenSentence2bratPlaintext(sentence)
     if (toyield) {
@@ -129,12 +129,12 @@ export function* tokenStream2bratPlaintext(stream: Iterable<Token[]>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenSentence2bratPlaintext(sentence: Token[]) {
+export function tokenSentence2bratPlaintext(sentence: Array<Token>) {
   return sentence.filter(x => x.isWord()).map(x => x.getForm()).join(' ')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2brat(sentences: Token[][]) {
+export function* tokenStream2brat(sentences: Array<Array<Token>>) {
   let offset = 0
   let t = 1
   let a = 1
@@ -202,7 +202,7 @@ export function* tokenStream2brat(sentences: Token[][]) {
 }
 
 //------------------------------------------------------------------------------
-function mustHighlightHoles(sentence: Token[]) {
+function mustHighlightHoles(sentence: Array<Token>) {
   let numRoots = mu(sentence).count(x => !x.hasDeps())
   if (numRoots === 1) {
     return false
@@ -217,7 +217,7 @@ function mustHighlightHoles(sentence: Token[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function* conll2sentenceStream(lines: Iterable<string>) {
-  let buf: string[][] = []
+  let buf: Array<Array<string>> = []
   for (let line of lines) {
     if (/^\s*#\s*sent_id\s/.test(line) && buf.length) {
       yield buf
@@ -265,7 +265,7 @@ export function interp2udVertFeatures(interp: MorphInterp) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function mergeAmbiguityFeaturewise(arr: any[][]) {
+export function mergeAmbiguityFeaturewise(arr: Array<Array<any>>) {
   let ret = []
   for (let i = 0; i < arr[0].length; ++i) {
     ret.push([])
@@ -291,7 +291,7 @@ export interface BratSpan {
   index: number
   form: string
   annotations: any
-  arcs?: { relation: string, head: BratSpan }[]
+  arcs?: Array<{ relation: string, head: BratSpan }>
   comment?: string
 }
 
@@ -326,7 +326,7 @@ export function parseBratFile(lines: Iterable<string>) {
       let [, relation, headId, depId] = match
       tokens[depId].arcs.push({
         relation,
-        head: tokens[headId]
+        head: tokens[headId],
       })
       continue
     }
@@ -349,6 +349,6 @@ export function uEq(rel: string, unirel: string) {  // universally equals
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function uEqSome(rel: string, unirels: string[]) {  // universally equals
+export function uEqSome(rel: string, unirels: Array<string>) {  // universally equals
   return unirels.some(x => uEq(rel, x))
 }

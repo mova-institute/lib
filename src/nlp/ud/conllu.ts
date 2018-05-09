@@ -1,6 +1,6 @@
 // import { StringDict } from '../../types'
 // import { parseIntStrict, buildObject } from '../../lang'
-import { mu, Mu } from '../../mu'
+import { mu } from '../../mu'
 import { UdPos } from './tagset'
 import { makeObject, mapInplace } from '../../lang'
 import { Dict } from '../../types'
@@ -30,7 +30,7 @@ export interface ConlluToken {
   feats: Dict<string>
   head: number
   rel: string
-  deps: [number, string][]
+  deps: Array<[number, string]>
   misc: Dict<string>
 }
 
@@ -137,7 +137,7 @@ export function parseConlluTokenLine(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseConlluTokenCells(value: string[]) {
+export function parseConlluTokenCells(value: Array<string>) {
   mapInplace(value, x => x === '_' ? '' : x, 3)
   let [indexStr, form, lemma, upos, xpos, featsStr, headStr, rel, , miscStr] = value
 
@@ -154,7 +154,7 @@ function parseUdKeyvalues(keyvals: string) {
   if (!keyvals) {
     return makeObject<string>([])
   }
-  return makeObject(keyvals.split('|').map(x => x.split('=')) as [string, string][])
+  return makeObject(keyvals.split('|').map(x => x.split('=')) as Array<[string, string]>)
 }
 
 //------------------------------------------------------------------------------
