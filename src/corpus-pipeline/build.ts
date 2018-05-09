@@ -65,8 +65,8 @@ if (require.main === module) {
     },
     boolean: [
       'checkDate',
-      'checkUkr'
-    ]
+      'checkUkr',
+    ],
   }) as any
 
   main(args)

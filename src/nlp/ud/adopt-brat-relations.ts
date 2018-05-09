@@ -25,7 +25,7 @@ function main() {
 
   const args = minimist(process.argv.slice(2), {
     boolean: [
-    ]
+    ],
   }) as any
 
   let [goldenDir, bratGlob] = args._

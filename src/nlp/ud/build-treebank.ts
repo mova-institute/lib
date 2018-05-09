@@ -112,7 +112,7 @@ function getArgs() {
       datasetSchema: '',
       morphonlyThreshold: '0',
       datasetReroute: '',
-    }
+    },
   }) as Args
 }
 

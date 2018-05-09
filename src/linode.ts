@@ -108,7 +108,7 @@ function getArgs() {
       location: process.env.DEFAULT_LINODE_LOCATION,
       distribution: process.env.DEFAULT_LINODE_DISTRIBUTION,
       plan: process.env.DEFAULT_LINODE_PLAN,
-    }
+    },
   }) as any as Args
 
   return ret
@@ -131,7 +131,7 @@ async function main() {
       group: 'farm',
       location: args.location,
       password: 'lin0d2',
-      plan: args.plan
+      plan: args.plan,
     }
 
     LinodeFarmer.newHerd({

@@ -44,7 +44,7 @@ const readFile = promisify(fs.readFile)
 export function lineBulksAsync(
   readable: NodeJS.ReadableStream,
   callback: (lineBulk: Array<string>) => void,
-  newline: string | RegExp = '\n'
+  newline: string | RegExp = '\n',
 ) {
   return new Promise<void>((resolve, reject) => {
     let leftover = ''
@@ -86,7 +86,7 @@ export function lineBulksAsync(
 export function linesAsync(
   readable: NodeJS.ReadableStream,
   callback: (line: string) => void,
-  newline: string | RegExp = '\n'
+  newline: string | RegExp = '\n',
 ) {
   return lineBulksAsync(readable, async lineBulk => {
     for await (let line of lineBulk) {
@@ -98,7 +98,7 @@ export function linesAsync(
 ////////////////////////////////////////////////////////////////////////////////
 export function linesAsyncStd(
   callback: (line: string) => void,
-  newline: string | RegExp = '\n'
+  newline: string | RegExp = '\n',
 ) {
   process.stdin.setEncoding('utf8')
   return linesAsync(process.stdin, callback, newline)
@@ -108,7 +108,7 @@ export function linesAsyncStd(
 export function chunksAsync(
   readable: NodeJS.ReadableStream,
   callback: (chunkBulk: Array<Buffer>) => void,
-  splitter: Buffer
+  splitter: Buffer,
 ) {
   if (splitter.length !== 1) {
     throw new Error(`Only 1-byte splitters are currently supported`)
@@ -270,7 +270,7 @@ export async function joinToStream(
   strings: Iterable<string>,
   stream: NodeJS.WritableStream,
   joiner = '',
-  trailing = false
+  trailing = false,
 ) {
   let isFirst = true
   for await (let x of strings) {
@@ -291,7 +291,7 @@ export async function writeJoin(
   what: Iterable<string>,
   where: NodeJS.WritableStream,
   joiner: string,
-  trailing = false
+  trailing = false,
 ) {
   return writePromiseDrain(where, mu(what).join(joiner, trailing))
 }

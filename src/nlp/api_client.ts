@@ -15,7 +15,7 @@ export class ApiClient {
     private tdozatEndpoint: string,
     private agent = new Agent({
       keepAlive: true,
-    })
+    }),
   ) {
     this.udpipeClient = new UdpipeApiClient(udpipeEndpoint)
   }

@@ -35,7 +35,7 @@ function getArgs() {
     alias: {
     },
     default: {
-    }
+    },
   }) as Args
 }
 

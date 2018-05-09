@@ -28,7 +28,7 @@ export class PrevertDocBuilder {
         if (tag.name === 'doc') {
           let ret = {
             paragraphs: this.paragraphs,
-            meta: this.meta
+            meta: this.meta,
           }
           this.reset()
           return ret

@@ -33,7 +33,7 @@ export const NUMERAL_PREFIXED_TOKEN_RE = new RegExp(r`^(\d+)-([${APOSTROPES}${LE
 
 const SMILE_RE_STRS = [
   r`[:;]?[)(]+`,
-  r`О_о`
+  r`О_о`,
   // r``,
 ]
 export const SMILE_RE_STR = SMILE_RE_STRS.join('|')

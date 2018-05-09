@@ -58,7 +58,7 @@ export function extract(html: string) {
       date,
       url: url.href,
       paragraphs,
-      source: 'Українська правда'
+      source: 'Українська правда',
     }
   } else {
     let date = getDate(root, '//div[@class="post_news__date"]')

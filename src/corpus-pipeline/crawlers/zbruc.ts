@@ -20,7 +20,7 @@ if (require.main === module) {
     },
     default: {
       oldestNode: 56850,
-      workspace: './zbruc'
+      workspace: './zbruc',
     },
   }) as any
 

@@ -13,7 +13,7 @@ import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
 import {
   serializeMiDocument, tokenStream2sentences, mixml2tokenStream,
-  tokenStream2plaintextString
+  tokenStream2plaintextString,
 } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
@@ -60,7 +60,7 @@ async function main() {
     boolean: [
       'tranformIds',
       'afterAnnotator',
-    ]
+    ],
   })
   let [globStr, sequencePath] = args._
   let files = glob.sync(globStr)
@@ -990,7 +990,7 @@ function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
 
       let fracEl = token.document().createElement('w_').setAttributes({
         id: fracElId,
-        dep: `${token.attribute('id')}-compound`
+        dep: `${token.attribute('id')}-compound`,
       }) as AbstractElement
       let fracInterpEl = token.document().createElement('w').setAttributes({
         lemma: fracPart,
@@ -1003,7 +1003,7 @@ function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
 
       let punctEl = token.document().createElement('w_').setAttributes({
         id: punctElId,
-        dep: `${fracElId}-punct`
+        dep: `${fracElId}-punct`,
       }) as AbstractElement
       let punctInterpEl = token.document().createElement('w').setAttributes({
         lemma: punct,

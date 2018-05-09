@@ -23,7 +23,7 @@ if (require.main === module) {
     },
     default: {
       oldNumber: 3127,
-      workspace: './umoloda'
+      workspace: './umoloda',
     },
   }) as any
 

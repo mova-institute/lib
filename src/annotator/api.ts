@@ -426,7 +426,7 @@ export async function getStats(req: IReq, res: express.Response, client: PgClien
       count: {
         align: 'right',
       },
-    }
+    },
   })
   res.setHeader('Content-Type', 'text/html')
   tosend = `<html><body><pre style="font-family:'Courier New';">\n${tosend}\n</pre></body></html>`

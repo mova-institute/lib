@@ -114,7 +114,7 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
   if (params.hasDictTags) {
     ret += positionalAttr('tag_dic', 'повна міта зі словника', {
       multivalue: 'yes',
-      multisep: ';'
+      multisep: ';',
     })
   }
   ret += `

@@ -61,7 +61,7 @@ async function main() {
           conllu, {
             meta: metaObj as any,
             formOnly: true,
-            pGapIndexes: gapFollowerIndexes
+            pGapIndexes: gapFollowerIndexes,
           })
         await writeJoin(vertStream, process.stdout, '\n', true)
       })

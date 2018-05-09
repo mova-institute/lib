@@ -177,7 +177,7 @@ export class CachedFunctionResult<T> {
 export class DefaultMap<K, V> extends Map<K, V> {
   constructor(
     private v: { new(): V; },
-    iterable?: Iterable<[K, V]>
+    iterable?: Iterable<[K, V]>,
   ) {
     super(iterable)
   }

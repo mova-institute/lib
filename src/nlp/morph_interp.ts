@@ -12,7 +12,7 @@ import {
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
   PrepositionRequirement, Typo, PartType, VerbReversivity, PunctuationType, PunctuationSide, NounNumeral,
-  Feature, NONGRAMMATICAL_FEATURES
+  Feature, NONGRAMMATICAL_FEATURES,
 } from './morph_features'
 
 
