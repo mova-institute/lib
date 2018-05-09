@@ -378,7 +378,7 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
       abbrs.reverse()
     }
     let registryFile = renderFeatvals({
-      name: `${langMeta.ukName} паралельна ${alignedLangMeta.ukNameDat}`,
+      name: `${langMeta.ukName} || ${alignedLangMeta.ukNameDat}`,
       path: path.resolve(`${registry}/../manatee/${corporaId}`),
       vertical: path.resolve('vertical', corporaId),
       // infohref: '',
@@ -460,7 +460,7 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
       + ` | ${params.fixgaps} | ${params.compressrng} > ${dest}`
     console.error(command)
     execSync(command, {
-      stdio: 'inherit'
+      // stdio: 'inherit'
     })
   }
 
