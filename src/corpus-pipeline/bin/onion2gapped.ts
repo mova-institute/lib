@@ -2,31 +2,33 @@
 
 import { exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
 
-import * as fs from 'fs'
 
-
-
-const gapTagBytes = Buffer.from(`<gap type="dupe"/>\n`)
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function main() {
+const enum GapType {
+  none,
+  par,
+  doc,
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+async function main() {
   exitOnStdoutPipeError()
 
-  let insideGap = false
-  linesBackpressedStd((line, writer) => {
-    let isMarkedAsDupe = line.startsWith('1')
-    let payload = line.substr(2)
-
-    if (isMarkedAsDupe) {
-      if (!/^<doc[\s>]/.test(payload)) {
-        insideGap = true
+  let gap = GapType.none
+  await linesBackpressedStd((line, writer) => {
+    if (line.startsWith('1')) {  // onion marked it as a dupe
+      if (!gap) {
+        gap = /^..<doc[\s>]/.test(line) ? GapType.doc : GapType.par
       }
     } else {
-      if (insideGap) {
-        writer.write(gapTagBytes)
-        insideGap = false
+      if (gap) {
+        if (gap === GapType.par) {
+          writer.write(`<gap type="dupe"/>\n`)
+        }
+        gap = GapType.none
       }
-      writer.write(`${payload}\n`)
+      writer.write(`${line.substr(2)}\n`)
     }
   })
 }

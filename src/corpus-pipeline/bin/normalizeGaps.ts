@@ -5,15 +5,24 @@ import { exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function main() {
+async function main() {
   exitOnStdoutPipeError()
 
+  let isInsideDoc = false
   let currGapTypes = []
-  linesBackpressedStd((line, writer) => {
+  await linesBackpressedStd((line, writer) => {
     let match = line.match(/^<gap type="([^"]+)"/)
     if (match) {
-      currGapTypes.push(match[1])
+      if (isInsideDoc) {
+        currGapTypes.push(match[1])
+      }
     } else {
+      if (/^<doc[\s>]/.test(line)) {
+        isInsideDoc = true
+      } else if (line.startsWith('</doc>')) {
+        isInsideDoc = false
+      }
+
       if (currGapTypes.length) {
         writer.write(`<gap type="${currGapTypes.join(' ')}"/>\n`)
         currGapTypes = []

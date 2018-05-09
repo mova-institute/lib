@@ -13,7 +13,7 @@ export class BackpressingWriter {
   ) {
   }
 
-  write(what: string | Buffer) {
+  write(what: string) {
     this.buf += what
     if (this.buf.length > this.bufLength) {
       this.flush()
