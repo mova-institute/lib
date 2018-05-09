@@ -19,7 +19,7 @@ export function fragmentCorpusText(doc: Document) {
   let range = doc.createRange()
   let rangeStart = paragraphs[0]
   for (let [i, p] of paragraphs.entries()) {
-    let numWords = doc.evaluate('count(.//mi:w_|.//tei:w[not(ancestor::mi:w_)])', p, <any>xmlNsResolver, XPathResult.NUMBER_TYPE, null).numberValue
+    let numWords = doc.evaluate('count(.//mi:w_|.//tei:w[not(ancestor::mi:w_)])', p, xmlNsResolver as any, XPathResult.NUMBER_TYPE, null).numberValue
     curNumWords += numWords
     if (curNumWords >= NUM_WORDS || i === paragraphs.length - 1) {
       range.setStartBefore(rangeStart)

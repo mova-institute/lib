@@ -87,7 +87,7 @@ export class LibxmljsNode extends AbstractNode {
   evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult {
     let result = this.wrapee.find(xpath, nsMap)
     if (Array.isArray(result)) {
-      return mu((function*() {
+      return mu((function* () {
         for (let node of result) {
           yield nodeOrElementOrAttribute(node)
         }

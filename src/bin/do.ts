@@ -23,7 +23,7 @@ let moduleObj = require('../' + path)
 let func = moduleObj[funcName]
 
 
-ioArgs(filename1, filename2, async(input, output) => {
+ioArgs(filename1, filename2, async (input, output) => {
   let writer = new BackpressingWriter(output, input)
   try {
     let inputStr: any = await readTillEnd(input)

@@ -1,31 +1,35 @@
 {
   "rules": {
-    // "semicolon": [
-    //   true,
-    //   "never"
-    // ],
-    // "space-before-function-paren": [
-    //   true,
-    //   "never"
-    // ],
-    // "space-within-parens": true,
-    // "switch-final-break": [
-    //   true,
-    //   "always"
-    // ],
-    // "whitespace": [
-    //   true,
-    //   "check-branch",
-    //   "check-decl",
-    //   "check-operator",
-    //   "check-module",
-    //   "check-separator",
-    //   "check-rest-spread",
-    //   "check-type",
-    //   "check-typecast",
-    //   "check-type-operator",
-    //   "check-preblock"
-    // ],
+    "semicolon": [
+      true,
+      "never"
+    ],
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "space-within-parens": true,
+    "switch-final-break": [
+      true,
+      "always"
+    ],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-module",
+      "check-separator",
+      "check-rest-spread",
+      "check-type",
+      "check-typecast",
+      "check-type-operator",
+      "check-preblock"
+    ],
     "array-type": [
       true,
       "generic"
@@ -71,7 +75,7 @@
     // "one-variable-per-declaration": true,
     // "ordered-importsts": true,
     // "prefer-method-signature": true,
-    // "no-angle-bracket-type-assertion": true,
+    "no-angle-bracket-type-assertion": true,
     // "prefer-template": true,
     // "prefer-function-over-method": true,
     // "return-undefined": true,

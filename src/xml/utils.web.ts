@@ -32,7 +32,7 @@ import { parseXml, serializeXml } from '../utils.web'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function xpath(context: Node, query: string, type: number) {
-  let doc = context.ownerDocument || <Document>context
+  let doc = context.ownerDocument || context as Document
   let res = doc.evaluate(query, context, xmlNsResolver, type, null)
 
   if (type === XPathResult.ORDERED_NODE_SNAPSHOT_TYPE

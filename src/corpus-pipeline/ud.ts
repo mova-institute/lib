@@ -31,7 +31,7 @@ export function tokenOrMulti2verticalLineGeneric(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenObj2verticalColsGeneric(token: ConlluToken, featsOrder: Array<string>, ) {
+export function tokenObj2verticalColsGeneric(token: ConlluToken, featsOrder: Array<string>) {
   return token2verticalColsGeneric(token.form, token.lemma, token.upos, token.feats as any,
     featsOrder, token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
 }

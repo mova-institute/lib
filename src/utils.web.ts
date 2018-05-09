@@ -25,7 +25,7 @@ export function isModifierKeyPressed(e: MouseEvent) {
 ////////////////////////////////////////////////////////////////////////////////
 export function parseXml(str: string) {  // todo: test in non-chrome
   let doc = getDomParser().parseFromString(str, 'application/xml')
-  let error = doc.evaluate('//xhtml:parsererror', doc, <any>xmlNsResolver,
+  let error = doc.evaluate('//xhtml:parsererror', doc, xmlNsResolver as any,
     XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue
 
   return error ? null : doc
@@ -128,7 +128,7 @@ export function collection2array<T>(collection: IWebapiCollection<T>) {
 //////////////////////////////////////////////////////////////////////////////
 export function loadScript(src: string) {
   return new Promise<HTMLScriptElement>((resolve, reject) => {
-    let script = <HTMLScriptElement>document.getElementById(src)
+    let script = document.getElementById(src) as HTMLScriptElement
     if (script) {
       resolve(script)
     }

@@ -163,7 +163,7 @@ const typeMap = {
 
 
 //------------------------------------------------------------------------------
-function extractMeta(root: AbstractElement)/*: CorpusDocumentAttributes*/ {
+function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
   let year = getTableValue(root, 'Написано')
   year = year.split(/\s/)[0]
 

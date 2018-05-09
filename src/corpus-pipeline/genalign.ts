@@ -114,7 +114,7 @@ function readTeiMapping(target: Map<string, Array<string>>, path: string) {
 }
 
 //------------------------------------------------------------------------------
-function* buildSketchAlingmentMap(id2indexMap: Map<string, string>, alingmentGlob: string, ) {
+function* buildSketchAlingmentMap(id2indexMap: Map<string, string>, alingmentGlob: string) {
   for (let path of globSync(alingmentGlob)) {
     // console.error(path)
     for (let line of linesSync(path)) {
