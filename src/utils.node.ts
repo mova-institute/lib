@@ -156,9 +156,8 @@ export function linesBackpressed(
   return new Promise<void>((resolve, reject) => {
     let writer = new BackpressingWriter(dest, source)
     createInterface({ input: source })
-      .on('error', reject)
       .on('line', line => listener(line, writer))
-      .on('end', () => {
+      .on('close', () => {
         writer.flush()
         resolve()
       })
