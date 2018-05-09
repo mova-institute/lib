@@ -442,7 +442,7 @@ async function therest(alignFiles: string[], params: Dict<string>) {
       } else if (alignFile.endsWith(`.${lang}.${alignedLang}.alignment.xml`)) {
         // reverse alignment
         console.error(`reversing alignment ${alignFile}`)
-        toWrite = toWrite.map(x => reverseAlignmentLine(x))
+        toWrite = toWrite.map(reverseAlignmentLine)
       } else {
         continue
       }

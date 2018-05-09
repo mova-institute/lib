@@ -26,6 +26,7 @@ function main() {
         writer.write('\n')
         firstInSent = true
       }
+
       return
     }
     let [form, lemma, , pos] = line.split('\t', 4)

@@ -23,7 +23,7 @@ let moduleObj = require('../' + path)
 let func = moduleObj[funcName]
 
 
-ioArgs(filename1, filename2, async (input, output) => {
+ioArgs(filename1, filename2, async(input, output) => {
   let writer = new BackpressingWriter(output, input)
   try {
     let inputStr: any = await readTillEnd(input)
@@ -39,12 +39,12 @@ ioArgs(filename1, filename2, async (input, output) => {
       let res = func(root)
       if (typeof res === 'string') {
         output.write(res)
+      } else {
+        output.write((res || root)
+          .document()
+          .serialize(true))
       }
-      else {
-        output.write((res || root).document().serialize(true))
-      }
-    }
-    else {
+    } else {
       let res = func(inputStr)
       if (typeof res === 'object' && Symbol.iterator in res) {
         for (let line of res) {
@@ -53,13 +53,11 @@ ioArgs(filename1, filename2, async (input, output) => {
           writer.write('\n')
           // }
         }
-      }
-      else if (res) {
+      } else if (res) {
         output.write(res)
       }
     }
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e.stack)
   }
 })

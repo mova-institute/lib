@@ -65,8 +65,8 @@ async function main() {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function mergeConlluIntoVert(
-  vertLines: string[],
-  conlluCells: Mu<string[]>,
+  vertLines: Array<string>,
+  conlluCells: Mu<Array<string>>,
   analyzer: MorphAnalyzer,
 ) {
   let ret = ''
