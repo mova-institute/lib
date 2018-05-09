@@ -108,8 +108,8 @@
     "no-eval": true,
     "no-floating-promises": true,
     "no-for-in-array": true,
-    // "no-inferred-empty-object-type": true,
-    // "no-invalid-template-strings": true,
+    "no-inferred-empty-object-type": true,
+    "no-invalid-template-strings": true,
     "no-invalid-this": true,
     "no-misused-new": true,
     "no-object-literal-type-assertion": true,
@@ -184,98 +184,58 @@
       "never-prefix"
     ],
     // "jsdoc-format": true,
-    // "label-position": true,
+    "label-position": true,
     // "max-line-length": [
     //   true,
     //   200
     // ],
-    // "no-arg": true,
+    "no-arg": true,
     // "no-bitwise": false,
     // "no-conditional-assignment": false,
     // "no-console": [
     //   false
     // ],
     "no-construct": true,
-    // "no-constructor-vars": false,
+    "no-constructor-vars": false,
     // "no-debugger": true,
-    // "no-inferrable-types": true,
-    // "no-internal-module": true,
+    "no-inferrable-types": true,
+    "no-internal-module": true,
     // "no-null-keyword": false,
     // "no-var-requires": false,
     // "object-literal-sort-keys": false,
-    // "quotemark": [
-    //   true,
-    //   "single",
-    //   "avoid-escape"
-    // ],
-    // "typedef": [
-    //   false,
-    //   "parameter",
-    //   "arrow-parameter",
-    //   "property-declaration",
-    //   "member-variable-declaration"
-    // ],
-    // "typedef-whitespace": [
-    //   true,
-    //   {
-    //     "call-signature": "nospace",
-    //     "index-signature": "nospace",
-    //     "parameter": "nospace",
-    //     "property-declaration": "nospace",
-    //     "variable-declaration": "nospace"
-    //   },
-    //   {
-    //     "call-signature": "space",
-    //     "index-signature": "space",
-    //     "parameter": "space",
-    //     "property-declaration": "space",
-    //     "variable-declaration": "space"
-    //   }
-    // ],
-    // "use-strict": [
-    //   false
-    // ],
-    // "variable-name": [
-    //   true,
-    //   "check-format",
-    //   "ban-keywords"
-    // ],
-    // "no-unnecessary-field-initialization": true,
-    // "no-typeof-undefined": true,
-    // "chai-vague-errors": true,
-    // "export-name": false,
-    // "missing-optional-annotation": true,
-    // "no-banned-terms": true,
-    // "no-constant-condition": false,
-    // "no-control-regex": true,
-    // "no-cookies": true,
-    // "no-document-write": false,
-    // "no-document-domain": true,
-    // "no-disable-auto-sanitization": true,
-    // "no-duplicate-case": true,
-    // "no-duplicate-parameter-names": true,
-    // "no-empty-interfaces": true,
-    // "no-exec-script": true,
-    // "no-function-constructor-with-string-args": true,
-    // "no-function-expression": false,
-    // "no-increment-decrement": false,
-    // "no-invalid-regexp": true,
-    // "no-for-in": true,
-    // "no-missing-visibility-modifiers": false,
-    // "no-multiline-string": false,
-    // "no-multiple-var-decl": true,
-    // "no-unnecessary-semicolons": true,
-    // "no-octal-literal": true,
-    // "no-regex-spaces": true,
-    // "no-reserved-keywords": false,
-    // "no-string-based-set-immediate": true,
-    // "no-string-based-set-interval": true,
-    // "no-string-based-set-timeout": true,
-    // "no-with-statement": true,
-    // "prefer-array-literal": false,
-    // "promise-must-complete": true,
-    // "react-no-dangerous-html": true,
-    // "use-named-parameter": true,
-    "valid-typeof": true
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
+    "typedef": [
+      false,
+      "parameter",
+      "arrow-parameter",
+      "property-declaration",
+      "member-variable-declaration"
+    ],
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      },
+      {
+        "call-signature": "space",
+        "index-signature": "space",
+        "parameter": "space",
+        "property-declaration": "space",
+        "variable-declaration": "space"
+      }
+    ],
+    "variable-name": [
+      true,
+      "check-format",
+      "ban-keywords"
+    ]
   }
 }

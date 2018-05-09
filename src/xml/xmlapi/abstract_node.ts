@@ -126,7 +126,7 @@ export abstract class AbstractNode {
     if (typeof ret !== 'boolean') {
       throw new Error('XPath result is not a boolean')
     }
-    return ret as boolean
+    return ret
   }
 
   evaluateNumber(xpath: string, nsMap?: Object) {
@@ -134,7 +134,7 @@ export abstract class AbstractNode {
     if (typeof ret !== 'number') {
       throw new Error('XPath result is not a number')
     }
-    return ret as number
+    return ret
   }
 
   evaluateString(xpath: string, nsMap?: Object) {
@@ -142,7 +142,7 @@ export abstract class AbstractNode {
     if (typeof ret !== 'string') {
       throw new Error('XPath result is not a string')
     }
-    return ret as string
+    return ret
   }
 
 

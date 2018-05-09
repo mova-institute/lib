@@ -318,7 +318,7 @@ for (let row of FEATURE_TABLE) {
   }
 }
 
-const NONGRAMMATIACAL_FEATURE_NAMES = NONGRAMMATIACAL_FEATURES.map(x => FEAT_MAP_STRING.get(x as any) as string).filter(x => x)
+const NONGRAMMATIACAL_FEATURE_NAMES = NONGRAMMATIACAL_FEATURES.map(x => FEAT_MAP_STRING.get(x as any)).filter(x => x)
 // console.log(FEAT_MAP_STRING.get(PrepositionRequirement))
 
 export const FEATURE_ORDER = {
@@ -1338,7 +1338,7 @@ export function compareTags(a: MorphInterp, b: MorphInterp) {
     }
   }
   for (let feature of featureCompareOrder) {
-    let prop = FEAT_MAP_STRING.get(feature) as string
+    let prop = FEAT_MAP_STRING.get(feature)
     let res = compare(a.features[prop], b.features[prop])
     if (res) {
       return res

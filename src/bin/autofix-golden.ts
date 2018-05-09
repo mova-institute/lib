@@ -991,7 +991,7 @@ function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
       let fracEl = token.document().createElement('w_').setAttributes({
         id: fracElId,
         dep: `${token.attribute('id')}-compound`,
-      }) as AbstractElement
+      })
       let fracInterpEl = token.document().createElement('w').setAttributes({
         lemma: fracPart,
         ana: interpEl.attribute('ana'),
@@ -1004,7 +1004,7 @@ function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
       let punctEl = token.document().createElement('w_').setAttributes({
         id: punctElId,
         dep: `${fracElId}-punct`,
-      }) as AbstractElement
+      })
       let punctInterpEl = token.document().createElement('w').setAttributes({
         lemma: punct,
         ana: 'punct',

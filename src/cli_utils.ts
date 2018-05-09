@@ -25,7 +25,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
     } else {
       input = process.stdin
       tmpFile = tmp.fileSync()
-      output = createWriteStream(undefined!, { fd: tmpFile.fd })
+      output = createWriteStream(undefined, { fd: tmpFile.fd })
     }
   } else {
     input = process.stdin

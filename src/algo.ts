@@ -123,7 +123,7 @@ export function groupTableBy<T>(table: Array<T>, groupProp: string | number | sy
   for (let row of table) {
     let cell = row[groupProp]
     let pushIn = ret.get(cell) || ret.set(cell, []).get(cell)
-    pushIn!.push(row)
+    pushIn.push(row)
   }
 
   return ret
