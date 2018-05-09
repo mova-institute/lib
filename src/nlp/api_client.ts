@@ -17,7 +17,7 @@ export class ApiClient {
       keepAlive: true,
     })
   ) {
-    this.udpipeClient = new UdpipeApiClient(udpipeEndpoint, this.agent)
+    this.udpipeClient = new UdpipeApiClient(udpipeEndpoint)
   }
 
   // (looses comments)
