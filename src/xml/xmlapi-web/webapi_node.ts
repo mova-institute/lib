@@ -37,8 +37,7 @@ export class WebapiNode extends AbstractNode {
   text(value?: string) {
     if (value !== undefined) {
       this.wrapee.textContent = value
-    }
-    else {
+    } else {
       return this.wrapee.textContent
     }
   }
@@ -193,9 +192,8 @@ export function createNsResolver(nsMap: Object) {
     'xml': NS_XML,
   }
   if (nsMap) {
-    nsMap = Object.assign(defaultNsMap, nsMap)
-  }
-  else {
+    nsMap = {...defaultNsMap, ...nsMap}
+  } else {
     nsMap = defaultNsMap
   }
   return {

@@ -18,19 +18,16 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
     input = createReadStream(filename1, 'utf8')  // todo
     tmpFile = tmp.fileSync()
     output = createWriteStream(undefined, { fd: tmpFile.fd })
-  }
-  else if (filename1) {
+  } else if (filename1) {
     if (process.stdout.isTTY) {
       input = createReadStream(filename1, 'utf8')
       output = process.stdout
-    }
-    else {
+    } else {
       input = process.stdin
       tmpFile = tmp.fileSync()
       output = createWriteStream(undefined!, { fd: tmpFile.fd })
     }
-  }
-  else {
+  } else {
     input = process.stdin
     output = process.stdout
   }
@@ -44,8 +41,7 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
         renameSync(tmpFile.name, filename)
       }
     }
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e.stack)
   }
 }

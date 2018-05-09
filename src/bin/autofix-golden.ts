@@ -906,13 +906,13 @@ function createInterpWithFeatures(fromInterp: MorphInterp, features: Array<any>)
 //------------------------------------------------------------------------------
 function canBeNameFromCommon(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let inCorp2 = cloneAsBareAdjective(inCorp)
-  let inDict2 = inDict.map(x => cloneAsBareAdjective(x))
+  let inDict2 = inDict.map(cloneAsBareAdjective)
   if (inDict2.some(x => x.equals(inCorp2))) {
     return true
   }
 
   inCorp2 = cloneAsBareNoun(inCorp)
-  inDict2 = inDict.map(x => cloneAsBareNoun(x))
+  inDict2 = inDict.map(cloneAsBareNoun)
   if (inDict2.some(x => x.equals(inCorp2))) {
     return true
   }

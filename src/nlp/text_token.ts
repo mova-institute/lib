@@ -227,8 +227,7 @@ export class TextToken {
     traverseDocumentOrderEl(where, el => {
       if (ELEMS_BREAKING_SENTENCE_NS.has(el.localName())) {
 
-      }
-      else if (!el.nextElementSibling() || haveSpaceBetweenEl(el, el.nextElementSibling())) {
+      } else if (!el.nextElementSibling() || haveSpaceBetweenEl(el, el.nextElementSibling())) {
         where = el
         return 'stop'
       }

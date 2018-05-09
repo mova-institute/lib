@@ -99,9 +99,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
         .toArray()
 
       yield { paragraphs, ...meta } as CorpusDoc
-    }
-    // else if (true) { continue }
-    else if (format === 'htm' || format === 'html') {
+    } else if (format === 'htm' || format === 'html') {
       let root = parseHtml(content)
       let paragraphsIt = root.evaluateElements(
         // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')

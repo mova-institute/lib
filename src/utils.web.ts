@@ -60,8 +60,7 @@ function dataDownloadOrOpen(data, mime: string, filename?: string) {
   if (filename) {
     a.download = filename
     a.dataset.downloadurl = `${mime}:${filename}:${a.href}`
-  }
-  else {
+  } else {
     a.target = '_blank'
   }
 
@@ -131,8 +130,7 @@ export function loadScript(src: string) {
     let script = document.getElementById(src) as HTMLScriptElement
     if (script) {
       resolve(script)
-    }
-    else {
+    } else {
       script = document.createElement('script')
       script.id = src
       script.src = src

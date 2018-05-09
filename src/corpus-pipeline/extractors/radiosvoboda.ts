@@ -1,5 +1,5 @@
 import { tryParseHtml } from '../../xml/utils.node'
-import { canonical, ogValue, metaProperty, textOf, textsOf, brbr2paragraphs } from './utils'
+import { canonical, ogValue, metaProperty, textsOf, brbr2paragraphs } from './utils'
 import { CorpusDoc } from '../doc_meta'
 import { firstMatch } from '../../string_utils'
 

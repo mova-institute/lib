@@ -44,8 +44,7 @@ export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
       let buf = istream.read(n)
       if (buf) {
         resolve(buf)
-      }
-      else {
+      } else {
         istream.once('readable', waitUntilNBytes)
       }
     }

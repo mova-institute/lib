@@ -78,14 +78,12 @@ export function testMte2Vesum(fileStr: string) {
         console.error(`${tag}\n${vesum2}\n${mte1}\n${mte2}   for ${form} ${vesum2}\n`)
       }
       mte1 = fromMte = vesum2 = mte2 = null
-    }
-    catch (e) {
+    } catch (e) {
       console.error({ form, tag, mte1, vesum2, mte2, lineIndex })
       if (e.message.startsWith('Unma')) {
         throw e
         //continue
-      }
-      else {
+      } else {
         throw e
       }
     }
@@ -103,8 +101,7 @@ export function testConverter(fileStr: string) {
     try {
       try {
         // mte = rysin2multext(lemma, lemmaTag, form, tag)[0]
-      }
-      catch (e) {
+      } catch (e) {
         console.error(e)
         if (e.message.startsWith('Unma')) {
           console.error({ form, tag, lemma, lemmaTag, isLemma, mte, lineIndex })
@@ -120,8 +117,7 @@ export function testConverter(fileStr: string) {
           throw new Error(`${mte} !== ${reMte}`)
         }
       }
-    }
-    catch (e) {
+    } catch (e) {
       console.error({ form, tag, lemma, lemmaTag, isLemma, mte, vesumBack, reMte, fromMte, lineIndex })
       throw e
     }
@@ -139,8 +135,7 @@ export function testFlagSorter(fileStr: string) {
         console.log({ form, befor: tag, after: backVesum, internal, lineIndex })
         console.log('===========================')
       }
-    }
-    catch (e) {
+    } catch (e) {
       console.error({ form, tag, lemma, lemmaTag, isLemma, lineIndex })
       throw e
     }

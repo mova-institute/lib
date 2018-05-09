@@ -315,8 +315,7 @@ export function setTenseIfConverb(interp: MorphInterp, form: string) {
   if (interp.isConverb()) {
     if (/ши(с[ья])?$/.test(form)) {
       interp.features.tense = f.Tense.past
-    }
-    else if (/чи(с[ья])?$/.test(form)) {
+    } else if (/чи(с[ья])?$/.test(form)) {
       interp.features.tense = f.Tense.present
     } else {
       let msg = `Bad ending for converb "${form}"`

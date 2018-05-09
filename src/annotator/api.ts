@@ -61,8 +61,7 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
       await client.update('login', 'access_token=$1', 'id=$2', login.accessToken, login.id)
     }
     res.cookie('accessToken', login.accessToken, COOKIE_CONFIG)
-  }
-  else {
+  } else {
     personId = await client.insert('person', {
       nameFirst: req.body.profile.given_name,
       nameLast: req.body.profile.family_name,
@@ -289,10 +288,8 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
 
       if (taskInDb.step === 'review') {
         await onReviewConflicts(task, client)
-      }
-      else if (taskInDb.step === 'resolve') {
-      }
-      else {
+      } else if (taskInDb.step === 'resolve') {
+      } else {
         let markedFragments = []
         let diffsTotal = 0
         for (let fragment of task.fragments) {
@@ -337,8 +334,7 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
     if (reviewTasks.length) {  // todo: take review from current project if can
       let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).documents[0]
       nextTaskId = doc.tasks[0].id
-    }
-    else {
+    } else {
       nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id, projectId)
     }
 
@@ -472,8 +468,7 @@ async function onReviewConflicts(task, client: PgClient) {
           status: 'pristine',
           content: markedStr,
         })
-      }
-      else {
+      } else {
         console.error('task exists: ' + alreadyTask.id)
       }
     }

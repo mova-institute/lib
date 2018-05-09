@@ -116,8 +116,7 @@ export function prettify(xmlstr: string, gentle = false) {
                     // xmlns //
                     if (ar[i].search(/xmlns\:/) > -1 || ar[i].search(/xmlns\=/) > -1) {
                       str += shift[deep] + ar[i]
-                    }
-                    else {
+                    } else {
                       str += ar[i]
                     }
   }

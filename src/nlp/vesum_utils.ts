@@ -348,8 +348,7 @@ function alignTagList(flags: Array<Array<string>>) {
         if (feature) {
           let featureIndex = featureOrderMap.get(feature)
           tagAligned[featureIndex] = flag
-        }
-        else {
+        } else {
           flagsOfUnknownFeature.push(flag)
         }
       }

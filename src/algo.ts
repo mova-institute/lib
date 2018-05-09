@@ -185,8 +185,7 @@ function* _combinations<T>(arr: Array<Array<T>>, state = new Array<T>()): Iterab
       yield* _combinations(arr, state)
       state.pop()
     }
-  }
-  else {
+  } else {
     yield [...state]
   }
 }

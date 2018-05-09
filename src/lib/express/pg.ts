@@ -15,8 +15,7 @@ export async function pgTransactionWrap(action, config: pg.ClientConfig, req: Re
       // }
       await action(req, res, client)
     })
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e.stack)
     // if (e instanceof HttpError) {
     //   sendError(res, e.code, e.message)

@@ -38,8 +38,7 @@ export class LibxmljsDocument extends AbstractDocument {
       el = new libxmljs.Element(this.wrapee, name)
       let ns = this.wrapee.root().namespaces().find(x => x.href() === nsUri)  // todo
       el.namespace(ns || nsUri)
-    }
-    else {
+    } else {
       let [localName, prefix] = name.split(':').reverse()
       el = new libxmljs.Element(this.wrapee, localName)
       if (prefix) {

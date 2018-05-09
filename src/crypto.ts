@@ -8,8 +8,7 @@ export async function genAccessToken() {
     randomBytes(32, (e, buf) => {
       if (e) {
         reject(e)
-      }
-      else {
+      } else {
         resolve(buf.toString('base64'))
       }
     })

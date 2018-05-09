@@ -108,8 +108,7 @@ function main(args: Args) {
     let output
     if (inputStr) {
       output = args._[0] && createReadStream(args._[0]) || process.stdout
-    }
-    else {
+    } else {
       output = outputFromIoargs
       inputStr = await readTillEnd(input)
     }
@@ -162,8 +161,7 @@ function main(args: Args) {
         for (let unknown of unknowns) {
           output.write(unknown + '\n')
         }
-      }
-      else {
+      } else {
         if (args.numerate) {
           numerateTokensGently(root)
         }
@@ -187,8 +185,7 @@ function main(args: Args) {
           tokens.sort()
         }
         tokens.forEach(x => output.write(x + '\n'))
-      }
-      else {
+      } else {
         try {
           let root = parseXml(inputStr)
           if (args.apply) {

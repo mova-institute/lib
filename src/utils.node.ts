@@ -1,4 +1,4 @@
-import { writePromiseDrain, writeBackpressing } from './stream_utils.node'
+import { writePromiseDrain } from './stream_utils.node'
 import { mu } from './mu'
 
 import { readFileSync } from 'fs'

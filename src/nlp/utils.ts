@@ -113,13 +113,11 @@ export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
     if (!/^\s*$/.test(token)) {
       if (token.includes('-') && (!analyzer || !analyzer.canBeToken(token))) {
         ret.push(...token.split(/(-)/).filter(x => x).map((t, j) => ({ token: t, glue: glue || j !== 0 || false })))
-      }
-      else {
+      } else {
         ret.push({ token, glue })
       }
       glue = true
-    }
-    else if (/^\s+$/.test(token)) {
+    } else if (/^\s+$/.test(token)) {
       glue = false
     }
   }
@@ -335,8 +333,7 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
           let lang = el.lang()
           if (lang && lang !== 'uk') {
             miw = tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0)
-          }
-          else {
+          } else {
             let next = findNextToken(el)
             miw = tagWord(el, tagFunction(analyzer.tagOrX(el.text(), next && next.text())))
           }
@@ -749,11 +746,9 @@ export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnaly
   traverseDepthEl(root, el => {
     if (unboxElems.has(el.localName())) {
       el.unwrap()
-    }
-    else if (removeElems.has(el.localName())) {
+    } else if (removeElems.has(el.localName())) {
       el.remove()
-    }
-    else if (el.localName() === 'em') {
+    } else if (el.localName() === 'em') {
       let box = el.document().createElement('emph').setAttribute('rend', 'italic')
       el.rewrap(box)
     }

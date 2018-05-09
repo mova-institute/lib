@@ -53,18 +53,15 @@ app.all('/api/*', async (req: IReq, res: express.Response) => {
         }
         await action(req, res, client)
       })
-    }
-    catch (e) {
+    } catch (e) {
       console.error(e.stack)
       if (e instanceof HttpError) {
         sendError(res, e.code, e.message)
-      }
-      else {
+      } else {
         sendError(res, 500)
       }
     }
-  }
-  else {
+  } else {
     sendError(res, 404)
   }
 })

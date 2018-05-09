@@ -36,8 +36,7 @@ export class PgClient {
         await client.query('BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE')  // todo: remove await?
         ret = await f(client)
         await client.query('COMMIT')
-      }
-      catch (e) {
+      } catch (e) {
         await client.query('ROLLBACK')
 
         const MAX_TRANSACTION_RETRY = 100
@@ -50,8 +49,7 @@ export class PgClient {
         }
 
         throw e
-      }
-      finally {
+      } finally {
         client.release()
       }
 
@@ -142,8 +140,7 @@ export function getClient(config: ClientConfig) {
     connect(config, (err, client, done) => {
       if (err) {
         reject(err)
-      }
-      else {
+      } else {
         resolve({ client, done })
       }
     })
@@ -156,8 +153,7 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
     client.query(queryStr, params, (err, res) => {
       if (err) {
         reject(err)
-      }
-      else {
+      } else {
         resolve(res)
       }
     })

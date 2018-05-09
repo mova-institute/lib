@@ -517,8 +517,7 @@ export class MorphInterp {
     try {
       MorphInterp.fromVesumStr(value)
       return true
-    }
-    catch (e) {
+    } catch (e) {
       return false
     }
   }
@@ -558,8 +557,7 @@ export class MorphInterp {
           if (flags[6] === 's') {
             ret.features.variant = Variant.short
           }
-        }
-        else if (flags[6] === 'f' && 'na'.includes(flags[5])) {
+        } else if (flags[6] === 'f' && 'na'.includes(flags[5])) {
           ret.features.variant = Variant.uncontracted
         }
         break
@@ -592,8 +590,7 @@ export class MorphInterp {
         if (flags[2] === 'o') {
           ret.features.pos = Pos.adjective
           ret.features.ordinalNumeral = OrdinalNumeral.yes
-        }
-        else if (flags[2] === 'c') {
+        } else if (flags[2] === 'c') {
           ret.features.pos = Pos.cardinalNumeral
         }
         break
@@ -646,8 +643,7 @@ export class MorphInterp {
       let row = tryMapVesumFlag(flag)
       if (row) {
         this.features[row.featStr] = row.vesum
-      }
-      else {
+      } else {
         if (!MorphInterp.otherFlagsAllowed.has(flag) && strict) {
           throw new Error(`Unknown flag "${flag}" in tag "${flags.join(':')}"`)
         }
