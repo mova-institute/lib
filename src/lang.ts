@@ -55,7 +55,7 @@ export function matchNth(str: string, re: RegExp, n: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function arrayed(value: any | any[]) {
+export function arrayed(value: any | Array<any>) {
   if (Array.isArray(value)) {
     return value
   }
@@ -140,7 +140,7 @@ export function assureIterable<T>(thing: T | Iterable<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* zipLongest<T>(...iterables: Iterable<T>[]) {
+export function* zipLongest<T>(...iterables: Array<Iterable<T>>) {
   let iterators = iterables.map(x => x[Symbol.iterator]())
 
   for (let state = iterators.map(x => x.next());
@@ -152,10 +152,10 @@ export function* zipLongest<T>(...iterables: Iterable<T>[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* zip<T>(...iterables: Iterable<T>[]) {
+export function* zip<T>(...iterables: Array<Iterable<T>>) {
   let iterators = iterables.map(x => x[Symbol.iterator]())
 
-  let toyield: T[] = []
+  let toyield: Array<T> = []
   while (true) {
     for (let it of iterators) {
       let { done, value } = it.next()
@@ -171,7 +171,7 @@ export function* zip<T>(...iterables: Iterable<T>[]) {
 
 ////////////////////////////////////////////////////////////////////////////////
 /** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
-export function mixin(...baseCtors: any[]) {
+export function mixin(...baseCtors: Array<any>) {
   return derivedCtor => {
     baseCtors.forEach(baseCtor => {
       Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
@@ -188,7 +188,7 @@ export function mixin(...baseCtors: any[]) {
 }*/
 
 ////////////////////////////////////////////////////////////////////////////////
-export function createObject2(keys: string[], values: any[]) {
+export function createObject2(keys: Array<string>, values: Array<any>) {
   let ret = {}
   let i = 0
   for (let key of keys) {
@@ -198,7 +198,7 @@ export function createObject2(keys: string[], values: any[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function makeObject<T>(keyvaluePairs: [string, T][] /* todo */) {
+export function makeObject<T>(keyvaluePairs: Array<[string, T]> /* todo */) {
   let ret: { [key: string]: T } = {}
   for (let [key, value] of keyvaluePairs) {
     ret[key] = value

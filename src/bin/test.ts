@@ -112,7 +112,7 @@ main()
 
 
 function testPerf() {
-  let arr: number[] = []
+  let arr: Array<number> = []
   for (let i = 0; i < 10000000; ++i) {
     arr.push(Math.random())
   }
@@ -145,7 +145,7 @@ function testPerf() {
   console.timeEnd('forEach')
 }
 
-function* generate(array: number[]) {
+function* generate(array: Array<number>) {
   for (let n of array) {
     if (n < 0.5) {
       yield [n, 'super'.repeat(n * 5) + n]
@@ -155,8 +155,8 @@ function* generate(array: number[]) {
   }
 }
 
-function mapp(array: number[]) {
-  let ret: [number, string][] = []
+function mapp(array: Array<number>) {
+  let ret: Array<[number, string]> = []
   for (let n of array) {
     if (n < 0.5) {
       ret.push([n, 'super'.repeat(n * 5) + n])

@@ -21,7 +21,7 @@ type Dict<T> = { [key: string]: T }
 
 interface LinodeDescriptor {
   label: string
-  ips: string[]
+  ips: Array<string>
   group: string
   totalhd: string
   linodeid: string
@@ -51,7 +51,7 @@ interface HerdConfig {
   runOnClientAfter: string,
   linodeConfig: LinodeConfig,
   setupScript: string,
-  scriptsPerLinode: string[]
+  scriptsPerLinode: Array<string>
 }
 
 class LinodeFarmer {
@@ -81,7 +81,7 @@ class LinodeFarmer {
     }
   }
 
-  static async takeHerd(linodes: LinodeDescriptor[], runOnClientAfter: string) {
+  static async takeHerd(linodes: Array<LinodeDescriptor>, runOnClientAfter: string) {
     for (let linode of linodes) {
       let creds = `root@${linode.ips[0]}`
       let watchCommand = `ssh ${creds} 'ls ~/.done || inotify'`

@@ -7,7 +7,7 @@ export function wrappedOrNull<T>(ctor: { new (val): T; }, val): T {
 
 ////////////////////////////////////////////////////////////////////////////////
 /** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
-export function mixin(...baseCtors: any[]) {
+export function mixin(...baseCtors: Array<any>) {
   return derivedCtor => {
     for (let baseCtor of baseCtors) {
       for (let name of Object.getOwnPropertyNames(baseCtor.prototype)) {

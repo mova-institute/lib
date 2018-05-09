@@ -270,12 +270,12 @@ function normalizeCorpusDoc(doc: CorpusDoc) {
 }
 
 //------------------------------------------------------------------------------
-function paragraphs2UdpipeInput(paragraphs: string[]) {
+function paragraphs2UdpipeInput(paragraphs: Array<string>) {
   return paragraphs.map(x => x.replace(/\u0301/g, '')).join('\n\n')
 }
 
 //------------------------------------------------------------------------------
-function isConsideredUkrainan(paragraphs: string[], analyzer: MorphAnalyzer) {
+function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer) {
   const THRESHOLD = 0.2
 
   let tokensChecked = 0
@@ -344,7 +344,7 @@ async function buildUkParallelSide(workspacePath: string, analyzer: MorphAnalyze
 }
 
 //------------------------------------------------------------------------------
-function selectFilesForLang(files: string[], lang: string) {
+function selectFilesForLang(files: Array<string>, lang: string) {
   return files.filter(x => x.endsWith('.alignment.xml') && x.includes(`.${lang}.`))
     .sort()
     .map(x => x.slice(0, -'xx.alignment.xml'.length) + 'xml')
@@ -450,7 +450,7 @@ function kontrakty(workspacePath: string, analyzer: MorphAnalyzer) {
 }
 
 //------------------------------------------------------------------------------
-function writeDocMetaAndParagraphs(meta: any, paragraphs: string[], analyzer: MorphAnalyzer, verticalFile: number) {
+function writeDocMetaAndParagraphs(meta: any, paragraphs: Array<string>, analyzer: MorphAnalyzer, verticalFile: number) {
   fs.writeSync(verticalFile, `<doc ${keyvalue2attributesNormalized(meta)}>\n`)
   for (let p of paragraphs) {
     fs.writeSync(verticalFile, '<p>\n')

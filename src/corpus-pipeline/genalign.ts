@@ -44,7 +44,7 @@ async function main(id2idsGlob: string, id2iRPath: string) {
     console.error(`read id2iR`)
     // console.error(id2iR)
 
-    let id2ids = new Map<string, string[]>()
+    let id2ids = new Map<string, Array<string>>()
     globSync(id2idsGlob).forEach(x => readTeiMapping(id2ids, x))
     console.error(`read TEI mappings`)
     // console.error(id2ids)
@@ -81,7 +81,7 @@ async function main(id2idsGlob: string, id2iRPath: string) {
 }
 
 //------------------------------------------------------------------------------
-function readTeiMapping(target: Map<string, string[]>, path: string) {
+function readTeiMapping(target: Map<string, Array<string>>, path: string) {
   for (let line of linesSync(path)) {
     if (line.startsWith('<link ')) {
       let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/)[1].split(';')
@@ -129,7 +129,7 @@ function* buildSketchAlingmentMap(id2indexMap: Map<string, string>, alingmentGlo
 }
 
 //------------------------------------------------------------------------------
-function indexArr2val(indexes: string[]) {
+function indexArr2val(indexes: Array<string>) {
   if (!indexes.length) {
     return '-1'
   }

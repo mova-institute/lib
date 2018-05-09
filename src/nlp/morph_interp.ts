@@ -523,7 +523,7 @@ export class MorphInterp {
     }
   }
 
-  static fromVesum(flags: string[], lemma?: string, lemmaFlags?: string[], strict = false) {
+  static fromVesum(flags: Array<string>, lemma?: string, lemmaFlags?: Array<string>, strict = false) {
     return new MorphInterp().setFromVesum(flags, lemma, lemmaFlags, strict)
   }
 
@@ -641,7 +641,7 @@ export class MorphInterp {
     return this.setFromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'), strict)
   }
 
-  setFromVesum(flags: string[], lemma?: string, lemmaFlags?: string[], strict = false) {
+  setFromVesum(flags: Array<string>, lemma?: string, lemmaFlags?: Array<string>, strict = false) {
     for (let flag of flags) {
       let row = tryMapVesumFlag(flag)
       if (row) {
@@ -697,7 +697,7 @@ export class MorphInterp {
     return ret
   }
 
-  cloneWithFeatures(features: any[]) {
+  cloneWithFeatures(features: Array<any>) {
     let ret = new MorphInterp()
     for (let feature of features) {
       ret.setFeature(feature, this.getFeature(feature))
@@ -706,7 +706,7 @@ export class MorphInterp {
     return ret
   }
 
-  cloneWithFeaturesAndLemma(features: Feature[]) {
+  cloneWithFeaturesAndLemma(features: Array<Feature>) {
     return this.cloneWithFeatures(features).setLemma(this.lemma)
   }
 
@@ -904,11 +904,11 @@ export class MorphInterp {
     return this.toVesumStr() === other.toVesumStr() && this.lemma === other.lemma
   }
 
-  equalsByFeatures(other: MorphInterp, features: any[]) {
+  equalsByFeatures(other: MorphInterp, features: Array<any>) {
     return features.every(f => this.getFeature(f) === other.getFeature(f))
   }
 
-  equalsByLemmaAndFeatures(other: MorphInterp, features: any[]) {
+  equalsByLemmaAndFeatures(other: MorphInterp, features: Array<any>) {
     return this.lemma === other.lemma && this.equalsByFeatures(other, features)
   }
 
@@ -1157,7 +1157,7 @@ export class MorphInterp {
     }
   }
 
-  private fromMte(mteFlags: string[]) {
+  private fromMte(mteFlags: Array<string>) {
     let posFeatures = MTE_FEATURES[mteFlags[0]]
 
     if (posFeatures[0] !== undefined) {
@@ -1238,7 +1238,7 @@ function createVesumFlagCompare(pos: Pos) {
       let featA = rowA.feat
       let featB = rowB.feat
 
-      let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as any[]
+      let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as Array<any>
       return overflowNegative(order.indexOf(featA)) - overflowNegative(order.indexOf(featB))
     }
 
@@ -1249,7 +1249,7 @@ function createVesumFlagCompare(pos: Pos) {
 
 //------------------------------------------------------------------------------
 function createVesumFlagComparator2(pos: Pos) {
-  let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as any[]
+  let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as Array<any>
   return (a, b) => {
     return overflowNegative(order.indexOf(a.feature)) - overflowNegative(order.indexOf(b.feature))
   }

@@ -33,7 +33,7 @@ import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factorie
 
 //------------------------------------------------------------------------------
 interface Args {
-  _: string[]
+  _: Array<string>
   dryRun: boolean
   noStandartizing: boolean
   includeIncomplete: boolean
@@ -327,7 +327,7 @@ function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
 }
 
 //------------------------------------------------------------------------------
-function transposeProblems(problems: any[]) {
+function transposeProblems(problems: Array<any>) {
   let problemsByType = []
   for (let sentence of problems) {
     for (let problem of sentence.problems || []) {
@@ -381,7 +381,7 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
 }
 
 //------------------------------------------------------------------------------
-function formatProblemsHtml(sentenceProblems: any[]) {
+function formatProblemsHtml(sentenceProblems: Array<any>) {
   let body = ''
   for (let [i, { sentenceId, problems, tokens, bratPath }] of sentenceProblems.entries()) {
     let href = `https://lab.mova.institute/brat/#/ud/${bratPath}`
@@ -464,7 +464,7 @@ function standartizeMorpho(sentence: Array<Token>) {
 
 //------------------------------------------------------------------------------
 function createDatasetRerouteMap(definition: string) {
-  let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as [string, string][]
+  let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as Array<[string, string]>
   return new Map<string, string>(pairs)
 }
 

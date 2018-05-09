@@ -272,7 +272,7 @@ export function test(fileStr: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function presentTagsForDisamb(interps: IStringMorphInterp[]) {
+export function presentTagsForDisamb(interps: Array<IStringMorphInterp>) {
   let mainTags = new Array<IStringMorphInterp>()
   let auxTags = new Array<IStringMorphInterp>()
   interps.forEach(x => (isAdditionalTag(x.flags) ? auxTags : mainTags).push(x))
@@ -283,7 +283,7 @@ export function presentTagsForDisamb(interps: IStringMorphInterp[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function presentTagsForDisambOneBlock(interps: IStringMorphInterp[]) {
+export function presentTagsForDisambOneBlock(interps: Array<IStringMorphInterp>) {
   let splitted = interps.map((x, index) => ({ index, lemma: x.lemma, flags: x.flags.split(':') }))
   let sorted = stableSort(splitted, (a, b) => compareTags(MorphInterp.fromVesum(a.flags), MorphInterp.fromVesum(b.flags)))
 
@@ -318,7 +318,7 @@ export function presentTagsForDisambOneBlock(interps: IStringMorphInterp[]) {
 }
 
 //------------------------------------------------------------------------------
-function alignTagList(flags: string[][]) {
+function alignTagList(flags: Array<Array<string>>) {
   let ret = new Array<Array<Array<string>>>()  // [pos][tag][flag]
 
   let poses = groupTableBy(flags, 0)

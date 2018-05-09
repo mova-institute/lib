@@ -220,7 +220,7 @@ async function main() {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function annotate(alignFiles: string[]) {
+async function annotate(alignFiles: Array<string>) {
   for (let alignFile of alignFiles) {
     let { alignDoc, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
       prepareFromAlignment(alignFile)
@@ -270,7 +270,7 @@ async function annotate(alignFiles: string[]) {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-async function therest(alignFiles: string[], params: Dict<string>) {
+async function therest(alignFiles: Array<string>, params: Dict<string>) {
   console.error(`Gathering morph features from conllus…`)
 
   let langFeats = new DefaultMap<string, Set<string>>(Set)
@@ -279,7 +279,7 @@ async function therest(alignFiles: string[], params: Dict<string>) {
     getFeatsFromConllu2(linesSync(conlluPath), langFeats.get(lang))
   }
   let langFeatsArr = buildMap(
-    mu(langFeats).map(([lang, set]) => [lang, [...set].sort()] as [string, string[]])  // todo
+    mu(langFeats).map(([lang, set]) => [lang, [...set].sort()] as [string, Array<string>])  // todo
   )
 
   console.error(`Generating vertical files…`)
@@ -287,7 +287,7 @@ async function therest(alignFiles: string[], params: Dict<string>) {
   let metaTable = indexTableByColumn(
     parseSeparatedValues(linesSync(params.meta)).toArray(), 'intertext_id')
 
-  let langPairs = new HashSet<string[]>()
+  let langPairs = new HashSet<Array<string>>()
   for (let alignFile of alignFiles) {
     let { intertextId, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
       prepareFromAlignment(alignFile)

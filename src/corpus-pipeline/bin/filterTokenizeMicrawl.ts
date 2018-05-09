@@ -34,7 +34,7 @@ async function main() {
       return
     }
     try {
-      var paragraphs = await parseJsonFile(paraPath) as string[]
+      var paragraphs = await parseJsonFile(paraPath) as Array<string>
       let metaPath = paraPath2metaPath(paraPath, args.basePath)
       var meta = await parseJsonFile(metaPath)
     } catch (e) {

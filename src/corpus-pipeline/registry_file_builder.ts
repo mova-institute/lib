@@ -66,7 +66,7 @@ export const STRUCTURE_G = `STRUCTURE g {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFileUk(params: RegistryFileParams) {
-  let positionalAttrs = clone(positionalAttrsBase) as any[]
+  let positionalAttrs = clone(positionalAttrsBase) as Array<any>
   if (params.hasTokenIds) {
     positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
   }

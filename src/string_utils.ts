@@ -163,7 +163,7 @@ export function uppercaseMask(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function applyUppercaseMask(str: string, mask: boolean[]) {
+export function applyUppercaseMask(str: string, mask: Array<boolean>) {
   return [...str].map((x, i) => mask[i] ? x.toUpperCase() : x.toLowerCase()).join('')
 }
 
@@ -216,7 +216,7 @@ export function findAllIndexes(str: string, char: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function insertAtIndexes(str: string, indexes: number[], what: string) {
+export function insertAtIndexes(str: string, indexes: Array<number>, what: string) {
   if (!indexes.length) {
     return str
   }
@@ -245,7 +245,7 @@ export function toFloorPercent(nominator: number, denominator: number, aftercomm
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function joinAsRe(parts: string[], flags = '') {
+export function joinAsRe(parts: Array<string>, flags = '') {
   return new RegExp(parts.join('|'), flags)
 }
 ////////////////////////////////////////////////////////////////////////////////

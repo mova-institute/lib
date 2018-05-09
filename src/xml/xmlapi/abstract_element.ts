@@ -101,7 +101,7 @@ export abstract class AbstractElement extends AbstractNode {
    */
 
   abstract hasAttributes(): boolean
-  abstract attributes(): AbstractAttribute[]
+  abstract attributes(): Array<AbstractAttribute>
   abstract attributeNs(nsUri: string, localName: string): string
   abstract attribute(name: string): string
   abstract setAttribute(name: string, value: string | number): AbstractElement

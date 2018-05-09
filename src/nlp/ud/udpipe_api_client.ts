@@ -9,7 +9,7 @@ export class UdpipeApiClient {
   ) {
   }
 
-  tokenizeSentencesAndParagraphs(paragraphs: string[]) {
+  tokenizeSentencesAndParagraphs(paragraphs: Array<string>) {
     return this.requestConllu({
       tokenizer: '',
       input: 'horizontal',
@@ -17,7 +17,7 @@ export class UdpipeApiClient {
     })
   }
 
-  tokenizeParagraphs(paragraphs: string[]) {
+  tokenizeParagraphs(paragraphs: Array<string>) {
     return this.requestConllu({
       tokenizer: '',
       data: paragraphs.join('\n\n') + '\n',
@@ -66,7 +66,7 @@ export class UdpipeApiClient {
     })
   }
 
-  tagParseConnluLines(lines: string[]) {
+  tagParseConnluLines(lines: Array<string>) {
     return this.tagParseConnlu(lines.join('\n') + '\n')
   }
 

@@ -21,7 +21,7 @@ export class Crawler {
   private visiting = new Set<string>()
 
   private isUrlToSave: UrlPredicate
-  private isUrlToFollow: UrlPredicate[]
+  private isUrlToFollow: Array<UrlPredicate>
 
   private timeout = 0
   private numRetries = 5
@@ -42,12 +42,12 @@ export class Crawler {
     return this
   }
 
-  setUrlsToFollow(pred: UrlPredicate[]) {
+  setUrlsToFollow(pred: Array<UrlPredicate>) {
     this.isUrlToFollow = pred
     return this
   }
 
-  async seed(urlStrs: string[]) {
+  async seed(urlStrs: Array<string>) {
     for (let urlStr of urlStrs) {
       let url = parse(urlStr)
       let fileishUrl = `${url.hostname}${url.path}`

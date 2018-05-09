@@ -16,7 +16,7 @@ import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 
 
 
-const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredicate2][] = [
+const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentencePredicate2]> = [
   [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.interp.isAdjective()],
   [`nummod`, `з іменника`, t => canActAsNoun(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronominal()],
   [`det:numgov`, `з іменника`, t => canActAsNoun(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronominal()],
@@ -48,7 +48,7 @@ const SIMPLE_RULES: [string, string, SentencePredicate2, string, SentencePredica
   [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
 
-const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, TreedSentencePredicate][] = [
+const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string, TreedSentencePredicate]> = [
   // cc не в сурядний is a separate rule
   [`advmod`,
     ``, t => t,
@@ -168,7 +168,7 @@ const TREED_SIMPLE_RULES: [string, string, TreedSentencePredicate, string, Treed
 ////////////////////////////////////////////////////////////////////////////////
 export interface Problem {
   message: string
-  indexes: number[]
+  indexes: Array<number>
 }
 
 interface ReoprtIf2Arg {
@@ -177,7 +177,7 @@ interface ReoprtIf2Arg {
   i: MorphInterp  // interp
   l: string  // lemma
   r: string  // relation
-  c: GraphNode<Token>[]  // children
+  c: Array<GraphNode<Token>>  // children
   p: GraphNode<Token>
   pt: Token
   pi: MorphInterp
@@ -186,12 +186,12 @@ interface ReoprtIf2Arg {
 }
 
 type SentencePredicate = (x: Token, i?: number) => any
-type SentencePredicate2 = (t: Token, s: Token[], i: number/*, node: GraphNode<Token>*/) => any
+type SentencePredicate2 = (t: Token, s: Array<Token>, i: number/*, node: GraphNode<Token>*/) => any
 type TreedSentencePredicate = (t: GraphNode<Token>) => any
 type TreedSentencePredicate2 = (a: ReoprtIf2Arg) => any
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentenceSyntax(
-  nodes: GraphNode<Token>[],
+  nodes: Array<GraphNode<Token>>,
   analyzer: MorphAnalyzer,
   valencyDict?: ValencyDict,
 ) {
@@ -1912,7 +1912,7 @@ function canBePredicate(t: GraphNode<Token>) {
 }
 
 //------------------------------------------------------------------------------
-function canBePredicateOld(token: Token, sentence: Token[], index: number) {
+function canBePredicateOld(token: Token, sentence: Array<Token>, index: number) {
   return token.isPromoted
     || !token.hasDeps()
     || uEq(token.rel, 'parataxis')
@@ -1948,7 +1948,7 @@ function canActAsNounForObj(node: GraphNode<Token>) {
 }
 
 //------------------------------------------------------------------------------
-function isActualParticiple(token: Token, sentence: Token[], index: number) {
+function isActualParticiple(token: Token, sentence: Array<Token>, index: number) {
   return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.headIndex === index && xx.rel === x))
 }
 

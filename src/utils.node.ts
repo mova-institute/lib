@@ -42,7 +42,7 @@ const readFile = promisify(fs.readFile)
 ////////////////////////////////////////////////////////////////////////////////
 export function lineBulksAsync(  // todo: rerwrite with async iterators once avail
   readable: NodeJS.ReadableStream,
-  callback: (lineBulk: string[]) => void,
+  callback: (lineBulk: Array<string>) => void,
   newline: string | RegExp = '\n'
 ) {
   return new Promise<void>((resolve, reject) => {
@@ -104,7 +104,7 @@ export function linesAsyncStd(
 ////////////////////////////////////////////////////////////////////////////////
 export function chunksAsync(  // todo: rerwrite with async iterators once avail
   readable: NodeJS.ReadableStream,
-  callback: (chunkBulk: Buffer[]) => void,
+  callback: (chunkBulk: Array<Buffer>) => void,
   splitter: Buffer
 ) {
   if (splitter.length !== 1) {

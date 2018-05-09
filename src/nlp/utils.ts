@@ -105,7 +105,7 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
 ////////////////////////////////////////////////////////////////////////////////
 const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WORDCHAR}])`)
 export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
-  let ret: { token: string, glue: boolean }[] = []
+  let ret: Array<{ token: string, glue: boolean }> = []
   let toks = val.trim().split(SPLIT_REGEX)
   let glue = false
   for (let i = 0; i < toks.length; ++i) {
@@ -144,7 +144,7 @@ function* splitNospace(val: string, analyzer: MorphAnalyzer) {
     yield [val, false] as [string, boolean]
   } else {
     // console.log(val)
-    yield* tokenizeUk(val, analyzer).map(({ token, glue }) => [token, glue]) as [string, boolean][]
+    yield* tokenizeUk(val, analyzer).map(({ token, glue }) => [token, glue]) as Array<[string, boolean]>
   }
 }
 
@@ -256,12 +256,12 @@ function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
 }
 
 //------------------------------------------------------------------------------
-function tagOrXVesum(interps: MorphInterp[]) {
+function tagOrXVesum(interps: Array<MorphInterp>) {
   return interps.map(x => x.toVesumStrMorphInterp())
 }
 
 //------------------------------------------------------------------------------
-function tagOrXMte(interps: MorphInterp[]) {
+function tagOrXMte(interps: Array<MorphInterp>) {
   let res = interps.map(x => x.toMteMorphInterp())
   return uniqueJson(res)
 }
@@ -351,7 +351,7 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
 }
 
 //------------------------------------------------------------------------------
-function orX(form: string, interps: MorphInterp[]) {  // todo
+function orX(form: string, interps: Array<MorphInterp>) {  // todo
   if (!interps.length) {
     interps = [MorphInterp.fromVesumStr('x', form)]
   }
@@ -359,7 +359,7 @@ function orX(form: string, interps: MorphInterp[]) {  // todo
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyzer) {
+export function morphReinterpret(words: Array<AbstractElement>, analyzer: MorphAnalyzer) {
   // let stream = mu(words.map(x => $t(x))).window(3)
   for (let el of words) {
     let token = $t(el)
@@ -371,7 +371,7 @@ export function morphReinterpret(words: AbstractElement[], analyzer: MorphAnalyz
       let interps = token.getDisambedInterps()
       let next = token.nextToken() && token.nextToken()!.text()
 
-      let curDictInterps: MorphInterp[]
+      let curDictInterps: Array<MorphInterp>
       let correctedForm = el.attribute('correct')
       if (correctedForm) {
         curDictInterps = analyzer.tag(correctedForm, next)
@@ -776,7 +776,7 @@ export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnaly
 const MULTISEP = '|'
 const teiStructuresToCopy = makeObject(['s', 'p', 'l', 'lg', 'div'].map(x => [x, x]))
 // todo: fix namespace problem
-function element2sketchVertical(el: AbstractElement, entering: boolean, interps?: MorphInterp[]) {
+function element2sketchVertical(el: AbstractElement, entering: boolean, interps?: Array<MorphInterp>) {
   let elName = el.localName()
   if (entering) {
     switch (elName) {
@@ -917,7 +917,7 @@ function sketchLine(token: string, lemma: string, mteTag: string, vesumTag: stri
 }
 
 //------------------------------------------------------------------------------
-function tsvLine(...values: string[]) {
+function tsvLine(...values: Array<string>) {
   return values.join('\t')
 }
 
@@ -1066,9 +1066,9 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
             .map(([head, relation]) => ({ headId: head, relation }))
           tok.deps = deps
         }
-        tok.tags.push(...(el.attribute('tags') || '').split(/\s+/g).filter(x => x) as TokenTag[])
+        tok.tags.push(...(el.attribute('tags') || '').split(/\s+/g).filter(x => x) as Array<TokenTag>)
         tok.tags.push(...(el.attribute('comment') || '')
-          .split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as TokenTag[])
+          .split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as Array<TokenTag>)
         // todo: attributeDefault
       }
 
@@ -1265,7 +1265,7 @@ function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
 }
 
 //------------------------------------------------------------------------------
-function sentenceArray2TreeNodes(sentence: Token[]) {
+function sentenceArray2TreeNodes(sentence: Array<Token>) {
   let nodeArray = sentence.map(x => new GraphNode(x))
   for (let i = 0; i < nodeArray.length; ++i) {
     if (sentence[i].rel) {

@@ -7,7 +7,7 @@ export class StanfordTaggerClient {
   }
 
   tag(chunk: string) {
-    return new Promise<string[][]>((resolve, reject) => {
+    return new Promise<Array<Array<string>>>((resolve, reject) => {
       let res: string | undefined
       let client = connect({
         port: this.port,

@@ -15,11 +15,11 @@ import * as minimist from 'minimist'
 
 
 interface Args {
-  vertical: string | string[]
+  vertical: string | Array<string>
   verticalList: string
   registryJson: string
   subcorpConfig?: string
-  alignmentPath: string[]
+  alignmentPath: Array<string>
   name?: string
   user: string
   host: string
@@ -53,7 +53,7 @@ function main(args: Args) {
 
   let configJson = parseJsonFileSync(args.registryJson)
   let config = generateRegistryFileUk(configJson)
-  let verticalPaths: string[]
+  let verticalPaths: Array<string>
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)
   } else {
@@ -89,10 +89,10 @@ function main(args: Args) {
 
 
 interface CorpusParams {
-  verticalPaths: string[]
+  verticalPaths: Array<string>
   config: string
   subcorpConfig?: string
-  alignmentPaths?: string[]
+  alignmentPaths?: Array<string>
   name?: string
 }
 
@@ -237,7 +237,7 @@ function addSubcorpToConfig(path: string, config: string) {
 }
 
 //------------------------------------------------------------------------------
-function addAlingmentsPaths(paths: string[], config: string) {
+function addAlingmentsPaths(paths: Array<string>, config: string) {
   return `${config}\nALIGNDEF "${paths.join(',')}"\n`
 }
 

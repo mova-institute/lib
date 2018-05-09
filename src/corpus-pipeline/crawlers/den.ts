@@ -16,7 +16,7 @@ interface Args {
   seed: number
 }
 
-type LinkExtractor = (html: string) => string[]
+type LinkExtractor = (html: string) => Array<string>
 class Crawler {
   private visited = new Set<string>()//: FileSavedSet<string>
   private visiting = new Set<string>()

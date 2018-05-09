@@ -15,7 +15,7 @@ let destDir = join(args.d || args.dest || join(__dirname, '../../data/dict'), na
 
 let lines = readFileSync(input, 'utf8').trim().replace(`'`, '’').split('\n')
 let theLexemes = [...lexemes(lines)]
-let compiledDict = compileDict(<[string, string][][]>theLexemes)
+let compiledDict = compileDict(<Array<Array<[string, string]>>>theLexemes)
 
 mkdirp.sync(destDir)
 writeCompiledDict(destDir, compiledDict)

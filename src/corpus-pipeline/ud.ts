@@ -188,6 +188,6 @@ function prepareFeatValue(feat: (string | number)) {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function feats2line(feats: (string | number)[]) {
+function feats2line(feats: Array<string | number>) {
   return feats.map(x => prepareFeatValue(x)).join('\t')
 }

@@ -820,7 +820,7 @@ const DROP_ORDER = [
   // f.Pos,
 ]
 //------------------------------------------------------------------------------
-function findClosestFixable(inCorp: MorphInterp, inDict: MorphInterp[]) {
+function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let paradigmOmonym = inCorp.getFeature(f.ParadigmOmonym)
 
   let inCorp2 = inCorp.clone().dropFeature(f.ParadigmOmonym)
@@ -894,7 +894,7 @@ function cloneAsBareNoun(fromInterp: MorphInterp) {
 }
 
 //------------------------------------------------------------------------------
-function createInterpWithFeatures(fromInterp: MorphInterp, features: any[]) {
+function createInterpWithFeatures(fromInterp: MorphInterp, features: Array<any>) {
   let ret = new MorphInterp()
   for (let feature of features) {
     ret.setFeature(feature, fromInterp.getFeature(feature))
@@ -904,7 +904,7 @@ function createInterpWithFeatures(fromInterp: MorphInterp, features: any[]) {
 }
 
 //------------------------------------------------------------------------------
-function canBeNameFromCommon(inCorp: MorphInterp, inDict: MorphInterp[]) {
+function canBeNameFromCommon(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let inCorp2 = cloneAsBareAdjective(inCorp)
   let inDict2 = inDict.map(x => cloneAsBareAdjective(x))
   if (inDict2.some(x => x.equals(inCorp2))) {
@@ -927,7 +927,7 @@ function canBeNameFromCommon(inCorp: MorphInterp, inDict: MorphInterp[]) {
 }
 
 //------------------------------------------------------------------------------
-function autofixXml(files: string[]) {
+function autofixXml(files: Array<string>) {
   for (let filePath of files) {
     let xmlstr = fs.readFileSync(filePath, 'utf8')
     xmlstr = autofixSomeEntitites(xmlstr)
@@ -974,7 +974,7 @@ function insertGlueIfNeeded(el: AbstractElement) {
 }
 
 //------------------------------------------------------------------------------
-function splitFractions(tokens: AbstractElement[], idSequence: number) {
+function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
   for (let token of tokens) {
     let interpEl = token.firstElementChild()
     let form = interpEl.text()

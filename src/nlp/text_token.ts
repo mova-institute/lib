@@ -73,7 +73,7 @@ export class TextToken {
     return this.getAllInterps().some(x => x.flags === flags && (lemma === undefined || x.lemma === lemma))
   }
 
-  hasAllInterps(tags: IStringMorphInterp[]) {
+  hasAllInterps(tags: Array<IStringMorphInterp>) {
     // return tags this.getAllInterps().some(x => x.flags === flags && (lemma === undefined || x.lemma === lemma))
   }
 
@@ -102,7 +102,7 @@ export class TextToken {
     return this.getDisambedInterpElems().map(x => x.attribute(TextToken.LEMMA_ATTR))
   }
 
-  interpAs(tags: IStringMorphInterp[]) {
+  interpAs(tags: Array<IStringMorphInterp>) {
     this.setDisambIndexes(tags.map(x => this.assureHasInterp(x.flags, x.lemma)))
   }
 
@@ -306,7 +306,7 @@ export class TextToken {
     return this.elem.elementChildren().map(x => ({
       flags: x.attribute(TextToken.FLAGS_ATTR),
       lemma: x.attribute(TextToken.LEMMA_ATTR),
-    })).toArray() as { flags: string, lemma: string }[]
+    })).toArray() as Array<{ flags: string, lemma: string }>
   }
 
   private toggleDisamb(index: number) {
@@ -327,7 +327,7 @@ export class TextToken {
     return []
   }
 
-  private setDisambIndexes(value: number[]) {
+  private setDisambIndexes(value: Array<number>) {
     value = uniq(value)
     this.elem.setAttribute(TextToken.DISAMB_ATTR, value.join(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR))
   }

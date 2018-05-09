@@ -96,7 +96,7 @@ Top bad rules:
 class UniqueCounter<T> {
   private map = new Map<T, number>()
 
-  account(...values: T[]) {
+  account(...values: Array<T>) {
     for (let value of values) {
       if (this.map.has(value)) {
         this.map.set(value, this.map.get(value) + 1)

@@ -332,7 +332,7 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
 
   if (req.body.grabNext) {
     let projectId = await client.select1('document', 'project_id', 'id=$1', taskInDb.docId)
-    let reviewTasks: any[] = await client.call('get_task_list', req.bag.user.id, 'review', null)
+    let reviewTasks: Array<any> = await client.call('get_task_list', req.bag.user.id, 'review', null)
     let nextTaskId
     if (reviewTasks.length) {  // todo: take review from current project if can
       let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).documents[0]

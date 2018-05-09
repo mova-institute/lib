@@ -18,7 +18,7 @@ const caseCollisionRe = new RegExp(
   `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`)
 const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i')
 
-const regexesKillingParagraph: [RegExp, string][] = [
+const regexesKillingParagraph: Array<[RegExp, string]> = [
   [spacedWordRe, `long single-char word repeating`],
   [/([^0)])\1{4}/, `long char repeating`],
   [/Этот e-mail адрес защищен от спам-ботов|Переведено сервисом/, 'ru junk'],
@@ -28,7 +28,7 @@ const regexesKillingParagraph: [RegExp, string][] = [
   // [,],
 ]
 
-const regexesKillingDoc: [RegExp, string][] = [
+const regexesKillingDoc: Array<[RegExp, string]> = [
   [/[Ђћџ]/, `possible encoding error`],
   [/\[(\w+)\][^[]*\[\/\1\]/i, 'bb code'],
 ]
@@ -38,7 +38,7 @@ const wordsKillingDocRe = new RegExp(`^(${[
   'ьм',
 ].join('')})$`, 'i')
 
-const functionsKillingParagraph: [(p: string) => boolean, string][] = [
+const functionsKillingParagraph: Array<[(p: string) => boolean, string]> = [
   [p => ruSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `ru but not uk`],
   [p => beSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `be but not uk`],
   // [p => ,],
@@ -89,7 +89,7 @@ const defaultOptions = {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function filterParagraphedDoc(
-  pp: string[],
+  pp: Array<string>,
   meta: any,
   analyzer: MorphAnalyzer,
   options = defaultOptions,
@@ -243,7 +243,7 @@ function reportRmDoc(reason: string) {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function findInternalHypenations(tokens: string[], analyzer: MorphAnalyzer) {
+function findInternalHypenations(tokens: Array<string>, analyzer: MorphAnalyzer) {
   return mu(tokens).window(3).filter(([l, m, r]) =>
     (m === '-' || m === '¬')
     && l
@@ -260,13 +260,13 @@ function findInternalHypenations(tokens: string[], analyzer: MorphAnalyzer) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function filterTokenizedParagraphs(pp: string[][], analyzer: MorphAnalyzer) {
+export function filterTokenizedParagraphs(pp: Array<Array<string>>, analyzer: MorphAnalyzer) {
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function filterParagraphedDocExtra(
-  paragraphs: string[],
+  paragraphs: Array<string>,
   meta: any,
   analyzer: MorphAnalyzer,
   options = defaultOptions,

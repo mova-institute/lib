@@ -21,7 +21,7 @@ export class ApiClient {
   }
 
   // (looses comments)
-  async tagParseConnluLines(lines: string[]) {
+  async tagParseConnluLines(lines: Array<string>) {
     // temp while tdozat is not ready
     let res = await this.udpipeClient.tagParseConnluLines(lines)
     return mu(res.split('\n'))
@@ -39,7 +39,7 @@ export class ApiClient {
 }
 
 
-function mergeConlluCols(dest: string, source: string, cols: number[]) {
+function mergeConlluCols(dest: string, source: string, cols: Array<number>) {
   let ret = new Array<Array<string>>()
 
   let destLines = dest.split('\n').filter(isConlluTokenLine)

@@ -123,7 +123,7 @@ function getDate(root: AbstractElement, xpath: string) {
 
 
 //------------------------------------------------------------------------------
-function trimCopyrightish(paragraphs: string[]) {
+function trimCopyrightish(paragraphs: Array<string>) {
   if (paragraphs.length) {
     if (/( правда$|^\S+$|^Теми: |для УП$)/i.test(last(paragraphs))) {
       return paragraphs.pop()

@@ -89,7 +89,7 @@ const REGEX2TAG_IMMEDIATE = [
   [[URL_RE,
     EMOJI_RE,
     SMILE_RE], ['sym']],
-] as [RegExp[], string[]][]
+] as Array<[Array<RegExp>, Array<string>]>
 
 const REGEX2TAG_ADDITIONAL_LC_LEMMA = [
   [[INTERJECTION_RE], ['intj']],
@@ -104,7 +104,7 @@ const REGEX2TAG_ADDITIONAL = [
     // 'verb:foreign',
     'x:foreign',
   ]],
-] as [RegExp[], string[]][]
+] as Array<[Array<RegExp>, Array<string>]>
 
 const gluedPrefixes = [
   'авіа',
@@ -231,10 +231,10 @@ export class MorphAnalyzer {
   expandAdjectivesAsNouns = false
   keepN2adj = false
   keepParadigmOmonyms = false
-  private numeralMap = new CachedValue<NumeralMapObj[]>(this.buildNumeralMap.bind(this))
-  private dictCache = new CacheMap<string, MorphInterp[]>(10000, token =>
+  private numeralMap = new CachedValue<Array<NumeralMapObj>>(this.buildNumeralMap.bind(this))
+  private dictCache = new CacheMap<string, Array<MorphInterp>>(10000, token =>
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)/*.denormalize()*/))
-  private dictCacheNaive = new Map<string, MorphInterp[]>()  // ~800K / first GB
+  private dictCacheNaive = new Map<string, Array<MorphInterp>>()  // ~800K / first GB
   private naiveCacheLimit = 0
 
   constructor(private dictionary: Dictionary) {
@@ -700,7 +700,7 @@ export class MorphAnalyzer {
         continue
       }
 
-      let matchedPrefixes: string[] = []
+      let matchedPrefixes: Array<string> = []
       if (prefixesRegex) {
         let match = lowercase.match(prefixesRegex)
         if (match) {
@@ -770,7 +770,7 @@ export class MorphAnalyzer {
       [9, 'дев’ять'],
       [0, 'десять'],
       [0, 'двадцять'],
-    ] as [number, string][]
+    ] as Array<[number, string]>
 
     let ret = new Array<NumeralMapObj>()
     for (let [digit, lemma] of supermap) {

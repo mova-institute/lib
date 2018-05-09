@@ -44,7 +44,7 @@ export function removeTags(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function removeElements(xmlstr: string, names: string[]) {
+export function removeElements(xmlstr: string, names: Array<string>) {
   let namesRe = names.join('|')
   let re = new RegExp(String.raw`<\s*(${namesRe})[^>]*>[^<]*</\s*(${namesRe})\s*>`, 'g')
   return xmlstr.replace(re, '')

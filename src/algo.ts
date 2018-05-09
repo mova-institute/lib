@@ -28,7 +28,7 @@ export function numericCompare(a: number, b: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function chainComparators<T>(...comparators: Comparator<T>[]) {
+export function chainComparators<T>(...comparators: Array<Comparator<T>>) {
   return (a: T, b: T) => {
     for (let comparator of comparators) {
       let ret = comparator(a, b)
@@ -52,13 +52,13 @@ export function lexCompare(a, b) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function indexComparator<T>(array: T[]) {
+export function indexComparator<T>(array: Array<T>) {
   let indexMap = arr2indexMap(array)
   return (a: T, b: T) => indexMap.get(a) - indexMap.get(b)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function stableSort<T>(array: T[], comparator: (a: T, b: T) => number = lexCompare) {
+export function stableSort<T>(array: Array<T>, comparator: (a: T, b: T) => number = lexCompare) {
   let stableComparator = chainComparators(comparator, indexComparator(array))
   return array.sort(stableComparator)
 }
@@ -117,8 +117,8 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function groupTableBy<T>(table: T[], groupProp: string | number | symbol) {
-  let ret = new Map<string | number | symbol, T[]>()
+export function groupTableBy<T>(table: Array<T>, groupProp: string | number | symbol) {
+  let ret = new Map<string | number | symbol, Array<T>>()
 
   for (let row of table) {
     let cell = row[groupProp]
@@ -130,12 +130,12 @@ export function groupTableBy<T>(table: T[], groupProp: string | number | symbol)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function indexTableByColumn<T>(table: T[], propName: string) {
+export function indexTableByColumn<T>(table: Array<T>, propName: string) {
   return new Map(table.map(x => [x[propName], x] as [string, T]))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function indexTableByColumns(table: Object[], propNames: any[]) {
+export function indexTableByColumns(table: Array<Object>, propNames: Array<any>) {
   let ret = new Map()
 
   for (let row of table) {
@@ -174,11 +174,11 @@ export function arr2indexObj<T>(value: Array<string>, shift = 0) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function combinations<T>(arr: T[][]) {
+export function combinations<T>(arr: Array<Array<T>>) {
   return [..._combinations(arr)]
 }
 
-function* _combinations<T>(arr: T[][], state = new Array<T>()): Iterable<T[]> {
+function* _combinations<T>(arr: Array<Array<T>>, state = new Array<T>()): Iterable<Array<T>> {
   if (state.length < arr.length) {
     for (let x of arr[state.length]) {
       state.push(x)
@@ -197,7 +197,7 @@ export function overflowNegative(value: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function uniq<T>(array: T[]) {
+export function uniq<T>(array: Array<T>) {
   if (array.length === 1) {
     return array
   }
@@ -205,7 +205,7 @@ export function uniq<T>(array: T[]) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function uniqueSmall(array: any[]) {
+export function uniqueSmall(array: Array<any>) {
   return array.filter((x, i) => array.indexOf(x) === i)
 }
 
@@ -255,7 +255,7 @@ export function commonPrefix(a: string, b: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function commonPrefixDestructive(strings: string[]) {
+export function commonPrefixDestructive(strings: Array<string>) {
   if (strings.length === 0) {
     return ''
   }
@@ -285,7 +285,7 @@ export function uniformSubarray2<T>(array: Array<T>, n: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function deleteIndexes<T>(array: Array<T>, indexes: number[]) {
+export function deleteIndexes<T>(array: Array<T>, indexes: Array<number>) {
   indexes.sort(numericCompare)
   let ii = 0
   return array.filter((x, i) => {

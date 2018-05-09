@@ -36,7 +36,7 @@ export function extract(html: string) {
     'string(//div[@id="postView"]//div[@class="bf4"]//*[contains(@href, "/Author/")]/text())')
   author = normalizeWebParaSafe(author)
 
-  let paragraphs: string[] = []
+  let paragraphs: Array<string> = []
   let jumbo = root.evaluateString(
     'string(//div[@id="postView"]//table[contains(@class, "publication-body")]//div[contains(@class, "bf1")]/text())')
   if (jumbo) {

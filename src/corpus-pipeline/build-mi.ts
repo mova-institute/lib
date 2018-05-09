@@ -21,7 +21,7 @@ import { standartizeMorphoForUd21 } from '../nlp/ud/uk_grammar'
 
 //------------------------------------------------------------------------------
 interface Args {
-  _: string[]
+  _: Array<string>
   inputRoot: string
   inputGlob: string
   outDir: string

@@ -400,7 +400,7 @@ const SUBRELS_TO_EXPORT = new Set([
   'parataxis:newsent',
   'xcomp:sp',
 ])
-export function standartizeSentence2ud21(sentence: TokenNode[]) {
+export function standartizeSentence2ud21(sentence: Array<TokenNode>) {
   let lastToken = last(sentence).node
   let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
 
@@ -676,7 +676,7 @@ export const COMPARATIVE_SCONJS = [
   'чим'
 ]
 
-export const ALLOWED_RELATIONS: UdMiRelation[] = [
+export const ALLOWED_RELATIONS: Array<UdMiRelation> = [
   'advcl:sp',
   'advcl:cmp',
   'advcl:svc',
@@ -832,7 +832,7 @@ export const CONTINUOUS_REL = [
 ]
 
 
-export const POSES_NEVER_ROOT: UdPos[] = [
+export const POSES_NEVER_ROOT: Array<UdPos> = [
   // 'ADP',
   'AUX',
   // 'CCONJ',

@@ -70,7 +70,7 @@ export class Token {
     return new Token().setType('glue')
   }
 
-  static word(form: string, interps: MorphInterp[], attributes?: any) {
+  static word(form: string, interps: Array<MorphInterp>, attributes?: any) {
     let ret = new Token().setForm(form)
     ret.interps = interps
     ret.attributes = attributes

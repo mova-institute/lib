@@ -14,7 +14,7 @@ function isIterable(thing) {
 export class Mu<T> implements Iterable<T> {
   iterator: Iterator<T>
 
-  static chain<T>(...iterables: (Iterable<T> | T)[]) {
+  static chain<T>(...iterables: Array<Iterable<T> | T>) {
     return mu((function* () {
       for (let it of iterables) {
         if (isIterable(it)) {
@@ -26,7 +26,7 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
-  static zip<T>(...iterables: (Iterable<T> | T)[]): Mu<Array<T>> {
+  static zip<T>(...iterables: Array<Iterable<T> | T>): Mu<Array<T>> {
     throw new Error(`Not implemented`)
   }
 
@@ -38,12 +38,12 @@ export class Mu<T> implements Iterable<T> {
     return this.iterator.next()
   }
 
-  chain<TT>(...iterables: (Iterable<TT> | TT)[]) {    // todo: append to this and return this
+  chain<TT>(...iterables: Array<Iterable<TT> | TT>) {    // todo: append to this and return this
     return Mu.chain<TT>(this as any, ...iterables)    // todo
   }
 
   chunk(n: number) {
-    let buf: T[] = []
+    let buf: Array<T> = []
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
@@ -60,7 +60,7 @@ export class Mu<T> implements Iterable<T> {
   }
 
   chunkByMax(n: number, lengther: (x: T) => number) {
-    let buf: T[] = []
+    let buf: Array<T> = []
     let curLength = 0
     const thiss = this
     return mu((function* () {
@@ -81,7 +81,7 @@ export class Mu<T> implements Iterable<T> {
   }
 
   split(fn: Predicate<T>) {
-    let buf: T[] = []
+    let buf: Array<T> = []
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
