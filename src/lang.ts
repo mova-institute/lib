@@ -1,5 +1,4 @@
 import { Dict } from './types'
-import { arr2indexObj } from './algo'
 
 
 

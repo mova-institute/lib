@@ -207,7 +207,7 @@ export function isDeceimalInt(str: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function findAllIndexes(str: string, char: string) {
   let ret = new Array<number>()
-  for (var i = 0; i < str.length; ++i) {
+  for (let i = 0; i < str.length; ++i) {
     if (str[i] === char) {
       ret.push(i)
     }

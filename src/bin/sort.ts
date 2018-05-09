@@ -1,8 +1,6 @@
 #!/usr/bin/env node --max_old_space_size=4096
 
-import { ioArgsPlain } from '../cli_utils'
 import { linesStreamSync } from '../utils.node'
-import { readTillEnd } from '../stream_utils.node'
 
 
 function main() {

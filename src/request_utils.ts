@@ -2,7 +2,7 @@ import { firstMatch } from './string_utils'
 
 import * as conv from 'iconv-lite'
 import * as request from 'request-promise-native'
-import { CoreOptions, RequestResponse } from 'request'
+import { CoreOptions } from 'request'
 
 
 
