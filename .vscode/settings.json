@@ -16,5 +16,6 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "tslint.enable": true,
+  "tslint.jsEnable": true,
   "tslint.alwaysShowRuleFailuresAsWarnings": true
 }
