@@ -569,6 +569,11 @@ export const CORE_COMPLEMENTS = [
   'ccomp',
 ]
 
+export const CORE_COMPLEMENTS_XCOMP = [
+  ...CORE_COMPLEMENTS,
+  'xcomp'
+]
+
 export const COMPLEMENTS = [
   ...CORE_COMPLEMENTS,
   'iobj',

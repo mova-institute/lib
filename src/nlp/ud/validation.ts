@@ -1602,9 +1602,13 @@ export function validateSentenceSyntax(
     reportIf(`перехідне дієслово не має додатка`,
       t => t.node.interp.isVerb()
         && valencyDict.isUnambAccVerb(t.node.interp.lemma)
-        && !t.children.some(x => uEqSome(x.node.rel, g.CORE_COMPLEMENTS))
-        && !t.children.some(x => uEq(x.node.rel, 'iobj')
-          && x.node.interp.isDative())
+        && !thisOrConj(t, tt => tt.children.length
+          && (tt.children.some(x => uEqSome(x.node.rel, g.CORE_COMPLEMENTS_XCOMP))
+            || tt.children.some(x => uEq(x.node.rel, 'iobj')
+              && x.node.interp.isDative()
+            )
+          )
+        )
     )
 
     const johojiji = ['його', 'її', 'їх']
@@ -1843,6 +1847,20 @@ function thisOrConjHead(node: GraphNode<Token>, predicate: TreedSentencePredicat
       return predicate(t)
     }
   }
+}
+
+//------------------------------------------------------------------------------
+function thisOrConj(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
+  let nodes = [node]
+  if (uEq(node.node.rel, 'conj')) {
+    nodes.push(node.parent)
+  }
+  for (let x of nodes) {
+    if (predicate(x)) {
+      return true
+    }
+  }
+  return false
 }
 
 //------------------------------------------------------------------------------
