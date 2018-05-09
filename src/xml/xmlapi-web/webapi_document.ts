@@ -6,8 +6,6 @@ import { isOddball } from '../xmlapi/utils'
 
 
 
-
-
 export class WebapiDocument extends AbstractDocument {
 
   private static parser: DOMParser

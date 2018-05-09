@@ -12,7 +12,6 @@ import * as path from 'path'
 
 
 
-
 export class ServerAdmin {
   private sensorLogPath = '/mnt/hdd/env/log/sensors'
   private sensorLogFile: number

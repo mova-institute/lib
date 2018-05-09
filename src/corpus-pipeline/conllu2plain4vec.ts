@@ -5,7 +5,6 @@ import { BufferedSyncWriter } from '../lib/buffered_writer'
 
 
 
-
 async function main() {
   let i = process.argv[2] === '--lemma' ? 1 : 0
 

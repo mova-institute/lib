@@ -8,7 +8,6 @@ import * as business from './business'
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 export function markConflicts(taskType: string, mine: string, theirs: string) {
   if (taskType === 'annotate') {

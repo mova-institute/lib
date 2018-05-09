@@ -5,7 +5,6 @@ import { mu } from '../mu'
 
 
 
-
 const positionalAttrsBase = [
   ['pos', 'ЧМ'],
   ['upos', 'універсальна ЧМ'],

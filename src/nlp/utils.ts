@@ -520,7 +520,6 @@ export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename x
 
 
 
-
     // select unambig dict interps
     if (miw.elementChildren().length() === 1 && !miw.attribute('disamb')) {
       miw.setAttribute('disamb', 0)

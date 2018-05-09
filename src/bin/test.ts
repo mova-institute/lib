@@ -31,7 +31,6 @@ import { StreamDataIterator } from '../lib/nextify/stream_data_iterator'
 
 
 
-
 async function main() {
   for await (let chunk of new StreamDataIterator<Buffer>(process.stdin)) {
     console.log(chunk.byteLength)
@@ -41,73 +40,6 @@ async function main() {
 
 
 main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

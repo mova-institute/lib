@@ -1768,7 +1768,6 @@ export function validateSentenceSyntax(
 
 
 
-
   /*
 
   Nevertheless, there are four important exceptions to the rule that function words do not take dependents:

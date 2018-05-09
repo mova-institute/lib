@@ -147,9 +147,6 @@ async function main() {
 
 
 
-
-
-
 //------------------------------------------------------------------------------
 async function createLinode(label: string, params: LinodeConfig) {
   let command = `linode create ${label} `

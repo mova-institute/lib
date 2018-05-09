@@ -125,16 +125,16 @@ export class Token {
   isWord() { return !!this.form }
 
   isSentenceBoundary() {
-    return this.structure === 'sentence' && this.closing === true
+    return this.structure === 'sentence' && this.closing
   }
 
   isSentenceStartDeprecated() {
     return (this.structure === 'sentence' || this.structure === 'paragraph')
-      && this.closing === false
+      && !this.closing
   }
 
   isGlue() { return this.type === 'glue' }
-  isClosing() { return this.closing === true }
+  isClosing() { return this.closing }
 
   interp0() {
     return this.interps[0]

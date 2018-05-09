@@ -20,7 +20,6 @@ import * as tlds from 'tlds'
 
 
 
-
 const DOMAIN_AS_NAME = new RegExp(r`^\w+\.(${tlds.join('|')})$`)
 
 const CASES = [
@@ -575,8 +574,6 @@ export class MorphAnalyzer {
         res.addAll(toadd)
       }
     }
-
-
 
 
 

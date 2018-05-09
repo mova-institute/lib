@@ -222,7 +222,7 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
       cur;
       cur = next, next = next && next.nextSibling()) {
 
-      if (traverseDepth(cur, onEnter, onLeave) === false) {
+      if (!traverseDepth(cur, onEnter, onLeave)) {
         return false
       }
     }
@@ -296,13 +296,13 @@ export function* traverseDocumentOrderGen(node: AbstractNode): IterableIterator<
 export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
   let curNode = node
   for (; curNode; curNode = curNode.nextSibling()) {
-    if (traverseDepth(curNode, onEnter, onLeave) === false) {
+    if (!traverseDepth(curNode, onEnter, onLeave)) {
       return false
     }
   }
   for (curNode = node && node.parent(); curNode; curNode = curNode.parent()) {
     if (curNode.nextSibling()) {
-      if (traverseDocumentOrder(curNode.nextSibling(), onEnter, onLeave) === false) {
+      if (!traverseDocumentOrder(curNode.nextSibling(), onEnter, onLeave)) {
         return false
       }
       break

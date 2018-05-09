@@ -359,8 +359,6 @@ mi-deploycorp \
 
 
 
-
-
 cwb-encode -R ~/Developer/cwb/registry/uk -d ~/Developer/cwb/data/uk -f /Volumes/pogrib/corpworkspace/cwb.vrt -P lemma -P tag -P tag2 -c utf8 -v
 
 cwb-encode -R ~/Developer/cwb/registry/uk -d ~/Developer/cwb/data/uk -f cwb.vrt -f cwb_chtyvo.vrt -c utf8 -v && cwb-make uk && cwb-scan-corpus -f 1000 -C uk word+0 word+1 word+2 | sort -nr -k 1 > ~/Downloads/3gram.txt
