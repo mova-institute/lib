@@ -3491,7 +3491,7 @@ msgstr "Вилучити і перебудувати руками"
 #: cmpltmpl/document.py:4107
 msgid "This action may take several minutes for large corpora, please wait."
 msgstr ""
-"Для великих корпусів ця дія може забрати декілька хвилин. Будь ласка, "
+"Для великих корпусів ця дія може забрати кілька хвилин. Будь ласка, "
 "зачекайте."
 
 #: cmpltmpl/first_form.py:89
