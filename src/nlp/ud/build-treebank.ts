@@ -164,13 +164,15 @@ function main() {
       paragraph } of sentenceStream
     ) {
       // count some stats
-      for (let token of tokens) {
-        if (token.interp.isVerb()) {
-          ++numVerbsTotal
-          if (valencyDict.hasVerb(token.interp.lemma)) {
-            ++numVerbsCoveredByValencyDict
-          } else {
-            verbsUncoveredByValencyDict.add(token.interp.lemma)
+      if (valencyDict) {
+        for (let token of tokens) {
+          if (token.interp.isVerb()) {
+            ++numVerbsTotal
+            if (valencyDict.hasVerb(token.interp.lemma)) {
+              ++numVerbsCoveredByValencyDict
+            } else {
+              verbsUncoveredByValencyDict.add(token.interp.lemma)
+            }
           }
         }
       }
