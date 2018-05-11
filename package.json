@@ -9,15 +9,6 @@
     "data/dict/vesum"
   ],
   "bin": {
-    "mi-cat": "lib/bin/cat.js",
-    "mi-glob": "lib/bin/glob.js",
-    "mi-do": "lib/bin/do.js",
-    "mi-do2": "lib/bin/do2.js",
-    "mi-globcat": "lib/bin/globcat.js",
-    "mi-parse-brat-log": "lib/nlp/ud/parse-brat-log.js",
-    "mi-sort": "lib/bin/sort.js",
-    "mi-tag": "lib/bin/tag.js",
-    "mitag": "lib/bin/tag.js"
   },
   "scripts": {},
   "author": "mova.institute",
