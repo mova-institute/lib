@@ -7,8 +7,9 @@ import * as minimist from 'minimist'
 
 
 interface Args {
-  lemma: boolean
-  lowercase: boolean
+  surfaceColumn: number
+  uposColumn: number
+  lowercase?: boolean
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -16,8 +17,10 @@ function main() {
   exitOnStdoutPipeError()
 
   const args: Args = minimist(process.argv.slice(2), {
-    boolean: ['lemma', 'lowercase`']
+    boolean: ['lowercase']
   }) as any
+
+  let splitMax = Math.max(args.uposColumn, args.surfaceColumn) + 1
 
   let firstInSent = true
   linesBackpressedStd((line, writer) => {
@@ -26,15 +29,16 @@ function main() {
         writer.write('\n')
         firstInSent = true
       }
-
-      return
-    }
-    let [form, lemma, , pos] = line.split('\t', 4)
-    if (pos === 'punct') {
       return
     }
 
-    let word = args.lemma ? lemma : form
+    let cells = line.split('\t', splitMax)
+    let upos = cells[args.uposColumn]
+    if (upos === 'punct') {
+      return
+    }
+
+    let word = cells[args.surfaceColumn]
     if (args.lowercase) {
       word = word.toLowerCase()
     }
