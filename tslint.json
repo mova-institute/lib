@@ -102,7 +102,7 @@
     "no-duplicate-variable": true,
     "no-dynamic-delete": true,
     "no-empty": [
-      true,
+      false,
       "allow-empty-catch"
     ],
     "no-eval": true,
