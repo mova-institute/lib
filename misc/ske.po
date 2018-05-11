@@ -3910,7 +3910,7 @@ msgstr "Не вживати Флеш для записування в буфер
 
 #: cmpltmpl/viewattrs.py:594
 msgid "Change view options"
-msgstr "Налаштувати вигляд конкордансу"
+msgstr "Настроїти подання конкордансу"
 
 #: cmpltmpl/viewattrs.py:602
 msgid "Save & change options"
