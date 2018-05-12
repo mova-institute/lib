@@ -2971,7 +2971,7 @@ msgstr "Кількість стовпчиків синтзв’язків"
 #: skellcgi.py:127
 #, python-format
 msgid "Word sketch not available for %s"
-msgstr "Шкіц не доступний для %s"
+msgstr "Шкіц недоступний для %s"
 
 #: skellcgi.py:129
 #, python-format

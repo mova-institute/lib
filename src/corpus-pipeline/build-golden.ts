@@ -66,6 +66,7 @@ function main() {
       // build meta
       let docMeta: any = {
         title: docRoot.attribute('title') || basename,
+        genre: docRoot.attribute('genre') || '(не позначено)',
       }
       docMeta.reference_title = docMeta.title
       for (let attribute of ['author', 'date', 'url']) {
@@ -90,7 +91,7 @@ function main() {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function buildExtTitle(meta) {
-  let ret = meta.author || '(без автора)'
+  let ret = meta.author || '(автор недоступний)'
   ret += ' — '
   ret += meta.title || '(без назви)'
 
