@@ -29,6 +29,8 @@ import { PREDICATES } from '../nlp/ud/uk_grammar'
 import * as g2 from '../nlp/uk_grammar'
 import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus-pipeline/extractors/tereveni'
+import { parse } from 'url';
+import { sleep } from '../lang';
 
 
 
@@ -1022,43 +1024,94 @@ function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
 async function addDocMeta(root: AbstractElement) {
   for (let docEl of root.evaluateElements('//doc')) {
     let attributes = docEl.attributesObj()
-    if (!attributes.src) {
-      continue
+
+    // console.error(attributes.title)
+    // console.error(attributes)
+
+    if (attributes.genre === 'народна казка') {
+      attributes.author = '[народ]'
     }
 
-    if (!attributes.author || !attributes.date) {
-      if (attributes.src.includes('facebook.com')) {
-        // let meta = await getFbPostMeta(attributes.src)
-        // console.log(meta)
-        // attributes = { ...attributes, ...meta }
-      } else if (attributes.src.includes('tereveni.org')) {
-        let html = await fetchText(attributes.src)
-        let meta = mu(tereveni.streamDocs(html)).find(x => x.url === attributes.src)
-        console.log(meta)
-        attributes.author = meta.author
-        attributes.date = meta.date
-        attributes.title = meta.title
+    if (attributes.tags && attributes.tags.startsWith('genre:')) {
+      attributes.genre = attributes.tags.substr('genre:'.length)
+      attributes.tags = undefined
+    }
+
+    if (!attributes.genre) {
+      if (attributes.tags && attributes.tags.startsWith('genre:')) {
+        attributes.genre = attributes.tags.substr('genre:'.length)
+        attributes.tags = undefined
+      } else if (attributes.src) {
+        let url = parse(attributes.src)
+        if (url.hostname.endsWith('tereveni.org')) {
+          attributes.genre = 'коментар'
+        } else if (url.hostname.endsWith('facebook.com')) {
+          if (attributes.src.includes('comment_id')) {
+            attributes.genre = 'коментар'
+          } else {
+            attributes.genre = 'допис'
+          }
+        } else if (url.hostname.endsWith('.wikipedia.org')) {
+          attributes.genre = 'вікі'
+        } else if (url.hostname.endsWith('.livejournal.com')) {
+          attributes.genre = 'допис'
+        } else if (url.hostname.endsWith('.youtube.com')) {
+          attributes.genre = 'коментар'
+        } else if (url.hostname.endsWith('.instagram.com')) {
+          attributes.genre = 'коментар'
+        } else if (url.hostname.endsWith('twitter.com')) {
+          attributes.genre = 'твіт'
+        } else if (attributes.src.includes('ababahalamaha.com.ua/uk/Special:Guestbook')) {
+          attributes.genre = 'коментар'
+        }
+      } else {
       }
     }
 
-    if (!attributes.title) {
-      let numWords = 0
-      let stream = mu(mixml2tokenStream(docEl))
-        .filter(x => x.isWord() || x.isGlue())
-        .take(7)
-      // .takeUntil(() => numWords++ > 6)
-      let title = tokenStream2plaintextString(stream)
-      title = `[${title}…]`
-      attributes['title'] = title
-      attributes['tags'] = 'autotitle'
+    if (!attributes.genre) {
+      // console.log(`No genre for ${attributes.id} src: "${attributes.src}" title: "${attributes.title}"`)
+      attributes.genre = ''
     }
 
-    if (!attributes['tags']
-      && (!attributes['src']
-        || !attributes['src'].includes('facebook.com') && !attributes['src'].includes('tereveni')
-      )
-    ) {
-      attributes['tags'] = 'genre:'
+    if (!attributes.author) {
+      // console.log(`No genre for ${attributes.id} src: "${attributes.src}" title: "${attributes.title}"`)
+      attributes.author = ''
+    }
+
+    if (attributes.src) {
+      let url = parse(attributes.src)
+
+      if (!attributes.author && url.hostname.endsWith('.wikipedia.org')) {
+        attributes.author = '[користувачі Вікіпедії]'
+      }
+
+      if (!attributes.author || !attributes.date) {
+        if (url.hostname.match(/\bfacebook\.com$/) && attributes.date.length !== '2017-08-08 22:09:36'.length) {
+          // let meta = await getFbPostMeta(attributes.src)
+          // console.log(meta)
+          // await sleep(2000)
+          // attributes = { ...attributes, ...meta }
+        } else if (attributes.src.includes('tereveni.org')) {
+          let html = await fetchText(attributes.src)
+          let meta = mu(tereveni.streamDocs(html)).find(x => x.url === attributes.src)
+          console.log(meta)
+          attributes.author = meta.author
+          attributes.date = meta.date
+          attributes.title = meta.title
+        }
+      }
+
+      if (!attributes.title) {
+        let numWords = 0
+        let stream = mu(mixml2tokenStream(docEl))
+          .filter(x => x.isWord() || x.isGlue())
+          .take(7)
+        // .takeUntil(() => numWords++ > 6)
+        let title = tokenStream2plaintextString(stream)
+        title = `[${title}…]`
+        attributes['title'] = title
+        attributes['tags'] = 'autotitle'
+      }
     }
 
     docEl.setAttributes(attributes)
@@ -1067,11 +1120,18 @@ async function addDocMeta(root: AbstractElement) {
 
 //------------------------------------------------------------------------------
 async function getFbPostMeta(url: string) {
-  let html = await fetchText(url)
-  console.log(html.substr(0, 100))
-  let author = strUtils.singleMatchOrThrow(html, /ownerName:"(.+?)",/, 1)
-  let dateStr = strUtils.singleMatchOrThrow(html, /data-utime="(\d+)"/, 1)
+  let html = await fetchText(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15'
+    }
+  })
+  let author = strUtils.singleMatchOrThrow(html, /actorname\s*:\s*"([^"]+)"/, 1)
+  let dateStr = strUtils.singleMatchOrThrow(html, /data-utime\s*=\s*"(\d+)"/, 1)
   let date = toSortableDatetime(fromUnixStr(dateStr))
+
+  if (author) {
+    author = author.split(' ').reverse().join(' ')
+  }
   return { author, date }
 }
 
