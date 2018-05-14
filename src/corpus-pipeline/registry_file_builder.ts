@@ -43,10 +43,32 @@ const positionalAttrsBase = [
   ['spaceafter', 'пробіл після'],
 ]
 
+export interface StructureAttribute {
+  name: string
+  label?: string
+  isMulti?: boolean
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
   title: string
   langCode: string
+  structAttrs?: Dict<StructureAttribute>
+  isGiant: boolean
+  hasDictTags?: boolean
+  hasGaps?: boolean
+  hasTokenIds?: boolean
+  path?: string
+  vertical?: string
+  subcorpAttrs?: string
+}
+
+///////////////////////////////////////////////////////////////////////////////
+export interface RegistryFileDescriptor {
+  title: string
+  langCode: string
+  structAttrs?: Dict<StructureAttribute>
+  isGiant: boolean
   hasDictTags?: boolean
   hasGaps?: boolean
   hasTokenIds?: boolean
@@ -62,6 +84,11 @@ export const STRUCTURE_G = `STRUCTURE g {
   DISPLAYBEGIN "_EMPTY_"
   DEFAULTVALUE ""
 }\n`
+
+////////////////////////////////////////////////////////////////////////////////
+export function generateRegistryFile(descr: RegistryFileDescriptor) {
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFileUk(params: RegistryFileParams) {
@@ -89,8 +116,8 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
 #####################          Positionals        ##############################
 ################################################################################
 `
-  ret += positionalAttr('word', 'словоформа')
-  ret += positionalAttr('lc', 'словоформа мал. літерами', {
+  ret += positionalAttrHuge('word', 'словоформа')
+  ret += positionalAttrHuge('lc', 'словоформа мал. літерами', {
     dynamic: 'utf8lowercase',
     dynlib: 'internal',
     arg1: 'C',
@@ -99,8 +126,8 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
     type: 'index',
     transquery: 'yes',
   })
-  ret += positionalAttr('lemma', 'лема')
-  ret += positionalAttr('lemma_lc', 'лема мал. літерами', {
+  ret += positionalAttrHuge('lemma', 'лема')
+  ret += positionalAttrHuge('lemma_lc', 'лема мал. літерами', {
     dynamic: 'utf8lowercase',
     dynlib: 'internal',
     arg1: 'C',
@@ -110,9 +137,9 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
     transquery: 'yes',
   })
 
-  ret += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
+  ret += positionalAttrs.map(([name, label]) => positionalAttrHuge(name, label)).join('\n')
   if (params.hasDictTags) {
-    ret += positionalAttr('tag_dic', 'повна міта зі словника', {
+    ret += positionalAttrHuge('tag_dic', 'повна міта зі словника', {
       multivalue: 'yes',
       multisep: ';',
     })
@@ -153,6 +180,10 @@ STRUCTURE doc {
     MULTISEP "|"
     DEFAULTVALUE ""
   }
+  ATTRIBUTE genre {
+    LABEL "категорія"
+    DEFAULTVALUE ""
+  }
   ATTRIBUTE chtyvo_section {
     LABEL "розділ (для Чтива)"
     DEFAULTVALUE ""
@@ -184,7 +215,7 @@ STRUCTURE doc {
     DEFAULTVALUE ""
   }
   ATTRIBUTE wordcount {
-    LABEL "кількість слів"
+    LABEL "токенів в документі"
     DEFAULTVALUE ""
   }
 }
@@ -264,6 +295,140 @@ WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,при
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function generateRegistryFileUkGolden(params: RegistryFileParams) {
+  let positionalAttrs = clone(positionalAttrsBase) as Array<any>
+  positionalAttrs.pop()
+  positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
+
+
+  let ret = `
+NAME "${params.title}"
+INFOHREF "https://mova.institute/corpus"
+MAINTAINER "org@mova.institute"
+TAGSETDOC "http://universaldependencies.org/guidelines.html"
+
+
+LANGUAGE "Ukrainian"
+ENCODING "utf8"
+LOCALE "uk_UA.UTF-8"
+NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщьЮюЯя’А-Яа-я[:alpha:]].*"
+
+`
+  ret += positionalAttr('word', 'словоформа')
+  ret += positionalAttr('lc', 'словоформа мал. літерами', {
+    dynamic: 'utf8lowercase',
+    dynlib: 'internal',
+    arg1: 'C',
+    funtype: 's',
+    fromattr: 'word',
+    type: 'index',
+    transquery: 'yes',
+  })
+  ret += positionalAttr('lemma', 'лема')
+  ret += positionalAttr('lemma_lc', 'лема мал. літерами', {
+    dynamic: 'utf8lowercase',
+    dynlib: 'internal',
+    arg1: 'C',
+    funtype: 's',
+    fromattr: 'lemma',
+    type: 'index',
+    transquery: 'yes',
+  })
+
+  ret += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
+  if (params.hasDictTags) {
+    ret += positionalAttr('tag_dic', 'повна міта зі словника', {
+      multivalue: 'yes',
+      multisep: ';',
+    })
+  }
+  ret += `
+
+################################################################################
+#####################          Structures        ###############################
+################################################################################
+
+STRUCTURE doc {
+  ATTRIBUTE id {
+    LABEL "код документа"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE title {
+    LABEL "назва"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE ext_title {
+    LABEL "широка назва"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE date {
+    LABEL "час появи"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE author {
+    LABEL "автор"
+    MULTIVALUE yes
+    MULTISEP "|"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE genre {
+    LABEL "категорія"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE url {
+    LABEL "посилання"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE wordcount {
+    LABEL "слів в документі"
+    DEFAULTVALUE ""
+  }
+}
+STRUCTURE p {
+  ATTRIBUTE id {
+    LABEL "код абзаца"
+    DEFAULTVALUE ""
+  }
+}
+STRUCTURE s {
+  ATTRIBUTE id {
+    LABEL "код речення"
+    DEFAULTVALUE ""
+  }
+}
+${STRUCTURE_G}
+
+SHORTREF "=doc.title"
+
+HARDCUT "2000"
+MAXKWIC "100"
+MAXCONTEXT "100"
+MAXDETAIL "100"
+
+#FULLREF "doc.title,doc.author,doc.original_author,doc.date,doc.domain,doc.wordcount,s.id,doc.url"
+#STRUCTATTRLIST "doc.title,doc.author,doc.date"
+#SUBCORPATTRS "`
+  // ret += params.subcorpAttrs
+  //   ? params.subcorpAttrs
+  //   : 'doc.source,doc.chtyvo_section,doc.chtyvo_type,doc.title,doc.author,doc.original_author,doc.date'
+  ret += `"
+WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,прикметник,.+(ADJ|DET).*,прислівник,.+ADV.*,прийменник,.+ADP.*,сполучник,.+[CS]CONJ.*,числівник,.+NUM.*,частка,.+PART.*,вигук,.+INTJ.*,символ,.+SYM.*,розділовий,.+PUNCT.*,залишок,.+X.*"
+`
+
+  if (params.path) {
+    ret += `\nPATH "${path.resolve(params.path)}"`
+  }
+
+  if (params.vertical) {
+    ret += `\nVERTICAL "${path.resolve(params.vertical)}"`
+  }
+
+  ret = ret.trim()
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function renderFeatvals(featvals: Dict<string>) {
   return mu(Object.entries(featvals))
     .filter(x => x[1] !== undefined)
@@ -317,6 +482,12 @@ function positionalAttr(name: string, label: string, options: Dict<string> = {})
   }
   ret += '\n}'
   return ret
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function positionalAttrHuge(name: string, label: string, options: Dict<string> = {}) {
+  options.type = 'FD_FGD'
+  return positionalAttr(name, label, options)
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
