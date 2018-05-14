@@ -8,8 +8,7 @@
     "lib/**/*.js",
     "data/dict/vesum"
   ],
-  "bin": {
-  },
+  "bin": {},
   "scripts": {},
   "author": "mova.institute",
   "license": "GPL-3.0",

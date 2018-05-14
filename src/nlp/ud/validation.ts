@@ -4,15 +4,16 @@ import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
 import { GraphNode, walkDepth } from '../../lib/graph'
 import { MorphInterp } from '../morph_interp'
-import * as f from '../morph_features'
 import { last } from '../../lang'
 import { uEq, uEqSome } from './utils'
 import { startsWithCapital } from '../../string_utils'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { PREDICATES, isNumericModifier, isGoverning } from './uk_grammar'
-import * as g from './uk_grammar'
-import * as _ from 'lodash'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
+import * as f from '../morph_features'
+import * as g from './uk_grammar'
+
+import { groupBy } from 'lodash'
 
 
 
@@ -165,12 +166,7 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
   ]
 ]
 
-////////////////////////////////////////////////////////////////////////////////
-export interface Problem {
-  message: string
-  indexes: Array<number>
-}
-
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 interface ReoprtIf2Arg {
   n: GraphNode<Token>  // tree node
   t: Token  // token
@@ -185,10 +181,18 @@ interface ReoprtIf2Arg {
   pr: string
 }
 
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 type SentencePredicate = (x: Token, i?: number) => any
 type SentencePredicate2 = (t: Token, s: Array<Token>, i: number/*, node: GraphNode<Token>*/) => any
 type TreedSentencePredicate = (t: GraphNode<Token>) => any
 type TreedSentencePredicate2 = (a: ReoprtIf2Arg) => any
+
+////////////////////////////////////////////////////////////////////////////////
+export interface Problem {
+  message: string
+  indexes: Array<number>
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentenceSyntax(
   nodes: Array<GraphNode<Token>>,
@@ -1477,7 +1481,7 @@ export function validateSentenceSyntax(
   reportIf(`більше ніж один тип імені в пучку`,
     t => !t.node.hasTag('multi_names')
       && Object.values(
-        _.groupBy(
+        groupBy(
           t.children.filter(x => x.node.rel === 'flat:name'),
           x => x.node.interp.getFeature(f.NameType)))
         .some(x => x.length > 1)
@@ -1805,8 +1809,6 @@ export function validateSentenceSyntax(
     )
 
   */
-
-
 
   return problems
 }
