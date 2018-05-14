@@ -192,7 +192,7 @@ STRUCTURE doc {
     LABEL "перекладач"
   }
   ATTRIBUTE wordcount {
-    LABEL "кількість токенів"
+    LABEL "токенів в документі"
     MAXLISTSIZE 0
   }
 }
