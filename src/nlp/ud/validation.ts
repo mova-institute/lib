@@ -17,6 +17,7 @@ import { groupBy } from 'lodash'
 
 
 
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentencePredicate2]> = [
   [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.interp.isAdjective()],
   [`nummod`, `з іменника`, t => canActAsNoun(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronominal()],
@@ -49,6 +50,7 @@ const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentenceP
   [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
 
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string, TreedSentencePredicate]> = [
   // cc не в сурядний is a separate rule
   [`advmod`,
