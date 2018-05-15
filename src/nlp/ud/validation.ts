@@ -1605,7 +1605,7 @@ export function validateSentenceSyntax(
         && !t.node.interp.isGenitive()
     )
 
-    reportIf(`перехідне дієслово не має додатка`,
+    xreportIf(`перехідне дієслово не має додатка`,
       t => t.node.interp.isVerb()
         && valencyDict.isUnambAccVerb(t.node.interp.lemma)
         && !thisOrConj(t, tt => tt.children.length
