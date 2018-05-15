@@ -3,31 +3,22 @@ import * as bodyParser from 'body-parser'
 import * as actions from './api'
 import * as cookieParser from 'cookie-parser'
 import { PgClient } from '../postrges'
-import { ClientConfig } from 'pg'
 import * as debugFactory from 'debug'
+import { parseJsonFileSync } from '../utils.node'
 const jwt = require('express-jwt')
+
+
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 export const debug = debugFactory('annotator')
-
-export const config: ClientConfig = {
-  host: IS_DEV ? 'localhost' : '/var/run/postgresql',
-  port: IS_DEV ? 5433 : undefined,
-  database: IS_DEV ? 'mi_stage' : 'mi',
-  user: 'annotator',
-  password: '@nn0t@t0zh3',
-}
-
-const jwtCheck = jwt({
-  secret: new Buffer('2P1lL3Sm1CavW2VPoZF9b-lzBDV1VQvdf_9tIaJeQ5EcLKLsd0UXCCYNA5DYKVOC', 'base64'),
-  audience: '043jypMQ2KNdgkfi8FbwHjSxYNXaISWg',
-  credentialsRequired: false,
-})
 
 export interface IReq extends express.Request {
   bag: any
 }
 
+
+let config = parseJsonFileSync(process.argv[3])
+let jwtCheck = jwt(config.jwt)
 
 let app = express()
 app.disable('x-powered-by')
