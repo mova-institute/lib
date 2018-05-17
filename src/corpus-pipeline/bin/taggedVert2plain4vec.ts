@@ -10,6 +10,8 @@ interface Args {
   surfaceColumn: number
   uposColumn: number
   lowercase?: boolean
+  noPunct?: boolean
+  newContextOnRe?: string
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -17,15 +19,20 @@ function main() {
   exitOnStdoutPipeError()
 
   const args: Args = minimist(process.argv.slice(2), {
-    boolean: ['lowercase']
+    boolean: [
+      'lowercase',
+      'noPunct',
+    ]
   }) as any
+
+  let newContextRe = new RegExp(args.newContextOnRe || '^</doc>')
 
   let splitMax = Math.max(args.uposColumn, args.surfaceColumn) + 1
 
   let firstInSent = true
   linesBackpressedStd((line, writer) => {
     if (!line.includes('\t')) {
-      if (/^<\/s>/.test(line)) {
+      if (newContextRe.test(line)) {
         writer.write('\n')
         firstInSent = true
       }
@@ -34,7 +41,7 @@ function main() {
 
     let cells = line.split('\t', splitMax)
     let upos = cells[args.uposColumn]
-    if (upos === 'punct') {
+    if (args.noPunct && upos === 'punct') {
       return
     }
 

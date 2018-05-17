@@ -8,7 +8,7 @@ import { unescape } from 'he'
 function main() {
   exitOnStdoutPipeError()
 
-  let newContextOn = new RegExp(process.argv[2] || /^<\/doc>/)
+  let newContextOn = new RegExp(process.argv[2] || '^</doc>')
 
   let firstInContext = true
   linesBackpressedStd((line, writer) => {
