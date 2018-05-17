@@ -16,7 +16,6 @@ import * as glob from 'glob'
 import { mu } from '../mu'
 import * as _ from 'lodash'
 import { CatStream } from '../cat_stream'
-import { StreamDataIterator } from '../lib/nextify/stream_data_iterator'
 
 // export const config: ClientConfig = {
 //   host: 'localhost',
@@ -32,9 +31,6 @@ import { StreamDataIterator } from '../lib/nextify/stream_data_iterator'
 
 
 async function main() {
-  for await (let chunk of new StreamDataIterator<Buffer>(process.stdin)) {
-    console.log(chunk.byteLength)
-  }
 }
 
 
