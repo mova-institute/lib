@@ -11,8 +11,8 @@ import {
   Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctuationType, PunctuationSide, NounNumeral,
-  Feature, NONGRAMMATICAL_FEATURES,
+  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctuationType, PunctuationSide,
+  NounNumeral, DictValency, Feature, NONGRAMMATICAL_FEATURES,
 } from './morph_features'
 
 
@@ -29,6 +29,7 @@ export const featureObj2nameMap = new Map<any, string>([
   [Inflectability, 'inflectability'],
   [Colloquiality, 'colloquial'],
   [Degree, 'degree'],
+  [DictValency, 'dictValency'],
   [Dimin, 'dimin'],
   [Gender, 'gender'],
   [VerbType, 'verbType'],
@@ -261,6 +262,8 @@ export const FEATURE_TABLE = [
   { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.open, vesumStr: 'open' },
   { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.close, vesumStr: 'close' },
 
+  // { featStr: 'dictValency', feat: DictValency,  },
+
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
@@ -459,6 +462,7 @@ export class Features {
   inflectability: Inflectability
   colloquial: Colloquiality
   conjunctionType: ConjunctionType
+  dictValency: DictValency
   degree: Degree
   foreign: Foreign
   formality: Formality

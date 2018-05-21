@@ -6,7 +6,7 @@ import {
   PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
   Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
   booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
-  PartType, PunctuationType, PunctuationSide, VerbReversivity,
+  PartType, PunctuationType, PunctuationSide, VerbReversivity, DictValency,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap } from '../morph_interp'
@@ -42,6 +42,7 @@ export type UdPolite = 'Form'
 export type UdPunctType = 'Quot' | 'Ellip' | 'Hyph' | 'Dash' | 'Ndash' | 'Bull'
 export type UdUninflect = UdBoolean
 export type UdReversivity = UdBoolean
+export type UdValency = 'Acc' | 'Intrans' | 'Ambig'
 export type UdPos =
   'ADJ' |
   'ADP' |
@@ -112,6 +113,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [PunctuationType, 'PunctType'],
   [Inflectability, 'Uninflect'],
   [VerbReversivity, 'Reverse'],
+  [DictValency, 'Valent'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
@@ -278,6 +280,12 @@ const punctTypeMap = new Map<PunctuationType, UdPunctType>([
   [PunctuationType.bullet, 'Bull'],
 ])
 
+const valencyTypeMap = new Map<DictValency, UdValency>([
+  [DictValency.accusative, 'Acc'],
+  [DictValency.intransitive, 'Intrans'],
+  [DictValency.ambiguous, 'Ambig'],
+])
+
 /*
 const Map: [][] = [
   [, ''],
@@ -308,6 +316,7 @@ const mapMap = new Map<any, any>([
   [Alternativity, orthoMap],
   [PartType, partTypeMap],
   [PunctuationType, punctTypeMap],
+  [DictValency, valencyTypeMap],
 ])
 
 

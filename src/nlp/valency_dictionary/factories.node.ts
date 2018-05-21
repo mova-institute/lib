@@ -1,5 +1,5 @@
 import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE } from '../static'
-import { ValencyDict, Valency } from './valency_dictionary'
+import { ValencyDict, ValencyCase } from './valency_dictionary'
 import { mu } from '../../mu'
 import { r } from '../../lang'
 import { linesSync } from '../../utils.node'
@@ -71,14 +71,14 @@ function createTsvIt(path: string) {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function decodeTransitivity(val: string) {
   if (val.startsWith('0') || !val.trim()) {
-    return [Valency.intransitive]
+    return [ValencyCase.intransitive]
   }
   if (val === 'acc_opt' || val === 'acc|' || val === '?') {
     // return Valency.optional
-    return [Valency.accusative, Valency.intransitive]
+    return [ValencyCase.accusative, ValencyCase.intransitive]
   }
   if (/^acc($|:|&|_)/.test(val)) {
-    return [Valency.accusative]
+    return [ValencyCase.accusative]
   }
 
   throw new Error(`Cannot parse "${val}" as transitivity value`)

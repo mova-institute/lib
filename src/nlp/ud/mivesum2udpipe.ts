@@ -1,21 +1,34 @@
 #!/usr/bin/env node
 
 import { logErrAndExit, exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
-import { iterateDictCorpVizLines, DictCorpVizIterator } from '../vesum_utils'
+import { DictCorpVizIterator } from '../vesum_utils'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
-import { standartizeMorphoForUd21 } from './uk_grammar'
-import { write } from 'fs'
+import { standartizeMorphoForUd21, fillWithValencyFromDict } from './uk_grammar'
+import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
+
+import * as minimist from 'minimist'
+
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
   exitOnStdoutPipeError()
+
+  const args = minimist(process.argv.slice(2))
+
+  let valencyDict = args.valencyDict ?
+    createValencyDictFromKotsybaTsvs(args.valencyDict)
+    : undefined
+
   let iterator = new DictCorpVizIterator()
   linesBackpressedStd((line, writer) => {
     let { form, tag, lemma } = iterator.feedLine(line)
     let interp = MorphInterp.fromVesumStr(tag, lemma)
     standartizeMorphoForUd21(interp, form)
+    if (valencyDict) {
+      fillWithValencyFromDict(interp, valencyDict)
+    }
     try {
       let udTag = toUd(interp)
 

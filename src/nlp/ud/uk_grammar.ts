@@ -8,6 +8,7 @@ import { last, wiith } from '../../lang'
 import { trimAfterFirst } from '../../string_utils'
 import { UdMiRelation } from './syntagset'
 import { UdPos } from './tagset'
+import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 
 export type TokenNode = GraphNode<Token>
 export type Node2IndexMap = Map<TokenNode, number>
@@ -479,6 +480,14 @@ export function isPassive(t: TokenNode) {
   return false
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function fillWithValencyFromDict(interp: MorphInterp, valencyDict: ValencyDict) {
+  if (interp.isVerb()) {
+    interp.features.dictValency = valencyDict.lookupVerb(interp.lemma)
+  } else if (interp.isNounish()) {
+    interp.features.dictValency = valencyDict.lookupGerund(interp.lemma)
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export const ADVMOD_NONADVERBIAL_LEMMAS = [

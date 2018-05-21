@@ -229,3 +229,15 @@ export function mapInplace<T>(
     array[i] = f(array[i])
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function flip(value, a, b) {
+  if (value === a) {
+    return b
+  }
+  if (value === b) {
+    return a
+  }
+
+  throw new Error(`Value ${value} is neither ${a} nor ${b}`)
+}

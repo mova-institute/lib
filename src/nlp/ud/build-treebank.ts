@@ -26,7 +26,6 @@ import { validateSentenceSyntax } from './validation'
 import { zerofillMax, toPercent } from '../../string_utils'
 import { toSortableDatetime } from '../../date'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
-import { ukComparator } from '../static'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 
 
@@ -51,6 +50,7 @@ interface Args {
   id2bratPath: string
 
   valencyDict: string
+  addValency: boolean
 }
 
 //------------------------------------------------------------------------------
@@ -96,6 +96,7 @@ function getArgs() {
       'dryRun',
       'reportHoles',
       'onlyValid',
+      'addValency',
     ],
     alias: {
       oneSet: 'one-set',
@@ -174,6 +175,9 @@ function main() {
               verbsUncoveredByValencyDict.add(token.interp.lemma)
             }
           }
+        }
+        if (args.addValency) {
+          tokens.forEach(x => g.fillWithValencyFromDict(x.interp, valencyDict))
         }
       }
 
@@ -469,11 +473,6 @@ function createDatasetRerouteMap(definition: string) {
   let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as Array<[string, string]>
   return new Map<string, string>(pairs)
 }
-
-//------------------------------------------------------------------------------
-// function expandSentenceStream() {
-
-// }
 
 
 ////////////////////////////////////////////////////////////////////////////////

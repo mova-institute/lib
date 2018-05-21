@@ -202,6 +202,12 @@ export enum PunctuationSide {
   close,
 }
 
+export enum DictValency {
+  accusative,
+  intransitive,
+  ambiguous,
+}
+
 export type Feature = Abbreviation
   | AdjectiveAsNoun
   | Alternativity

@@ -301,3 +301,14 @@ export function logErrAndExit(e) {
   console.error(e)
   process.exit(1)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function joinToFileSync(
+  //todo
+  filePath: string,
+  strings: Iterable<string>,
+  joiner = '\n',
+  trail = true
+) {
+  fs.writeFileSync(filePath, mu(strings).join(joiner, trail))
+}

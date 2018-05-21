@@ -1,6 +1,6 @@
 // import { StringDict } from '../../types'
 // import { parseIntStrict, buildObject } from '../../lang'
-import { mu } from '../../mu'
+import { mu, Mu } from '../../mu'
 import { UdPos } from './tagset'
 import { makeObject, mapInplace } from '../../lang'
 import { Dict } from '../../types'
@@ -40,6 +40,10 @@ export class ConlluMultitoken {
   surfaceForm: string
   tokens = Array<ConlluToken>()
   misc: Dict<string>
+
+  toString() {
+    return this.surfaceForm
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +61,7 @@ export function getCol(line: string, col: ConlluField) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function parseConllu(lines: Iterable<string>) {
+export function parseConlluSentences(lines: Iterable<string>) {
   return mu(streamparseConllu(lines))
     .filter(x => !x.structure || x.structure.type === Structure.sentence && !x.structure.opening)
     .map(x => x.structure ? undefined : x.token)

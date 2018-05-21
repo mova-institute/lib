@@ -257,3 +257,13 @@ export function isTitlecase(str: string) {
 export function getColumn(line: string, col: number, separator = '\t') {
   return line.split(separator, col + 1)[col]
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function cutOut(prey: string, start: number, length: number) {
+  return prey.slice(0, start) + prey.substr(start + length)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function insert(to: string, what: string, where: number) {
+  return to.substring(0, where) + what + to.substr(where)
+}

@@ -141,8 +141,8 @@ export function token2verticalColsGeneric(
   return ret
 }
 
-//------------------------------------------------------------------------------
-function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVerbForm): UdPos {
+////////////////////////////////////////////////////////////////////////////////
+export function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVerbForm): UdPos {
   if (upos === 'PROPN' || upos === 'PRON') {
     return 'NOUN'
   }

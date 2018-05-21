@@ -1600,14 +1600,14 @@ export function validateSentenceSyntax(
     reportIf(`неперехідне дієслово має додаток`,
       t => uEqSome(t.node.rel, ['obj'])
         && t.parent.node.interp.isVerb()
-        && valencyDict.isUnambIntransVerb(t.parent.node.interp.lemma)
+        && valencyDict.isIntransitiveOnlyVerb(t.parent.node.interp.lemma)
         && !(uEq(t.node.rel, 'obj') && t.node.interp.isDative())
         && !t.node.interp.isGenitive()
     )
 
     xreportIf(`перехідне дієслово не має додатка`,
       t => t.node.interp.isVerb()
-        && valencyDict.isUnambAccVerb(t.node.interp.lemma)
+        && valencyDict.isAccusativeOnlyVerb(t.node.interp.lemma)
         && !thisOrConj(t, tt => tt.children.length
           && (tt.children.some(x => uEqSome(x.node.rel, g.CORE_COMPLEMENTS_XCOMP))
             || tt.children.some(x => uEq(x.node.rel, 'iobj')
@@ -1625,7 +1625,7 @@ export function validateSentenceSyntax(
         && t.node.interp.isAdjective()
         && t.parent
         && t.parent.node.interp.isNoun()
-        && valencyDict.isUnambTransitiveGerund(t.parent.node.interp.lemma)
+        && valencyDict.isTransitiveOnlyGerund(t.parent.node.interp.lemma)
     )
 
     xreportIf(`${johojijiStr}-прикметник замість іменника (потенційно)`,
@@ -1650,7 +1650,7 @@ export function validateSentenceSyntax(
         && t.node.interp.isNoun()
         && t.parent
         && t.parent.node.interp.isNoun()
-        && valencyDict.isUnambIntransGerund(t.parent.node.interp.lemma)
+        && valencyDict.isIntransitiveOnlyGerund(t.parent.node.interp.lemma)
     )
 
     xreportIf(`${johojijiStr}-іменник замість прикметника (потенційно)`,
