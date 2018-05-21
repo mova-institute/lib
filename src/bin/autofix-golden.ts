@@ -215,7 +215,7 @@ async function main() {
 
         saveInterp(interpEl, interp)
       }
-      tokenCount += root.evaluateElements('//w_').length()
+      tokenCount += root.evaluateElements('//w_').count()
 
       // assign id's
       if (idSequence !== undefined) {

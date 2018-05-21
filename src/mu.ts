@@ -283,10 +283,10 @@ export class Mu<T> implements Iterable<T> {
     return true
   }
 
-  count(fn: Predicate<T>) {
+  count(fn?: Predicate<T>) {
     let ret = 0
     for (let x of this) {
-      if (fn(x)) {
+      if (!fn || fn(x)) {
         ++ret
       }
     }
@@ -321,14 +321,6 @@ export class Mu<T> implements Iterable<T> {
     let ret: T
     for (let x of this) {
       ret = x
-    }
-    return ret
-  }
-
-  length() {
-    let ret = 0
-    while (!this.next().done) {
-      ++ret
     }
     return ret
   }

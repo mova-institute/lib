@@ -173,7 +173,7 @@ function main(args: Args) {
         inputStr = autofixDirtyText(inputStr, analyzer)
       }
       if (args.count) {
-        let len = mu(tokenizeUk(inputStr, analyzer)).length()
+        let len = mu(tokenizeUk(inputStr, analyzer)).count()
         output.write(len.toString() + '\n')
       } else if (args.unknown) {
         let tokens = string2tokenStream(inputStr, analyzer)

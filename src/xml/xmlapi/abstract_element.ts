@@ -66,11 +66,11 @@ export abstract class AbstractElement extends AbstractNode {
   }
 
   countChildren() {
-    return this.children().length()  // todo: wait for .count() in wu
+    return this.children().count()
   }
 
   countElementChildren() {
-    return this.children().filter(x => x.isElement()).length()  // todo: wait for .count() in wu
+    return this.children().filter(x => x.isElement()).count()
   }
 
   clear() {

@@ -56,27 +56,27 @@ export class ValencyDict {
 
   isUnambTransitiveGerund(lemma: string) {
     return this.hasGerund(lemma)
-      && this.lookupGerund(lemma).every(x => x === Valency.accusative)
+      && this.lookupGerund(lemma).every(x => x === ValencyCase.accusative)
   }
 
   isAmbigiousGerund(lemma: string) {
     return this.hasGerund(lemma)
-      && this.lookupGerund(lemma).length() > 1  //?
+      && this.lookupGerund(lemma).count() > 1  //?
   }
 
   isUnambIntransGerund(lemma: string) {
     return this.hasGerund(lemma)
-      && this.lookupGerund(lemma).every(x => x === Valency.intransitive)
+      && this.lookupGerund(lemma).every(x => x === ValencyCase.intransitive)
   }
 
   isUnambAccVerb(lemma: string) {
     return this.hasVerb(lemma)
-      && this.lookupVerb(lemma).every(x => x === Valency.accusative)
+      && this.lookupVerb(lemma).every(x => x === ValencyCase.accusative)
   }
 
   isUnambIntransVerb(lemma: string) {
     return this.hasVerb(lemma)
-      && this.lookupVerb(lemma).every(x => x === Valency.intransitive)
+      && this.lookupVerb(lemma).every(x => x === ValencyCase.intransitive)
   }
 
   buildStats() {
