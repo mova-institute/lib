@@ -1,3 +1,4 @@
+////////////////////////////////////////////////////////////////////////////////
 export class CachedValue<T> {
   private value: T
   private valid = false
@@ -9,6 +10,14 @@ export class CachedValue<T> {
     if (this.valid) {
       return this.value
     }
-    return this.value = this.calculator()
+    let ret = this.value = this.calculator()  // watch for exceptions
+    this.valid = true
+
+    return ret
+  }
+
+  invalidate() {
+    this.valid = false
+    return this
   }
 }
