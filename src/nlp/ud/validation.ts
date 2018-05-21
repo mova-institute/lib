@@ -1618,7 +1618,9 @@ export function validateSentenceSyntax(
     )
 
     const johojiji = ['його', 'її', 'їх']
-    reportIf(`${johojiji.join('/')}-прикметник замість іменника`,
+    const johojijiStr = ['його', 'її', 'їх'].join('/')
+
+    xreportIf(`${johojijiStr}-прикметник замість іменника`,
       t => johojiji.includes(t.node.form.toLowerCase())
         && t.node.interp.isAdjective()
         && t.parent
@@ -1626,7 +1628,7 @@ export function validateSentenceSyntax(
         && valencyDict.isUnambTransitiveGerund(t.parent.node.interp.lemma)
     )
 
-    reportIf(`${johojiji.join('/')}-прикметник замість іменника (потенційно)`,
+    xreportIf(`${johojijiStr}-прикметник замість іменника (потенційно)`,
       t => johojiji.includes(t.node.form.toLowerCase())
         && t.node.interp.isAdjective()
         && t.parent
@@ -1634,7 +1636,16 @@ export function validateSentenceSyntax(
         && valencyDict.isAmbigiousGerund(t.parent.node.interp.lemma)
     )
 
-    reportIf(`${johojiji.join('/')}-іменник замість прикметника`,
+    xreportIf(`${johojijiStr}-прикметник замість іменника (-ння)`,
+      t => johojiji.includes(t.node.form.toLowerCase())
+        && t.node.interp.isAdjective()
+        && t.parent
+        && t.parent.node.interp.isNoun()
+        && t.parent.node.interp.lemma.endsWith('ння')
+        && !valencyDict.hasGerund(t.parent.node.interp.lemma)
+    )
+
+    xreportIf(`${johojijiStr}-іменник замість прикметника`,
       t => johojiji.includes(t.node.form.toLowerCase())
         && t.node.interp.isNoun()
         && t.parent
@@ -1642,12 +1653,21 @@ export function validateSentenceSyntax(
         && valencyDict.isUnambIntransGerund(t.parent.node.interp.lemma)
     )
 
-    reportIf(`${johojiji.join('/')}-іменник замість прикметника (потенційно)`,
+    xreportIf(`${johojijiStr}-іменник замість прикметника (потенційно)`,
       t => johojiji.includes(t.node.form.toLowerCase())
         && t.node.interp.isNoun()
         && t.parent
         && t.parent.node.interp.isNoun()
         && valencyDict.isAmbigiousGerund(t.parent.node.interp.lemma)
+    )
+
+    xreportIf(`${johojijiStr}-іменник замість прикметника (-ння)`,
+      t => johojiji.includes(t.node.form.toLowerCase())
+        && t.node.interp.isNoun()
+        && t.parent
+        && t.parent.node.interp.isNoun()
+        && t.parent.node.interp.lemma.endsWith('ння')
+        && !valencyDict.hasGerund(t.parent.node.interp.lemma)
     )
   }
 
