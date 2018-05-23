@@ -262,8 +262,6 @@ export const FEATURE_TABLE = [
   { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.open, vesumStr: 'open' },
   { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.close, vesumStr: 'close' },
 
-  // { featStr: 'dictValency', feat: DictValency,  },
-
   // todo: dehardcode
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
   { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
