@@ -2,15 +2,17 @@ import { mu, Mu } from '../mu'
 import { cutOut, insert } from '../string_utils'
 import { parseConlluSentences, ConlluToken } from './ud/conllu'
 import { zip, flip } from '../lang'
-import { linesSync, linesBackpressedStd, joinToFileSync } from '../utils.node'
+import { linesSync, linesBackpressedStdPipeable, joinToFileSync } from '../utils.node'
 import { join, dirname } from 'path'
 import { domesticateUdPos } from '../corpus-pipeline/ud'
+import { createValencyDictFromKotsybaTsvs } from './valency_dictionary/factories.node'
+import { createMorphAnalyzerSync } from './morph_analyzer/factories.node'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function toPlaintext() {
-  linesBackpressedStd((line, writer) => {
+  linesBackpressedStdPipeable((line, writer) => {
     if (!line.trim()) {
       return
     }
@@ -112,6 +114,36 @@ export function parseGoldSentence(line) {
 
   return ret
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function calcValencyDictCoverage(args) {
+  let [morphDictDir, valDictDir, wordlist] = args._
+  let analyzer = createMorphAnalyzerSync(morphDictDir)
+  let dict = createValencyDictFromKotsybaTsvs(valDictDir)
+  let numLines = 0
+  let numInDict = 0
+  for (let line of linesSync(wordlist)) {
+    line = line.trim()
+    if (!line) {
+      continue
+    }
+    ++numLines
+    let interps = analyzer.tag(line)
+    if (interps.length) {
+      let has = analyzer.tag(line).some(x => dict.hasGerund(x.lemma))
+      if (has) {
+        ++numInDict
+        console.error(`1 ${line}`)
+      } else {
+        console.error(`0 ${line}`)
+      }
+    } else {
+      console.error(`~ ${line}`)
+    }
+  }
+  console.error([numLines, numInDict, numInDict / numLines])
+}
+
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function makeAnnotatedLine(testCase: TestCase) {
