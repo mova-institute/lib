@@ -168,6 +168,14 @@ export function linesBackpressed(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function linesBackpressedStdPipeable(
+  listener: (line: string, writer: BackpressingWriter) => void,
+) {
+  exitOnStdoutPipeError()
+  return linesBackpressedStd(listener)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
   listener: (line: string, writer: BackpressingWriter) => void,
 ) {

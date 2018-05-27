@@ -1,17 +1,15 @@
 #!/usr/bin/env node
 
-import { linesBackpressedStd, exitOnStdoutPipeError } from '../../utils.node'
+import { linesBackpressedStdPipeable } from '../../utils.node'
 import { unescape } from 'he'
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
-  exitOnStdoutPipeError()
-
   let newContextOn = new RegExp(process.argv[2] || '^</doc>')
 
   let firstInContext = true
-  linesBackpressedStd((line, writer) => {
+  linesBackpressedStdPipeable((line, writer) => {
     if (line.startsWith('<')) {
       if (newContextOn.test(line)) {
         writer.write('\n')

@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 
-import { linesBackpressedStd, exitOnStdoutPipeError } from '../../utils.node'
+import { linesBackpressedStdPipeable } from '../../utils.node'
 import { unescape } from 'he'
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
-  exitOnStdoutPipeError()
-
-  linesBackpressedStd((line, writer) => {
+  linesBackpressedStdPipeable((line, writer) => {
     if (!line.startsWith('<')) {
       writer.write(unescape(line))
       writer.write(' ')

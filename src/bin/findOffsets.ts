@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { exitOnStdoutPipeError, linesBackpressedStd } from '../utils.node'
+import { linesBackpressedStdPipeable } from '../utils.node'
 
 import { Buffer } from 'buffer'
 
@@ -8,14 +8,12 @@ import { Buffer } from 'buffer'
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
-  exitOnStdoutPipeError()
-
   let findRe = new RegExp(process.argv[2])
 
   let curOffset = 0
   let lastOffset = 0
   let lastHit: string
-  linesBackpressedStd((line, writer) => {
+  linesBackpressedStdPipeable((line, writer) => {
     if (findRe.test(line)) {
       if (curOffset) {
         writer.write(`${lastOffset}\t${curOffset - lastOffset}\t${lastHit}\n`)

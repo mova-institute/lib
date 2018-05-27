@@ -1,16 +1,14 @@
 #!/usr/bin/env node
 
-import { exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
+import { linesBackpressedStdPipeable } from '../../utils.node'
 
 
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
-  exitOnStdoutPipeError()
-
   let isInsideDoc = false
   let currGapTypes = []
-  await linesBackpressedStd((line, writer) => {
+  await linesBackpressedStdPipeable((line, writer) => {
     let match = line.match(/^<gap type="([^"]+)"/)
     if (match) {
       if (isInsideDoc) {

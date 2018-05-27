@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { logErrAndExit, exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
+import { logErrAndExit, linesBackpressedStdPipeable } from '../../utils.node'
 import { DictCorpVizIterator } from '../vesum_utils'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
@@ -13,8 +13,6 @@ import * as minimist from 'minimist'
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
-  exitOnStdoutPipeError()
-
   const args = minimist(process.argv.slice(2))
 
   let valencyDict = args.valencyDict ?
@@ -22,7 +20,7 @@ async function main() {
     : undefined
 
   let iterator = new DictCorpVizIterator()
-  linesBackpressedStd((line, writer) => {
+  linesBackpressedStdPipeable((line, writer) => {
     let { form, tag, lemma } = iterator.feedLine(line)
     let interp = MorphInterp.fromVesumStr(tag, lemma)
     standartizeMorphoForUd21(interp, form)

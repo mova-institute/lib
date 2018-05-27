@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { exitOnStdoutPipeError, linesBackpressedStd } from '../../utils.node'
+import { linesBackpressedStdPipeable } from '../../utils.node'
 
 
 
@@ -13,10 +13,8 @@ const enum GapType {
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
-  exitOnStdoutPipeError()
-
   let gap = GapType.none
-  await linesBackpressedStd((line, writer) => {
+  await linesBackpressedStdPipeable((line, writer) => {
     if (line.startsWith('1')) {  // onion marked it as a dupe
       if (!gap) {
         gap = /^..<doc[\s>]/.test(line) ? GapType.doc : GapType.par
