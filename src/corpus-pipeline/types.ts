@@ -1,17 +1,6 @@
-export type Disamb = 'жодного' | 'часткове-правила' | 'руками-Політехніка' | 'руками-стандарт'
-export type Type = 'невизначені'
-export type Domain = 'невизначені'
+import { CorpusDoc } from './doc_meta'
 
-export interface CorpusDocumentAttributes {
-  reference_title: string
-  type: Type
-  disamb: Disamb
-  domain: Domain
 
-  title?: string
-  date?: string
-  author?: string
-  original_author?: string
-  url?: string
-  comment?: string
+export interface StreamingExtractor {
+  feed(line: string): CorpusDoc | undefined
 }

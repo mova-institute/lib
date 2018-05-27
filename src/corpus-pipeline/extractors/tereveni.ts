@@ -3,7 +3,7 @@ import { parseHtml } from '../../xml/utils.node'
 import { traverseDepth } from '../../xml/utils'
 import { toSortableDate } from '../../date'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
-import { textOf } from './utils'
+import { textOf, nameFromLoginAtDomain } from './utils'
 
 
 
@@ -17,20 +17,20 @@ export function* streamDocs(html: string) {
     title = `повідомлення ${title}`
     let url = textOf(postRoot, './/span[contains(@class, "post_id ")]/a/@href')
     let author = textOf(postRoot, './/span[@class="author vcard"]/a/text()')
-    author = `${author} @ tereveni.org`
+    author = nameFromLoginAtDomain(author, 'tereveni.org')
     let date = textOf(postRoot, './/abbr[@class="published updated"]/@title')
     date = toSortableDate(new Date(date))
     let postEntry = postRoot.evaluateElement('.//div[contains(@class, "post entry-content")]')
     let paragraphs = getPostParagraphs(postEntry)
 
-    let toyield = {
+    let toyield: CorpusDoc = {
       title,
       url,
       author,
       date,
       paragraphs,
       source: 'Теревені',
-    } as CorpusDoc
+    }
     yield toyield
   }
 }

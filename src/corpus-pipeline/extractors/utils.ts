@@ -72,3 +72,7 @@ export function brbr2paragraphs(root: AbstractElement) {
 
   return ret
 }
+////////////////////////////////////////////////////////////////////////////////
+export function nameFromLoginAtDomain(login: string, domain: string) {
+  return `${login} @ ${domain}`
+}
