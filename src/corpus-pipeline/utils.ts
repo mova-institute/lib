@@ -1,10 +1,10 @@
 import * as glob from 'glob'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { CorpusDoc } from './doc_meta';
-import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer';
-import { writeFileSyncMkdirp } from '../utils.node';
-import { join } from 'path';
-import { tokenizeUk, normalizeWebParaSafe } from '../nlp/utils';
+import { CorpusDoc } from './doc_meta'
+import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
+import { writeFileSyncMkdirp } from '../utils.node'
+import { join } from 'path'
+import { tokenizeUk, normalizeWebParaSafe } from '../nlp/utils'
 
 
 

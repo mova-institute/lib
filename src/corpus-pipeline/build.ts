@@ -11,7 +11,7 @@ import * as minimist from 'minimist'
 import { join } from 'path'
 import * as fs from 'fs'
 import * as path from 'path'
-import { processDoc, getMetaParaPaths } from './utils';
+import { processDoc, getMetaParaPaths } from './utils'
 
 
 
