@@ -1,18 +1,35 @@
-#!/usr/bin/env node
+import { PgClient } from '../postrges'
+import { genAccessToken } from '../crypto'
+import { parseJsonFileSync } from '../utils.node'
+import { pgTransactionWrap } from '../lib/express/pg'
+import { sendError } from '../lib/express/utils'
 
-import { PgClient } from './postrges'
-import { genAccessToken } from './crypto'
-import { parseJsonFileSync } from './utils.node'
-import { pgTransactionWrap } from './lib/express/pg'
-import { sendError } from './lib/express/utils'
-
+import * as minimist from 'minimist'
 import * as express from 'express'
+import { Request, Response, CookieOptions } from 'express'
 import * as cookieParser from 'cookie-parser'
 import * as passport from 'passport'
-import { Request, Response, CookieOptions } from 'express'
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth'
+import { WebvectorClient } from './webvector-client'
+import { vectorHandlers, VectorConfig } from './vector-handlers'
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+export interface Config {
+  port: number
+  webvector: VectorConfig
+  postgres: {
+    host: string
+    database: string
+    user: string
+    password: string
+  }
+  google: {
+    clientID: string
+    clientSecret: string
+  }
+}
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const AUTH_COOKIE = 'accessToken'
@@ -52,29 +69,40 @@ let actions: { [key: string]: (req: Request, res: Response, client: PgClient) =>
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
-  let config = parseJsonFileSync(process.argv[2])
+  let params = minimist(process.argv.slice(2))
+  let config = parseJsonFileSync(process.argv[2]) as Config
 
   bakeGooglePassport(passport, config.google)
+  let vebvectorClient = new WebvectorClient(config.webvector.port, config.webvector.host)
 
   let app = express()
-    .disable('x-powered-by')
+  app.disable('x-powered-by')
     .disable('etag')
     .set('json spaces', 2)
     .use(cookieParser())
-    .use(express.json())
+    .use(express.json({ type: '*/*' }))
     .use(passport.initialize())
-    .get('/auth/google', startAuthWithGoogle)
     .get('/auth/google/callback', endAuthWithGoogle(config.postgres))
+    .get('/auth/google', startAuthWithGoogle)
     .all('/*', async (req, res) => {
-      let actionName = req.params[0]
-      if (actionName in actions) {
-        pgTransactionWrap(actions[actionName], config.postgres, req, res)
-      } else {
-        sendError(res, 404)
+      try {
+        let [l1, l2] = req.path.substr(1).split(/\//g, 2)
+        if (l1 in actions) {
+          pgTransactionWrap(actions[l1], config.postgres, req, res)
+        } else if (l1 === 'vectors' && (l2 in vectorHandlers)) {
+          await vectorHandlers[l2](req, res, vebvectorClient, config.webvector)
+        } else {
+          sendError(res, 404)
+        }
+      } catch (e) {
+        console.error(e.stack)
+        sendError(res, 500)
       }
     })
 
-  let server = app.listen(config.port, () => console.log(`mi-api listening on ${config.port}`))
+  let port = params.port || config.port
+  let server = app.listen(port,
+    () => console.log(`mi-api listening on ${port}`))
 
   process.on('SIGINT', () => {
     console.error(`Shutting down gracefully…`)
@@ -86,9 +114,14 @@ function main() {
 function startAuthWithGoogle(req: Request, res: Response) {
   let continueTo = req.query[CONTINUETO_COOKIE]
   if (continueTo) {
-    res.cookie(CONTINUETO_COOKIE, req.query[CONTINUETO_COOKIE], continuetoCookieOptions)
+    res.cookie(CONTINUETO_COOKIE, continueTo, continuetoCookieOptions)
   }
-  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res)
+  passport.authenticate('google', {
+    scope: ['profile', 'email'] ,
+    // successRedirect: continueTo,
+    // successReturnToOrRedirect: continueTo,
+    // passReqToCallback: continueTo,
+  })(req, res)
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -147,14 +180,14 @@ function extractGoogleProfile(profile) {
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function bakeGooglePassport(passportModule, config) {
-  passportModule.use(new GoogleStrategy({
+function bakeGooglePassport(passportInstance, config) {
+  passportInstance.use(new GoogleStrategy({
     ...config,
     callbackURL: 'https://api.mova.institute/auth/google/callback',
     accessType: 'offline',
   }, (accessToken, refreshToken, profile, cb) => cb(null, extractGoogleProfile(profile))))
-  passportModule.serializeUser((user, cb) => cb(null, user))
-  passportModule.deserializeUser((obj, cb) => cb(null, obj))
+  passportInstance.serializeUser((user, cb) => cb(null, user))
+  passportInstance.deserializeUser((obj, cb) => cb(null, obj))
 }
 
 
@@ -162,3 +195,5 @@ function bakeGooglePassport(passportModule, config) {
 if (require.main === module) {
   main()
 }
+
+

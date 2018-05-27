@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto'
+import { randomBytes, createHash } from 'crypto'
 
 
 
@@ -13,4 +13,14 @@ export async function genAccessToken() {
       }
     })
   })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function hashString(value: string) {
+  return createHash('sha256').update(value).digest('hex')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function hashObj(value) {
+  return hashString(JSON.stringify(value))
 }
