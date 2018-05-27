@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesBackpressedStd, exitOnStdoutPipeError } from '../../utils.node'
+import { linesBackpressedStdPipeable } from '../../utils.node'
 
 import * as minimist from 'minimist'
 
@@ -11,13 +11,11 @@ interface Args {
   uposColumn: number
   lowercase?: boolean
   noPunct?: boolean
-  newContextOnRe?: string
+  newContextOn?: string
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
-  exitOnStdoutPipeError()
-
   const args: Args = minimist(process.argv.slice(2), {
     boolean: [
       'lowercase',
@@ -25,12 +23,13 @@ function main() {
     ]
   }) as any
 
-  let newContextRe = new RegExp(args.newContextOnRe || '^</doc>')
+  args.newContextOn = args.newContextOn || 'doc'
+  let newContextRe = new RegExp(`^</${args.newContextOn}>`)
 
   let splitMax = Math.max(args.uposColumn, args.surfaceColumn) + 1
 
   let firstInSent = true
-  linesBackpressedStd((line, writer) => {
+  linesBackpressedStdPipeable((line, writer) => {
     if (!line.includes('\t')) {
       if (newContextRe.test(line)) {
         writer.write('\n')
