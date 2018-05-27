@@ -2,7 +2,9 @@
   "version": "0.1.0",
   "command": "node_modules/typescript/bin/tsc",
   "isShellCommand": true,
-  "args": ["-w"],
+  "args": [
+    "-w"
+  ],
   "suppressTaskName": true,
   "tasks": [
     {
@@ -10,7 +12,12 @@
       "suppressTaskName": true,
       "isBuildCommand": true,
       "showOutput": "silent",
-      "isBackground": true
+      "isBackground": true,
+      "options": {
+        "env": {
+          "TSC_NONPOLLING_WATCHER": "1"
+        }
+      }
     }
   ]
 }
