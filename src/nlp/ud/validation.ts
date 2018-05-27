@@ -1835,7 +1835,7 @@ export function validateSentenceSyntax(
   return problems
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isRelativeInRelcl(node: GraphNode<Token>) {
   if (!node.node.interp.isRelative()) {
     return false
@@ -1859,12 +1859,12 @@ function isRelativeInRelcl(node: GraphNode<Token>) {
   return clauseRoot && uEq(clauseRoot.node.rel, 'acl')
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function hasChildrenOfUrel(node: GraphNode<Token>, urel: string) {
   return node.children.some(x => uEq(x.node.rel, urel))
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function thisOrConjHead(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
   for (let t of node.walkThisAndUp0()) {
     if (!uEq(t.node.rel, 'conj')) {
@@ -1873,7 +1873,7 @@ function thisOrConjHead(node: GraphNode<Token>, predicate: TreedSentencePredicat
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function thisOrConj(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
   let nodes = [node]
   if (uEq(node.node.rel, 'conj')) {
@@ -1887,12 +1887,12 @@ function thisOrConj(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
   return false
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isSubordiateRoot(token: Token) {
   return g.SUBORDINATE_CLAUSES.some(x => uEq(token.rel, x))
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function findHoles(array: Array<number>) {
   let ret = new Array<number>()
   if (array.length < 3) {
@@ -1907,7 +1907,7 @@ function findHoles(array: Array<number>) {
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isContentWord(token: Token) {
   if (token.isPromoted) {
     return true
@@ -1917,12 +1917,12 @@ function isContentWord(token: Token) {
   return !FUNCTION_WORD_POSES.includes(token.interp.features.pos) && !token.interp.isAuxillary()
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isPassive(interp: MorphInterp) {
   return /*interp.isImpersonal() ||*/ interp.isPassive()
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isContinuous(array: Array<number>) {
   for (let i = 1; i < array.length; ++i) {
     if (array[i] - array[i - 1] !== 1) {
@@ -1932,7 +1932,7 @@ function isContinuous(array: Array<number>) {
   return true
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function canBePredicate(t: GraphNode<Token>) {
   let token = t.node
   let interp = token.interp
@@ -1952,7 +1952,7 @@ function canBePredicate(t: GraphNode<Token>) {
   // || ((interp.isNounish() || interp.isAdjective()) && interp.isNominative())
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function canBePredicateOld(token: Token, sentence: Array<Token>, index: number) {
   return token.isPromoted
     || !token.hasDeps()
@@ -1969,7 +1969,7 @@ function canBePredicateOld(token: Token, sentence: Array<Token>, index: number) 
     || g.CLAUSAL_MODIFIERS.includes(token.rel)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function canActAsNoun(token: Token) {
   return token.interp.isNounish()
     || token.isPromoted && (token.interp.isAdjectivish() || token.interp.isCardinalNumeral())
@@ -1978,7 +1978,7 @@ function canActAsNoun(token: Token) {
     || token.interp.isSymbol()
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function canActAsNounForObj(node: GraphNode<Token>) {
   return canActAsNoun(node.node)
     || !node.isRoot()
@@ -1988,12 +1988,12 @@ function canActAsNounForObj(node: GraphNode<Token>) {
     && node.node.interp.isDemonstrative()
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isActualParticiple(token: Token, sentence: Array<Token>, index: number) {
   return token.interp.isParticiple() && ['obl:agent', /*'advcl', 'obl', 'acl', 'advmod'*/].some(x => sentence.some(xx => xx.headIndex === index && xx.rel === x))
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isEncolsedInQuotes(node: GraphNode<Token>) {
   let ret = node.children.length > 2
     && node.children[0].node.interp.isPunctuation()

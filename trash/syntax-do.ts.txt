@@ -35,7 +35,7 @@
 //   fs.writeFileSync(args.o || 'compound.txt', retLines.join('\n'), 'utf8')
 // }
 
-// //------------------------------------------------------------------------------
+// //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // function compare(a: string, b: string) {
 //   return Number.parseInt(a.match(/(\d+)\.out/)[1], 10) - Number.parseInt(b.match(/(\d+)\.out/)[1], 10)
 // }

@@ -19,13 +19,13 @@ import { processDoc, getMetaParaPaths } from './utils';
 
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 interface SpecificExtractor {
   streamDocs?(inputStr: string): Iterable<CorpusDoc>
   extract?(inputStr: string): CorpusDoc
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main(args: Args) {
   let outDir = getOutDir(args)
 
@@ -80,12 +80,12 @@ function main(args: Args) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getOutDir(args: Args) {
   return join(args.workspace, args.out || args.part)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function globInforming(inputRoot: string, inputGlob = '**/*') {
   let globStr = join(inputRoot, inputGlob)
   console.log(`globbing input files: ${globStr}`)
@@ -94,7 +94,7 @@ function globInforming(inputRoot: string, inputGlob = '**/*') {
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function doUdpipeStage(args: Args) {
   let outDir = getOutDir(args)
   let inputRoot = join(outDir, 'para')
@@ -119,7 +119,7 @@ async function doUdpipeStage(args: Args) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function doVerticalStage(args: Args) {
   let outDir = getOutDir(args)
   let inputRoot = join(outDir, 'conllu')
@@ -143,7 +143,7 @@ function doVerticalStage(args: Args) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function paragraphs2UdpipeInput(paragraphs: Array<string>) {
   return paragraphs.map(x => x.replace(/\u0301/g, '')).join('\n\n')
 }

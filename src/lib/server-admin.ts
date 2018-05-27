@@ -52,12 +52,12 @@ export class ServerAdmin {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function log(line: string, file: number) {
   fs.writeSync(file, `${nowSortableDatetime()} ${line}\n`)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function parseIpmitoolSensor(val: string) {
   let pairs = val.trim().split('\n')
     .map(line => line.trim()
@@ -67,7 +67,7 @@ function parseIpmitoolSensor(val: string) {
   return makeObject(pairs)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function parseHddtemp(val: string) {
   let pairs = val.trim()
     .split('\n')
@@ -75,7 +75,7 @@ function parseHddtemp(val: string) {
   return makeObject(pairs)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
   let admin = new ServerAdmin()
   admin.start()

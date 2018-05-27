@@ -179,7 +179,7 @@ const REPLACINGS = [
   ['лянд', 'ланд'],
 ]
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const PREFIX_SPECS = [
   {
     prefixesRegex: new RegExp(`^(${gluedPrefixes.join('|')})+`, 'g'),
@@ -215,7 +215,7 @@ const PREFIX_SPECS = [
   },
 ]
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function postrpocessPerfPrefixedVerb(x: MorphInterp) {
   x.setIsPerfect()
   if (x.isPresent()) {
@@ -789,7 +789,7 @@ export class MorphAnalyzer {
 
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const allUkUppercaseWchar = new RegExp(`^[${WCHAR_UK_UPPERCASE}]+$`)
 function varyLetterCases(value: string) {
   let lowercase = value.toLowerCase()
@@ -804,7 +804,7 @@ function varyLetterCases(value: string) {
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const ignoreLemmas = new Set(['ввесь', 'його', 'її', 'весь', 'увесь', 'який'])
 function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: string) {
   yield flags
@@ -820,7 +820,7 @@ function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: s
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function capitalizeFirst(value: string) {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }

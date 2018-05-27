@@ -133,7 +133,7 @@ const TRANSFORMS = {
 
 /*
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function switch2globalIds(root: AbstractElement) {
   let tokens = [...root.evaluateElements('//w_')]
 
@@ -153,7 +153,7 @@ function switch2globalIds(root: AbstractElement) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function convertPcToW(root: AbstractElement) {
   mu(root.evaluateElements('//pc'))
     .forEach(pc => {
@@ -169,7 +169,7 @@ function convertPcToW(root: AbstractElement) {
     })
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function sideQuotes(root: AbstractElement) {
   mu(root.evaluateElements('//w_'))
     .filter(x => x.firstElementChild().attribute('lemma') === '"')
@@ -231,7 +231,7 @@ morphInterpret(root, analyzer)
 });
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function insertGlueAroundIfNeeded(el: AbstractElement) {
   if (el.text() === '-'
     && el.previousElementSibling()
@@ -293,7 +293,7 @@ for (let tokenEl of tokenEls) {
   //     && (x.interp.isNominative() || x.interp.isAccusative() /*|| /^\d+$/.test(x.form)*/)
   //     && sentence[x.head].interp.isGenitive())
 
-  //------------------------------------------------------------------------------
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function formatProblemsTxt(docName: string, sentenceId: string, tokens: Token[], problems: any[], count: number) {
   let tokenWithDepsrc = tokens.find(x => x.getAttribute('depsrc'))
   let bratPath = tokenWithDepsrc && tokenWithDepsrc.getAttribute('depsrc').slice('/Users/msklvsk/Desktop/treebank/'.length, -4)
@@ -336,7 +336,7 @@ function formatProblemsTxt(docName: string, sentenceId: string, tokens: Token[],
 
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function adoptBratRelationsNoN() {
   let [xmlFile, bratFilesGlob, nStr] = process.argv.slice(2)
   let bratFiles = glob.sync(bratFilesGlob)
@@ -365,7 +365,7 @@ function adoptBratRelationsNoN() {
 }
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function write4vec(outDir: string, relPath: string, parsedDocs: CorpusDoc[], analyzer: MorphAnalyzer) {
   let forvecPath = join(outDir, '4vec', `${relPath}.4vec`)
   let tempout = openSyncMkdirp(forvecPath, 'w')
@@ -386,7 +386,7 @@ function write4vec(outDir: string, relPath: string, parsedDocs: CorpusDoc[], ana
   fs.closeSync(tempout)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function umoloda(workspacePath: string, analyzer: MorphAnalyzer) {
   let verticalFile = rotateAndOpen(join(workspacePath, `build/ umoloda.vrt.txt`))
   let articlePathsGlob = join(workspacePath, 'data/umoloda/fetched_articles/*.html')
@@ -417,7 +417,7 @@ function umoloda(workspacePath: string, analyzer: MorphAnalyzer) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function den(workspacePath: string, analyzer: MorphAnalyzer) {
   let verticalFile = rotateAndOpen(join(workspacePath, `build/den.vrt.txt`))
   let articlePathsGLob = join(workspacePath, 'data/den/fetched_articles/*/**/*.html')
@@ -454,7 +454,7 @@ function den(workspacePath: string, analyzer: MorphAnalyzer) {
 
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function tyzhden(workspacePath: string, analyzer: MorphAnalyzer) {
   let verticalFile = rotateAndOpen(join(workspacePath, 'build', 'tyzhden.vrt.txt'))
   let articlePathsGLob = join(workspacePath, 'data/tyzhden/html/**/*.html')
@@ -489,7 +489,7 @@ function tyzhden(workspacePath: string, analyzer: MorphAnalyzer) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function conllu2forvec(conllu: string) {
   let forms = ''
   let lemmas = ''

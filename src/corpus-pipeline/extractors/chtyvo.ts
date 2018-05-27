@@ -160,7 +160,7 @@ const typeMap = {
 }
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
   let year = getTableValue(root, 'Написано')
   year = year.split(/\s/)[0]
@@ -202,23 +202,23 @@ function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getTableValue(root: AbstractElement, key: string) {
   return root.evaluateString(
     `string(//table[@class="books"]//strong[text()="${key}:"]/parent::*/following-sibling::td/text())`)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getTextByClassName(root: AbstractElement, elName: string, className: string) {
   return root.evaluateString(`string(//${elName}[@class="${className}"]/text())`)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function hasSmashedEncoding(str: string) {
   return !str.includes('і') || str.includes('Ђ')
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function readFileSyncAutodetect(path: string) {
   let bytes = fs.readFileSync(path)
   let encoding = detectCharacterEncoding(bytes).encoding
@@ -228,7 +228,7 @@ function readFileSyncAutodetect(path: string) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function extractTextFromTxt(str: string) {
   return str.replace(/^[\s\S]{0,300}-{9,}/, '')
     .replace(/\n[\s\-]*---\s*КІНЕЦЬ[\s\S]{0,5000}$/, '')
@@ -236,19 +236,19 @@ function extractTextFromTxt(str: string) {
     .replace(/-{5,}[\s\S]+(Бібліографія|Примітки:)([\s\S]{0,10000}|(\[\d+\])+\s+[^\n]+(\n|$))$/, '')
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function killReferences(str: string) {
   return str.replace(/\s\[\d+\]/g, '')
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function normalizeText(str: string) {
   let ret = autofixDirtyText(str)
   ret = killReferences(ret)
   return ret.trim()
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function extractParsFromDocWithLibre(filePath: string) {
   execSync(`timeout 60s soffice --headless --convert-to html `  // hangs for xhtml
     + `"${filePath}" --outdir tmp`)

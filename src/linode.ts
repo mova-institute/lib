@@ -98,7 +98,7 @@ class LinodeFarmer {
   // private construct() { }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getArgs() {
   let ret = minimist(process.argv.slice(2), {
     boolean: [
@@ -114,7 +114,7 @@ function getArgs() {
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
   const args = getArgs()
   const prefix = `${args.prefix}_`
@@ -147,7 +147,7 @@ async function main() {
 
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function createLinode(label: string, params: LinodeConfig) {
   let command = `linode create ${label} `
   command += Object.entries(params).map(([k, v]) => `--${k} '${v}'`).join(' ')
@@ -159,25 +159,25 @@ async function createLinode(label: string, params: LinodeConfig) {
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function getLinodesWithPrefix(prefix: string) {
   let allRunningLinodes = await getLinodeList()
   return allRunningLinodes.filter(x => x.label.startsWith(prefix))
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function deleteLinode(label: string) {
   return execPromise(`linode delete ${label}`)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function getLinodeInfo(label: string) {
   let command = `linode show ${label} --json`
   let { stdout } = await execPromise(command)
   return JSON.parse(stdout)[label] as LinodeDescriptor
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function execPromise(command: string) {
   return new Promise<{ stdout: string, stderr: string }>((resolve, reject) => {
     exec(command, (err, stdout, stderr) => {
@@ -190,7 +190,7 @@ function execPromise(command: string) {
   })
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function getLinodeList() {
   let { stdout } = await execPromise(`linode list --json`)
   let dict = JSON.parse(stdout) as Dict<LinodeDescriptor>

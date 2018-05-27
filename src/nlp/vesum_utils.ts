@@ -15,7 +15,7 @@ const NONLEMMA_PADDING = '  '
 // const expandableFeatures = new Set([RequiredCase, PronominalType, ConjunctionType])
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // function groupExpandableFlags(flags: string[]) {
 //   if (!flags.length) {
 //     return []
@@ -154,7 +154,7 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // function* expandLexeme(lexeme: Mu<string>) {
 //   let lemmaLine = lexeme.next()
 //   if (!lemmaLine.done) {
@@ -240,7 +240,7 @@ export function* domesticateDictCorpViz(fileStr: string) {
 //   return ret.join('\n')
 // }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // function splitMainAltFlags(tag: string) {
 //   let [main, alt] = tag.split(/:&_|:&(?=adjp)/)
 //   if (alt) {
@@ -256,7 +256,7 @@ export function* domesticateDictCorpViz(fileStr: string) {
 //   return [main, alt]
 // }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // function expandAndSortVesumTag(tag: string, lemmaFlags?: string[]) {
 //   let ret = combinations(groupExpandableFlags(tag.split(':')))
 //   ret = ret.map(x => MorphTag.fromVesum(x, lemmaFlags).toVesum())
@@ -317,7 +317,7 @@ export function presentTagsForDisambOneBlock(interps: Array<IStringMorphInterp>)
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function alignTagList(flags: Array<Array<string>>) {
   let ret = new Array<Array<Array<string>>>()  // [pos][tag][flag]
 
@@ -432,7 +432,7 @@ export function* gatherXps(lines: Iterable<string>) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function isAdditionalTag(flags: string) {
   return /:&noun|:(in)?animish/.test(flags)
 }

@@ -22,7 +22,7 @@ ioArgsPlain(async (input, output) => {
   })
 })
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function writeLexeme(lexeme: Array<VesumLineDescriptor>, output) {
   let mteLinesLexeme = lexeme.map(x => {
     let ret = ''

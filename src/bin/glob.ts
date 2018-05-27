@@ -6,7 +6,7 @@ import * as glob from 'glob'
 import * as minimist from 'minimist'
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
   let args = minimist(process.argv.splice(2))
 
@@ -19,7 +19,7 @@ function main() {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function globAndWrite(globStr: string, args) {
   let paths = glob.sync(globStr, args)
   if (paths.length) {

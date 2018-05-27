@@ -78,7 +78,7 @@ export function compileCorpus(inputDir: string, outDir: string) {
 
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function verticalizeDir(dir: string, verticalFile: number) {
   let taggedFiles = globSync(dir + '/**/*.xml')
   taggedFiles.forEach((filePath, i) => {
@@ -102,7 +102,7 @@ function verticalizeDir(dir: string, verticalFile: number) {
 }
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
   const args = require('minimist')(process.argv.slice(2), {
     // boolean: ['tee'],
@@ -170,12 +170,12 @@ export function updateMetadataInVertical(metaFilePath: string, inputFilePath: st
   })
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function formatTextId(id: number) {
   return id.toString(36).toUpperCase()
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 class IdRegistry {
   private registry: Set<number>
   private current = 0
@@ -195,7 +195,7 @@ class IdRegistry {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function createTextTypeAttribute(value: string) {
   let res = new Array<string>()
   value.split('|').forEach(type => {
@@ -214,17 +214,17 @@ function createTextTypeAttribute(value: string) {
   return res.join('|')
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function killExtension(value: string) {
   return value.replace(/\.(txt|xml)$/, '')
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function countOf(i: number, len: number) {
   return `(${i + 1} of ${len})`
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function separatedValues2Array(filename: string, separator: string): any[] {
   let [headerString, ...lines] = linesSyncArray(filename)
   let header = headerString.split(separator)

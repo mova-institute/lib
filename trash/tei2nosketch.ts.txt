@@ -11,7 +11,7 @@ const args = require('minimist')(process.argv.slice(2))
 
 main()
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
   let sourcePaths = globSync(args._[0])
   let dest = fs.openSync(args.out, 'a')

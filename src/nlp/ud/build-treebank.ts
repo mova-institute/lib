@@ -30,7 +30,7 @@ import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factorie
 
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 interface Args {
   _: Array<string>
   dryRun: boolean
@@ -53,7 +53,7 @@ interface Args {
   addValency: boolean
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 class DatasetDescriptor {
   file: number
   counts = {
@@ -87,7 +87,7 @@ class DatasetDescriptor {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getArgs() {
   return minimist(process.argv.slice(2), {
     boolean: [
@@ -117,7 +117,7 @@ function getArgs() {
   }) as Args
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
   let args = getArgs()
 
@@ -332,7 +332,7 @@ function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function transposeProblems(problems: Array<any>) {
   let problemsByType = []
   for (let sentence of problems) {
@@ -347,7 +347,7 @@ function transposeProblems(problems: Array<any>) {
   return problemsByType
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
   let stats = Object.entries(datasetRegistry)
     .map(([set, { counts: { tokensBlocked, tokensExported, tokensInUnfinishedSentenses, sentencesExported } }]) => ({
@@ -386,7 +386,7 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
   // console.log(`\n`)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function formatProblemsHtml(sentenceProblems: Array<any>) {
   let body = ''
   for (let [i, { sentenceId, problems, tokens, bratPath }] of sentenceProblems.entries()) {
@@ -429,12 +429,12 @@ function formatProblemsHtml(sentenceProblems: Array<any>) {
   </body></html>`
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function set2filename(dir: string, setSchema: string, setName: string) {
   return path.join(dir, `uk-${setSchema}-${setName}.conllu`)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // const FOREIGN = MorphInterp.fromVesumStr('x:foreign')
 function standartizeMorpho(sentence: Array<Token>) {
   for (let token of sentence) {
@@ -468,7 +468,7 @@ function standartizeMorpho(sentence: Array<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function createDatasetRerouteMap(definition: string) {
   let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as Array<[string, string]>
   return new Map<string, string>(pairs)

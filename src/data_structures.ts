@@ -75,7 +75,7 @@ export interface IMap<K, V> {
   [Symbol.iterator]()
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 export class JsonCompareMap<K, V> implements IMap<K, V> {
   map = new Map<string, [K, V]>()
 

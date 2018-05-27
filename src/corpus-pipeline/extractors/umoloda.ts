@@ -58,12 +58,12 @@ export function extract(html: string) {
   } as CorpusDoc
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function paragraphByNewline(text: string) {
   return `<p>${text.replace(/[\n\r]+/g, '</p>\n<p>')}</p>`
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function matchTag(html: string, tagName: string, includeTags: boolean, attributes = '') {
   let re = new RegExp(String.raw`<${tagName}[^>]*${attributes}[^>]*>([^>]*)</${tagName}>`)
   let match = html.match(re)
@@ -74,12 +74,12 @@ function matchTag(html: string, tagName: string, includeTags: boolean, attribute
   return ''
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function betweenTags(html: string, tagName: string, attributes = '') {
   return matchTag(html, tagName, false, attributes)
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function withTags(html: string, tagName: string, attributes = '') {
   return matchTag(html, tagName, true, attributes)
 }

@@ -19,7 +19,7 @@ import { standartizeMorphoForUd21 } from '../nlp/ud/uk_grammar'
 
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 interface Args {
   _: Array<string>
   inputRoot: string
@@ -27,7 +27,7 @@ interface Args {
   outDir: string
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getArgs() {
   return minimist(process.argv.slice(2), {
     boolean: [
@@ -39,7 +39,7 @@ function getArgs() {
   }) as Args
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function main() {
   let args = getArgs()
 
@@ -98,7 +98,7 @@ function buildExtTitle(meta) {
   return ret
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function* streamVertical(root: AbstractElement, docMeta) {
   yield `<doc ${keyvalue2attributesNormalized(docMeta)}>`
   yield '<p>'
@@ -127,7 +127,7 @@ function* streamVertical(root: AbstractElement, docMeta) {
   yield '</doc>'
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function* stream4vec(root: AbstractElement) {
   let tokenStream = mixml2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))

@@ -105,7 +105,7 @@ export function extract(html: string) {
   }
 }
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function getDate(root: AbstractElement, xpath: string) {
   // Неділя, 5 березня 2017, 01:08
   let ret = textOf(root, xpath)
@@ -122,7 +122,7 @@ function getDate(root: AbstractElement, xpath: string) {
 }
 
 
-//------------------------------------------------------------------------------
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 function trimCopyrightish(paragraphs: Array<string>) {
   if (paragraphs.length) {
     if (/( правда$|^\S+$|^Теми: |для УП$)/i.test(last(paragraphs))) {
