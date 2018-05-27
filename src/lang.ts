@@ -16,7 +16,7 @@ export function buildObject<ValueType>(kevalues: Iterable<[string, ValueType]>) 
 
 ////////////////////////////////////////////////////////////////////////////////
 export function buildMap<KeyType, ValueType>(kevalues: Iterable<[KeyType, ValueType]>) {
-  let ret = new Map <KeyType, ValueType>()
+  let ret = new Map<KeyType, ValueType>()
   for (let [key, value] of kevalues) {
     ret.set(key, value)
   }
@@ -240,4 +240,29 @@ export function flip(value, a, b) {
   }
 
   throw new Error(`Value ${value} is neither ${a} nor ${b}`)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isShallowEqual(a, b) {
+  if (a === b) {
+    return true
+  }
+
+  if (!a || !b) {
+    return false
+  }
+
+  for (let key in a) {
+    if (!(key in b) || a[key] !== b[key]) {
+      return false
+    }
+  }
+
+  for (let key in b) {
+    if (!(key in a) || a[key] !== b[key]) {
+      return false
+    }
+  }
+
+  return true
 }
