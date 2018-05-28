@@ -30,6 +30,15 @@ export class Mu<T> implements Iterable<T> {
     throw new Error(`Not implemented`)
   }
 
+  static seq(start = 0, step = 1) {
+    return mu((function* () {
+      while (true) {
+        yield start
+        start += step
+      }
+    })())
+  }
+
   constructor(iterable: Iterable<T>) {
     this.iterator = iterable[Symbol.iterator]()
   }
