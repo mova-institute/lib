@@ -654,7 +654,6 @@ async function main() {
 function saveToken(token: Token, element: AbstractElement) {
   Object.entries(token.getAttributes())
     .forEach(([k, v]) => element.setAttribute(k, v || undefined))
-
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)
