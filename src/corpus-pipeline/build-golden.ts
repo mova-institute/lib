@@ -12,7 +12,7 @@ import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { trimExtension } from '../string_utils'
 import { toUd } from '../nlp/ud/tagset'
-import { token2verticalLineUk } from './ud'
+import { token2verticalLineZoloto } from './ud'
 import { mu } from '../mu'
 import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
 import { standartizeMorphoForUd21 } from '../nlp/ud/uk_grammar'
@@ -114,7 +114,7 @@ function* streamVertical(root: AbstractElement, docMeta) {
     for (let token of tokens) {
       standartizeMorphoForUd21(token.interp, token.form)
       let { pos, features } = toUd(token.interp)
-      yield token2verticalLineUk(token.form, token.interp.lemma,
+      yield token2verticalLineZoloto(token.form, token.interp.lemma,
         pos, features, token.rel, token.index, token.headIndex, token.getAttribute('id'))
       if (token.gluedNext) {
         yield '<g/>'

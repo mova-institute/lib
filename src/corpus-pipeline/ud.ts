@@ -7,7 +7,7 @@ import * as _ from 'lodash'
 
 ////////////////////////////////////////////////////////////////////////////////
 export function tokenObj2verticalLineUk(token: ConlluToken) {
-  return token2verticalLineUk(token.form, token.lemma, token.upos, token.feats as any,
+  return token2verticalLineZoloto(token.form, token.lemma, token.upos, token.feats as any,
     token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
 }
 
@@ -38,7 +38,7 @@ export function tokenObj2verticalColsGeneric(token: ConlluToken, featsOrder: Arr
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function token2verticalLineUk(
+export function token2verticalLineZoloto(
   form: string,
   lemma: string,
   upos: UdPos,
@@ -46,8 +46,8 @@ export function token2verticalLineUk(
   rel: string,
   sentIndex: number,
   head: number,
-  gluedNext = false,
-  id?: string,
+  // gluedNext = false,
+  id: string,
 ) {
   let domesticatedPos = domesticateUdPos(upos, feats.NumType, feats.VerbForm)
   let urel = prepareUrel(rel)
@@ -93,11 +93,9 @@ export function token2verticalLineUk(
     urel,
     head + 1,
     relativeHead,
-    gluedNext ? 'no' : '',
+    // gluedNext ? 'no' : '',
   ])
-  if (id !== undefined) {
-    ret += `\t${id}`
-  }
+  ret += `\t${id}`
 
   return ret
 }
