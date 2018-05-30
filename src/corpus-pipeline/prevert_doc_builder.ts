@@ -1,57 +1,45 @@
 import { parseTagStr } from '../xml/utils'
-import * as he from 'he'
-import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../nlp/utils'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class PrevertDocBuilder {
-  private meta: Array<[string, string]>
+  private meta = new Array<[string, string]>()
   private paragraphs = new Array<string>()
-  private curPar = ''
 
   reset() {
-    this.meta = undefined
+    this.meta = []
     this.paragraphs = []
-    this.curPar = ''
   }
 
-  // node is an element of split for ~ /(<[^>]+>)/
-  feedNode(node: string) {
-    if (!node) {
+  feedLine(line: string) {
+    line = line.trim()
+    if (!line) {
       return
     }
 
-    let tag = parseTagStr(node)
-    if (tag) {
+    let tag = parseTagStr(line)
+    if (!tag) {
+      throw new Error(`Unexpected line: not a tag: "${line}"`)
+    }
+
+    if (tag.name === 'doc') {
       if (tag.isClosing) {
-        if (tag.name === 'doc') {
-          let ret = {
-            paragraphs: this.paragraphs,
-            meta: this.meta,
-          }
-          this.reset()
-          return ret
-        } else if (tag.name === 'p') {
-          this.paragraphs.push(normalizeParagraph(this.curPar))
-          this.curPar = ''
+        let ret = {
+          paragraphs: this.paragraphs,
+          meta: this.meta,
         }
-      } else if (tag.name === 'doc') {
-        this.meta = tag.attributes
+        this.reset()
+        return ret
       }
+      this.meta = tag.attributes
+    } else if (tag.name === 'p') {
+      if (!tag.content) {
+        throw new Error(`<p> without a content`)
+      }
+      this.paragraphs.push(tag.content)
     } else {
-      this.curPar += node
+      throw new Error(`Unexpected tag: "${tag.name}"`)
     }
   }
-}
-
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-function normalizeParagraph(p: string) {
-  let ret = he.unescape(p)
-  ret = normalizeWebParaSafe(p)
-  ret = fixLatinGlyphMisspell(ret)
-
-  // ret = ret.replace(/([^0\.!?]){4,}/g, '')
-
-  return ret
 }

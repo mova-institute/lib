@@ -1,15 +1,42 @@
-import { writeBackpressing } from '../../stream_utils.node'
+////////////////////////////////////////////////////////////////////////////////
+export class StreamPauser {
+  private pausers = new Set<any>()
 
+  constructor(private stream: NodeJS.ReadableStream) {
+  }
 
+  pause(pauser: any) {
+    this.pausers.add(pauser)
+    this.poke()
+  }
+
+  resume(pauser: any) {
+    this.pausers.delete(pauser)
+    this.poke()
+  }
+
+  private poke() {
+    // console.error(this.pausers.size)
+    if (this.pausers.size && !this.stream.isPaused()) {
+      // console.error(`pausing`)
+      this.stream.pause()
+    } else if (!this.pausers.size && this.stream.isPaused()) {
+      // console.error(`resumin`)
+      this.stream.resume()
+    }
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-export class BackpressingWriter {
+export class BufferedBackpressWriter {
   private buf = ''
-  private bufLength = 1 * 1024 ** 2
+  private bufLength = 1024 ** 2
+  private onDrainBinded = this.onDrain.bind(this)
 
   constructor(
     private dest: NodeJS.WritableStream,
     private backpressee: NodeJS.ReadableStream,
+    private pauser = new StreamPauser(backpressee)
   ) {
   }
 
@@ -21,7 +48,14 @@ export class BackpressingWriter {
   }
 
   flush() {
-    writeBackpressing(this.dest, this.backpressee, this.buf)
+    if (!this.dest.write(this.buf)) {
+      this.pauser.pause(this)
+      this.dest.once('drain', this.onDrainBinded)
+    }
     this.buf = ''
+  }
+
+  private onDrain() {
+    this.pauser.resume(this)
   }
 }

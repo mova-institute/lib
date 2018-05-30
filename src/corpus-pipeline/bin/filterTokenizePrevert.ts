@@ -4,12 +4,14 @@ import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { filterParagraphedDocExtra } from '../filter'
-import { linesAsyncStd, exitOnStdoutPipeError, writeJoin, } from '../../utils.node'
-import { makeObject, renprop } from '../../lang'
+import { linesBackpressedStdPipeable, writeJoin } from '../../utils.node'
+import { makeObject, renprop, mapInplace } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
+import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
 
 import * as minimist from 'minimist'
+import he = require('he')
 
 
 
@@ -22,51 +24,54 @@ interface Args {
 async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
-  exitOnStdoutPipeError()
-
-  let builder = new PrevertDocBuilder()
+  let docBuilder = new PrevertDocBuilder()
   let analyzer = createMorphAnalyzerSync()
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
 
-  await linesAsyncStd(async nodeStr => {
-    let doc = builder.feedNode(nodeStr)
-    if (doc) {
-      let { meta, paragraphs } = doc
-      let metaObj = meta && makeObject(meta)
-      let { docValid, filteredParagraphs, gapFollowerIndexes } =
-        filterParagraphedDocExtra(paragraphs, meta, analyzer)
-      if (!docValid) {
-        return
-      }
-      if (!metaObj) {
-        console.error(`No meta!`)
-        return
-      }
-
-      normalizeMeta(metaObj)
-
-      await runner.startRunning(async () => {
-        try {
-          var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
-        } catch (e) {
-          console.error(e)
-          return
-        }
-        if (!conllu) {
-          console.error(`conllu missing!`)
-          return
-        }
-        let vertStream = conlluStrAndMeta2vertical(
-          conllu, {
-            meta: metaObj as any,
-            formOnly: true,
-            pGapIndexes: gapFollowerIndexes,
-          })
-        await writeJoin(vertStream, process.stdout, '\n', true)
-      })
+  await linesBackpressedStdPipeable((line, writer) => {
+    let doc = docBuilder.feedLine(line)
+    if (!doc) {
+      return
     }
-  }, /(<\/?[\w\-]+(?:(?:\s+[\w\-]+="[^"]*")*)*\s*\/?\s*>)/)
+
+    let { meta, paragraphs } = doc
+    mapInplace(paragraphs, normalizeParagraph)
+
+    let { docValid, filteredParagraphs, gapFollowerIndexes } =
+      filterParagraphedDocExtra(paragraphs, meta, analyzer)
+    if (!docValid || !filteredParagraphs.length) {
+      return
+    }
+
+    let metaObj = meta && makeObject(meta)
+    if (!metaObj) {
+      console.error(`No meta!`)
+      return
+    }
+
+    normalizeMeta(metaObj)
+
+    return runner.startRunning(async () => {  // todo: optimize
+      try {
+        var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
+      } catch (e) {
+        console.error(e)
+        return
+      }
+      if (!conllu) {
+        console.error(`conllu missing!`)
+        return
+      }
+      let vertStream = conlluStrAndMeta2vertical(
+        conllu, {
+          meta: metaObj as any,
+          formOnly: true,
+          pGapIndexes: gapFollowerIndexes,
+        })
+      writeJoin(vertStream, writer, '\n')
+    })
+  })
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -76,6 +81,16 @@ function normalizeMeta(meta) {
   meta.source = 'загальний інтернет'
 }
 
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+function normalizeParagraph(p: string) {
+  let ret = he.unescape(p)
+  ret = normalizeWebParaSafe(p)
+  ret = fixLatinGlyphMisspell(ret)
+  ret = ret.trim()
+  // ret = ret.replace(/([^0\.!?]){4,}/g, '')
+
+  return ret
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {

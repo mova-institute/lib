@@ -7,7 +7,7 @@ import * as path from 'path'
 import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
 import { promisify } from 'util'
-import { BackpressingWriter } from './lib/node/backpressing_writer'
+import { BufferedBackpressWriter, StreamPauser } from './lib/node/backpressing_writer'
 
 const lineIterator = require('n-readlines')
 
@@ -154,12 +154,21 @@ export function chunksAsync(
 export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
-  listener: (line: string, writer: BackpressingWriter) => void,
+  listener: (line: string, writer: BufferedBackpressWriter) => any,
 ) {
   return new Promise<void>((resolve, reject) => {
-    let writer = new BackpressingWriter(dest, source)
+    let pauser = new StreamPauser(source)
+    let writer = new BufferedBackpressWriter(dest, source, pauser)
     createInterface({ input: source })
-      .on('line', line => listener(line, writer))
+      .on('line', async line => {
+        let res = listener(line, writer)
+        if (res) {
+          let id = Symbol()
+          pauser.pause(id)
+          await listener(line, writer)
+          pauser.resume(id)
+        }
+      })
       .on('close', () => {
         writer.flush()
         resolve()
@@ -169,7 +178,7 @@ export function linesBackpressed(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStdPipeable(
-  listener: (line: string, writer: BackpressingWriter) => void,
+  listener: (line: string, writer: BufferedBackpressWriter) => void,
 ) {
   exitOnStdoutPipeError()
   return linesBackpressedStd(listener)
@@ -177,7 +186,7 @@ export function linesBackpressedStdPipeable(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
-  listener: (line: string, writer: BackpressingWriter) => void,
+  listener: (line: string, writer: BufferedBackpressWriter) => void,
 ) {
   return linesBackpressed(process.stdin, process.stdout, listener)
 }
@@ -297,11 +306,13 @@ export async function joinToStream(
 ////////////////////////////////////////////////////////////////////////////////
 export async function writeJoin(
   what: Iterable<string>,
-  where: NodeJS.WritableStream,
+  writer: { write(what: string): any },
   joiner: string,
-  trailing = false,
 ) {
-  return writePromiseDrain(where, mu(what).join(joiner, trailing))
+  for (let item of what) {
+    writer.write(item)
+    writer.write(joiner)
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

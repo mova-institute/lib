@@ -10,7 +10,7 @@ import { ApiClient } from '../../nlp/api_client'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
 import { toConlluishString } from '../../nlp/ud/tagset'
-import { BackpressingWriter } from '../../lib/node/backpressing_writer'
+import { BufferedBackpressWriter } from '../../lib/node/backpressing_writer'
 
 import * as minimist from 'minimist'
 
@@ -35,7 +35,7 @@ async function main() {
   let api = new ApiClient(args.udpipeUrl, args.tdozatUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
   let analyzer = createMorphAnalyzerSync()
-  let writer = new BackpressingWriter(process.stdout, process.stdin)
+  let writer = new BufferedBackpressWriter(process.stdout, process.stdin)
 
   let lines = new Array<string>()
   await linesAsyncStd(async (line/* , writer */) => {
