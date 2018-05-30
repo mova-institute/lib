@@ -1,5 +1,5 @@
 import { mu, Mu } from '../mu'
-import { cutOut, insert } from '../string_utils'
+import { cutOut, insert, trimExtension } from '../string_utils'
 import { parseConlluSentences, ConlluToken } from './ud/conllu'
 import { zip, flip } from '../lang'
 import { linesSync, linesBackpressedStdPipeable, joinToFileSync } from '../utils.node'
@@ -65,8 +65,9 @@ export function evaluate(args: EvaluateArgs) {
     outLinesTestee.push(testeeAnnotated.trim())
   }
 
-  joinToFileSync(join(args.outDir, 'golden.txt'), outLinesGolden)
-  joinToFileSync(join(args.outDir, 'predicted.txt'), outLinesTestee)
+  joinToFileSync(join(args.outDir, 'golden-diffable.txt'), outLinesGolden)
+  let dest = trimExtension(args.testee)
+  joinToFileSync(join(args.outDir, `${dest}.txt`), outLinesTestee)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

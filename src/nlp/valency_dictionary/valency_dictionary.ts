@@ -23,6 +23,7 @@ export const enum Valency {
 export class ValencyDict {
   valencies = new DefaultMap<string, CoolSet<ValencyCase>>(CoolSet)
   gerund2verb = new DefaultMap<string, CoolSet<string>>(CoolSet)
+  nounOverlayValencies = new DefaultMap<string, CoolSet<ValencyCase>>(CoolSet)
 
   private lookupVerbCases(lemma: string) {
     lemma = normalizeLemma(lemma)
@@ -36,10 +37,20 @@ export class ValencyDict {
   }
 
   private lookupGerundCases(lemma: string) {
-    return this.lookupGerund2Verb(lemma)
+    lemma = normalizeLemma(lemma)
+
+    if (this.nounOverlayValencies.has(lemma)) {
+      return mu(this.nounOverlayValencies.getRaw(lemma)).unique()
+    }
+    let res = this.lookupGerund2Verb(lemma)
       .map(x => this.lookupVerbCases(x))
       .flattenShallowNaive()
-      .unique() as Mu<ValencyCase>
+      .unique()
+    // if (this.nounOverlayValencies.has(lemma)) {
+    //   res = Mu.chain(res, this.nounOverlayValencies.getRaw(lemma))
+    // }
+
+    return res.unique() as Mu<ValencyCase>
   }
 
   private lookupGerund2Verb(lemma: string) {
@@ -59,7 +70,7 @@ export class ValencyDict {
 
   hasGerund(lemma: string) {
     lemma = normalizeLemma(lemma)
-    return this.gerund2verb.has(lemma)
+    return this.nounOverlayValencies.has(lemma) || this.gerund2verb.has(lemma)
   }
 
   isTransitiveOnlyGerund(lemma: string) {

@@ -1,6 +1,6 @@
 import * as flatten from 'lodash.flatten'
 
-import { mu } from '../../mu'
+import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
 import { Case, Pos } from '../morph_features'
@@ -730,7 +730,7 @@ export class MorphAnalyzer {
       let fricativized = lookupee.replace(/ґ/g, 'г').replace(/Ґ/g, 'Г')
       let diffs = algo.findStringDiffIndexes(lookupee, fricativized)
       if (diffs.length) {
-        ret = ret.chain(this.lookup(fricativized)
+        ret = Mu.chain(ret, this.lookup(fricativized)
           .filter(interp => diffs.every(i => /г/gi.test(interp.lemma!.charAt(i))))
           .map(x => {
             let chars = [...x.lemma!]

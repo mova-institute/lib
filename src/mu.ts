@@ -47,10 +47,6 @@ export class Mu<T> implements Iterable<T> {
     return this.iterator.next()
   }
 
-  chain<TT>(...iterables: Array<Iterable<TT> | TT>) {    // todo: append to this and return this
-    return Mu.chain<TT>(this as any, ...iterables)    // todo
-  }
-
   chunk(n: number) {
     let buf: Array<T> = []
     const thiss = this

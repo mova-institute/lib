@@ -113,7 +113,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
   [PunctuationType, 'PunctType'],
   [Inflectability, 'Uninflect'],
   [VerbReversivity, 'Reverse'],
-  [DictValency, 'Valent'],
+  [DictValency, 'Valency'],
   // [AdjectiveAsNoun, 'adjectiveAsNoun'],
   // [Alternativity, 'alternative'],
   // [Auto, 'auto'],
