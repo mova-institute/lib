@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFile, linesAsyncStd, writeJoin, logErrAndExit } from '../../utils.node'
+import { parseJsonFile, logErrAndExit, linesNoSpillStdPipeable } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../lib/async_task_runner'
 import { filterParagraphedDocExtra } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
+import { mu } from '../../mu'
+import { writePromiseDrain } from '../../stream_utils.node'
 
 import * as minimist from 'minimist'
 import * as path from 'path'
@@ -29,7 +31,7 @@ async function main() {
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency || 8)
   let analyzer = createMorphAnalyzerSync()
 
-  await linesAsyncStd(async paraPath => {
+  await linesNoSpillStdPipeable(async paraPath => {
     if (!paraPath) {
       return
     }
@@ -77,7 +79,7 @@ async function main() {
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })
-      writeJoin(vertStream, process.stdout, '\n', true)
+      await writePromiseDrain(process.stdout, mu(vertStream).join('\n', true))
     })
   })
 }

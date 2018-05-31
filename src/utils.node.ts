@@ -151,6 +151,46 @@ export function chunksAsync(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function linesNoSpillStdPipeable(listener: (line: string) => Promise<any>) {
+  exitOnStdoutPipeError()
+  return linesNoSpill(process.stdin, listener)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// mimics syncronous iteration
+export function linesNoSpill(
+  source: NodeJS.ReadableStream,
+  listener: (line: string) => Promise<any>,
+) {
+  return new Promise<void>((resolve, reject) => {
+    let buf = new Array<string>()
+    let inProgress = false
+    let rl = createInterface({ input: source })
+      .on('line', async line => {
+        buf.push(line)
+        if (!inProgress) {
+          rl.pause()
+          inProgress = true
+
+          for (var i = 0; i < buf.length; ++i) {
+            await listener(buf[i])
+          }
+          buf = []
+
+          inProgress = false
+          rl.resume()
+        }
+      })
+      .on('close', async () => {
+        for (let l of buf) {
+          await listener(l)
+        }
+        resolve()
+      })
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
@@ -310,12 +350,12 @@ export async function joinToStream(
 ////////////////////////////////////////////////////////////////////////////////
 export async function writeJoin(
   what: Iterable<string>,
-  writer: { write(what: string): any },
+  where: { write(what: string): any },
   joiner: string,
 ) {
   for (let item of what) {
-    writer.write(item)
-    writer.write(joiner)
+    where.write(item)
+    where.write(joiner)
   }
 }
 

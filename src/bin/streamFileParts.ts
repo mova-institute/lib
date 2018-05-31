@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { linesAsyncStd, exitOnStdoutPipeError } from '../utils.node'
+import { linesNoSpillStdPipeable } from '../utils.node'
 
 import * as fs from 'fs'
 
@@ -8,10 +8,8 @@ import * as fs from 'fs'
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
-  exitOnStdoutPipeError()
-
   let file = process.argv[2]
-  await linesAsyncStd(async line => {
+  await linesNoSpillStdPipeable(async line => {
     if (!line) {
       return
     }
