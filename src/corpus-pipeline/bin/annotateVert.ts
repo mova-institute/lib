@@ -47,7 +47,7 @@ async function main() {
     if (inputAsConllu) {
       let myLines = lines
       lines = []
-      await runner.startRunning(async () => {
+      await runner.start(async () => {
         try {
           var conllu = await api.tagParseConnluLines(inputAsConllu)
           var taggedVert = mergeConlluIntoVert(myLines, conllu, analyzer)

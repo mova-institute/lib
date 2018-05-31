@@ -6,6 +6,7 @@ import { parseTagStr } from '../xml/utils'
 export class PrevertDocBuilder {
   private meta = new Array<[string, string]>()
   private paragraphs = new Array<string>()
+  private buf = ''
 
   reset() {
     this.meta = []
@@ -16,6 +17,16 @@ export class PrevertDocBuilder {
     line = line.trim()
     if (!line) {
       return
+    }
+
+    if (!line.endsWith('>')) {
+      this.buf += line
+      return
+    }
+
+    if (this.buf) {
+      line = this.buf += line
+      this.buf = ''
     }
 
     let tag = parseTagStr(line)
@@ -34,6 +45,9 @@ export class PrevertDocBuilder {
       }
       this.meta = tag.attributes
     } else if (tag.name === 'p') {
+      if (tag.isClosing) {
+        throw new Error(`Unexpected </p>`)
+      }
       if (!tag.content) {
         throw new Error(`<p> without a content`)
       }

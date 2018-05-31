@@ -26,7 +26,7 @@ async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
+  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency || 8)
   let analyzer = createMorphAnalyzerSync()
 
   await linesAsyncStd(async paraPath => {
@@ -65,7 +65,7 @@ async function main() {
       return
     }
 
-    await runner.startRunning(async () => {
+    await runner.start(async () => {
       try {
         var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
       } catch {
@@ -77,7 +77,7 @@ async function main() {
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })
-      await writeJoin(vertStream, process.stdout, '\n', true)
+      writeJoin(vertStream, process.stdout, '\n', true)
     })
   })
 }

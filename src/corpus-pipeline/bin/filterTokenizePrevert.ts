@@ -27,9 +27,9 @@ async function main() {
   let docBuilder = new PrevertDocBuilder()
   let analyzer = createMorphAnalyzerSync()
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
+  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency || 8)
 
-  await linesBackpressedStdPipeable((line, writer) => {
+  linesBackpressedStdPipeable((line, writer) => {
     let doc = docBuilder.feedLine(line)
     if (!doc) {
       return
@@ -44,15 +44,15 @@ async function main() {
       return
     }
 
-    let metaObj = meta && makeObject(meta)
-    if (!metaObj) {
+    if (!meta || !meta.length) {
       console.error(`No meta!`)
       return
     }
 
+    let metaObj = makeObject(meta)
     normalizeMeta(metaObj)
 
-    return runner.startRunning(async () => {  // todo: optimize
+    runner.start(async () => {
       try {
         var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
       } catch (e) {
@@ -63,6 +63,7 @@ async function main() {
         console.error(`conllu missing!`)
         return
       }
+
       let vertStream = conlluStrAndMeta2vertical(
         conllu, {
           meta: metaObj as any,
@@ -87,7 +88,6 @@ function normalizeParagraph(p: string) {
   ret = normalizeWebParaSafe(p)
   ret = fixLatinGlyphMisspell(ret)
   ret = ret.trim()
-  // ret = ret.replace(/([^0\.!?]){4,}/g, '')
 
   return ret
 }

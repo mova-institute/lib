@@ -159,16 +159,20 @@ export function linesBackpressed(
   return new Promise<void>((resolve, reject) => {
     let pauser = new StreamPauser(source)
     let writer = new BufferedBackpressWriter(dest, source, pauser)
+    // let spillBuffer = new Array<string>()
     createInterface({ input: source })
-      .on('line', async line => {
-        let res = listener(line, writer)
-        if (res) {
-          let id = Symbol()
-          pauser.pause(id)
-          await listener(line, writer)
-          pauser.resume(id)
-        }
-      })
+      // .on('line', async line => {
+      //   let res = listener(line, writer)
+      //   if (res) {
+      //     // let id = {}
+      //     // console.error(`pause`)
+      //     // pauser.pause(id)
+      //     // /* await */ res
+      //     // pauser.resume(id)
+      //     // console.error(`resume`)
+      //   }
+      // })
+      .on('line', line => listener(line, writer))
       .on('close', () => {
         writer.flush()
         resolve()

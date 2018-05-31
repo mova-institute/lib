@@ -119,7 +119,6 @@ export function filterParagraphedDoc(
   let filtered = new Array<number>()
   let internalHypens = new Array<string>()
 
-  let before = pp.slice()
   ploop:
   for (let i = 0; i < pp.length; ++i) {
     let p = pp[i]
