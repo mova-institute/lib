@@ -176,8 +176,11 @@ async function main() {
   await linesBackpressedStdPipeable((line, writer) => {
     let doc = extractor.feed(line)
     if (doc) {
+      if (args.plaintext) {
+        console.log(doc.paragraphs.join('\n'))
+        console.log()
+      }
       // processDoc(doc, '', '', analyzer)
-      console.log(doc)
     }
   })
   console.error(extractor.getStats())

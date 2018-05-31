@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+import { logErrAndExit } from '../utils.node'
+
+import * as glob from 'glob'
+import * as minimist from 'minimist'
+
+import * as fs from 'fs'
+import { join } from 'path'
+
+
+
+interface Args {
+  _: Array<string>
+}
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+async function main() {
+  const args: Args = minimist(process.argv.slice(2)) as any
+  let [targetDir] = args._
+
+  process.stdin.on('data', data => {
+    process.stdin
+  })
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+if (require.main === module) {
+  main().catch(logErrAndExit)
+}
