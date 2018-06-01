@@ -36,7 +36,7 @@ const extensionPriorityKeyer = arr2indexMap([
 ])
 
 if (require.main === module) {
-  const args: Args = minimist(process.argv.slice(2), {
+  const args = minimist<Args>(process.argv.slice(2), {
     alias: {
       'workspace': ['ws'],
     },

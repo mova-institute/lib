@@ -26,7 +26,7 @@ interface Args {
 
 //------------------------------------------------------------------------------
 async function main() {
-  const args: Args = minimist(process.argv.slice(2)) as any
+  const args = minimist<Args>(process.argv.slice(2)) as any
   exitOnStdoutPipeError()
 
   args.udpipeConcurrency = args.udpipeConcurrency || Math.max(1, os.cpus().length - 1)

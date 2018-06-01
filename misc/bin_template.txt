@@ -11,12 +11,11 @@ import { join } from 'path'
 
 
 interface Args {
-  _: Array<string>
 }
 
 //------------------------------------------------------------------------------
 async function main() {
-  const args: Args = minimist(process.argv.slice(2)) as any
+  const args = minimist<Args>(process.argv.slice(2))
 
 }
 

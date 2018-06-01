@@ -16,7 +16,7 @@ import { sync as mkdirpSync } from 'mkdirp'
 
 
 function main() {
-  const args: any = minimist(process.argv.slice(2), {
+  const args = minimist(process.argv.slice(2), {
     default: {
       'n': 55,
       'dest': '.',

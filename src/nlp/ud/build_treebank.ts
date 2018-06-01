@@ -32,7 +32,6 @@ import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factorie
 
 //------------------------------------------------------------------------------
 interface Args {
-  _: Array<string>
   dryRun: boolean
   noStandartizing: boolean
   includeIncomplete: boolean
@@ -89,7 +88,7 @@ class DatasetDescriptor {
 
 //------------------------------------------------------------------------------
 function getArgs() {
-  return minimist(process.argv.slice(2), {
+  return minimist<Args>(process.argv.slice(2), {
     boolean: [
       'noStandartizing',
       'includeIncomplete',

@@ -17,7 +17,7 @@ interface Args {
 const articleHrefRe = new RegExp(String.raw`<a\s.*href="/number/(\d+)/(\d+)/(\d+)/"`, 'g')
 
 if (require.main === module) {
-  const args: Args = minimist(process.argv.slice(2), {
+  const args = minimist<Args>(process.argv.slice(2), {
     alias: {
       workspace: ['ws'],
     },

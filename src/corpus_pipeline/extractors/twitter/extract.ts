@@ -131,8 +131,13 @@ function twitterSpecificFilter(lang: string) {
 }
 
 //------------------------------------------------------------------------------
+interface Args {
+  format: 'readable' | 'vertical'
+}
+
+//------------------------------------------------------------------------------
 async function main() {
-  const args = minimist(process.argv.slice(2)) as any
+  const args = minimist<Args>(process.argv.slice(2))
 
   let analyzer = createMorphAnalyzerSync()
   let extractor = new TwitterStreamingDocExtracor()

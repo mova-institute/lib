@@ -43,7 +43,7 @@ interface Args extends minimist.ParsedArgs {
 }
 
 if (require.main === module) {
-  const args: Args = minimist(process.argv.slice(2), {
+  const args = minimist<Args>(process.argv.slice(2), {
     boolean: [
       'count',
       'forMorphDisamb',

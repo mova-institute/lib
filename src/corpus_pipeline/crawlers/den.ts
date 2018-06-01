@@ -75,7 +75,7 @@ const articleHrefRe = new RegExp(String.raw`"(/uk/article/[^"]+)"`, 'g')
 const articleSavePath = new RegExp(String.raw`/uk/article/(.+)`)
 
 if (require.main === module) {
-  const args: Args = minimist(process.argv.slice(2), {
+  const args = minimist<Args>(process.argv.slice(2), {
     default: {
       workspace: 'den',
       saveDir: 'saved_web/day.kyiv.ua',

@@ -13,7 +13,7 @@ import { getLibRootRelative } from '../../lib_path.node'
 
 
 function main() {
-  const args: any = minimist(process.argv.slice(2))
+  const args = minimist<any>(process.argv.slice(2))
   // streamSsh(args.userhost, args.path)
   // let datetimeFrom: Date
   // if (args.from) {

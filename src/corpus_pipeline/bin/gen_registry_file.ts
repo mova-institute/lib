@@ -8,7 +8,7 @@ import * as minimist from 'minimist'
 
 //------------------------------------------------------------------------------
 function main() {
-  const args = minimist(process.argv.slice(2)) as any
+  const args = minimist<any>(process.argv.slice(2))
   delete args._
   let res = generateRegistryFileUk(args)
   process.stdout.write(res)

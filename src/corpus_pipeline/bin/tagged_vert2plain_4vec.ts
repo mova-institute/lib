@@ -16,7 +16,7 @@ interface Args {
 
 //------------------------------------------------------------------------------
 function main() {
-  const args: Args = minimist(process.argv.slice(2), {
+  const args = minimist<Args>(process.argv.slice(2), {
     boolean: [
       'lowercase',
       'noPunct',

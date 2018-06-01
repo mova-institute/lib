@@ -21,7 +21,6 @@ import { standartizeMorphoForUd21 } from '../nlp/ud/uk_grammar'
 
 //------------------------------------------------------------------------------
 interface Args {
-  _: Array<string>
   inputRoot: string
   inputGlob: string
   outDir: string
@@ -29,14 +28,14 @@ interface Args {
 
 //------------------------------------------------------------------------------
 function getArgs() {
-  return minimist(process.argv.slice(2), {
+  return minimist<Args>(process.argv.slice(2), {
     boolean: [
     ],
     alias: {
     },
     default: {
     },
-  }) as Args
+  })
 }
 
 //------------------------------------------------------------------------------
