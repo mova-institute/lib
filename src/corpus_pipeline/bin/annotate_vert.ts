@@ -47,7 +47,7 @@ async function main() {
     if (inputAsConllu) {
       let myLines = lines
       lines = []
-      await runner.start(async () => {
+      let [posted] = runner.post(async () => {
         try {
           var conllu = await api.tagParseConnluLines(inputAsConllu)
           var taggedVert = mergeConlluIntoVert(myLines, conllu, analyzer)
@@ -58,6 +58,7 @@ async function main() {
           return
         }
       })
+      await posted
     }
   })
   writer.flush()

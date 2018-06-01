@@ -8,33 +8,33 @@ import { filterParagraphedDocExtra } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
-import { mu } from '../../mu'
+import { mu, Mu } from '../../mu'
 import { writePromiseDrain } from '../../stream.node'
 
 import * as minimist from 'minimist'
 import * as path from 'path'
+import { numThreads } from '../../os'
 
 
 
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 interface Args {
   basePath: string
   udpipeUrl: string
   udpipeConcurrency?: number
 }
 
-
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 async function main() {
   const args = minimist<Args>(process.argv.slice(2)) as any
 
-  let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency || 8)
-  let analyzer = createMorphAnalyzerSync()
+  let filterTokenizer = new MicrawlFilterTokenizer(args.udpipeUrl, args.udpipeConcurrency)
 
   await linesNoSpillStdPipeable(async paraPath => {
     if (!paraPath) {
       return
     }
+
     try {
       var paragraphs = await parseJsonFile(paraPath) as Array<string>
       let metaPath = paraPath2metaPath(paraPath, args.basePath)
@@ -47,6 +47,28 @@ async function main() {
       }
     }
 
+    let vertStream = await filterTokenizer.filterTokenize(paragraphs, meta)
+    if (vertStream) {
+      await writePromiseDrain(process.stdout, mu(vertStream).join('\n', true))
+    }
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export class MicrawlFilterTokenizer {
+  private udpipe = new UdpipeApiClient()
+  private runner = new AsyncTaskRunner<Mu<string>>()
+  private analyzer = createMorphAnalyzerSync()
+
+  constructor(
+    udpipeUrl: string,
+    udpipeConcurrency?: number,
+  ) {
+    this.udpipe.setEndpoint(udpipeUrl)
+    this.runner.setConcurrency(udpipeConcurrency || numThreads())
+  }
+
+  async filterTokenize(paragraphs: Array<string>, meta) {
     mapInplace(paragraphs, normalizeParagraph)
 
     if (!paragraphs || !paragraphs.length) {
@@ -59,7 +81,7 @@ async function main() {
     }
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
-      filterParagraphedDocExtra(paragraphs, meta, analyzer, {
+      filterParagraphedDocExtra(paragraphs, meta, this.analyzer, {
         filterPreviews: false,
       })
 
@@ -67,9 +89,9 @@ async function main() {
       return
     }
 
-    await runner.start(async () => {
+    let [posted, finished] = this.runner.post(async () => {
       try {
-        var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
+        var conllu = await this.udpipe.tokenizeParagraphs(filteredParagraphs)
       } catch {
         console.error(`Udpipe error for`, filteredParagraphs)
         return
@@ -79,9 +101,12 @@ async function main() {
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })
-      await writePromiseDrain(process.stdout, mu(vertStream).join('\n', true))
+      return mu(vertStream)
     })
-  })
+    await posted
+
+    return finished
+  }
 }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

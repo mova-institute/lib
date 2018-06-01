@@ -1,16 +1,15 @@
-import { logErrAndExit, linesBackpressedStdPipeable } from '../../../utils.node'
-import { StreamingExtractor } from '../../types'
+import { logErrAndExit, linesBackpressedStdPipeable, writeLines } from '../../../utils.node'
 import { nameFromLoginAtDomain } from '../utils'
 import { toSortableDatetime } from '../../../date'
-import { createMorphAnalyzerSync } from '../../../nlp/morph_analyzer/factories.node'
 import { JsonObjectLogReader } from './json_object_log_reader'
+import { MicrawlFilterTokenizer } from '../../bin/filter_tokenize_micrawl'
 
 import * as minimist from 'minimist'
 
 
 
 //------------------------------------------------------------------------------
-function parseTweetObservation(tweet) {
+function bakeTweetObservation(tweet) {
   let observedAt = new Date(tweet.created_at)
 
   let cur = tweet
@@ -49,78 +48,6 @@ function parseTweetObservation(tweet) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-export class TwitterStreamingDocExtracor implements StreamingExtractor {
-  private reader = new JsonObjectLogReader()
-  private seenIds = new Set<string>()
-
-  private totalTweets = 0
-
-  constructor() {
-    this.reader.setIgnoreErrors()
-  }
-
-  feed(line: string) {
-    let obj = this.reader.feed(line)
-    if (!obj) {
-      return
-    }
-    ++this.totalTweets
-
-    let tweet = parseTweetObservation(obj)
-    if (tweet.lang !== 'uk') {
-      return
-    }
-
-    let {
-      id,
-      text,
-      isTruncated,
-      login,
-      createdAt,
-      lang,
-    } = tweet
-
-    let paragraphs = text.split(/(?:\s*\n+\s*)+/g)
-
-    if (isTruncated) {
-      paragraphs.pop()
-    }
-
-    if (!paragraphs.length) {
-      return
-    }
-
-    if (this.seenIds.has(id)) {
-      return
-    }
-
-    this.seenIds.add(id)
-
-    if (twitterSpecificFilter(lang)) {
-      return
-    }
-
-    let author = nameFromLoginAtDomain(login, 'twitter.com')
-
-    return {
-      paragraphs,
-      title: '',  // todo
-      source: 'Твітер',
-      url: `https://twitter.com/statuses/${id}`,
-      author,
-      date: toSortableDatetime(createdAt),
-    }
-  }
-
-  getStats() {
-    return {
-      totalTweets: this.totalTweets,
-      numOriginal: this.seenIds.size
-    }
-  }
-}
-
 //------------------------------------------------------------------------------
 function twitterSpecificFilter(lang: string) {
   if (lang !== 'uk') {
@@ -133,30 +60,90 @@ function twitterSpecificFilter(lang: string) {
 //------------------------------------------------------------------------------
 interface Args {
   format: 'readable' | 'vertical'
+  udpipeUrl: string
 }
 
 //------------------------------------------------------------------------------
 async function main() {
   const args = minimist<Args>(process.argv.slice(2))
 
-  let analyzer = createMorphAnalyzerSync()
-  let extractor = new TwitterStreamingDocExtracor()
-  // if (args.ignoreErrors) {
-  //   reader.ignoreErrors = true
-  // }
-  // let i = 0
-  // let numUsable = 0
-  await linesBackpressedStdPipeable((line, writer) => {
-    let doc = extractor.feed(line)
-    if (doc) {
-      if (args.plaintext) {
-        console.log(doc.paragraphs.join('\n'))
-        console.log()
+  if (args.format === 'vertical') {
+    var filterTokenizer = new MicrawlFilterTokenizer(args.udpipeUrl || process.env['UDPIPE'])
+  }
+
+  let reader = new JsonObjectLogReader().setIgnoreErrors()
+  let seenIds = new Set<string>()
+
+  let nTotalTweets = 0
+  let nDuplicateTweets = 0
+  let nNonUkTweets = 0
+  let nFilteredTweets = 0
+  let nAccepedTweets = 0
+
+  await linesBackpressedStdPipeable(async (line, writer) => {
+    let rawTweet = reader.feed(line)
+    if (!rawTweet) {
+      return
+    }
+    ++nTotalTweets
+
+    let observation = bakeTweetObservation(rawTweet)
+    let { id, text, isTruncated, login, createdAt, lang } = observation
+
+    if (lang !== 'uk') {
+      ++nNonUkTweets
+      return
+    }
+
+    let paragraphs = text.split(/(?:\s*\n+\s*)+/g)
+
+    if (isTruncated) {
+      paragraphs.pop()
+    }
+    if (!paragraphs.length) {
+      return
+    }
+    if (seenIds.has(id)) {
+      ++nDuplicateTweets
+      return
+    }
+    seenIds.add(id)
+    if (twitterSpecificFilter(lang)) {
+      return
+    }
+
+    let author = nameFromLoginAtDomain(login, 'twitter.com')
+
+    if (args.format === 'vertical') {
+      let meta = {
+        title: '',  // todo
+        source: 'Твітер',
+        url: `https://twitter.com/statuses/${id}`,
+        author,
+        date: toSortableDatetime(createdAt),
       }
-      // processDoc(doc, '', '', analyzer)
+
+      let vertStream = await filterTokenizer.filterTokenize(paragraphs, meta)
+      if (!vertStream) {
+        ++nFilteredTweets
+        return
+      }
+      ++nAccepedTweets
+      writeLines(vertStream, writer)
+      writer.flush()
+    } else if (args.format === 'readable') {
+      console.log(paragraphs.join('\n'))
     }
   })
-  console.error(extractor.getStats())
+  let stats = {
+    nTotalTweets,
+    nNonUkTweets,
+    nDuplicateTweets,
+    nFilteredTweets,
+    nAccepedTweets,
+  }
+
+  console.error(stats)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

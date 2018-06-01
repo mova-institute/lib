@@ -28,5 +28,6 @@ export class JsonObjectLogReader {
 
   setIgnoreErrors(value = true) {
     this.ignoreErrors = value
+    return this
   }
 }

@@ -1,5 +1,5 @@
 import { mu } from './mu'
-import { cpus } from 'os'
+import { numThreads } from './os'
 
 
 
@@ -8,20 +8,26 @@ export type TaskFunc<Result> = () => Promise<Result>
 
 ////////////////////////////////////////////////////////////////////////////////
 export class AsyncTaskRunner<Result = void> {
-  private concurrency = cpus().length
+  private concurrency = numThreads()
   private tasksRunning = new Set<Promise<Result>>()
-  private slotAvail: Promise<void>
+  private slotAvail: Promise<Result>
 
-  async start(task: TaskFunc<Result>) {
+  post(task: TaskFunc<Result>) {
     if (this.tasksRunning.size < this.concurrency) {
-      this.tasksRunning.add(task())
+      let result = task()
+      this.tasksRunning.add(result)
+      return [Promise.resolve(), result]
     } else {
-      return this.slotAvail = (async () => {
+      let posted = this.slotAvail
+      this.slotAvail = (async () => {
         await this.slotAvail
         let { promise } = await Promise.race(this.wrappedTasks())
         this.tasksRunning.delete(promise)
-        this.tasksRunning.add(task())
+        let result = task()
+        this.tasksRunning.add(result)
+        return result
       })()
+      return [posted, this.slotAvail]
     }
   }
 

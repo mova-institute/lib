@@ -4,9 +4,14 @@ import { reqJson } from '../../request'
 
 export class UdpipeApiClient {
   constructor(
-    private endpoint: string,
+    private endpoint?: string,
     private model?,
   ) {
+  }
+
+  setEndpoint(value: string) {
+    this.endpoint = value
+    return this
   }
 
   tokenizeSentencesAndParagraphs(paragraphs: Array<string>) {

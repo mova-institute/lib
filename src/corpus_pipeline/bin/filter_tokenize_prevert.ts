@@ -52,7 +52,7 @@ async function main() {
     let metaObj = makeObject(meta)
     normalizeMeta(metaObj)
 
-    runner.start(async () => {
+    runner.post(async () => {
       try {
         var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
       } catch (e) {

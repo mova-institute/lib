@@ -335,6 +335,15 @@ export async function writeJoin(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export async function writeLines(
+  what: Iterable<string>,
+  where: { write(what: string): any },
+  joiner = '\n',
+) {
+  return writeJoin(what, where, '\n')
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function logErrAndExit(e) {
   console.error(e)
   process.exit(1)
