@@ -4,7 +4,7 @@ import { parseConlluSentences, ConlluToken } from './ud/conllu'
 import { zip, flip } from '../lang'
 import { linesSync, linesBackpressedStdPipeable, joinToFileSync } from '../utils.node'
 import { join, dirname } from 'path'
-import { domesticateUdPos } from '../corpus-pipeline/ud'
+import { domesticateUdPos } from '../corpus_pipeline/ud'
 import { createValencyDictFromKotsybaTsvs } from './valency_dictionary/factories.node'
 import { createMorphAnalyzerSync } from './morph_analyzer/factories.node'
 

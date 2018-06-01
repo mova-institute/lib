@@ -28,7 +28,7 @@ import { toUd } from '../nlp/ud/tagset'
 import { PREDICATES } from '../nlp/ud/uk_grammar'
 import * as g2 from '../nlp/uk_grammar'
 import * as g from '../nlp/ud/uk_grammar'
-import * as tereveni from '../corpus-pipeline/extractors/tereveni'
+import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
 import { sleep } from '../lang'
 

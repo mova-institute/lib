@@ -1,6 +1,6 @@
-import { WebvectorClient } from './webvector-client'
+import { WebvectorClient } from './webvector_client'
 import { sendError, sendBadRequest } from '../lib/express/utils'
-import { writeJson, exists, rmrf, mktempdirp, renamep } from '../fs-utils.node'
+import { writeJson, exists, rmrf, mktempdirp, renamep } from '../fs_utils.node'
 import { hashObj } from '../crypto'
 import { mu } from '../mu'
 

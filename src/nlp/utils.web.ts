@@ -3,7 +3,7 @@ import { xpath } from '../xml/utils.web'
 import { serializeXmlNoNs, parseXml } from '../utils.web'
 // import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { /*tokenizeTei, morphInterpret, enumerateWords, */ firstNWords } from './utils'
-import { WebapiElement } from '../xml/xmlapi-web/webapi_element'
+import { WebapiElement } from '../xml/xmlapi_web/webapi_element'
 
 
 ////////////////////////////////////////////////////////////////////////////////

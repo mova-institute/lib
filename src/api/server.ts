@@ -10,8 +10,8 @@ import { Request, Response, CookieOptions } from 'express'
 import * as cookieParser from 'cookie-parser'
 import * as passport from 'passport'
 import { OAuth2Strategy as GoogleStrategy } from 'passport-google-oauth'
-import { WebvectorClient } from './webvector-client'
-import { vectorHandlers, VectorConfig } from './vector-handlers'
+import { WebvectorClient } from './webvector_client'
+import { vectorHandlers, VectorConfig } from './vector_handlers'
 
 
 
