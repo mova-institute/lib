@@ -5,7 +5,7 @@ import { conlluStrAndMeta2vertical } from '../tovert'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function main() {
   exitOnStdoutPipeError()
   process.stdin.setEncoding('utf8')

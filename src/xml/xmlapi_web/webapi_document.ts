@@ -65,7 +65,7 @@ export class WebapiDocument extends AbstractDocument {
 }
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 export function considerIsParseErrorDocument(document: XMLDocument) {
   const NS_XHTML = 'http://www.w3.org/1999/xhtml'
   const NS_MOZILLA_ERROR = 'http://www.mozilla.org/newlayout/xml/parsererror.xml'

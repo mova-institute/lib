@@ -146,7 +146,7 @@ export function calcValencyDictCoverage(args) {
 }
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function makeAnnotatedLine(testCase: TestCase) {
   return insert(testCase.plaintext, `/${testCase.hasToBe}`,
     testCase.johojijiIndex + testCase.johojiji.length)

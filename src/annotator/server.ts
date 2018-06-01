@@ -61,14 +61,14 @@ app.listen(process.argv[2])
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function errorHandler(err, req, res: express.Response, next) {
   console.error(err)
   console.error(err.stack)
   sendError(res, 500)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function preauth(action: string, req: IReq, client: PgClient) {
   if (action === 'login' || action === 'getInviteDetails' || action === 'join') {
     return true
@@ -82,7 +82,7 @@ async function preauth(action: string, req: IReq, client: PgClient) {
   return req.bag.user || action === 'getRoles'
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function reqBag(req, res: express.Response, next) {
   req.bag = req.bag || {}
   next()

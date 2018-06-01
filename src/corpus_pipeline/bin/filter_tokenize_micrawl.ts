@@ -89,7 +89,7 @@ function paraPath2metaPath(paraPath: string, base: string) {
   return path.join(base, paraPath.substr(base.length).replace(/(^|\/)para\//, '$1meta/'))
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function normalizeParagraph(p: string) {
   let ret = normalizeWebParaSafe(p)
   ret = fixLatinGlyphMisspell(ret)

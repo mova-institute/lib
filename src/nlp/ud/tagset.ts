@@ -357,7 +357,7 @@ export class UdFeats {
 }
 /* tslint:enable:variable-name */
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function mapFeatureValue2Ud(featureName, value) {
   if (value === undefined) {
     return undefined

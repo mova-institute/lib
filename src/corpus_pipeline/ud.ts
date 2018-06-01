@@ -160,7 +160,7 @@ export function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVe
   return upos
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function prepareUrel(rel: string | undefined) {
   let ret: string
   if (rel) {
@@ -169,7 +169,7 @@ function prepareUrel(rel: string | undefined) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function prepareRelativeHead(head: number, index: number) {
   if (head === 0) {
     return 0
@@ -180,12 +180,12 @@ function prepareRelativeHead(head: number, index: number) {
   return head - index
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function prepareFeatValue(feat: (string | number)) {
   return feat === undefined ? '' : feat.toString().toLowerCase()
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function feats2line(feats: Array<string | number>) {
   return feats.map(x => prepareFeatValue(x)).join('\t')
 }

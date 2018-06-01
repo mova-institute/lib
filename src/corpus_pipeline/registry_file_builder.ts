@@ -453,7 +453,7 @@ export function positionalAttrGeneric(name: string, options: Dict<string> = {}) 
 }
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const uiSettings = {
   uilang: 'uk',
   attrs: 'word',
@@ -473,7 +473,7 @@ const uiSettings = {
   use_noflash: '0',
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function positionalAttr(name: string, label: string, options: Dict<string> = {}) {
   options.type = 'FD_FGD'
   let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} [${name}]"\n  DEFAULTVALUE ""`
@@ -484,18 +484,18 @@ function positionalAttr(name: string, label: string, options: Dict<string> = {})
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function positionalAttrHuge(name: string, label: string, options: Dict<string> = {}) {
   options.type = 'FD_FGD'
   return positionalAttr(name, label, options)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function attr(name: string, value: string) {
   return `${name.toUpperCase()} "${value}"`
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function attrOrNothing(name: string, value: string) {
   if (value) {
     return attr(name, value)

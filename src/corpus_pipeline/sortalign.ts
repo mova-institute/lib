@@ -9,7 +9,7 @@ if (require.main === module) {
   main()
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function main() {
   let lines = (await allLinesFromStdin())
     .map(x => [x.split('\t').map(xx => parseIntStrict(xx.split(/[:,]/)[0])), x]) as Array<[Array<number>, string]>

@@ -6,7 +6,7 @@ import { CatStreamEnqueueable } from '../cat_stream_enqueueable'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function main() {
   let stream = new CatStreamEnqueueable()
 

@@ -20,7 +20,7 @@ interface Args {
   udpipeConcurrency?: number
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
 
@@ -75,14 +75,14 @@ async function main() {
   })
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function normalizeMeta(meta) {
   renprop(meta, 'id', 'spider_id')
   meta.title = meta.title || '[без назви]'
   meta.source = 'загальний інтернет'
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function normalizeParagraph(p: string) {
   let ret = he.unescape(p)
   ret = normalizeWebParaSafe(p)

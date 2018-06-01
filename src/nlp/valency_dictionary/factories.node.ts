@@ -8,7 +8,7 @@ import { removeAccent } from '../utils'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const formsRe = new RegExp(r`[${LETTER_UK_UPPERCASE}'#]{2,}`, 'g')
 const nounVerbFormsRe = new RegExp(r`[${LETTER_UK_LOWERCASE}'#]{2,}`, 'g')
 
@@ -51,17 +51,17 @@ export function createValencyDictFromKotsybaTsvs(directory: string) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function removePoundAccent(val: string) {
   return val.replace(/#/g, '')
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function normalizeForm(val: string) {
   return removePoundAccent(val).toLowerCase()
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function createTsvIt(filePath: string) {
   return mu(linesSync(filePath))
     .map(x => x.trim())
@@ -71,7 +71,7 @@ function createTsvIt(filePath: string) {
     .entries()
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function decodeTransitivity(val: string) {
   if (val.startsWith('0') || !val.trim()) {
     return [ValencyCase.intransitive]

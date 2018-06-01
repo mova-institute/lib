@@ -60,7 +60,7 @@ export function translitKabmin2010(text: string) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function translitKabmin2010Word(word: string) {  // todo: capitalization
   let ret = ''
   let i = 0

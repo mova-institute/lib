@@ -123,7 +123,7 @@ export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const wordRe = new RegExp(`^[${WORDCHAR}]$`)
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
@@ -134,7 +134,7 @@ export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 // let rrr = new Regex(`(${ANY_PUNC})`)
 function* splitNospace(val: string, analyzer: MorphAnalyzer) {
   if (analyzer.canBeToken(val)) {
@@ -231,7 +231,7 @@ export function elementFromToken(token: string, document: AbstractDocument) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterable<IStringMorphInterp>) {
   let doc = miw.document()
   for (let morphTag of morphTags) {
@@ -245,19 +245,19 @@ function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterab
   return miw
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
   let miw = fillInterpElement(el.document().createElement('w_', NS.mi), el.text(), morphTags)
   el.replace(miw)
   return miw
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function tagOrXVesum(interps: Array<MorphInterp>) {
   return interps.map(x => x.toVesumStrMorphInterp())
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function tagOrXMte(interps: Array<MorphInterp>) {
   let res = interps.map(x => x.toMteMorphInterp())
   return uniqueJson(res)
@@ -300,7 +300,7 @@ export function iterateCorpusTokens(root: AbstractElement,
   })())
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function findNextToken(el: AbstractElement) {
   return el.nextElementSiblings().find(x => x.localName() === 'w')
 }
@@ -346,7 +346,7 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
   return root
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function orX(form: string, interps: Array<MorphInterp>) {  // todo
   if (!interps.length) {
     interps = [MorphInterp.fromVesumStr('x', form)]
@@ -904,17 +904,17 @@ export function* interpretedTeiDoc2sketchVerticalTokens(root: AbstractElement) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function sketchLine(token: string, lemma: string, mteTag: string, vesumTag: string) {
   return tsvLine(token, lemma, mteTag, vesumTag)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function tsvLine(...values: Array<string>) {
   return values.join('\t')
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
   let doc = root.document()
   for (let textNode of root.evaluateNodes('./text()', NS)) {
@@ -1239,7 +1239,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
   let changed = new Set<string>()
@@ -1257,7 +1257,7 @@ function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function sentenceArray2TreeNodes(sentence: Array<Token>) {
   let nodeArray = sentence.map(x => new GraphNode(x))
   for (let i = 0; i < nodeArray.length; ++i) {
@@ -1289,7 +1289,7 @@ export function serializeMiDocument(root: AbstractElement, prettify = false) {
 }
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const ATTR_ORDER = arr2indexObj(['id', 'dep', 'tags', 'lemma', 'anna', 'mark'], 1)
 function sortAttributes(element: AbstractElement) {
   let attributes = Object.entries(element.attributesObj()).sort(([a], [b]) => {

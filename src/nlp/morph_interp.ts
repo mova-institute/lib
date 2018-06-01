@@ -1181,12 +1181,12 @@ export class MorphInterp {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function isUngrammaticalFeature(prop: string) {
   return NONGRAMMATICAL_FEATURES.includes(STRING_MAP_FEAT.get(prop) as any)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function tryMap2Mte(feature, value) {
   let mappedFeature = MAP_VESUM_FEAT.get(feature)
   if (mappedFeature) {
@@ -1201,12 +1201,12 @@ function tryMap2Mte(feature, value) {
   return ''
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function map2mteOrDash(feature, value) {
   return tryMap2Mte(feature, value) || '-'
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function map2mte(feature, value) {
   let ret = tryMap2Mte(feature, value)
   if (!ret) {
@@ -1215,7 +1215,7 @@ function map2mte(feature, value) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function defaultMteDefiniteness(gender: Gender, morphNumber: Number, morphCase: Case, requiredAnimacy: RequiredAnimacy) {  // todo: загалний
   if ((gender === Gender.feminine || gender === Gender.neuter
     || (morphNumber === MorphNumber.plural && requiredAnimacy !== RequiredAnimacy.animate))
@@ -1227,7 +1227,7 @@ function defaultMteDefiniteness(gender: Gender, morphNumber: Number, morphCase: 
   return 'f'
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function createVesumFlagCompare(pos: Pos) {
   return (a: string, b: string) => {
     let rowA = tryMapVesumFlag(a)
@@ -1245,7 +1245,7 @@ function createVesumFlagCompare(pos: Pos) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function createVesumFlagComparator2(pos: Pos) {
   let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as Array<any>
   return (a, b) => {
@@ -1253,12 +1253,12 @@ function createVesumFlagComparator2(pos: Pos) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function isAuxVerb(lemma: string) {
   return lemma === 'бути' || lemma === 'будучи' || lemma === 'бувши'
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function trimTrailingDash(str: string) {
   let i = str.length
   while (i >= 0 && str.charAt(i - 1) === '-') {

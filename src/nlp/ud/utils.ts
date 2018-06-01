@@ -113,7 +113,7 @@ export function* tokenStream2conllu(stream: Iterable<Token>) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function sentenceIdLine(id: number | string) {
   return `# sent_id = ${id}`
 }
@@ -201,7 +201,7 @@ export function* tokenStream2brat(sentences: Array<Array<Token>>) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function mustHighlightHoles(sentence: Array<Token>) {
   let numRoots = mu(sentence).count(x => !x.hasDeps())
   if (numRoots === 1) {

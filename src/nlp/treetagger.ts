@@ -93,7 +93,7 @@ export function build4TreeTagger(args: Args) {
   fs.writeFileSync(join(args.outPath, 'lexicon.txt'), array.join('\n'))
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function isJohojiji(interp: MorphInterp) {
   return (interp.lemma === 'його' || interp.lemma === 'її') && interp.isAdjective() && interp.isPronominal()
 }

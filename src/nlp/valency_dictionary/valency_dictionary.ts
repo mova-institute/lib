@@ -160,7 +160,7 @@ export class ValencyDict {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function normalizeLemma(val: string) {
   let ret = normalizeApostrophes(val, `'`)
   ret = removeAccent(ret)

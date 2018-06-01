@@ -231,17 +231,17 @@ export function filterParagraphedDoc(
   return { docValid: true, filteredIndexes: filtered }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function reportRmPar(i: number, p: string, reason: string) {
   console.error(`✖️  ${i}\t ${reason} \t ∎ ${p}\n`)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function reportRmDoc(reason: string) {
   console.error(`👎 removing doc: ${reason}`)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function findInternalHypenations(tokens: Array<string>, analyzer: MorphAnalyzer) {
   return mu(tokens).window(3).filter(([l, m, r]) =>
     (m === '-' || m === '¬')

@@ -175,13 +175,13 @@ export async function query1Client(client: Client, queryStr: string, params: Arr
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function camelizeParseJson(jsonStr: string) {
   let camelized = jsonStr.replace(/"(\w+)"\s*:/g, (a, b) => `"${camelCase(b)}":`)
   return JSON.parse(camelized)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function snakize(obj) {  // first-level only
   for (let key of Object.keys(obj)) {
     let snake = decamelize(key)
@@ -194,7 +194,7 @@ function snakize(obj) {  // first-level only
   return obj
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function nDollars(n: number) {
   let ret = ''
   if (n) {

@@ -28,7 +28,7 @@ interface CliArgs {
   meta?: string
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const langMetas = indexTableByColumn([
   {
     code: 'uk',
@@ -113,7 +113,7 @@ const langMetas = indexTableByColumn([
   // },
 ], 'code')
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const udpipeApiLangMap = {
   'uk': {
     url: 'https://api.mova.institute/udpipe/process',
@@ -147,7 +147,7 @@ langsServedByUfal.forEach(x => udpipeApiLangMap[x].url =
   'http://lindat.mff.cuni.cz/services/udpipe/api/process')
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const firstRegistryPositionals = `
 ATTRIBUTE word {
   DEFAULTVALUE ""
@@ -205,7 +205,7 @@ STRUCTURE s {
 }
 `
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function main() {
   let [stage, alignFilesGlob] = process.argv.slice(2)
   let alignFiles = glob.sync(alignFilesGlob)
@@ -219,7 +219,7 @@ async function main() {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function annotate(alignFiles: Array<string>) {
   for (let alignFile of alignFiles) {
     let { alignDoc, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
@@ -269,7 +269,7 @@ async function annotate(alignFiles: Array<string>) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function therest(alignFiles: Array<string>, params: Dict<string>) {
   console.error(`Gathering morph features from conllus…`)
 
@@ -470,7 +470,7 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
     .forEach(x => execSync(`compilecorp --no-ske --recompile-align ${x}`, { stdio: 'inherit' }))
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function reverseAlignmentLine(val: string) {
   let [, type, xtargets, rest] = val.match(/^<link type='([^']+)' xtargets='([^']+)'(.*)$/)
   let newType = type.split('-').reverse().join('-')
@@ -479,14 +479,14 @@ function reverseAlignmentLine(val: string) {
   return `<link type='${newType}' xtargets='${newXtargets}'${rest}`
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function adaptFeatName(val: string) {
   return val.toLowerCase()
     .replace(']', '')
     .replace('[', '_')
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function getFeatsFromConllu2(conllu: Iterable<string>, set = new Set<string>()) {
   for (let line of conllu) {
     let feats = getCol(line, ConlluField.feats)
@@ -498,7 +498,7 @@ function getFeatsFromConllu2(conllu: Iterable<string>, set = new Set<string>()) 
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function subobject(from, props: Iterable<string>, filter = (x) => !!x) {
   let ret = {}
   for (let prop of props) {
@@ -510,19 +510,19 @@ function subobject(from, props: Iterable<string>, filter = (x) => !!x) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function yesNoUk(val: boolean) {
   return val ? 'так' : 'ні'
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function parseAlignmentPath(alignFilePath: string) {
   return path.basename(alignFilePath)
     .match(/^(.+)\.(\w+)\.(\w+)\.alignment\.xml$/)
     .slice(1)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function prepareFromAlignment(alignFilePath: string) {
   let [intertextId, leftLang, rightLang] = parseAlignmentPath(alignFilePath)
   let alignDoc = parseXmlFileSync(alignFilePath)
@@ -546,7 +546,7 @@ function prepareFromAlignment(alignFilePath: string) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function intertextDoc2HorizontalPlaintext(root: AbstractElement) {
   let ret = ''
   // let ids = new Array<string>()
@@ -564,14 +564,14 @@ function intertextDoc2HorizontalPlaintext(root: AbstractElement) {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function getSentIdsFromIntertextDoc(root: AbstractElement) {
   return (root.evaluateElements('.//s').toArray())
     .filter(x => x.text().trim())
     .map(x => x.attribute('id'))
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function parseSeparatedValues(lines: Iterable<string>, separator: string | RegExp = '\t') {
   let linesIt = mu(lines)
   let keys = linesIt.first().split(separator)

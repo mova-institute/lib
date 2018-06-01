@@ -10,7 +10,7 @@ import { mu } from '../mu'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 const collator = new Intl.Collator('uk-UA')
 const NONLEMMA_PADDING = '  '
 
@@ -180,7 +180,7 @@ export function presentTagsForDisambOneBlock(interps: Array<IStringMorphInterp>)
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function alignTagList(flags: Array<Array<string>>) {
   let ret = new Array<Array<Array<string>>>()  // [pos][tag][flag]
 
@@ -276,7 +276,7 @@ export function* gatherXps(lines: Iterable<string>) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function isAdditionalTag(flags: string) {
   return /:&noun|:(in)?animish/.test(flags)
 }

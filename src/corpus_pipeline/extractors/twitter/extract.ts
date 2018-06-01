@@ -9,7 +9,7 @@ import * as minimist from 'minimist'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function parseTweetObservation(tweet) {
   let observedAt = new Date(tweet.created_at)
 
@@ -121,7 +121,7 @@ export class TwitterStreamingDocExtracor implements StreamingExtractor {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function twitterSpecificFilter(lang: string) {
   if (lang !== 'uk') {
     return true
@@ -130,7 +130,7 @@ function twitterSpecificFilter(lang: string) {
   return false
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function main() {
   const args = minimist(process.argv.slice(2)) as any
 

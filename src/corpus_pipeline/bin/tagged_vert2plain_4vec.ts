@@ -14,7 +14,7 @@ interface Args {
   newContextOn?: string
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function main() {
   const args: Args = minimist(process.argv.slice(2), {
     boolean: [

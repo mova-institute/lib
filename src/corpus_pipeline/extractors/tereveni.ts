@@ -35,7 +35,7 @@ export function* streamDocs(html: string) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function getPostParagraphs(contentRoot: AbstractElement) {
   let ret = new Array<string>()
   let buf = ''

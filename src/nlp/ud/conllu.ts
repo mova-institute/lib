@@ -153,7 +153,7 @@ export function parseConlluTokenCells(value: Array<string>) {
   return { index, form, lemma, upos, xpos, feats, head, rel, misc } as ConlluToken
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function parseUdKeyvalues(keyvals: string) {
   if (!keyvals) {
     return makeObject<string>([])
@@ -161,7 +161,7 @@ function parseUdKeyvalues(keyvals: string) {
   return makeObject(keyvals.split('|').map(x => x.split('=')) as Array<[string, string]>)
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function makeStructure(type: Structure, opening: boolean) {
   return {
     structure: { type, opening } as StructureToken,
@@ -170,7 +170,7 @@ function makeStructure(type: Structure, opening: boolean) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function makeToken(token: ConlluToken) {
   return {
     structure: undefined as StructureToken,
@@ -179,7 +179,7 @@ function makeToken(token: ConlluToken) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function makeMultitoken(multitoken: ConlluMultitoken) {
   return {
     structure: undefined as StructureToken,

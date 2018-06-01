@@ -15,13 +15,13 @@ import { processDoc, getMetaParaPaths } from './utils'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 interface SpecificExtractor {
   streamDocs?(inputStr: string): Iterable<CorpusDoc>
   extract?(inputStr: string): CorpusDoc
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function main(args: Args) {
   let outDir = join(args.workspace, args.part)
 
@@ -68,7 +68,7 @@ function main(args: Args) {
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function globInforming(inputRoot: string, inputGlob = '**/*') {
   let globStr = join(inputRoot, inputGlob)
   console.log(`globbing input files: ${globStr}`)
@@ -77,7 +77,7 @@ function globInforming(inputRoot: string, inputGlob = '**/*') {
   return ret
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 interface Args {
   workspace: string
   part: string

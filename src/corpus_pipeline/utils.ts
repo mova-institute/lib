@@ -58,7 +58,7 @@ export function processDoc(
   writeFileSyncMkdirp(metaPath, JSON.stringify(meta, undefined, 2))
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function normalizeCorpusDoc(doc: CorpusDoc) {
   doc.paragraphs = doc.paragraphs.map(x => normalizeWebParaSafe(x)).filter(x => x)
   doc.title = doc.title && normalizeWebParaSafe(doc.title)
@@ -67,7 +67,7 @@ function normalizeCorpusDoc(doc: CorpusDoc) {
   doc.date = doc.date && doc.date.trim()
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer) {
   const THRESHOLD = 0.2
 
@@ -96,7 +96,7 @@ function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer
   }
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 export function getMetaParaPaths(outDir: string, relpath: string) {
   return [join(outDir, 'meta', `${relpath}.json`), join(outDir, 'para', `${relpath}.json`)]
 }

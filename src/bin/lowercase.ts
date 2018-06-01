@@ -4,7 +4,7 @@ import { BufferedBackpressWriter } from '../backpressing_writer'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function main() {
   process.stdin.setEncoding('utf8')
   let writer = new BufferedBackpressWriter(process.stdout, process.stdin)

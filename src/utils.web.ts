@@ -2,13 +2,13 @@ import { xmlNsResolver, removeXmlns } from './xml/utils'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 let xmlSerializer: XMLSerializer
 function getXmlSerializer() {
   return xmlSerializer || (xmlSerializer = new XMLSerializer())
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 let domParser: DOMParser
 function getDomParser() {
   return domParser || (domParser = new DOMParser())

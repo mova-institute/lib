@@ -24,7 +24,7 @@ interface Args {
   udpipeConcurrency?: number
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function main() {
   const args: Args = minimist(process.argv.slice(2)) as any
   exitOnStdoutPipeError()
@@ -63,7 +63,7 @@ async function main() {
   writer.flush()
 }
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 function mergeConlluIntoVert(
   vertLines: Array<string>,
   conlluCells: Mu<Array<string>>,

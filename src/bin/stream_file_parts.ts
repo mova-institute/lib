@@ -6,7 +6,7 @@ import * as fs from 'fs'
 
 
 
-//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//------------------------------------------------------------------------------
 async function main() {
   let file = process.argv[2]
   await linesNoSpillStdPipeable(async line => {
