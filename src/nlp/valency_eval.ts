@@ -1,5 +1,5 @@
 import { mu, Mu } from '../mu'
-import { cutOut, insert, trimExtension } from '../string_utils'
+import { cutOut, insert, trimExtension } from '../string'
 import { parseConlluSentences, ConlluToken } from './ud/conllu'
 import { zip, flip } from '../lang'
 import { linesSync, linesBackpressedStdPipeable, joinToFileSync } from '../utils.node'

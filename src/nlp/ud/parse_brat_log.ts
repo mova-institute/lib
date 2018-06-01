@@ -7,7 +7,7 @@ import * as fs from 'fs'
 import * as minimist from 'minimist'
 import * as columnify from 'columnify'
 
-import { getLibRootRelative } from '../../path.node'
+import { getLibRootRelative } from '../../lib_path.node'
 // import { toPercent } from '../../string_utils'
 
 

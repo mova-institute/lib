@@ -1,34 +1,6 @@
-import { walkUpUntil, nLevelsDeep, xmlNsResolver } from './utils'
-import { parseXml, serializeXml } from '../utils.web'
+import { xmlNsResolver } from './utils'
 
-// ////////////////////////////////////////////////////////////////////////////////
-// export function replaceRangeWithStr(range: Range, rangeStr: string) {
-//   let holeStart = range.startContainer.previousSibling || range.startContainer.parentNode
-//   let holeEnd = range.endContainer.nextSibling || range.endContainer.parentNode.nextSibling
-//   //range.deleteContents()
-//   range.setStartBefore(holeStart)
-//   range.setEndAfter(holeEnd)
-//   insertRangeStr(range, rangeStr)
-// }
 
-// ////////////////////////////////////////////////////////////////////////////////
-// export function insertRangeStr(hole: Range, rangeStr: string) {
-//   let rootClone = hole.startContainer.ownerDocument.documentElement.cloneNode(false)
-//   let rootName = rootClone.nodeName
-//   let rootStr = serializeXml(rootClone).slice(0, -2) + '>'
-
-//   let fragment = parseXml(rootStr + rangeStr + `</${rootName}>`)  // contextual?
-
-//   let destDepth = -1
-//   walkUpUntil(new WebapiNode(hole.startContainer), x => {
-//     ++destDepth
-//     return x.parent === hole.commonAncestorContainer
-//   })
-
-//   let source = nLevelsDeep(fragment.documentElement.firstChild, destDepth)
-
-//   mergeTrees(source, hole.startContainer, hole.endContainer)
-// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function xpath(context: Node, query: string, type: number) {

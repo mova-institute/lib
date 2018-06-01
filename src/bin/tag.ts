@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { ioArgsPlain } from '../cli_utils'
+import { ioArgsPlain } from '../cli'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
-import { readTillEnd } from '../stream_utils.node'
+import { readTillEnd } from '../stream.node'
 import {
   tokenizeMixml, morphInterpret, numerateTokensGently, mixml2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, autofixDirtyText, normalizeCorpusText,
@@ -14,7 +14,7 @@ import { parseXml } from '../xml/utils.node'
 import { NS } from '../xml/utils'
 import * as xmlutils from '../xml/utils'
 import { createReadStream } from 'fs'
-import { getLibRootRelative } from '../path.node'
+import { getLibRootRelative } from '../lib_path.node'
 import { mu } from '../mu'
 import * as minimist from 'minimist'
 import { tokenStream2conllu, tokenStream2brat, tokenStream2bratPlaintext } from '../nlp/ud/utils'

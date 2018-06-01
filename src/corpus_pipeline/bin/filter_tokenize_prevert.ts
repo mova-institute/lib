@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { AsyncTaskRunner } from '../../lib/async_task_runner'
+import { AsyncTaskRunner } from '../../async_task_runner'
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { filterParagraphedDocExtra } from '../filter'

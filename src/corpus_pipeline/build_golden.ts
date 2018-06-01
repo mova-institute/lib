@@ -10,11 +10,11 @@ import * as mkdirp from 'mkdirp'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
-import { trimExtension } from '../string_utils'
+import { trimExtension } from '../string'
 import { toUd } from '../nlp/ud/tagset'
 import { token2verticalLineZoloto } from './ud'
 import { mu } from '../mu'
-import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
+import { keyvalue2attributesNormalized } from '../nlp/noske'
 import { standartizeMorphoForUd21 } from '../nlp/ud/uk_grammar'
 
 

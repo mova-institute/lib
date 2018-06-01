@@ -1,6 +1,6 @@
 import { createDictionarySync } from '../dictionary/factories.node'
 import { MorphAnalyzer } from './morph_analyzer'
-import { getLibRootRelative } from '../../path.node'
+import { getLibRootRelative } from '../../lib_path.node'
 
 
 

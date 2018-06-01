@@ -1,5 +1,5 @@
 import { UdPos, UdFeats, ud2conlluishString, UdNumType, UdVerbForm } from '../nlp/ud/tagset'
-import { trimAfterLast } from '../string_utils'
+import { trimAfterLast } from '../string'
 import { ConlluToken, ConlluMultitoken } from '../nlp/ud/conllu'
 
 import * as _ from 'lodash'

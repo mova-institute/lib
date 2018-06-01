@@ -6,7 +6,7 @@ import { tokenizeUk } from '../nlp/utils'
 import { mu } from '../mu'
 import { uniformSubarray, numericCompare } from '../algo'
 import * as he from 'he'
-import { isTitlecase } from '../string_utils'
+import { isTitlecase } from '../string'
 
 
 const lengthThreshold = 60000

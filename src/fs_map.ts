@@ -1,10 +1,12 @@
 import { Stream } from 'stream'
-import * as fs from 'fs'
 import { join, dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 
+import * as fs from 'fs'
 
 
+
+////////////////////////////////////////////////////////////////////////////////
 export class FsMap {
   constructor(private directoryPath: string) {
   }

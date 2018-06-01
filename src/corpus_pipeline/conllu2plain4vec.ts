@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { forEachLine } from '../utils.node'
-import { BufferedSyncWriter } from '../lib/buffered_writer'
+import { BufferedSyncWriter } from '../buffered_writer'
 
 
 

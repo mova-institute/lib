@@ -4,6 +4,7 @@ const camelCase = require('camelcase')
 const decamelize = require('decamelize')
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcodes-appendix.html
   serialization_failure: '40001',

@@ -1,9 +1,9 @@
 #!/usr/bin/env node --max-old-space-size=5120
 
-import { ioArgs } from '../cli_utils'
-import { readTillEnd } from '../stream_utils.node'
+import { ioArgs } from '../cli'
+import { readTillEnd } from '../stream.node'
 import { parseXml } from '../xml/utils.node'
-import { BufferedBackpressWriter } from '../lib/node/backpressing_writer'
+import { BufferedBackpressWriter } from '../backpressing_writer'
 
 const args = require('minimist')(process.argv.slice(2), {
   boolean: [

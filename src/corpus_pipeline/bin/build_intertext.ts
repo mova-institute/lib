@@ -13,7 +13,7 @@ import * as minimist from 'minimist'
 
 import * as path from 'path'
 import * as fs from 'fs'
-import { countNumMatches } from '../../string_utils'
+import { countNumMatches } from '../../string'
 import { DefaultMap, HashSet } from '../../data_structures'
 import { getCol, ConlluField } from '../../nlp/ud/conllu'
 import { buildMap, createObject2 } from '../../lang'

@@ -10,7 +10,7 @@ import * as assert from 'assert'
 import * as columnify from 'columnify'
 import { parseXml } from '../xml/utils.node'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
-import { getLibRootRelative } from '../path.node'
+import { getLibRootRelative } from '../lib_path.node'
 
 
 

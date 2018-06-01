@@ -1,6 +1,6 @@
 import { sleep } from '../../lang'
-import { fetchText } from '../../request_utils'
-import { matchAll } from '../../string_utils'
+import { fetchText } from '../../request'
+import { matchAll } from '../../string'
 
 import * as minimist from 'minimist'
 

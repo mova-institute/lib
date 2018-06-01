@@ -5,19 +5,22 @@ import { mu } from '../mu'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { linesStreamSync } from '../utils.node'
 import { mixml2tokenStream } from '../nlp/utils'
-import { iterateDictCorpVizLines } from '../nlp/vesum_utils'
+import { iterateDictCorpVizLines } from './vesum'
 import { NS } from '../xml/utils'
-import { startsWithCapital } from '../string_utils'
+import { startsWithCapital } from '../string'
 import { MorphInterp } from '../nlp/morph_interp'
 import { sync as mkdirpSync } from 'mkdirp'
 
 
+
+////////////////////////////////////////////////////////////////////////////////
 export interface Args {
   corpusPath: string
   outPath: string
   vesumPath: string
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export function build4TreeTagger(args: Args) {
   mkdirpSync(args.outPath)
   let trainFile = fs.openSync(join(args.outPath, 'train.txt'), 'w')

@@ -1,9 +1,8 @@
-import { xmlNsResolver, encloseInRootNs } from '../xml/utils'
+import { xmlNsResolver } from '../xml/utils'
 import { xpath } from '../xml/utils.web'
-import { serializeXmlNoNs, parseXml } from '../utils.web'
-// import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
-import { /*tokenizeTei, morphInterpret, enumerateWords, */ firstNWords } from './utils'
+import { serializeXmlNoNs } from '../utils.web'
 import { WebapiElement } from '../xml/xmlapi_web/webapi_element'
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -11,7 +10,8 @@ export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 80
   let ret = new Array<DocumentFragment>()
 
-  let paragraphs: Array<any> = xpath(doc, '//*[local-name()="p"]|//*[local-name()="chunk" and not(descendant::*[local-name()="p"])]', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+  let paragraphs = xpath(doc, '//*[local-name()="p"]|//*[local-name()="chunk" and not(descendant::*[local-name()="p"])]',
+    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE) as Array<any>
   if (!paragraphs.length) {
     paragraphs = [doc.documentElement] // todo //xpath(doc, '//div//p', XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
   }
@@ -40,22 +40,3 @@ export function textFragmentCorpusText(doc: Document) {
     firstWords: firstNWords(4, new WebapiElement(x.firstElementChild)),
   }))
 }
-
-////////////////////////////////////////////////////////////////////////////////
-/*export function morphTagText(value: string, tagger: MorphAnalyzer, numerate: boolean, mte = false) {
-  let doc = parseXml(value)
-  if (!doc || !doc.lookupNamespaceURI('mi')) {
-    value = value.replace(/^\s*<\?[^>]*>/, '')
-    doc = parseXml(encloseInRootNs(value, 'text'))
-  }
-  let root = new WebapiDocument(doc).root()
-  tokenizeTei(root, tagger)
-  morphInterpret(root, tagger, mte)
-  if (numerate) {
-    enumerateWords(root)
-  }
-  let ret = root.document().serialize()
-
-  return ret
-}
-*/

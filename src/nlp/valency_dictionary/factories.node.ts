@@ -8,6 +8,7 @@ import { removeAccent } from '../utils'
 
 
 
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 const formsRe = new RegExp(r`[${LETTER_UK_UPPERCASE}'#]{2,}`, 'g')
 const nounVerbFormsRe = new RegExp(r`[${LETTER_UK_LOWERCASE}'#]{2,}`, 'g')
 

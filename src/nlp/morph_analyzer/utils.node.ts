@@ -3,6 +3,7 @@ import { execSync } from 'child_process'
 import { join } from 'path'
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 export function writeCompiledDict(path: string, compiledDict) {   // todo: type
   writeFileSync(path + '/tags.json', JSON.stringify(compiledDict.tags), 'utf8')

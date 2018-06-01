@@ -10,7 +10,7 @@ import { tokenStream2brat, tokenStream2bratPlaintext } from '../nlp/ud/utils'
 import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { parseIntStrict } from '../lang'
-import { zerofillMax, trimExtension } from '../string_utils'
+import { zerofillMax, trimExtension } from '../string'
 
 import { sync as mkdirpSync } from 'mkdirp'
 

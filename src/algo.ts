@@ -2,6 +2,7 @@ import { isOddball, isNumber, last } from './lang'
 import { HashSet } from './data_structures'  // todo remove dep
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 export type Comparator<T> = (a: T, b: T) => number
 

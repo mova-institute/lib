@@ -1,7 +1,7 @@
 import { FsMap } from '../../fs_map'
-import { fetchText } from '../../request_utils'
+import { fetchText } from '../../request'
 import { sleep } from '../../lang'
-import { matchAll } from '../../string_utils'
+import { matchAll } from '../../string'
 
 import * as chalk from 'chalk'
 

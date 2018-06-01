@@ -1,5 +1,5 @@
 import { tryParseHtml } from '../../xml/utils.node'
-import { zerofill } from '../../string_utils'
+import { zerofill } from '../../string'
 import { parseIntStrict, last } from '../../lang'
 import { mu } from '../../mu'
 import {

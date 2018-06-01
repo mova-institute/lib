@@ -11,11 +11,11 @@ import {
 } from '../static'
 
 import { HashSet } from '../../data_structures'
-import { CacheMap } from '../../data_structures/cache_map'
+import { CacheMap } from '../../cache_map'
 import * as algo from '../../algo'
 import { CachedValue } from '../../cached_value'
 import { parseIntStrict, r } from '../../lang'
-import * as stringUtils from '../../string_utils'
+import * as stringUtils from '../../string'
 import * as tlds from 'tlds'
 
 

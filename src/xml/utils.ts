@@ -235,17 +235,6 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// export function* traverseDepthElGen(root: AbstractNode) {
-//   let iterator = traverseDepthGen(root)
-//   let v = iterator.next()
-//   while (!v.done) {
-//     if (v.value.node.isElement()) {
-//       v = iterator.next(yield { el: v.value.node.asElement(), entering: v.value.entering })
-//     }
-//   }
-// }
-
-////////////////////////////////////////////////////////////////////////////////
 export function* traverseDepthGen2(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
   let directive = yield { node, entering: true }
   if (directive === 'stop') {

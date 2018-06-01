@@ -1,5 +1,5 @@
 import { CorpusDoc } from './doc_meta'
-import { keyvalue2attributesNormalized } from '../nlp/noske_utils'
+import { keyvalue2attributesNormalized } from '../nlp/noske'
 import { tokenObj2verticalLineUk, tokenOrMulti2verticalLineGeneric } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 

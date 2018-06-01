@@ -1,4 +1,4 @@
-import { writePromiseDrain } from './stream_utils.node'
+import { writePromiseDrain } from './stream.node'
 import { mu } from './mu'
 
 import { readFileSync } from 'fs'
@@ -7,38 +7,13 @@ import * as path from 'path'
 import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
 import { promisify } from 'util'
-import { BufferedBackpressWriter, StreamPauser } from './lib/node/backpressing_writer'
+import { BufferedBackpressWriter, StreamPauser } from './backpressing_writer'
 
 const lineIterator = require('n-readlines')
-
 const readFile = promisify(fs.readFile)
 
 
-////////////////////////////////////////////////////////////////////////////////
-// export async function* lines(readable: NodeJS.ReadableStream, newline: string | RegExp = '\n') {
-//   let leftover: string
-//   for await (let chunk of new StreamDataIterator<string>(readable)) {
-//     let splitted = chunk.split(newline)
-//     leftover = splitted.pop()
-//     yield* splitted
-//   }
-//   yield leftover
-// }
 
-////////////////////////////////////////////////////////////////////////////////
-// export function linesCbNonempty(
-//   readable: NodeJS.ReadableStream,
-//   callback: (lineBulk: string[], ready: () => void) => void,
-//   newline: string | RegExp = '\n'
-// ) {
-//   linesCb(readable, (line, ready) => {
-//     if (line) {
-//       callback(line, ready)
-//     } else {
-//       ready()
-//     }
-//   }, newline)
-// }
 ////////////////////////////////////////////////////////////////////////////////
 // todo: rerwrite with async iterators once avail
 export function lineBulksAsync(
@@ -269,9 +244,9 @@ export function* linesSync(filename: string) {  // todo: do not buffer file
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function readTsvMapSync(path: string, to?: Map<string, string>) {
+export function readTsvMapSync(filePath: string, to?: Map<string, string>) {
   let ret = to || new Map<string, string>()
-  for (let line of linesSync(path)) {
+  for (let line of linesSync(filePath)) {
     let [key, val] = line.split('\t')
     ret.set(key, val)
   }

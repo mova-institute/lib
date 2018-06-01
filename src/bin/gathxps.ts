@@ -1,4 +1,4 @@
-import { gatherXps } from '../nlp/vesum_utils'
+import { gatherXps } from '../nlp/vesum'
 
 import * as glob from 'glob'
 import { readFileSync } from 'fs'

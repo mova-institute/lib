@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { logErrAndExit, linesBackpressedStdPipeable } from '../../utils.node'
-import { DictCorpVizIterator } from '../vesum_utils'
+import { DictCorpVizIterator } from '../vesum'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { standartizeMorphoForUd21, fillWithValencyFromDict } from './uk_grammar'

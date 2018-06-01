@@ -1,4 +1,4 @@
-import { reqJson } from '../../request_utils'
+import { reqJson } from '../../request'
 
 
 

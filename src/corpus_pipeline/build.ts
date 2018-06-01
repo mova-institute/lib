@@ -2,7 +2,7 @@
 
 import { CorpusDoc } from './doc_meta'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
-import { trimExtension, zerofill, toFloorPercent } from '../string_utils'
+import { trimExtension, zerofill, toFloorPercent } from '../string'
 import { mu } from '../mu'
 
 import { sync as globSync } from 'glob'

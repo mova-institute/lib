@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { BufferedBackpressWriter } from '../lib/node/backpressing_writer'
+import { BufferedBackpressWriter } from '../backpressing_writer'
 
 
 

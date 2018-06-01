@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { r, arrayed } from '../lang'
-import { putFileSshSync, execRemoteInlpaceSync } from '../ssh_utils'
+import { putFileSshSync, execRemoteInlpaceSync } from '../ssh'
 import { CatStream } from '../cat_stream'
 import { execPipe } from '../child_process.node'
 import { parseJsonFileSync } from '../utils.node'

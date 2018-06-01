@@ -1,7 +1,7 @@
 import { CorpusDoc } from '../doc_meta'
 import { tryParseHtml } from '../../xml/utils.node'
 import { normalizeWebParaSafe } from '../../nlp/utils'
-import { allcaps2TitlecaseDirty } from '../../string_utils'
+import { allcaps2TitlecaseDirty } from '../../string'
 import { toSortableDate } from '../../date'
 import { textOf, textsOf } from './utils'
 

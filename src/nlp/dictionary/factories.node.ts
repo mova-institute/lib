@@ -1,6 +1,6 @@
 import { Dictionary } from '../dictionary/dictionary'
 import { WordDawgPayload } from '../dictionary/word_dawg_payload'
-import { getLibRootRelative } from '../../path.node'
+import { getLibRootRelative } from '../../lib_path.node'
 
 import { readFileSync } from 'fs'
 import { readStringMapDawgSync } from 'dawgjs'

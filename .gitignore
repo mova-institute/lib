@@ -1,17 +1,12 @@
-node_modules/
+/node_modules/
 npm-debug.log
-lib/**/*.js
-lib/**/*.d.ts
-lib5/*
-!lib5/package.json
-!lib/package.json
-!lib/**/*.py
-dist/
+/lib/**/*.js
+/lib/**/*.d.ts
+!/lib/**/*.py
+/dist/
 /data/*
-!/data/test
+/src/ext
 *.js.map
 
 **/__pycache__/
-**/.idea/workspace.xml
-**/.idea/tasks.xml
-**/.idea/*.iws
+/.idea/

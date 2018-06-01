@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
-import { AsyncTaskRunner } from '../../lib/async_task_runner'
+import { AsyncTaskRunner } from '../../async_task_runner'
 import { Vert2ConlluBuilder } from '../vert2conllu_builder'
 import { mu, Mu } from '../../mu'
 import { tokenObj2verticalLineUk } from '../ud'
@@ -10,7 +10,7 @@ import { ApiClient } from '../../nlp/api_client'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
 import { toConlluishString } from '../../nlp/ud/tagset'
-import { BufferedBackpressWriter } from '../../lib/node/backpressing_writer'
+import { BufferedBackpressWriter } from '../../backpressing_writer'
 
 import * as minimist from 'minimist'
 

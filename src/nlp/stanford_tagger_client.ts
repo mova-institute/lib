@@ -1,6 +1,9 @@
 import { connect } from 'net'
-import { matchAll } from '../string_utils'
+import { matchAll } from '../string'
 
+
+
+////////////////////////////////////////////////////////////////////////////////
 export class StanfordTaggerClient {
   constructor(private port: number, private host = 'localhost') {
 
