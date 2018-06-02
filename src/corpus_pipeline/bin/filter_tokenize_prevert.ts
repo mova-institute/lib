@@ -3,10 +3,12 @@
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { ZvisusilDocFilter } from '../filter'
 import { linesBackpressedStdPipeable, writeLines } from '../../utils.node'
-import { makeObject, renprop, mapInplace } from '../../lang'
+import { makeObject, renprop, mapInplace, zip } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
-import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
+import { normalizeZvidusilParaNondestructive, fixLatinGlyphMisspell, normalizeZvidusilParaAggressive } from '../../nlp/utils'
+import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
+import { unzip } from 'lodash'
 
 import * as minimist from 'minimist'
 import he = require('he')
@@ -24,7 +26,8 @@ async function main() {
   const args = minimist<Args>(process.argv.slice(2)) as any
 
   let docBuilder = new PrevertDocBuilder()
-  let filter = new ZvisusilDocFilter()
+  let analyzer = createMorphAnalyzerSync()
+  let filter = new ZvisusilDocFilter(analyzer)
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
 
   linesBackpressedStdPipeable(async (line, writer) => {
@@ -34,7 +37,7 @@ async function main() {
     }
 
     let { meta, paragraphs } = doc
-    mapInplace(paragraphs, normalizeParagraph)
+    mapInplace(paragraphs, he.unescape)
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
       filter.filter(paragraphs, meta)
@@ -50,8 +53,11 @@ async function main() {
     let metaObj = makeObject(meta)
     normalizeMeta(metaObj)
 
+    let [originalParas, normalizedParas] =
+      unzip(filteredParagraphs.map(x => normalizeZvidusilParaAggressive(x, analyzer)))
+
     try {
-      var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
+      var conllu = await udpipe.tokenizeParagraphs(normalizedParas)
     } catch (e) {
       console.error(e)
       return
@@ -77,16 +83,6 @@ function normalizeMeta(meta) {
   renprop(meta, 'id', 'spider_id')
   meta.title = meta.title || '[без назви]'
   meta.source = 'загальний інтернет'
-}
-
-//------------------------------------------------------------------------------
-function normalizeParagraph(p: string) {
-  let ret = he.unescape(p)
-  ret = normalizeWebParaSafe(p)
-  ret = fixLatinGlyphMisspell(ret)
-  ret = ret.trim()
-
-  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////

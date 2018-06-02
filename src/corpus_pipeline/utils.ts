@@ -4,7 +4,7 @@ import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { writeFileSyncMkdirp } from '../utils.node'
 import { join } from 'path'
-import { tokenizeUk, normalizeWebParaSafe } from '../nlp/utils'
+import { tokenizeUk, normalizeZvidusilParaNondestructive } from '../nlp/utils'
 
 
 
@@ -60,10 +60,10 @@ export function processDoc(
 
 //------------------------------------------------------------------------------
 function normalizeCorpusDoc(doc: CorpusDoc) {
-  doc.paragraphs = doc.paragraphs.map(x => normalizeWebParaSafe(x)).filter(x => x)
-  doc.title = doc.title && normalizeWebParaSafe(doc.title)
-  doc.author = doc.author && normalizeWebParaSafe(doc.author)
-  doc.authors = doc.authors && doc.authors.map(x => normalizeWebParaSafe(x))
+  doc.paragraphs = doc.paragraphs.map(x => normalizeZvidusilParaNondestructive(x)).filter(x => x)
+  doc.title = doc.title && normalizeZvidusilParaNondestructive(doc.title)
+  doc.author = doc.author && normalizeZvidusilParaNondestructive(doc.author)
+  doc.authors = doc.authors && doc.authors.map(x => normalizeZvidusilParaNondestructive(x))
   doc.date = doc.date && doc.date.trim()
 }
 

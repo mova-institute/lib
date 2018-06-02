@@ -12,7 +12,7 @@ import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
 import { MorphInterp, compareTags } from './morph_interp'
 import {
-  WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE,
+  WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE, latinMisspellsReRight, latinMisspellsReLeft, LATIN_CYR_GLYPH_MISSPELL_MAP, accentLatinMisspellsReRight, accentLatinMisspellsReLeft, ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP,
 } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
@@ -27,6 +27,7 @@ import * as sortedUniq from 'lodash.sorteduniq'
 import { GraphNode } from '../graph'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { AbstractDocument } from '../xml/xmlapi/abstract_document'
+import { mapInplace } from '../../lib/lang';
 
 
 
@@ -37,8 +38,101 @@ export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'text'),
 ])
 
+//------------------------------------------------------------------------------
 const WORD_TAGS = new Set([W, W_])
 
+////////////////////////////////////////////////////////////////////////////////
+export function fixLatinGlyphMisspell(value: string) {
+  value = value.replace(latinMisspellsReRight, (match, cyr, latin) =>
+    cyr + LATIN_CYR_GLYPH_MISSPELL_MAP[latin])
+
+  value = value.replace(latinMisspellsReLeft, (match, latin, cyr) =>
+    LATIN_CYR_GLYPH_MISSPELL_MAP[latin] + cyr)
+
+  return value
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function fixAccentLatinGlyphMisspell(value: string) {
+  value = value.replace(accentLatinMisspellsReRight, (match, cyr, latin) =>
+    cyr + ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP[latin])
+
+  value = value.replace(accentLatinMisspellsReLeft, (match, latin, cyr) =>
+    ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP[latin] + cyr)
+
+  return value
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function removeRenderedHypenation(str: string, analyzer: MorphAnalyzer) {
+  let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-]\s+([${WORDCHAR}]+|$)`, 'g')
+  return str.replace(re, (match, beforeLeft, left, right) => {
+    // if (right === 'і') {
+    //   return beforeLeft + left + right
+    // }
+    let together = left + right
+    if (analyzer.canBeToken(together)) {  // it's a hypen
+      return beforeLeft + left + right
+    }
+    let dashed = left + '-' + right
+    if (analyzer.canBeToken(dashed)) {
+      return beforeLeft + dashed
+    }
+    return beforeLeft + left + right
+  })
+    .replace(/\u00AD/g, '')  // just kill the rest
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function removeInvisibles(value: string) {
+  return value.replace(/[\u0000-\u0008\u000E-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060]/gu, '')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// safe autofixes
+export function normalizeZvidusilParaNondestructive(value: string) {
+  value = removeInvisibles(value)
+  value = value.replace(/[\s\n\r]+/g, ' ')
+  value = removeSoftHypen(value)
+  value = normalizeDiacritics(value)
+  value = value.trim()
+
+  return value
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function normalizeZvidusilParaAggressive(value: string, analyzer: MorphAnalyzer) {
+  let quasiOriginal = normalizeZvidusilParaNondestructive(value)
+
+  let normalized = quasiOriginal
+
+  normalized = removeCombiningAccent(normalized)
+  normalized = fixAccentLatinGlyphMisspell(normalized)
+  normalized = autofixApostrophes(normalized)
+
+  let naiveSplit = normalized.split(' ')
+  mapInplace(naiveSplit, x => normalizeDash(x, analyzer))
+  normalized = naiveSplit.join(' ')
+
+  if (quasiOriginal.length !== normalized.length) {
+    throw new Error(`Should not happen`)
+  }
+
+  return [quasiOriginal, normalized]
+}
+
+//------------------------------------------------------------------------------
+const autofixApostrophesRe = /([а-яєіїґ])([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])([а-яєіїґ])/gi
+const autofixApostrophesEndRe = /^([а-яєіїґ]+)([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])$/gi
+////////////////////////////////////////////////////////////////////////////////
+export function autofixApostrophes(token: string, to = '’') {
+  token = token.replace(autofixApostrophesRe, (match, left, apos, right) =>
+    `${left}${to}${right}`)
+  token = token.replace(autofixApostrophesEndRe, (match, word, apos) =>
+    `${word}${to}`)
+
+  return token
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function plaintext2ParagraphsTrimmed(plaintext: string) {
@@ -51,8 +145,13 @@ export function normalizeApostrophes(val: string, to = '’') {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function removeAccent(val: string) {
+export function removeCombiningAccent(val: string) {
   return val.replace(/\u0301/g, '')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function removeSoftHypen(val: string) {
+  return val.replace(/\u00AD/g, '')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +159,18 @@ export function normalizeDiacritics(str: string) {
   return str
     .replace(/і\u{308}/gui, x => startsWithCapital(x) ? 'Ї' : 'ї')
     .replace(/и\u{306}/gui, x => startsWithCapital(x) ? 'Й' : 'й')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function normalizeDash(form: string, analyzer: MorphAnalyzer) {
+  let replaced = form.replace(/[–—―־‑]/g, '-')
+  if (replaced !== form
+    && replaced.length === form.length
+    && analyzer.hasInterps(replaced)
+  ) {
+    return replaced
+  }
+  return form
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -594,79 +705,6 @@ export function keepDisambedOnly(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const LATIN_CYR_GLYPH_MISSPELL = {
-  'e': 'е',
-  'y': 'у',
-  'i': 'і',
-  'o': 'о',
-  'p': 'р',
-  'a': 'а',
-  'x': 'х',
-  'c': 'с',
-  'E': 'Е',
-  'T': 'Т',
-  'I': 'І',
-  'O': 'О',
-  'P': 'Р',
-  'A': 'А',
-  'H': 'Н',
-  'K': 'К',
-  'X': 'Х',
-  'C': 'С',
-  'B': 'В',
-  'M': 'М',
-  'ï': 'ї',
-  'Ï': 'Ї',
-  'ı': 'і',
-  'r': 'г',
-}
-const latinMisspells = Object.keys(LATIN_CYR_GLYPH_MISSPELL).join('')
-const latinMisspellsRe1 = new RegExp(r`([${LETTER_UK}])([${latinMisspells}])`, 'g')
-const latinMisspellsRe2 = new RegExp(r`([${latinMisspells}])([${LETTER_UK}])`, 'g')
-export function fixLatinGlyphMisspell(value: string) {
-  value = value.replace(latinMisspellsRe1, (match, cyr, latin) => cyr + LATIN_CYR_GLYPH_MISSPELL[latin])
-  value = value.replace(latinMisspellsRe2, (match, latin, cyr) => LATIN_CYR_GLYPH_MISSPELL[latin] + cyr)
-  return value
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function removeHypenation(str: string, analyzer: MorphAnalyzer) {
-  let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-]\s+([${WORDCHAR}]+|$)`, 'g')
-  return str.replace(re, (match, beforeLeft, left, right) => {
-    // if (right === 'і') {
-    //   return beforeLeft + left + right
-    // }
-    let together = left + right
-    if (analyzer.canBeToken(together)) {  // it's a hypen
-      return beforeLeft + left + right
-    }
-    let dashed = left + '-' + right
-    if (analyzer.canBeToken(dashed)) {
-      return beforeLeft + dashed
-    }
-    return beforeLeft + left + right
-  })
-    .replace(/\u00AD/g, '')  // just kill the rest
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function removeInvisibles(value: string) {
-  return value.replace(/[\u0000-\u0008\u000E-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060]/gu, '')
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// safe autofixes
-export function normalizeWebParaSafe(value: string) {
-  let ret = removeInvisibles(value)
-    .replace(/[\s\n\r]+/g, ' ')
-    .replace(/[\u00AD\u0301]/g, '')  // soft hypen and stress
-
-  ret = normalizeDiacritics(ret)
-
-  return ret.trim()
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
   let ret = removeInvisibles(value)
     // .replace(/[\xa0]/g, ' ')
@@ -676,7 +714,7 @@ export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
   ret = fixLatinGlyphMisspell(ret)
   ret = normalizeDiacritics(ret)
   if (analyzer) {
-    ret = removeHypenation(ret, analyzer)
+    ret = removeRenderedHypenation(ret, analyzer)
   }
   ret = ret.trim()
 

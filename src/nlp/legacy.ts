@@ -1,6 +1,6 @@
 import { MorphInterp } from './morph_interp'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
-import { removeInvisibles, fixLatinGlyphMisspell, normalizeDiacritics, removeHypenation, sortInterps } from './utils'
+import { removeInvisibles, fixLatinGlyphMisspell, normalizeDiacritics, removeRenderedHypenation, sortInterps } from './utils'
 import { WORDCHAR, PUNC_GLUED_BEFORE, LETTER_UK, PUNC_GLUED_AFTER } from './static'
 import { r } from '../lang'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
@@ -29,7 +29,7 @@ export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyze
   ret = fixLatinGlyphMisspell(ret)
   ret = normalizeDiacritics(ret)
   if (analyzer) {
-    ret = removeHypenation(ret, analyzer)
+    ret = removeRenderedHypenation(ret, analyzer)
   }
   ret = ret.trim()
 

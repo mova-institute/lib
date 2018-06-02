@@ -1,6 +1,6 @@
 import { mu, Mu } from '../../mu'
 import { DefaultMap, CoolSet } from '../../data_structures'
-import { normalizeApostrophes, removeAccent } from '../utils'
+import { normalizeApostrophes, removeCombiningAccent } from '../utils'
 import { DictValency } from '../morph_features'
 
 
@@ -163,7 +163,7 @@ export class ValencyDict {
 //------------------------------------------------------------------------------
 function normalizeLemma(val: string) {
   let ret = normalizeApostrophes(val, `'`)
-  ret = removeAccent(ret)
+  ret = removeCombiningAccent(ret)
 
   return ret
 }

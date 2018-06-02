@@ -1,4 +1,5 @@
-import { r } from '../lang'
+import { r, makeObject } from '../lang'
+import { Dict } from '../types'
 
 export const ukComparator = new Intl.Collator('uk-UA').compare
 
@@ -125,3 +126,69 @@ const INTERJECTION_RE_STRS = [
 ]
 const INTERJECTION_RE_STR = INTERJECTION_RE_STRS.join('|')
 export const INTERJECTION_RE = new RegExp(`^(${INTERJECTION_RE_STR})$`, 'i')
+
+const LATIN_CYR_GLYPH_MISSPELL: Array<[string, string]> = [
+  ['e', 'е'],
+  ['y', 'у'],
+  ['i', 'і'],
+  ['o', 'о'],
+  ['p', 'р'],
+  ['a', 'а'],
+  ['x', 'х'],
+  ['c', 'с'],
+  ['E', 'Е'],
+  ['T', 'Т'],
+  ['I', 'І'],
+  ['O', 'О'],
+  ['P', 'Р'],
+  ['A', 'А'],
+  ['H', 'Н'],
+  ['K', 'К'],
+  ['X', 'Х'],
+  ['C', 'С'],
+  ['B', 'В'],
+  ['M', 'М'],
+  ['ï', 'ї'],
+  ['Ï', 'Ї'],
+  ['ȉ', 'ї'],
+  ['Ȉ', 'Ї'],
+  ['ı', 'і'],
+  ['r', 'г'],
+  ['u', 'и'],  // ~
+]
+export const LATIN_CYR_GLYPH_MISSPELL_MAP = makeObject(LATIN_CYR_GLYPH_MISSPELL)
+const latinMisspells = LATIN_CYR_GLYPH_MISSPELL.map(x => x[0]).join('')
+export const latinMisspellsReRight = new RegExp(r`([${LETTER_UK}])([${latinMisspells}])`, 'g')
+export const latinMisspellsReLeft = new RegExp(r`([${latinMisspells}])([${LETTER_UK}])`, 'g')
+
+const ACCENT_LATIN_CYR_GLYPH_MISSPELL = [
+  ['ÀÁ', 'А'],
+  ['ÈÉ', 'Е'],
+  ['ÌÍ', 'І'],
+  ['ÒÓ', 'О'],
+  ['àáȁ', 'а'],
+  ['èѐé', 'е'],
+  ['ìí', 'і'],
+  ['ȉḯ', 'ї'],
+  ['òóȍ', 'о'],
+  ['úù', 'и'],
+  ['ýỳ', 'у'],
+]
+export const ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP: Dict<string> = {}
+ACCENT_LATIN_CYR_GLYPH_MISSPELL.forEach(([k, v]) =>
+  [...k].forEach(char => ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP[char] = v))
+
+const accentLatinMisspells = Object.keys(ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP).join('')
+export const accentLatinMisspellsReRight =
+  new RegExp(r`([${LETTER_UK}])([${accentLatinMisspells}])`, 'g')
+export const accentLatinMisspellsReLeft =
+  new RegExp(r`([${accentLatinMisspells}])([${LETTER_UK}])`, 'g')
+
+
+/*
+
+ѓ
+// ['Ć', 'С'],
+// ['ć', 'с'],
+
+*/

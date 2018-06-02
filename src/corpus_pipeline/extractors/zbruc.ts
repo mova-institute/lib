@@ -1,6 +1,6 @@
 import { CorpusDoc } from '../doc_meta'
 import { tryParseHtml } from '../../xml/utils.node'
-import { normalizeWebParaSafe } from '../../nlp/utils'
+import { normalizeZvidusilParaNondestructive } from '../../nlp/utils'
 import { allcaps2TitlecaseDirty } from '../../string'
 import { toSortableDate } from '../../date'
 import { textOf, textsOf } from './utils'
@@ -30,7 +30,7 @@ export function extract(html: string) {
 
   let author = textOf(root, '//div[contains(@class, "field-name-field-author")]//text()').trim()
   if (author) {
-    author = normalizeWebParaSafe(author)
+    author = normalizeZvidusilParaNondestructive(author)
     author = allcaps2TitlecaseDirty(author)
   }
 

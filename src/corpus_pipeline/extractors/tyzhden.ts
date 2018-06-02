@@ -1,6 +1,6 @@
 import { CorpusDoc } from '../doc_meta'
 import { tryParseHtml } from '../../xml/utils.node'
-import { normalizeWebParaSafe } from '../../nlp/utils'
+import { normalizeZvidusilParaNondestructive } from '../../nlp/utils'
 import { dayUkmonthCommaYear2date, isDayUkMonthCommaYear, toSortableDate, dayUkmonth2date } from '../../date'
 import { matchNth } from '../../lang'
 import { textsOf } from './utils'
@@ -34,7 +34,7 @@ export function extract(html: string) {
 
   let author = root.evaluateString(
     'string(//div[@id="postView"]//div[@class="bf4"]//*[contains(@href, "/Author/")]/text())')
-  author = normalizeWebParaSafe(author)
+  author = normalizeZvidusilParaNondestructive(author)
 
   let paragraphs: Array<string> = []
   let jumbo = root.evaluateString(
@@ -51,7 +51,7 @@ export function extract(html: string) {
   // + '|//div[@id="postBody" or contains(@class, "post-body")]/h1'
   for (let paragraphsXapth of paragraphsXapthTries) {
     textsOf(root, paragraphsXapth)
-      .map(x => normalizeWebParaSafe(x))
+      .map(x => normalizeZvidusilParaNondestructive(x))
       .filter(x => !x.startsWith('Читайте також'))
       .forEach(x => paragraphs.push(x))
     if (paragraphs.length) {

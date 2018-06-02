@@ -5,7 +5,7 @@ import { parseJsonFile, logErrAndExit, superLinesStd } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { ZvisusilDocFilter } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
-import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
+import { normalizeZvidusilParaNondestructive, fixLatinGlyphMisspell } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
 import { mu, Mu } from '../../mu'
 import { writePromiseDrain } from '../../stream.node'
@@ -99,7 +99,7 @@ function paraPath2metaPath(paraPath: string, base: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeParagraph(p: string) {
-  let ret = normalizeWebParaSafe(p)
+  let ret = normalizeZvidusilParaNondestructive(p)
   ret = fixLatinGlyphMisspell(ret)
 
   return ret

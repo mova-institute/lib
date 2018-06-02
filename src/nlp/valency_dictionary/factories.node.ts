@@ -4,7 +4,7 @@ import { mu } from '../../mu'
 import { r } from '../../lang'
 import { linesSync } from '../../utils.node'
 import * as path from 'path'
-import { removeAccent } from '../utils'
+import { removeCombiningAccent } from '../utils'
 
 
 
@@ -33,7 +33,7 @@ export function createValencyDictFromKotsybaTsvs(directory: string) {
   for (let [, cols] of it) {
 
     let forms = cols[1].match(formsRe).map(x => normalizeForm(x))
-    let baseVerbs = removeAccent(cols[4])
+    let baseVerbs = removeCombiningAccent(cols[4])
       .match(nounVerbFormsRe)
       .map(x => x.replace(/#/g, ''))
 
