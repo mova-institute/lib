@@ -5,7 +5,7 @@ import { parseJsonFile, logErrAndExit, superLinesStd } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { ZvidusilDocFilter } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
-import { normalizeZvidusilParaNondestructive, fixLatinGlyphMisspell } from '../../nlp/utils'
+import { normalizeZvidusilParaNondestructive, fixLatinGlyphMisspell, normalizeZvidusilParaAggressive } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
 import { mu, Mu } from '../../mu'
 import { writePromiseDrain } from '../../stream.node'
@@ -72,12 +72,14 @@ async function main() {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MicrawlFilter {
-  private zvidusilFilter = new ZvidusilDocFilter(createMorphAnalyzerSync(), {
+  private analyzer = createMorphAnalyzerSync()
+  private zvidusilFilter = new ZvidusilDocFilter(this.analyzer, {
     filterPreviews: false
   })
 
   filter(paragraphs: Array<string>, meta) {
-    mapInplace(paragraphs, normalizeParagraph)
+    mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
+    mapInplace(paragraphs, x => normalizeZvidusilParaAggressive(x, this.analyzer))
 
     if (!paragraphs || !paragraphs.length) {
       console.error(`Paragraphs are empty or invalid`, paragraphs)

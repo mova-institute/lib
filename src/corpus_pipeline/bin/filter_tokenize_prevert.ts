@@ -6,9 +6,8 @@ import { linesBackpressedStdPipeable, writeLines } from '../../utils.node'
 import { makeObject, renprop, mapInplace, zip } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
-import { normalizeZvidusilParaNondestructive, fixLatinGlyphMisspell, normalizeZvidusilParaAggressive } from '../../nlp/utils'
+import { normalizeZvidusilParaNondestructive, normalizeZvidusilParaAggressive } from '../../nlp/utils'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
-import { unzip } from 'lodash'
 
 import * as minimist from 'minimist'
 import he = require('he')
@@ -38,6 +37,7 @@ async function main() {
 
     let { meta, paragraphs } = doc
     mapInplace(paragraphs, he.unescape)
+    mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
       filter.filter(paragraphs, meta)
@@ -53,11 +53,11 @@ async function main() {
     let metaObj = makeObject(meta)
     normalizeMeta(metaObj)
 
-    let [originalParas, normalizedParas] =
-      unzip(filteredParagraphs.map(x => normalizeZvidusilParaAggressive(x, analyzer)))
+    // let [original, normalizedParas] = normalizeZvidusilParasAggressive(filteredParagraphs, analyzer)
+    mapInplace(filteredParagraphs, x => normalizeZvidusilParaAggressive(x, analyzer))
 
     try {
-      var conllu = await udpipe.tokenizeParagraphs(normalizedParas)
+      var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
     } catch (e) {
       console.error(e)
       return
@@ -73,9 +73,29 @@ async function main() {
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })
+    // todo: manage to put originals to second column
+    // vertStream = addOriginalFormsToVert(vertStream, original)
 
     writeLines(vertStream, writer)
   })
+}
+
+//------------------------------------------------------------------------------
+function* addOriginalFormsToVert(vertStream: Iterable<string>, original: string) {
+  let i = 0
+  for (let line of vertStream) {
+    if (line.startsWith('<')) {
+      yield line
+      continue
+    }
+    if (line === '<g/>') {
+      --i
+      continue
+    }
+    let originalToken = original.substr(i, line.length)
+    i += line.length + 1
+    yield `${line}\t${originalToken}`
+  }
 }
 
 //------------------------------------------------------------------------------

@@ -101,25 +101,32 @@ export function normalizeZvidusilParaNondestructive(value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function normalizeZvidusilParaAggressive(value: string, analyzer: MorphAnalyzer) {
-  let quasiOriginal = normalizeZvidusilParaNondestructive(value)
+// expects normalizeZvidusilParaNondestructive() upstream
+export function normalizeZvidusilParaAggressive(para: string, analyzer: MorphAnalyzer) {
+  para = removeCombiningAccent(para)
+  para = fixAccentLatinGlyphMisspell(para)
+  para = autofixApostrophes(para)
 
-  let normalized = quasiOriginal
-
-  normalized = removeCombiningAccent(normalized)
-  normalized = fixAccentLatinGlyphMisspell(normalized)
-  normalized = autofixApostrophes(normalized)
-
-  let naiveSplit = normalized.split(' ')
+  let naiveSplit = para.split(' ')  // todo: better split
   mapInplace(naiveSplit, x => normalizeDash(x, analyzer))
-  normalized = naiveSplit.join(' ')
+  para = naiveSplit.join(' ')
 
-  if (quasiOriginal.length !== normalized.length) {
-    throw new Error(`Should not happen`)
-  }
-
-  return [quasiOriginal, normalized]
+  return para
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// export function normalizeZvidusilParasAggressive(paras: Array<string>, analyzer: MorphAnalyzer) {
+//   let normalizedParas = new Array<string>()
+//   let originalStr = ''
+//   for (let para of paras) {
+//     let [quasiOriginal, normalized] = normalizeZvidusilParaAggressive(para, analyzer)
+//     originalStr += quasiOriginal
+//     originalStr += ' '
+//     normalizedParas.push(normalized)
+//   }
+
+//   return [originalStr, normalizedParas] as [string, Array<string>]
+// }
 
 //------------------------------------------------------------------------------
 const autofixApostrophesRe = /([а-яєіїґ])([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])([а-яєіїґ])/gi
