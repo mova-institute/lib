@@ -35,7 +35,6 @@
     "@types/request-promise-native": "^1.0.14",
     "@types/rimraf": "^2.0.2",
     "@types/tmp": "~0.0.30",
-    "@types/wu": "^2.1.34",
     "fsevents": "^1.2.4",
     "tslint": "^5.10.0",
     "tslint-eslint-rules": "^4.1.1",
