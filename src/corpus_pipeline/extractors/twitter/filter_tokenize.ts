@@ -10,7 +10,7 @@ import { conlluStrAndMeta2vertical } from '../../tovert'
 import { UdpipeApiClient } from '../../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../../async_task_runner'
 import { mapInplace } from '../../../lang'
-import { ZvisusilDocFilter } from '../../filter'
+import { ZvidusilDocFilter } from '../../filter'
 import { createMorphAnalyzerSync } from '../../../nlp/morph_analyzer/factories.node'
 import { getLibRootRelative } from '../../../lib_path.node'
 import { readStringDawgSync } from 'dawgjs'
@@ -91,7 +91,7 @@ async function main() {
   let reader = new JsonObjectLogReader().setIgnoreErrors()
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
   let runner = new AsyncTaskRunner()
-  let filter = new ZvisusilDocFilter(analyzer, {
+  let filter = new ZvidusilDocFilter(analyzer, {
     filterPreviews: false,
   }).setRuLexicon(readStringDawgSync(args.ruLexicon))
   let stdinPauser = new StreamPauser(process.stdin)

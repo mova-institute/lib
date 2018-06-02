@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { ZvisusilDocFilter } from '../filter'
+import { ZvidusilDocFilter } from '../filter'
 import { linesBackpressedStdPipeable, writeLines } from '../../utils.node'
 import { makeObject, renprop, mapInplace, zip } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
@@ -27,7 +27,7 @@ async function main() {
 
   let docBuilder = new PrevertDocBuilder()
   let analyzer = createMorphAnalyzerSync()
-  let filter = new ZvisusilDocFilter(analyzer)
+  let filter = new ZvidusilDocFilter(analyzer)
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
 
   linesBackpressedStdPipeable(async (line, writer) => {

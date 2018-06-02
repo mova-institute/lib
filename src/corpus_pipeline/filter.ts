@@ -112,7 +112,7 @@ const defaultOptions = {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export class ZvisusilDocFilter {
+export class ZvidusilDocFilter {
   private ruLexicon: Dawg<string>
 
   constructor(

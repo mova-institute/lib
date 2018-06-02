@@ -3,7 +3,7 @@
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { parseJsonFile, logErrAndExit, superLinesStd } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
-import { ZvisusilDocFilter } from '../filter'
+import { ZvidusilDocFilter } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { normalizeZvidusilParaNondestructive, fixLatinGlyphMisspell } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
@@ -72,7 +72,7 @@ async function main() {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MicrawlFilter {
-  private zvidusilFilter = new ZvisusilDocFilter(createMorphAnalyzerSync(), {
+  private zvidusilFilter = new ZvidusilDocFilter(createMorphAnalyzerSync(), {
     filterPreviews: false
   })
 
