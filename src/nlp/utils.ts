@@ -129,8 +129,6 @@ export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
   return ret
 }
 
-//------------------------------------------------------------------------------
-const wordRe = new RegExp(`^[${WORDCHAR}]$`)
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
   for (let chunk of val.trim().split(/\s+/g)) {
@@ -191,9 +189,10 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 const TOSKIP = new Set(['w', 'mi:w_', 'w_', 'abbr', 'mi:sb', 'sb'])
 
+////////////////////////////////////////////////////////////////////////////////
 export function tokenizeMixml(root: AbstractElement, tagger: MorphAnalyzer) {
   let subroots = root.evaluateNodes('//tei:title|//tei:text', NS).toArray()
   if (!subroots.length) {
@@ -513,41 +512,6 @@ export function firstNWords(n: number, from: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename xmlns
-  let miwords = root.evaluateElements('//mi:w_', NS)
-  for (let miw of miwords) {
-    // rename attributes
-    miw.renameAttributeIfExists('ana', 'disamb')
-    miw.renameAttributeIfExists('word-id', 'n')
-
-
-
-    // select unambig dict interps
-    if (miw.elementChildren().count() === 1 && !miw.attribute('disamb')) {
-      miw.setAttribute('disamb', 0)
-    }
-
-    for (let w of miw.elementChildren()) {
-      let mte = w.attribute('ana')
-      // console.log(`mte: ${mte}`)
-      let vesum = MorphInterp.fromMte(mte, w.text()).toVesumStr()
-      // console.log(`vesum: ${vesum}`)
-
-      w.setAttribute('ana', vesum)
-    }
-
-    // miw.removeAttribute('n')  // temp
-    // miw.removeAttribute('disamb')  // temp
-  }
-
-  sortInterps(root)
-
-  return root
-
-  // todo: sort attributes
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function sortInterps(root: AbstractElement) {
   for (let miw of root.evaluateElements('//mi:w_', NS).toArray()) {
 
@@ -720,34 +684,6 @@ export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
-//   let ret = removeInvisibles(value)
-//     // .replace(/[\xa0]/g, ' ')
-//     .replace(/\r/g, '\n')
-//     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
-
-//     // ~
-//     .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])\.{3}([^\.])?`, 'g'), '$1…$2')
-//     .replace(new RegExp(r`(^|[\s${PUNC_GLUED_BEFORE}])[\-–] `, 'g'), '$1— ')
-//     // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
-//     .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
-//     .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
-//     .replace(new RegExp(r`(^|\s)"([${PUNC_GLUED_BEFORE}${WORDCHAR}])`, 'g'), '$1“$2')
-//     .replace(new RegExp(r`(^|\s),,([${PUNC_GLUED_AFTER}${WORDCHAR}])`, 'g'), '$1„$2')
-//     .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])"(\s|[-${PUNC_GLUED_BEFORE}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
-//   // ~
-
-//   ret = fixLatinGlyphMisspell(ret)
-//   ret = normalizeDiacritics(ret)
-//   if (analyzer) {
-//     ret = removeHypenation(ret, analyzer)
-//   }
-//   ret = ret.trim()
-
-//   return ret
-// }
-
-////////////////////////////////////////////////////////////////////////////////
 const unboxElems = new Set(['nobr', 'img'])
 const removeElems = new Set(['br'])
 export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnalyzer) {
@@ -777,7 +713,8 @@ export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnaly
 
 ////////////////////////////////////////////////////////////////////////////////
 const MULTISEP = '|'
-const teiStructuresToCopy = makeObject(['s', 'p', 'l', 'lg', 'div'].map(x => [x, x]))
+const teiStructuresToCopy = makeObject(['s', 'p', 'l', 'lg', 'div']
+  .map(x => [x, x] as [string, string]))
 // todo: fix namespace problem
 function element2sketchVertical(el: AbstractElement, entering: boolean, interps?: Array<MorphInterp>) {
   let elName = el.localName()
@@ -940,6 +877,16 @@ function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function oldMteDisamb2mivesum(root: AbstractElement) {
+  for (let w of root.evaluateElements('//tei:w', NS)) {
+    let form = w.text()
+    let mte = w.attribute('ana')
+    let vesum = MorphInterp.fromMte(mte, form).toVesumStr()
+    w.setAttribute('ana', vesum)
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 const miteiTransforms = {
   normalize: normalizeCorpusText,
   paragraphBySpaceBeforeNewLine,
@@ -958,35 +905,6 @@ export function applyMiTeiDocTransforms(root: AbstractElement) {
 ////////////////////////////////////////////////////////////////////////////////
 export function looksLikeMiTei(value: string) {
   return /^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(value)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// export function preprocessForTaggingGeneric(value: string, docCreator: DocCreator, isXml: boolean) {
-//   if (isXml) {
-//     value = xmlutils.removeProcessingInstructions(value)
-//     if (looksLikeMiTei(value)) {
-//       let ret = docCreator(value).root()
-//       // processMiTeiDocument(ret)
-//       return ret
-//     }
-//   }
-//   value = normalizeCorpusTextString(value)
-//   if (!isXml) {
-//     value = xmlutils.escape(value)
-//   }
-//   value = xmlutils.encloseInRootNs(value)
-
-//   return docCreator(value).root()
-// }
-
-////////////////////////////////////////////////////////////////////////////////
-export function oldMteDisamb2mivesum(root: AbstractElement) {
-  for (let w of root.evaluateElements('//tei:w', NS)) {
-    let form = w.text()
-    let mte = w.attribute('ana')
-    let vesum = MorphInterp.fromMte(mte, form).toVesumStr()
-    w.setAttribute('ana', vesum)
-  }
 }
 
 const structureElementName2type = new Map<string, Structure>([
@@ -1043,7 +961,7 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
           if (sentenceSetSchema === '') {
             // attributes.set = el.attributeUp('dataset')
           } else if (sentenceSetSchema) {
-            let attrName = `dataset-${sentenceSetSchema}`
+            // let attrName = `dataset-${sentenceSetSchema}`
             // attributes.set = el.attributeUp(attrName)
           }
           tok.setAttributes(attributes)
@@ -1120,38 +1038,6 @@ export function* tokenStream2cg(stream: Iterable<Token>) {
       // console.log(tok)
       // throw new Error(`Not possible`)
     }
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function* polishXml2verticalStream(root: AbstractElement) {
-  let iterator = traverseDepthGen2(root)
-  let pointer = iterator.next()
-  while (!pointer.done) {
-    let { node, entering } = pointer.value
-    if (node.isElement()) {
-      let el = node.asElement()
-      let name = el.name()
-      // console.log(name)
-      if (entering && name === 'tok') {
-        let form = el.evaluateString('string(./orth/text())').trim()
-        let lemma = el.evaluateString('string(.//base/text())').trim()
-        let tag = el.evaluateString('string(.//ctag/text())').trim()
-        // let form = el.firstElementChild().text()
-        // console.log('form')
-        // console.log(el.firstElementChild().lastElementChild().text())
-        // let [lemma, tag] = el.firstElementChild()
-        //   .lastElementChild()
-        //   .elementChildren()
-        //   .map(x => x.text())
-        yield tsvLine(form, lemma, tag)
-        pointer = iterator.next('skip')
-        continue
-      } else if (name === 'p' || name === 's') {
-        yield xmlutils.tagStr2(name, !entering, el.attributesObj())
-      }
-    }
-    pointer = iterator.next()
   }
 }
 

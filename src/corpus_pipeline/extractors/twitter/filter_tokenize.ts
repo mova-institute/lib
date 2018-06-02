@@ -5,16 +5,16 @@ import { JsonObjectLogReader } from './json_object_log_reader'
 import { normalizeParagraph } from '../../bin/filter_tokenize_micrawl'
 
 import * as minimist from 'minimist'
-import { plaintext2ParagraphsTrimmed } from '../../../nlp/utils';
-import { conlluStrAndMeta2vertical } from '../../tovert';
-import { UdpipeApiClient } from '../../../nlp/ud/udpipe_api_client';
-import { AsyncTaskRunner } from '../../../async_task_runner';
-import { mapInplace } from '../../../lang';
-import { ZvisusilDocFilter } from '../../filter';
-import { createMorphAnalyzerSync } from '../../../nlp/morph_analyzer/factories.node';
-import { getLibRootRelative } from '../../../lib_path.node';
-import { readStringDawgSync } from 'dawgjs';
-import { BufferedBackpressWriter, StreamPauser } from '../../../backpressing_writer';
+import { plaintext2ParagraphsTrimmed } from '../../../nlp/utils'
+import { conlluStrAndMeta2vertical } from '../../tovert'
+import { UdpipeApiClient } from '../../../nlp/ud/udpipe_api_client'
+import { AsyncTaskRunner } from '../../../async_task_runner'
+import { mapInplace } from '../../../lang'
+import { ZvisusilDocFilter } from '../../filter'
+import { createMorphAnalyzerSync } from '../../../nlp/morph_analyzer/factories.node'
+import { getLibRootRelative } from '../../../lib_path.node'
+import { readStringDawgSync } from 'dawgjs'
+import { BufferedBackpressWriter, StreamPauser } from '../../../backpressing_writer'
 
 import * as fs from 'fs'
 import * as util from 'util'

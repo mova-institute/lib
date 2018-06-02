@@ -1,6 +1,7 @@
 import { AbstractNode } from './abstract_node'
 import { AbstractAttribute } from './abstract_attribute'
 import { mu, Mu } from '../../mu'
+import { Dict } from '../../types'
 
 
 
@@ -134,9 +135,8 @@ export abstract class AbstractElement extends AbstractNode {
   }
 
   attributesObj() {
-    let ret: any = {}
+    let ret: Dict<string> = {}
     this.attributes().forEach(x => ret[x.nameLocal().toString()] = x.value().toString())
-    // this.attributes().forEach(x => console.log(x.value()))
     return ret
   }
 

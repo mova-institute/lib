@@ -9,10 +9,10 @@ import { normalizeWebParaSafe, fixLatinGlyphMisspell } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
 import { mu, Mu } from '../../mu'
 import { writePromiseDrain } from '../../stream.node'
+import { AsyncTaskRunner } from '../../async_task_runner'
 
 import * as minimist from 'minimist'
 import * as path from 'path'
-import { AsyncTaskRunner } from '../../async_task_runner';
 
 
 
