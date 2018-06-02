@@ -30,7 +30,7 @@ export class StreamPauser {
 ////////////////////////////////////////////////////////////////////////////////
 export class BufferedBackpressWriter {
   private buf = ''
-  private bufLength = 1024 ** 2
+  private bufSize = 1024 ** 2
   private onDrainBinded = this.onDrain.bind(this)
 
   constructor(
@@ -40,9 +40,14 @@ export class BufferedBackpressWriter {
   ) {
   }
 
+  setBufSize(numChars: number) {
+    this.bufSize = numChars
+    return this
+  }
+
   write(what: string) {
     this.buf += what
-    if (this.buf.length > this.bufLength) {
+    if (this.buf.length > this.bufSize) {
       this.flush()
     }
   }

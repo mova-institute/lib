@@ -12,7 +12,7 @@ export class AsyncTaskRunner<Result = void> {
   private tasksRunning = new Set<Promise<Result>>()
   private slotAvail: Promise<Result>
 
-  post(task: TaskFunc<Result>) {
+  post(task: TaskFunc<Result>): [Promise<any>, Promise<Result>] {
     if (this.tasksRunning.size < this.concurrency) {
       let result = task()
       this.tasksRunning.add(result)

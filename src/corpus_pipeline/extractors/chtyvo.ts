@@ -6,7 +6,7 @@ import { decode } from 'iconv-lite'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
-import { autofixDirtyText } from '../../nlp/utils'
+import { autofixDirtyText, plaintext2ParagraphsTrimmed } from '../../nlp/utils'
 import { mu } from '../../mu'
 import { CorpusDoc } from '../doc_meta'
 import { execSync } from 'child_process'
@@ -114,7 +114,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
       content = normalizeText(content)
       content = content.replace(/\n+/g, '\n').trim()
 
-      let paragraphs = content.split(/\s*\n\s*/)
+      let paragraphs = plaintext2ParagraphsTrimmed(content)
 
       yield { paragraphs, ...meta } as CorpusDoc
     } else {

@@ -267,3 +267,13 @@ export function cutOut(prey: string, start: number, length: number) {
 export function insert(to: string, what: string, where: number) {
   return to.substring(0, where) + what + to.substr(where)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function escapeRe(str: string) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function anyReLiteral(strings: Array<string>) {
+  return new RegExp(strings.map(escapeRe).join('|'))
+}

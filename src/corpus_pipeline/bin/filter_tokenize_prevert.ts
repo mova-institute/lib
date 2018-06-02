@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
-import { AsyncTaskRunner } from '../../async_task_runner'
 import { conlluStrAndMeta2vertical } from '../tovert'
-import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
-import { filterParagraphedDocExtra } from '../filter'
-import { linesBackpressedStdPipeable, writeJoin } from '../../utils.node'
+import { ZvisusilDocFilter } from '../filter'
+import { linesBackpressedStdPipeable, writeLines } from '../../utils.node'
 import { makeObject, renprop, mapInplace } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
@@ -15,6 +13,7 @@ import he = require('he')
 
 
 
+//------------------------------------------------------------------------------
 interface Args {
   udpipeUrl: string
   udpipeConcurrency?: number
@@ -25,11 +24,10 @@ async function main() {
   const args = minimist<Args>(process.argv.slice(2)) as any
 
   let docBuilder = new PrevertDocBuilder()
-  let analyzer = createMorphAnalyzerSync()
+  let filter = new ZvisusilDocFilter()
   let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency || 8)
 
-  linesBackpressedStdPipeable((line, writer) => {
+  linesBackpressedStdPipeable(async (line, writer) => {
     let doc = docBuilder.feedLine(line)
     if (!doc) {
       return
@@ -39,7 +37,7 @@ async function main() {
     mapInplace(paragraphs, normalizeParagraph)
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
-      filterParagraphedDocExtra(paragraphs, meta, analyzer)
+      filter.filter(paragraphs, meta)
     if (!docValid || !filteredParagraphs.length) {
       return
     }
@@ -52,26 +50,25 @@ async function main() {
     let metaObj = makeObject(meta)
     normalizeMeta(metaObj)
 
-    runner.post(async () => {
-      try {
-        var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
-      } catch (e) {
-        console.error(e)
-        return
-      }
-      if (!conllu) {
-        console.error(`conllu missing!`)
-        return
-      }
+    try {
+      var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
+    } catch (e) {
+      console.error(e)
+      return
+    }
+    if (!conllu) {
+      console.error(`conllu missing!`)
+      return
+    }
 
-      let vertStream = conlluStrAndMeta2vertical(
-        conllu, {
-          meta: metaObj as any,
-          formOnly: true,
-          pGapIndexes: gapFollowerIndexes,
-        })
-      writeJoin(vertStream, writer, '\n')
-    })
+    let vertStream = conlluStrAndMeta2vertical(
+      conllu, {
+        meta: metaObj as any,
+        formOnly: true,
+        pGapIndexes: gapFollowerIndexes,
+      })
+
+    writeLines(vertStream, writer)
   })
 }
 

@@ -1,4 +1,7 @@
-import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE, WCHAR_UK, WCHAR_OTHER, WORDCHAR_UK_RE } from '../nlp/static'
+import {
+  LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE, WCHAR_UK,
+  WCHAR_OTHER, WORDCHAR_UK_RE
+} from '../nlp/static'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { last, r } from '../lang'
 import { tokenizeUk } from '../nlp/utils'
@@ -6,9 +9,13 @@ import { tokenizeUk } from '../nlp/utils'
 import { mu } from '../mu'
 import { uniformSubarray, numericCompare } from '../algo'
 import * as he from 'he'
-import { isTitlecase } from '../string'
+import { isTitlecase, anyReLiteral } from '../string'
+import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
+import { Dawg } from 'dawgjs'
 
 
+
+//------------------------------------------------------------------------------
 const lengthThreshold = 60000
 const ukSpecLettersRe = /[ґїєі]/i
 const ruSpecLettersRe = /[эёъы]/i
@@ -18,7 +25,8 @@ const caseCollisionRe = new RegExp(
   `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`)
 const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i')
 
-const regexesKillingParagraph: Array<[RegExp, string]> = [
+//------------------------------------------------------------------------------
+const regsRejectingParagraph: Array<[RegExp, string]> = [
   [spacedWordRe, `long single-char word repeating`],
   [/([^0)])\1{4}/, `long char repeating`],
   [/Этот e-mail адрес защищен от спам-ботов|Переведено сервисом/, 'ru junk'],
@@ -28,31 +36,40 @@ const regexesKillingParagraph: Array<[RegExp, string]> = [
   // [,],
 ]
 
-const regexesKillingDoc: Array<[RegExp, string]> = [
+//------------------------------------------------------------------------------
+const regsRejectingDoc: Array<[RegExp, string]> = [
   [/[Ђћџ]/, `possible encoding error`],
   [/\[(\w+)\][^[]*\[\/\1\]/i, 'bb code'],
+  [/\[\[\s*{{\w+:[^}]*}}\s*:\s*.*\]\]/, 'wiki code'],
 ]
 
-const wordsKillingDocRe = new RegExp(`^(${[
+//------------------------------------------------------------------------------
+const wordsRejectingDocRe = new RegExp(`^(${[
   'ьй',
   'ьм',
 ].join('')})$`, 'i')
 
+//------------------------------------------------------------------------------
 const functionsKillingParagraph: Array<[(p: string) => boolean, string]> = [
   [p => ruSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `ru but not uk`],
   [p => beSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `be but not uk`],
   // [p => ,],
 ]
 
-const substringsKillingDoc = [
+//------------------------------------------------------------------------------
+const stringsRejectingDocRe = anyReLiteral([
   'указанньїх',
   '�',
   '[quote="',
   'page={{',
   '[[Special:',
-]
+  '',
+  'ĖĊ',
+  'в҆я',
+])
 
-const substringsKillingParagrph = [
+//------------------------------------------------------------------------------
+const stringsRejectingParagraph = [
   'електронна адреса захищена від спам-ботів. вам потрібно увімкнути JavaScript',
   'Потрібно включити	javascript',
   'Ця сторінка використовує	JavaScript',
@@ -66,25 +83,84 @@ const substringsKillingParagrph = [
   'class="wikitable"',
   '[[File:',
   '[[Media:',
+  'Текстовый документ',
+  'скажите пожалуйста',
   // '',
 ].map(x => x.toLowerCase())
 
-const titleRegsKillingDoc = [
+//------------------------------------------------------------------------------
+const titleRegsRejectingDoc = [
   /^Перегляд вихідного коду сторінки/,
   /�/,
   /\\"/,
 ]
 
-const urlsRegsKillingDoc = [
+//------------------------------------------------------------------------------
+const urlRegsRejectingDoc = [
   /�/,
 ]
 
-const urlsKillingDoc = new RegExp([
+//------------------------------------------------------------------------------
+const urlsRejectingDoc = anyReLiteral([
   r`http://om.net.ua/14/14_9/14_9006_J--motivatsionnie-sostoyaniya.html`,
-].join('|'))
+])
 
+//------------------------------------------------------------------------------
 const defaultOptions = {
   filterPreviews: true,
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export class ZvisusilDocFilter {
+  private ruLexicon: Dawg<string>
+
+  constructor(
+    private analyzer = createMorphAnalyzerSync(),
+    private options = defaultOptions,
+  ) {
+  }
+
+  setRuLexicon(ruLexicon: Dawg<string>) {
+    this.ruLexicon = ruLexicon
+    return this
+  }
+
+  setOptions(options = defaultOptions) {
+    this.options = options
+    return this
+  }
+
+  filter(
+    paragraphs: Array<string>,
+    meta: any,
+  ) {
+    let filteredParagraphs = new Array<string>()
+    let gapFollowerIndexes = new Array<number>()
+
+    let { docValid, filteredIndexes, message } = filterParagraphedDoc(
+      paragraphs, meta, this.analyzer, this.options)
+
+    if (!docValid) {
+      return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes, message }
+    }
+
+    let ii = 0
+    filteredIndexes.sort(numericCompare)
+    for (let i = 0; i < paragraphs.length; ++i) {
+      if (i === filteredIndexes[ii]) {
+        if (!gapFollowerIndexes.length
+          || last(gapFollowerIndexes) !== filteredParagraphs.length
+        ) {
+          gapFollowerIndexes.push(filteredParagraphs.length)
+        }
+        ++ii
+        continue
+      }
+      filteredParagraphs.push(paragraphs[i])
+    }
+
+    return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes, message }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,23 +172,22 @@ export function filterParagraphedDoc(
 ) {
   if (meta) {
     if (meta.title) {
-      for (let re of titleRegsKillingDoc) {
+      for (let re of titleRegsRejectingDoc) {
         if (re.test(meta.title)) {
-          reportRmDoc(`killed by title regex: ${re.source}`)
-          return { docValid: false, filteredIndexes: [] }
+          return invalidDoc(`killed by title regex: ${re.source}`)
         }
       }
     }
     if (meta.url) {
-      for (let re of urlsRegsKillingDoc) {
+      for (let re of urlRegsRejectingDoc) {
         if (re.test(meta.url)) {
-          reportRmDoc(`killed by url regex: ${re.source}`)
-          return { docValid: false, filteredIndexes: [] }
+          return invalidDoc(`killed by url regex: ${re.source}`)
         }
       }
-    }
-    if (urlsKillingDoc.test(meta.url)) {
-      return { docValid: false, filteredIndexes: [] }
+      var match = meta.url.match(urlsRejectingDoc)
+      if (match) {
+        return invalidDoc(`killed by url regex: ${match[0]}`)
+      }
     }
   }
 
@@ -123,36 +198,29 @@ export function filterParagraphedDoc(
   for (let i = 0; i < pp.length; ++i) {
     let p = pp[i]
 
-    for (let s of substringsKillingDoc) {
-      if (p.includes(s)) {
-        reportRmDoc(`killed by substring: ${s}`)
-        return { docValid: false, filteredIndexes: filtered }
-      }
+    // reject by substr
+    match = p.match(stringsRejectingDocRe)
+    if (match) {
+      return invalidDoc(`doc rejected by substring: ${match[0]}`, filtered)
     }
 
-    for (let [re, message] of regexesKillingDoc) {
+    // reject by regex
+    for (let [re, message] of regsRejectingDoc) {
       if (re.test(p)) {
-        reportRmDoc(message)
-        return { docValid: false, filteredIndexes: filtered }
+        return invalidDoc(message, filtered)
       }
     }
 
-    let naiveSplit = mu(tokenizeUk(pp[i]))
-      .map(x => x.token)
-      .toArray()
-
+    let naiveSplit = tokenizeUk(pp[i]).map(x => x.token)
     internalHypens.push(...findInternalHypenations(naiveSplit, analyzer))
     if (internalHypens.length > 1) {
-      reportRmDoc(`Too many internal hypens ${internalHypens}`)
-      return { docValid: false, filteredIndexes: filtered }
+      return invalidDoc(`Too many internal hypens ${internalHypens}`, filtered)
     }
 
-    let stopword = naiveSplit.find(x => wordsKillingDocRe.test(x))
+    let stopword = naiveSplit.find(x => wordsRejectingDocRe.test(x))
     if (stopword) {
-      reportRmDoc(`met "${stopword}"`)
-      return { docValid: false, filteredIndexes: filtered }
+      return invalidDoc(`met stopword "${stopword}"`, filtered)
     }
-
 
     if (p.length > lengthThreshold) {
       reportRmPar(i, pp[i], `longer than ${lengthThreshold} chars (${p.length})`)
@@ -179,7 +247,7 @@ export function filterParagraphedDoc(
       }
     }
 
-    for (let [re, message] of regexesKillingParagraph) {
+    for (let [re, message] of regsRejectingParagraph) {
       if (re.test(p)) {
         reportRmPar(i, p, message)
         filtered.push(i)
@@ -187,7 +255,7 @@ export function filterParagraphedDoc(
       }
     }
 
-    for (let substr of substringsKillingParagrph) {
+    for (let substr of stringsRejectingParagraph) {
       if (p.toLowerCase().includes(substr)) {
         reportRmPar(i, p, `killed by substring: ${substr}`)
         filtered.push(i)
@@ -197,7 +265,7 @@ export function filterParagraphedDoc(
 
     let prepared = pp[i].replace(/&\s*(\S+)\s*;/g, '&$1;')
     let unescaped = he.unescape(prepared)
-    if (unescaped.length != prepared.length) {
+    if (unescaped.length !== prepared.length) {
       reportRmPar(i, p, 'html markup')
       filtered.push(i)
       continue ploop
@@ -228,17 +296,26 @@ export function filterParagraphedDoc(
     }
   }
 
-  return { docValid: true, filteredIndexes: filtered }
+  return { docValid: true, filteredIndexes: filtered, message: 'ok' }
+}
+
+//------------------------------------------------------------------------------
+function invalidDoc(message: string, filteredIndexes: Array<number> = []) {
+  return {
+    docValid: false,
+    filteredIndexes,
+    message,
+  }
 }
 
 //------------------------------------------------------------------------------
 function reportRmPar(i: number, p: string, reason: string) {
-  console.error(`✖️  ${i}\t ${reason} \t ∎ ${p}\n`)
+  // console.error(`✖️  ${i}\t ${reason} \t ∎ ${p}\n`)
 }
 
 //------------------------------------------------------------------------------
 function reportRmDoc(reason: string) {
-  console.error(`👎 removing doc: ${reason}`)
+  // console.error(`👎 removing doc: ${reason}`)
 }
 
 //------------------------------------------------------------------------------
@@ -255,43 +332,4 @@ function findInternalHypenations(tokens: Array<string>, analyzer: MorphAnalyzer)
     && !analyzer.hasInterps(r)
     && analyzer.hasInterps(l + r)
   ).map(x => x.join(''))
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-export function filterTokenizedParagraphs(pp: Array<Array<string>>, analyzer: MorphAnalyzer) {
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function filterParagraphedDocExtra(
-  paragraphs: Array<string>,
-  meta: any,
-  analyzer: MorphAnalyzer,
-  options = defaultOptions,
-) {
-  let filteredParagraphs = new Array<string>()
-  let gapFollowerIndexes = new Array<number>()
-
-  let { docValid, filteredIndexes } = filterParagraphedDoc(paragraphs, meta, analyzer, options)
-  if (!docValid) {
-    return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes }
-  }
-
-  let ii = 0
-  filteredIndexes.sort(numericCompare)
-  for (let i = 0; i < paragraphs.length; ++i) {
-    if (i === filteredIndexes[ii]) {
-      if (!gapFollowerIndexes.length
-        || last(gapFollowerIndexes) !== filteredParagraphs.length
-      ) {
-        gapFollowerIndexes.push(filteredParagraphs.length)
-      }
-      ++ii
-      continue
-    }
-    filteredParagraphs.push(paragraphs[i])
-  }
-
-  return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes }
 }

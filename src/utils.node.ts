@@ -126,6 +126,17 @@ export function chunksAsync(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// non-emply, trimmed, no-spill, pipeable
+export function superLinesStd(listener: (line: string) => Promise<any>) {
+  return linesNoSpillStdPipeable(line => {
+    line = line.trim()
+    if (line) {
+      return listener(line)
+    }
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function linesNoSpillStdPipeable(listener: (line: string) => Promise<any>) {
   exitOnStdoutPipeError()
   return linesNoSpill(process.stdin, listener)
@@ -170,23 +181,11 @@ export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
   listener: (line: string, writer: BufferedBackpressWriter) => any,
+  pauser = new StreamPauser(source),
 ) {
   return new Promise<void>((resolve, reject) => {
-    let pauser = new StreamPauser(source)
-    let writer = new BufferedBackpressWriter(dest, source, pauser)
-    // let spillBuffer = new Array<string>()
+    let writer = new BufferedBackpressWriter(dest, undefined, pauser)
     createInterface({ input: source })
-      // .on('line', async line => {
-      //   let res = listener(line, writer)
-      //   if (res) {
-      //     // let id = {}
-      //     // console.error(`pause`)
-      //     // pauser.pause(id)
-      //     // /* await */ res
-      //     // pauser.resume(id)
-      //     // console.error(`resume`)
-      //   }
-      // })
       .on('line', line => listener(line, writer))
       .on('close', () => {
         writer.flush()
@@ -198,16 +197,18 @@ export function linesBackpressed(
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStdPipeable(
   listener: (line: string, writer: BufferedBackpressWriter) => void,
+  pauser = new StreamPauser(process.stdin),
 ) {
   exitOnStdoutPipeError()
-  return linesBackpressedStd(listener)
+  return linesBackpressedStd(listener, pauser)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
   listener: (line: string, writer: BufferedBackpressWriter) => void,
+  pauser: StreamPauser,
 ) {
-  return linesBackpressed(process.stdin, process.stdout, listener)
+  return linesBackpressed(process.stdin, process.stdout, listener, pauser)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +260,17 @@ export function linesSyncArray(filePath: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function linesSet(filePath: string) {
+  let ret = new Set<string>()
+  return new Promise<Set<string>>((resolve, reject) => {
+    createInterface(fs.createReadStream(filePath, 'utf8'))
+      .on('line', line => ret.add(line))
+      .on('close', () => resolve(ret))
+      .on('error', reject)
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function exitOnStdoutPipeError(code = 0) {
   process.stdout.on('error', err => {
     if (err.code === 'EPIPE') {
@@ -284,7 +296,6 @@ export function openSyncMkdirp(filePath: string, flags: string) {
 export async function parseJsonFile(filePath: string) {
   let fileStr = await readFile(filePath, 'utf8')
   let ret = JSON.parse(fileStr)
-  // console.error(ret)
   return ret
 }
 

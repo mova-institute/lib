@@ -30,6 +30,7 @@ import { AbstractDocument } from '../xml/xmlapi/abstract_document'
 
 
 
+////////////////////////////////////////////////////////////////////////////////
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'p'),
   nameNs(NS.tei, 'body'),
@@ -38,6 +39,11 @@ export const ELEMS_BREAKING_SENTENCE_NS = new Set([
 
 const WORD_TAGS = new Set([W, W_])
 
+
+////////////////////////////////////////////////////////////////////////////////
+export function plaintext2ParagraphsTrimmed(plaintext: string) {
+  return plaintext.trim().split(/(?:\s*\n+\s*)+/g)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeApostrophes(val: string, to = '’') {
@@ -645,6 +651,10 @@ const LATIN_CYR_GLYPH_MISSPELL = {
   'C': 'С',
   'B': 'В',
   'M': 'М',
+  'ï': 'ї',
+  'Ï': 'Ї',
+  'ı': 'і',
+  'r': 'г',
 }
 const latinMisspells = Object.keys(LATIN_CYR_GLYPH_MISSPELL).join('')
 const latinMisspellsRe1 = new RegExp(r`([${LETTER_UK}])([${latinMisspells}])`, 'g')

@@ -266,3 +266,8 @@ export function isShallowEqual(a, b) {
 
   return true
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function logError(value) {
+  console.log(value)
+}
