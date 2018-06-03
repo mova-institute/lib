@@ -1,5 +1,6 @@
 import { isOddball, isNumber, last } from './lang'
 import { HashSet } from './data_structures'  // todo remove dep
+import { Dict } from './types'
 
 
 
@@ -62,6 +63,13 @@ export function indexComparator<T>(array: Array<T>) {
 export function stableSort<T>(array: Array<T>, comparator: (a: T, b: T) => number = lexCompare) {
   let stableComparator = chainComparators(comparator, indexComparator(array))
   return array.sort(stableComparator)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function flipObjMap(map: Dict<string>) {
+  let ret = {}
+  Object.entries(map).forEach(([k, v]) => ret[v] = k)
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -295,4 +303,9 @@ export function deleteIndexes<T>(array: Array<T>, indexes: Array<number>) {
     }
     return true
   })
+}
+////////////////////////////////////////////////////////////////////////////////
+export function transformUntilNoChange<T>(value: T, f: (value: T) => T) {
+  while ((value = f(value)) !== value) { }
+  return value
 }

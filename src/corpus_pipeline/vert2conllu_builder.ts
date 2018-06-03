@@ -2,7 +2,7 @@ import { parseTagStr } from '../xml/utils'
 import { last } from '../lang'
 
 import * as he from 'he'
-import { replaceLoop } from '../string'
+import { loopReplace } from '../string'
 
 
 
@@ -26,7 +26,7 @@ export class Vert2ConlluBuilder {
     }
 
     if (line.startsWith('<')) {
-      line = replaceLoop(line, /("[^"]*)\\"/g, '$1&quot;')
+      line = loopReplace(line, /("[^"]*)\\"/g, '$1&quot;')
     }
     let tag = parseTagStr(line)
     if (tag) {

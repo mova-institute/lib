@@ -148,9 +148,13 @@ export function replaceCaseAware(str: string, substr: string | RegExp, newSubStr
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function replaceLoop(str: string, pattern: RegExp | string, replacer: string) {
+export function loopReplace(
+  str: string,
+  pattern: RegExp | string,
+  replacer: string | ((substring: string, ...args: Array<any>) => string)
+) {
   let ret: string
-  while ((ret = str.replace(pattern, replacer)) !== str) {
+  while ((ret = str.replace(pattern, replacer as any)) !== str) {  // todo: post a bug
     str = ret
   }
   return ret
@@ -245,9 +249,20 @@ export function toFloorPercent(nominator: number, denominator: number, aftercomm
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function escapeRe(str: string) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function joinAsRe(parts: Array<string>, flags = '') {
   return new RegExp(parts.join('|'), flags)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function joinAsReOfLiterals(strings: Array<string>) {
+  return new RegExp(strings.map(escapeRe).join('|'))
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function isTitlecase(str: string) {
   return isAllcaps(str[0]) && isAllLower(str.substr(1))
@@ -266,14 +281,4 @@ export function cutOut(prey: string, start: number, length: number) {
 ////////////////////////////////////////////////////////////////////////////////
 export function insert(to: string, what: string, where: number) {
   return to.substring(0, where) + what + to.substr(where)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function escapeRe(str: string) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function anyReLiteral(strings: Array<string>) {
-  return new RegExp(strings.map(escapeRe).join('|'))
 }

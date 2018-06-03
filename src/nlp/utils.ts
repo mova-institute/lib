@@ -12,11 +12,13 @@ import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
 import { MorphInterp, compareTags } from './morph_interp'
 import {
-  WORDCHAR, LETTER_UK, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE, latinMisspellsReRight, latinMisspellsReLeft, LATIN_CYR_GLYPH_MISSPELL_MAP, accentLatinMisspellsReRight, accentLatinMisspellsReLeft, ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP,
+  WORDCHAR, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE, cyrToLat,
+  INVISIBLES_RE, latMixins, latToCyr,
+  APOSTROPHES_COMMON, cyrMixins, LETTER_CYR, LETTER_LAT_EXCLUSIVE, LETTER_CYR_EXCLUSIVE,
 } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
-import { startsWithCapital } from '../string'
+import { startsWithCapital, loopReplace } from '../string'
 import { Token, TokenTag, Structure } from './token'
 import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
 import { keyvalue2attributesNormalized } from './noske'
@@ -27,7 +29,6 @@ import * as sortedUniq from 'lodash.sorteduniq'
 import { GraphNode } from '../graph'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { AbstractDocument } from '../xml/xmlapi/abstract_document'
-import { mapInplace } from '../../lib/lang';
 
 
 
@@ -41,26 +42,67 @@ export const ELEMS_BREAKING_SENTENCE_NS = new Set([
 //------------------------------------------------------------------------------
 const WORD_TAGS = new Set([W, W_])
 
+//------------------------------------------------------------------------------
+// todo: more grace with apostrophes
+
+const latMixinsGentleReLeft = new RegExp(
+  r`([${latMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_CYR_EXCLUSIVE}])`, 'g')
+const latMixinsGentleReRight = new RegExp(
+  r`([${LETTER_CYR_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${latMixins}])`, 'g')
+// const latMixinsRudeReLeft = new RegExp(
+//   r`([${latMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_CYR}])`, 'g')
+// const latMixinsRudeReRight = new RegExp(
+//   r`([${LETTER_CYR_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${latMixins}])`, 'g')
+const latMixinsReLeft = new RegExp(
+  r`([${latMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_CYR}])`, 'g')
+const latMixinsReRight = new RegExp(
+  r`([${LETTER_CYR}][${APOSTROPHES_COMMON}]?)([${latMixins}])`, 'g')
+const cyrMixinsReLeft = new RegExp(
+  r`([${cyrMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_LAT_EXCLUSIVE}])`, 'g')
+const cyrMixinsReRight = new RegExp(
+  r`([${LETTER_LAT_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${cyrMixins}])`, 'g')
+
 ////////////////////////////////////////////////////////////////////////////////
-export function fixLatinGlyphMisspell(value: string) {
-  value = value.replace(latinMisspellsReRight, (match, cyr, latin) =>
-    cyr + LATIN_CYR_GLYPH_MISSPELL_MAP[latin])
+export function fixLatinMixinGentle(text: string) {
+  text = text.replace(latMixinsGentleReLeft, (match, lat, cyr) =>
+    latToCyr[lat] + cyr)
 
-  value = value.replace(latinMisspellsReLeft, (match, latin, cyr) =>
-    LATIN_CYR_GLYPH_MISSPELL_MAP[latin] + cyr)
+  text = text.replace(latMixinsGentleReRight, (match, cyr, lat) =>
+    cyr + latToCyr[lat])
 
-  return value
+  return text
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function fixAccentLatinGlyphMisspell(value: string) {
-  value = value.replace(accentLatinMisspellsReRight, (match, cyr, latin) =>
-    cyr + ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP[latin])
+export function fixCyrillicMixinGentle(text: string) {
+  text = text.replace(cyrMixinsReLeft, (match, cyr, lat) =>
+    cyrToLat[cyr] + lat)
 
-  value = value.replace(accentLatinMisspellsReLeft, (match, latin, cyr) =>
-    ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP[latin] + cyr)
+  text = text.replace(cyrMixinsReRight, (match, lat, cyr) =>
+    lat + cyrToLat[cyr])
 
-  return value
+  return text
+}
+
+//------------------------------------------------------------------------------
+const latMixinRe = new RegExp(`[${latMixins}]`, 'g')
+////////////////////////////////////////////////////////////////////////////////
+export function fixLatinMixinDict(token: string, analyzer: MorphAnalyzer) {
+  if (latMixinsReLeft.test(token) || latMixinsReRight.test(token)) {
+    let replaced = token.replace(latMixinRe, match => latToCyr[match])
+    if (analyzer.hasInterps(replaced)) {
+      return replaced
+    }
+  }
+  return token
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function fixRomanNumeralCyrMixin(text: string) {
+  text = loopReplace(text, /([XVI])([ХІ])/g, (match, lat, cyr) => lat + cyrToLat[cyr])
+  text = loopReplace(text, /([ХІ])([XVI])/g, (match, cyr, lat) => cyrToLat[cyr] + lat)
+
+  return text
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,11 +127,10 @@ export function removeRenderedHypenation(str: string, analyzer: MorphAnalyzer) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function removeInvisibles(value: string) {
-  return value.replace(/[\u0000-\u0008\u000E-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060]/gu, '')
+  return value.replace(INVISIBLES_RE, '')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// safe autofixes
 export function normalizeZvidusilParaNondestructive(value: string) {
   value = removeInvisibles(value)
   value = value.replace(/[\s\n\r]+/g, ' ')
@@ -102,37 +143,37 @@ export function normalizeZvidusilParaNondestructive(value: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // expects normalizeZvidusilParaNondestructive() upstream
-export function normalizeZvidusilParaAggressive(para: string, analyzer: MorphAnalyzer) {
+export function normalizeZvidusilParaAggressive(
+  para: string,
+  analyzer: MorphAnalyzer,
+) {
   para = removeCombiningAccent(para)
-  para = fixAccentLatinGlyphMisspell(para)
-  para = autofixApostrophes(para)
+  para = fixRomanNumeralCyrMixin(para)
+  para = fixLatinMixinGentle(para)
+  para = fixCyrillicMixinGentle(para)
+  para = fixApostrophes(para)
 
-  let naiveSplit = para.split(' ')  // todo: better split
-  mapInplace(naiveSplit, x => normalizeDash(x, analyzer))
-  para = naiveSplit.join(' ')
+  para = mu(tokenizeUkNew(para, analyzer)).map(([token, glued]) => {
+    token = normalizeDash(token, analyzer)
+    token = fixLatinMixinDict(token, analyzer)
+
+    if (!glued) {
+      token = ` ${token}`
+    }
+
+    return token
+  }).join('')
+
+  para = para.trim()
 
   return para
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// export function normalizeZvidusilParasAggressive(paras: Array<string>, analyzer: MorphAnalyzer) {
-//   let normalizedParas = new Array<string>()
-//   let originalStr = ''
-//   for (let para of paras) {
-//     let [quasiOriginal, normalized] = normalizeZvidusilParaAggressive(para, analyzer)
-//     originalStr += quasiOriginal
-//     originalStr += ' '
-//     normalizedParas.push(normalized)
-//   }
-
-//   return [originalStr, normalizedParas] as [string, Array<string>]
-// }
-
 //------------------------------------------------------------------------------
-const autofixApostrophesRe = /([а-яєіїґ])([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])([а-яєіїґ])/gi
-const autofixApostrophesEndRe = /^([а-яєіїґ]+)([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])$/gi
+const autofixApostrophesRe = /([бпвмфгґкхжчшр])([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])([єїюя])/gi
+const autofixApostrophesEndRe = /^([а-яєіїґ]+)([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])(?:\s|$)/gi
 ////////////////////////////////////////////////////////////////////////////////
-export function autofixApostrophes(token: string, to = '’') {
+export function fixApostrophes(token: string, to = '’') {
   token = token.replace(autofixApostrophesRe, (match, left, apos, right) =>
     `${left}${to}${right}`)
   token = token.replace(autofixApostrophesEndRe, (match, word, apos) =>
@@ -225,8 +266,9 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
   return haveSpaceBetween(a.name(), a.text(), b.name(), b.text())
 }
 
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WORDCHAR}])`)
+////////////////////////////////////////////////////////////////////////////////
 export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
   let ret: Array<{ token: string, glue: boolean }> = []
   let toks = val.trim().split(SPLIT_REGEX)
@@ -263,7 +305,8 @@ function* splitNospace(val: string, analyzer: MorphAnalyzer) {
     yield [val, false] as [string, boolean]
   } else {
     // console.log(val)
-    yield* tokenizeUk(val, analyzer).map(({ token, glue }) => [token, glue]) as Array<[string, boolean]>
+    yield* tokenizeUk(val, analyzer)
+      .map(({ token, glue }) => [token, glue]) as Array<[string, boolean]>
   }
 }
 
@@ -718,7 +761,10 @@ export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
     .replace(/\r/g, '\n')
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
 
-  ret = fixLatinGlyphMisspell(ret)
+  ret = fixLatinMixinGentle(ret)
+  if (analyzer) {
+    ret = fixLatinMixinDict(ret, analyzer)
+  }
   ret = normalizeDiacritics(ret)
   if (analyzer) {
     ret = removeRenderedHypenation(ret, analyzer)

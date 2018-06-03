@@ -41,7 +41,8 @@ async function main() {
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
       filter.filter(paragraphs, meta)
-    if (!docValid || !filteredParagraphs.length) {
+
+      if (!docValid || !filteredParagraphs.length) {
       return
     }
 
@@ -50,11 +51,11 @@ async function main() {
       return
     }
 
-    let metaObj = makeObject(meta)
-    normalizeMeta(metaObj)
-
     // let [original, normalizedParas] = normalizeZvidusilParasAggressive(filteredParagraphs, analyzer)
     mapInplace(filteredParagraphs, x => normalizeZvidusilParaAggressive(x, analyzer))
+
+    let metaObj = makeObject(meta)
+    normalizeMeta(metaObj)
 
     try {
       var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)

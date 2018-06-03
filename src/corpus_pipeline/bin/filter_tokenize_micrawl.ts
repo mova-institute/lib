@@ -5,7 +5,10 @@ import { parseJsonFile, logErrAndExit, superLinesStd } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { ZvidusilDocFilter } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
-import { normalizeZvidusilParaNondestructive, fixLatinGlyphMisspell, normalizeZvidusilParaAggressive } from '../../nlp/utils'
+import {
+  normalizeZvidusilParaNondestructive,
+  normalizeZvidusilParaAggressive,
+} from '../../nlp/utils'
 import { mapInplace } from '../../lang'
 import { mu, Mu } from '../../mu'
 import { writePromiseDrain } from '../../stream.node'
@@ -97,14 +100,6 @@ export class MicrawlFilter {
 //------------------------------------------------------------------------------
 function paraPath2metaPath(paraPath: string, base: string) {
   return path.join(base, paraPath.substr(base.length).replace(/(^|\/)para\//, '$1meta/'))
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function normalizeParagraph(p: string) {
-  let ret = normalizeZvidusilParaNondestructive(p)
-  ret = fixLatinGlyphMisspell(ret)
-
-  return ret
 }
 
 ///////////////////////////////////////////////////////////////////////////////

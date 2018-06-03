@@ -1,16 +1,26 @@
-import { r, makeObject } from '../lang'
-import { Dict } from '../types'
+import { r } from '../lang'
+import { flipObjMap } from '../algo'
 
 export const ukComparator = new Intl.Collator('uk-UA').compare
 
 export const APOSTROPES = '\'"*`’‘'
 
-export const EMOJI_RE = require('emoji-regex')()
+export const EMOJIS = r`\ud83c[\udf00-\udfff]|\ud83d[\udc00-\ude4f]|\ud83d[\ude80-\udeff]`
+export const LETTER_CYR = r`А-ЯІЇЄҐа-яіїєґ`
+export const LETTER_CYR_EXCLUSIVE = r`БбВвГгҐґДдЄєЖжЗзИиЙйКкЛлмнПпТУФфЦцЧчШшЩщЬьЮюЯя`
+export const LETTER_LAT_EXCLUSIVE = r`QqWwRtYUuSsDdFfGghJjkLlZzVvbNnm`
 export const LETTER_UK = r`АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`
 export const LETTER_UK_UPPERCASE = r`АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ`
 export const LETTER_UK_LOWERCASE = r`абвгґдеєжзиіїйклмнопрстуфхцчшщьюя`
-export const EMOJIS = r`\ud83c[\udf00-\udfff]|\ud83d[\udc00-\ude4f]|\ud83d[\ude80-\udeff]`
+export const APOSTROPHES_COMMON = r`“᾿ʹ”´΄ʾ᾽‘´\`'’ʼ"`
+export const APOSTROPHES_SICK = r`ˈי»\uF0A2\u0313*`
+export const APOSTROPHES = APOSTROPHES_COMMON + APOSTROPHES_SICK
+export const APOSTROPHE_PRECEEDERS = `бпвмфгґкхжчшр`
+export const APOSTROPHE_FOLLOWERS = `єїюя`
 
+
+export const EMOJI_RE = require('emoji-regex')()
+export const INVISIBLES_RE = /[\u0000-\u0008\u000E-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060]/gu
 export const WCHAR_UK = r`\-’${LETTER_UK}`
 export const WCHAR_UK_UPPERCASE = r`\-’${LETTER_UK_UPPERCASE}`
 export const FOREIGN_RE = new RegExp(`^[${WCHAR_UK}]*[A-Za-zЫыЁёЪъЭэ]+[${WCHAR_UK}]*$`)  // not negation
@@ -127,68 +137,66 @@ const INTERJECTION_RE_STRS = [
 const INTERJECTION_RE_STR = INTERJECTION_RE_STRS.join('|')
 export const INTERJECTION_RE = new RegExp(`^(${INTERJECTION_RE_STR})$`, 'i')
 
-const LATIN_CYR_GLYPH_MISSPELL: Array<[string, string]> = [
-  ['e', 'е'],
-  ['y', 'у'],
-  ['i', 'і'],
-  ['o', 'о'],
-  ['p', 'р'],
-  ['a', 'а'],
-  ['x', 'х'],
-  ['c', 'с'],
-  ['E', 'Е'],
-  ['T', 'Т'],
-  ['I', 'І'],
-  ['O', 'О'],
-  ['P', 'Р'],
-  ['A', 'А'],
-  ['H', 'Н'],
-  ['K', 'К'],
-  ['X', 'Х'],
-  ['C', 'С'],
-  ['B', 'В'],
-  ['M', 'М'],
-  ['ï', 'ї'],
-  ['Ï', 'Ї'],
-  ['ȉ', 'ї'],
-  ['Ȉ', 'Ї'],
-  ['ı', 'і'],
-  ['r', 'г'],
-  ['u', 'и'],  // ~
-]
-export const LATIN_CYR_GLYPH_MISSPELL_MAP = makeObject(LATIN_CYR_GLYPH_MISSPELL)
-const latinMisspells = LATIN_CYR_GLYPH_MISSPELL.map(x => x[0]).join('')
-export const latinMisspellsReRight = new RegExp(r`([${LETTER_UK}])([${latinMisspells}])`, 'g')
-export const latinMisspellsReLeft = new RegExp(r`([${latinMisspells}])([${LETTER_UK}])`, 'g')
+export const latToCyrUnaccented = {
+  'e': 'е',
+  'y': 'у',
+  'i': 'і',
+  'o': 'о',
+  'p': 'р',
+  'a': 'а',
+  'x': 'х',
+  'c': 'с',
+  'E': 'Е',
+  'T': 'Т',
+  'I': 'І',
+  'O': 'О',
+  'P': 'Р',
+  'A': 'А',
+  'H': 'Н',
+  'K': 'К',
+  'X': 'Х',
+  'C': 'С',
+  'B': 'В',
+  'M': 'М',
+  'ï': 'ї',
+  'Ï': 'Ї',
+  'ȉ': 'ї',
+  'Ȉ': 'Ї',
+  'ı': 'і',
+  'r': 'г',
+  'u': 'и',  // ~
+}
 
-const ACCENT_LATIN_CYR_GLYPH_MISSPELL = [
-  ['ÀÁ', 'А'],
-  ['ÈÉ', 'Е'],
-  ['ÌÍ', 'І'],
-  ['ÒÓ', 'О'],
-  ['àáȁ', 'а'],
-  ['èѐé', 'е'],
-  ['ìí', 'і'],
-  ['ȉḯ', 'ї'],
-  ['òóȍ', 'о'],
-  ['úù', 'и'],
-  ['ýỳ', 'у'],
-]
-export const ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP: Dict<string> = {}
-ACCENT_LATIN_CYR_GLYPH_MISSPELL.forEach(([k, v]) =>
-  [...k].forEach(char => ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP[char] = v))
+export const latToCyrAccented = {
+  'À': 'А',
+  'Á': 'А',
+  'È': 'Е',
+  'É': 'Е',
+  'Ì': 'І',
+  'Í': 'І',
+  'Ò': 'О',
+  'Ó': 'О',
+  'à': 'а',
+  'á': 'а',
+  'ȁ': 'а',
+  'è': 'е',
+  'ѐ': 'е',
+  'é': 'е',
+  'ì': 'і',
+  'í': 'і',
+  'ȉ': 'ї',
+  'ḯ': 'ї',
+  'ò': 'о',
+  'ó': 'о',
+  'ȍ': 'о',
+  'ú': 'и',
+  'ù': 'и',
+  'ý': 'у',
+  'ỳ': 'у',
+}
 
-const accentLatinMisspells = Object.keys(ACCENT_LATIN_CYR_GLYPH_MISSPELL_MAP).join('')
-export const accentLatinMisspellsReRight =
-  new RegExp(r`([${LETTER_UK}])([${accentLatinMisspells}])`, 'g')
-export const accentLatinMisspellsReLeft =
-  new RegExp(r`([${accentLatinMisspells}])([${LETTER_UK}])`, 'g')
-
-
-/*
-
-ѓ
-// ['Ć', 'С'],
-// ['ć', 'с'],
-
-*/
+export const latToCyr = { ...latToCyrUnaccented, ...latToCyrAccented }
+export const cyrToLat = flipObjMap(latToCyrUnaccented)
+export const latMixins = Object.keys(latToCyr).join('')
+export const cyrMixins = Object.values(latToCyr).join('')
+export const accentLatMixins = Object.keys(latToCyrAccented).join('')

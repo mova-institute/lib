@@ -2,7 +2,6 @@ import { logErrAndExit, linesBackpressedStdPipeable, writeLines, linesBackpresse
 import { nameFromLoginAtDomain } from '../utils'
 import { toSortableDatetime } from '../../../date'
 import { JsonObjectLogReader } from './json_object_log_reader'
-import { normalizeParagraph } from '../../bin/filter_tokenize_micrawl'
 
 import * as minimist from 'minimist'
 import { plaintext2ParagraphsTrimmed } from '../../../nlp/utils'
@@ -163,7 +162,7 @@ async function main() {
       date: toSortableDatetime(createdAt),
     } as any
 
-    mapInplace(paragraphs, normalizeParagraph)
+    // mapInplace(paragraphs, normalizeParagraph)
 
     if (!paragraphs || !paragraphs.length) {
       logRejection(`Paragraphs are empty or invalid`, observation)

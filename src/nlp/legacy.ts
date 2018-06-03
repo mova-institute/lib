@@ -1,40 +1,8 @@
 import { MorphInterp } from './morph_interp'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
-import { removeInvisibles, fixLatinGlyphMisspell, normalizeDiacritics, removeRenderedHypenation, sortInterps } from './utils'
-import { WORDCHAR, PUNC_GLUED_BEFORE, LETTER_UK, PUNC_GLUED_AFTER } from './static'
-import { r } from '../lang'
-import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
+import { sortInterps } from './utils'
 import { NS, traverseDepthGen2, tagStr2 } from '../xml/utils'
 
-
-
-//////////////////////////////////////////////////////////////////////////////
-export function normalizeCorpusTextString(value: string, analyzer?: MorphAnalyzer) {
-  let ret = removeInvisibles(value)
-    // .replace(/[\xa0]/g, ' ')
-    .replace(/\r/g, '\n')
-    .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
-
-    // ~
-    .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])\.{3}([^\.])?`, 'g'), '$1…$2')
-    .replace(new RegExp(r`(^|[\s${PUNC_GLUED_BEFORE}])[\-–] `, 'g'), '$1— ')
-    // .replace(new RegExp(r`((\s|${ANY_PUNC})[\-–]([${LETTER_UK}])`, 'g'), '$1 — $2')
-    .replace(new RegExp(r`([${LETTER_UK}])'`, 'g'), '$1’')
-    .replace(new RegExp(r`(?=[${WORDCHAR}])['\`](?=[${WORDCHAR}])'`, 'g'), '’')
-    .replace(new RegExp(r`(^|\s)"([${PUNC_GLUED_BEFORE}${WORDCHAR}])`, 'g'), '$1“$2')
-    .replace(new RegExp(r`(^|\s),,([${PUNC_GLUED_AFTER}${WORDCHAR}])`, 'g'), '$1„$2')
-    // .replace(new RegExp(r`([${WORDCHAR}${PUNC_GLUED_BEFORE}])"(\s|[-${PUNC_GLUED_BEFORE}${NO_GLUE_PUNC}]|$)`, 'g'), '$1”$2')
-  // ~
-
-  ret = fixLatinGlyphMisspell(ret)
-  ret = normalizeDiacritics(ret)
-  if (analyzer) {
-    ret = removeRenderedHypenation(ret, analyzer)
-  }
-  ret = ret.trim()
-
-  return ret
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -9,9 +9,11 @@ import { tokenizeUk } from '../nlp/utils'
 import { mu } from '../mu'
 import { uniformSubarray, numericCompare } from '../algo'
 import * as he from 'he'
-import { isTitlecase, anyReLiteral } from '../string'
+import { isTitlecase, joinAsReOfLiterals, escapeRe } from '../string'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { Dawg } from 'dawgjs'
+
+import { parse } from 'url'
 
 
 
@@ -24,6 +26,13 @@ const previewAbruptRe = /(…|\.{3,})[)\]]?\s*((читати|дізнатися)
 const caseCollisionRe = new RegExp(
   `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`)
 const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i')
+
+//------------------------------------------------------------------------------
+const domainsRejectingDoc = [
+  'dovidkam.com'
+]
+const domainsRejectingDocRe = new RegExp(
+  domainsRejectingDoc.map(x => r`\.?${escapeRe(x)}$`).join('|'))
 
 //------------------------------------------------------------------------------
 const regsRejectingParagraph: Array<[RegExp, string]> = [
@@ -57,7 +66,7 @@ const functionsKillingParagraph: Array<[(p: string) => boolean, string]> = [
 ]
 
 //------------------------------------------------------------------------------
-const stringsRejectingDocRe = anyReLiteral([
+const stringsRejectingDocRe = joinAsReOfLiterals([
   'указанньїх',
   '�',
   '[quote="',
@@ -102,7 +111,7 @@ const urlRegsRejectingDoc = [
 ]
 
 //------------------------------------------------------------------------------
-const urlsRejectingDoc = anyReLiteral([
+const urlsRejectingDoc = joinAsReOfLiterals([
   r`http://om.net.ua/14/14_9/14_9006_J--motivatsionnie-sostoyaniya.html`,
 ])
 
@@ -180,12 +189,17 @@ export function filterParagraphedDoc(
       }
     }
     if (meta.url) {
+      let url = parse(meta.url)
+      let match = url.hostname.match(domainsRejectingDocRe)
+      if (match) {
+        return invalidDoc(`killed by domain: ${match[0]}`)
+      }
       for (let re of urlRegsRejectingDoc) {
         if (re.test(meta.url)) {
           return invalidDoc(`killed by url regex: ${re.source}`)
         }
       }
-      var match = meta.url.match(urlsRejectingDoc)
+      match = meta.url.match(urlsRejectingDoc)
       if (match) {
         return invalidDoc(`killed by url regex: ${match[0]}`)
       }
@@ -200,7 +214,7 @@ export function filterParagraphedDoc(
     let p = pp[i]
 
     // reject by substr
-    match = p.match(stringsRejectingDocRe)
+    let match = p.match(stringsRejectingDocRe)
     if (match) {
       return invalidDoc(`doc rejected by substring: ${match[0]}`, filtered)
     }
@@ -212,7 +226,7 @@ export function filterParagraphedDoc(
       }
     }
 
-    let naiveSplit = tokenizeUk(pp[i]).map(x => x.token)
+    let naiveSplit = tokenizeUk(p).map(x => x.token)
     internalHypens.push(...findInternalHypenations(naiveSplit, analyzer))
     if (internalHypens.length > 1) {
       return invalidDoc(`Too many internal hypens ${internalHypens}`, filtered)
@@ -224,7 +238,7 @@ export function filterParagraphedDoc(
     }
 
     if (p.length > lengthThreshold) {
-      reportRmPar(i, pp[i], `longer than ${lengthThreshold} chars (${p.length})`)
+      reportRmPar(i, p, `longer than ${lengthThreshold} chars (${p.length})`)
       filtered.push(i)
       continue ploop
     }
@@ -241,8 +255,8 @@ export function filterParagraphedDoc(
     }
 
     for (let [f, message] of functionsKillingParagraph) {
-      if (f(pp[i])) {
-        reportRmPar(i, pp[i], message)
+      if (f(p)) {
+        reportRmPar(i, p, message)
         filtered.push(i)
         continue ploop
       }
@@ -264,7 +278,7 @@ export function filterParagraphedDoc(
       }
     }
 
-    let prepared = pp[i].replace(/&\s*(\S+)\s*;/g, '&$1;')
+    let prepared = p.replace(/&\s*(\S+)\s*;/g, '&$1;')
     let unescaped = he.unescape(prepared)
     if (unescaped.length !== prepared.length) {
       reportRmPar(i, p, 'html markup')
@@ -272,11 +286,11 @@ export function filterParagraphedDoc(
       continue ploop
     }
 
-    let isSuspicious = [ruSpecLettersRe, /[ђњџћүө¤≥]/].some(x => x.test(pp[i]))
+    let isSuspicious = [ruSpecLettersRe, /[ђњџћүө¤≥]/].some(x => x.test(p))
     if (isSuspicious) {
       let numNondict = mu(naiveSplit).count(x => !analyzer.tag(x).length)
       if (numNondict / naiveSplit.length > 0.06) {
-        reportRmPar(i, pp[i], `out-of-dict threshold: ${numNondict}/${naiveSplit.length}`)
+        reportRmPar(i, p, `out-of-dict threshold: ${numNondict}/${naiveSplit.length}`)
         filtered.push(i)
         continue ploop
       }
@@ -288,7 +302,7 @@ export function filterParagraphedDoc(
         if (unknowns.length / naiveSplit.length > 0.23) {
           let unknownsOfUkLetters = unknowns.filter(x => WORDCHAR_UK_RE.test(x))
           if (unknownsOfUkLetters.length / unknowns.length < 0.9) {
-            reportRmPar(i, pp[i], `out-of-dict soft threshold`)
+            reportRmPar(i, p, `out-of-dict soft threshold`)
             filtered.push(i)
             continue ploop
           }
