@@ -556,7 +556,7 @@ msgstr "частота"
 
 #: cmpltmpl/viewattrs.py:88 cmpltmpl/viewattrs.py:135 cmpltmpl/view.py:583
 msgid "View options"
-msgstr "Вигляд"
+msgstr "Подання"
 
 #: cmpltmpl/viewattrs.py:173
 msgid "Attributes"
@@ -1551,7 +1551,7 @@ msgstr "жодного (цілий корпус)"
 
 #: cmpltmpl/document.py:1372
 msgid "Character"
-msgstr "Символ"
+msgstr "Символи"
 
 #: cmpltmpl/document.py:1862
 msgid "default"
