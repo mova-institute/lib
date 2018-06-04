@@ -84,11 +84,16 @@ export function fixCyrillicMixinGentle(text: string) {
   return text
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function hasLatCyrMix(text: string) {
+  return latMixinsReLeft.test(text) || latMixinsReRight.test(text)
+}
+
 //------------------------------------------------------------------------------
 const latMixinRe = new RegExp(`[${latMixins}]`, 'g')
 ////////////////////////////////////////////////////////////////////////////////
 export function fixLatinMixinDict(token: string, analyzer: MorphAnalyzer) {
-  if (latMixinsReLeft.test(token) || latMixinsReRight.test(token)) {
+  if (hasLatCyrMix(token)) {
     let replaced = token.replace(latMixinRe, match => latToCyr[match])
     if (analyzer.hasInterps(replaced)) {
       return replaced
