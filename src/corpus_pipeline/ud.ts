@@ -51,7 +51,7 @@ export function token2verticalLineUk(
   let domesticatedPos = domesticateUdPos(upos, feats.NumType, feats.VerbForm)
   let urel = prepareUrel(rel)
   let relativeHead = prepareRelativeHead(head, sentIndex)
-  let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
+  let tag = ud2conlluishString(upos, feats)
   let nameType = feats.NameType || (upos === 'PROPN' && 'Oth') || ''
 
   let ret = `${form}\t${lemma}\t`
@@ -117,7 +117,7 @@ export function token2verticalColsGeneric(
 ) {
   let urel = prepareUrel(rel)
   let relativeHead = prepareRelativeHead(head, sentIndex)
-  let tag = `${lemma}/${ud2conlluishString(upos, feats)}`
+  let tag = ud2conlluishString(upos, feats)
 
   let ret = [
     form,
