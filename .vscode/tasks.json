@@ -1,5 +1,4 @@
 {
-  "version": "0.1.0",
   "command": "./develop.sh",
   "isShellCommand": true,
   "suppressTaskName": true,
@@ -10,6 +9,9 @@
       "isBuildCommand": true,
       "showOutput": "silent",
       "isBackground": true,
+      "problemMatcher": [
+        "$msCompile"
+      ]
     }
   ]
 }
