@@ -250,7 +250,7 @@ async function annotate(alignFiles: Array<string>) {
       let { url, model } = udpipeApiLangMap[lang as string]  // todo
       let udpipe = new UdpipeApiClient(url, model)
 
-      let plaintext = intertextDoc2HorizontalPlaintext(doc as AbstractElement)
+      let plaintext = intertextDoc2horizontalPlaintext(doc as AbstractElement)
       let sentIds = getSentIdsFromIntertextDoc(doc as AbstractElement)
 
       console.error(
@@ -547,7 +547,7 @@ function prepareFromAlignment(alignFilePath: string) {
 }
 
 //------------------------------------------------------------------------------
-function intertextDoc2HorizontalPlaintext(root: AbstractElement) {
+function intertextDoc2horizontalPlaintext(root: AbstractElement) {
   let ret = ''
   // let ids = new Array<string>()
   let pEls = (root.evaluateElements('//p').toArray())

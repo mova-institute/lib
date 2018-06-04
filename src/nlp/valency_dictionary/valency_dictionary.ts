@@ -42,7 +42,7 @@ export class ValencyDict {
     if (this.nounOverlayValencies.has(lemma)) {
       return mu(this.nounOverlayValencies.getRaw(lemma)).unique()
     }
-    let res = this.lookupGerund2Verb(lemma)
+    let res = this.lookupGerund2verb(lemma)
       .map(x => this.lookupVerbCases(x))
       .flattenShallowNaive()
       .unique()
@@ -53,7 +53,7 @@ export class ValencyDict {
     return res.unique() as Mu<ValencyCase>
   }
 
-  private lookupGerund2Verb(lemma: string) {
+  private lookupGerund2verb(lemma: string) {
     lemma = normalizeLemma(lemma)
 
     let ret = this.gerund2verb.getRaw(lemma)

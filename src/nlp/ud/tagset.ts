@@ -358,7 +358,7 @@ export class UdFeats {
 /* tslint:enable:variable-name */
 
 //------------------------------------------------------------------------------
-function mapFeatureValue2Ud(featureName, value) {
+function mapFeatureValue2ud(featureName, value) {
   if (value === undefined) {
     return undefined
   }
@@ -403,7 +403,7 @@ export function toUd(interp: MorphInterp) {
 
   // auto-map pos and features
   for (let featureName of Object.keys(interp.features)) {
-    let keyvalue = mapFeatureValue2Ud(featureName, interp.features[featureName])
+    let keyvalue = mapFeatureValue2ud(featureName, interp.features[featureName])
     if (keyvalue) {
       let [key, value] = keyvalue
       if (key === 'POS') {

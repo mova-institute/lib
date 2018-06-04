@@ -755,12 +755,12 @@ export class MorphInterp {
     }
 
     if (this.isCardinalNumeral() || this.isOrdinalNumeral()) {
-      let form = tryMap2Mte(NumeralForm, this.features.numeralForm) || 'l'
+      let form = tryMap2mte(NumeralForm, this.features.numeralForm) || 'l'
       let type = this.isCardinalNumeral() ? 'c' : 'o'
       let gender = map2mteOrDash(Gender, this.features.gender)
-      let morphNumber = tryMap2Mte(MorphNumber, this.getNumber())
+      let morphNumber = tryMap2mte(MorphNumber, this.getNumber())
       let morphCase = map2mteOrDash(Case, this.features.case)
-      let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
+      let requiredAnimacy = tryMap2mte(RequiredAnimacy, this.features.requiredAnimacy)
 
       return trimTrailingDash('M' + form + type + gender + morphNumber + morphCase + requiredAnimacy)
     }
@@ -777,7 +777,7 @@ export class MorphInterp {
       let possessiveness = this.isPossessive() ? 'p' : '-'
       let person = map2mteOrDash(Person, this.features.person)
       let gender = map2mteOrDash(Gender, this.features.gender)
-      let animacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
+      let animacy = tryMap2mte(RequiredAnimacy, this.features.requiredAnimacy)
       if (!animacy) {
         animacy = map2mteOrDash(Animacy, this.features.animacy)
       }
@@ -789,8 +789,8 @@ export class MorphInterp {
     }
 
     if (this.isNoun() /*|| this.isAdjectiveAsNoun()*/) {
-      let type = tryMap2Mte(NounType, this.features.nounType) || 'c'
-      let gender = tryMap2Mte(Gender, this.features.gender)
+      let type = tryMap2mte(NounType, this.features.nounType) || 'c'
+      let gender = tryMap2mte(Gender, this.features.gender)
       if (!gender) {
         if (this.isNoSingular() || this.isBad() || (this.isN2Adj() && this.isPlural())) {
           gender = '-'
@@ -804,7 +804,7 @@ export class MorphInterp {
       // let morphNumber = map2mte(MorphNumber, this.getNumber())
       let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
       let morphCase = map2mteOrDash(Case, this.features.case)
-      let animacy = tryMap2Mte(Animacy, this.features.animacy)
+      let animacy = tryMap2mte(Animacy, this.features.animacy)
       if (!animacy) {
         if (this.isBacteria()) {
           animacy = 'y'
@@ -823,11 +823,11 @@ export class MorphInterp {
       }
       let type = isAuxVerb(lemma) ? 'a' : 'm'
       let aspect = map2mte(Aspect, this.features.aspect)
-      let verbForm = this.isConverb() ? 'g' : tryMap2Mte(VerbType, this.features.verbType) || 'i'
+      let verbForm = this.isConverb() ? 'g' : tryMap2mte(VerbType, this.features.verbType) || 'i'
       let tense = map2mteOrDash(Tense, this.features.tense)
       let person = map2mteOrDash(Person, this.features.person)
       let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
-      let gender = tryMap2Mte(Gender, this.features.gender)
+      let gender = tryMap2mte(Gender, this.features.gender)
 
       return trimTrailingDash('V' + type + aspect + verbForm + tense + person + morphNumber + gender)
     }
@@ -839,17 +839,17 @@ export class MorphInterp {
         let gender = map2mteOrDash(Gender, this.features.gender)
         let morphNumber = map2mte(MorphNumber, this.getNumber())
         let morphCase = map2mteOrDash(Case, this.features.case)
-        let definiteness = tryMap2Mte(Variant, this.features.variant)
+        let definiteness = tryMap2mte(Variant, this.features.variant)
           || defaultMteDefiniteness(this.features.gender, this.features.number, this.features.case,
             this.features.requiredAnimacy)
         if (!this.isParticiple()) {
-          let requiredAnimacy = tryMap2Mte(RequiredAnimacy, this.features.requiredAnimacy)
+          let requiredAnimacy = tryMap2mte(RequiredAnimacy, this.features.requiredAnimacy)
           return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy
         }
         let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy)
-        let aspect = tryMap2Mte(Aspect, this.features.aspect)
-        let voice = tryMap2Mte(Voice, this.features.voice)
-        let tense = tryMap2Mte(Tense, this.features.tense)
+        let aspect = tryMap2mte(Aspect, this.features.aspect)
+        let voice = tryMap2mte(Voice, this.features.voice)
+        let tense = tryMap2mte(Tense, this.features.tense)
         if (!tense && this.isActive() && this.isImperfect()) {
           tense = 'p'
         }
@@ -873,7 +873,7 @@ export class MorphInterp {
         return 'C' + type + formation
       }
       case Pos.adverb: {
-        return 'R' + tryMap2Mte(Degree, this.features.degree)
+        return 'R' + tryMap2mte(Degree, this.features.degree)
       }
       case Pos.particle:
         return 'Q'
@@ -1187,7 +1187,7 @@ function isUngrammaticalFeature(prop: string) {
 }
 
 //------------------------------------------------------------------------------
-function tryMap2Mte(feature, value) {
+function tryMap2mte(feature, value) {
   let mappedFeature = MAP_VESUM_FEAT.get(feature)
   if (mappedFeature) {
     let mappedRow = mappedFeature.get(value)
@@ -1203,12 +1203,12 @@ function tryMap2Mte(feature, value) {
 
 //------------------------------------------------------------------------------
 function map2mteOrDash(feature, value) {
-  return tryMap2Mte(feature, value) || '-'
+  return tryMap2mte(feature, value) || '-'
 }
 
 //------------------------------------------------------------------------------
 function map2mte(feature, value) {
-  let ret = tryMap2Mte(feature, value)
+  let ret = tryMap2mte(feature, value)
   if (!ret) {
     throw new Error(`Unmappable feature "${Object.keys(feature).join(',')}" value "${value}"`)
   }

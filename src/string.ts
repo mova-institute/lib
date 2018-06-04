@@ -55,7 +55,7 @@ export function firstMatch(str: string, regex: RegExp, groupIndex = 0) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function allcaps2TitlecaseDirty(str: string) {
+export function allcaps2titlecaseDirty(str: string) {
   return str.split(/\s+/).map(word => {
     if (isAllcaps(word)) {
       return titlecaseToken(word)

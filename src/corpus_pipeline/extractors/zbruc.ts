@@ -1,7 +1,7 @@
 import { CorpusDoc } from '../doc_meta'
 import { tryParseHtml } from '../../xml/utils.node'
 import { normalizeZvidusilParaNondestructive } from '../../nlp/utils'
-import { allcaps2TitlecaseDirty } from '../../string'
+import { allcaps2titlecaseDirty } from '../../string'
 import { toSortableDate } from '../../date'
 import { textOf, textsOf } from './utils'
 
@@ -31,7 +31,7 @@ export function extract(html: string) {
   let author = textOf(root, '//div[contains(@class, "field-name-field-author")]//text()').trim()
   if (author) {
     author = normalizeZvidusilParaNondestructive(author)
-    author = allcaps2TitlecaseDirty(author)
+    author = allcaps2titlecaseDirty(author)
   }
 
   const paragraphsXapth = '//div[contains(@property, "content:encoded")]/p'

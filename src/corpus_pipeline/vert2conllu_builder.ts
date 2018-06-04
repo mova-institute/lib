@@ -9,7 +9,7 @@ import { loopReplace } from '../string'
 const MIDDLE_PADDER = '\t_'.repeat(7) + '\t'
 
 ////////////////////////////////////////////////////////////////////////////////
-export class Vert2ConlluBuilder {
+export class Vert2conlluBuilder {
   private buf = new Array<string>()
   private sentIdGen = 0
   private curTokNum: number

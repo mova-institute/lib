@@ -6,7 +6,7 @@ import { readTillEnd } from '../stream.node'
 import {
   tokenizeMixml, morphInterpret, numerateTokensGently, mixml2tokenStream, string2tokenStream,
   tokenStream2plainVertical, tokenizeUk, autofixDirtyText, normalizeCorpusText,
-  newline2Paragraph, tokenStream2cg, morphReinterpret, token2sketchVertical,
+  newline2paragraph, tokenStream2cg, morphReinterpret, token2sketchVertical,
   applyMiTeiDocTransforms,
 } from '../nlp/utils'
 import { $t } from '../nlp/text_token'
@@ -129,7 +129,7 @@ function main(args: Args) {
       }
 
       if (args.nl2p) {
-        newline2Paragraph(root)
+        newline2paragraph(root)
       }
 
       tokenizeMixml(root, analyzer)

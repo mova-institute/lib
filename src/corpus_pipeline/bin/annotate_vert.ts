@@ -2,7 +2,7 @@
 
 import { exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
 import { AsyncTaskRunner } from '../../async_task_runner'
-import { Vert2ConlluBuilder } from '../vert2conllu_builder'
+import { Vert2conlluBuilder } from '../vert2conllu_builder'
 import { mu, Mu } from '../../mu'
 import { tokenObj2verticalLineUk } from '../ud'
 import { parseConlluTokenCells } from '../../nlp/ud/conllu'
@@ -31,7 +31,7 @@ async function main() {
 
   args.udpipeConcurrency = args.udpipeConcurrency || Math.max(1, os.cpus().length - 1)
 
-  let builder = new Vert2ConlluBuilder()
+  let builder = new Vert2conlluBuilder()
   let api = new ApiClient(args.udpipeUrl, args.tdozatUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
   let analyzer = createMorphAnalyzerSync()

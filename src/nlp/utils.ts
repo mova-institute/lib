@@ -188,7 +188,7 @@ export function fixApostrophes(token: string, to = '’') {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function plaintext2ParagraphsTrimmed(plaintext: string) {
+export function plaintext2paragraphsTrimmed(plaintext: string) {
   return plaintext.trim().split(/(?:\s*\n+\s*)+/g)
 }
 
@@ -599,7 +599,7 @@ export function numerateTokensGently(root: AbstractElement, attributeName = 'n')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function newline2Paragraph(root: AbstractElement) {
+export function newline2paragraph(root: AbstractElement) {
   root.evaluateNodes('.//text()').forEach(node => {
     let text = node.text()
     if (text.trim()) {
@@ -1172,7 +1172,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
 
   const makeYield = () => {
     initLocalHeadIndexes(buf, sentenceId)
-    let nodes = sentenceArray2TreeNodes(buf)
+    let nodes = sentenceArray2treeNodes(buf)
     let ret = {
       sentenceId,
       tokens: buf,
@@ -1250,7 +1250,7 @@ function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
 }
 
 //------------------------------------------------------------------------------
-function sentenceArray2TreeNodes(sentence: Array<Token>) {
+function sentenceArray2treeNodes(sentence: Array<Token>) {
   let nodeArray = sentence.map(x => new GraphNode(x))
   for (let i = 0; i < nodeArray.length; ++i) {
     if (sentence[i].rel) {

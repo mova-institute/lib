@@ -11,7 +11,7 @@ import { UdPos } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 
 export type TokenNode = GraphNode<Token>
-export type Node2IndexMap = Map<TokenNode, number>
+export type Node2indexMap = Map<TokenNode, number>
 
 
 

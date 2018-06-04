@@ -4,7 +4,7 @@ import { toSortableDatetime } from '../../../date'
 import { JsonObjectLogReader } from './json_object_log_reader'
 
 import * as minimist from 'minimist'
-import { plaintext2ParagraphsTrimmed } from '../../../nlp/utils'
+import { plaintext2paragraphsTrimmed } from '../../../nlp/utils'
 import { conlluStrAndMeta2vertical } from '../../tovert'
 import { UdpipeApiClient } from '../../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../../async_task_runner'
@@ -133,7 +133,7 @@ async function main() {
       return
     }
 
-    let paragraphs = plaintext2ParagraphsTrimmed(text)
+    let paragraphs = plaintext2paragraphsTrimmed(text)
 
     if (lang !== 'uk') {
       ++nNonUkTweets
