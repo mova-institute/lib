@@ -16,6 +16,7 @@ import { AsyncTaskRunner } from '../../async_task_runner'
 
 import * as minimist from 'minimist'
 import * as path from 'path'
+import { prepareZvidusilMeta } from '../utils';
 
 
 
@@ -46,6 +47,8 @@ async function main() {
         throw e
       }
     }
+
+    prepareZvidusilMeta(meta)
 
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
       filter.filter(paragraphs, meta)

@@ -1,6 +1,7 @@
 import { AbstractElement } from './xmlapi/abstract_element'
 import { AbstractNode } from './xmlapi/abstract_node'
 import * as he from 'he'
+import { Dict } from '../types'
 
 
 
@@ -151,12 +152,12 @@ export function parseTagStr(value: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function parseAttributeStr(value: string) {
-  let ret = new Array<[string, string]>()
+  let ret: Dict<string> = {}
 
   let re = /(\w+)="([^"]+)"\s*/g
   let matchArray
   while ((matchArray = re.exec(value)) !== null) {
-    ret.push([matchArray[1], unescape(matchArray[2])])
+    ret[matchArray[1]] = matchArray[2]
   }
 
   return ret

@@ -5,6 +5,8 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { writeFileSyncMkdirp } from '../utils.node'
 import { join } from 'path'
 import { tokenizeUk, normalizeZvidusilParaNondestructive } from '../nlp/utils'
+import { Dict } from '../types'
+import { getDomain } from 'tldjs'
 
 
 
@@ -99,4 +101,11 @@ function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer
 //------------------------------------------------------------------------------
 export function getMetaParaPaths(outDir: string, relpath: string) {
   return [join(outDir, 'meta', `${relpath}.json`), join(outDir, 'para', `${relpath}.json`)]
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function prepareZvidusilMeta(value: Dict<string>) {
+  if (value.url) {
+    value.domain = getDomain(value.url)
+  }
 }

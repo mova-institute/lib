@@ -214,6 +214,10 @@ STRUCTURE doc {
     LABEL "посилання"
     DEFAULTVALUE ""
   }
+  ATTRIBUTE domain {
+    LABEL "домен"
+    DEFAULTVALUE ""
+  }
   ATTRIBUTE wordcount {
     LABEL "токенів в документі"
     DEFAULTVALUE ""
@@ -377,6 +381,10 @@ STRUCTURE doc {
   }
   ATTRIBUTE url {
     LABEL "посилання"
+    DEFAULTVALUE ""
+  }
+  ATTRIBUTE domain {
+    LABEL "домен"
     DEFAULTVALUE ""
   }
   ATTRIBUTE wordcount {

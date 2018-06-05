@@ -42,6 +42,7 @@
     "typescript": "^2.9.1"
   },
   "dependencies": {
+    "@types/tldjs": "^1.7.1",
     "body-parser": "^1.18.3",
     "camelcase": "^3.0.0",
     "chalk": "^2.4.1",
@@ -79,6 +80,7 @@
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5",
     "rimraf": "^2.6.2",
+    "tldjs": "^2.3.1",
     "tlds": "^1.203.1",
     "tmp": "^0.0.33",
     "wu": "^2.1.0"

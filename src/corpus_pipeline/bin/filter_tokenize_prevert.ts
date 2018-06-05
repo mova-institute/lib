@@ -11,6 +11,7 @@ import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node
 
 import * as minimist from 'minimist'
 import he = require('he')
+import { prepareZvidusilMeta } from '../utils';
 
 
 
@@ -54,8 +55,9 @@ async function main() {
     // let [original, normalizedParas] = normalizeZvidusilParasAggressive(filteredParagraphs, analyzer)
     mapInplace(filteredParagraphs, x => normalizeZvidusilParaAggressive(x, analyzer))
 
-    let metaObj = makeObject(meta)
-    normalizeMeta(metaObj)
+    normalizeMeta(meta)
+    prepareZvidusilMeta(meta)
+
 
     try {
       var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
@@ -70,7 +72,7 @@ async function main() {
 
     let vertStream = conlluStrAndMeta2vertical(
       conllu, {
-        meta: metaObj as any,
+        meta: meta as any,
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })

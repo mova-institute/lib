@@ -1,15 +1,20 @@
 import { parseTagStr } from '../xml/utils'
+import { Dict } from '../types';
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class PrevertDocBuilder {
-  private meta = new Array<[string, string]>()
-  private paragraphs = new Array<string>()
+  private meta: Dict<string>
+  private paragraphs: Array<string>
   private buf = ''
 
+  constructor() {
+    this.reset()
+  }
+
   reset() {
-    this.meta = []
+    this.meta = {}
     this.paragraphs = []
   }
 
