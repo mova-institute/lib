@@ -34,7 +34,11 @@ export class Crawler {
     this.saved = new FsMap(saveDir)
     // this.saved = new FolderSavedMap(join(workspacePath, 'saved'), '**/*.html')
     // console.log(this.saved)
+  }
 
+  setTimeout(value: number) {
+    this.timeout = value
+    return this
   }
 
   setUrlsToSave(pred: UrlPredicate) {
@@ -89,7 +93,7 @@ export class Crawler {
           // clearTimeout(timeout)
         } catch (e) {
           console.error(`error fetching ${urlStr}`)
-          console.error(e.code)
+          console.error(e.message.substr(0, 80))
           return
         }
 

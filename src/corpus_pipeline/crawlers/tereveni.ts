@@ -4,6 +4,7 @@ import { Crawler } from './crawler'
 
 
 
+//------------------------------------------------------------------------------
 async function main() {
   let crawler = new Crawler('saved_web')
     .setUrlsToSave(({ pathname }) => isForumPage(pathname))
@@ -17,6 +18,7 @@ async function main() {
   ])
 }
 
+////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }
