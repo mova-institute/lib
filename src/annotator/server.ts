@@ -9,7 +9,6 @@ const jwt = require('express-jwt')
 
 
 
-const IS_DEV = process.env.NODE_ENV === 'development'
 export const debug = debugFactory('annotator')
 
 export interface IReq extends express.Request {
