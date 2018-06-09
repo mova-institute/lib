@@ -350,7 +350,7 @@ export function standartizeMorphoForUd21(interp: MorphInterp, form: string) {
 
   // add base degree if empty
   if (interp.isAdjective() && !interp.hasFeature(f.Degree) && !interp.isPronominal()) {
-    interp.setFeature(f.Degree, f.Degree.positive)
+    // interp.setFeature(f.Degree, f.Degree.positive)
   }
 
   // drop features
