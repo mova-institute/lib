@@ -11,7 +11,7 @@ import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node
 
 import * as minimist from 'minimist'
 import he = require('he')
-import { prepareZvidusilMeta } from '../utils';
+import { prepareZvidusilMeta } from '../utils'
 
 
 

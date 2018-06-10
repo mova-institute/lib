@@ -1,5 +1,5 @@
 import { parseTagStr } from '../xml/utils'
-import { Dict } from '../types';
+import { Dict } from '../types'
 
 
 
