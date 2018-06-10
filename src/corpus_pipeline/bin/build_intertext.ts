@@ -21,12 +21,9 @@ import { renderFeatvals, STRUCTURE_G, positionalAttrGeneric } from '../registry_
 import { indexTableByColumn } from '../../algo'
 import { execSync } from 'child_process'
 import { Dict } from '../../types'
+import { udpipeApiLangMap } from '../updipe_api_lang_map'
 
 
-
-interface CliArgs {
-  meta?: string
-}
 
 //------------------------------------------------------------------------------
 const langMetas = indexTableByColumn([
@@ -112,39 +109,6 @@ const langMetas = indexTableByColumn([
   //   nonwordre: '',
   // },
 ], 'code')
-
-//------------------------------------------------------------------------------
-const udpipeApiLangMap = {
-  'uk': {
-    url: 'https://api.mova.institute/udpipe/process',
-    model: 'uk',
-  },
-  'de': {
-    model: 'german-ud-2.0-170801',
-  },
-  'cs': {
-    model: 'czech-ud-2.0-170801',
-  },
-  'en': {
-    model: 'english-ud-2.0-170801',
-  },
-  'fr': {
-    model: 'french-ud-2.0-170801',
-  },
-  'pl': {
-    model: 'polish-ud-2.0-170801',
-  },
-}
-// udpipeApiLangMap['ua'] = udpipeApiLangMap['uk']
-let langsServedByUfal = [
-  'de',
-  'cs',
-  'en',
-  'fr',
-  'pl',
-]
-langsServedByUfal.forEach(x => udpipeApiLangMap[x].url =
-  'http://lindat.mff.cuni.cz/services/udpipe/api/process')
 
 
 //------------------------------------------------------------------------------
