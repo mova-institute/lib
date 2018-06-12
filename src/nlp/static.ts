@@ -3,7 +3,7 @@ import { flipObjMap } from '../algo'
 
 export const ukComparator = new Intl.Collator('uk-UA').compare
 
-export const APOSTROPES = '\'"*`’‘'
+export const APOSTROPES = '\'"*`’ʼ‘"'
 
 export const EMOJIS = r`\ud83c[\udf00-\udfff]|\ud83d[\udc00-\ude4f]|\ud83d[\ude80-\udeff]`
 export const LETTER_CYR = r`А-ЯІЇЄҐа-яіїєґ`

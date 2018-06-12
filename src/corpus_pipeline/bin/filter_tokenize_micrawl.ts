@@ -24,15 +24,16 @@ import { prepareZvidusilMeta } from '../utils'
 interface Args {
   basePath: string
   udpipeUrl: string
+  udpipeModel: string
   udpipeConcurrency?: number
 }
 
 //------------------------------------------------------------------------------
 async function main() {
-  const args = minimist<Args>(process.argv.slice(2)) as any
+  const args = minimist<Args>(process.argv.slice(2))
 
   let filter = new MicrawlFilter()
-  let udpipe = new UdpipeApiClient()
+  let udpipe = new UdpipeApiClient(args.udpipeUrl, args.udpipeModel)
   let runner = new AsyncTaskRunner()
 
   await superLinesStd(async paraPath => {
@@ -53,7 +54,7 @@ async function main() {
     let { docValid, filteredParagraphs, gapFollowerIndexes } =
       filter.filter(paragraphs, meta)
 
-    if (!docValid) {
+    if (!docValid || !filteredParagraphs.length) {
       return
     }
 

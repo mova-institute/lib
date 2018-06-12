@@ -26,7 +26,7 @@ interface Args {
 
 //------------------------------------------------------------------------------
 async function main() {
-  const args = minimist<Args>(process.argv.slice(2)) as any
+  const args = minimist<Args>(process.argv.slice(2))
   exitOnStdoutPipeError()
 
   args.udpipeConcurrency = args.udpipeConcurrency || Math.max(1, os.cpus().length - 1)
@@ -35,7 +35,7 @@ async function main() {
   let api = new ApiClient(args.udpipeUrl, args.tdozatUrl)
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
   let analyzer = createMorphAnalyzerSync()
-  let writer = new BufferedBackpressWriter(process.stdout, process.stdin)
+  let writer = BufferedBackpressWriter.fromStreams(process.stdout, process.stdin)
 
   let lines = new Array<string>()
   await linesAsyncStd(async (line/* , writer */) => {
@@ -47,18 +47,17 @@ async function main() {
     if (inputAsConllu) {
       let myLines = lines
       lines = []
-      let [posted] = runner.post(async () => {
+      await runner.post(async () => {
         try {
           var conllu = await api.tagParseConnluLines(inputAsConllu)
           var taggedVert = mergeConlluIntoVert(myLines, conllu, analyzer)
-          await writer.write(taggedVert)
+          writer.write(taggedVert)
         } catch (e) {
           // console.error(`ERROR at doc ${docCount}`)
           console.error(e)
           return
         }
       })
-      await posted
     }
   })
   writer.flush()

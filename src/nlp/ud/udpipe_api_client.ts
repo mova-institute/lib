@@ -15,6 +15,11 @@ export class UdpipeApiClient {
     return this
   }
 
+  setModel(value: string) {
+    this.model = value
+    return this
+  }
+
   tokenizeSentencesAndParagraphs(paragraphs: Array<string>) {
     return this.requestConllu({
       tokenizer: '',

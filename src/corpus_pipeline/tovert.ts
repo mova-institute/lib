@@ -4,13 +4,14 @@ import { tokenObj2verticalLineUk, tokenOrMulti2verticalLineGeneric } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
+import { Dict } from '../types'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface ConlluAndMeta2verticalOptions {
   formOnly?: boolean
-  meta?: CorpusDoc
+  meta?: Dict<string>
   pGapIndexes?: Array<number>
   featsOrder?: Array<string>
 }

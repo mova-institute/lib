@@ -11,8 +11,8 @@ function main() {
   let stream = new CatStreamEnqueueable()
 
   createInterface(process.stdin)
-    .on('line', line => stream.enqueue(line))
-    .on('close', () => stream.endOnDrain())
+    .on('line', stream.enqueue)
+    .on('close', stream.setEndOnDrain)
 
   stream.pipe(process.stdout)
 }

@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as algo from '../../algo'
 import { parseXmlFileSync } from '../../xml/utils.node'
-import { linesSync, write2jsonFile } from '../../utils.node'
+import { linesSync, writeTojsonFile } from '../../utils.node'
 import { isString, last } from '../../lang'
 import { trimExtension } from '../../string'
 import { firstMatch } from '../../string'
@@ -79,7 +79,7 @@ function main() {
     }
     fs.writeFileSync(xmlFile, serializeMiDocument(root))
     if (args.id2bratPath) {
-      write2jsonFile(args.id2bratPath, id2bratPath)
+      writeTojsonFile(args.id2bratPath, id2bratPath)
     }
   }
 }

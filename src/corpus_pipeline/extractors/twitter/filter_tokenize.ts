@@ -1,4 +1,4 @@
-import { logErrAndExit, linesBackpressedStdPipeable, writeLines, linesBackpressed } from '../../../utils.node'
+import { logErrAndExit, writeLines, linesMultibackpressedStdPipeable } from '../../../utils.node'
 import { nameFromLoginAtDomain } from '../utils'
 import { toSortableDatetime } from '../../../date'
 import { JsonObjectLogReader } from './json_object_log_reader'
@@ -13,7 +13,8 @@ import { ZvidusilDocFilter } from '../../filter'
 import { createMorphAnalyzerSync } from '../../../nlp/morph_analyzer/factories.node'
 import { getLibRootRelative } from '../../../lib_path.node'
 import { readStringDawgSync } from 'dawgjs'
-import { BufferedBackpressWriter, StreamPauser } from '../../../backpressing_writer'
+import { BufferedBackpressWriter } from '../../../backpressing_writer'
+import { StreamPauser } from '../../../stream_pauser'
 
 import * as fs from 'fs'
 import * as util from 'util'
@@ -95,7 +96,7 @@ async function main() {
   }).setRuLexicon(readStringDawgSync(args.ruLexicon))
   let stdinPauser = new StreamPauser(process.stdin)
   let logWriter = new BufferedBackpressWriter(
-    fs.createWriteStream(args.filterLog), undefined, stdinPauser)
+    fs.createWriteStream(args.filterLog), stdinPauser)
 
   let seenIds = new Set<string>()
 
@@ -115,7 +116,7 @@ async function main() {
     logWriter.flush()
   }
 
-  await linesBackpressedStdPipeable(async (line, stdoutWriter) => {
+  await linesMultibackpressedStdPipeable(stdinPauser, async (line, stdoutWriter) => {
     let rawObservation = reader.feed(line)
     if (!rawObservation) {
       return
@@ -206,7 +207,7 @@ async function main() {
         stdoutWriter.flush()
       }
     })
-  }, stdinPauser)
+  })
 
   let stats = {
     nTotalTweets,

@@ -1,5 +1,6 @@
 import { parseTagStr } from '../xml/utils'
 import { Dict } from '../types'
+import he = require('he')
 
 
 
@@ -56,7 +57,7 @@ export class PrevertDocBuilder {
       if (!tag.content) {
         throw new Error(`<p> without a content`)
       }
-      this.paragraphs.push(tag.content)
+      this.paragraphs.push(he.unescape(tag.content))
     } else {
       throw new Error(`Unexpected tag: "${tag.name}"`)
     }

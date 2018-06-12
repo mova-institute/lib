@@ -106,6 +106,6 @@ export function getMetaParaPaths(outDir: string, relpath: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function prepareZvidusilMeta(value: Dict<string>) {
   if (value.url) {
-    value.domain = getDomain(value.url)
+    value.tld = getDomain(value.url)
   }
 }

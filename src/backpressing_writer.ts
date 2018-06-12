@@ -1,43 +1,23 @@
-////////////////////////////////////////////////////////////////////////////////
-export class StreamPauser {
-  private pausers = new Set<any>()
+import { StreamPauser } from './stream_pauser'
 
-  constructor(private stream: NodeJS.ReadableStream) {
-  }
 
-  pause(pauser: any) {
-    this.pausers.add(pauser)
-    this.poke()
-  }
-
-  resume(pauser: any) {
-    this.pausers.delete(pauser)
-    this.poke()
-  }
-
-  private poke() {
-    // console.error(this.pausers.size)
-    if (this.pausers.size && !this.stream.isPaused()) {
-      // console.error(`pausing`)
-      this.stream.pause()
-    } else if (!this.pausers.size && this.stream.isPaused()) {
-      // console.error(`resumin`)
-      this.stream.resume()
-    }
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 export class BufferedBackpressWriter {
   private buf = ''
   private bufSize = 1024 ** 2
-  private onDrainBinded = this.onDrain.bind(this)
+
+  static fromStreams(source: NodeJS.ReadableStream, dest: NodeJS.WritableStream) {
+    return new BufferedBackpressWriter(dest, new StreamPauser(source))
+  }
 
   constructor(
     private dest: NodeJS.WritableStream,
-    private backpressee: NodeJS.ReadableStream,
-    private pauser = new StreamPauser(backpressee)
+    private pauser: StreamPauser,
   ) {
+    if ('writableHighWaterMark' in dest) {
+      this.setBufSize((dest as any).writableHighWaterMark / 2 - 1)
+    }
   }
 
   setBufSize(numChars: number) {
@@ -47,20 +27,20 @@ export class BufferedBackpressWriter {
 
   write(what: string) {
     this.buf += what
-    if (this.buf.length > this.bufSize) {
-      this.flush()
+    if (this.buf.length > this.bufSize && !this.pauser.isPaused()) {
+      return this.flush()
     }
+    return true
   }
 
   flush() {
-    if (!this.dest.write(this.buf)) {
+    let ret = this.dest.write(this.buf)
+    if (!ret) {
       this.pauser.pause(this)
-      this.dest.once('drain', this.onDrainBinded)
+      this.dest.once('drain', () => this.pauser.resume(this))
     }
     this.buf = ''
-  }
 
-  private onDrain() {
-    this.pauser.resume(this)
+    return ret
   }
 }

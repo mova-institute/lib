@@ -4,10 +4,12 @@ import { mu } from './mu'
 import { readFileSync } from 'fs'
 import * as fs from 'fs'
 import * as path from 'path'
+import * as util from 'util'
 import { createInterface } from 'readline'
 import { sync as mkdirpSync } from 'mkdirp'
 import { promisify } from 'util'
-import { BufferedBackpressWriter, StreamPauser } from './backpressing_writer'
+import { BufferedBackpressWriter } from './backpressing_writer'
+import { StreamPauser } from './stream_pauser'
 
 const lineIterator = require('n-readlines')
 const readFile = promisify(fs.readFile)
@@ -18,9 +20,13 @@ const readFile = promisify(fs.readFile)
 // todo: rerwrite with async iterators once avail
 export function lineBulksAsync(
   readable: NodeJS.ReadableStream,
+  pauser: StreamPauser,
   callback: (lineBulk: Array<string>) => void,
   newline: string | RegExp = '\n',
 ) {
+  pauser = pauser || new StreamPauser(readable)
+
+  let pauseId = {}
   return new Promise<void>((resolve, reject) => {
     let leftover = ''
 
@@ -29,7 +35,7 @@ export function lineBulksAsync(
       let splitted = leftover.split(newline)
       if (splitted.length > 1) {
         leftover = splitted.pop()
-        readable.pause()
+        pauser.pause(pauseId)
         try {
           await callback(splitted)
         } catch (e) {
@@ -39,7 +45,7 @@ export function lineBulksAsync(
             .removeListener('end', onEnd)
           reject(e)
         } finally {
-          readable.resume()
+          pauser.resume(pauseId)
         }
       }
     }
@@ -60,11 +66,12 @@ export function lineBulksAsync(
 // todo: rerwrite with async iterators once avail
 export function linesAsync(
   readable: NodeJS.ReadableStream,
+  pauser: StreamPauser,
   callback: (line: string) => void,
   newline: string | RegExp = '\n',
 ) {
-  return lineBulksAsync(readable, async lineBulk => {
-    for await (let line of lineBulk) {
+  return lineBulksAsync(readable, pauser, async lineBulk => {
+    for (let line of lineBulk) {
       await callback(line)
     }
   }, newline)
@@ -75,8 +82,7 @@ export function linesAsyncStd(
   callback: (line: string) => void,
   newline: string | RegExp = '\n',
 ) {
-  process.stdin.setEncoding('utf8')
-  return linesAsync(process.stdin, callback, newline)
+  return linesAsync(process.stdin, new StreamPauser(process.stdin), callback, newline)
 }
 ////////////////////////////////////////////////////////////////////////////////
 // todo: rerwrite with async iterators once avail
@@ -180,35 +186,47 @@ export function linesNoSpill(
 export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
+  pauser: StreamPauser,
   listener: (line: string, writer: BufferedBackpressWriter) => any,
-  pauser = new StreamPauser(source),
 ) {
   return new Promise<void>((resolve, reject) => {
-    let writer = new BufferedBackpressWriter(dest, undefined, pauser)
-    createInterface({ input: source })
+    let writer = new BufferedBackpressWriter(dest, pauser)
+    createInterface(source)
       .on('line', line => listener(line, writer))
-      .on('close', () => {
+      .on('close', (e) => {
+        console.error(`close`, e)
         writer.flush()
         resolve()
       })
+      .on('SIGCONT', () => console.error('SIGCONT'))
+      .on('SIGINT', () => console.error('SIGINT'))
+      .on('SIGTSTP', () => console.error('SIGTSTP'))
   })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function linesMultibackpressedStdPipeable(
+  pauser: StreamPauser,
+  listener: (line: string, writer: BufferedBackpressWriter) => void,
+) {
+  exitOnStdoutPipeError()
+  return linesBackpressedStd(pauser, listener)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStdPipeable(
   listener: (line: string, writer: BufferedBackpressWriter) => void,
-  pauser = new StreamPauser(process.stdin),
 ) {
   exitOnStdoutPipeError()
-  return linesBackpressedStd(listener, pauser)
+  return linesBackpressedStd(new StreamPauser(process.stdin), listener)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
-  listener: (line: string, writer: BufferedBackpressWriter) => void,
   pauser: StreamPauser,
+  listener: (line: string, writer: BufferedBackpressWriter) => void,
 ) {
-  return linesBackpressed(process.stdin, process.stdout, listener, pauser)
+  return linesBackpressed(process.stdin, process.stdout, pauser, listener)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -274,6 +292,7 @@ export function linesSet(filePath: string) {
 export function exitOnStdoutPipeError(code = 0) {
   process.stdout.on('error', err => {
     if (err.code === 'EPIPE') {
+      // console.error(`exitOnStdoutPipeError at process ${process.pid}`, err)
       process.exit(code)
     }
   })
@@ -307,9 +326,23 @@ export function parseJsonFileSync(filePath: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function write2jsonFile(filePath: string, obj: any) {
+export function writeTojsonFile(filePath: string, obj: any) {
   let json = JSON.stringify(obj)
   fs.writeFileSync(filePath, json)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function writeTojson(writer: { write(what) }, obj: any) {
+  let json = JSON.stringify(obj)
+  return writer.write(json)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function writeTojsonColored(writer: { write(what) }, obj: any) {
+  let objDump = util.inspect(obj, {
+    colors: true,
+  })
+  return writer.write(objDump)
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -356,7 +389,7 @@ export async function writeLines(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function logErrAndExit(e) {
-  console.error(e)
+  // console.error(`logErrAndExit at process ${process.pid}`, e)
   process.exit(1)
 }
 

@@ -24,7 +24,7 @@ let func = moduleObj[funcName]
 
 
 ioArgs(filename1, filename2, async (input, output) => {
-  let writer = new BufferedBackpressWriter(output, input)
+  let writer = BufferedBackpressWriter.fromStreams(output, input)
   try {
     let inputStr: any = await readTillEnd(input)
     if (args.v) {
