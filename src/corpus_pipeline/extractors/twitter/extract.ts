@@ -1,14 +1,13 @@
-import { logErrAndExit, writeLines, linesMultibackpressedStdPipeable } from '../../../utils.node'
+import { logErrAndExit, writeLines, linesMultibackpressedStdPipeable, linesAsync, superLinesStd, linesBackpressedStdPipeable } from '../../../utils.node'
 import { nameFromLoginAtDomain } from '../utils'
 import { toSortableDatetime } from '../../../date'
 import { JsonObjectLogReader } from './json_object_log_reader'
 
 import * as minimist from 'minimist'
-import { plaintext2paragraphsTrimmed } from '../../../nlp/utils'
+import { plaintext2paragraphsTrimmed, normalizeZvidusilParaNondestructive } from '../../../nlp/utils'
 import { conlluStrAndMeta2vertical } from '../../tovert'
 import { UdpipeApiClient } from '../../../nlp/ud/udpipe_api_client'
 import { AsyncTaskRunner } from '../../../async_task_runner'
-import { mapInplace } from '../../../lang'
 import { ZvidusilDocFilter } from '../../filter'
 import { createMorphAnalyzerSync } from '../../../nlp/morph_analyzer/factories.node'
 import { getLibRootRelative } from '../../../lib_path.node'
@@ -18,6 +17,8 @@ import { StreamPauser } from '../../../stream_pauser'
 
 import * as fs from 'fs'
 import * as util from 'util'
+import { prepareZvidusilMeta } from '../../utils';
+import { mapInplace } from '../../../lang';
 
 
 
@@ -69,7 +70,7 @@ interface Args {
   watch: boolean
   filter: boolean
   format: 'glance' | 'conllu' | 'vertical'
-  udpipeUrl: string
+  // udpipeUrl: string
   ruLexicon: string
   filterLog: string
 }
@@ -89,10 +90,11 @@ async function main() {
 
   let analyzer = createMorphAnalyzerSync()
   let reader = new JsonObjectLogReader().setIgnoreErrors()
-  let udpipe = new UdpipeApiClient(args.udpipeUrl)
-  let runner = new AsyncTaskRunner()
+  // let udpipe = new UdpipeApiClient(args.udpipeUrl)
+  // let runner = new AsyncTaskRunner()
   let filter = new ZvidusilDocFilter(analyzer, {
     filterPreviews: false,
+    // filterRuAggressive: true,
   }).setRuLexicon(readStringDawgSync(args.ruLexicon))
   let stdinPauser = new StreamPauser(process.stdin)
   let logWriter = new BufferedBackpressWriter(
@@ -116,7 +118,8 @@ async function main() {
     logWriter.flush()
   }
 
-  await linesMultibackpressedStdPipeable(stdinPauser, async (line, stdoutWriter) => {
+  await linesBackpressedStdPipeable(async line => {
+    // console.error(line)
     let rawObservation = reader.feed(line)
     if (!rawObservation) {
       return
@@ -134,13 +137,14 @@ async function main() {
       return
     }
 
-    let paragraphs = plaintext2paragraphsTrimmed(text)
-
     if (lang !== 'uk') {
       ++nNonUkTweets
       // logRejection(`non-uk`, observation)
       return
     }
+
+    let paragraphs = plaintext2paragraphsTrimmed(text)
+
     if (isTruncated) {
       paragraphs.pop()
     }
@@ -163,7 +167,6 @@ async function main() {
       date: toSortableDatetime(createdAt),
     } as any
 
-    // mapInplace(paragraphs, normalizeParagraph)
 
     if (!paragraphs || !paragraphs.length) {
       logRejection(`Paragraphs are empty or invalid`, observation)
@@ -174,39 +177,17 @@ async function main() {
       return
     }
 
+    mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
     let { docValid, filteredParagraphs, gapFollowerIndexes, message } =
       filter.filter(paragraphs, meta)
 
-    if (!docValid) {
+    if (!docValid || !filteredParagraphs.length) {
       ++nFilteredTweets
       logRejection(`Doc rejected: ${message}`, observation)
       return
     }
 
-    await runner.post(async () => {
-      try {
-        var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
-      } catch {
-        console.error(`Udpipe error for`, filteredParagraphs)
-        return
-      }
-
-      if (args.format === 'vertical') {
-        let vertStream = conlluStrAndMeta2vertical(conllu, {
-          meta,
-          formOnly: true,
-          pGapIndexes: gapFollowerIndexes,
-        })
-        await writeLines(vertStream, stdoutWriter)
-      } else if (args.format === 'conllu') {
-        stdoutWriter.write(conllu)
-        stdoutWriter.write('')
-      }
-
-      if (args.watch) {
-        stdoutWriter.flush()
-      }
-    })
+    console.error(filteredParagraphs, meta)
   })
 
   let stats = {

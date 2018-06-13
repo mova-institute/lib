@@ -29,7 +29,9 @@ const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i'
 
 //------------------------------------------------------------------------------
 const domainsRejectingDoc = [
-  'dovidkam.com'
+  'dovidkam.com',
+  'teremock.com.ua',
+  'wmn.pp.ua',
 ]
 const domainsRejectingDocRe = new RegExp(
   domainsRejectingDoc.map(x => r`\.?${escapeRe(x)}$`).join('|'))
@@ -118,11 +120,12 @@ const urlsRejectingDoc = joinAsReOfLiterals([
 //------------------------------------------------------------------------------
 const defaultOptions = {
   filterPreviews: true,
+  // filterRuAggressive: false,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 export class ZvidusilDocFilter {
-  private ruLexicon: Dawg<string>
+  private ruLexicon?: Dawg<string>
 
   constructor(
     private analyzer = createMorphAnalyzerSync(),
@@ -148,7 +151,7 @@ export class ZvidusilDocFilter {
     let gapFollowerIndexes = new Array<number>()
 
     let { docValid, filteredIndexes, message } = filterParagraphedDoc(
-      paragraphs, meta, this.analyzer, this.options)
+      paragraphs, meta, this.analyzer, this.options, this.ruLexicon)
 
     if (!docValid) {
       return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes, message }
@@ -179,6 +182,7 @@ export function filterParagraphedDoc(
   meta: any,
   analyzer: MorphAnalyzer,
   options = defaultOptions,
+  ruLexicon?: Dawg<string>
 ) {
   if (meta) {
     if (meta.title) {
@@ -308,6 +312,10 @@ export function filterParagraphedDoc(
           }
         }
       }
+    }
+
+    if (ruLexicon) {
+      // naiveSplit
     }
   }
 
