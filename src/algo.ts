@@ -223,10 +223,13 @@ export function uniqueJson<T>(iterable: Iterable<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* findAllIndexes<T>(iterable: Iterable<T>, predicate: (value: T) => boolean) {
+export function* findAllIndexes<T>(
+  iterable: Iterable<T>,
+  predicate: (value: T, index: number) => boolean,
+) {
   let i = 0
   for (let value of iterable) {
-    if (predicate(value)) {
+    if (predicate(value, i)) {
       yield i++
     }
   }

@@ -217,11 +217,11 @@ export function normalizeDiacritics(str: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeDash(form: string, analyzer: MorphAnalyzer) {
   let replaced = form.replace(/[–—―־‑]/g, '-')
-  if (replaced !== form
-    && replaced.length === form.length
-    && analyzer.hasInterps(replaced)
-  ) {
-    return replaced
+  if (replaced !== form && replaced.length === form.length) {
+    let interps = analyzer.tag(replaced)
+    if (interps.length && !interps.some(x => x.isPunctuation())) {
+      return replaced
+    }
   }
   return form
 }
@@ -418,7 +418,11 @@ function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterab
 
 //------------------------------------------------------------------------------
 function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
-  let miw = fillInterpElement(el.document().createElement('w_', NS.mi), el.text(), morphTags)
+  let miw = fillInterpElement(
+    el.document().createElement('w_', NS.mi),
+    el.text(),
+    morphTags
+  )
   el.replace(miw)
   return miw
 }
@@ -505,7 +509,7 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
             miw = tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0)
           } else {
             let next = findNextToken(el)
-            miw = tagWord(el, tagFunction(analyzer.tagOrX(el.text(), next && next.text())))
+            miw = tagWord(el, tagFunction(analyzer.tagOrX(el.attribute('correct') || el.text(), next && next.text())))
           }
         }
         attributes.filter(x => x[0] !== 'lemma' && x[0] !== 'ana')

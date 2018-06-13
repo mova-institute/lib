@@ -321,7 +321,7 @@ export class MorphAnalyzer {
     // dictionary
     let lookupees = varyLetterCases(token)
     let lowercase = lookupees[0]
-    let titlecase = stringUtils.titlecase(lowercase)
+    let titlecase = lowercase.split('-').map(stringUtils.titlecase).join('-')
     if (nextToken === '.') {
       lookupees.push(...lookupees.map(x => x + '.'))
     }

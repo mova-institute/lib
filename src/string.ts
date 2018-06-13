@@ -1,4 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
+export function assureUnicode(re: RegExp) {
+  if (!re.unicode) {
+    re = new RegExp(re, re.flags + 'u')
+  }
+  return re
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function countNumMatches(str: string, re: RegExp) {
   let match = str.match(re)
   if (!match) {
@@ -58,7 +66,7 @@ export function firstMatch(str: string, regex: RegExp, groupIndex = 0) {
 export function allcaps2titlecaseDirty(str: string) {
   return str.split(/\s+/).map(word => {
     if (isAllcaps(word)) {
-      return titlecaseToken(word)
+      return titlecase(word)
     }
     return word
   }).join(' ')
@@ -111,18 +119,8 @@ export function trimExtensions(path: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function titlecaseToken(str: string) {
-  return str[0].toUpperCase() + str.substr(1).toLowerCase()
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function titlecase(str: string, splitter = /[\s\-]\S/g) {
-  let chars = [...str]
-  if (chars.length) {
-    chars[0] = chars[0].toUpperCase()
-  }
-  regexMatchIndexes(str, splitter).forEach(i => chars[i + 1] = chars[i + 1].toUpperCase())
-  return chars.join('')
+export function titlecase(str: string) {
+  return str.substr(0, 1).toUpperCase() + str.substr(1).toLowerCase()
 }
 
 ////////////////////////////////////////////////////////////////////////////////

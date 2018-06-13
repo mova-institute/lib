@@ -57,6 +57,7 @@ async function main() {
     if (!docValid || !filteredParagraphs.length || !meta) {
       writeTojsonColored(filterLogWriter, filterResult)
       filterLogWriter.write('\n')
+      filterLogWriter.flush()
       return
     }
 
@@ -87,8 +88,6 @@ async function main() {
       writeLines(vertStream, stdoutWriter)
     })
   })
-
-  filterLogWriter.flush()  // todo
 }
 
 //------------------------------------------------------------------------------
