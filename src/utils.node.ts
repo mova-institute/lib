@@ -389,7 +389,7 @@ export async function writeLines(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function logErrAndExit(e) {
-  // console.error(`logErrAndExit at process ${process.pid}`, e)
+  console.error(`logErrAndExit at process ${process.pid}`, process.argv, e)
   process.exit(1)
 }
 
