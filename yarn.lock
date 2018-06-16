@@ -128,8 +128,8 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@^10.3.2":
-  version "10.3.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.2.tgz#3840ec6c12556fdda6e0e6d036df853101d732a4"
+  version "10.3.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.3.3.tgz#8798d9e39af2fa604f715ee6a6b19796528e46c3"
 
 "@types/passport-google-oauth@^1.0.38":
   version "1.0.38"
@@ -161,8 +161,8 @@
     "@types/request" "*"
 
 "@types/request@*", "@types/request@^2.47.0":
-  version "2.47.0"
-  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.47.0.tgz#76a666cee4cb85dcffea6cd4645227926d9e114e"
+  version "2.47.1"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.47.1.tgz#25410d3afbdac04c91a94ad9efc9824100735824"
   dependencies:
     "@types/caseless" "*"
     "@types/form-data" "*"
@@ -1301,8 +1301,8 @@ proxy-addr@~2.0.3:
     ipaddr.js "1.6.0"
 
 psl@^1.1.24:
-  version "1.1.27"
-  resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.27.tgz#2b2c77019db86855170d903532400bf71ee085b6"
+  version "1.1.28"
+  resolved "https://registry.yarnpkg.com/psl/-/psl-1.1.28.tgz#4fb6ceb08a1e2214d4fd4de0ca22dae13740bc7b"
 
 punycode@^1.4.1:
   version "1.4.1"
@@ -1399,8 +1399,8 @@ request@^2.87.0:
     uuid "^3.1.0"
 
 resolve@^1.3.2:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.7.1.tgz#aadd656374fd298aee895bc026b8297418677fd3"
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.8.0.tgz#a7f2ac27b78480ecc09c83782741d9f26e4f0c3e"
   dependencies:
     path-parse "^1.0.5"
 
@@ -1669,8 +1669,8 @@ type-is@~1.6.15, type-is@~1.6.16:
     mime-types "~2.1.18"
 
 typescript@^2.9.1:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.1.tgz#fdb19d2c67a15d11995fd15640e373e09ab09961"
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
 
 uid2@0.0.x:
   version "0.0.3"
