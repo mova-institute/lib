@@ -101,7 +101,6 @@ export function* domesticateDictCorpViz(fileStr: string) {
     .filter(x => !/^\s*$/.test(x))
     .map(x => x.replace(/'/g, '’'))
 
-  let expandedStream = expandDictCorpViz(lines)
   for (let lexeme of expandDictCorpViz(lines)) {
     let mustDropNumber = /\snumr:/.test(lexeme[0])
       && lexeme.some(x => /\s.*\b:p\b/.test(x))

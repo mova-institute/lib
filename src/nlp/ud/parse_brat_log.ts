@@ -8,6 +8,7 @@ import * as minimist from 'minimist'
 import * as columnify from 'columnify'
 
 import { getLibRootRelative } from '../../lib_path.node'
+import { Dict } from '../../types'
 // import { toPercent } from '../../string_utils'
 
 
@@ -46,7 +47,8 @@ function main() {
 
     }).on('close', () => {
       let grandTotal = 0
-      let counts = {} as any
+      // tslint:disable-next-line:no-object-literal-type-assertion
+      let counts = {} as Dict<any>
       for (let [arrowId, { user }] of Object.entries(stats).filter(x => x[1])) {
         if (user === undefined) {
           continue

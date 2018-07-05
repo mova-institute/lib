@@ -63,6 +63,24 @@ export function lineBulksAsync(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export async function* lines(readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] }) {
+  let buf = ''
+  for await (let chunk of readable) {
+    buf += chunk
+    let begin = 0
+    let end: number
+    while ((end = buf.indexOf('\n', begin)) >= 0) {
+      yield buf.slice(begin, end)
+      begin = end + 1
+    }
+    buf = buf.slice(begin)
+  }
+  if (buf) {
+    yield buf
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // todo: rerwrite with async iterators once avail
 export function linesAsync(
   readable: NodeJS.ReadableStream,
@@ -309,6 +327,12 @@ export function writeFileSyncMkdirp(filePath: string, value: string) {
 export function openSyncMkdirp(filePath: string, flags: string) {
   mkdirpSync(path.dirname(filePath))
   return fs.openSync(filePath, flags)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function createWriteStreamMkdirpSync(filePath: string) {
+  mkdirpSync(path.dirname(filePath))
+  return fs.createWriteStream(filePath)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

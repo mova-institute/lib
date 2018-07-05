@@ -32,6 +32,7 @@ const domainsRejectingDoc = [
   'dovidkam.com',
   'teremock.com.ua',
   'wmn.pp.ua',
+  'liferules.com.ua',
 ]
 const domainsRejectingDocRe = new RegExp(
   domainsRejectingDoc.map(x => r`\.?${escapeRe(x)}$`).join('|'))

@@ -228,6 +228,7 @@ export function mapInplace<T>(
   for (let i = start; i < array.length; ++i) {
     array[i] = f(array[i])
   }
+  return array
 }
 
 ////////////////////////////////////////////////////////////////////////////////

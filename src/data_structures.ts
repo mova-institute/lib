@@ -197,11 +197,3 @@ export class DefaultMap<K, V> extends Map<K, V> {
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-export class CoolSet<T> extends Set<T> {
-  addAll(iterable: Iterable<T>) {
-    for (let val of iterable) {
-      this.add(val)
-    }
-  }
-}

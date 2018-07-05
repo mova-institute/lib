@@ -1,7 +1,8 @@
 import { mu, Mu } from '../../mu'
-import { DefaultMap, CoolSet } from '../../data_structures'
+import { DefaultMap } from '../../data_structures'
 import { normalizeApostrophes, removeCombiningAccent } from '../utils'
 import { DictValency } from '../morph_features'
+import { CoolSet } from '../../data_structures/cool_set'
 
 
 
