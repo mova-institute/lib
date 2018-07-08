@@ -248,7 +248,7 @@ export function findStringDiffIndexes(str1: string, str2: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function commonPrefixLen(a: string, b: string) {
+export function commonPrefixLen2(a: string, b: string) {
   if (a === b) {
     return a.length
   }
@@ -261,8 +261,28 @@ export function commonPrefixLen(a: string, b: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function commonPrefix(a: string, b: string) {
-  return a.substr(0, commonPrefixLen(a, b))
+export function commonPrefixLen(strings: Array<string>) {
+  let minLen = Math.min(...strings.map(x => x.length))
+
+  outer: for (var ret = 0; ret < minLen; ++ret) {
+    for (let i = 1; i < strings.length; ++i) {
+      if (strings[i - 1][ret] !== strings[i][ret]) {
+        break outer
+      }
+    }
+  }
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function commonPrefix(strings: Array<string>) {
+  return strings[0].substr(0, commonPrefixLen(strings))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function commonPrefix2(a: string, b: string) {
+  return a.substr(0, commonPrefixLen2(a, b))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +296,7 @@ export function commonPrefixDestructive(strings: Array<string>) {
 
   strings.sort()
 
-  return commonPrefix(strings[0], last(strings))
+  return commonPrefix2(strings[0], last(strings))
 }
 
 ////////////////////////////////////////////////////////////////////////////////

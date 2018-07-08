@@ -13,6 +13,7 @@ export type Structure =
   | 'sentence'
   | 'stanza'
   | 'line'
+  | 'coref-split'
 
 export type TokenTag =
   | 'bad'
@@ -43,6 +44,12 @@ export interface Dependency {
   headIndex?: number
 }
 
+export interface Coreference {
+  type: string
+  headId: string
+  // headIndex?: number
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export class Token {
   private structure?: Structure
@@ -55,6 +62,8 @@ export class Token {
   gluedNext: boolean
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
+  corefs = new Array<Coreference>()
+  // corefs2 = new Array<Coreference>()
   tags = new Array<TokenTag>()
   index: number
 
@@ -128,6 +137,10 @@ export class Token {
     return this.structure === 'sentence' && this.closing
   }
 
+  isDocumentStart() {
+    return this.structure === 'document' && !this.isClosing()
+  }
+
   isSentenceStartDeprecated() {
     return (this.structure === 'sentence' || this.structure === 'paragraph')
       && !this.closing
@@ -135,6 +148,9 @@ export class Token {
 
   isGlue() { return this.type === 'glue' }
   isClosing() { return this.closing }
+  isClosingStructure(name: Structure) {
+    return this.isClosing() && (!name || this.getStructureName() === name)
+  }
 
   interp0() {
     return this.interps[0]

@@ -48,7 +48,7 @@ export class Mu<T> implements Iterable<T> {
   }
 
   chunk(n: number) {
-    let buf: Array<T> = []
+    let buf = new Array<T>()
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
@@ -65,7 +65,7 @@ export class Mu<T> implements Iterable<T> {
   }
 
   chunkByMax(n: number, lengther: (x: T) => number) {
-    let buf: Array<T> = []
+    let buf = new Array<T>()
     let curLength = 0
     const thiss = this
     return mu((function* () {
@@ -86,21 +86,25 @@ export class Mu<T> implements Iterable<T> {
   }
 
   split(fn: Predicate<T>) {
-    let buf: Array<T> = []
+    let buf = new Array<T>()
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
         if (fn(x)) {
-          yield buf
+          yield [buf, x] as [Array<T>, T]
           buf = []
         } else {
           buf.push(x)
         }
       }
       if (buf.length) {
-        yield buf
+        yield [buf, undefined] as [Array<T>, T]
       }
     })())
+  }
+
+  split0(fn: Predicate<T>) {
+    return this.split(fn).map(x => x[0])
   }
 
   window(n: number, focus = 0) {
@@ -242,7 +246,7 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
-  pluck<MappedT>(prop: string) {
+  pluck<MappedT>(prop: string | number) {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {

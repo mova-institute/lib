@@ -5,13 +5,12 @@ import * as path from 'path'
 import * as algo from '../../algo'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync, writeTojsonFile } from '../../utils.node'
-import { isString, last } from '../../lang'
+import { isString } from '../../lang'
 import { trimExtension } from '../../string'
 import { firstMatch } from '../../string'
-import { serializeMiDocument } from '../../nlp/utils'
+import { serializeMiDocument } from '../utils'
 import { parseBratFile } from './utils'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
-import { toSortableDatetime } from '../../date'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
@@ -21,7 +20,7 @@ import groupby = require('lodash.groupby')
 
 //------------------------------------------------------------------------------
 function main() {
-  const now = toSortableDatetime(new Date())
+  // const now = toSortableDatetime(new Date())
 
   const args = minimist(process.argv.slice(2), {
     boolean: [
@@ -30,16 +29,19 @@ function main() {
 
   let [goldenDir, bratGlob] = args._
   let allBratFiles = glob.sync(bratGlob)
-  let bratFilesRoot = algo.commonPrefix(allBratFiles[0], last(allBratFiles))
-  let bratFilesGrouped = groupby(allBratFiles, x => firstMatch(x, /\/([^/]+)\/\d+\.ann$/, 1))
+  let bratFilesRoot = algo.commonPrefix(allBratFiles).slice(0, -1)
+  let allSyntBratFiles = allBratFiles.filter(x => x.substr(bratFilesRoot.length).startsWith('/ud/'))
+  let allCorefBratFiles = allBratFiles.filter(x => x.substr(bratFilesRoot.length).startsWith('/coref/'))
+  let syntBratFilesGrouped = groupby(allSyntBratFiles, x => firstMatch(x, /\/([^/]+)\/\d+\.ann$/, 1))
+  let corefBratFilesGrouped = groupby(allCorefBratFiles, x => firstMatch(x, /([^/]+)\/[^/]+\.ann$/, 1))
 
   let id2bratPath = {} as any
-  for (let [bratName, bratFiles] of Object.entries(bratFilesGrouped)) {
+  for (let [bratName, syntBratFiles] of Object.entries(syntBratFilesGrouped)) {
     let xmlFile = path.join(goldenDir, `${bratName}.xml`)
     if (!fs.existsSync(xmlFile)) {
-      // throw new Error(`No xml file to adopt in: "${xmlFile}"`)
-      console.error(`No xml file to adopt in: "${xmlFile}"`)
-      continue
+      throw new Error(`No xml file to adopt in: "${xmlFile}"`)
+      // console.error(`No xml file to adopt in: "${xmlFile}"`)
+      // continue
     }
     console.log(`adopting ${path.basename(xmlFile)}`)
     let root = parseXmlFileSync(xmlFile)
@@ -48,7 +50,7 @@ function main() {
       root.evaluateElements('//*[@id]')
         .map(x => [x.attribute('id'), x] as [string, AbstractElement]))
 
-    for (let bratFile of bratFiles) {
+    for (let bratFile of syntBratFiles) {
       for (let span of parseBratFile(linesSync(bratFile))) {
         if (isString(span.annotations.N)) {
           let el = n2element.get(span.annotations.N)
@@ -77,6 +79,23 @@ function main() {
         }
       }
     }
+
+    // todo: dedup
+    let corefBratFiles = corefBratFilesGrouped[bratName]
+    for (let bratFile of corefBratFiles) {
+      for (let span of parseBratFile(linesSync(bratFile))) {
+        let el = n2element.get(span.annotations.N)
+        if (!el) {  // sometimes tokens are deleted in xml but remain in brat
+          continue
+        }
+        el.setAttribute('comment-coref', span.comment)
+        let coref = span.arcs
+          .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
+          .join('|') || undefined
+        el.setAttribute('coref', coref)
+      }
+    }
+
     fs.writeFileSync(xmlFile, serializeMiDocument(root))
     if (args.id2bratPath) {
       writeTojsonFile(args.id2bratPath, id2bratPath)

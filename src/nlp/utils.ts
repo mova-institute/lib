@@ -446,7 +446,8 @@ export function isRegularizedFlowElement(el: AbstractElement) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(root: AbstractElement,
-  elementsOfInterest = new Set(['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g', 'sb', 'doc', 'gap'])) {
+  elementsOfInterest = new Set(
+    ['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g', 'sb', 'doc', 'gap', 'coref-split'])) {
   return mu((function* () {
     let iterator = traverseDepthGen2(root)
     let pointer = iterator.next()
@@ -1013,8 +1014,8 @@ const structureElementName2type = new Map<string, Structure>([
   ['p', 'paragraph'],
   ['lg', 'stanza'],
   ['l', 'line'],
-  // ['s', 'sentence'],
   ['gap', 'gap'],
+  ['coref-split', 'coref-split'],
   // ['', ''],
 ])
 
@@ -1087,6 +1088,14 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
             .map(([head, relation]) => ({ headId: head, relation }))
           tok.deps = deps
         }
+
+        let corefStr = el.attribute('coref')
+        if (corefStr) {
+          tok.corefs = corefStr.split('|')
+            .map(x => x.split('-'))
+            .map(([head, type]) => ({ headId: head, type }))
+        }
+
         tok.tags.push(...(el.attribute('tags') || '').split(/\s+/g).filter(x => x) as Array<TokenTag>)
         tok.tags.push(...(el.attribute('comment') || '')
           .split(/\s+/g).filter(x => x.startsWith('#')).map(x => x.substr(1)) as Array<TokenTag>)

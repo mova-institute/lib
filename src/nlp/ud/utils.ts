@@ -201,6 +201,58 @@ export function* tokenStream2brat(sentences: Array<Array<Token>>) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
+  let offset = 0
+  let t = 1
+  let a = 1
+  let commentN = 1
+  let n2id = {} as any
+  for (let sentence of sentences) {
+    for (let token of sentence) {
+      if (token.isStructure()) {
+        continue
+      }
+
+      if (token.id === undefined) {
+        console.error(token)
+        throw new Error(`Token has no id`)
+      }
+
+      let id = t++
+      let tId = `T${id}`
+      let rightOffset = offset + token.form.length
+
+      let { pos, features } = toUd(token.interp)
+      let pronType = features['PronType']
+      if (pronType) {
+        pos += `_${pronType}`
+      }
+
+      yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
+
+      n2id[token.id] = id
+      yield `A${a++}\tN ${tId} ${token.id}`
+      let comment = token.getAttribute('comment-coref')
+      if (comment) {
+        yield `#${commentN++}\tAnnotatorNotes ${tId}\t${comment}`
+      }
+      offset = rightOffset + 1    // account for space
+    }
+  }
+
+  let rId = 1
+  for (let sentence of sentences) {
+    for (let token of sentence) {
+      for (let dep of token.corefs) {
+        let head = n2id[dep.headId]
+        let dependant = n2id[token.id]
+        yield `R${rId++}\t${dep.type.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
+      }
+    }
+  }
+}
+
 //------------------------------------------------------------------------------
 function mustHighlightHoles(sentence: Array<Token>) {
   let numRoots = mu(sentence).count(x => !x.hasDeps())

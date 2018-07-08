@@ -599,6 +599,14 @@ async function main() {
             }
           }
 
+          // for (let coref of token.corefs) {
+          //   let newTokEl = id2el.get(coref.headId)
+          //   let newTok = mu(mixml2tokenStream(newTokEl)).first()
+          //   // console.error(newTok)
+          //   newTok.corefs2.push({ headId: token.id, type: coref.type })
+          //   saveToken(newTok, newTokEl)
+          // }
+
           // if (interp.isUninflectable()) {
           //   let form = token.form
           //   if (interp.isAbbreviation() && interp.lemma.endsWith('.') && !form.endsWith('.')) {
@@ -660,6 +668,10 @@ function saveToken(token: Token, element: AbstractElement) {
   let dep = token.deps.map(x => `${x.headId}-${x.relation}`).join('|')
   if (dep) {
     element.setAttribute('dep', dep)
+  }
+  let coref = token.corefs.map(x => `${x.headId}-${x.type}`).join('|')
+  if (coref) {
+    element.setAttribute('coref', coref)
   }
 }
 

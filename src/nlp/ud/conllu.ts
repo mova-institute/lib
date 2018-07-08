@@ -64,7 +64,7 @@ export function parseConlluSentences(lines: Iterable<string>) {
   return mu(streamparseConllu(lines))
     .filter(x => !x.structure || x.structure.type === Structure.sentence && !x.structure.opening)
     .map(x => x.structure ? undefined : x.token)
-    .split(x => !x)
+    .split0(x => !x)
     .filter(x => x.length)
 }
 

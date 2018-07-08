@@ -704,7 +704,7 @@ export class MorphInterp {
     return ret
   }
 
-  cloneWithFeaturesAndLemma(features: Array<Feature>) {
+  cloneWithFeaturesAndLemma(features: Array<any>) {
     return this.cloneWithFeatures(features).setLemma(this.lemma)
   }
 
