@@ -3,7 +3,7 @@
 import { forEachLine } from '../../utils.node'
 import { canBeConlluLine } from './utils'
 import { toUdString } from './tagset'
-import { MorphInterp } from '../../nlp/morph_interp'
+import { MorphInterp } from '../morph_interp'
 
 if (require.main === module) {
   main()

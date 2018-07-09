@@ -12,12 +12,13 @@ export class ApiClient {
 
   constructor(
     private udpipeEndpoint: string,
-    private tdozatEndpoint: string,
+    private udpipeModel: string,
+    // private tdozatEndpoint: string,
     private agent = new Agent({
       keepAlive: true,
     }),
   ) {
-    this.udpipeClient = new UdpipeApiClient(udpipeEndpoint)
+    this.udpipeClient = new UdpipeApiClient(udpipeEndpoint, udpipeModel)
   }
 
   // (looses comments)

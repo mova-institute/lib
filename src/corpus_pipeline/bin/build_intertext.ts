@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { logErrAndExit, linesSync } from '../../utils.node'
+import { logErrAndExit, linesSync, writeFileSyncMkdirp } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
@@ -71,6 +71,17 @@ const langMetas = indexTableByColumn([
     // nonwordre: '',
   },
   {
+    code: 'pt',
+    ukName: 'португальська',
+    ukNameGen: 'португальської',
+    ukNameDat: 'португальській',
+    ukNameMasc: 'португальський',
+    ukAbbr: 'пор',
+    name: 'Portuguese',
+    locale: 'pt_PT',
+    // nonwordre: '',
+  },
+  {
     code: 'de',
     ukName: 'німецька',
     ukNameGen: 'німецької',
@@ -90,6 +101,16 @@ const langMetas = indexTableByColumn([
     ukAbbr: 'англ',
     name: 'English',
     locale: 'en_US',
+  },
+  {
+    code: 'es',
+    ukName: 'іспанська',
+    ukNameGen: 'іспанської',
+    ukNameDat: 'іспанській',
+    ukNameMasc: 'іспанський',
+    ukAbbr: 'ісп',
+    name: 'Spanish',
+    locale: 'es_ES',
   },
   {
     code: 'se',
@@ -266,15 +287,15 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
       let message = `Intertext id "${intertextId}" is missing from the meta table`
       // throw new Error(message)
       console.error(message)
-      continue
+      // continue
     }
-    let metaRecord = metaTable.get(intertextId)
+    let metaRecord = metaTable.get(intertextId) || {}
     if (!metaRecord['title_uk']) {
       console.error(`title_uk is missing from ${intertextId} meta`)
     }
     if (!metaRecord['original_language']) {
       let message = `original_language is missing from ${intertextId} meta`
-      throw new Error(message)
+      // throw new Error(message)
       // console.error(message)
     }
     // console.error(metaRecord)
@@ -300,7 +321,10 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
         ]),
         is_original: yesNoUk(metaRecord['original_language'] === lang),
       }
-      meta['original_language'] = langMetas.get(meta['original_language']).ukName
+
+      if (meta['original_language']) {
+        meta['original_language'] = langMetas.get(meta['original_language']).ukName
+      }
 
       let vertStream = conlluStrAndMeta2vertical(conllu, {
         meta: meta as any,
@@ -321,15 +345,15 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
   console.error(`Generating registry files…`)
 
   let alignmentSketchDir = 'alignment-sketch'
-  let registry = process.env['MANATEE_REGISTRY']
+  let registry = 'registry'//process.env['MANATEE_REGISTRY']
   if (!registry) {
     throw new Error(`MANATEE_REGISTRY env var not set`)
   }
   for (let [lang, alignedLang] of langPairs) {
     let corporaId = `${lang}_${alignedLang}`
 
-    let langMeta = langMetas.get(lang)
-    let alignedLangMeta = langMetas.get(alignedLang)
+    let langMeta = langMetas.get(lang) || {}
+    let alignedLangMeta = langMetas.get(alignedLang) || {}
     if (!langMeta || !alignedLangMeta) {
       throw new Error(`Missing lang meta for "${lang}" or "${alignedLangMeta}`)
     }
@@ -377,7 +401,7 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
     registryFile += registryStructures
     registryFile += STRUCTURE_G
 
-    fs.writeFileSync(path.join(registry, corporaId), registryFile)
+    writeFileSyncMkdirp(path.join(registry, corporaId), registryFile)
   }
 
   console.error(`Indexing corpora…`)
@@ -385,7 +409,7 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
   for (let [lang, alignedLang] of langPairs) {
     let corporaId = `${lang}_${alignedLang}`
     console.error(`Indexing ${corporaId}…`)
-    execSync(`compilecorp --recompile-corpus --no-ske --no-align ${corporaId}`, {
+    execSync(`MANATEE_REGISTRY="${registry}" compilecorp --recompile-corpus --no-ske --no-align ${corporaId}`, {
       // stdio: 'inherit'
     })
   }
@@ -431,7 +455,7 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
   console.error(`Aligning corpora…`)
 
   mu(langPairs).map(([lang, alignedLang]) => `${lang}_${alignedLang}`)
-    .forEach(x => execSync(`compilecorp --no-ske --recompile-align ${x}`, { stdio: 'inherit' }))
+    .forEach(x => execSync(`MANATEE_REGISTRY="${registry}" compilecorp --no-ske --recompile-align ${x}`))
 }
 
 //------------------------------------------------------------------------------

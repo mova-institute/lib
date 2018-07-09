@@ -2,7 +2,12 @@
 
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { ZvidusilDocFilter } from '../filter'
-import { writeLines, writeTojsonColored, logErrAndExit, linesAsync } from '../../utils.node'
+import {
+  writeLines, writeTojsonColored,
+  logErrAndExit, linesAsync,
+  createWriteStreamMkdirpSync,
+  lines,
+} from '../../utils.node'
 import { renprop, mapInplace } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
@@ -14,8 +19,9 @@ import { prepareZvidusilMeta } from '../utils'
 import { BufferedBackpressWriter } from '../../backpressing_writer'
 import { StreamPauser } from '../../stream_pauser'
 
-import * as fs from 'fs'
 import { AsyncTaskRunner } from '../../async_task_runner'
+// import { ObjApiClient } from '../../object_api_client'
+// import { hashStringLatin1 } from '../../crypto';
 
 
 
@@ -24,7 +30,9 @@ interface Args {
   udpipeUrl: string
   udpipeModel: string
   udpipeConcurrency?: number
+  outFile?: string
   filterLog: string
+  seenDocsSocket: string
 }
 
 //------------------------------------------------------------------------------
@@ -36,18 +44,32 @@ async function main() {
   let analyzer = createMorphAnalyzerSync()
   let filter = new ZvidusilDocFilter(analyzer)
   let udpipe = new UdpipeApiClient(args.udpipeUrl, args.udpipeModel)
-  let logStream = fs.createWriteStream(args.filterLog)
+  let logStream = createWriteStreamMkdirpSync(args.filterLog)
   let stdinPauser = new StreamPauser(process.stdin)
-  let stdoutWriter = new BufferedBackpressWriter(process.stdout, stdinPauser)
+  let outStream = args.outFile ? createWriteStreamMkdirpSync(args.outFile) : process.stdout
+  let outWriter = new BufferedBackpressWriter(outStream, stdinPauser)
   let filterLogWriter = new BufferedBackpressWriter(logStream, stdinPauser)
+  // let seenUrls = new ObjApiClient(args.seenDocsSocket)
 
-  await linesAsync(process.stdin, stdinPauser, async (line) => {
+  for await (let line of lines(process.stdin)) {
+  // await linesAsync(process.stdin, stdinPauser, async (line) => {
     let doc = docBuilder.feedLine(line)
     if (!doc) {
       return
     }
-
     let { meta, paragraphs } = doc
+    // {
+    //   let hash = hashStringLatin1(meta.url).substr(0, 6)
+    //   let isDuplicateDoc = await seenUrls.call('addHas', [hash])
+    //   if (!isDuplicateDoc) {
+    //     writeTojsonColored(filterLogWriter, {
+    //       docValid: false,
+    //       message: `duplicate url: ${meta.url}`,
+    //       meta,
+    //     })
+    //     return
+    //   }
+    // }
 
     mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
 
@@ -85,10 +107,13 @@ async function main() {
           pGapIndexes: gapFollowerIndexes,
         })
 
-      writeLines(vertStream, stdoutWriter)
+      writeLines(vertStream, outWriter)
     })
-  })
+  }
+  filterLogWriter.flush()
+  outWriter.flush()
 }
+
 
 //------------------------------------------------------------------------------
 function normalizeMeta(meta) {

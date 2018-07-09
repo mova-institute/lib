@@ -4,11 +4,11 @@ import { sync as globSync } from 'glob'
 import { mu } from '../mu'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { linesStreamSync } from '../utils.node'
-import { mixml2tokenStream } from '../nlp/utils'
+import { mixml2tokenStream } from './utils'
 import { iterateDictCorpVizLines } from './vesum'
 import { NS } from '../xml/utils'
 import { startsWithCapital } from '../string'
-import { MorphInterp } from '../nlp/morph_interp'
+import { MorphInterp } from './morph_interp'
 import { sync as mkdirpSync } from 'mkdirp'
 
 

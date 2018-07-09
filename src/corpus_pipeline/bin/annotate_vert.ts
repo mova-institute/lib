@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { exitOnStdoutPipeError, linesAsyncStd } from '../../utils.node'
+import { exitOnStdoutPipeError, lines as linesIt } from '../../utils.node'
 import { AsyncTaskRunner } from '../../async_task_runner'
 import { Vert2conlluBuilder } from '../vert2conllu_builder'
 import { mu, Mu } from '../../mu'
@@ -15,6 +15,7 @@ import { BufferedBackpressWriter } from '../../backpressing_writer'
 import * as minimist from 'minimist'
 
 import * as os from 'os'
+import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client';
 
 
 
@@ -22,6 +23,7 @@ interface Args {
   udpipeUrl: string
   tdozatUrl: string
   udpipeConcurrency?: number
+  udpipeModel?: string
 }
 
 //------------------------------------------------------------------------------
@@ -32,13 +34,14 @@ async function main() {
   args.udpipeConcurrency = args.udpipeConcurrency || Math.max(1, os.cpus().length - 1)
 
   let builder = new Vert2conlluBuilder()
-  let api = new ApiClient(args.udpipeUrl, args.tdozatUrl)
+  let udpipe = new UdpipeApiClient(args.udpipeUrl, args.udpipeModel)
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
   let analyzer = createMorphAnalyzerSync()
-  let writer = BufferedBackpressWriter.fromStreams(process.stdout, process.stdin)
+  let writer = BufferedBackpressWriter.fromStreams(process.stdin, process.stdout)
 
   let lines = new Array<string>()
-  await linesAsyncStd(async (line/* , writer */) => {
+  for await (let line of linesIt(process.stdin)) {
+    // await linesAsyncStd(async (line/* , writer */) => {
     if (!line) {
       return
     }
@@ -49,7 +52,9 @@ async function main() {
       lines = []
       await runner.post(async () => {
         try {
-          var conllu = await api.tagParseConnluLines(inputAsConllu)
+          var conllu = mu((await udpipe.tagParseConnluLines(inputAsConllu)).split('\n'))
+            .filter(x => /^\d/.test(x))
+            .map(x => x.split('\t'))
           var taggedVert = mergeConlluIntoVert(myLines, conllu, analyzer)
           writer.write(taggedVert)
         } catch (e) {
@@ -59,7 +64,7 @@ async function main() {
         }
       })
     }
-  })
+  }
   writer.flush()
 }
 

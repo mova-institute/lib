@@ -7,6 +7,9 @@ export const udpipeApiLangMap = {
   'de': {
     model: 'german-ud-2.0-170801',
   },
+  'du': {
+    model: 'dutch-ud-2.0-170801',
+  },
   'cs': {
     model: 'czech-ud-2.0-170801',
   },
@@ -23,18 +26,20 @@ export const udpipeApiLangMap = {
     model: 'polish-ud-2.0-170801',
   },
   'pt': {
-    url: 'https://api.mova.institute/udpipe/process',
-    model: 'pt',
+    // url: 'https://api.mova.institute/udpipe/process',
+    model: 'portuguese-ud-2.0-170801',
   }
 }
 
 let langsServedByUfal = [
   'de',
+  'du',
   'cs',
   'en',
   'es',
   'fr',
   'pl',
+  'pt',
 ]
 
 langsServedByUfal.forEach(x => udpipeApiLangMap[x].url =
