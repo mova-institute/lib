@@ -1,4 +1,4 @@
-import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
+import { MorphAnalyzer } from './morph_analyzer'
 import { WordDawgPayload } from '../dictionary/word_dawg_payload'
 import { Dictionary } from '../dictionary/dictionary'
 

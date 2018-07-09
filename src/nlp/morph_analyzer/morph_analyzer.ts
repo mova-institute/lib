@@ -19,6 +19,15 @@ import * as stringUtils from '../../string'
 import * as tlds from 'tlds'
 
 
+const adHocDict = new Map([
+  ['"', ['punct:quote']],
+  ['…', ['punct:ellipsis']],
+  ['...', ['punct:ellipsis']],
+  ['-', ['punct:hyphen', 'punct:dash', 'punct:ndash']],
+  ['–', ['punct:hyphen', 'punct:dash', 'punct:ndash']],
+  ['—', ['punct:hyphen', 'punct:dash', 'punct:ndash']],
+  // ['', ['']],
+])
 
 const DOMAIN_AS_NAME = new RegExp(r`^\w+\.(${tlds.join('|')})$`)
 
@@ -208,6 +217,11 @@ const PREFIX_SPECS = [
     postprocess: postrpocessPerfPrefixedVerb,
   },
   {
+    prefixes: ['не'],
+    pretest: (x: string) => x.length > 4,
+    test: (x: MorphInterp) => x.isVerbial2(),
+  },
+  {
     prefixes: ['за', 'пере'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerb(),
@@ -291,6 +305,10 @@ export class MorphAnalyzer {
     token = token.replace(/\u0301/g, '')  // kill stress
     if (!token.length) {
       return []
+    }
+
+    if (adHocDict.has(token)) {
+      return adHocDict.get(token).map(x => MorphInterp.fromVesumStr(x, token))
     }
 
     // regexes returning immediately
@@ -692,7 +710,7 @@ export class MorphAnalyzer {
   }
 
   private *fromPrefixes(lowercase: string, fromDict: HashSet<any>) {
-    for (let { prefixes, prefixesRegex, pretest, test, postprocess } of PREFIX_SPECS as any) {
+    for (let { prefixes, prefixesRegex, pretest, test, postprocess } of PREFIX_SPECS) {
       if (pretest && !pretest(lowercase)) {
         continue
       }
@@ -706,6 +724,7 @@ export class MorphAnalyzer {
       } else {
         matchedPrefixes = prefixes.filter(x => lowercase.startsWith(x))
       }
+      // console.error(matchedPrefixes)
 
       for (let prefix of matchedPrefixes) {
         for (let interp of this.lookup(lowercase.substr(prefix.length))) {

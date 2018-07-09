@@ -863,7 +863,7 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
 }
 
 //==============================================================================
-const ALLOWED_TO_BE_EMPTY = ['g', 'sb', 'gap', 'br']
+const ALLOWED_TO_BE_EMPTY = ['g', 'sb', 'gap', 'br', 'coref-split']
 function killEmptyElements(root: AbstractElement) {
   mu(root.evaluateElements(`//*[not(normalize-space())]`))
     .filter(x => !ALLOWED_TO_BE_EMPTY.includes(x.localName()))

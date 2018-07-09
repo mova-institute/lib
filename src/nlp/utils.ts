@@ -510,7 +510,12 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
             miw = tagWord(el, [{ lemma: el.text(), flags: 'x:foreign' }]).setAttribute('disamb', 0)
           } else {
             let next = findNextToken(el)
-            miw = tagWord(el, tagFunction(analyzer.tagOrX(el.attribute('correct') || el.text(), next && next.text())))
+            let [tagAsLemma, tagAsForm] = (el.attribute('as') || '').split('/')  // todo
+            let interps = analyzer.tagOrX(tagAsForm || el.attribute('correct') || el.text(), next && next.text())
+            if (tagAsLemma) {
+              interps.forEach(x => x.lemma = tagAsLemma)
+            }
+            miw = tagWord(el, tagFunction(interps))
           }
         }
         attributes.filter(x => x[0] !== 'lemma' && x[0] !== 'ana')
