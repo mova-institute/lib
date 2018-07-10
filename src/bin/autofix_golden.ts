@@ -14,6 +14,7 @@ import { Token } from '../nlp/token'
 import {
   serializeMiDocument, tokenStream2sentences, mixml2tokenStream,
   tokenStream2plaintextString,
+  createTokenElement,
 } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
@@ -30,12 +31,17 @@ import * as g2 from '../nlp/uk_grammar'
 import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
-import { sleep } from '../lang'
+import { LibxmljsElement } from '../xml/xmlapi_libxmljs/libxmljs_element';
 
 
 
+//------------------------------------------------------------------------------
 const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
 
+//------------------------------------------------------------------------------
+interface Args {
+
+}
 
 // temp
 const KNOWN_NONDIC_LEMMAS = new Set([
@@ -46,19 +52,8 @@ const KNOWN_NONDIC_LEMMAS = new Set([
 ])
 
 //------------------------------------------------------------------------------
-function prepareIds(path: string) {
-  return new Set(fs.readFileSync(path, 'utf8')
-    .trim()
-    .split(/\n+/g)
-    .map(x => x.trim())
-    .filter(x => !x.startsWith('#'))
-    .join(' ')
-    .split(/\s+/g))
-}
-
-//------------------------------------------------------------------------------
 async function main() {
-  let args = minimist(process.argv.slice(2), {
+  let args = minimist<Args>(process.argv.slice(2), {
     boolean: [
       'tranformIds',
       'afterAnnotator',
@@ -67,14 +62,6 @@ async function main() {
   let [globStr, sequencePath] = args._
   let files = glob.sync(globStr)
   let tokenCount = 0
-
-  if (args.tranformIds) {
-    var ids = prepareIds(path)
-  }
-
-  if (args.tranformIdsInline) {
-    ids = new Set(args.tranformIdsInline.trim().split(/\s+/g))
-  }
 
   let idSequence: number
   if (fs.existsSync(sequencePath)) {
@@ -90,8 +77,8 @@ async function main() {
 
   console.log(`applying autofixes…`)
 
-  const dict = createDictionarySync()
-  const analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
+  let dict = createDictionarySync()
+  let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
 
   for (let file of files) {
     try {
@@ -102,7 +89,7 @@ async function main() {
       killEmptyElements(root)
       insertSb(root)
       swapSb(root)
-      await addDocMeta(root)
+      // await addDocMeta(root)
       // renameStructures(root)
 
       {
@@ -126,94 +113,104 @@ async function main() {
       }
 
       // do safe transforms
-      let interpEls = root.evaluateElements('//w_/w')
-      for (let interpEl of interpEls) {
-        // continue
-        let form = interpEl.text() as string  // todo: remove as
-        let tag = interpEl.attribute('ana')
-        let lemma = interpEl.attribute('lemma')
-        if (!tag || !lemma) {
-          throw new Error(`No tag/lemma for ${form}`)
-        }
-        let interp: MorphInterp
-        try {
-          interp = MorphInterp.fromVesumStr(
-            interpEl.attribute('ana'), interpEl.attribute('lemma'), undefined, true)
-        } catch (e) {
-          console.error(e.message)
-          continue
-        }
-
-        let interpsInDict = analyzer.tag(form)
-        let presentInDict = interpsInDict.some(dictInterp => dictInterp.featurewiseEquals(interp))
-        // console.log(presentInDict)
-        if (!presentInDict) {
-          // negativity
-          let newInterp = interp.clone().setIsNegative()
-          if (interpsInDict.some(x => x.featurewiseEquals(newInterp))) {
-            interp = newInterp
+      interpLoop:
+      while (true) {
+        let interpEls = root.evaluateElements('//w_/w')
+        for (let interpEl of interpEls) {
+          // continue
+          let form = interpEl.text() as string  // todo: remove as
+          let tag = interpEl.attribute('ana')
+          let lemma = interpEl.attribute('lemma')
+          if (!tag || !lemma) {
+            throw new Error(`No tag/lemma for ${form}`)
           }
-        }
-
-        // advp lemmas
-        if (interp.isConverb()) {
-          let dictInterps = analyzer.tag(form).filter(x => x.isConverb)
-          if (dictInterps.length) {
-            interp.lemma = dictInterps[0].lemma
+          let interp: MorphInterp
+          try {
+            interp = MorphInterp.fromVesumStr(
+              interpEl.attribute('ana'), interpEl.attribute('lemma'), undefined, true)
+          } catch (e) {
+            console.error(e.message)
+            continue
           }
-        }
 
-        // adj as noun lemmas
-        let lemma2 = interpEl.attribute('lemma2')
-        if (interp.isAdjectiveAsNoun() && !lemma2) {
-          let adjLemma = lemma2 || interp.lemma
-          interpEl.setAttribute('lemma2', adjLemma)
-          let lexeme = dict.lookupLexemesByLemma(adjLemma)
-            .find(([{ flags }]) => MorphInterp.fromVesumStr(flags).isAdjective())
-          if (lexeme) {
-            let nounLemma =
-              lexeme.find(({ flags }) => {
-                let cursor = MorphInterp.fromVesumStr(flags)
-                let ret = !cursor.isUncontracted()
-                  && ((cursor.isPlural() && cursor.features.number === interp.features.number)
-                    || cursor.features.gender === interp.features.gender)
-                return ret
-              })
-            if (nounLemma) {
-              interp.lemma = nounLemma.form
-            } else {
-              console.log(`Nothingo ${interp.lemma}`)
-              // console.log(`Nothingo ${interp.lemma}`)
+          let interpsInDict = analyzer.tag(form)
+          let presentInDict = interpsInDict.some(dictInterp => dictInterp.featurewiseEquals(interp))
+          // console.log(presentInDict)
+          if (!presentInDict) {
+            // negativity
+            let newInterp = interp.clone().setIsNegative()
+            if (interpsInDict.some(x => x.featurewiseEquals(newInterp))) {
+              interp = newInterp
             }
-          } else if (!interp.isOrdinalNumeral() && !KNOWN_NONDIC_LEMMAS.has(interp.lemma)) {
-            console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
           }
-        }
 
-        if (lemma2 && !interp.isAdjectiveAsNoun()) {
-          interp.lemma = lemma2
-          interpEl.removeAttribute('lemma2')
-        }
-
-        if (interp.isVerb() && interp.lemma === 'бути') {
-          let dep = interpEl.parent().attribute('dep')
-          if (dep && /\-(aux|cop)$/.test(dep)) {
-            interp.setIsAuxillary()
+          // split fused pronominals
+          if (interp.isEmphatic()) {
+            splitFusedProns(form, interp, interpEl, analyzer)
+            continue interpLoop
           }
+
+          // advp lemmas
+          if (interp.isConverb()) {
+            let dictInterps = analyzer.tag(form).filter(x => x.isConverb)
+            if (dictInterps.length) {
+              interp.lemma = dictInterps[0].lemma
+            }
+          }
+
+          // adj as noun lemmas
+          let lemma2 = interpEl.attribute('lemma2')
+          if (interp.isAdjectiveAsNoun() && !lemma2) {
+            let adjLemma = lemma2 || interp.lemma
+            interpEl.setAttribute('lemma2', adjLemma)
+            let lexeme = dict.lookupLexemesByLemma(adjLemma)
+              .find(([{ flags }]) => MorphInterp.fromVesumStr(flags).isAdjective())
+            if (lexeme) {
+              let nounLemma =
+                lexeme.find(({ flags }) => {
+                  let cursor = MorphInterp.fromVesumStr(flags)
+                  let ret = !cursor.isUncontracted()
+                    && ((cursor.isPlural() && cursor.features.number === interp.features.number)
+                      || cursor.features.gender === interp.features.gender)
+                  return ret
+                })
+              if (nounLemma) {
+                interp.lemma = nounLemma.form
+              } else {
+                console.log(`Nothingo ${interp.lemma}`)
+                // console.log(`Nothingo ${interp.lemma}`)
+              }
+            } else if (!interp.isOrdinalNumeral() && !KNOWN_NONDIC_LEMMAS.has(interp.lemma)) {
+              console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
+            }
+          }
+
+          if (lemma2 && !interp.isAdjectiveAsNoun()) {
+            interp.lemma = lemma2
+            interpEl.removeAttribute('lemma2')
+          }
+
+          if (interp.isVerb() && interp.lemma === 'бути') {
+            let dep = interpEl.parent().attribute('dep')
+            if (dep && /\-(aux|cop)$/.test(dep)) {
+              interp.setIsAuxillary()
+            }
+          }
+
+          // advps without tense
+          g.setTenseIfConverb(interp, form)
+
+          // if (isNoninfl(interp)) {
+          //   let oldLemma = interp.lemma
+          //   interp.lemma = interpEl.parent().attribute('corrected') || form.toLowerCase()
+          //   if (oldLemma.endsWith('.')) {
+          //     interp.lemma += '.'
+          //   }
+          // }
+
+          saveInterp(interpEl, interp)
         }
-
-        // advps without tense
-        g.setTenseIfConverb(interp, form)
-
-        // if (isNoninfl(interp)) {
-        //   let oldLemma = interp.lemma
-        //   interp.lemma = interpEl.parent().attribute('corrected') || form.toLowerCase()
-        //   if (oldLemma.endsWith('.')) {
-        //     interp.lemma += '.'
-        //   }
-        // }
-
-        saveInterp(interpEl, interp)
+        break
       }
       tokenCount += root.evaluateElements('//w_').count()
 
@@ -244,17 +241,6 @@ async function main() {
       for (let { sentenceId, dataset, nodes } of sentenceStream) {
         let roots = nodes.filter(x => x.isRoot())
         let sentenceHasOneRoot = roots.length === 1
-
-        // console.log(ids.size)
-        if (ids && TRANSFORMS[args.transform]) {
-          // console.log(id2el)
-          nodes.forEach(t => {
-            if (ids.has(t.node.id)) {
-              // console.log(t.node.form)
-              TRANSFORMS[args.transform](t)
-            }
-          })
-        }
 
         for (let [index, [prevNode, node, nextNode]] of mu(nodes).window(2, 1).entries()) {
           let token = node.node
@@ -1151,6 +1137,55 @@ const TRANSFORMS = {
   toObl(t: GraphNode<Token>) {
     t.node.rel = 'obl'
   },
+}
+
+//------------------------------------------------------------------------------
+function prepareIds(path: string) {
+  return new Set(fs.readFileSync(path, 'utf8')
+    .trim()
+    .split(/\n+/g)
+    .map(x => x.trim())
+    .filter(x => !x.startsWith('#'))
+    .join(' ')
+    .split(/\s+/g))
+}
+
+//------------------------------------------------------------------------------
+function splitFusedProns(
+  form: string,
+  interp: MorphInterp,
+  interpEl: AbstractElement,
+  analyzer: MorphAnalyzer,
+) {
+  let newForm = form.substr(2)
+  interp.features.pronominalType = f.PronominalType.relative
+  if (interp.isAdverb()) {
+    interp.lemma = interp.lemma.substr(2)
+    interp.features.paradigmOmonym = undefined
+  } else {
+    if (['кого', 'ким', 'кому'].includes(newForm)) {
+      interp.lemma = 'хто'
+      interp.features.gender = f.Gender.masculine
+    } else if (['чого', 'чим', 'чому'].includes(newForm)) {
+      interp.lemma = 'що'
+      interp.features.gender = f.Gender.neuter
+    }
+  }
+
+  let nemayeInterps = analyzer.tag('немає', newForm)
+  if (nemayeInterps.length > 1) {
+    throw new Error(`Multiple немає interps not supported`)
+  }
+  let multitokenEl = interpEl.document()
+    .createElement('multitoken')
+    .setAttribute('form', form)
+  let nemayeEl = createTokenElement(interpEl.document(), 'немає', [nemayeInterps[0].toVesumStrMorphInterp()]) as LibxmljsElement
+  let pronounEl = createTokenElement(interpEl.document(), newForm, [interp.toVesumStrMorphInterp()]) as LibxmljsElement
+  multitokenEl.appendChild(nemayeEl)
+  multitokenEl.appendChild(pronounEl)
+  interpEl.parent()
+    .insertAfter(multitokenEl)
+    .remove()
 }
 
 ////////////////////////////////////////////////////////////////////////////////

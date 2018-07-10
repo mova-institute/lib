@@ -78,10 +78,12 @@ export class LibxmljsNode extends AbstractNode {
 
   insertBefore(newNode: LibxmljsNode) {
     this.wrapee.addPrevSibling(newNode.wrapee)
+    return this
   }
 
   insertAfter(newNode: LibxmljsNode) {
     this.wrapee.addNextSibling(newNode.wrapee)
+    return this
   }
 
   evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult {

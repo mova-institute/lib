@@ -160,7 +160,7 @@ function main() {
     let sentenceStream = tokenStream2sentences(tokenStream)
     let annotationalGap = false
 
-    for (let { sentenceId, dataset, tokens, nodes, document,
+    for (let { sentenceId, dataset, tokens, multitokens, nodes, document,
       paragraph } of sentenceStream
     ) {
       // count some stats
@@ -269,7 +269,7 @@ function main() {
             }
             let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-            let conlluedSentence = sentence2conllu(tokens, sentLevelInfoSynt, { xpos: args.xpos })
+            let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
             annotationalGap = false
           } else {
@@ -289,7 +289,7 @@ function main() {
         // standartizeMorpho(tokens)
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, sentLevelInfo, {
+        let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfo, {
           // morphOnly: true,
           xpos: args.xpos,
         })

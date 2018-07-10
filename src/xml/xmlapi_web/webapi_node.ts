@@ -74,10 +74,12 @@ export class WebapiNode extends AbstractNode {
 
   insertBefore(newNode: WebapiNode) {
     this.wrapee.parentNode.insertBefore(newNode.wrapee, this.wrapee)
+    return this
   }
 
   insertAfter(newNode: WebapiNode) {
     this.wrapee.parentNode.insertBefore(newNode.wrapee, this.wrapee.nextSibling)
+    return this
   }
 
   getPath(): string {

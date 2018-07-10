@@ -402,6 +402,14 @@ export function elementFromToken(token: string, document: AbstractDocument) {
   return ret
 }
 
+////////////////////////////////////////////////////////////////////////////////
+export function createTokenElement(doc: AbstractDocument, form: string, morphTags: Iterable<IStringMorphInterp>) {
+  let ret = doc.createElement('w_')
+  fillInterpElement(ret, form, morphTags)
+
+  return ret
+}
+
 //------------------------------------------------------------------------------
 function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterable<IStringMorphInterp>) {
   let doc = miw.document()
@@ -418,8 +426,8 @@ function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterab
 
 //------------------------------------------------------------------------------
 function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
-  let miw = fillInterpElement(
-    el.document().createElement('w_', NS.mi),
+  let miw = createTokenElement(
+    el.document(),
     el.text(),
     morphTags
   )
@@ -445,9 +453,12 @@ export function isRegularizedFlowElement(el: AbstractElement) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function iterateCorpusTokens(root: AbstractElement,
+export function iterateCorpusTokens(
+  root: AbstractElement,
   elementsOfInterest = new Set(
-    ['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g', 'sb', 'doc', 'gap', 'coref-split'])) {
+    ['w_', 'w', 'p', 'lg', 'l', 's', 'div', 'g',
+      'sb', 'doc', 'gap', 'coref-split', 'multitoken'])
+) {
   return mu((function* () {
     let iterator = traverseDepthGen2(root)
     let pointer = iterator.next()
@@ -1021,6 +1032,7 @@ const structureElementName2type = new Map<string, Structure>([
   ['l', 'line'],
   ['gap', 'gap'],
   ['coref-split', 'coref-split'],
+  ['multitoken', 'multitoken'],
   // ['', ''],
 ])
 
@@ -1156,15 +1168,34 @@ export function* tokenStream2cg(stream: Iterable<Token>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2plaintext(stream: Iterable<Token>, corrected = true) {
+export function* tokenStream2plaintext(
+  stream: Iterable<Token>,
+  multitokens: Array<MultitokenDescriptor> = [],
+  corrected = true
+) {
   let space = ''
-  for (let token of stream) {
+  let multitokenI = 0
+  for (let [i, token] of mu(stream).entries()) {
     if (token.isGlue()) {
       space = ''
     } else if (token.getStructureName() === 'paragraph') {  // todo
       space = '\n'
     } else if (token.isWord()) {
-      yield space + token.getForm(corrected)
+      if (multitokenI < multitokens.length) {
+        let mt = multitokens[multitokenI]
+        if (i < mt.startIndex) {
+          yield space + token.getForm(corrected)
+        } else {
+          if (i === mt.startIndex + mt.spanLength - 1) {
+            ++multitokenI
+          }
+          if (i === mt.startIndex) {
+            yield space + mt.form
+          }
+        }
+      } else {
+        yield space + token.getForm(corrected)
+      }
       space = token.gluedNext ? '' : ' '
     }
   }
@@ -1176,8 +1207,15 @@ export function tokenStream2plaintextString(stream: Iterable<Token>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export interface MultitokenDescriptor {
+  form: string
+  startIndex: number
+  spanLength: number
+}
+////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentences(stream: Iterable<Token>) {
   let buf = new Array<Token>()
+  let multitokens = new Array<MultitokenDescriptor>()
   let curDoc: Token
   let curPar: Token
   let nextPar: Token
@@ -1194,6 +1232,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     let ret = {
       sentenceId,
       tokens: buf,
+      multitokens,
       nodes,
       dataset,
       document: curDoc,
@@ -1201,6 +1240,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     }
 
     buf = []
+    multitokens = []
     followsGap = false
     skip = false
 
@@ -1220,6 +1260,16 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
       }
       if (!token.isClosing()) {
         curDoc = token
+      }
+    } else if (token.getStructureName() === 'multitoken') {
+      if (token.isClosing()) {
+        last(multitokens).spanLength = buf.length - last(multitokens).startIndex
+      } else {
+        multitokens.push({
+          form: token.getAttribute('form'),
+          startIndex: buf.length,
+          spanLength: 0,
+        })
       }
     } else if (token.isSentenceBoundary()) {
       if (token.hasTag('skip' as any)) {

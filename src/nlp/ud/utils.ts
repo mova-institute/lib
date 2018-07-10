@@ -1,7 +1,7 @@
 import { Token, TokenTag } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
-import { tokenStream2plaintextString } from '../utils'
+import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
 
 
@@ -11,7 +11,12 @@ export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos' | 'ud'
   morphOnly?: boolean
 }
-export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options: Sentence2conlluParams = {}) {
+export function sentence2conllu(
+  tokens: Array<Token>,
+  multitokens: Array<MultitokenDescriptor>,
+  sentenceLevelData,
+  options: Sentence2conlluParams = {}
+) {
   let comments = new Array<string>()
   for (let [k, v] of Object.entries(sentenceLevelData)) {
     if (v === undefined) {
@@ -22,11 +27,28 @@ export function sentence2conllu(tokens: Array<Token>, sentenceLevelData, options
       comments.push(`${k} = ${v}`)
     }
   }
-  comments.push(`text = ${tokenStream2plaintextString(tokens)}`)
+  let text = mu(tokenStream2plaintext(tokens, multitokens))
+    .join('')
+  comments.push(`text = ${text}`)
 
   let lines = comments.sort().map(x => `# ${x}`)
 
+  let multitokenI = 0
   tokens.forEach((token, i) => {
+
+    // deal with multitoken
+    if (multitokenI < multitokens.length) {
+      let mt = multitokens[multitokenI]
+      if (mt.startIndex === i) {
+        lines.push([
+          `${i + 1}-${i + mt.spanLength}`,
+          mt.form,
+          ...'_'.repeat(8),
+        ].join('\t'))
+        ++multitokenI
+      }
+    }
+
     let { pos, features } = toUd(token.interp)
 
     let udFeatureStr = udFeatures2conlluString(features)

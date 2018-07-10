@@ -14,6 +14,7 @@ export type Structure =
   | 'stanza'
   | 'line'
   | 'coref-split'
+  | 'multitoken'
 
 export type TokenTag =
   | 'bad'
