@@ -4,7 +4,7 @@ import { genAccessToken } from '../crypto'
 import { IReq, debug, HttpError } from './server'
 import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business'
 import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node'
-import { firstNWords, morphReinterpretGently, morphReinterpret, keepDisambedOnly } from '../nlp/utils'
+import { firstNWords, morphReinterpretGently, morphReinterpret, keepDisambedOnly, enumerateWords, adoptMorphDisambs } from '../nlp/utils'
 import { NS, encloseInRootNs } from '../xml/utils'
 import * as assert from 'assert'
 import * as columnify from 'columnify'
@@ -373,8 +373,15 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
             latestFragments.forEach(x => adoptMorphDisambsStr(docRoot, x))
           } catch (e) {
             if (e.message === 'Words are not numerated') {
-              docRoot = parseXml(encloseInRootNs(latestFragments.join('\n')))
-              keepDisambedOnly(docRoot)
+              enumerateWords(docRoot)
+              let from = 0
+              for (let fragment of latestFragments) {
+                let root = parseXml(encloseInRootNs(fragment))
+                from = enumerateWords(root, 'n', from)
+                adoptMorphDisambs(docRoot, root)
+              }
+              // docRoot = parseXml(encloseInRootNs(latestFragments.join('\n')))
+              // keepDisambedOnly(docRoot)
             } else {
               throw e
             }

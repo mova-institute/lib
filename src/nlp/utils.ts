@@ -403,6 +403,21 @@ export function elementFromToken(token: string, document: AbstractDocument) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function createMultitokenElement(
+  doc: AbstractDocument,
+  surfaceForm: string,
+  subtokens: Array<[string, Array<MorphInterp>]>,
+) {
+  let ret = doc.createElement('multitoken')
+    .setAttribute('form', surfaceForm)
+  subtokens.forEach(([form, interps]) => ret.appendChild(
+    createTokenElement(doc, form, interps.map(x => x.toVesumStrMorphInterp()))
+  ))
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function createTokenElement(doc: AbstractDocument, form: string, morphTags: Iterable<IStringMorphInterp>) {
   let ret = doc.createElement('w_')
   fillInterpElement(ret, form, morphTags)
@@ -595,11 +610,10 @@ export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAna
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function enumerateWords(root: AbstractElement, attributeName = 'n') {
-  let idGen = 0  // todo: switch from wu to normal forEach
+export function enumerateWords(root: AbstractElement, attributeName = 'n', idGen = 0) {
   root.evaluateElements('//mi:w_|//w_', NS)  // todo: NS bug
-    .toArray()
     .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
+  return idGen
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -749,9 +763,11 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
 ////////////////////////////////////////////////////////////////////////////////
 export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
   // let stream = mixml2tokenStream(sourceRoot)
+  let attr = !!sourceRoot.evaluateElement(`//mi:w_[@n]`, NS) ? 'n' : 'nn'
+  // console.error(`attr`, attr)
   for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
-    let n = miwSource.attribute('n')
-    let miwDest = destRoot.evaluateElement(`//mi:w_[@n="${n}"]`, NS)
+    let n = miwSource.attribute(attr)
+    let miwDest = destRoot.evaluateElement(`//mi:w_[@${attr}="${n}"]`, NS)
     if (!miwDest) {
       throw new Error('Words are not numerated')
     }
