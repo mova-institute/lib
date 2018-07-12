@@ -69,7 +69,7 @@ function doCoref(
     for (let [i, subdoc] of subdocs.entries()) {
       let filename = id
       if (subdocs.length > 1) {
-        filename += `_${zerofillMax(i, Math.min(11, subdocs.length))}`
+        filename += `_${zerofillMax(i + 1, subdocs.length + 11)}`
       }
 
       let paragraps = mu(subdoc)
