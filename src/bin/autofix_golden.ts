@@ -31,7 +31,6 @@ import * as g2 from '../nlp/uk_grammar'
 import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
-import { LibxmljsElement } from '../xml/xmlapi_libxmljs/libxmljs_element';
 
 
 
@@ -288,26 +287,7 @@ async function main() {
             interp.lemma = token.getForm()
           }
 
-          if (!interp.lemma.includes('’')
-            && (
-              interp.isParticle()
-              || interp.isConjunction()
-              || interp.isPreposition()
-              || interp.isAdverb()
-              || interp.isInterjection()
-              || interp.isUninflectable()
-            )
-            || interp.isPunctuation()
-            || interp.isSymbol()
-            || interp.isX()
-            || interp.isError()
-          ) {
-            if (strUtils.isAllLower(interp.lemma)) {
-              // interp.lemma = token.getForm().toLowerCase()
-            } else {
-
-            }
-          }
+          // lowercaseOddballLemmas(token)
 
           if (uEqSome(token.rel, ['cc']) && interp.lemma === 'бути') {
             token.rel = parent.interp.isVerbial() ? 'aux' : 'cop'
@@ -535,6 +515,8 @@ async function main() {
             // interp.lemma = token.form.replace('\'', '’').toLocaleLowerCase()
           }
 
+          // addRefRelation(node)
+
 
           // ↓↓↓↓ breaks the tree, keep last!
 
@@ -700,6 +682,31 @@ function renameStructures(root: AbstractElement) {
     DOC_META_ATTRS.forEach(attr =>
       !doc.attribute(attr) && doc.setAttribute(attr, '')))
 
+}
+
+//------------------------------------------------------------------------------
+function lowercaseOddballLemmas(token: Token) {
+  let interp = token.interp
+  if (!interp.lemma.includes('’')
+    && (
+      interp.isParticle()
+      || interp.isConjunction()
+      || interp.isPreposition()
+      || interp.isAdverb()
+      || interp.isInterjection()
+      || interp.isUninflectable()
+    )
+    || interp.isPunctuation()
+    || interp.isSymbol()
+    || interp.isX()
+    || interp.isError()
+  ) {
+    if (strUtils.isAllLower(interp.lemma)) {
+      interp.lemma = token.getForm().toLowerCase()
+    } else {
+      //
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1227,6 +1234,20 @@ function splitPiv(
   }
 
   return false
+}
+
+//------------------------------------------------------------------------------
+function addRefRelation(node: GraphNode<Token>) {
+  let token = node.node
+  if (!token.deps.some(x => uEq(x.relation, 'ref'))
+    && g.isRelativeInRelcl(node)
+  ) {
+    let aclRoot = g.findClauseRoot(node)
+    token.deps.push({
+      headId: aclRoot.parent.node.id,
+      relation: 'ref',
+    })
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

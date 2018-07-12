@@ -16,6 +16,34 @@ export type Node2indexMap = Map<TokenNode, number>
 
 
 ////////////////////////////////////////////////////////////////////////////////
+export function findClauseRoot(node: GraphNode<Token>) {
+  return mu(node.walkUp0())
+    .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isRelativeInRelcl(node: GraphNode<Token>) {
+  if (!node.node.interp.isRelative()) {
+    return false
+  }
+  let clauseRoot = findClauseRoot(node)
+  if (!clauseRoot) {
+    return false
+  }
+
+  if (uEq(clauseRoot.node.rel, 'acl')) {
+    return true
+  }
+
+  if (clauseRoot.node.interp.isInfinitive()) {
+    clauseRoot = mu(clauseRoot.walkUp0())
+      .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
+  }
+
+  return clauseRoot && uEq(clauseRoot.node.rel, 'acl')
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function isValencyHavingAdjective(t: Token) {
   return t.interp.isAdjective()
     && VALENCY_HAVING_ADJECTIVES.includes(t.interp.lemma)

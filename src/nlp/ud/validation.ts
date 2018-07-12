@@ -107,12 +107,12 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
       || t.node.isPromoted
     ,
     `в іменник`,
-    t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && isRelativeInRelcl(t),
+    t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && g.isRelativeInRelcl(t),
   ],
   [`nmod`, `з іменника`, t => canActAsNoun(t.node) || g.isDenUDen(t) /* temp */,
     `в іменник`,
     t => canActAsNounForObj(t)
-      || t.node.interp.lemma === 'який' && isRelativeInRelcl(t)
+      || t.node.interp.lemma === 'який' && g.isRelativeInRelcl(t)
       || g.isDenUDen(t.parent)  // temp
   ],
   [`aux`,
@@ -1203,7 +1203,7 @@ export function validateSentenceSyntax(
       && !t.node.isPromoted
       && toUd(t.node.interp).pos === 'DET'  // todo: .isDet()
       && !uEqSome(t.node.rel, ['det', 'conj', 'fixed', 'advcl:sp'])
-      && !isRelativeInRelcl(t)
+      && !g.isRelativeInRelcl(t)
   )
 
   xreportIf(`неочікувана реляція в кількісний числівник`,
@@ -1834,30 +1834,6 @@ export function validateSentenceSyntax(
   */
 
   return problems
-}
-
-//------------------------------------------------------------------------------
-function isRelativeInRelcl(node: GraphNode<Token>) {
-  if (!node.node.interp.isRelative()) {
-    return false
-  }
-  let clauseRoot = mu(node.walkUp0())
-    .find(x => uEqSome(x.node.rel, g.CLAUSE_RELS))
-
-  if (!clauseRoot) {
-    return false
-  }
-
-  if (uEq(clauseRoot.node.rel, 'acl')) {
-    return true
-  }
-
-  if (clauseRoot.node.interp.isInfinitive()) {
-    clauseRoot = mu(clauseRoot.walkUp0())
-      .find(x => uEqSome(x.node.rel, g.CLAUSE_RELS))
-  }
-
-  return clauseRoot && uEq(clauseRoot.node.rel, 'acl')
 }
 
 //------------------------------------------------------------------------------
