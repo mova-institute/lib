@@ -37,14 +37,19 @@ export function sentence2conllu(
   tokens.forEach((token, i) => {
 
     // deal with multitoken
+    let isInsideMultitoken: boolean
     if (multitokenI < multitokens.length) {
       let mt = multitokens[multitokenI]
-      if (mt.startIndex === i) {
+      isInsideMultitoken = i >= mt.startIndex
+      if (i === mt.startIndex) {
         lines.push([
           `${i + 1}-${i + mt.spanLength}`,
           mt.form,
-          ...'_'.repeat(8),
+          ...'_'.repeat(7),
         ].join('\t'))
+      } else if (i === mt.startIndex + mt.spanLength - 1) {
+        lines[lines.length - mt.spanLength ] +=
+          '\t' + (token.gluedNext ? 'SpaceAfter=No' : '_')
         ++multitokenI
       }
     }
@@ -63,7 +68,7 @@ export function sentence2conllu(
     if (token.isGraft) {
       misc.push('Graft=Yes')
     }
-    if (token.gluedNext) {
+    if (!isInsideMultitoken && token.gluedNext) {
       misc.push('SpaceAfter=No')
     }
 
