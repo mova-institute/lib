@@ -19,13 +19,17 @@ import * as stringUtils from '../../string'
 import * as tlds from 'tlds'
 
 
-const adHocDict = new Map([
+const dictOverride = new Map([
   ['"', ['punct:quote']],
   ['…', ['punct:ellipsis']],
   ['...', ['punct:ellipsis']],
   ['-', ['punct:hyphen', 'punct:dash', 'punct:ndash']],
   ['–', ['punct:hyphen', 'punct:dash', 'punct:ndash']],
   ['—', ['punct:hyphen', 'punct:dash', 'punct:ndash']],
+  // ['', ['']],
+])
+const adHocDict = new Map([
+  ['ні', [['ні', 'verb:imperf:pres:neg']]],
   // ['', ['']],
 ])
 
@@ -307,8 +311,8 @@ export class MorphAnalyzer {
       return []
     }
 
-    if (adHocDict.has(token)) {
-      return adHocDict.get(token).map(x => MorphInterp.fromVesumStr(x, token))
+    if (dictOverride.has(token)) {
+      return dictOverride.get(token).map(x => MorphInterp.fromVesumStr(x, token))
     }
 
     // regexes returning immediately
@@ -591,6 +595,12 @@ export class MorphAnalyzer {
         // todo: alter lemma?
         res.addAll(toadd)
       }
+    }
+
+    // todo: implement a proper dict interface
+    let fromAdHocDict = adHocDict.get(lowercase)
+    if (fromAdHocDict) {
+      res.addAll(fromAdHocDict.map(([lemma, tag]) => MorphInterp.fromVesumStr(tag, lemma)))
     }
 
 
