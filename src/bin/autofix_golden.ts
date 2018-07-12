@@ -14,7 +14,7 @@ import { Token } from '../nlp/token'
 import {
   serializeMiDocument, tokenStream2sentences, mixml2tokenStream,
   tokenStream2plaintextString,
-  createTokenElement,
+  createMultitokenElement,
 } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
@@ -79,6 +79,7 @@ async function main() {
 
   let dict = createDictionarySync()
   let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
+  let ids = new Set<string>()
 
   for (let file of files) {
     try {
@@ -147,6 +148,10 @@ async function main() {
           // split fused pronominals
           if (interp.isEmphatic()) {
             splitFusedProns(form, interp, interpEl, analyzer)
+            continue interpLoop
+          }
+
+          if (splitPiv(form, interp, interpEl, analyzer)) {
             continue interpLoop
           }
 
@@ -230,9 +235,10 @@ async function main() {
       let idedElements = root.evaluateElements('//*[@id]')
       for (let el of idedElements) {
         let id = el.attribute('id')
-        if (id2el.has(id)) {
+        if (ids.has(id)) {
           throw new Error(`Duplicate id: ${id}`)
         }
+        ids.add(id)
         id2el.set(id, el)
       }
 
@@ -1176,16 +1182,51 @@ function splitFusedProns(
   if (nemayeInterps.length > 1) {
     throw new Error(`Multiple немає interps not supported`)
   }
-  let multitokenEl = interpEl.document()
-    .createElement('multitoken')
-    .setAttribute('form', form)
-  let nemayeEl = createTokenElement(interpEl.document(), 'немає', [nemayeInterps[0].toVesumStrMorphInterp()]) as LibxmljsElement
-  let pronounEl = createTokenElement(interpEl.document(), newForm, [interp.toVesumStrMorphInterp()]) as LibxmljsElement
-  multitokenEl.appendChild(nemayeEl)
-  multitokenEl.appendChild(pronounEl)
+  let multitokenEl = createMultitokenElement(interpEl.document(), form, [
+    ['немає', [nemayeInterps[0]]],
+    [newForm, [interp]],
+  ])
   interpEl.parent()
     .insertAfter(multitokenEl)
     .remove()
+}
+
+//------------------------------------------------------------------------------
+function splitPiv(
+  form: string,
+  interp: MorphInterp,
+  interpEl: AbstractElement,
+  analyzer: MorphAnalyzer,
+) {
+  const prefix = 'пів'
+  if (form.startsWith(prefix)
+    && form.length > prefix.length
+    && interp.isNoun()
+  ) {
+    let stem = form.substr(prefix.length)
+    let filtered = analyzer.tag(stem)
+      .filter(x => x.isNoun())
+    let isPiv = interp.isNoPlural() && interp.isUninflectable()
+      || filtered.length
+      && filtered.every(x => x.isUninflectable())
+    if (isPiv) {
+      console.error(`пів-: ${form}`)
+      let pivInterp = MorphInterp.fromVesumStr('numr:v_naz:nv:alt', 'пів')
+        .setCase(interp.getFeature(f.Case))
+      let nounInterp = filtered.find(x => x.isGenitive())
+      let multitokenEl = createMultitokenElement(interpEl.document(), form, [
+        ['пів', [pivInterp]],
+        [stem, [nounInterp]],
+      ])
+      interpEl.parent()
+        .insertAfter(multitokenEl)
+        .remove()
+
+      return true
+    }
+  }
+
+  return false
 }
 
 ////////////////////////////////////////////////////////////////////////////////

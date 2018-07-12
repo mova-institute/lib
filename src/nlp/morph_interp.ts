@@ -1050,7 +1050,6 @@ export class MorphInterp {
   isPassive() { return this.features.voice === Voice.passive }
   isPerfect() { return this.features.aspect === Aspect.perfect }
   isPlural() { return this.features.number === MorphNumber.plural }
-  isPluraleTantum() { return this.features.numberTantum === NumberTantum.noSingular }
   isPast() { return this.features.tense === Tense.past }
   isPossessive() { return this.features.possessiveness === Possessiveness.yes }
   isReflexive() { return this.features.reflexivity === Reflexivity.yes }
@@ -1078,7 +1077,7 @@ export class MorphInterp {
   isGrammaticallyAnimate() { return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.animate }
   isGrammaticallyInanimate() { return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.inanimate }
   isNonparticipleAdj() { return this.isAdjective() && !this.isParticiple() }
-
+  isNoPlural() { return this.getFeature(NumberTantum) === NumberTantum.noPlural }
 
 
   hasAnimacy() { return this.features.animacy !== undefined }

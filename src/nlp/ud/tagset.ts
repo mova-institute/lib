@@ -415,7 +415,7 @@ export function toUd(interp: MorphInterp) {
   }
 
   // encode plurale tantum in Number feature
-  if (interp.isPluraleTantum()) {
+  if (interp.isNoSingular()) {
     features.Number = 'Ptan'
   }
 
