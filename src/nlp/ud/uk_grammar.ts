@@ -739,7 +739,7 @@ export const ALLOWED_RELATIONS: Array<UdMiRelation> = [
   'csubj:pass',
   'det:numgov',
   'det:nummod',
-  'flat:conjpack',
+  'flat:pack',
   'flat:foreign',
   'flat:name',
   'flat:repeat',

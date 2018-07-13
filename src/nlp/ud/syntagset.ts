@@ -51,7 +51,7 @@ export type Ud20MiSpecificRelation =
   | 'csubj:pass'
   | 'det:numgov'
   | 'det:nummod'
-  | 'flat:conjpack'
+  | 'flat:pack'
   | 'flat:foreign'
   | 'flat:name'
   | 'flat:repeat'

@@ -1463,8 +1463,8 @@ export function validateSentenceSyntax(
     // &&
   )
 
-  reportIf2(`flat:conjpack не з conj`,
-    ({ r, pr }) => r === 'flat:conjpack'
+  xreportIf2(`flat:pack не з conj`,
+    ({ r, pr }) => r === 'flat:pack'
       && !uEq(pr, 'conj')
   )
 
