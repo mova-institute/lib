@@ -9,12 +9,13 @@ import { isString } from '../../lang'
 import { trimExtension } from '../../string'
 import { firstMatch } from '../../string'
 import { serializeMiDocument } from '../utils'
-import { parseBratFile } from './utils'
+import { parseBratFile, BratArc } from './utils'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
 import groupby = require('lodash.groupby')
+import { HELPER_RELATIONS } from './uk_grammar'
 
 
 
@@ -50,6 +51,7 @@ function main() {
       root.evaluateElements('//*[@id]')
         .map(x => [x.attribute('id'), x] as [string, AbstractElement]))
 
+    // adopt synt
     for (let bratFile of syntBratFiles) {
       for (let span of parseBratFile(linesSync(bratFile))) {
         if (isString(span.annotations.N)) {
@@ -72,7 +74,12 @@ function main() {
 
           let dependencies = span.arcs
             .filter(x => isString(x.head.annotations.N))
-            .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
+            .map(x => {
+              x.relation = x.relation.replace('_', ':')
+              return x
+            })
+            .sort(basicRelationsFirstCompare)
+            .map(({ relation, head }) => `${head.annotations.N}-${relation}`)
             .join('|') || undefined
           el.setAttribute('dep', dependencies)
           id2bratPath[span.annotations.N] = trimExtension(path.relative(bratFilesRoot, bratFile))
@@ -103,6 +110,13 @@ function main() {
   }
 }
 
+//------------------------------------------------------------------------------
+function basicRelationsFirstCompare(a: BratArc, b: BratArc) {
+  return Number(HELPER_RELATIONS.has(a.relation))
+    - Number(HELPER_RELATIONS.has(b.relation))
+}
+
+////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

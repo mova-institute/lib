@@ -93,8 +93,8 @@ function doUd(
 ) {
   let sentenceStream = tokenStream2sentences(tokens)
   let chunks = mu(sentenceStream)
-    .map(x => x.tokens)
-    .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.isWord()))
+    .map(x => x.nodes)
+    .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.node.isWord()))
     .toArray()
 
   for (let [i, chunk] of chunks.entries()) {
@@ -103,10 +103,12 @@ function doUd(
     let str = mu(tokenStream2brat(chunk)).join('\n', true)
     writeFileSyncMkdirp(join(dest, `${filename}.ann`), str)
 
-    str = mu(tokenStream2bratPlaintext(chunk)).join('\n', true)
+    let chunkTokens = chunk.map(x => x.map(xx => xx.node))
+    str = mu(tokenStream2bratPlaintext(chunkTokens)).join('\n', true)
     writeFileSyncMkdirp(join(dest, `${filename}.txt`), str)
   }
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {

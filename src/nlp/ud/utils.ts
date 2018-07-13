@@ -3,6 +3,7 @@ import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
 import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
+import { GraphNode } from '../../graph'
 
 
 
@@ -48,7 +49,7 @@ export function sentence2conllu(
           ...'_'.repeat(7),
         ].join('\t'))
       } else if (i === mt.startIndex + mt.spanLength - 1) {
-        lines[lines.length - mt.spanLength ] +=
+        lines[lines.length - mt.spanLength] +=
           '\t' + (token.gluedNext ? 'SpaceAfter=No' : '_')
         ++multitokenI
       }
@@ -160,8 +161,36 @@ export function tokenSentence2bratPlaintext(sentence: Array<Token>) {
   return sentence.filter(x => x.isWord()).map(x => x.getForm()).join(' ')
 }
 
+//------------------------------------------------------------------------------
+function isAmbigCoordModifier(node: GraphNode<Token>) {
+  return node.parent
+    && node.parent.children.some(x => uEq(x.node.rel, 'conj')
+      && !x.node.rel.endsWith(':parataxis'))
+    && !uEqSome(node.node.rel, [
+      'conj',
+      'cc',
+      'sconj',
+      'mark',
+      'punct',
+      'xcomp',
+      'appos',
+      'parataxis',
+      'flat',
+      'compound',
+    ])
+    && !(uEq(node.node.rel, 'discourse') && (node.node.interp.isConsequential()
+      || node.node.interp.lemma === 'тощо')
+    )
+    && !node.node.deps.some(xx => uEqSome(xx.relation, ['private', 'shared']))
+}
+
+//------------------------------------------------------------------------------
+function hasAmbigCoordDependents(node: GraphNode<Token>) {
+  return node.children.some(x => isAmbigCoordModifier(x))
+}
+
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2brat(sentences: Array<Array<Token>>) {
+export function* tokenStream2brat(sentences: Array<Array<GraphNode<Token>>>) {
   let offset = 0
   let t = 1
   let a = 1
@@ -169,7 +198,8 @@ export function* tokenStream2brat(sentences: Array<Array<Token>>) {
   let n2id = {} as any
   for (let sentence of sentences) {
     let highlightHoles = mustHighlightHoles(sentence)
-    for (let token of sentence) {
+    for (let node of sentence) {
+      let token = node.node
       if (token.isStructure()) {
         continue
       }
@@ -185,7 +215,18 @@ export function* tokenStream2brat(sentences: Array<Array<Token>>) {
 
       let { pos, features } = toUd(token.interp)
 
-      delete features['Animacy[gram]']
+      Object.keys(features)
+        .filter(x => /[[\]]/.test(x))
+        .forEach(x => delete features[x])
+
+      if (isAmbigCoordModifier(node)) {
+        features['IsAmbigCoordModifier'] = 'Yes'
+      }
+
+      if (hasAmbigCoordDependents(node)) {
+        features['HasAmbigCoordModifier'] = 'Yes'
+      }
+
       if (highlightHoles && !token.rel) {
         features['AnnotationHole'] = 'Yes'
       }
@@ -219,9 +260,9 @@ export function* tokenStream2brat(sentences: Array<Array<Token>>) {
   let rId = 1
   for (let sentence of sentences) {
     for (let token of sentence) {
-      for (let dep of token.deps) {
+      for (let dep of token.node.deps) {
         let head = n2id[dep.headId]
-        let dependant = n2id[token.id]
+        let dependant = n2id[token.node.id]
         yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
       }
     }
@@ -281,8 +322,8 @@ export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
 }
 
 //------------------------------------------------------------------------------
-function mustHighlightHoles(sentence: Array<Token>) {
-  let numRoots = mu(sentence).count(x => !x.hasDeps())
+function mustHighlightHoles(sentence: Array<GraphNode<Token>>) {
+  let numRoots = mu(sentence).count(x => !x.node.hasDeps())
   if (numRoots === 1) {
     return false
   }
@@ -366,11 +407,17 @@ export function mergeAmbiguityFeaturewise(arr: Array<Array<any>>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export interface BratArc {
+  relation: string
+  head: BratSpan
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export interface BratSpan {
   index: number
   form: string
   annotations: any
-  arcs?: Array<{ relation: string, head: BratSpan }>
+  arcs?: Array<BratArc>
   comment?: string
 }
 

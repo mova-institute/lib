@@ -717,6 +717,12 @@ export const COMPARATIVE_SCONJS = [
   'чим'
 ]
 
+export const HELPER_RELATIONS = new Set([
+  'private',
+  'shared',
+  'shared:cl',
+])
+
 export const ALLOWED_RELATIONS: Array<UdMiRelation> = [
   'advcl:sp',
   'advcl:cmp',
