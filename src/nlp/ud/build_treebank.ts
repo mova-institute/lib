@@ -392,7 +392,7 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
 function formatProblemsHtml(sentenceProblems: Array<any>) {
   let body = ''
   for (let [i, { sentenceId, problems, tokens, bratPath }] of sentenceProblems.entries()) {
-    let href = `https://lab.mova.institute/brat/#/ud/${bratPath}`
+    let href = `https://lab.mova.institute/brat/#/${bratPath}`
     let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
 
     body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`

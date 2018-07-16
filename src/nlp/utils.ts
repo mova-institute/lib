@@ -418,8 +418,13 @@ export function createMultitokenElement(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function createTokenElement(doc: AbstractDocument, form: string, morphTags: Iterable<IStringMorphInterp>) {
-  let ret = doc.createElement('w_')
+export function createTokenElement(
+  doc: AbstractDocument,
+  form: string,
+  morphTags: Iterable<IStringMorphInterp>,
+  useNs = false
+) {
+  let ret = doc.createElement('w_', useNs ? NS.mi : undefined)
   fillInterpElement(ret, form, morphTags)
 
   return ret
@@ -444,7 +449,8 @@ function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
   let miw = createTokenElement(
     el.document(),
     el.text(),
-    morphTags
+    morphTags,
+    true
   )
   el.replace(miw)
   return miw

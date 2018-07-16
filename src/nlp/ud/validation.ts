@@ -1703,6 +1703,7 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // hypen з пробілами
   // перечепити shared залежники до конжа і перевалідувати
   // conj з verb в noun
   // неузгодження не-private conj модифікаторів: https://lab.mova.institute/brat/#/ud/pryklady__nikoho/07?focus=T23

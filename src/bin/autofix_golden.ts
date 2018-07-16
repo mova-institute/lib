@@ -311,7 +311,7 @@ async function main() {
             && token.interp.isNegative()
             && !token.isPromoted
             && !node.children.some(x => uEq(x.node.rel, 'fixed'))
-            && !uEqSome(token.rel, ['fixed', 'parataxis', 'conj:parataxis', 'conj'])
+            && !uEqSome(token.rel, ['fixed', 'parataxis', 'conj:parataxis', 'conj', 'goeswith'])
           ) {
             token.rel = 'advmod'
           }
@@ -1205,13 +1205,13 @@ function splitPiv(
   interpEl: AbstractElement,
   analyzer: MorphAnalyzer,
 ) {
-  const prefix = 'пів'
-  if (form.startsWith(prefix)
-    && form.length > prefix.length
-    && interp.isNoun()
-  ) {
-    let stem = form.substr(prefix.length)
-    let filtered = analyzer.tag(stem)
+  if (!interp.isNoun()) {
+    return false
+  }
+  let prefix = strUtils.firstMatch(form, /^(пів['’\-]?).+/, 1)
+  if (prefix) {
+    let base = form.substr(prefix.length)
+    let filtered = analyzer.tag(base)
       .filter(x => x.isNoun())
     let isPiv = interp.isNoPlural() && interp.isUninflectable()
       || filtered.length
@@ -1223,7 +1223,7 @@ function splitPiv(
       let nounInterp = filtered.find(x => x.isGenitive())
       let multitokenEl = createMultitokenElement(interpEl.document(), form, [
         ['пів', [pivInterp]],
-        [stem, [nounInterp]],
+        [base, [nounInterp]],
       ])
       interpEl.parent()
         .insertAfter(multitokenEl)

@@ -3,7 +3,7 @@ import * as flatten from 'lodash.flatten'
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
-import { Case, Pos } from '../morph_features'
+import { Case, Pos, Gender } from '../morph_features'
 import {
   FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
   APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE,
@@ -20,7 +20,11 @@ import * as tlds from 'tlds'
 
 
 const dictOverride = new Map([
-  ['"', ['punct:quote']],
+  ['"', ['punct:quote:open', 'punct:quote:close']],
+  ['«', ['punct:quote:open']],
+  ['»', ['punct:quote:close']],
+  ['“', ['punct:quote:open']],
+  ['”', ['punct:quote:close']],
   ['…', ['punct:ellipsis']],
   ['...', ['punct:ellipsis']],
   ['-', ['punct:hyphen', 'punct:dash', 'punct:ndash']],
@@ -78,6 +82,7 @@ const NONIFL_ARABIC_CARDINAL_PARADIGM_1 = NONINFL_PARADIGM.map(x => `numr:${x}`)
 const NONIFL_ARABIC_CARDINAL_PARADIGM_2 = [
   ...CASES.map(x => `numr:m:${x}:nv`),
   ...CASES.map(x => `numr:f:${x}:nv`),
+  ...CASES.map(x => `numr:n:${x}:nv`),
 ]
 const NONIFL_ARABIC_CARDINAL_PARADIGM_3_0 = CASES.map(x => `numr:${x}:nv`)
 
@@ -203,7 +208,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdjective() && x.isComparable(),
   },
   {
-    prefixes: ['пів', 'напів', 'не', 'спів'],
+    prefixes: ['напів', 'не', 'спів'],
     test: (x: MorphInterp) => x.isNoun(),
   },
   {
@@ -253,9 +258,11 @@ export class MorphAnalyzer {
     this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)/*.denormalize()*/))
   private dictCacheNaive = new Map<string, Array<MorphInterp>>()  // ~800K / first GB
   private naiveCacheLimit = 0
+  private pivInterps: Array<MorphInterp>
 
   constructor(private dictionary: Dictionary) {
     this.buildNumeralMap()
+    this.pivInterps = this.lookup('пів’яблука')
   }
 
   setExpandAdjectivesAsNouns(value = true) {
@@ -601,6 +608,27 @@ export class MorphAnalyzer {
     let fromAdHocDict = adHocDict.get(lowercase)
     if (fromAdHocDict) {
       res.addAll(fromAdHocDict.map(([lemma, tag]) => MorphInterp.fromVesumStr(tag, lemma)))
+    }
+
+    // пів’ягняти from ягняти and пів’яйце from яйце
+    if (!res.size) {
+      let pivPrefix = stringUtils.firstMatch(lowercase, /^(пів[’\-]?)/)
+      if (pivPrefix) {
+        let base = token.substr(pivPrefix.length)
+        let baseInterps = this.lookup(base)
+        let baseInterp = baseInterps.filter(x => x.isGenitive() && x.isNoun())[0]
+        if (baseInterp) {
+          let toAdd = this.pivInterps.map(x => x.clone()
+            .setFeature(Gender, baseInterp.getFeature(Gender))
+            .setLemma(pivPrefix.toLowerCase() + base)
+            .setIsAuto()
+          )
+          res.addAll(toAdd)
+        }
+        let toAdd = baseInterps.filter(x => x.isNoun())
+          .map(x => x.setLemma(pivPrefix + x.lemma).setIsAuto())
+        res.addAll(toAdd)
+      }
     }
 
 
