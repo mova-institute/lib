@@ -221,7 +221,7 @@ async function main() {
       // assign id's
       if (idSequence !== undefined) {
         const xpath = ['doc', 'p', 'sb', 's', 'w_', 'pc']
-          .map(x => `//${x}[not(@id)]`)
+          .map(x => `//${x}[not(@id) or string-length(@id)=0]`)
           .join('|')
         let tokenEls = root.evaluateElements(xpath).toArray()
         for (let token of tokenEls) {

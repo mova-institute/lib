@@ -6,7 +6,7 @@ import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
 import { r, makeObject, last } from '../lang'
-import { uniqueSmall as unique, uniqueJson, arr2indexObj } from '../algo'
+import { uniqueSmall as unique, uniqueJson, arr2indexObj, rfind } from '../algo'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
@@ -1122,10 +1122,9 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
       if (name === 'w_') {
         let depsStr = el.attribute('dep')
         if (depsStr) {
-          let deps = depsStr.split('|')
+          tok.deps = depsStr.split('|')
             .map(x => x.split('-'))
             .map(([head, relation]) => ({ headId: head, relation }))
-          tok.deps = deps
         }
 
         let corefStr = el.attribute('coref')
@@ -1269,7 +1268,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
     return ret
   }
 
-  for (let [token, nextToken] of mu(stream).window(2)) {
+  for (let token of stream) {
     if (token.getStructureName() === 'paragraph') {
       if (!token.isClosing()) {
         nextPar = token
@@ -1310,7 +1309,7 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
       curPar = nextPar
       buf.push(token)
     } else if (token.isGlue() && buf.length) {
-      last(buf).gluedNext = true
+      rfind(buf, x => !x.isElided()).gluedNext = true
     } else if (token.getStructureName() === 'gap') {
       followsGap = true
     }
@@ -1324,16 +1323,12 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
 //------------------------------------------------------------------------------
 function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
-  let changed = new Set<string>()
   for (let [i, token] of sentence.entries()) {
     token.index = i
     for (let dep of token.deps) {
-      if (!changed.has(token.id)) {
-        dep.headIndex = id2i.get(token.deps[0].headId)
-        if (dep.headIndex === undefined) {
-          throw new Error(`head outside a sentence #${sentenceId} token #${token.getAttribute('id')}`)
-        }
-        changed.add(token.id)
+      dep.headIndex = id2i.get(dep.headId)
+      if (dep.headIndex === undefined) {
+        throw new Error(`head outside a sentence #${sentenceId} token #${token.getAttribute('id')}`)
       }
     }
   }
@@ -1343,9 +1338,9 @@ function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
 function sentenceArray2treeNodes(sentence: Array<Token>) {
   let nodeArray = sentence.map(x => new GraphNode(x))
   for (let i = 0; i < nodeArray.length; ++i) {
-    if (sentence[i].rel) {
-      nodeArray[i].parents.push(nodeArray[sentence[i].headIndex])
-      nodeArray[sentence[i].headIndex].children.push(nodeArray[i])
+    for (let { headIndex } of sentence[i].deps) {
+      nodeArray[i].parents.push(nodeArray[headIndex])
+      nodeArray[headIndex].children.push(nodeArray[i])
     }
   }
 

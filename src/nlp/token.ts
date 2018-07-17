@@ -1,5 +1,6 @@
 import { MorphInterp } from './morph_interp'
 import { keyvalue2attributesNormalized } from '../xml/utils'
+import { Dict } from '../types'
 
 
 
@@ -55,7 +56,7 @@ export interface Coreference {
 export class Token {
   private structure?: Structure
   private closing?: boolean
-  private attributes?: any
+  private attributes: Dict<string> = {}
   private type: TokenType
   form?: string
   interps = new Array<MorphInterp>()
@@ -153,6 +154,10 @@ export class Token {
     return this.isClosing() && (!name || this.getStructureName() === name)
   }
 
+  isElided() {
+    return this.attributes['elided'] === 'yes'
+  }
+
   interp0() {
     return this.interps[0]
   }
@@ -194,9 +199,10 @@ export class Token {
   }
 
   getForm(corrected = true) {
-    return corrected
-      ? this.getAttribute('correct') || this.form
-      : this.form
+    if (corrected) {
+      return this.getAttribute('correct') || this.form
+    }
+    return this.form
   }
 
   toString() {

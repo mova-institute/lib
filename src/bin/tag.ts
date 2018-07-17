@@ -17,7 +17,7 @@ import { createReadStream } from 'fs'
 import { getLibRootRelative } from '../lib_path.node'
 import { mu } from '../mu'
 import * as minimist from 'minimist'
-import { tokenStream2conllu, tokenStream2brat, tokenStream2bratPlaintext } from '../nlp/ud/utils'
+import { tokenStream2conllu, tokenStream2bratSynt, tokenStream2bratPlaintext } from '../nlp/ud/utils'
 
 
 type OutFormat = 'vertical' | 'xml' | 'conllu' | 'sketch' | 'cg' | 'brat' | 'brat_plaintext'
@@ -217,9 +217,9 @@ function main(args: Args) {
             output.write(line + '\n')
           }
         } else if (args.format === 'brat') {
-          mu(tokenStream2brat([[...tokenStream]])).forEach(x => output.write(x + '\n'))
+          // mu(tokenStream2bratSynt([[...tokenStream]])).forEach(x => output.write(x + '\n'))
         } else if (args.format === 'brat_plaintext') {
-          mu(tokenStream2bratPlaintext(tokenStream)).forEach(x => output.write(x + '\n'))
+          // mu(tokenStream2bratPlaintext(tokenStream)).forEach(x => output.write(x + '\n'))
         } else {
           tokenStream2plainVertical(tokenStream, args.mte).forEach(x => output.write(x + '\n'))
         }

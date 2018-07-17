@@ -5,7 +5,7 @@ import * as minimist from 'minimist'
 import * as glob from 'glob'
 
 import { mu } from '../mu'
-import { tokenStream2brat, tokenStream2bratPlaintext, tokenStream2bratCoref } from '../nlp/ud/utils'
+import { tokenStream2bratSynt, tokenStream2bratPlaintext, tokenStream2bratCoref } from '../nlp/ud/utils'
 import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { zerofillMax, trimExtension } from '../string'
@@ -100,7 +100,7 @@ function doUd(
   for (let [i, chunk] of chunks.entries()) {
     let filename = `${zerofillMax(i + 1, chunks.length)}`
 
-    let str = mu(tokenStream2brat(chunk)).join('\n', true)
+    let str = mu(tokenStream2bratSynt(chunk)).join('\n', true)
     writeFileSyncMkdirp(join(dest, `${filename}.ann`), str)
 
     let chunkTokens = chunk.map(x => x.map(xx => xx.node))

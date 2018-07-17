@@ -1,6 +1,6 @@
 import { isOddball, isNumber, last } from './lang'
 import { HashSet } from './data_structures'  // todo remove dep
-import { Dict } from './types'
+import { Dict, Predicate } from './types'
 
 
 
@@ -327,8 +327,18 @@ export function deleteIndexes<T>(array: Array<T>, indexes: Array<number>) {
     return true
   })
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 export function transformUntilNoChange<T>(value: T, f: (value: T) => T) {
   while ((value = f(value)) !== value) { }
   return value
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function rfind<T>(array: Array<T>, predicate: Predicate<T>) {
+  for (let i = array.length - 1; i >= 0; --i) {
+    if (predicate(array[i])) {
+      return array[i]
+    }
+  }
 }

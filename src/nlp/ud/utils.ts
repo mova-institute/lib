@@ -12,13 +12,16 @@ export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos' | 'ud'
   morphOnly?: boolean
 }
+
+////////////////////////////////////////////////////////////////////////////////
 export function sentence2conllu(
   tokens: Array<Token>,
   multitokens: Array<MultitokenDescriptor>,
   sentenceLevelData,
   options: Sentence2conlluParams = {}
 ) {
-  let comments = new Array<string>()
+  let text = mu(tokenStream2plaintext(tokens.filter(x => !x.isElided()), multitokens)).join('')
+  let comments = [`text = ${text}`]
   for (let [k, v] of Object.entries(sentenceLevelData)) {
     if (v === undefined) {
       continue
@@ -28,19 +31,17 @@ export function sentence2conllu(
       comments.push(`${k} = ${v}`)
     }
   }
-  let text = mu(tokenStream2plaintext(tokens, multitokens))
-    .join('')
-  comments.push(`text = ${text}`)
+
 
   let lines = comments.sort().map(x => `# ${x}`)
 
-  let multitokenI = 0
-  tokens.forEach((token, i) => {
-
+  let indices = buildConlluIndexMap(tokens)
+  let multitokenIdx = 0
+  for (let [i, token] of tokens.entries()) {
     // deal with multitoken
     let isInsideMultitoken: boolean
-    if (multitokenI < multitokens.length) {
-      let mt = multitokens[multitokenI]
+    if (multitokenIdx < multitokens.length) {
+      let mt = multitokens[multitokenIdx]
       isInsideMultitoken = i >= mt.startIndex
       if (i === mt.startIndex) {
         lines.push([
@@ -51,7 +52,7 @@ export function sentence2conllu(
       } else if (i === mt.startIndex + mt.spanLength - 1) {
         lines[lines.length - mt.spanLength] +=
           '\t' + (token.gluedNext ? 'SpaceAfter=No' : '_')
-        ++multitokenI
+        ++multitokenIdx
       }
     }
 
@@ -69,11 +70,11 @@ export function sentence2conllu(
     if (token.isGraft) {
       misc.push('Graft=Yes')
     }
-    if (!isInsideMultitoken && token.gluedNext) {
+    if (!isInsideMultitoken && !token.isElided() && token.gluedNext) {
       misc.push('SpaceAfter=No')
     }
 
-
+    // XPOS
     let xpos: string
     if (options.xpos === 'mte') {
       xpos = token.interp.toMte()
@@ -88,21 +89,57 @@ export function sentence2conllu(
       xpos = '_'
     }
 
+    let head: string
+    let deprel: string
+    if (!options.morphOnly && !token.isElided()) {
+      let dep = token.deps.find(x => !tokens[x.headIndex].isElided())
+      if (dep) {
+        head = indices[dep.headIndex]
+        deprel = dep.relation
+      } else {
+        head = '0'
+        deprel = 'root'
+      }
+    }
+
+    let deps = token.deps
+      .filter(x => token.isElided() || tokens[x.headIndex].isElided())
+      .map(x => `${indices[x.headIndex]}:${x.relation}`)
+      .join('|')
+
     lines.push([
-      i + 1,
+      indices[i],
       token.getForm(),
       token.interp.lemma,
       pos,
       xpos,
       udFeatureStr || '_',
-      options.morphOnly ? '_' : (token.headIndex === undefined ? 0 : token.headIndex + 1),
-      options.morphOnly ? '_' : (token.rel || 'root'),
-      '_',
+      head || '_',
+      deprel || '_',
+      deps || '_',
       misc.sort().join('|') || '_',
     ].join('\t'))
-  })
+  }
 
   return lines.join('\n')
+}
+
+//------------------------------------------------------------------------------
+function buildConlluIndexMap(tokens: Array<Token>) {
+  let ret = new Array<string>()
+  let basicIndex = 0
+  let enchancedSubindex = 1
+  for (let t of tokens) {
+    if (t.isElided()) {
+      ret.push(`${basicIndex}.${enchancedSubindex++}`)
+    } else {
+      enchancedSubindex = 1
+      ++basicIndex
+      ret.push(basicIndex.toString())
+    }
+  }
+
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +227,7 @@ function hasAmbigCoordDependents(node: GraphNode<Token>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2brat(sentences: Array<Array<GraphNode<Token>>>) {
+export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>) {
   let offset = 0
   let t = 1
   let a = 1
@@ -222,13 +259,21 @@ export function* tokenStream2brat(sentences: Array<Array<GraphNode<Token>>>) {
       if (isAmbigCoordModifier(node)) {
         features['IsAmbigCoordModifier'] = 'Yes'
       }
-
       if (hasAmbigCoordDependents(node)) {
         features['HasAmbigCoordModifier'] = 'Yes'
       }
 
-      if (highlightHoles && !token.rel) {
+      let highlightHole = highlightHoles && (
+        token.isElided()
+          ? node.isRoot()
+          : node.parents.every(x => x.node.isElided())
+      )
+      if (highlightHole) {
         features['AnnotationHole'] = 'Yes'
+      }
+
+      if (token.isElided()) {
+        features['Elided'] = 'Yes'
       }
 
       yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
@@ -323,7 +368,8 @@ export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
 
 //------------------------------------------------------------------------------
 function mustHighlightHoles(sentence: Array<GraphNode<Token>>) {
-  let numRoots = mu(sentence).count(x => !x.node.hasDeps())
+  let numRoots = mu(sentence).count(x =>
+    x.node.isElided() ? x.isRoot() : !x.parents.some(xx => !xx.node.isElided()))
   if (numRoots === 1) {
     return false
   }

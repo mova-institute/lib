@@ -181,7 +181,8 @@ function main() {
       }
 
       // ~~~ bake some vars from sentence stream data
-      let roots = mu(tokens).findAllIndexes(x => !x.hasDeps()).toArray()
+      let roots = mu(tokens).findAllIndexes(
+        x => !x.deps.find(xx => !g.HELPER_RELATIONS.has(xx.relation))).toArray()
       let numComplete = tokens.length - roots.length + 1
       let isComplete = roots.length === 1
       let completionRatio = tokens.length === 1
@@ -214,7 +215,7 @@ function main() {
       prevSet = dataset
 
       if (!args.noStandartizing) {
-        g.standartizeSentence2ud21(nodes)
+        g.standartizeSentence2ud23(nodes)
       }
 
       if (completionRatio) {
@@ -265,7 +266,7 @@ function main() {
             }
             setRegistry[dataset].accountExported(tokens.length)
             if (!args.noStandartizing) {
-              g.standartizeSentence2ud21(nodes)
+              g.standartizeSentence2ud23(nodes)
             }
             let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
@@ -440,7 +441,7 @@ function set2filename(dir: string, setSchema: string, setName: string) {
 // const FOREIGN = MorphInterp.fromVesumStr('x:foreign')
 function standartizeMorpho(sentence: Array<Token>) {
   for (let token of sentence) {
-    g.standartizeMorphoForUd21(token.interp, token.form)
+    g.standartizeMorphoForUd23(token.interp, token.form)
 
     // token.interp.killNongrammaticalFeatures()
     token.interp.setIsAuxillary(false)

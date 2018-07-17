@@ -366,7 +366,7 @@ export function denormalizeInterp(interp: MorphInterp) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function standartizeMorphoForUd21(interp: MorphInterp, form: string) {
+export function standartizeMorphoForUd23(interp: MorphInterp, form: string) {
   denormalizeInterp(interp)
 
   setTenseIfConverb(interp, form)  // redundant?
@@ -428,7 +428,7 @@ const SUBRELS_TO_EXPORT = new Set([
   'parataxis:newsent',
   'xcomp:sp',
 ])
-export function standartizeSentence2ud21(sentence: Array<TokenNode>) {
+export function standartizeSentence2ud23(sentence: Array<TokenNode>) {
   let lastToken = last(sentence).node
   let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
 
@@ -436,11 +436,11 @@ export function standartizeSentence2ud21(sentence: Array<TokenNode>) {
     let t = node.node
 
     // todo? set obj from rev to obl
+    // todo: choose punct relation from the rigthtest token
 
-    // choose (punct) relation from the rigthtest token
     t.deps = t.deps
+      .filter(x => !HELPER_RELATIONS.has(x.relation))
       .sort((a, b) => a.headIndex - b.headIndex)
-      .slice(0, 1)
 
     // set AUX and Cond
     if (uEqSome(t.rel, ['aux', 'cop'])) {
@@ -481,7 +481,7 @@ export function standartizeSentence2ud21(sentence: Array<TokenNode>) {
         .forEach(x => x.node.rel = 'cop')
     }
 
-    standartizeMorphoForUd21(t.interp, t.form)
+    standartizeMorphoForUd23(t.interp, t.form)
   }
 
   // set parataxis punct to the root
