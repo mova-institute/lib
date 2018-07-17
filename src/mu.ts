@@ -292,6 +292,15 @@ export class Mu<T> implements Iterable<T> {
     return true
   }
 
+  longerThan(n: number) {
+    for (let _ of this) {
+      if (--n < 0) {
+        return true
+      }
+    }
+    return false
+  }
+
   count(fn?: Predicate<T>) {
     let ret = 0
     for (let x of this) {

@@ -2,7 +2,7 @@ import { Token } from '../token'
 import { toUd } from './tagset'
 import { UdMiRelation } from './syntagset'
 import { mu } from '../../mu'
-import { GraphNode, walkDepth } from '../../graph'
+import { GraphNode, walkDepth, walkDepthNoSelf } from '../../graph'
 import { MorphInterp } from '../morph_interp'
 import { last } from '../../lang'
 import { uEq, uEqSome } from './utils'
@@ -1669,6 +1669,22 @@ export function validateSentenceSyntax(
         && t.parent.node.interp.lemma.endsWith('ння')
         && !valencyDict.hasGerund(t.parent.node.interp.lemma)
     )
+
+    {
+      let cutoff = [...g.SUBORDINATE_CLAUSES, 'parataxis', 'conj']
+      reportIf(`не єдиний відносний в підрядному реченні`,
+        t => t.node.interp.isRelative()
+          && t.parent
+          && uEqSome(t.parent.node.rel, g.SUBORDINATE_CLAUSES)
+          && mu(walkDepthNoSelf(t.parent, x => uEqSome(x.node.rel, cutoff)))
+            .filter(x => x.node.interp.isRelative()
+              // з ким і про що розмовляє президент
+              && !(uEq(x.node.rel, 'conj') && x.parent.node.interp.isRelative())
+            )
+            .unique()  // shared-private paths
+            .longerThan(1)
+      )
+    }
   }
 
   // **********
@@ -1703,6 +1719,7 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // _немає_ з підметом
   // hypen з пробілами
   // перечепити shared залежники до конжа і перевалідувати
   // conj з verb в noun

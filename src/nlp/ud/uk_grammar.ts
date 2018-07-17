@@ -836,13 +836,7 @@ export const AUX_LEMMAS = [
   ...CONDITIONAL_AUX_LEMMAS,
 ]
 
-export const CLAUSAL_MODIFIERS = [
-  'acl',
-  'advcl',
-  'csubj',
-  'ccomp',
-  'xcomp',
-]
+export const CLAUSAL_MODIFIERS = SUBORDINATE_CLAUSES
 
 export const EXPL_FORMS = [
   'собі',
@@ -852,11 +846,7 @@ export const EXPL_FORMS = [
 ]
 
 export const CLAUSE_RELS = [
-  'csubj',
-  'ccomp',
-  'xcomp',
-  'advcl',
-  'acl',
+  ...SUBORDINATE_CLAUSES,
   'parataxis',
 ]
 

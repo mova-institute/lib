@@ -54,3 +54,11 @@ export function* walkDepth<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) 
     yield* walkDepth(child, cutOff)
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// naive, callstack-unbounded
+export function* walkDepthNoSelf<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) => boolean): IterableIterator<GraphNode<T>> {
+  for (let child of node.children) {
+    yield* walkDepth(child, cutOff)
+  }
+}
