@@ -1,6 +1,7 @@
 import { MorphInterp } from './morph_interp'
 import { keyvalue2attributesNormalized } from '../xml/utils'
 import { Dict } from '../types'
+import { CONJ_PROPAGATION_RELS, HELPER_RELATIONS } from './ud/uk_grammar'
 
 
 
@@ -130,6 +131,12 @@ export class Token {
   getAttribute(name: string) {
     return this.attributes && this.attributes[name]
   }
+  getConjPropagation() {
+    let rel = this.deps.find(x => CONJ_PROPAGATION_RELS.has(x.relation))
+    if (rel) {
+      return rel.relation
+    }
+  }
   isStructure() {
     return !!this.structure || this.isGlue()  // todo
   }
@@ -179,7 +186,8 @@ export class Token {
   }
 
   get rel() {
-    return this.deps.length > 0 ? this.deps[0].relation : undefined
+    let dep = this.deps.find(x => !HELPER_RELATIONS.has(x.relation))
+    return dep && dep.relation
   }
 
   set rel(val: string) {

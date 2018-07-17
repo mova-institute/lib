@@ -12,6 +12,7 @@ import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 
 export type TokenNode = GraphNode<Token>
 export type Node2indexMap = Map<TokenNode, number>
+// export type ConjPropagarion = 'private' | 'shared' | 'group'
 
 
 
@@ -439,7 +440,7 @@ export function standartizeSentence2ud23(sentence: Array<TokenNode>) {
     // todo: choose punct relation from the rigthtest token
 
     t.deps = t.deps
-      .filter(x => !HELPER_RELATIONS.has(x.relation))
+      // .filter(x => !HELPER_RELATIONS.has(x.relation))
       .sort((a, b) => a.headIndex - b.headIndex)
 
     // set AUX and Cond
@@ -717,11 +718,14 @@ export const COMPARATIVE_SCONJS = [
   'чим'
 ]
 
-export const HELPER_RELATIONS = new Set([
+export const CONJ_PROPAGATION_RELS_ARR = [
   'private',
   'shared',
-  'shared:cl',
-])
+  'groupshared',
+]
+export const CONJ_PROPAGATION_RELS = new Set(CONJ_PROPAGATION_RELS_ARR)
+
+export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
 
 export const ALLOWED_RELATIONS: Array<UdMiRelation> = [
   'advcl:sp',

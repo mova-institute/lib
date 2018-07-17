@@ -4,6 +4,8 @@ import { MorphInterp } from '../morph_interp'
 import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
+import { titlecase } from '../../string'
+import { CONJ_PROPAGATION_RELS_ARR } from './uk_grammar';
 
 
 
@@ -72,6 +74,17 @@ export function sentence2conllu(
     }
     if (!isInsideMultitoken && !token.isElided() && token.gluedNext) {
       misc.push('SpaceAfter=No')
+    }
+
+    // conj propagation
+    {
+      let conjPropagation = token.getConjPropagation()
+      if (conjPropagation) {
+        if (conjPropagation === 'groupshared') {
+          conjPropagation = 'group'
+        }
+        misc.push(`ConjPropagation=${titlecase(conjPropagation)}`)
+      }
     }
 
     // XPOS
@@ -218,7 +231,7 @@ function isAmbigCoordModifier(node: GraphNode<Token>) {
     && !(uEq(node.node.rel, 'discourse') && (node.node.interp.isConsequential()
       || node.node.interp.lemma === 'тощо')
     )
-    && !node.node.deps.some(xx => uEqSome(xx.relation, ['private', 'shared']))
+    && !node.node.deps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
 }
 
 //------------------------------------------------------------------------------
