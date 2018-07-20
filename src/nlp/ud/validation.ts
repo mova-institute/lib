@@ -391,11 +391,16 @@ export function validateSentenceSyntax(
       && !g.hasChild(t, 'fixed')
   )
 
-  oldReportIf(`punct в двокрапку зліва`,
-    (t, i) => i !== sentence.length - 1  // not last in sentence
-      && t.form === ':'
-      && t.interp.isPunctuation()
-      && t.headIndex < i)
+  reportIf(`punct в двокрапку зліва`,
+    t => t.node.index !== sentence.length - 1  // not last in sentence
+      && t.node.form === ':'
+      && t.node.interp.isPunctuation()
+      && t.node.headIndex < t.node.index
+      && !(t.parent
+        && (uEqSome(t.parent.node.rel, ['discourse'])
+          || t.parent.node.rel === 'parataxis:discourse')
+      )
+  )
 
   xoldReportIf(`у залежника ccomp немає підмета`,
     (t, i) => t.rel === 'ccomp'
@@ -897,13 +902,22 @@ export function validateSentenceSyntax(
     t => uEq(t.node.rel, 'parataxis')
       && t.node.rel !== 'parataxis:discourse'
       && t.node.rel !== 'parataxis:thatis'
+      && t.node.rel !== 'parataxis:rel'
+      && t.node.rel !== 'parataxis:newsent'
       && t.children.some(x => uEqSome(x.node.rel, ['cc', 'mark']))
+      && !t.children.some(x => x.node.interp.isQuote() && x.node.interp.isOpening())
   )
 
   reportIf(`parataxis має відносний`,
     t => uEq(t.node.rel, 'parataxis')
+      && t.node.rel !== 'parataxis:rel'
       && t.node.rel !== 'parataxis:discourse'
       && g.hasOwnRelative(t)
+  )
+
+  reportIf(`parataxis:rel не має відносного`,
+    t => t.node.rel === 'parataxis:rel'
+      && !g.hasOwnRelative(t)
   )
 
   reportIf(`xcomp зі сполучником`,

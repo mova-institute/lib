@@ -1,4 +1,4 @@
-import { GraphNode, walkDepth } from '../../graph'
+import { GraphNode, walkDepthNoSelf } from '../../graph'
 import { Token } from '../token'
 import { MorphInterp } from '../morph_interp'
 import * as f from '../morph_features'
@@ -281,13 +281,9 @@ export function isInfinitiveAnalytically(t: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function hasOwnRelative(t: TokenNode) {
-  let it = walkDepth(t, x => x !== t
-    && uEqSome(x.node.rel, SUBORDINATE_CLAUSES)
-    && !(x.parent.node.interp.isAdverb() && uEqSome(x.node.rel, ['csubj']))
-  )
-
-  return mu(it)
-    .some(x => x.node.interp.isRelative())
+  return mu(walkDepthNoSelf(t, x => uEqSome(x.node.rel, SUBORDINATE_CLAUSES)
+    || x.node.rel === 'parataxis:rel')
+  ).some(x => x.node.interp.isRelative())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -754,6 +750,7 @@ export const ALLOWED_RELATIONS: Array<UdMiRelation> = [
   'parataxis:discourse',
   'parataxis:newsent',
   'parataxis:thatis',
+  'parataxis:rel',
   'xcomp:sp',
 
   'acl',

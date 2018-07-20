@@ -62,6 +62,7 @@ export type Ud20MiSpecificRelation =
   | 'parataxis:discourse'
   | 'parataxis:newsent'
   | 'parataxis:thatis'
+  | 'parataxis:rel'
   | 'xcomp:sp'
 
 
