@@ -120,7 +120,13 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
       || t.node.interp.isAdverb() && t.children.some(x => g.SUBJECTS.some(subj => uEq(x.node.rel, subj))),
     `в ${g.AUX_LEMMAS.join('|')}`,
     t => g.AUX_LEMMAS.includes(t.node.interp.lemma)],
-  [`acl`, `з іменника`, t => canActAsNoun(t.node) || t.node.interp.isDemonstrative(),
+  [`acl`, `з іменника`, t => canActAsNoun(t.node)
+    || (!uEq(t.node.rel, 'det')
+      && [
+        f.PronominalType.demonstrative,
+        f.PronominalType.general,
+        f.PronominalType.indefinite
+      ].includes(t.node.interp.getFeature(f.PronominalType))),
     `в присудок (з умовами)`, t => g.isFeasibleAclRoot(t)
       || t.node.interp.isParticiple()  // temp
   ],
@@ -361,8 +367,10 @@ export function validateSentenceSyntax(
 
   oldReportIf(`токен позначено error’ом`, t => t.hasTag('error'))
 
-  oldReportIf('більше однієї стрілки в слово',
-    tok => tok.deps.length > 1 && mu(tok.deps).count(x => x.relation !== 'punct'))
+  reportIf('більше однієї стрілки в слово',
+    t => mu(t.node.deps)
+      .filter(x => !uEq(x.relation, 'punct') && !g.HELPER_RELATIONS.has(x.relation))
+      .longerThan(1))
 
   g.RIGHT_POINTED_RELATIONS.forEach(rel => reportIf2(`${rel} ліворуч`,
     ({ r, t }) => uEq(r, rel) && t.headIndex > t.index))
@@ -469,9 +477,13 @@ export function validateSentenceSyntax(
     t => uEq(t.node.rel, 'nsubj')
       && !t.node.isGraft
       && g.thisOrGovernedCase(t) !== f.Case.nominative
-      && !t.node.interp.isXForeign()
+      && !t.node.interp.isForeign()
       && !g.isQuantificationalNsubj(t)
       && !g.isQuantitativeAdverbModified(t)
+      && !(t.children.some(x => x.node.interp.isCardinalNumeral())
+        && t.children.some(x => x.node.interp.isPreposition() &&
+          ['близько'].includes(t.node.interp.lemma))
+      )
   )
 
   reportIf(`додаток в називному`,
@@ -745,6 +757,7 @@ export function validateSentenceSyntax(
         || uEqSome(t.node.rel, ['acl']) && nounInterp.isParticiple()
       ret = ret
         && interp.isAdjective()
+        && !interp.isMock()
         && !t.parent.node.isGraft
         && !nounInterp.isXForeign()
         && (
@@ -757,6 +770,11 @@ export function validateSentenceSyntax(
           || (interp.features.case !== nounInterp.features.case
             && interp.features.case !== g.thisOrGovernedCase(t.parent)
           )
+        )
+        // виділяють три основних елементи
+        && !(interp.isGenitive()
+          && [f.Case.accusative, f.Case.nominative].includes(t.parent.node.interp.getFeature(f.Case))
+          && t.parent.children.some(x => x.node.rel === 'nummod')
         )
 
       return ret
@@ -869,7 +887,10 @@ export function validateSentenceSyntax(
           && g.SUBORDINATE_CLAUSES.some(x => uEq(t.parent.parent.node.rel, x))
         )
       )
-      && !(t.node.index === 0 && t.parent.isRoot())
+      && !(t.parent.isRoot() && t.node.index === nodes.findIndex(x =>
+        !x.node.interp.isPunctuation() && !mu(x.walkThisAndUp0()).some(
+          xx => uEqSome(xx.node.rel, ['discourse'])))
+      )
   )
 
   reportIf(`parataxis під’єднано сполучником`,
@@ -992,6 +1013,14 @@ export function validateSentenceSyntax(
     && !lastToken.node.interp.isQuote()
     && !(lastToken.node.interp.isForeign() && lastToken.parent.node.form.length === 1)
     && !lastToken.parent.node.isGraft
+    && !(lastToken.node.interp.isClosing()
+      && lastToken.parent.children.some(x => x.node.interp.isOpening())
+    )
+    && !(lastToken.node.interp.isQuote()
+      && mu(lastToken.parent.children)
+        .filter(x => x.node.interp.isQuote())
+        .longerThan(1)
+    )
   ) {
     problems.push({
       indexes: [nodes.length - 1],
@@ -1592,9 +1621,8 @@ export function validateSentenceSyntax(
 
   reportIf2(`числівник має неочікувані (?) залежники`,
     ({ r, c }) => uEq(r, 'nummod')
-      && c.some(x => !uEqSome(x.node.rel, ['compound']))
+      && c.some(x => !uEqSome(x.node.rel, ['compound', 'conj', 'discourse']))
   )
-
 
   if (valencyDict) {
     reportIf(`неперехідне дієслово має додаток`,
@@ -1719,6 +1747,10 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // відмінки в іменниковій предикації
+  // ccomp/obj з _можливо_
+  // зловити <w lemma="&quot;Westworld&quot;" ana="x:foreign">"Westworld"</w>
+  // в conj:repeat всі shared
   // _немає_ з підметом
   // hypen з пробілами
   // перечепити shared залежники до конжа і перевалідувати

@@ -1078,6 +1078,9 @@ export class MorphInterp {
   isGrammaticallyInanimate() { return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.inanimate }
   isNonparticipleAdj() { return this.isAdjective() && !this.isParticiple() }
   isNoPlural() { return this.getFeature(NumberTantum) === NumberTantum.noPlural }
+  isClosing() { return this.getFeature(PunctuationSide) === PunctuationSide.close }
+  isOpening() { return this.getFeature(PunctuationSide) === PunctuationSide.open }
+  isMock() { return this.otherFlags.has('mock') }
 
 
   hasAnimacy() { return this.features.animacy !== undefined }

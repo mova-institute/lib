@@ -599,7 +599,9 @@ async function main() {
           //   console.log(`велика літера без :prop, ${token2string(token)}`)
           // }
 
-          // testMorpho(node, nextNode, analyzer)
+          if (0) {
+            fixtestMorpho(node, nextNode, analyzer)
+          }
         }
 
 
@@ -710,7 +712,7 @@ function lowercaseOddballLemmas(token: Token) {
 }
 
 //------------------------------------------------------------------------------
-function testMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer: MorphAnalyzer) {
+function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer: MorphAnalyzer) {
   let token = node.node
   let interp = node.node.interp
   token.form = token.getForm()

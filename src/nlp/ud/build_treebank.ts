@@ -214,10 +214,6 @@ function main() {
       }
       prevSet = dataset
 
-      if (!args.noStandartizing) {
-        g.standartizeSentence2ud23(nodes)
-      }
-
       if (completionRatio) {
         let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
@@ -288,6 +284,9 @@ function main() {
       let morphonlyThreshold = Number.parseFloat(args.morphonlyThreshold)
       if (completionRatio >= morphonlyThreshold) {
         // standartizeMorpho(tokens)
+        if (!args.noStandartizing) {
+          g.standartizeSentence2ud23(nodes)
+        }
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
         let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfo, {
