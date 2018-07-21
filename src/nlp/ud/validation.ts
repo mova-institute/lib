@@ -38,8 +38,11 @@ const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentenceP
     (t, s, i) => canBePredicateOld(t, s, i),
     `в кличний іменник`,
     t => t.interp.isXForeign()
+      || t.interp.isForeign()
       || canActAsNoun(t) && (t.interp.isVocative()
-        || t.hasTag('nomvoc'))],
+        || t.hasTag('nomvoc')
+      )
+  ],
   [`expl`,
     `з присудка`,
     (t, s, i) => canBePredicateOld(t, s, i),
@@ -379,7 +382,7 @@ export function validateSentenceSyntax(
 
   oldReportIf(`case праворуч`, (t, i) => uEq(t.rel, 'case')
     && t.headIndex < i
-    && !(sentence[i + 1] && sentence[i + 1].interp.isCardinalNumeral())
+    && !(sentence[i + 1] && sentence[i + 1].interp.isNumeric())
   )
 
   oldReportIf('невідома реляція',
@@ -571,6 +574,7 @@ export function validateSentenceSyntax(
     t => uEq(t.node.rel, 'case')
       && (t.node.interp.features.requiredCase as number) !== g.thisOrGovernedCase(t.parent)
       && !t.parent.node.interp.isXForeign()
+      && !t.parent.node.interp.isForeign()  // todo
       && !t.parent.node.isGraft
       && !g.hasChild(t.parent, 'fixed')
   )
@@ -1466,7 +1470,7 @@ export function validateSentenceSyntax(
       && !uEqSome(t.node.rel, ['flat:title'])
   )
 
-  reportIf(`_тест: еліпс наперед`,
+  xreportIf(`_тест: еліпс наперед`,
     t => t.node.comment
       && t.node.comment.includes('еліпс наперед')
   )
@@ -1651,6 +1655,10 @@ export function validateSentenceSyntax(
         )
         && !(g.thisOrGovernedCase(t) === f.Case.accusative
           && g.OTHER_WORDS_WITH_ACC_VALENCY.has(t.parent.node.interp.lemma)
+        )
+        && !(t.node.interp.isNeuter()
+          && t.node.interp.isReversive()
+          && valencyDict.isAccusativeOnlyVerb(t.node.interp.lemma.slice(0, -2))
         )
     )
 

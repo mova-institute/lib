@@ -992,6 +992,7 @@ export class MorphInterp {
   isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes }
   isAdjectivish() { return this.features.pos === Pos.adjective }  // todo: rename properly <^
   isAdverb() { return this.features.pos === Pos.adverb }
+  isNumeric() { return this.isCardinalNumeral() || this.canBeOrdinalNumeral() }
   isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
   isCardinalNumerish() { return this.isCardinalNumeral() || this.isNounNumeral() }
   isConjunction() { return this.features.pos === Pos.conjunction }

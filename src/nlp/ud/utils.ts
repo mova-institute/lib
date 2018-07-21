@@ -303,7 +303,7 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
       n2id[token.id] = id
       yield `A${a++}\tN ${tId} ${token.id}`
       for (let tag of ['Promoted', 'Graft']) {
-        if (token.tags.includes(tag.toLowerCase() as TokenTag)) {
+        if (token.tags.has(tag.toLowerCase() as TokenTag)) {
           yield `A${a++}\t${tag} ${tId}`
         }
       }

@@ -18,7 +18,7 @@ import {
 } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
-import { toSortableDatetime, fromUnixStr } from '../date'
+import { toSortableDatetime, fromUnixStr, ukMonthMap } from '../date'
 import { mu } from '../mu'
 import * as strUtils from '../string'
 import { createDictionarySync } from '../nlp/dictionary/factories.node'
@@ -49,6 +49,8 @@ const KNOWN_NONDIC_LEMMAS = new Set([
   'і.',
   'телеведучий',
 ])
+
+const ukMonthsGen = new Set(ukMonthMap.keys())
 
 //------------------------------------------------------------------------------
 async function main() {
@@ -573,6 +575,8 @@ async function main() {
             }
           }
 
+          // makeDatesPromoted(node)
+
           // for (let coref of token.corefs) {
           //   let newTokEl = id2el.get(coref.headId)
           //   let newTok = mu(mixml2tokenStream(newTokEl)).first()
@@ -635,6 +639,16 @@ async function main() {
 }
 
 //------------------------------------------------------------------------------
+function makeDatesPromoted(node: GraphNode<Token>) {
+  if (ukMonthsGen.has(node.node.form)
+    && node.parent
+    && node.parent.node.interp.isOrdinalNumeral()
+  ) {
+    node.parent.node.tags.add('promoted')
+  }
+}
+
+//------------------------------------------------------------------------------
 function saveToken(token: Token, element: AbstractElement) {
   Object.entries(token.getAttributes())
     .forEach(([k, v]) => element.setAttribute(k, v || undefined))
@@ -650,6 +664,10 @@ function saveToken(token: Token, element: AbstractElement) {
   let coref = token.corefs.map(x => `${x.headId}-${x.type}`).join('|')
   if (coref) {
     element.setAttribute('coref', coref)
+  }
+  let tags = element.attribute('tags') || ''
+  if (token.hasTag('promoted') && !/\bpromoted\b/.test(tags)) {
+    element.setAttribute('tags', `${tags} promoted`.trim())
   }
 }
 

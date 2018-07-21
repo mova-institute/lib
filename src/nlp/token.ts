@@ -2,6 +2,7 @@ import { MorphInterp } from './morph_interp'
 import { keyvalue2attributesNormalized } from '../xml/utils'
 import { Dict } from '../types'
 import { CONJ_PROPAGATION_RELS, HELPER_RELATIONS } from './ud/uk_grammar'
+import { CoolSet } from '../data_structures/cool_set';
 
 
 
@@ -68,7 +69,7 @@ export class Token {
   helperDeps = new Array<Dependency>()
   corefs = new Array<Coreference>()
   // corefs2 = new Array<Coreference>()
-  tags = new Array<TokenTag>()
+  tags = new CoolSet<TokenTag>()
   index: number
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
@@ -91,7 +92,7 @@ export class Token {
   }
 
   get isPromoted() {
-    return this.tags.includes('promoted')
+    return this.tags.has('promoted')
   }
 
   get isGraft() {
@@ -99,7 +100,7 @@ export class Token {
   }
 
   hasTag(tag: TokenTag) {
-    return this.tags.includes(tag)
+    return this.tags.has(tag)
   }
 
   setType(type: TokenType) {

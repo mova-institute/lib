@@ -47,7 +47,7 @@ export function isRelativeInRelcl(node: GraphNode<Token>) {
 ////////////////////////////////////////////////////////////////////////////////
 export function isValencyHavingAdjective(t: Token) {
   return t.interp.isAdjective()
-    && VALENCY_HAVING_ADJECTIVES.includes(t.interp.lemma)
+    && DATIVE_VALENCY_ADJECTIVES.includes(t.interp.lemma)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -243,13 +243,26 @@ export function isNumAdvAmbig(lemma: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isConjWithoutCcOrPunct(t: TokenNode) {
-  return uEq(t.node.rel, 'conj')
+  let ret = uEq(t.node.rel, 'conj')
     && !t.children.some(x => uEqSome(x.node.rel, ['cc'])
       || uEq(x.node.rel, 'punct')
-      && /[,;/–—\-]/.test(x.node.interp.lemma)
+      && /[,;/–—\-\\]/.test(x.node.interp.lemma)
       && x.node.index < t.node.index
     )
     && !t.node.hasTag('conj_no_cc')
+
+  if (!ret) {
+    return ret
+  }
+
+  // last one has
+  // let siblingConjes = t.parent.children.filter(x => x !== t && uEq(x.node.rel, 'conj'))
+  // if (siblingConjes.length) {
+  //   ret = ret && !last(siblingConjes).children
+  //     .some(x => uEq(x.node.rel, 'cc'))
+  // }
+
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -918,24 +931,29 @@ export const WORDS_WITH_INS_VALENCY = [
 ]
 
 export const OTHER_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
-  'запитувати',
+  'бігати',
+  'бігти',
+  'бухтіти',
+  'досиджувати',
+  'думати',
   'дякувати',
   'зазначити',
-  'нотувати',
-  'бухтіти',
-  'розміщувати',
-  'продивлятися',
-  'наложити',
-  'бігати',
   'заказати',
-  'думати',
-  'проскочити',
-  'постачати',
-  'являти',
+  'запитувати',
+  'збутися',
+  'збутися',
   'інкримінувати',
+  'наложити',
+  'нотувати',
+  'поворожити',
+  'пообростати',
+  'постачати',
+  'продивлятися',
+  'проскочити',
   'розмістити',
+  'розміщувати',
   'штовхнути',
-  'виплюнути',
+  'являти',
 ])
 
 export const PREPS_HEADABLE_BY_NUMS = [
@@ -986,12 +1004,26 @@ export const EMPTY_ANIMACY_NOUNS = [
   'ся',
 ]
 
-const VALENCY_HAVING_ADJECTIVES = [
-  'властивий',
-  'потрібний',
-  'доступний',
-  'ненависний',
+const DATIVE_VALENCY_ADJECTIVES = [
   'ближчий',
+  'ближчий',
+  'вигідний',
+  'виписаний',
+  'відданий',
+  'відомий',
+  'властивий',
+  'доступний',
+  'звичний',
+  'найвірніший',
+  'незнайомий',
+  'ненависний',
+  'переданий',
+  'передбачений',
+  'піддатний',
+  'підконтрольний',
+  'повернений',
+  'потрібний',
+  'присвячений',
 ]
 
 const INF_VALENCY_ADJECTIVES = [
