@@ -865,7 +865,7 @@ export function validateSentenceSyntax(
     t => uEqSome(t.node.rel, ['nummod', 'det:nummod', 'det:numgov'])
       && !t.parent.node.interp.isPlural()
       && !t.node.interp.lemma.endsWith('1')
-      && !['один', 'півтора'].includes(t.node.interp.lemma)
+      && !['один', 'півтора', 'пів'].includes(t.node.interp.lemma)
       && !g.canBeDecimalFraction(t)
       && !t.parent.node.interp.isXForeign()
   )
@@ -1645,6 +1645,13 @@ export function validateSentenceSyntax(
         && valencyDict.isIntransitiveOnlyVerb(t.parent.node.interp.lemma)
         && !(uEq(t.node.rel, 'obj') && t.node.interp.isDative())
         && !t.node.interp.isGenitive()
+        && !g.WORDS_WITH_INS_VALENCY.includes(t.parent.node.interp.lemma)
+        && !(g.thisOrGovernedCase(t) === f.Case.instrumental
+          && g.WORDS_WITH_INS_VALENCY.includes(t.parent.node.interp.lemma)
+        )
+        && !(g.thisOrGovernedCase(t) === f.Case.accusative
+          && g.OTHER_WORDS_WITH_ACC_VALENCY.has(t.parent.node.interp.lemma)
+        )
     )
 
     xreportIf(`перехідне дієслово не має додатка`,

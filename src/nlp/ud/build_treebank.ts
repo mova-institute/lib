@@ -228,7 +228,10 @@ function main() {
         } else if (!isComplete && args.reportHoles) {
           sentenseHoles.push({
             sentenceId,
-            problems: [{ message: 'речення недороблене', indexes: roots }],
+            problems: [{
+              message: `речення недороблене, ${tokens.length} ток.`,
+              indexes: roots,
+            }],
             tokens,
             bratPath,
           })
