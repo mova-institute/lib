@@ -641,7 +641,9 @@ function saveToken(token: Token, element: AbstractElement) {
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)
-  let dep = token.deps.map(x => `${x.headId}-${x.relation}`).join('|')
+  let dep = mu(token.getAllDeps())
+    .map(x => `${x.headId}-${x.relation}`)
+    .join('|')
   if (dep) {
     element.setAttribute('dep', dep)
   }

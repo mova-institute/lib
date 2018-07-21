@@ -318,7 +318,7 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
   let rId = 1
   for (let sentence of sentences) {
     for (let token of sentence) {
-      for (let dep of token.node.deps) {
+      for (let dep of token.node.getAllDeps()) {
         let head = n2id[dep.headId]
         let dependant = n2id[token.node.id]
         yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`

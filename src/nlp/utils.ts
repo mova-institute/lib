@@ -6,7 +6,7 @@ import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
 import { r, makeObject, last } from '../lang'
-import { uniqueSmall as unique, uniqueJson, arr2indexObj, rfind } from '../algo'
+import { uniqueSmall as unique, uniqueJson, arr2indexObj, rfind, clusterize } from '../algo'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
@@ -29,6 +29,7 @@ import * as sortedUniq from 'lodash.sorteduniq'
 import { GraphNode } from '../graph'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { AbstractDocument } from '../xml/xmlapi/abstract_document'
+import { HELPER_RELATIONS } from './ud/uk_grammar'
 
 
 
@@ -1122,9 +1123,10 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
       if (name === 'w_') {
         let depsStr = el.attribute('dep')
         if (depsStr) {
-          tok.deps = depsStr.split('|')
+          let deps = depsStr.split('|')
             .map(x => x.split('-'))
             .map(([head, relation]) => ({ headId: head, relation }))
+          clusterize(deps, x => HELPER_RELATIONS.has(x.relation), [tok.deps, tok.helperDeps])
         }
 
         let corefStr = el.attribute('coref')

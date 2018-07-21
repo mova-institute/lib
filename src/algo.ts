@@ -342,3 +342,20 @@ export function rfind<T>(array: Array<T>, predicate: Predicate<T>) {
     }
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function clusterize<T>(
+  values: Iterable<T>,
+  clusterizer: (t: T) => number | boolean,
+  clusters = new Array<Array<T>>(),
+) {
+  for (let value of values) {
+    let cluster = Number(clusterizer(value))
+    if (!(cluster in clusters)) {
+      clusters[cluster] = new Array<T>()
+    }
+    clusters[cluster].push(value)
+  }
+
+  return clusters
+}
