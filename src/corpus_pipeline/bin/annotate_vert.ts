@@ -15,7 +15,7 @@ import { BufferedBackpressWriter } from '../../backpressing_writer'
 import * as minimist from 'minimist'
 
 import * as os from 'os'
-import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client';
+import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 
 
 

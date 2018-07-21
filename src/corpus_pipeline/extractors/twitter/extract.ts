@@ -17,8 +17,8 @@ import { StreamPauser } from '../../../stream_pauser'
 
 import * as fs from 'fs'
 import * as util from 'util'
-import { prepareZvidusilMeta } from '../../utils';
-import { mapInplace } from '../../../lang';
+import { prepareZvidusilMeta } from '../../utils'
+import { mapInplace } from '../../../lang'
 
 
 

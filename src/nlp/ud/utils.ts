@@ -5,7 +5,7 @@ import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
 import { titlecase } from '../../string'
-import { CONJ_PROPAGATION_RELS_ARR } from './uk_grammar';
+import { CONJ_PROPAGATION_RELS_ARR } from './uk_grammar'
 
 
 
