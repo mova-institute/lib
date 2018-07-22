@@ -232,7 +232,7 @@ function isAmbigCoordModifier(node: GraphNode<Token>) {
     && !(uEq(node.node.rel, 'discourse') && (node.node.interp.isConsequential()
       || node.node.interp.lemma === 'тощо')
     )
-    && !node.node.deps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
+    && !node.node.helperDeps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
 }
 
 //------------------------------------------------------------------------------
