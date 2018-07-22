@@ -1647,6 +1647,10 @@ export function validateSentenceSyntax(
     ({ n, r, p }) => uEq(r, 'xcomp') && !g.findXcompSubject(n)
   )
 
+  xreportIf2(`, що її …`,
+    ({ n }) => g.findShchojijiAntecedent(n)
+  )
+
   if (valencyDict) {
     reportIf(`неперехідне дієслово має додаток`,
       t => uEqSome(t.node.rel, ['obj'])

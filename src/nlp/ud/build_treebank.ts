@@ -140,8 +140,8 @@ function main() {
     createValencyDictFromKotsybaTsvs(args.valencyDict)
     : undefined
   let openedFiles = {} as any
-  let setRegistry = {} as Dict<DatasetDescriptor>
-  let setRegistryMorpho = {} as Dict<DatasetDescriptor>
+  let setRegistry: Dict<DatasetDescriptor> = {}
+  let setRegistryMorpho: Dict<DatasetDescriptor> = {}
   let sentenseErrors = []
   let sentenseHoles = []
   let prevSet: string
@@ -160,8 +160,8 @@ function main() {
     let sentenceStream = tokenStream2sentences(tokenStream)
     let annotationalGap = false
 
-    for (let { sentenceId, dataset, tokens, multitokens, nodes, document,
-      paragraph } of sentenceStream
+    for (let { tokens, multitokens, nodes,
+      sentenceId, dataset, document, paragraph, } of sentenceStream
     ) {
       g.generateEnhancedDeps(nodes)
 

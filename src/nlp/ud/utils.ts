@@ -7,6 +7,7 @@ import { GraphNode } from '../../graph'
 import { titlecase, trimAfterFirst } from '../../string'
 import { CONJ_PROPAGATION_RELS_ARR } from './uk_grammar'
 import sortby = require('lodash.sortby')
+import sorteduniq = require('lodash.sorteduniq')
 
 
 
@@ -119,7 +120,11 @@ export function sentence2conllu(
 
     let edeps = sortby(token.edeps, x => x.headIndex)
       .map(x => `${indices[x.headIndex]}:${x.relation}`)
-      .join('|')
+    let prevLen = edeps.length
+    edeps = sorteduniq(edeps)
+    if (edeps.length !== prevLen) {
+      // throw new Error(`edeps.length !== prevLen`)
+    }
 
     lines.push([
       indices[i],
@@ -130,7 +135,7 @@ export function sentence2conllu(
       udFeatureStr || '_',
       head || '_',
       deprel || '_',
-      edeps || '_',
+      edeps.join('|') || '_',
       misc.sort().join('|') || '_',
     ].join('\t'))
   }

@@ -166,7 +166,11 @@ export class Token {
   }
 
   isElided() {
-    return this.attributes['elided'] === 'yes'
+    return !!this.attributes['ellipsis']
+  }
+
+  isElidedPredicate() {
+    return this.attributes['ellipsis'] === 'predicate'
   }
 
   interp0() {

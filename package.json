@@ -42,6 +42,7 @@
     "typescript": "^2.9.1"
   },
   "dependencies": {
+    "@types/lodash.sorteduniq": "^4.2.3",
     "@types/tldjs": "^1.7.1",
     "body-parser": "^1.18.3",
     "camelcase": "^3.0.0",

@@ -105,6 +105,12 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.sorteduniq@^4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.sorteduniq/-/lodash.sorteduniq-4.2.3.tgz#4a05b8aceff813fb1785909190989820bf76ef14"
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash@*", "@types/lodash@^4.14.109":
   version "4.14.112"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.112.tgz#4a8d8e5716b97a1ac01fe1931ad1e4cba719de5a"
