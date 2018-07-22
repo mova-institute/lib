@@ -110,12 +110,12 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
       || t.node.isPromoted
     ,
     `в іменник`,
-    t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && g.isRelativeInRelcl(t),
+    t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && g.findRelativeClauseRoot(t),
   ],
   [`nmod`, `з іменника`, t => canActAsNoun(t.node) || g.isDenUDen(t) /* temp */,
     `в іменник`,
     t => canActAsNounForObj(t)
-      || t.node.interp.lemma === 'який' && g.isRelativeInRelcl(t)
+      || t.node.interp.lemma === 'який' && g.findRelativeClauseRoot(t)
       || g.isDenUDen(t.parent)  // temp
   ],
   [`aux`,
@@ -525,9 +525,10 @@ export function validateSentenceSyntax(
     }
   )
 
-  reportIf(`orphan не з Promoted`,
+  reportIf(`orphan не з Promoted / залежника пропущеного`,
     t => uEq(t.node.rel, 'orphan')
       && !t.parent.node.isPromoted
+      && !g.isPromoted(t)
   )
 
   reportIf(`підрядне означальне відкриває що-іменник`,
@@ -1250,7 +1251,7 @@ export function validateSentenceSyntax(
       && !t.node.isPromoted
       && toUd(t.node.interp).pos === 'DET'  // todo: .isDet()
       && !uEqSome(t.node.rel, ['det', 'conj', 'fixed', 'advcl:sp'])
-      && !g.isRelativeInRelcl(t)
+      && !g.findRelativeClauseRoot(t)
   )
 
   xreportIf(`неочікувана реляція в кількісний числівник`,
@@ -1640,6 +1641,10 @@ export function validateSentenceSyntax(
   reportIf2(`числівник має неочікувані (?) залежники`,
     ({ r, c }) => uEq(r, 'nummod')
       && c.some(x => !uEqSome(x.node.rel, ['compound', 'conj', 'discourse']))
+  )
+
+  xreportIf2(`xcomp не має явного підмета`,
+    ({ n, r, p }) => uEq(r, 'xcomp') && !g.findXcompSubject(n)
   )
 
   if (valencyDict) {

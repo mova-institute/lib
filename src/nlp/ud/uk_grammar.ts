@@ -1,5 +1,5 @@
 import { GraphNode, walkDepthNoSelf } from '../../graph'
-import { Token } from '../token'
+import { Token, buildDep, buildEDep } from '../token'
 import { MorphInterp } from '../morph_interp'
 import * as f from '../morph_features'
 import { uEq, uEqSome } from './utils'
@@ -7,33 +7,199 @@ import { mu } from '../../mu'
 import { last, wiith } from '../../lang'
 import { trimAfterFirst } from '../../string'
 import { UdMiRelation } from './syntagset'
-import { UdPos } from './tagset'
+import { UdPos, toUd } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 
 export type TokenNode = GraphNode<Token>
 export type Node2indexMap = Map<TokenNode, number>
-// export type ConjPropagarion = 'private' | 'shared' | 'group'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export function findClauseRoot(node: GraphNode<Token>) {
+export function isPromoted(node: TokenNode) {
+  return node.parents.some(p => p.node.isElided())
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function generateEnhancedDeps(basicNodes: Array<TokenNode>) {
+
+  // 1: build a “basic” enhanced *tree*
+  for (let node of basicNodes) {
+    // 1.1: copy basic edges that don't touch promoted tokens
+    if (!isPromoted(node)) {
+      node.node.edeps.push(...node.node.deps)
+    }
+
+    // 1.2: add deps touching elided tokens
+    {
+      let elisionDeps = node.node.deps
+        .filter(x => node.node.isElided() || basicNodes[x.headIndex].node.isElided())
+      node.node.edeps.push(...elisionDeps)
+    }
+  }
+
+  for (let node of basicNodes) {
+    //todo: do everything on enhanced tree after propagation of conjuncts??
+
+    // 2: propagation of conjuncts
+    if (uEq(node.node.rel, 'conj') && node.node.rel !== 'conj:parataxis') {
+
+      // 2.1: conjuncts are heads: _She was watching a movie or reading._ (easy)
+      // todo: share marks and stuff?
+      let conj0 = node.parent
+      let shared = conj0.children.filter(x => x !== node
+        && x.node.helperDeps.some(helperDep =>
+          helperDep.headId === conj0.node.id && helperDep.relation === 'shared'))
+      for (let t of shared) {
+        t.node.edeps.push(buildEDep(node.node, t.node.rel))
+      }
+
+      // 2.2: conjuncts are dependents: _a long and wide river_ (harder)
+      let conjHead = node.ancestors0().find(x => !uEq(x.node.rel, 'conj'))
+      if (conjHead.parent) {
+        let newRel = findRelationAnalog(node, conjHead)
+        if (newRel) {
+          // console.error(newRel)
+          // todo: do not strip?
+          node.node.edeps.push(buildEDep(conjHead.parent.node, newRel))
+        }
+      }
+    }
+
+    // Relative clauses
+    let relRoot = findRelativeClauseRoot(node)
+    if (relRoot) {
+      let antecedent = relRoot.parent
+
+      // ref
+      // todo: adv?
+      // todo: дівчина, що її
+      node.node.edeps.push(buildDep(antecedent.node, 'ref'))
+
+      // backward, todo
+      if (node.node.rel !== 'advmod' && relRoot.children.some(x => x === node)) {
+        antecedent.node.edeps.push(buildDep(relRoot.node, node.node.rel))
+      }
+    }
+
+    // xcomp subject
+    if (uEq(node.node.rel, 'xcomp')) {
+      let subj = findXcompSubject(node)
+      if (subj) {
+        let rel = uEqSome(subj.node.rel, ['obj', 'iobj']) ? 'nsubj' : subj.node.rel
+        node.node.edeps.push(buildEDep(subj.node, rel))
+      }
+    }
+
+    // todo: filter elided? e.g. 20:nsubj|20.1:nsubj
+    // todo: test nested conj
+    // todo: check conj paths are followed
+    // todo: 5-10 м/с не конж
+  }
+}
+
+//------------------------------------------------------------------------------
+function findRelationAnalog(newDependent: TokenNode, existingDependent: TokenNode) {
+  let { pos: newDepPos } = toUd(newDependent.node.interp)
+  let { pos: existingDepPos } = toUd(existingDependent.node.interp)
+  let existingRel = existingDependent.node.rel
+  newDepPos = dumbDownUdPos(newDepPos)
+  existingDepPos = dumbDownUdPos(existingDepPos)
+
+
+  if (newDependent.node.interp.isX()) {
+    // what else can we do?..
+    return existingRel
+  }
+
+  if (uEqSome(existingRel, [
+    'cop',
+    'aux',
+    'mark',
+    'case',
+    'dep',
+    'cc',
+    'vocative',
+    'xcomp',  // ~
+    'appos',  // ~
+  ])) {
+    return existingRel
+  }
+
+  if (uEq(existingRel, 'obl') && newDependent.node.interp.isAdverb()) {
+    // todo: виколоти і т.д.
+    return 'advmod'
+  }
+  if (uEq(existingRel, 'advmod') && newDependent.node.interp.isNounish()) {
+    // todo: то там, то сям, то те, то се; скрізь і всім допомагати
+    return 'obl'
+  }
+  if (uEq(existingRel, 'amod') && newDepPos === 'DET') {
+    return 'det'
+  }
+  if (uEqSome(existingRel, ['amod', 'det']) && newDependent.node.interp.isNounish()) {
+    return 'nmod'
+  }
+  if (uEq(existingRel, 'det') && newDepPos === 'ADJ') {
+    return 'amod'
+  }
+
+  if (uEqSome(existingRel, CLAUSAL_MODIFIERS) && definitelyIsPredicate(newDependent)) {
+    return existingRel
+  }
+
+  if (newDepPos === existingDepPos) {
+    return existingRel  // risky
+  }
+
+  // return existingRel  // risky, last resort
+  // todo: state it doesn't work without gap filling
+  // todo: хто і як слухатиме його
+}
+
+//------------------------------------------------------------------------------
+function definitelyIsPredicate(node: TokenNode) {
+  return hasChild(node, 'nsubj')
+    || hasChild(node, 'csubj')
+    || hasChild(node, 'cop')
+}
+
+//------------------------------------------------------------------------------
+function dumbDownUdPos(upos: UdPos) {
+  if (upos === 'PROPN' || upos === 'PRON') {
+    return 'NOUN'
+  }
+  return upos
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findXcompSubject(node: TokenNode) {
+  let topParent = node.ancestors0().find(x =>
+    !uEqSome(x.node.rel, ['xcomp', 'conj'])/*  || x.node.rel === 'conj:parataxis' */)
+
+  return mu(['obj', 'iobj', 'nsubj', 'csubj'])
+    .map(r => topParent.children.find(x => uEq(x.node.rel, r)))
+    .filter(x => x)
+    .first()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findClauseRoot(node: TokenNode) {
   return mu(node.walkUp0())
     .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isRelativeInRelcl(node: GraphNode<Token>) {
-  if (!node.node.interp.isRelative()) {
-    return false
+export function findRelativeClauseRoot(relative: TokenNode) {
+  if (!relative.node.interp.isRelative()) {
+    return
   }
-  let clauseRoot = findClauseRoot(node)
+  let clauseRoot = findClauseRoot(relative)
   if (!clauseRoot) {
-    return false
+    return
   }
-
   if (uEq(clauseRoot.node.rel, 'acl')) {
-    return true
+    return clauseRoot
   }
 
   if (clauseRoot.node.interp.isInfinitive()) {
@@ -41,7 +207,9 @@ export function isRelativeInRelcl(node: GraphNode<Token>) {
       .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
   }
 
-  return clauseRoot && uEq(clauseRoot.node.rel, 'acl')
+  if (clauseRoot && uEq(clauseRoot.node.rel, 'acl')) {
+    return clauseRoot
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

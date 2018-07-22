@@ -3,6 +3,7 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 import { Dict } from '../types'
 import { CONJ_PROPAGATION_RELS, HELPER_RELATIONS } from './ud/uk_grammar'
 import { CoolSet } from '../data_structures/cool_set';
+import { stripSubrel } from './ud/utils'
 
 
 
@@ -66,6 +67,7 @@ export class Token {
   gluedNext: boolean
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
+  edeps = new Array<Dependency>()
   helperDeps = new Array<Dependency>()
   corefs = new Array<Coreference>()
   // corefs2 = new Array<Coreference>()
@@ -246,5 +248,23 @@ export class Token {
       }
       return `<${tagName}>`
     }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function buildDep(head: Token, relation = head.rel): Dependency {
+  return {
+    relation,
+    headId: head.id,
+    headIndex: head.index,
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function buildEDep(head: Token, relation = head.rel): Dependency {
+  return {
+    relation: stripSubrel(relation),
+    headId: head.id,
+    headIndex: head.index,
   }
 }

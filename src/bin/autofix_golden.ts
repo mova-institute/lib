@@ -1262,7 +1262,7 @@ function splitPiv(
 function addRefRelation(node: GraphNode<Token>) {
   let token = node.node
   if (!token.deps.some(x => uEq(x.relation, 'ref'))
-    && g.isRelativeInRelcl(node)
+    && g.findRelativeClauseRoot(node)
   ) {
     let aclRoot = g.findClauseRoot(node)
     token.deps.push({

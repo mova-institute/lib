@@ -163,6 +163,8 @@ function main() {
     for (let { sentenceId, dataset, tokens, multitokens, nodes, document,
       paragraph } of sentenceStream
     ) {
+      g.generateEnhancedDeps(nodes)
+
       // count some stats
       if (valencyDict) {
         for (let token of tokens) {

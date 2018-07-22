@@ -4,8 +4,9 @@ import { MorphInterp } from '../morph_interp'
 import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
-import { titlecase } from '../../string'
+import { titlecase, trimAfterFirst } from '../../string'
 import { CONJ_PROPAGATION_RELS_ARR } from './uk_grammar'
+import sortby = require('lodash.sortby')
 
 
 
@@ -102,6 +103,7 @@ export function sentence2conllu(
       xpos = '_'
     }
 
+    // head, deprel
     let head: string
     let deprel: string
     if (!options.morphOnly && !token.isElided()) {
@@ -115,8 +117,7 @@ export function sentence2conllu(
       }
     }
 
-    let deps = token.deps
-      .filter(x => token.isElided() || tokens[x.headIndex].isElided())
+    let edeps = sortby(token.edeps, x => x.headIndex)
       .map(x => `${indices[x.headIndex]}:${x.relation}`)
       .join('|')
 
@@ -129,7 +130,7 @@ export function sentence2conllu(
       udFeatureStr || '_',
       head || '_',
       deprel || '_',
-      deps || '_',
+      edeps || '_',
       misc.sort().join('|') || '_',
     ].join('\t'))
   }
@@ -526,6 +527,11 @@ export function parseBratFile(lines: Iterable<string>) {
   }
 
   return Object.values(tokens).sort((a, b) => a.index - b.index)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function stripSubrel(rel: string) {
+  return trimAfterFirst(rel, ':')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
