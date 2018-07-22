@@ -194,7 +194,7 @@ export class Token {
   }
 
   get rel() {
-    let dep = this.deps.find(x => !HELPER_RELATIONS.has(x.relation))
+    let dep = this.deps[0]
     return dep && dep.relation
   }
 

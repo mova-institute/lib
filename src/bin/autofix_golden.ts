@@ -517,6 +517,14 @@ async function main() {
             // interp.lemma = token.form.replace('\'', '’').toLocaleLowerCase()
           }
 
+          // цікавий вивід
+          // if (uEqSome(token.rel, ['acl', 'advmod'])
+          //   && token.rel !== 'advmod:amtgov'
+          //   && g.isAdverbialAcl(node)
+          // ) {
+          //   token.rel = 'acl:adv'
+          // }
+
           // addRefRelation(node)
 
 

@@ -512,8 +512,13 @@ export function hasOwnRelative(t: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isAdverbialAcl(t: TokenNode) {
-  return t.node.interp.isAdverb() && !t.hasChildren()  // двері праворуч
-    || t.node.interp.isConverb() && !t.hasChildren()  // бокс лежачи
+  return t.parent
+    && t.parent.node.interp.isNounish()
+    && !t.parent.children.some(x => uEqSome(x.node.rel, ['cop', 'nsubj']))
+    && !uEqSome(t.parent.node.rel, ['obl'])
+    && (t.node.interp.isAdverb() && !t.hasChildren()  // двері праворуч
+      || t.node.interp.isConverb() && !t.hasChildren()  // бокс лежачи
+    )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -948,10 +953,10 @@ export const CONJ_PROPAGATION_RELS = new Set(CONJ_PROPAGATION_RELS_ARR)
 export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
 
 export const ALLOWED_RELATIONS: Array<UdMiRelation> = [
+  'acl:adv',
   'advcl:sp',
   'advcl:cmp',
   'advcl:svc',
-  'advmod:a',
   'advmod:amtgov',
   'appos:nonnom',
   'aux:pass',

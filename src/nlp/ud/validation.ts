@@ -1445,7 +1445,6 @@ export function validateSentenceSyntax(
   reportIf(`неочікувана голова advmod`,
     t => uEq(t.node.rel, 'advmod')
       && t.node.rel !== 'advmod:amtgov'
-      && t.node.rel !== 'advmod:a'
       && !t.parent.node.interp.isVerb()
       && !t.parent.node.interp.isAdverb()
       && !t.parent.node.interp.isAdjective()

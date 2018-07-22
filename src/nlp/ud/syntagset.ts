@@ -36,10 +36,10 @@ export type Ud20UniversalRelation =
   | 'xcomp'
 
 export type Ud20MiSpecificRelation =
+  | 'acl:adv'
   | 'advcl:cmp'
   | 'advcl:sp'
   | 'advcl:svc'
-  | 'advmod:a'
   | 'advmod:amtgov'
   | 'appos:nonnom'
   | 'aux:pass'
