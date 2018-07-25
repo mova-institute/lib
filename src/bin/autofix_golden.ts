@@ -91,7 +91,7 @@ async function main() {
       killEmptyElements(root)
       insertSb(root)
       swapSb(root)
-      // await addDocMeta(root)
+      await addDocMeta(root)
       // renameStructures(root)
 
       {
@@ -1140,18 +1140,25 @@ async function addDocMeta(root: AbstractElement) {
           attributes.title = meta.title
         }
       }
-
-      if (!attributes.title) {
-        let numWords = 0
-        let stream = mu(mixml2tokenStream(docEl))
-          .filter(x => x.isWord() || x.isGlue())
-          .take(7)
-        // .takeUntil(() => numWords++ > 6)
-        let title = tokenStream2plaintextString(stream)
-        title = `[${title}…]`
-        attributes['title'] = title
-        attributes['tags'] = 'autotitle'
+    }
+    if (!attributes.title) {
+      let tokens = mu(mixml2tokenStream(docEl))
+        .filter(x => x.isWord() || x.isGlue())
+        .take(8)
+        .toArray()
+      let isFullDoc = tokens.length < 8
+      if (!isFullDoc) {
+        tokens.pop()
       }
+      // .takeUntil(() => numWords++ > 6)
+      let title = tokenStream2plaintextString(tokens)
+      title = `[${title}`
+      if (!isFullDoc) {
+        title += '…'
+      }
+      title += ']'
+      attributes['title'] = title
+      attributes['tags'] = 'autotitle'
     }
 
     docEl.setAttributes(attributes)
