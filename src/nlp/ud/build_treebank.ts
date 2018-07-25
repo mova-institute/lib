@@ -183,8 +183,8 @@ function main() {
       }
 
       // ~~~ bake some vars from sentence stream data
-      let roots = mu(tokens).findAllIndexes(
-        x => !x.deps.find(xx => !g.HELPER_RELATIONS.has(xx.relation))).toArray()
+      let roots = mu(nodes).findAllIndexes(g.isRootOrHole).toArray()
+      // x => !x.deps.find(xx => !g.HELPER_RELATIONS.has(xx.relation))).toArray()
       let numComplete = tokens.length - roots.length + 1
       let isComplete = roots.length === 1
       let completionRatio = tokens.length === 1

@@ -21,10 +21,10 @@ export function isPromoted(node: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // http://universaldependencies.org/u/overview/enhanced-syntax.html
-export function generateEnhancedDeps(basicNodes: Array<TokenNode>) {
+export function generateEnhancedDeps(nodes: Array<TokenNode>) {
 
   // 1: build enhanced **tree**: basic, but with null nodes
-  for (let node of basicNodes) {
+  for (let node of nodes) {
     // 1.1: copy basic edges that don't touch promoted tokens
     if (!isPromoted(node)) {
       node.node.edeps.push(...node.node.deps)
@@ -34,18 +34,19 @@ export function generateEnhancedDeps(basicNodes: Array<TokenNode>) {
     // UD: “Null nodes for elided predicates”
     {
       let elisionDeps = node.node.deps
-        .filter(x => node.node.isElided() || basicNodes[x.headIndex].node.isElided())
+        .filter(x => node.node.isElided() || nodes[x.headIndex].node.isElided())
       node.node.edeps.push(...elisionDeps)
     }
   }
 
-  for (let node of basicNodes) {
+  for (let node of nodes) {
     // todo: fix duplicate edeps
     // todo: filter elided? e.g. 20:nsubj|20.1:nsubj
     // todo: test nested conj
     // todo: check conj paths are followed
     // todo: 5-10 м/с не конж
     // todo: do everything on enhanced tree after propagation of conjuncts??
+    // todo: secondary predication
 
 
     // 2: propagation of conjuncts
@@ -56,7 +57,10 @@ export function generateEnhancedDeps(basicNodes: Array<TokenNode>) {
       let conj0 = node.parent
       let shared = conj0.children.filter(x => x !== node
         && x.node.helperDeps.some(helperDep =>
-          helperDep.headId === conj0.node.id && helperDep.relation === 'shared'))
+          helperDep.headId === conj0.node.id && (helperDep.relation === 'shared'
+            || helperDep.relation === 'groupshared' // ~, todo
+          )
+        ))
       for (let t of shared) {
         t.node.edeps.push(buildEDep(node.node, t.node.rel))
       }
@@ -67,7 +71,7 @@ export function generateEnhancedDeps(basicNodes: Array<TokenNode>) {
         let newRel = findRelationAnalog(node, conjHead)
         if (newRel) {
           // todo: do not strip?
-          node.node.edeps.push(buildEDep(conjHead.parent.node, newRel))
+          node.node.edeps.push(buildDep(conjHead.parent.node, newRel))
         }
       }
     }
@@ -79,7 +83,7 @@ export function generateEnhancedDeps(basicNodes: Array<TokenNode>) {
       let subj = findXcompSubject(node)
       if (subj) {
         let rel = uEqSome(subj.node.rel, ['obj', 'iobj']) ? 'nsubj' : subj.node.rel
-        node.node.edeps.push(buildEDep(subj.node, rel))
+        subj.node.edeps.push(buildEDep(node.node, rel))
       }
     }
 
@@ -121,7 +125,23 @@ export function generateEnhancedDeps(basicNodes: Array<TokenNode>) {
         }
       }
     }
+
+    // secondary predication advcl
+    if (isSecondaryPredication(node.node.rel)) {
+      if (node.node.rel === 'advcl:sp') {
+        let subj = node.parent.children.find(x => uEqSome(x.node.rel, SUBJECTS))
+        // || node.parent.children.find(x => uEqSome(x.node.rel, COMPLEMENTS))
+        if (subj) {
+          subj.node.edeps.push(buildDep(node.node, subj.node.rel))
+        }
+      }
+    }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isSecondaryPredication(rel: string) {
+  return rel === 'advcl:sp' || rel === 'xcomp:sp'
 }
 
 //------------------------------------------------------------------------------
@@ -174,14 +194,40 @@ function findRelationAnalog(newDependent: TokenNode, existingDependent: TokenNod
     return existingRel
   }
 
+  if (uEq(existingRel, 'advcl')
+    && existingDependent.node.interp.isConverb()
+    && newDependent.node.interp.isAdjective()
+  ) {
+    return 'advcl:sp'
+  }
+
+  for (let [clausal, plain] of CLAUSAL_TO_PLAIN) {
+    if (uEq(existingRel, clausal)
+      && !definitelyIsPredicate(newDependent)
+      && !newDependent.node.interp.isVerbial()
+    ) {
+      // return plain
+    }
+    if (uEq(existingRel, plain) && definitelyIsPredicate(newDependent)) {
+      // return clausal
+    }
+  }
+
   if (newDepPos === existingDepPos) {
     return existingRel  // risky
   }
 
-  // return existingRel  // risky, last resort
+  return existingRel  // last resort
+
   // todo: state it doesn't work without gap filling
   // todo: хто і як слухатиме його
 }
+
+const CLAUSAL_TO_PLAIN = new Map([
+  ['csubj', 'nsubj'],
+  ['ccomp', 'obj'],
+  ['advcl', 'adv'],
+])
 
 //------------------------------------------------------------------------------
 function definitelyIsPredicate(node: TokenNode) {
@@ -207,6 +253,13 @@ export function findXcompSubject(node: TokenNode) {
     .map(r => topParent.children.find(x => uEq(x.node.rel, r)))
     .filter(x => x)
     .first()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isRootOrHole(node: TokenNode) {
+  return !node.node.deps.some(x => !uEq(x.relation, 'orphan'))
+    // || !node.parents.every(x => hasChild(x, 'orphan')
+    //   && !x.parents.some(xx => xx.node.isElided()))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -664,6 +717,13 @@ export function standartizeSentence2ud23(sentence: Array<TokenNode>) {
     // todo? set obj from rev to obl
     // todo: choose punct relation from the rigthtest token
 
+    for (let edep of t.edeps) {
+      // remove non-exportable subrels
+      if (!SUBRELS_TO_EXPORT.has(edep.relation)) {
+        edep.relation = stripSubrel(edep.relation)
+      }
+    }
+
     t.deps = t.deps
       // .filter(x => !HELPER_RELATIONS.has(x.relation))
       .sort((a, b) => a.headIndex - b.headIndex)
@@ -913,6 +973,44 @@ export const SOME_FREQUENT_INTRANSITIVE_VERBS = [
   'сідати',
   'ходити',
 ]
+
+export const SOME_DATIVE_VALENCY_NOUNS = new Set([
+  'вдячність',
+  'видача',
+  'визначення',
+  'відповідність',
+  'довг',
+  'допомога',
+  'доставка',
+  'загроза',
+  'запобігання',
+  'заподіяння',
+  'інтерв’ю',
+  'край',
+  'надання',
+  'надсилання',
+  'нанесення',
+  'опір',
+  'п.',
+  'пам’ятник',
+  'передання',
+  'передача',
+  'побажання',
+  'повернення',
+  'повідомлення',
+  'подібне',
+  'поклоніння',
+  'поміч',
+  'посвята',
+  'привітання',
+  'пригода',
+  'придбання',
+  'протидія',
+  'сприяння',
+  'спротив',
+  'угода',  // деякі неоднозначні!
+  'уклін',
+])
 
 export const MONTHS = [
   'січень',

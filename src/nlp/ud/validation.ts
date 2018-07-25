@@ -121,7 +121,7 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
   [`aux`,
     `з дієслівного`, t => t.node.interp.isVerbial2()
       || t.node.interp.isAdverb() && t.children.some(x => g.SUBJECTS.some(subj => uEq(x.node.rel, subj))),
-    `в ${g.AUX_LEMMAS.join('|')}`,
+    `у ${g.AUX_LEMMAS.join('|')}`,
     t => g.AUX_LEMMAS.includes(t.node.interp.lemma)],
   [`acl`, `з іменника`, t => canActAsNoun(t.node)
     || (!uEq(t.node.rel, 'det')
@@ -132,6 +132,17 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
       ].includes(t.node.interp.getFeature(f.PronominalType))),
     `в присудок (з умовами)`, t => g.isFeasibleAclRoot(t)
       || t.node.interp.isParticiple()  // temp
+      || t.node.rel === 'acl:adv'
+  ],
+  [`acl:adv`, `з іменника`, t => canActAsNoun(t.node)
+    || (!uEq(t.node.rel, 'det')
+      && [
+        f.PronominalType.demonstrative,
+        f.PronominalType.general,
+        f.PronominalType.indefinite
+      ].includes(t.node.interp.getFeature(f.PronominalType))),
+    `в одинокий прислівник`, t => t.node.interp.isAdverb()
+      && !t.hasChildren()
   ],
   [`punct`,
     `зі слова`,
@@ -372,7 +383,10 @@ export function validateSentenceSyntax(
 
   reportIf('більше однієї стрілки в слово',
     t => mu(t.node.deps)
-      .filter(x => !uEq(x.relation, 'punct') && !g.HELPER_RELATIONS.has(x.relation))
+      .filter(x => !uEq(x.relation, 'punct')
+        && !g.HELPER_RELATIONS.has(x.relation)
+        && !sentence[x.headIndex].isElided()  // todo
+      )
       .longerThan(1))
 
   g.RIGHT_POINTED_RELATIONS.forEach(rel => reportIf2(`${rel} ліворуч`,
@@ -453,7 +467,7 @@ export function validateSentenceSyntax(
   for (let leafrel of g.LEAF_RELATIONS) {
     reportIf(`${leafrel} має залежників`,
       t => uEq(t.node.rel, leafrel)
-        && (['cop', 'aux'].some(x => uEq(t.node.rel, x))
+        && (uEqSome(t.node.rel, ['cop', 'aux'])
           ? !t.children.every(x => x.node.interp.isPunctuation()
             || x.node.interp.lemma === 'не'
             || x.node.interp.lemma === 'б' && x.node.interp.isParticle()
@@ -495,7 +509,7 @@ export function validateSentenceSyntax(
   )
 
   reportIf(`додаток в називному`,
-    t => ['obj', 'iobj', 'obl'].some(x => uEq(t.node.rel, x))
+    t => uEqSome(t.node.rel, ['obj', 'iobj', 'obl'])
       && g.thisOrGovernedCase(t) === f.Case.nominative
       && !t.node.interp.isXForeign()
       && !t.node.isGraft
@@ -516,7 +530,7 @@ export function validateSentenceSyntax(
       }
       let p = t
       while (p && !hasChildrenOfUrel(p, 'case')) {
-        if (!['appos', 'conj', 'flat'].some(x => uEq(p.node.rel, x))) {
+        if (!uEqSome(p.node.rel, ['appos', 'conj', 'flat'])) {
           return true
         } else {
           p = p.parent
@@ -525,10 +539,14 @@ export function validateSentenceSyntax(
     }
   )
 
-  reportIf(`orphan не з Promoted / залежника пропущеного`,
-    t => uEq(t.node.rel, 'orphan')
-      && !t.parent.node.isPromoted
-      && !g.isPromoted(t)
+  reportIf2(`голова orphan’а не під’єднана до пропуска`,
+    ({ n, t }) => g.hasChild(n, 'orphan')
+      && !t.edeps.length
+  )
+
+  reportIf2(`orphan не під’єднаний до пропуска`,
+    ({ n, r }) => uEq(r, 'orphan')
+      && !n.parents.some(x => x.node.isElided())
   )
 
   reportIf(`підрядне означальне відкриває що-іменник`,
@@ -592,7 +610,7 @@ export function validateSentenceSyntax(
       && !t.isRoot()
       && !t.children.some(x => x.node.interp.isPreposition())
       && !t.parent.node.interp.isVerbial2()
-      && !['conj', 'flat'].some(x => uEq(t.node.rel, x))
+      && !uEqSome(t.node.rel, ['conj', 'flat'])
     // && !thisOrTravelUp(t, tt =>
     //   tt.parent.node.interp.isVerbial()
     //   && tt.children.some(x => x.node.interp.isPreposition())
@@ -604,11 +622,14 @@ export function validateSentenceSyntax(
     xreportIf(`інфінітив — корінь`,
       t => t.isRoot()
         && g.isInfinitive(t)
-      // && t.children.some(x => uEq(x.node.rel, 'nsubj'))
-      // && !t.node.isPromoted
-      // && !t.children.some(x => x.node.interp.isAuxillary() && x.node.interp.hasPerson())
     )
   }
+
+  reportIf2(`aux-інфінітив з дієслова-інфінітива`,
+    ({ r, i, pi }) => uEq(r, 'aux')
+      && i.isInfinitive()
+      && pi.isInfinitive()
+  )
 
   xreportIf(`неузгодження в часі`,
     t => uEq(t.node.rel, 'aux')
@@ -632,6 +653,16 @@ export function validateSentenceSyntax(
       && !t.parent.node.isPromoted
       && !g.nounAdjectiveAgreed(t, t.parent)
       && !(t.parent.node.interp.isInstrumental() && g.hasCopula(t.parent))
+  )
+
+  xreportIf(`неочікуваний відмінок іменника-присудка`,
+    t => uEq(t.node.rel, 'nsubj')
+      && t.parent.node.interp.isNounish()  // || t.parent.node.isPromoted
+      // && !g.nounNounAgreed(t.node.interp, t.parent.node.interp)
+      && !t.parent.node.interp.isNominative()
+      && !g.hasChild(t.parent, 'case')
+      && !(t.parent.node.interp.isInstrumental() && g.hasCopula(t.parent))
+    // && !['це'].some(x => t.node.interp.lemma === x)
   )
 
   reportIf(`неузгодження прикладки`,
@@ -1354,6 +1385,12 @@ export function validateSentenceSyntax(
         && t.parent.node.interp.isActive())
   )
 
+  reportIf(`неочікуваний давальний nmod`,
+    t => uEqSome(t.node.rel, ['nmod'])
+      && t.node.interp.isDative()
+      && !g.SOME_DATIVE_VALENCY_NOUNS.has(t.parent.node.interp.lemma)
+  )
+
   reportIf(`неочікуваний відмінок прикметника-присудка`,
     t => g.hasChild(t, 'nsubj')
       && t.node.interp.isAdjective()
@@ -1750,6 +1787,14 @@ export function validateSentenceSyntax(
             .longerThan(1)
       )
     }
+
+    reportIf2(`чистий flat`,
+      ({ r }) => r === 'flat'
+    )
+
+    // reportIf2(`acl:adv `,
+    //   ({ r }) => r === 'flat'
+    // )
   }
 
   // **********
@@ -1784,6 +1829,15 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // корінь — NP (чи взагалі без предикації)
+  // що в що не день — займенник? http://sum.in.ua/s/shho
+  // вугілля настільки бракує , що за два тижні можливе віялове відключення
+  // оті _Так,_ на початку речення
+  // conj:parataxis рівень
+  // мусить щосьробити, щоб не _ — з мусить?
+  // ні сполучник :neg
+  // злидні кинулись всі до дерева — всі advcl:sp чи просто det?
+  // :repeat між однаковими
   // відмінки в іменниковій предикації
   // ccomp/obj з _можливо_
   // зловити <w lemma="&quot;Westworld&quot;" ana="x:foreign">"Westworld"</w>

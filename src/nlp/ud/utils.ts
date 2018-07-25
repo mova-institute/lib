@@ -5,7 +5,7 @@ import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
 import { titlecase, trimAfterFirst } from '../../string'
-import { CONJ_PROPAGATION_RELS_ARR } from './uk_grammar'
+import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole } from './uk_grammar'
 import sortby = require('lodash.sortby')
 import sorteduniq = require('lodash.sorteduniq')
 
@@ -282,11 +282,7 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
         features['HasAmbigCoordModifier'] = 'Yes'
       }
 
-      let highlightHole = highlightHoles && (
-        token.isElided()
-          ? node.isRoot()
-          : node.parents.every(x => x.node.isElided())
-      )
+      let highlightHole = highlightHoles && isRootOrHole(node)
       if (highlightHole) {
         features['AnnotationHole'] = 'Yes'
       }
@@ -387,8 +383,7 @@ export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
 
 //------------------------------------------------------------------------------
 function mustHighlightHoles(sentence: Array<GraphNode<Token>>) {
-  let numRoots = mu(sentence).count(x =>
-    x.node.isElided() ? x.isRoot() : !x.parents.some(xx => !xx.node.isElided()))
+  let numRoots = mu(sentence).count(x => isRootOrHole(x))
   if (numRoots === 1) {
     return false
   }
