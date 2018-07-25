@@ -1009,19 +1009,6 @@ export function validateSentenceSyntax(
       && !['чимало', 'трохи'].includes(t.node.interp.lemma)
   )
 
-  xreportIf(`кого.Acc чому.Gen: patient не iobj?`,
-    t => {
-      let obj = t.children.find(x => uEq(x.node.rel, 'obj'))
-      let iobj = t.children.find(x => uEq(x.node.rel, 'iobj'))
-      if (obj && iobj) {
-        if (obj.node.interp.isAccusative() && iobj.node.interp.isGenitive()) {
-          return true
-        }
-      }
-    }
-  )
-
-
   // continuity/projectivity
 
   for (let token of nodes) {
@@ -1383,6 +1370,13 @@ export function validateSentenceSyntax(
         && x.node.index < t.node.index)
       && !(t.parent.node.interp.isParticiple()
         && t.parent.node.interp.isActive())
+  )
+
+  xreportIf(`неочікуваний орудний nmod`,
+    t => uEqSome(t.node.rel, ['nmod'])
+      && t.node.interp.isInstrumental()
+      && !g.hasChild(t, 'case')
+    // && !g.SOME_DATIVE_VALENCY_NOUNS.has(t.parent.node.interp.lemma)
   )
 
   reportIf(`неочікуваний давальний nmod`,
@@ -1792,9 +1786,13 @@ export function validateSentenceSyntax(
       ({ r }) => r === 'flat'
     )
 
-    // reportIf2(`acl:adv `,
-    //   ({ r }) => r === 'flat'
-    // )
+    reportIf2(`в звороті _вчити дитину математики_ — переплутані patient з addressee`,
+      ({ r, i, p }) => uEq(r, 'iobj')
+        && i.isGenitive()
+        && p.children.some(x => uEq(x.node.rel, 'obj')
+          && x.node.interp.isAccusative()
+        )
+    )
   }
 
   // **********
@@ -1829,6 +1827,7 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // найкращий в чомусь — обл і прикм, а не ім і нмод?
   // корінь — NP (чи взагалі без предикації)
   // що в що не день — займенник? http://sum.in.ua/s/shho
   // вугілля настільки бракує , що за два тижні можливе віялове відключення
@@ -1843,7 +1842,7 @@ export function validateSentenceSyntax(
   // зловити <w lemma="&quot;Westworld&quot;" ana="x:foreign">"Westworld"</w>
   // в conj:repeat всі shared
   // _немає_ з підметом
-  // hypen з пробілами
+  // hyphen з пробілами
   // перечепити shared залежники до конжа і перевалідувати
   // conj з verb в noun
   // неузгодження не-private conj модифікаторів: https://lab.mova.institute/brat/#/ud/pryklady__nikoho/07?focus=T23
@@ -1866,7 +1865,7 @@ export function validateSentenceSyntax(
   // крім — не конж
   // mark лише від голови підрядного
   // advcl входить в вузол з то
-  // з правого боку прикдаки не виходить зовнішнє
+  // з правого боку приклаки не виходить зовнішнє
   // appos’и йдуть пучком, а не як однорідні
   // у нас блаблабла, тому… — блаблабла має бути advcl
   // obl:agent безособового має бути :anim
