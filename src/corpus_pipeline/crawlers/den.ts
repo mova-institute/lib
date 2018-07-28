@@ -1,6 +1,6 @@
 import { sleep } from '../../lang'
 import { fetchText } from '../../request'
-import { matchAll } from '../../string'
+import { allMatchesArr } from '../../string'
 
 import * as minimist from 'minimist'
 
@@ -92,11 +92,11 @@ async function main(args: Args) {
 
     let crawler = new Crawler(path.join(args.workspace, 'fully_fetched_urls.txt'))
       .setSaveLinkExtractor(content => {
-        return matchAll(content, articleHrefRe).map(x => basUrl + x[1])
+        return allMatchesArr(content, articleHrefRe).map(x => basUrl + x[1])
       })
       .setFollowLinkExtractor(content => {
-        let ret = matchAll(content, monthIndexHrefRe).map(x => x[0])
-        ret.push(...matchAll(content, numberIndexHrefRe).map(x => x[1]))
+        let ret = allMatchesArr(content, monthIndexHrefRe).map(x => x[0])
+        ret.push(...allMatchesArr(content, numberIndexHrefRe).map(x => x[1]))
         ret = ret.map(x => basUrl + x)
         return ret
       })

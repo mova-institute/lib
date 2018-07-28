@@ -115,6 +115,11 @@ export class Token {
     return this
   }
 
+  setAttribute(name: string, value: string) {
+    this.attributes[name] = value
+    return this
+  }
+
   setAttributes(attributes: any) {
     this.attributes = attributes
     return this

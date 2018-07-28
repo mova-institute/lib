@@ -40,6 +40,9 @@ export function generateEnhancedDeps(nodes: Array<TokenNode>) {
   }
 
   for (let node of nodes) {
+    // todo: dislocated!
+    // todo: у такому становищі [є] один крок для того — в enhanced інший корінь!
+    //       https://lab.mova.institute/brat/#/ud/vislotska__kohannia/30
     // todo: fix duplicate edeps
     // todo: filter elided? e.g. 20:nsubj|20.1:nsubj
     // todo: test nested conj

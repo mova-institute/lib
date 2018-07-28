@@ -1,7 +1,7 @@
 import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request'
 import { sleep } from '../../lang'
-import { matchAll } from '../../string'
+import { allMatchesArr } from '../../string'
 
 import * as chalk from 'chalk'
 
@@ -142,7 +142,7 @@ export class Crawler {
 
 //------------------------------------------------------------------------------
 function extractHrefs(html: string) {
-  return matchAll(html, /<\s*a\b[^>]+\bhref="([^"]+)"/g)
+  return allMatchesArr(html, /<\s*a\b[^>]+\bhref="([^"]+)"/g)
     .map(x => x[1])
     .filter(x => x.startsWith('http') || !/^\w+:/.test(x))
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { logErrAndExit } from '../utils.node'
-import { matchAll2 } from '../string'
+import { allMatches } from '../string'
 import { mu } from '../mu'
 
 import * as glob from 'glob'
@@ -27,7 +27,7 @@ async function main() {
     return match
   })
 
-  let matchStream = mu(matchAll2(allPy, /\b_\('([^']+)'\)/g)).map(x => x[1])
+  let matchStream = mu(allMatches(allPy, /\b_\('([^']+)'\)/g)).map(x => x[1])
   let keysToAdd = new Set<string>()
   for (let keyInPy of matchStream) {
     if (!keys.has(keyInPy)) {

@@ -16,12 +16,12 @@ export function countNumMatches(str: string, re: RegExp) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function matchAll(str: string, re: RegExp) {
-  return [...matchAll2(str, re)]
+export function allMatchesArr(str: string, re: RegExp) {
+  return [...allMatches(str, re)]
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* matchAll2(str: string, re: RegExp) {
+export function* allMatches(str: string, re: RegExp) {
   if (!re.flags.includes('g')) {
     throw new Error(`Global regex exepected`)
   }

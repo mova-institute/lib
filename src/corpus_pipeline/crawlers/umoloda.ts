@@ -5,7 +5,7 @@ import * as minimist from 'minimist'
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request'
-import { matchAll } from '../../string'
+import { allMatchesArr } from '../../string'
 
 
 interface Args {
@@ -44,7 +44,7 @@ async function main(args: Args) {
       }
       console.log(`fetching №${curNumber}`)
       let numberContent = await fetchText(`http://www.umoloda.kiev.ua/number/${curNumber}/`)
-      let hrefs = matchAll(numberContent, articleHrefRe).filter(x => x[1] !== '0')
+      let hrefs = allMatchesArr(numberContent, articleHrefRe).filter(x => x[1] !== '0')
       for (let [, a, b, c] of hrefs) {
         let filename = `${a}_${b}_${c}.html`
         if (!articleRegistry.has(filename)) {

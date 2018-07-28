@@ -15,6 +15,7 @@ import {
   serializeMiDocument, tokenStream2sentences, mixml2tokenStream,
   tokenStream2plaintextString,
   createMultitokenElement,
+  createTokenElement,
 } from '../nlp/utils'
 // import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
@@ -36,6 +37,7 @@ import { parse } from 'url'
 
 //------------------------------------------------------------------------------
 const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
+const INSERTION_RE = /#<(\S+)/
 
 //------------------------------------------------------------------------------
 interface Args {
@@ -256,18 +258,39 @@ async function main() {
           const udInterp = toUd(interp.clone())
 
           if (token.comment) {
-            let match = token.comment.match(REPLACE_RE)
-            if (match) {
-              let [, tag, lemma] = match
-              tag = tag.replace('&amp;', '&')  // sometimes it's copyped from xml
-              lemma = lemma || interp.lemma
-              if (tag.startsWith(':')) {
-                interp.setFromVesumStr(tag.substr(1), lemma)
-              } else {
-                interp.resetFromVesumStr(tag, lemma)
+            // morpho alteration
+            {
+              let match = token.comment.match(REPLACE_RE)
+              if (match) {
+                let [, tag, lemma] = match
+                tag = tag.replace('&amp;', '&')  // sometimes it's copyped from xml
+                lemma = lemma || interp.lemma
+                if (tag.startsWith(':')) {
+                  interp.setFromVesumStr(tag.substr(1), lemma)
+                } else {
+                  interp.resetFromVesumStr(tag, lemma)
+                }
+              }
+              token.comment = token.comment.replace(REPLACE_RE, '').trim()
+            }
+            // token insertion
+            {
+              let match: RegExpMatchArray
+              while (match = token.comment.match(INSERTION_RE)) {
+                let insertionPoint = id2el.get(token.id)
+                let [, formToInsert] = match
+                let interps = analyzer.tag(formToInsert, token.form)
+                  .filter(x => x.lemma !== 'бути' || !x.isAuxillary())
+                let toInsert = createTokenElement(insertionPoint.document(), formToInsert,
+                  interps.map(x => x.toVesumStrMorphInterp()))
+                toInsert.setAttributes({
+                  id: id2str(idSequence++),
+                  ellipsis: 'predicate',
+                })
+                insertionPoint.insertBefore(toInsert)
+                token.comment = token.comment.replace(INSERTION_RE, '').trim()
               }
             }
-            token.comment = token.comment.replace(REPLACE_RE, '').trim()
           }
 
           // remove duplicates
@@ -282,7 +305,7 @@ async function main() {
           }
 
           if (token.rel && interp.isPunctuation()) {
-            token.rel = 'punct'
+            token.deps.forEach(x => x.relation = 'punct')
           }
 
           if (interp.isX()) {
@@ -517,6 +540,18 @@ async function main() {
             // interp.lemma = token.form.replace('\'', '’').toLocaleLowerCase()
           }
 
+          // remove unnecessary Promoted
+          if (token.isPromoted
+            && node.parents.some(x => x.node.isElided())
+            // workaround for: стояла на буржуазних позиціях, а її донька на *марксистських*
+            && !interp.isAdjective()
+          ) {
+            let tags = token.getAttribute('tags')
+            if (tags) {
+              token.setAttribute('tags', undefined)
+            }
+          }
+
           // цікавий вивід
           // if (uEqSome(token.rel, ['acl', 'advmod'])
           //   && token.rel !== 'advmod:amtgov'
@@ -673,10 +708,10 @@ function saveToken(token: Token, element: AbstractElement) {
   if (coref) {
     element.setAttribute('coref', coref)
   }
-  let tags = element.attribute('tags') || ''
-  if (token.hasTag('promoted') && !/\bpromoted\b/.test(tags)) {
-    element.setAttribute('tags', `${tags} promoted`.trim())
-  }
+  // let tags = element.attribute('tags') || ''
+  // if (token.hasTag('promoted') && !/\bpromoted\b/.test(tags)) {
+  //   element.setAttribute('tags', `${tags} promoted`.trim())
+  // }
 }
 
 //------------------------------------------------------------------------------
