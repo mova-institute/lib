@@ -27,6 +27,7 @@ import { zerofillMax, toPercent } from '../../string'
 import { toSortableDatetime } from '../../date'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
+import { buildCoreferenceClusters } from '../coreference'
 
 
 
@@ -155,15 +156,17 @@ function main() {
     console.log(`exporting ${basename}`)
 
     let root = parseXmlFileSync(xmlPath)
-    let tokenStream = mu(mixml2tokenStream(root, args.datasetSchema))
+    let docTokens = mu(mixml2tokenStream(root, args.datasetSchema))
       .transform(x => x.interp && g.denormalizeInterp(x.interp))
-    let sentenceStream = tokenStream2sentences(tokenStream)
+      .toArray()
+    let corefClusterization = buildCoreferenceClusters(docTokens)
+    let sentenceStream = tokenStream2sentences(docTokens)
     let annotationalGap = false
 
     for (let { tokens, multitokens, nodes,
       sentenceId, dataset, document, paragraph, } of sentenceStream
     ) {
-      g.generateEnhancedDeps(nodes)
+      g.generateEnhancedDeps(nodes, corefClusterization)
 
       // count some stats
       if (valencyDict) {
@@ -241,7 +244,7 @@ function main() {
 
         let hasProblems = false
         if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
-          let problems = validateSentenceSyntax(nodes, analyzer, valencyDict)
+          let problems = validateSentenceSyntax(nodes, analyzer, corefClusterization, valencyDict)
           hasProblems = !!problems.length
           if (hasProblems && args.reportErrors) {
             sentenseErrors.push({

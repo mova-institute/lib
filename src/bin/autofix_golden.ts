@@ -32,6 +32,7 @@ import * as g2 from '../nlp/uk_grammar'
 import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
+import { uniq } from 'lodash'
 
 
 
@@ -552,6 +553,13 @@ async function main() {
             }
           }
 
+          if (!token.hasTag('not-shchojiji')) {
+            let antecedent = g.findShchojijiAntecedent(node)
+            if (antecedent) {
+              token.corefs.push({ headId: antecedent.node.id, type: 'equality' })
+            }
+          }
+
           // цікавий вивід
           // if (uEqSome(token.rel, ['acl', 'advmod'])
           //   && token.rel !== 'advmod:amtgov'
@@ -704,7 +712,7 @@ function saveToken(token: Token, element: AbstractElement) {
   if (dep) {
     element.setAttribute('dep', dep)
   }
-  let coref = token.corefs.map(x => `${x.headId}-${x.type}`).join('|')
+  let coref = uniq(token.corefs.map(x => `${x.headId}-${x.type}`)).join('|')
   if (coref) {
     element.setAttribute('coref', coref)
   }

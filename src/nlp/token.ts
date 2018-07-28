@@ -1,8 +1,8 @@
 import { MorphInterp } from './morph_interp'
 import { keyvalue2attributesNormalized } from '../xml/utils'
 import { Dict } from '../types'
-import { CONJ_PROPAGATION_RELS, HELPER_RELATIONS } from './ud/uk_grammar'
-import { CoolSet } from '../data_structures/cool_set';
+import { CONJ_PROPAGATION_RELS } from './ud/uk_grammar'
+import { CoolSet } from '../data_structures/cool_set'
 import { stripSubrel } from './ud/utils'
 
 
@@ -42,6 +42,10 @@ export type TokenTag =
   | 'multi_names'
   | 'prepless_obl'
   | 'xcomp_mark'
+  | 'inf-ccomp'
+  | 'ok-imp-cop'
+  | 'right-nummod'
+  | 'not-shchojiji'
 
 export interface Dependency {
   relation: string
@@ -50,7 +54,7 @@ export interface Dependency {
 }
 
 export interface Coreference {
-  type: string
+  type: 'equality' | 'bridge'
   headId: string
   // headIndex?: number
 }

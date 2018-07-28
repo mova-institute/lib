@@ -8,6 +8,7 @@ import { last, wiith } from '../../lang'
 import { UdMiRelation } from './syntagset'
 import { UdPos, toUd } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
+import { SimpleGrouping } from '../../grouping'
 
 export type TokenNode = GraphNode<Token>
 export type Node2indexMap = Map<TokenNode, number>
@@ -21,7 +22,10 @@ export function isPromoted(node: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // http://universaldependencies.org/u/overview/enhanced-syntax.html
-export function generateEnhancedDeps(nodes: Array<TokenNode>) {
+export function generateEnhancedDeps(
+  nodes: Array<TokenNode>,
+  corefClusterization: SimpleGrouping<Token>,
+) {
 
   // 1: build enhanced **tree**: basic, but with null nodes
   for (let node of nodes) {
@@ -94,42 +98,19 @@ export function generateEnhancedDeps(nodes: Array<TokenNode>) {
     // todo: adv?
     // todo: дівчина, що її
     // todo: check deep backward
-    if (node.node.interp.isRelative()) {
-      let relRoot = findRelativeClauseRoot(node)
-      if (relRoot) {
-        let antecedent = relRoot.parent
-
-        // add `ref`
-        node.node.edeps.push(buildDep(antecedent.node, 'ref'))
-
-        if (relRoot === node) {
-          // https://github.com/UniversalDependencies/docs/issues/531
-          // He became chairman, which he still is.
-          // We should […] add a nsubj relation from the antecedent
-          //   to the nsubj of the relative pronoun.
-          let subject = node.children.find(x => uEqSome(x.node.rel, ['nsubj'/* , 'csubj' */]))
-          if (subject) {
-            // todo: csubj?
-            subject.node.edeps.push(buildDep(antecedent.node, 'nsubj'))
-          } else {
-            throw new Error(`Notice this!`)
-          }
-        } else {
-          // backward
-          if (node.node.rel !== 'advmod'/*  && relRoot.children.some(x => x === node) */) {
-            // let headOfTheRelative = node.parent
-            let rel = node.node.rel
-            if (antecedent.node.interp.isNounish() && uEq(node.node.rel, 'det')) {
-              // Сергія, чию смерть
-              rel = 'nmod'
-            }
-            antecedent.node.edeps.push(buildDep(node.parent.node, rel))
-          }
+    let relRoot = findRelativeClauseRoot(node)
+    if (relRoot) {
+      if (node.node.interp.isRelative()) {
+        handleRelcl(relRoot, node)
+      } else {
+        let antecedent = findShchojijiAntecedent(node)
+        if (antecedent && corefClusterization.areSameGroup(antecedent.node, node.node)) {
+          handleRelcl(relRoot, node)
         }
       }
     }
 
-    // secondary predication advcl
+    // (5): secondary predication advcl
     if (isSecondaryPredication(node.node.rel)) {
       if (node.node.rel === 'advcl:sp') {
         let subj = node.parent.children.find(x => uEqSome(x.node.rel, SUBJECTS))
@@ -138,6 +119,39 @@ export function generateEnhancedDeps(nodes: Array<TokenNode>) {
           subj.node.edeps.push(buildDep(node.node, subj.node.rel))
         }
       }
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+function handleRelcl(relRoot: TokenNode, node: TokenNode) {
+  let antecedent = relRoot.parent
+
+  // add `ref`
+  node.node.edeps.push(buildDep(antecedent.node, 'ref'))
+
+  if (relRoot === node) {
+    // https://github.com/UniversalDependencies/docs/issues/531
+    // He became chairman, which he still is.
+    // We should […] add a nsubj relation from the antecedent
+    //   to the nsubj of the relative pronoun.
+    let subject = node.children.find(x => uEqSome(x.node.rel, ['nsubj'/* , 'csubj' */]))
+    if (subject) {
+      // todo: csubj?
+      subject.node.edeps.push(buildDep(antecedent.node, 'nsubj'))
+    } else {
+      throw new Error(`Notice this!`)
+    }
+  } else {
+    // backward
+    if (node.node.rel !== 'advmod'/*  && relRoot.children.some(x => x === node) */) {
+      // let headOfTheRelative = node.parent
+      let rel = node.node.rel
+      if (antecedent.node.interp.isNounish() && uEq(node.node.rel, 'det')) {
+        // Сергія, чию смерть
+        rel = 'nmod'
+      }
+      antecedent.node.edeps.push(buildDep(node.parent.node, rel))
     }
   }
 }
@@ -261,8 +275,8 @@ export function findXcompSubject(node: TokenNode) {
 ////////////////////////////////////////////////////////////////////////////////
 export function isRootOrHole(node: TokenNode) {
   return !node.node.deps.some(x => !uEq(x.relation, 'orphan'))
-    // || !node.parents.every(x => hasChild(x, 'orphan')
-    //   && !x.parents.some(xx => xx.node.isElided()))
+  // || !node.parents.every(x => hasChild(x, 'orphan')
+  //   && !x.parents.some(xx => xx.node.isElided()))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -587,7 +601,7 @@ export function isFeasibleAclRoot(t: TokenNode) {
     || hasOwnRelative(t)
     // || t.children.some(x => x.node.interp.isRelative())
     // || t.node.interp.isParticiple()  // temp
-    || isAdverbialAcl(t)
+    // || isAdverbialAcl(t)
     || t.children.some(x => uEq(x.node.rel, 'nsubj'))
 }
 
@@ -1341,6 +1355,9 @@ const DATIVE_VALENCY_ADJECTIVES = [
   'повернений',
   'потрібний',
   'присвячений',
+  'подобний',
+  'подібний',
+  'нерекомендований',
 ]
 
 const INF_VALENCY_ADJECTIVES = [

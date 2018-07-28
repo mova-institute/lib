@@ -14,14 +14,12 @@ import * as f from '../morph_features'
 import * as g from './uk_grammar'
 
 import { groupBy } from 'lodash'
+import { SimpleGrouping } from '../../grouping'
 
 
 
 //------------------------------------------------------------------------------
 const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentencePredicate2]> = [
-  [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.interp.isAdjective()],
-  [`nummod`, `з іменника`, t => canActAsNoun(t), `в незайменниковий числівник`, t => t.interp.isCardinalNumeral() && !t.interp.isPronominal()],
-  [`det:numgov`, `з іменника`, t => canActAsNoun(t), `в займенниковий числівник`, t => t.interp.isCardinalNumeral() && t.interp.isPronominal()],
   [`discourse`,
     undefined,
     undefined,
@@ -29,20 +27,11 @@ const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentenceP
     (t, s, i) => g.DISCOURSE_DESTANATIONS.includes(toUd(t.interp).pos) || s[i + 1] && s[i + 1].rel === 'fixed'],
   [`cop`,
     `з недієслівного`,
-    (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() && !isActualParticiple(t, s, i),
+    (t, s, i) => !t.interp.isVerb() && !t.interp.isConverb() /* && !isActualParticiple(t, s, i) */,
     `в ${g.COPULA_LEMMAS.join(' ')}`,
     t => g.COPULA_LEMMAS.includes(t.interp.lemma)],
   // [`obl:agent`, `з присудка`, (t, s, i) => canBePredicate(t, s, i), `в іменник`, t => canActAsNoun(t)],
-  [`vocative`,
-    undefined, //`з присудка`,
-    (t, s, i) => canBePredicateOld(t, s, i),
-    `в кличний іменник`,
-    t => t.interp.isXForeign()
-      || t.interp.isForeign()
-      || canActAsNoun(t) && (t.interp.isVocative()
-        || t.hasTag('nomvoc')
-      )
-  ],
+
   [`expl`,
     `з присудка`,
     (t, s, i) => canBePredicateOld(t, s, i),
@@ -50,12 +39,14 @@ const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentenceP
     t => g.EXPL_FORMS.includes(t.form.toLowerCase()) && t.interp.isNounish()],
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
   [`advcl:`, ``, (t, s, i) => canBePredicateOld(t, s, i), `в присудок`, (t, s, i) => canBePredicateOld(t, s, i)],
-  [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
 
 //------------------------------------------------------------------------------
 const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string, TreedSentencePredicate]> = [
   // cc не в сурядний is a separate rule
+  [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.node.interp.isAdjective()],
+  [`nummod`, `з іменника`, t => canActAsNoun(t), `в незайменниковий числівник`, t => t.node.interp.isCardinalNumeral() && !t.node.interp.isPronominal()],
+  [`det:numgov`, `з іменника`, t => canActAsNoun(t), `в займенниковий числівник`, t => t.node.interp.isCardinalNumeral() && t.node.interp.isPronominal()],
   [`advmod`,
     ``, t => t,
     `в прислівник`, t => t.node.interp.isAdverb() || g.isAdvmodParticle(t)],
@@ -96,12 +87,12 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
     `з присудка чи валентного прикметника`,
     t => canBePredicate(t) || g.isValencyHavingAdjective(t.node),
     `в іменникове`,
-    t => canActAsNounForObj(t)],
+    t => canActAsNounForObj(t) || canTheoreticallyActAsNoun(t)],
   [`iobj`,
     `з присудка чи валентного прикметника`,
     t => canBePredicate(t) || g.isValencyHavingAdjective(t.node),
     `в іменникове`,
-    t => canActAsNounForObj(t)],
+    t => canActAsNounForObj(t) || canTheoreticallyActAsNoun(t)],
   [`obl`,
     `з дієслова / прикм. / присл. / іншого obl`,
     t => t.node.interp.isVerbial2()
@@ -114,18 +105,19 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
     `в іменник`,
     t => canActAsNounForObj(t) || t.node.interp.lemma === 'який' && g.findRelativeClauseRoot(t),
   ],
-  [`nmod`, `з іменника`, t => canActAsNoun(t.node) || g.isDenUDen(t) /* temp */,
+  [`nmod`, `з іменника`, t => canActAsNoun(t) || g.isDenUDen(t) /* temp */,
     `в іменник`,
     t => canActAsNounForObj(t)
       || t.node.interp.lemma === 'який' && g.findRelativeClauseRoot(t)
       || g.isDenUDen(t.parent)  // temp
+      || canTheoreticallyActAsNoun(t)
   ],
   [`aux`,
     `з дієслівного`, t => t.node.interp.isVerbial2()
       || t.node.interp.isAdverb() && t.children.some(x => g.SUBJECTS.some(subj => uEq(x.node.rel, subj))),
     `у ${g.AUX_LEMMAS.join('|')}`,
     t => g.AUX_LEMMAS.includes(t.node.interp.lemma)],
-  [`acl`, `з іменника`, t => canActAsNoun(t.node)
+  [`acl`, `з іменника`, t => canActAsNoun(t)
     || (!uEq(t.node.rel, 'det')
       && [
         f.PronominalType.demonstrative,
@@ -136,14 +128,15 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
       || t.node.interp.isParticiple()  // temp
       || t.node.rel === 'acl:adv'
   ],
-  [`acl:adv`, `з іменника`, t => canActAsNoun(t.node)
+  [`acl:adv`, `з іменника`, t => canActAsNoun(t)
     || (!uEq(t.node.rel, 'det')
       && [
         f.PronominalType.demonstrative,
         f.PronominalType.general,
         f.PronominalType.indefinite
       ].includes(t.node.interp.getFeature(f.PronominalType))),
-    `в одинокий прислівник`, t => t.node.interp.isAdverb()
+    `в одинокий (діє)прислівник`, t =>
+      (t.node.interp.isAdverb() || t.node.interp.isConverb())
       && !t.hasChildren()
   ],
   [`punct`,
@@ -171,6 +164,7 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
     `в присудок (тест: фінітний)`,
     t => canBePredicate(t)
       && !g.isInfinitiveAnalytically(t)
+      && !t.node.hasTag('inf-ccomp')
   ],
   [`xcomp:sp`,
     `з присудка`,
@@ -187,7 +181,18 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
     `в називний/орудний іменник/прикметник`,
     t => (t.node.interp.isNominative() || t.node.interp.isInstrumental())
       && (t.node.interp.isNoun() || t.node.interp.isAdjective())
-  ]
+  ],
+  [`vocative`,
+    '', //`з присудка`,
+    t => canBePredicate(t),
+    `в кличний іменник`,
+    t => t.node.interp.isXForeign()
+      || t.node.interp.isForeign()
+      || canActAsNoun(t) && (t.node.interp.isVocative()
+        || t.node.hasTag('nomvoc')
+      )
+  ],
+  [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
 ]
 
 //------------------------------------------------------------------------------
@@ -221,6 +226,7 @@ export interface Problem {
 export function validateSentenceSyntax(
   nodes: Array<GraphNode<Token>>,
   analyzer: MorphAnalyzer,
+  corefClusterization: SimpleGrouping<Token>,
   valencyDict?: ValencyDict,
 ) {
 
@@ -504,7 +510,7 @@ export function validateSentenceSyntax(
       if (!t.node.rel
         || uEq(t.node.rel, 'fixed')
         || !t.node.interp.isLocative()
-        || !canActAsNoun(t.node)
+        || !canActAsNoun(t)
       ) {
         return
       }
@@ -981,7 +987,6 @@ export function validateSentenceSyntax(
   )
 
   // continuity/projectivity
-
   for (let token of nodes) {
     if (uEqSome(token.node.rel, g.CONTINUOUS_REL)) {
       let rootFromHere = token.root()
@@ -1281,8 +1286,9 @@ export function validateSentenceSyntax(
     t => !t.isRoot()
       && t.node.interp.isAdverb()
       && t.parent.node.interp.isNounish()
-      && !uEqSome(t.node.rel, ['discourse', 'parataxis'])
+      && !uEqSome(t.node.rel, ['discourse', 'parataxis', 'orphan'])
       && !uEqSome(t.parent.node.rel, ['obl'])
+      && t.node.rel !== 'acl:adv'
       && !t.parent.children.some(x => uEqSome(x.node.rel, ['nsubj', 'cop']))
       && !t.node.interp.isNegative()
       && !g.isQuantitativeAdverbModifier(t)
@@ -1316,6 +1322,7 @@ export function validateSentenceSyntax(
         && t.node.interp.isAccusative()
       )
       && !g.CURRENCY_SYMBOLS.includes(t.parent.node.interp.lemma)
+      && !t.node.hasTag('right-nummod')
   )
 
   xreportIf(`підрядне наслідку — головне`,
@@ -1617,6 +1624,7 @@ export function validateSentenceSyntax(
   reportIf(`cop/aux в наказовому`,
     t => uEqSome(t.node.rel, ['cop', 'aux'])
       && t.node.interp.isImperative()
+      && !t.node.hasTag('ok-imp-cop')
   )
 
   reportIf(`наказовий має cop/aux`,
@@ -1646,8 +1654,17 @@ export function validateSentenceSyntax(
     ({ n, r, p }) => uEq(r, 'xcomp') && !g.findXcompSubject(n)
   )
 
-  xreportIf2(`, що її …`,
-    ({ n }) => g.findShchojijiAntecedent(n)
+  reportIf2(`потенційне _що її_ без кореференції чи #not-shchojiji`,
+    ({ n, t }) => {
+      if (t.hasTag('not-shchojiji')) {
+        return false
+      }
+      let antecedent = g.findShchojijiAntecedent(n)
+      if (!antecedent) {
+        return false
+      }
+      return !corefClusterization.areSameGroup(antecedent.node, t)
+    }
   )
 
   if (valencyDict) {
@@ -2125,17 +2142,22 @@ function canBePredicateOld(token: Token, sentence: Array<Token>, index: number) 
 }
 
 //------------------------------------------------------------------------------
-function canActAsNoun(token: Token) {
-  return token.interp.isNounish()
-    || token.isPromoted && (token.interp.isAdjectivish() || token.interp.isCardinalNumeral())
-    || token.hasTag('graft')
-    || token.interp.isXForeign()
-    || token.interp.isSymbol()
+function canActAsNoun(node: GraphNode<Token>) {
+  return node.node.interp.isNounish()
+    || node.node.isPromoted && (node.node.interp.isAdjectivish() || node.node.interp.isCardinalNumeral())
+    || node.node.hasTag('graft')
+    || node.node.interp.isXForeign()
+    || node.node.interp.isSymbol()
+}
+
+//------------------------------------------------------------------------------
+function canTheoreticallyActAsNoun(node: GraphNode<Token>) {
+  return node.node.interp.isAdjectivish() // && !node.hasChildren()
 }
 
 //------------------------------------------------------------------------------
 function canActAsNounForObj(node: GraphNode<Token>) {
-  return canActAsNoun(node.node)
+  return canActAsNoun(node)
     || !node.isRoot()
     && node.node.interp.isRelative()
     && thisOrConjHead(node, n => isSubordiateRoot(n.parent.node))
