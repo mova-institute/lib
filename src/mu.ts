@@ -27,7 +27,22 @@ export class Mu<T> implements Iterable<T> {
   }
 
   static zip<T>(...iterables: Array<Iterable<T> | T>): Mu<Array<T>> {
-    throw new Error(`Not implemented`)
+    return mu((function* () {
+      let iterators = iterables.map(x => x[Symbol.iterator]())
+
+      let toyield: Array<T> = []
+      while (true) {
+        for (let it of iterators) {
+          let { done, value } = it.next()
+          if (done) {
+            return
+          }
+          toyield.push(value)
+        }
+        yield toyield
+        toyield = []
+      }
+    })())
   }
 
   static seq(start = 0, step = 1) {
