@@ -64,8 +64,8 @@ export function generateEnhancedDeps(
       let conj0 = node.parent
       let shared = conj0.children.filter(x => x !== node
         && x.node.helperDeps.some(helperDep =>
-          helperDep.headId === conj0.node.id && (helperDep.relation === 'shared'
-            || helperDep.relation === 'groupshared' // ~, todo
+          helperDep.headId === conj0.node.id && (helperDep.relation === 'distrib'
+            || helperDep.relation === 'collect' // ~, todo
           )
         ))
       for (let t of shared) {
@@ -563,13 +563,18 @@ export function isInfinitive(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isInfinitiveCop(t: TokenNode) {
-  return !t.node.interp.isVerb()
-    && t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isInfinitive())
+export function hasInfinitiveCop(t: TokenNode) {
+  return t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isInfinitive())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isInfinitiveAnalytically(t: TokenNode) {
+export function isInfinitiveCop(t: TokenNode) {
+  return !t.node.interp.isVerb()
+    && t.children.some(x => hasInfinitiveCop(x))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isInfinitiveVerbAnalytically(t: TokenNode) {
   return isInfinitive(t) || isInfinitiveCop(t)
 }
 
@@ -1060,8 +1065,8 @@ export const COMPARATIVE_SCONJS = [
 
 export const CONJ_PROPAGATION_RELS_ARR = [
   'private',
-  'shared',
-  'groupshared',
+  'distrib',
+  'collect',
 ]
 export const CONJ_PROPAGATION_RELS = new Set(CONJ_PROPAGATION_RELS_ARR)
 
@@ -1259,9 +1264,11 @@ export const WORDS_WITH_INS_VALENCY = [
   'володіти',
   'опікуватися',
   'відати',
+  'пахнути',
+  'затискати',
 ]
 
-export const OTHER_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
+export const SOME_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
   'бігати',
   'бігти',
   'бухтіти',
@@ -1285,6 +1292,38 @@ export const OTHER_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
   'розміщувати',
   'штовхнути',
   'являти',
+  'виплюнути',
+  'виповнювати',
+  'виготовляти',
+  'боятися',
+  'затискати',
+])
+
+export const VALID_ADVS_AMBIG_TO_NOUN = new Set([
+  'тому',
+  'як',
+  'коли',
+  'погано',
+  'далі',
+  'слід',
+  'надміру',
+  'треба',
+  'руба',
+  'враз',
+  'доки',
+  'як',
+  'зразу',
+  'усюди',  // ~?
+  'різко',
+  'зараз',
+  'струнко',
+  'досі',
+  'палко',
+  'коли',
+  'тому',
+  'варто',
+  'тому',
+  'чому',
 ])
 
 export const PREPS_HEADABLE_BY_NUMS = [
@@ -1366,9 +1405,21 @@ const INF_VALENCY_ADJECTIVES = [
   'радий',
   'неспроможний',
   'неготовий',
+  'повинний',
+  'нездатний',
+  'змушений',
+  'покликаний',
 ]
 
 export const QUANTIF_PREP = [
   'понад',
   'близько',
+]
+
+export const PROMOTION_PRECEDENCE = [
+  'nsubj',
+  'obj',
+  'iobj',
+  'obl',
+  'advmod',
 ]

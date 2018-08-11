@@ -523,7 +523,7 @@ async function main() {
             // console.log(token.id)
           }
 
-          if (token.rel === 'xcomp' && !g.isInfinitiveAnalytically(node)) {
+          if (token.rel === 'xcomp' && !g.isInfinitiveVerbAnalytically(node)) {
             token.rel = 'ccomp'
           }
 
@@ -553,12 +553,7 @@ async function main() {
             }
           }
 
-          if (!token.hasTag('not-shchojiji')) {
-            let antecedent = g.findShchojijiAntecedent(node)
-            if (antecedent) {
-              token.corefs.push({ headId: antecedent.node.id, type: 'equality' })
-            }
-          }
+
 
           // цікавий вивід
           // if (uEqSome(token.rel, ['acl', 'advmod'])
@@ -687,6 +682,16 @@ async function main() {
     fs.writeFileSync(sequencePath, idSequence)
   }
   console.log(`${tokenCount} tokens`)
+}
+
+//------------------------------------------------------------------------------
+function addShchojijiCoreference(node: GraphNode<Token>) {
+  if (!node.node.hasTag('not-shchojiji')) {
+    let antecedent = g.findShchojijiAntecedent(node)
+    if (antecedent) {
+      node.node.corefs.push({ headId: antecedent.node.id, type: 'equality' })
+    }
+  }
 }
 
 //------------------------------------------------------------------------------

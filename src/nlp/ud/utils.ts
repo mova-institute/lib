@@ -82,9 +82,6 @@ export function sentence2conllu(
     {
       let conjPropagation = token.getConjPropagation()
       if (conjPropagation) {
-        if (conjPropagation === 'groupshared') {
-          conjPropagation = 'group'
-        }
         misc.push(`ConjPropagation=${titlecase(conjPropagation)}`)
       }
     }

@@ -3,7 +3,7 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 import { Dict } from '../types'
 import { CONJ_PROPAGATION_RELS } from './ud/uk_grammar'
 import { CoolSet } from '../data_structures/cool_set'
-import { stripSubrel } from './ud/utils'
+import { stripSubrel, uEq } from './ud/utils'
 
 
 
@@ -20,6 +20,7 @@ export type Structure =
   | 'coref-split'
   | 'multitoken'
 
+////////////////////////////////////////////////////////////////////////////////
 export type TokenTag =
   | 'bad'
 
@@ -47,12 +48,14 @@ export type TokenTag =
   | 'right-nummod'
   | 'not-shchojiji'
 
+////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {
   relation: string
   headId: string
   headIndex?: number
 }
 
+////////////////////////////////////////////////////////////////////////////////
 export interface Coreference {
   type: 'equality' | 'bridge'
   headId: string
@@ -226,6 +229,10 @@ export class Token {
 
   hasDeps() {
     return !!this.deps.length
+  }
+
+  hasUDep(relation: string) {
+    return this.deps.some(x => uEq(x.relation, relation))
   }
 
   getForm(corrected = true) {

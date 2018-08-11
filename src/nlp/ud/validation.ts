@@ -155,15 +155,15 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicate, string,
     `з присудка / валентного прикметника`,
     t => canBePredicate(t) || g.isInfValencyAdjective(t.node),
     `в інфінітив - присудок`,
-    t => g.isInfinitiveAnalytically(t) && canBePredicate(t)
+    t => (g.isInfinitiveVerbAnalytically(t) || g.hasInfinitiveCop(t)) && canBePredicate(t)
   ],
   [`ccomp`,
     `з присудка / валентного прикметника`,
     t => canBePredicate(t)
-      || g.isInfinitiveAnalytically(t) && g.isInfValencyAdjective(t.node),
+      || g.isInfinitiveVerbAnalytically(t) && g.isInfValencyAdjective(t.node),
     `в присудок (тест: фінітний)`,
     t => canBePredicate(t)
-      && !g.isInfinitiveAnalytically(t)
+      && !g.isInfinitiveVerbAnalytically(t)
       && !t.node.hasTag('inf-ccomp')
   ],
   [`xcomp:sp`,
@@ -571,7 +571,17 @@ export function validateSentenceSyntax(
       && !t.parent.node.interp.isXForeign()
       && !t.parent.node.interp.isForeign()  // todo
       && !t.parent.node.isGraft
+      //   &&!t.children.some(x => uEq(x.node.rel, 'case')
+      //   && x.node.interp.getFeature(f.RequiredCase)===
+      // )
       && !g.hasChild(t.parent, 'fixed')
+      && !(t.node.interp.lemma === 'замість'
+        && t.parent.node.interp.isVerb()
+        && t.parent.node.interp.isInfinitive()
+      )
+      && !(t.parent.node.interp.isAdverb()
+        && ['нікуди'].includes(t.parent.node.interp.lemma)
+      )
   )
 
   reportIf(`неособове має підмет`,
@@ -639,7 +649,7 @@ export function validateSentenceSyntax(
     // && !['це'].some(x => t.node.interp.lemma === x)
   )
 
-  reportIf(`неузгодження прикладки`,
+  xreportIf(`неузгодження прикладки`,  // todo: mark explicitly in tb
     t => uEq(t.node.rel, 'appos')
       && t.node.interp.isNounish()
       && t.parent.node.interp.isNounish()
@@ -1378,7 +1388,7 @@ export function validateSentenceSyntax(
       && !t.parent.node.interp.isReversive()  // злякався кабана, стосується жителя
       && !g.isQuantitativeAdverbModified(t)
       && !(t.parent.parent
-        && t.node.interp.isInfinitive()
+        && t.parent.node.interp.isInfinitive()
         && t.parent.parent.children.some(x => x.node.interp.isNegative())
       )
       // && t.parent.node.interp.lemma !== 'немати'
@@ -1669,21 +1679,22 @@ export function validateSentenceSyntax(
 
   if (valencyDict) {
     reportIf(`неперехідне дієслово має додаток`,
-      t => uEqSome(t.node.rel, ['obj'])
+      t => uEqSome(t.node.rel, ['obj'/* , 'iobj' */])
         && t.parent.node.interp.isVerb()
         && valencyDict.isIntransitiveOnlyVerb(t.parent.node.interp.lemma)
         && !(uEq(t.node.rel, 'obj') && t.node.interp.isDative())
         && !t.node.interp.isGenitive()
-        && !g.WORDS_WITH_INS_VALENCY.includes(t.parent.node.interp.lemma)
         && !(g.thisOrGovernedCase(t) === f.Case.instrumental
           && g.WORDS_WITH_INS_VALENCY.includes(t.parent.node.interp.lemma)
         )
         && !(g.thisOrGovernedCase(t) === f.Case.accusative
-          && g.OTHER_WORDS_WITH_ACC_VALENCY.has(t.parent.node.interp.lemma)
+          && g.SOME_WORDS_WITH_ACC_VALENCY.has(t.parent.node.interp.lemma)
         )
-        && !(t.node.interp.isNeuter()
-          && t.node.interp.isReversive()
-          && valencyDict.isAccusativeOnlyVerb(t.node.interp.lemma.slice(0, -2))
+        && !(t.parent.node.interp.isNeuter()
+          && t.parent.node.interp.isReversive()
+          && (valencyDict.isAmbigiousVerb(t.parent.node.interp.lemma.slice(0, -2))
+            || g.SOME_WORDS_WITH_ACC_VALENCY.has(t.parent.node.interp.lemma.slice(0, -2))
+          )
         )
     )
 
@@ -1768,7 +1779,7 @@ export function validateSentenceSyntax(
       )
     }
 
-    reportIf2(`в звороті _вчити дитину математики_ — переплутані patient з addressee`,
+    reportIf2(`в звороті типу _вчити дитину математики_ переплутані patient з addressee`,
       ({ r, i, p }) => uEq(r, 'iobj')
         && i.isGenitive()
         && p.children.some(x => uEq(x.node.rel, 'obj')
@@ -1806,9 +1817,28 @@ export function validateSentenceSyntax(
       )
     }
 
+    xreportIf(`ADV має іменникові інтерпретації`,
+      t => t.node.interp.isAdverb()
+        && analyzer.tag(t.node.form).some(x => x.isNoun() && !x.isVocative())
+        && !g.VALID_ADVS_AMBIG_TO_NOUN.has(t.node.form.toLowerCase())
+        && !t.node.interp.isAbbreviation()
+    )
+
+    /* reportIf(`wrong promotion precedence`,
+      t => {
+        if (!t.node.hasUDep('orphan')) {
+          return
+        }
+        let basicParent = t.parents.find(x => uEq(x.node.rel, 'orphan') && !x.node.isElided())
+        if (!basicParent) {
+          return
+        }
+      }
+    ) */
+
     reportIf2(`Promoted не прикметник`,
       ({ n, t, i }) => t.isPromoted
-        && !i.isAdjective()
+        && !i.isAdjectivish()
         && !i.isCardinalNumeral()
         && !n.parents.some(x => x.node.isElided())
     )
@@ -1868,6 +1898,8 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // прислівник з інтерп-іменником
+  // on enhanced deps
   // в пропуску немає сироти
   // чиє тире від сироти
   // orphan не може мати неслужбових депс?
@@ -1875,12 +1907,10 @@ export function validateSentenceSyntax(
   // conj:parataxis vs parataxis, nesting:
   //   Її учителем української мови був Василь Щурат , біологію викладав Мельник , а географію викладала Олена Степанів .
   // orphan і замінник consistency
-  // orphan без реконструкції
   // не orphan
-  // просто elided без стрілочки
   // ділитися чим — obl чи obj?
   // доти, поки — поки має бути ADV, а не SCONJ
-  // conj vs parataxis без context sharing: Пішли, увійшли в ліс.
+  // conj vs parataxis без sharing: Пішли, увійшли в ліс.
   // ще
   // літом/зимою NOUN vs ADV
   // cop чи aux з прислівника?
@@ -1934,7 +1964,7 @@ export function validateSentenceSyntax(
   // abbr => nv
   // тоді, коли — щоб advcl йшло з тоді
   // відносні promoted
-  // опікуватися мамою — мамою тут obj має бути
+  // опікуватися мамою — мамою тут obj має бути?
   // (упс) advcl з копули а не
   // advcl замість obl’а
   // _це_ не при присудку іменн пред
