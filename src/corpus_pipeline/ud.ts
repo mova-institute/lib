@@ -50,6 +50,7 @@ export function token2verticalLineUk(
 ) {
   let domesticatedPos = domesticateUdPos(upos, feats.NumType, feats.VerbForm)
   let urel = prepareUrel(rel)
+  let headStr = head === undefined ? '' : (head + 1)
   let relativeHead = prepareRelativeHead(head, sentIndex)
   let tag = ud2conlluishString(upos, feats)
   let nameType = feats.NameType || (upos === 'PROPN' && 'Oth') || ''
@@ -90,7 +91,7 @@ export function token2verticalLineUk(
     sentIndex + 1,
     rel,
     urel,
-    head + 1,
+    headStr,
     relativeHead,
     // gluedNext ? 'no' : '',
   ])
