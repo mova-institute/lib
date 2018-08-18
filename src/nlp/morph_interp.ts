@@ -891,7 +891,7 @@ export class MorphInterp {
         break
     }
 
-    throw new Error(`Cannot convert ${this.toVesumStr()} to MTE`)
+    throw new Error(`Cannot convert "${this.toVesumStr()}" to MTE`)
   }
 
   featurewiseEquals(other: MorphInterp) {

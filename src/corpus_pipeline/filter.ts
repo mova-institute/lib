@@ -7,7 +7,7 @@ import { last, r } from '../lang'
 import { tokenizeUk } from '../nlp/utils'
 
 import { mu } from '../mu'
-import { uniformSubarray, numericCompare } from '../algo'
+import { uniformSubarray, compareAscending } from '../algo'
 import * as he from 'he'
 import { isTitlecase, joinAsReOfLiterals, escapeRe } from '../string'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
@@ -159,7 +159,7 @@ export class ZvidusilDocFilter {
     }
 
     let ii = 0
-    filteredIndexes.sort(numericCompare)
+    filteredIndexes.sort(compareAscending)
     for (let i = 0; i < paragraphs.length; ++i) {
       if (i === filteredIndexes[ii]) {
         if (!gapFollowerIndexes.length

@@ -1,4 +1,4 @@
-import { GraphNode, walkDepthNoSelf } from '../../graph'
+import { GraphNode, walkDepthNoSelf, walkDepth } from '../../graph'
 import { Token, buildDep, buildEDep } from '../token'
 import { MorphInterp } from '../morph_interp'
 import * as f from '../morph_features'
@@ -9,6 +9,7 @@ import { UdMiRelation } from './syntagset'
 import { UdPos, toUd } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import { SimpleGrouping } from '../../grouping'
+import { compareAscending } from '../../algo';
 
 export type TokenNode = GraphNode<Token>
 export type Node2indexMap = Map<TokenNode, number>
@@ -18,6 +19,22 @@ export type Node2indexMap = Map<TokenNode, number>
 ////////////////////////////////////////////////////////////////////////////////
 export function isPromoted(node: TokenNode) {
   return node.parents.some(p => p.node.isElided())
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isNonprojective(node: TokenNode) {
+  let indexes = mu(walkDepth(node))
+    .map(x => x.node.index)
+    .toArray()
+    .sort(compareAscending)
+
+  for (let i = 1; i < indexes.length; ++i) {
+    if (indexes[i] - indexes[i - 1] !== 1) {
+      return true
+    }
+  }
+
+  return false
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -328,7 +345,10 @@ export function findShchojijiAntecedent(node: TokenNode) {
 ////////////////////////////////////////////////////////////////////////////////
 export function isValencyHavingAdjective(t: Token) {
   return t.interp.isAdjective()
-    && DATIVE_VALENCY_ADJECTIVES.includes(t.interp.lemma)
+    && (
+      DAT_VALENCY_ADJECTIVES.includes(t.interp.lemma)
+      || GEN_VALENCY_ADJECTIVES.has(t.interp.lemma)
+    )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -569,8 +589,7 @@ export function hasInfinitiveCop(t: TokenNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isInfinitiveCop(t: TokenNode) {
-  return !t.node.interp.isVerb()
-    && t.children.some(x => hasInfinitiveCop(x))
+  return !t.node.interp.isVerb() && hasInfinitiveCop(t)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -800,6 +819,27 @@ export function standartizeSentence2ud23(sentence: Array<TokenNode>) {
   }
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// todo: move out
+export function thisOrConjHead(node: GraphNode<Token>, predicate/* : TreedSentencePredicate */) {
+  for (let t of node.walkThisAndUp0()) {
+    if (!uEq(t.node.rel, 'conj')) {
+      return predicate(t)
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isFeasibleAdvmod(head: TokenNode, dep: TokenNode) {
+  return head.node.interp.isVerbial2()
+    || isNonverbialPredicate(head)
+    || (head.node.interp.isAdjective() && !head.node.interp.isPronominal())
+    || head.node.interp.isAdverb()
+    || thisOrConjHead(head, x => uEq(x.node.rel, 'obl'))
+    || isAdvmodParticle(dep)
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export function isPassive(t: TokenNode) {
   if (uEqSome(t.node.rel, SUBJECTS)) {
@@ -823,6 +863,13 @@ export function fillWithValencyFromDict(interp: MorphInterp, valencyDict: Valenc
   } else if (interp.isNounish()) {
     interp.features.dictValency = valencyDict.lookupGerund(interp.lemma)
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isNonverbialPredicate(t: TokenNode) {
+  return (t.node.interp.isNounish() || t.node.interp.isAdjective()) && t.children.some(
+    x => uEqSome(x.node.rel, ['cop', 'nsubj', 'csubj'])
+  )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1374,13 +1421,22 @@ export const EMPTY_ANIMACY_NOUNS = [
   'ся',
 ]
 
-const DATIVE_VALENCY_ADJECTIVES = [
+const GEN_VALENCY_ADJECTIVES = new Set([
+  'певний',
+  'сповнений',
+  'позбавлений',
+  'повний',
+  'певний',
+])
+
+const DAT_VALENCY_ADJECTIVES = [
   'ближчий',
   'ближчий',
   'вигідний',
   'виписаний',
   'відданий',
   'відомий',
+  'вдячний',
   'властивий',
   'доступний',
   'звичний',
@@ -1397,6 +1453,7 @@ const DATIVE_VALENCY_ADJECTIVES = [
   'подобний',
   'подібний',
   'нерекомендований',
+  'приступніший',
 ]
 
 const INF_VALENCY_ADJECTIVES = [

@@ -18,14 +18,14 @@ export function compare(a, b) {
   }
 
   if (isNumber(a) && isNumber(b)) {
-    return numericCompare(a, b)
+    return compareAscending(a, b)
   }
 
   return lexCompare(a, b)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function numericCompare(a: number, b: number) {
+export function compareAscending(a: number, b: number) {
   return a - b
 }
 
@@ -317,7 +317,7 @@ export function uniformSubarray2<T>(array: Array<T>, n: number) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function deleteIndexes<T>(array: Array<T>, indexes: Array<number>) {
-  indexes.sort(numericCompare)
+  indexes.sort(compareAscending)
   let ii = 0
   return array.filter((x, i) => {
     if (i === indexes[ii]) {

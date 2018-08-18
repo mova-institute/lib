@@ -282,6 +282,7 @@ async function main() {
                 let [, formToInsert] = match
                 let interps = analyzer.tag(formToInsert, token.form)
                   .filter(x => x.lemma !== 'бути' || !x.isAuxillary())
+                  .filter(x => !x.isColloquial())
                 let toInsert = createTokenElement(insertionPoint.document(), formToInsert,
                   interps.map(x => x.toVesumStrMorphInterp()))
                 toInsert.setAttributes({
@@ -305,7 +306,10 @@ async function main() {
             interp.setIsTypo(false)
           }
 
-          if (token.rel && interp.isPunctuation()) {
+          if (token.rel
+            && interp.isPunctuation()
+            && !(uEqSome(token.rel, ['flat']) && token.interp.lemma === '*')
+          ) {
             token.deps.forEach(x => x.relation = 'punct')
           }
 
@@ -545,7 +549,7 @@ async function main() {
           if (token.isPromoted
             && node.parents.some(x => x.node.isElided())
             // workaround for: стояла на буржуазних позиціях, а її донька на *марксистських*
-            && !interp.isAdjective()
+            && interp.isVerbial()
           ) {
             let tags = token.getAttribute('tags')
             if (tags) {

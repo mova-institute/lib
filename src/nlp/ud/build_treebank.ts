@@ -123,22 +123,14 @@ function main() {
 
   let [globStr, outDir] = args._
   let xmlPaths = glob.sync(globStr)
-  if (!xmlPaths.length) {
-    return
-  }
-
-  let id2bratPath = args.id2bratPath
-    ? parseJsonFileSync(args.id2bratPath)
-    : {}
+  let id2bratPath = args.id2bratPath ? parseJsonFileSync(args.id2bratPath) : {}
 
   let rerouteMap = createDatasetRerouteMap(args.datasetReroute)
-  console.log(`Reroutes:`, rerouteMap)
-
-  mkdirp.sync(outDir)
+  console.error(`Reroutes:`, rerouteMap)
 
   let analyzer = createMorphAnalyzerSync()
-  let valencyDict = args.valencyDict ?
-    createValencyDictFromKotsybaTsvs(args.valencyDict)
+  let valencyDict = args.valencyDict
+    ? createValencyDictFromKotsybaTsvs(args.valencyDict)
     : undefined
   let openedFiles = {} as any
   let setRegistry: Dict<DatasetDescriptor> = {}
@@ -150,10 +142,11 @@ function main() {
   let numVerbsTotal = 0
   let verbsUncoveredByValencyDict = new Set<string>()
 
+  mkdirp.sync(outDir)
   for (let xmlPath of xmlPaths) {
     let basename = path.basename(xmlPath)
 
-    console.log(`exporting ${basename}`)
+    console.error(`exporting ${basename}`)
 
     let root = parseXmlFileSync(xmlPath)
     let docTokens = mu(mixml2tokenStream(root, args.datasetSchema))
@@ -161,7 +154,6 @@ function main() {
       .toArray()
     let corefClusterization = buildCoreferenceClusters(docTokens)
     let sentenceStream = tokenStream2sentences(docTokens)
-    let annotationalGap = false
 
     for (let { tokens, multitokens, nodes,
       sentenceId, dataset, document, paragraph, } of sentenceStream
@@ -194,18 +186,15 @@ function main() {
         ? 1
         : 1 - ((roots.length - 1) / (tokens.length - 1))
       let hasMorphErrors = tokens.some(x => x.interp.isError())
-      if (hasMorphErrors) {
-        annotationalGap = true
-        continue
-      }
       let curDocId = document.getAttribute('id')
       let curParId = paragraph.getAttribute('id')
 
       dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
       setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
-      let opensDoc = setRegistry[dataset].curDocId !== curDocId
-      let opensPar = setRegistry[dataset].curParId !== curParId
-      setRegistry[dataset].update(curDocId, curParId)
+      let curDataset = setRegistry[dataset]
+      let opensDoc = curDataset.curDocId !== curDocId
+      let opensPar = curDataset.curParId !== curParId
+      curDataset.update(curDocId, curParId)
 
       let sentLevelInfo = {
         'sent_id': sentenceId,
@@ -222,7 +211,7 @@ function main() {
       if (completionRatio) {
         let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
-          setRegistry[dataset].accountBlocked(numComplete, tokens.length)
+          curDataset.accountBlocked(numComplete, tokens.length)
           sentenseErrors.push({
             sentenceId,
             problems: [{ message: 'цикл' }],
@@ -260,15 +249,15 @@ function main() {
           continue
         }
 
-        if (args.validOnly && hasProblems) {
-          setRegistry[dataset].accountBlocked(numComplete, tokens.length)
+        if (args.validOnly && hasProblems || hasMorphErrors) {
+          curDataset.accountBlocked(numComplete, tokens.length)
         } else {
           if (isComplete || args.includeIncomplete) {
             let sentLevelInfoSynt = { ...sentLevelInfo }
-            if (setRegistry[dataset].followsAnnotationalGap) {
+            if (curDataset.followsAnnotationalGap) {
               sentLevelInfoSynt['annotation_gap'] = true
             }
-            setRegistry[dataset].accountExported(tokens.length)
+            curDataset.accountExported(tokens.length)
             if (!args.noStandartizing) {
               g.standartizeSentence2ud23(nodes)
             }
@@ -276,9 +265,8 @@ function main() {
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
             let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, { xpos: args.xpos })
             fs.writeSync(file, conlluedSentence + '\n\n')
-            annotationalGap = false
           } else {
-            setRegistry[dataset].accountBlocked(numComplete, tokens.length)
+            curDataset.accountBlocked(numComplete, tokens.length)
           }
         }
       }
@@ -290,7 +278,7 @@ function main() {
       setRegistryMorpho[dataset] = setRegistryMorpho[dataset] || new DatasetDescriptor()
 
       let morphonlyThreshold = Number.parseFloat(args.morphonlyThreshold)
-      if (completionRatio >= morphonlyThreshold) {
+      if (completionRatio >= morphonlyThreshold && !hasMorphErrors) {
         // standartizeMorpho(tokens)
         if (!args.noStandartizing) {
           g.standartizeSentence2ud23(nodes)
@@ -318,10 +306,10 @@ function main() {
   console.error(`Uncovered are ${verbsUncoveredByValencyDict.size} lemmas`)
   // console.error(mu(verbsUncoveredByValencyDict).toArray().sort(ukComparator).join('\n'))
 
-  console.log()
+  console.error()
 }
 
-//==============================================================================
+//------------------------------------------------------------------------------
 function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
   if (sentenseErrors.length) {
     sentenseErrors = transposeProblems(sentenseErrors)
@@ -375,8 +363,8 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
     'exported s': stats.map(x => x['exported s']).reduce((a, b) => a + b, 0),
   })
 
-  console.log(`\n${header}`)
-  console.log(columnify(stats, {
+  console.error(`\n${header}`)
+  console.error(columnify(stats, {
     config: {
       align: 'right',
       blocked: {
@@ -393,7 +381,7 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
       },
     },
   }))
-  // console.log(`\n`)
+  // console.error(`\n`)
 }
 
 //------------------------------------------------------------------------------
