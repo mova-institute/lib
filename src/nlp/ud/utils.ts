@@ -15,6 +15,7 @@ import sorteduniq = require('lodash.sorteduniq')
 export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos' | 'ud'
   morphOnly?: boolean
+  // noBasic?: boolean
 }
 
 ////////////////////////////////////////////////////////////////////////////////

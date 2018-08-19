@@ -34,6 +34,8 @@ import { buildCoreferenceClusters } from '../coreference'
 //------------------------------------------------------------------------------
 interface Args {
   dryRun: boolean
+  noEnhanced: boolean
+  noBasic: boolean
   noStandartizing: boolean
   includeIncomplete: boolean
   oneSet: string
@@ -91,6 +93,8 @@ class DatasetDescriptor {
 function getArgs() {
   return minimist<Args>(process.argv.slice(2), {
     boolean: [
+      'noEnhanced',
+      'noBasic',
       'noStandartizing',
       'includeIncomplete',
       'dryRun',
@@ -158,7 +162,9 @@ function main() {
     for (let { tokens, multitokens, nodes,
       sentenceId, dataset, document, paragraph, } of sentenceStream
     ) {
-      g.generateEnhancedDeps(nodes, corefClusterization)
+      if (!args.noEnhanced) {
+        g.generateEnhancedDeps(nodes, corefClusterization)
+      }
 
       // count some stats
       if (valencyDict) {
@@ -263,7 +269,10 @@ function main() {
             }
             let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-            let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, { xpos: args.xpos })
+            let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, {
+              xpos: args.xpos,
+              // noBasic: args.noBasic,
+             })
             fs.writeSync(file, conlluedSentence + '\n\n')
           } else {
             curDataset.accountBlocked(numComplete, tokens.length)
