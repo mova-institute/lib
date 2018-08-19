@@ -574,7 +574,7 @@ async function main() {
 
 
           // switch compound numerals from flat to compound
-          if (uEq(token.rel, 'nummod') /* || uEq(token.rel, 'amod') && interp.isOrdinalNumeral() */) {
+          if (0 && uEq(token.rel, 'nummod') /* || uEq(token.rel, 'amod') && interp.isOrdinalNumeral() */) {
             let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
               .sort((a, b) => a.node.index - b.node.index)
             let newHead = _.last(flatChildren)

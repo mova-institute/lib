@@ -91,7 +91,7 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicateParent, s
     t => canActAsNounForObj(t) || canTheoreticallyActAsNoun(t)],
   [`iobj`,
     `з присудка чи валентного прикметника`,
-    t => canBePredicate(t) || g.isValencyHavingAdjective(t.node),
+    t => canBePredicate(t) || g.isDativeValencyAdjective(t.node),
     `в іменникове`,
     t => canActAsNounForObj(t) || canTheoreticallyActAsNoun(t)],
   [`obl`,
@@ -105,7 +105,10 @@ const TREED_SIMPLE_RULES: Array<[string, string, TreedSentencePredicateParent, s
     t => canActAsNounForObj(t)
       || t.node.interp.lemma === 'який' && (
         g.findRelativeClauseRoot(t) || t.parent.node.rel === 'flat:pack'
-      ),
+      )
+      || /* t.node.interp.isAdjective() && t.node.interp.isPronominal()
+      && */ g.hasChild(t, 'flat:rcp')
+    ,
   ],
   [`nmod`, `з іменника`, t => canActAsNoun(t) || g.isDenUDen(t) /* temp */,
     `в іменник`,
@@ -285,6 +288,16 @@ export function validateSentenceSyntax(
     }
   }
 
+  if (0) {
+    let interesting = sentence.filter(x =>
+      (['один', 'другий'].includes(x.interp.lemma))
+      && x.rel !== 'flat:rcp'
+    )
+    if (interesting.length > 1) {
+      problems.push({ indexes: interesting.map(x => x.index), message: `flat:rcp?` })
+    }
+  }
+
   // invalid AUX
   reportIf(`AUX без cop/aux`, PREDICATES.isAuxWithNoCopAux)
 
@@ -413,7 +426,7 @@ export function validateSentenceSyntax(
     && !(sentence[i + 1] && sentence[i + 1].interp.isNumeric())
   )
 
-  oldReportIf('невідома реляція',
+  oldReportIf('незнана реляція',
     t => t.rel && !g.ALLOWED_RELATIONS.includes(t.rel as UdMiRelation))
 
   reportIf(`cc не в сурядний`,
@@ -501,15 +514,20 @@ export function validateSentenceSyntax(
       )
   )
 
+  reportIf(`день у день`, t => g.isDenUDen(t))
+
+  reportIf(`займенник :&noun`, t =>
+    t.node.interp.isAdjectiveAsNoun()
+    && t.node.interp.isPronominal()
+  )
+
   reportIf(`додаток в називному`,
     t => uEqSome(t.node.rel, ['obj', 'iobj', 'obl'])
       && g.thisOrGovernedCase(t) === f.Case.nominative
       && !t.node.interp.isXForeign()
       && !t.node.isGraft
       && t.parent.node.interp.isReversive()
-      && !(uEq(t.node.rel, 'obl') && g.isDenUDen(t))
-    // && !t.children.some(x => isNumgov(x.node.rel))
-    // && !t.children.some(x => x.node.interp.isAdverb())
+      && !t.children.some(x => x.node.rel === 'flat:rcp')
   )
 
   reportIf(`місцевий без прийменника`,
@@ -929,6 +947,10 @@ export function validateSentenceSyntax(
         !x.node.interp.isPunctuation() && !mu(x.walkThisAndUp0()).some(
           xx => uEqSome(xx.node.rel, ['discourse'])))
       )
+      // використання як енергетичної сировини
+      && !(t.parent.node.rel === 'nmod:xcompsp'
+        && ['як'].includes(t.node.interp.lemma)
+      )
   )
 
   reportIf(`parataxis під’єднано сполучником`,
@@ -1104,7 +1126,7 @@ export function validateSentenceSyntax(
       && !uEq(t.parent.node.rel, 'xcomp')
   )
 
-  reportIf(`conj без розділового чи сполучника`,
+  reportIf(`conj без сполучника чи коми`,
     t => g.isConjWithoutCcOrPunct(t)
       && t.node.rel !== 'conj:svc'
   )
@@ -1497,9 +1519,9 @@ export function validateSentenceSyntax(
       && !uEqSome(t.node.rel, ['flat:title'])
   )
 
-  xreportIf(`_тест: еліпс наперед`,
+  reportIf(`_тест: еліпс наперед`,
     t => t.node.comment
-      && t.node.comment.includes('еліпс наперед')
+      && t.node.comment.toLowerCase().includes('еліпс наперед')
   )
 
   reportIf2(`невказівне _тому_ вжите як вказівне`,
@@ -1666,7 +1688,9 @@ export function validateSentenceSyntax(
 
   reportIf2(`числівник має неочікувані (?) залежники`,
     ({ r, c }) => uEq(r, 'nummod')
-      && c.some(x => !uEqSome(x.node.rel, ['compound', 'conj', 'discourse', 'punct']))
+      && c.some(x => !uEqSome(x.node.rel, ['compound', 'conj', 'discourse', 'punct'])
+        && x.node.rel !== 'flat:range'
+      )
   )
 
   xreportIf2(`xcomp не має явного підмета`,
@@ -1824,6 +1848,7 @@ export function validateSentenceSyntax(
       ({ n, t }) => t.isElided() && n.isRoot() && !n.hasChildren()
     )
 
+    // todo
     xreportIf(`ADV має іменникові інтерпретації`,
       t => t.node.interp.isAdverb()
         && analyzer.tag(t.node.form).some(x => x.isNoun() && !x.isVocative())
@@ -1871,6 +1896,11 @@ export function validateSentenceSyntax(
           && isPassive(sentence[t.headIndex].interp)
           && !hasDependantWhich(i, xx => uEq(xx.rel, 'case')))
     }
+
+    xreportIf(`flat:range?`,
+      t => uEqSome(t.node.rel, ['conj'])
+        && t.children.some(x => /[-–—]/.test(x.node.form) && x.node.index < t.node.index)
+    )
   }
 
   // **********
@@ -1905,6 +1935,10 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // один одного :rcp has PronType=
+  // Час від часу — перший час називний
+  // так само
+  // lemmas for punct types
   // зробили реконструкцію, але забули зробити орфанами obl’и
   // conj:upperlevel з conj
   // словник xcomp:sp

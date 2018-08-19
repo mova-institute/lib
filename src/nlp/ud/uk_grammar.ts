@@ -343,10 +343,18 @@ export function findShchojijiAntecedent(node: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isDativeValencyAdjective(t: Token) {
+  return t.interp.isAdjective() && (
+    DAT_VALENCY_ADJECTIVES.has(t.interp.lemma)
+    || DAT_VALENCY_ADJECTIVES.has('не' + t.interp.lemma)
+  )
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function isValencyHavingAdjective(t: Token) {
   return t.interp.isAdjective()
     && (
-      DAT_VALENCY_ADJECTIVES.includes(t.interp.lemma)
+      DAT_VALENCY_ADJECTIVES.has(t.interp.lemma)
       || GEN_VALENCY_ADJECTIVES.has(t.interp.lemma)
     )
 }
@@ -457,7 +465,7 @@ export function isPunctInParenthes(t: TokenNode) {
 export function isDenUDen(t: TokenNode) {
   // console.log(t.node.indexInSentence)
   return (t.node.interp.isNounish() || t.node.interp.isAdjective() && t.node.interp.isPronominal())
-    && t.node.interp.isNominative()
+    // && t.node.interp.isNominative()
     // && t.children.length === 1  // experimental
     && wiith(t.children.filter(x => !x.node.interp.isPunctuation()), c =>
       c.every(x => x.node.index > t.node.index)
@@ -547,7 +555,7 @@ export function isConjWithoutCcOrPunct(t: TokenNode) {
   let ret = uEq(t.node.rel, 'conj')
     && !t.children.some(x => uEqSome(x.node.rel, ['cc'])
       || uEq(x.node.rel, 'punct')
-      && /[,;/–—\-\\]/.test(x.node.interp.lemma)
+      && /[,;/\\]/.test(x.node.interp.lemma)
       && x.node.index < t.node.index
     )
     && !t.node.hasTag('conj_no_cc')
@@ -1119,70 +1127,74 @@ export const CONJ_PROPAGATION_RELS = new Set(CONJ_PROPAGATION_RELS_ARR)
 
 export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
 
-export const ALLOWED_RELATIONS: Array<UdMiRelation> = [
+export const ALLOWED_RELATIONS/* : Array<UdMiRelation> */ = [
   'acl:adv',
-  'advcl:sp',
-  'advcl:cmp',
-  'advcl:svc',
-  'advmod:amtgov',
-  'appos:nonnom',
-  'aux:pass',
-  'ccomp:svc',
-  'compound:svc',
-  'conj:parataxis',
-  'conj:repeat',
-  'conj:svc',
-  'csubj:pass',
-  'det:numgov',
-  'det:nummod',
-  'flat:pack',
-  'flat:foreign',
-  'flat:name',
-  'flat:repeat',
-  'flat:title',
-  'nsubj:pass',
-  'nummod:gov',
-  'obl:agent',
-  'parataxis:discourse',
-  'parataxis:newsent',
-  'parataxis:thatis',
-  'parataxis:rel',
-  'xcomp:sp',
-
+  'acl:parataxis',
   'acl',
+  'advcl:cmp',
+  'advcl:sp',
+  'advcl:svc',
   'advcl',
+  'advmod:amtgov',
   'advmod',
   'amod',
+  'appos:nonnom',
   'appos',
   'aux',
   'case',
   'cc',
+  'ccomp:svc',
   'ccomp',
+  'compound:svc',
   'compound',
+  'conj:parataxis',
+  'conj:repeat',
+  'conj:svc',
+  'conj:upperlevel',
   'conj',
   'cop',
   'csubj',
+  'det:numgov',
+  'det:nummod',
   'det',
   'discourse',
   'dislocated',
   'expl',
   'fixed',
+  'flat:foreign',
+  'flat:name',
+  'flat:pack',
+  'flat:range',
+  'flat:rcp',
+  'flat:repeat',
+  'flat:title',
   'flat',
   'goeswith',
   'iobj',
   'list',
   'mark',
   'nmod',
+  'nmod:iobj',
+  'nmod:obj',
+  'nmod:xcompsp',
+  'nsubj:pass',
   'nsubj',
+  'nummod:gov',
   'nummod',
   'obj',
+  'obl:agent',
   'obl',
   'orphan',
+  'parataxis:discourse',
+  'parataxis:newsent',
+  'parataxis:rel',
+  'parataxis:thatis',
   'parataxis',
   'punct',
   'reparandum',
   'root',
   'vocative',
+  'xcomp:sp',
   'xcomp',
 ]
 export const LEAF_RELATIONS = [
@@ -1347,30 +1359,40 @@ export const SOME_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
 ])
 
 export const VALID_ADVS_AMBIG_TO_NOUN = new Set([
-  'тому',
-  'як',
-  'коли',
-  'погано',
-  'далі',
-  'слід',
-  'надміру',
-  'треба',
-  'руба',
-  'враз',
-  'доки',
-  'як',
-  'зразу',
-  'усюди',  // ~?
-  'різко',
-  'зараз',
-  'струнко',
-  'досі',
-  'палко',
-  'коли',
-  'тому',
   'варто',
+  'відразу',
+  'враз',
+  'все',  // ~
+  'вчора',
+  'далі',
+  'дещо',
+  'дибки',
+  'доки',
+  'досі',
+  'загалом',
+  'зараз',
+  'зразу',
+  'коли',
+  'коли',
+  'надміру',
+  'палко',
+  'погано',
+  'разом',
+  'різко',
+  'руба',
+  'слід',
+  'струнко',
+  'сьогодні',
   'тому',
+  'тому',
+  'тому',
+  'треба',
+  'усюди',  // ~?
+  'чого',
   'чому',
+  'щось',
+  'як',
+  'як',
 ])
 
 export const PREPS_HEADABLE_BY_NUMS = [
@@ -1429,7 +1451,7 @@ const GEN_VALENCY_ADJECTIVES = new Set([
   'певний',
 ])
 
-const DAT_VALENCY_ADJECTIVES = [
+const DAT_VALENCY_ADJECTIVES = new Set([
   'ближчий',
   'ближчий',
   'вигідний',
@@ -1454,7 +1476,7 @@ const DAT_VALENCY_ADJECTIVES = [
   'подібний',
   'нерекомендований',
   'приступніший',
-]
+])
 
 const INF_VALENCY_ADJECTIVES = [
   'готовий',
