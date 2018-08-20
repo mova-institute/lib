@@ -47,6 +47,7 @@ export type TokenTag =
   | 'ok-imp-cop'
   | 'right-nummod'
   | 'not-shchojiji'
+  | 'pred-right'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {

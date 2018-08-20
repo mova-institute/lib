@@ -1281,13 +1281,13 @@ export function validateSentenceSyntax(
       && !uEqSome(t.node.rel, [...g.CLAUSAL_MODIFIERS])  // todo
   )
 
-  xreportIf(`неочікувана реляція в дієслово`,
+  reportIf(`неочікувана реляція в дієслово`,
     t => t.node.rel
       && !t.node.isGraft
       && t.node.interp.isVerb()
       && !t.node.interp.isAuxillary()
-      && !uEqSome(t.node.rel, [...g.CLAUSAL_MODIFIERS, 'parataxis', 'conj', 'flat:repeat',
-        'parataxis:discourse'])
+      && !uEqSome(t.node.rel, [...g.CLAUSE_RELS, 'conj'])
+      && !['compound:svc', 'orphan', 'flat:repeat', 'flat:pack'].includes(t.node.rel)
   )
 
   reportIf(`неочікувана реляція в DET`,
@@ -1482,7 +1482,7 @@ export function validateSentenceSyntax(
 
   reportIf(`питальний займенник без „?“`,
     t => !t.isRoot()
-      && t.node.interp.isInterogative()
+      && t.node.interp.isInterrogative()
       && !g.thisOrConjHead(t, x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
       && !g.thisOrConjHead(t.parent, x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
       && !mu(t.walkThisAndUp0())
@@ -1493,7 +1493,7 @@ export function validateSentenceSyntax(
   reportIf(`непитальний займенник з „?“`,
     t => !t.isRoot()
       && (t.node.interp.isRelative() || t.node.interp.isIndefinite())
-      // && !t.node.interp.isInterogative()
+      // && !t.node.interp.isInterrogative()
       && g.thisOrConjHead(t, x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
     // && mu(t.walkThisAndUp0())
     //   .some(x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
@@ -1881,6 +1881,25 @@ export function validateSentenceSyntax(
         && !t.comment.toLowerCase().includes('лжеожеледиця')
     )
 
+    reportIf(`недієслівна предикація праворуч`, t =>
+      uEqSome(t.node.rel, ['nsubj'/* , 'csubj' */])
+      && t.node.index > t.parent.node.index
+      && !t.parent.node.interp.isVerbial()
+      && !t.parent.node.interp.isInstrumental()
+      && !t.parent.node.interp.isInterrogative()
+      && !t.parent.node.interp.isAdjective()  // ~
+      && !g.hasChild(t.parent, 'expl')
+      && !t.node.hasTag('pred-right')
+    )
+
+    reportIf(`присудок є залежником`, t =>
+      uEqSome(t.node.rel, ['nsubj', 'csubj', 'cop'])
+      && t.parent.parent
+      && !uEqSome(t.parent.node.rel, [...g.CLAUSE_RELS, 'conj'])
+      && !t.parent.node.isGraft
+      && !['compound:svc', 'orphan'].includes(t.parent.node.rel)
+    )
+
     // trash >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     {
       xoldReportIf(`:pass-реляція?`,
@@ -1888,19 +1907,17 @@ export function validateSentenceSyntax(
           && ['aux', 'csubj', 'nsubj'].includes(t.rel)
           && sentence[t.headIndex]
           && isPassive(sentence[t.headIndex].interp))  // todo: навпаки
-
       xoldReportIf(`:obl:agent?`,
         (t, i) => !t.isPromoted
           && t.rel === 'obl'
           && t.interp.isInstrumental()
           && isPassive(sentence[t.headIndex].interp)
           && !hasDependantWhich(i, xx => uEq(xx.rel, 'case')))
+      xreportIf(`flat:range?`,
+        t => uEqSome(t.node.rel, ['conj'])
+          && t.children.some(x => /[-–—]/.test(x.node.form) && x.node.index < t.node.index)
+      )
     }
-
-    xreportIf(`flat:range?`,
-      t => uEqSome(t.node.rel, ['conj'])
-        && t.children.some(x => /[-–—]/.test(x.node.form) && x.node.index < t.node.index)
-    )
   }
 
   // **********
@@ -1935,6 +1952,7 @@ export function validateSentenceSyntax(
   // конкеретні дозволені відмінки в :gov-реляціях
 
 
+  // cop з flat:pack
   // один одного :rcp has PronType=
   // Час від часу — перший час називний
   // так само

@@ -199,13 +199,6 @@ async function main() {
             interpEl.removeAttribute('lemma2')
           }
 
-          if (interp.isVerb() && interp.lemma === 'бути') {
-            let dep = interpEl.parent().attribute('dep')
-            if (dep && /\-(aux|cop)$/.test(dep)) {
-              interp.setIsAuxillary()
-            }
-          }
-
           // advps without tense
           g.setTenseIfConverb(interp, form)
 
@@ -330,6 +323,13 @@ async function main() {
           if (PREDICATES.isAuxWithNoCopAux(node)
             || sentenceHasOneRoot && node.isRoot() && node.node.interp.isAuxillary()) {
             node.node.interp.setIsAuxillary(false)
+          }
+
+          if (interp.isVerb()
+            && g.COPULA_LEMMAS.includes(interp.lemma)
+            && uEqSome(token.rel, ['cop', 'aux'])
+          ) {
+            interp.setIsAuxillary()
           }
 
           if (token.rel === 'mark' && token.interp.isAdverb() && token.interp.isRelative()) {

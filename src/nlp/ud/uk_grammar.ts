@@ -437,7 +437,7 @@ export function isNegativeExistentialPseudosubject(t: TokenNode) {
     && t.node.interp.isGenitive()
     && t.parent.children.some(x => x.node.interp.isNegative())
     && t.parent.node.interp.isNeuter()
-    && ['бути', 'бувати', 'існувати', 'мати'].includes(t.parent.node.interp.lemma)
+    && [...COPULA_LEMMAS, 'існувати', 'мати'].includes(t.parent.node.interp.lemma)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1139,6 +1139,7 @@ export const ALLOWED_RELATIONS/* : Array<UdMiRelation> */ = [
   'advmod',
   'amod',
   'appos:nonnom',
+  'appos:reverse',
   'appos',
   'aux',
   'case',
@@ -1337,7 +1338,6 @@ export const SOME_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
   'зазначити',
   'заказати',
   'запитувати',
-  'збутися',
   'збутися',
   'інкримінувати',
   'наложити',

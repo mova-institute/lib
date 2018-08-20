@@ -119,7 +119,7 @@ export function* domesticateDictCorpViz(fileStr: string) {
       yield lineStart + interp.toVesumStr()
 
       if (interp.lemma === 'бути' && interp.isVerb()) {
-        interp.setIsAuxillary()
+        interp.setIsAuxillary()  // ??
         yield lineStart + interp.toVesumStr()
       }
     }

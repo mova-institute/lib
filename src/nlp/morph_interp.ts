@@ -821,7 +821,7 @@ export class MorphInterp {
       if (!lemma) {
         throw new Error('No lemma provided')
       }
-      let type = isAuxVerb(lemma) ? 'a' : 'm'
+      let type = considerAuxVerb(lemma) ? 'a' : 'm'
       let aspect = map2mte(Aspect, this.features.aspect)
       let verbForm = this.isConverb() ? 'g' : tryMap2mte(VerbType, this.features.verbType) || 'i'
       let tense = map2mteOrDash(Tense, this.features.tense)
@@ -1036,7 +1036,7 @@ export class MorphInterp {
   isTypo() { return this.features.typo === Typo.yes }
   isImperfect() { return this.features.aspect === Aspect.imperfect }
   isImpersonal() { return this.features.verbType === VerbType.impersonal }
-  isInterogative() { return this.getFeature(PronominalType) === PronominalType.interrogative }
+  isInterrogative() { return this.getFeature(PronominalType) === PronominalType.interrogative }
   isNotPersonal() { return this.isImpersonal() || this.isInfinitive() }
   isImperative() { return this.features.verbType === VerbType.imperative }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
@@ -1257,7 +1257,7 @@ function createVesumFlagComparator2(pos: Pos) {
 }
 
 //------------------------------------------------------------------------------
-function isAuxVerb(lemma: string) {
+function considerAuxVerb(lemma: string) {
   return lemma === 'бути' || lemma === 'будучи' || lemma === 'бувши'
 }
 
