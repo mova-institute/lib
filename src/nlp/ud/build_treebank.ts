@@ -60,6 +60,7 @@ class DatasetDescriptor {
   file: number
   counts = {
     tokensInUnfinishedSentenses: 0,
+    tokensEmpty: 0,
     tokensBlocked: 0,
     tokensExported: 0,
     sentencesExported: 0,
@@ -85,6 +86,11 @@ class DatasetDescriptor {
   accountBlocked(numComplete: number, numTotal: number) {
     this.counts.tokensBlocked += numComplete
     this.counts.tokensInUnfinishedSentenses += numTotal
+    this.followsAnnotationalGap = true
+  }
+
+  accountEmpty(numTokens: number) {
+    this.counts.tokensEmpty += numTokens
     this.followsAnnotationalGap = true
   }
 }
@@ -278,6 +284,8 @@ function main() {
             curDataset.accountBlocked(numComplete, tokens.length)
           }
         }
+      } else {
+        curDataset.accountEmpty(tokens.length)
       }
 
       if (args.dryRun) {
