@@ -33,6 +33,7 @@ import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
 import { uniq } from 'lodash'
+import { stableSort } from '../algo'
 
 
 
@@ -665,7 +666,7 @@ async function main() {
           let element = id2el.get(x.node.id)
           if (element) {
             // console.log(x.node.form)
-            saveToken(x.node, element)
+            saveToken(x.node, element, nodes)
           }
         })
       }
@@ -709,12 +710,14 @@ function makeDatesPromoted(node: GraphNode<Token>) {
 }
 
 //------------------------------------------------------------------------------
-function saveToken(token: Token, element: AbstractElement) {
+function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNode<Token>>) {
   Object.entries(token.getAttributes())
     .forEach(([k, v]) => element.setAttribute(k, v || undefined))
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)
+  stableSort(token.deps, (a, b) => Number(nodes[a.headIndex].node.isElided())
+    - Number(nodes[b.headIndex].node.isElided()))
   let dep = mu(token.getAllDeps())
     .map(x => `${x.headId}-${x.relation}`)
     .join('|')

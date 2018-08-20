@@ -5,11 +5,10 @@ import * as f from '../morph_features'
 import { uEq, uEqSome, stripSubrel } from './utils'
 import { mu } from '../../mu'
 import { last, wiith } from '../../lang'
-import { UdMiRelation } from './syntagset'
 import { UdPos, toUd } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import { SimpleGrouping } from '../../grouping'
-import { compareAscending } from '../../algo';
+import { compareAscending, clusterize } from '../../algo';
 
 export type TokenNode = GraphNode<Token>
 export type Node2indexMap = Map<TokenNode, number>
@@ -61,6 +60,7 @@ export function generateEnhancedDeps(
   }
 
   for (let node of nodes) {
+    // sent_id = 3bgj do not distribute to promoted!!
     // todo: dislocated!
     // todo: у такому становищі [є] один крок для того — в enhanced інший корінь!
     //       https://lab.mova.institute/brat/#/ud/vislotska__kohannia/30
@@ -756,7 +756,7 @@ const SUBRELS_TO_EXPORT = new Set([
   'parataxis:newsent',
   'xcomp:sp',
 ])
-export function standartizeSentence2ud23(sentence: Array<TokenNode>) {
+export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
   let lastToken = last(sentence).node
   let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
 
@@ -773,9 +773,18 @@ export function standartizeSentence2ud23(sentence: Array<TokenNode>) {
       }
     }
 
-    t.deps = t.deps
-      // .filter(x => !HELPER_RELATIONS.has(x.relation))
-      .sort((a, b) => a.headIndex - b.headIndex)
+    // leave the rightest punct head only
+    {
+      let [nonpunts, puncts] = clusterize(
+        t.deps,
+        x => uEq(x.relation, 'punct') && !sentence[x.headIndex].node.isElided(),
+        [[], []]
+      )
+      if (puncts.length) {
+        puncts.sort((a, b) => a.headIndex - b.headIndex)
+        t.deps = [puncts[0], ...nonpunts]
+      }
+    }
 
     // set AUX and Cond
     if (uEqSome(t.rel, ['aux', 'cop'])) {
@@ -795,11 +804,6 @@ export function standartizeSentence2ud23(sentence: Array<TokenNode>) {
     // remove non-exportable subrels
     if (t.rel && !SUBRELS_TO_EXPORT.has(t.rel)) {
       t.rel = stripSubrel(t.rel)
-    }
-
-    // set :pass
-    if (isPassive(node)) {
-      // t.rel += `:pass`
     }
 
     // set participle acl to amod

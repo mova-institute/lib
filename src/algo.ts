@@ -350,11 +350,11 @@ export function clusterize<T>(
   clusters = new Array<Array<T>>(),
 ) {
   for (let value of values) {
-    let cluster = Number(clusterizer(value))
-    if (!(cluster in clusters)) {
-      clusters[cluster] = new Array<T>()
+    let clusterId = Number(clusterizer(value))
+    if (!(clusterId in clusters)) {
+      clusters[clusterId] = new Array<T>()
     }
-    clusters[cluster].push(value)
+    clusters[clusterId].push(value)
   }
 
   return clusters

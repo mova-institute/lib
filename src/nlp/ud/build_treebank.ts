@@ -271,7 +271,7 @@ function main() {
             }
             curDataset.accountExported(tokens.length)
             if (!args.noStandartizing) {
-              g.standartizeSentence2ud23(nodes)
+              g.standartizeSentenceForUd23(nodes)
             }
             let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
@@ -298,7 +298,7 @@ function main() {
       if (completionRatio >= morphonlyThreshold && !hasMorphErrors) {
         // standartizeMorpho(tokens)
         if (!args.noStandartizing) {
-          g.standartizeSentence2ud23(nodes)
+          g.standartizeSentenceForUd23(nodes)
         }
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
