@@ -16,7 +16,6 @@ import { escape } from '../../xml/utils'
 import { mixml2tokenStream, tokenStream2sentences } from '../utils'
 import * as algo from '../../algo'
 import { parseJsonFileSync } from '../../utils.node'
-// import { last } from '../../lang'
 import { Dict } from '../../types'
 import { Token } from '../token'
 import { MorphInterp } from '../morph_interp'
@@ -28,6 +27,7 @@ import { toSortableDatetime } from '../../date'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 import { buildCoreferenceClusters } from '../coreference'
+import { intbool } from '../../lang'
 
 
 
@@ -53,78 +53,6 @@ interface Args {
 
   valencyDict: string
   addValency: boolean
-}
-
-//------------------------------------------------------------------------------
-class DatasetDescriptor {
-  file: number
-  counts = {
-    tokensInUnfinishedSentenses: 0,
-    tokensEmpty: 0,
-    tokensBlocked: 0,
-    tokensExported: 0,
-    sentencesExported: 0,
-  }
-  curDocId: string
-  curParId: string
-  followsAnnotationalGap = false
-
-  update(curDocId: string, curParId: string) {
-    if (this.curDocId !== curDocId) {
-      this.followsAnnotationalGap = false
-    }
-    this.curDocId = curDocId
-    this.curParId = curParId
-  }
-
-  accountExported(numTokens: number) {
-    ++this.counts.sentencesExported
-    this.counts.tokensExported += numTokens
-    this.followsAnnotationalGap = false
-  }
-
-  accountBlocked(numComplete: number, numTotal: number) {
-    this.counts.tokensBlocked += numComplete
-    this.counts.tokensInUnfinishedSentenses += numTotal
-    this.followsAnnotationalGap = true
-  }
-
-  accountEmpty(numTokens: number) {
-    this.counts.tokensEmpty += numTokens
-    this.followsAnnotationalGap = true
-  }
-}
-
-//------------------------------------------------------------------------------
-function getArgs() {
-  return minimist<Args>(process.argv.slice(2), {
-    boolean: [
-      'noEnhanced',
-      'noBasic',
-      'noStandartizing',
-      'includeIncomplete',
-      'dryRun',
-      'reportHoles',
-      'onlyValid',
-      'addValency',
-    ],
-    alias: {
-      oneSet: 'one-set',
-      noStandartizing: 'no-std',
-
-      datasetSchema: 'dataset-schema',
-      validOnly: 'valid-only',
-      reportHoles: 'report-holes',
-      reportErrors: 'report-errors',
-    },
-    default: {
-      reportErrors: 'all',
-      reportHoles: true,
-      datasetSchema: '',
-      morphonlyThreshold: '0',
-      datasetReroute: '',
-    },
-  })
 }
 
 //------------------------------------------------------------------------------
@@ -169,7 +97,7 @@ function main() {
       sentenceId, dataset, document, paragraph, } of sentenceStream
     ) {
       if (!args.noEnhanced) {
-        g.generateEnhancedDeps(nodes, corefClusterization)
+        g.generateEnhancedDeps2(nodes, corefClusterization)
       }
 
       // count some stats
@@ -200,6 +128,7 @@ function main() {
       let hasMorphErrors = tokens.some(x => x.interp.isError())
       let curDocId = document.getAttribute('id')
       let curParId = paragraph.getAttribute('id')
+      let bratPath = id2bratPath[tokens[0].id] || ''
 
       dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
       setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
@@ -221,7 +150,6 @@ function main() {
       prevSet = dataset
 
       if (completionRatio) {
-        let bratPath = id2bratPath[tokens[0].id] || ''
         if (!roots.length) {
           curDataset.accountBlocked(numComplete, tokens.length)
           sentenseErrors.push({
@@ -278,7 +206,7 @@ function main() {
             let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, {
               xpos: args.xpos,
               // noBasic: args.noBasic,
-             })
+            })
             fs.writeSync(file, conlluedSentence + '\n\n')
           } else {
             curDataset.accountBlocked(numComplete, tokens.length)
@@ -286,6 +214,17 @@ function main() {
         }
       } else {
         curDataset.accountEmpty(tokens.length)
+        if (args.reportHoles && !skipReportingEmptyFromDocs.has(curDocId)) {
+          sentenseHoles.push({
+            sentenceId,
+            problems: [{
+              message: `речення незаймане, ${tokens.length} ток.`,
+              indexes: [],
+            }],
+            tokens,
+            bratPath,
+          })
+        }
       }
 
       if (args.dryRun) {
@@ -336,6 +275,7 @@ function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
   if (sentenseHoles.length) {
     let comparator = algo.chainComparators<any>(
       // (a, b) => b.tokens.filter(x => x.hasDeps()).length - a.tokens.filter(x => x.hasDeps()).length,
+      (a, b) => intbool(b.problems[0].indexes.length) - intbool(a.problems[0].indexes.length),  //
       (a, b) => (a.problems[0].indexes.length - 1) / a.tokens.length
         - (b.problems[0].indexes.length - 1) / b.tokens.length,
       (a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length,
@@ -416,7 +356,7 @@ function formatProblemsHtml(sentenceProblems: Array<any>) {
         body += ` @ ${ids}</p>`
 
         for (let j = 0; j < tokens.length; ++j) {
-          if (indexes.includes(j)) {
+          if (indexes.length < tokens.length && indexes.includes(j)) {
             body += `<span class="error">${escape(tokens[j].getForm())}</span> `
           } else {
             body += `${tokens[j].getForm()} `
@@ -489,6 +429,87 @@ function createDatasetRerouteMap(definition: string) {
   return new Map<string, string>(pairs)
 }
 
+const skipReportingEmptyFromDocs = new Set([
+  '03do',
+  '0gq4',
+  '0djd',
+  '0a7t',
+  '0i7x',
+  '0clh',  // Про злидні
+  '2wie',  // Безталанна
+])
+
+//------------------------------------------------------------------------------
+class DatasetDescriptor {
+  file: number
+  counts = {
+    tokensInUnfinishedSentenses: 0,
+    tokensEmpty: 0,
+    tokensBlocked: 0,
+    tokensExported: 0,
+    sentencesExported: 0,
+  }
+  curDocId: string
+  curParId: string
+  followsAnnotationalGap = false
+
+  update(curDocId: string, curParId: string) {
+    if (this.curDocId !== curDocId) {
+      this.followsAnnotationalGap = false
+    }
+    this.curDocId = curDocId
+    this.curParId = curParId
+  }
+
+  accountExported(numTokens: number) {
+    ++this.counts.sentencesExported
+    this.counts.tokensExported += numTokens
+    this.followsAnnotationalGap = false
+  }
+
+  accountBlocked(numComplete: number, numTotal: number) {
+    this.counts.tokensBlocked += numComplete
+    this.counts.tokensInUnfinishedSentenses += numTotal
+    this.followsAnnotationalGap = true
+  }
+
+  accountEmpty(numTokens: number) {
+    this.counts.tokensEmpty += numTokens
+    this.followsAnnotationalGap = true
+  }
+}
+
+//------------------------------------------------------------------------------
+function getArgs() {
+  return minimist<Args>(process.argv.slice(2), {
+    boolean: [
+      'noEnhanced',
+      'noBasic',
+      'noStandartizing',
+      'includeIncomplete',
+      'dryRun',
+      'reportHoles',
+      'onlyValid',
+      'addValency',
+    ],
+    alias: {
+      oneSet: 'one-set',
+      noStandartizing: 'no-std',
+
+      datasetSchema: 'dataset-schema',
+      validOnly: 'valid-only',
+      reportHoles: 'report-holes',
+      reportErrors: 'report-errors',
+    },
+    default: {
+      reportErrors: 'all',
+      reportHoles: true,
+      datasetSchema: '',
+      morphonlyThreshold: '0',
+      datasetReroute: '',
+    },
+  })
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {

@@ -1,23 +1,28 @@
 import { GraphNode, walkDepthNoSelf, walkDepth } from '../../graph'
-import { Token, buildDep, buildEDep } from '../token'
+import { Token, buildDep, buildEDep, Dependency } from '../token'
 import { MorphInterp } from '../morph_interp'
-import * as f from '../morph_features'
 import { uEq, uEqSome, stripSubrel } from './utils'
 import { mu } from '../../mu'
 import { last, wiith } from '../../lang'
 import { UdPos, toUd } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import { SimpleGrouping } from '../../grouping'
-import { compareAscending, clusterize } from '../../algo';
+import { compareAscending, clusterize } from '../../algo'
+import { DirectedGraphNode, Arrow } from '../../directed_graph'
+import * as f from '../morph_features'
+
+import cloneDeep = require('lodash.clonedeep')
+
+
 
 export type TokenNode = GraphNode<Token>
+export type TokenNode2 = DirectedGraphNode<Token, string>
+export type TokenArrow = Arrow<string, Token>
 export type Node2indexMap = Map<TokenNode, number>
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isPromoted(node: TokenNode) {
-  return node.parents.some(p => p.node.isElided())
+  return !node.node.isElided() && node.parents.some(p => p.node.isElided())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,31 +42,172 @@ export function isNonprojective(node: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function buildEnhancedTree(basicNodes: Array<TokenNode>) {
+  let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
+
+  for (let [i, basicNode] of basicNodes.entries()) {
+    if (!isPromoted(basicNode)) {
+      // 1.1: copy basic arrows except for orphans
+      basicNode.node.deps.forEach(x =>
+        ret[i].addIncomingArrow(ret[x.headIndex], x.relation))
+    } else {
+      // 1.2: add deps touching elided tokens
+      // UD: “Null nodes for elided predicates”
+      basicNodes[i].node.deps
+        .filter(x => basicNodes[x.headIndex].node.isElided())
+        .forEach(x =>
+          ret[i].addIncomingArrow(ret[x.headIndex], x.relation))
+    }
+  }
+
+  return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// http://universaldependencies.org/u/overview/enhanced-syntax.html
+//
+// sent_id = 3bgj do not distribute to promoted!!
+// todo: dislocated?
+// todo: у такому становищі [є] один крок для того — в enhanced інший корінь!
+//       https://lab.mova.institute/brat/#/ud/vislotska__kohannia/30
+// todo: fix duplicate edeps
+// todo: test nested conj
+// todo: check conj paths are followed
+// todo: 5-10 м/с не конж
+// todo: do everything on enhanced tree after propagation of conjuncts??
+// todo: do not conj-propagate parataxis/clauses?, id=1286, Id=36ej
+// bug: Id=37d4
+// todo: where are conj in conj propagations?
+// todo: no orphans in enhanced
+// todo: ~Id=2gst
+// todo: Id=141k
+//
+////////////////////////////////////////////////////////////////////////////////
+export function generateEnhancedDeps2(
+  basicNodes: Array<TokenNode>,
+  corefClusterization: SimpleGrouping<Token>,
+) {
+  let enhancedNodes = buildEnhancedTree(basicNodes)
+
+  // 2: propagation of conjuncts
+  // _Paul and Mary+Zina are watching a movie or rapidly (reading or eating)._
+  // 2.1: conjuncts are governors: eating->rapidly, reading->Paul, eating->Paul
+  for (let node of enhancedNodes) {
+    let firstConjChain = node.walkBack(({ attrib: rel }) => uEq(rel, 'conj') && rel !== 'conj:parataxis')
+      .map(x => x.start)
+    for (let firstConj of firstConjChain) {
+      firstConj.outgoingArrows
+        .filter(x => x.end !== node && x.end.node.helperDeps.some(helperDep =>
+          helperDep.headId === firstConj.node.id
+          && ['distrib', 'collect'].includes(helperDep.relation)
+        ))
+        .forEach(x => x.end.addIncomingArrow(node, x.attrib))
+    }
+  }
+
+  // 2.2: conjuncts are dependents: _a long and wide river_
+  for (let [i, node] of enhancedNodes.entries()) {
+    let conjHead = node.walkBack(({ attrib: rel }) => uEq(rel, 'conj')).last()
+    if (conjHead && conjHead.start.hasIncoming()) {
+      // wrong, redo
+      let newRel = findRelationAnalog(basicNodes[i], basicNodes[conjHead.start.node.index])
+      conjHead.start.incomingArrows
+        .filter(x => !uEqSome(x.attrib, ['parataxis']))
+        .forEach(x => node.addIncomingArrow(x.start, newRel))
+    }
+  }
+
+  // 3: `xcomp` subject
+  // UD: “Additional subject relations for control and raising constructions”
+  for (let node of enhancedNodes) {
+    node.walkBack(({ attrib: rel }) => uEq(rel, 'xcomp'))
+      .map(x => findXcompSubjects(x.start))
+      .filter(x => x)
+      .take(1)
+      .forEach(subjArrows => subjArrows.forEach(subjArow => {
+        let rel = uEqSome(subjArow.attrib, ['obj', 'iobj']) ? 'nsubj' : subjArow.attrib
+        // node.addOutgoingArrow(subjArow.end, rel)
+      }))
+  }
+
+  // 4: coreference in relative clause constructions
+  // todo: adv?
+  // todo: check deep backward
+
+  // let relRoot = findRelativeClauseRoot(node)
+  // if (relRoot) {
+  //   if (node.node.interp.isRelative()) {
+  //     // handleRelcl(relRoot, node)
+  //   } else {
+  //     let antecedent = findShchojijiAntecedent(node)
+  //     if (antecedent && corefClusterization.areSameGroup(antecedent.node, node.node)) {
+  //       // handleRelcl(relRoot, node)
+  //     }
+  //   }
+  // }
+
+  // (5): secondary predication (`advcl:sp`)
+  // todo: Id=1765
+  for (let node of enhancedNodes) {
+    node.incomingArrows.filter(x => x.attrib === 'advcl:sp')
+      .forEach(advclArrow => {
+        let subjArrow = advclArrow.start.outgoingArrows.find(x => uEqSome(x.attrib, SUBJECTS))
+        // todo:
+        // || advclArrow.start.outgoingArrows.find(x => uEqSome(x.attrib, COMPLEMENTS))
+        if (subjArrow) {
+          // subjArrow.end.addIncomingArrow(node, subjArrow.attrib)
+        }
+      })
+  }
+
+  saveEnhancedGraphToTokens(enhancedNodes)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findXcompSubjects(xcompHead: TokenNode2) {
+  return mu(['obj', 'iobj', 'nsubj', 'csubj'])
+    .map(r => xcompHead.outgoingArrows.filter(x => uEq(x.attrib, r)))
+    .filter(x => x.length)
+    .first()
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function saveEnhancedGraphToTokens(enhancedNodes: Array<TokenNode2>) {
+  for (let node of enhancedNodes) {
+    node.node.edeps.push(...node.incomingArrows.map(x => ({
+      headId: x.start.node.id,
+      headIndex: x.start.node.index,
+      relation: x.attrib,
+    })))
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // http://universaldependencies.org/u/overview/enhanced-syntax.html
 export function generateEnhancedDeps(
   nodes: Array<TokenNode>,
   corefClusterization: SimpleGrouping<Token>,
 ) {
-
   // 1: build enhanced **tree**: basic, but with null nodes
   for (let node of nodes) {
-    // 1.1: copy basic edges that don't touch promoted tokens
-    if (!isPromoted(node)) {
-      node.node.edeps.push(...node.node.deps)
+    if (node.node.edeps.length) {
+      throw new Error(`Should not happen`)
     }
 
-    // 1.2: add deps touching elided tokens
-    // UD: “Null nodes for elided predicates”
-    {
-      let elisionDeps = node.node.deps
-        .filter(x => node.node.isElided() || nodes[x.headIndex].node.isElided())
-      node.node.edeps.push(...elisionDeps)
+    // 1.1: copy basic edges that don't touch promoted tokens
+    if (!isPromoted(node)) {
+      node.node.edeps.push(...cloneDeep(node.node.deps))  // todo: why multiple?
+    } else {
+      // 1.2: add deps touching elided tokens
+      // UD: “Null nodes for elided predicates”
+      let phantomDeps = node.node.deps.filter(x => nodes[x.headIndex].node.isElided())
+      node.node.edeps.push(...cloneDeep(phantomDeps))
     }
   }
 
   for (let node of nodes) {
     // sent_id = 3bgj do not distribute to promoted!!
-    // todo: dislocated!
+    // todo: dislocated?
     // todo: у такому становищі [є] один крок для того — в enhanced інший корінь!
     //       https://lab.mova.institute/brat/#/ud/vislotska__kohannia/30
     // todo: fix duplicate edeps
@@ -77,15 +223,16 @@ export function generateEnhancedDeps(
     if (uEq(node.node.rel, 'conj') && node.node.rel !== 'conj:parataxis') {
       // 2.1: conjuncts are governors (easy): _She was watching a movie or reading._
       // todo: share marks and stuff?
-      // todo: only for verbs?
-      let conj0 = node.parent
-      let shared = conj0.children.filter(x => x !== node
+      let firstConj = node.parent
+      let sharedDependents = firstConj.children.filter(x => x !== node
         && x.node.helperDeps.some(helperDep =>
-          helperDep.headId === conj0.node.id && (helperDep.relation === 'distrib'
-            || helperDep.relation === 'collect' // ~, todo
-          )
-        ))
-      for (let t of shared) {
+          helperDep.headId === firstConj.node.id
+          && ['distrib', 'collect'].includes(helperDep.relation)
+        )
+      )
+      for (let t of sharedDependents) {
+        // messy, todo
+        // node.node.edeps.push(buildEDep(t.node, t.node.rel))
         t.node.edeps.push(buildEDep(node.node, t.node.rel))
       }
 
@@ -107,7 +254,7 @@ export function generateEnhancedDeps(
       let subj = findXcompSubject(node)
       if (subj) {
         let rel = uEqSome(subj.node.rel, ['obj', 'iobj']) ? 'nsubj' : subj.node.rel
-        subj.node.edeps.push(buildEDep(node.node, rel))
+        // subj.node.edeps.push(buildEDep(node.node, rel))
       }
     }
 
@@ -118,11 +265,11 @@ export function generateEnhancedDeps(
     let relRoot = findRelativeClauseRoot(node)
     if (relRoot) {
       if (node.node.interp.isRelative()) {
-        handleRelcl(relRoot, node)
+        // handleRelcl(relRoot, node)
       } else {
         let antecedent = findShchojijiAntecedent(node)
         if (antecedent && corefClusterization.areSameGroup(antecedent.node, node.node)) {
-          handleRelcl(relRoot, node)
+          // handleRelcl(relRoot, node)
         }
       }
     }
@@ -133,7 +280,7 @@ export function generateEnhancedDeps(
         let subj = node.parent.children.find(x => uEqSome(x.node.rel, SUBJECTS))
         // || node.parent.children.find(x => uEqSome(x.node.rel, COMPLEMENTS))
         if (subj) {
-          subj.node.edeps.push(buildDep(node.node, subj.node.rel))
+          // subj.node.edeps.push(buildDep(node.node, subj.node.rel))
         }
       }
     }
@@ -301,6 +448,12 @@ export function findClauseRoot(node: TokenNode) {
   return mu(node.walkThisAndUp0())
     .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function findClauseRoot2(node: TokenNode2) {
+  // return node.walkBack
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 export function findRelativeClauseRoot(relative: TokenNode) {
@@ -699,9 +852,12 @@ export function standartizeMorphoForUd23(interp: MorphInterp, form: string) {
 
   setTenseIfConverb(interp, form)  // redundant?
 
-  // remove degree from &noun
+  // remove adj/numr/participle features from &noun
   if (interp.isAdjectiveAsNoun()) {
     interp.dropFeature(f.Degree)
+    interp.dropFeature(f.Voice)
+    interp.dropFeature(f.Aspect)
+    interp.dropFeature(f.OrdinalNumeral)
   }
 
   // add base degree if empty
@@ -709,7 +865,7 @@ export function standartizeMorphoForUd23(interp: MorphInterp, form: string) {
     // interp.setFeature(f.Degree, f.Degree.positive)
   }
 
-  // drop features
+  // drop non-standard features
   interp.dropFeature(f.PrepositionRequirement)
   interp.dropFeature(f.Formality)
   interp.dropFeature(f.VerbReversivity)
@@ -734,6 +890,35 @@ export function standartizeMorphoForUd23(interp: MorphInterp, form: string) {
   // we're not sure there's a need for that
   if (interp.getFeature(f.PunctuationType) === f.PunctuationType.ellipsis) {
     interp.dropFeature(f.PunctuationType)
+  }
+
+  if (interp.isAdjectiveAsNoun()
+    && interp.isPronominal()
+    && !(interp.isNeuter() && validPronominalAjectivesAsNouns.has(interp.lemma))
+  ) {
+    interp.dropAdjectiveAsNounFeatures()
+  }
+}
+
+//------------------------------------------------------------------------------
+const validPronominalAjectivesAsNouns = new Set([
+  'всяке',
+  'інше',
+  'усяке',
+  'і',
+])
+
+////////////////////////////////////////////////////////////////////////////////
+export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNode>) {
+  // leave the rightest punct head only
+  let [nonpunts, puncts] = clusterize(
+    deps,
+    x => uEq(x.relation, 'punct') && !sentence[x.headIndex].node.isElided(),
+    [[], []]
+  )
+  if (puncts.length) {
+    puncts.sort((a, b) => a.headIndex - b.headIndex)
+    deps = [puncts[0], ...nonpunts]
   }
 }
 
@@ -773,18 +958,7 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
       }
     }
 
-    // leave the rightest punct head only
-    {
-      let [nonpunts, puncts] = clusterize(
-        t.deps,
-        x => uEq(x.relation, 'punct') && !sentence[x.headIndex].node.isElided(),
-        [[], []]
-      )
-      if (puncts.length) {
-        puncts.sort((a, b) => a.headIndex - b.headIndex)
-        t.deps = [puncts[0], ...nonpunts]
-      }
-    }
+    normalizePunct(t.deps, sentence)
 
     // set AUX and Cond
     if (uEqSome(t.rel, ['aux', 'cop'])) {
@@ -843,11 +1017,16 @@ export function thisOrConjHead(node: GraphNode<Token>, predicate/* : TreedSenten
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isFeasibleAdvmod(head: TokenNode, dep: TokenNode) {
-  return head.node.interp.isVerbial2()
-    || isNonverbialPredicate(head)
-    || (head.node.interp.isAdjective() && !head.node.interp.isPronominal())
+export function isFeasibleAdvclHead(head: TokenNode) {
+  return head.node.interp.isVerbial()
     || head.node.interp.isAdverb()
+    || (head.node.interp.isAdjective() && !head.node.interp.isPronominal())
+    || isNonverbialPredicate(head)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isFeasibleAdvmod(head: TokenNode, dep: TokenNode) {
+  return isFeasibleAdvclHead(head)
     || thisOrConjHead(head, x => uEq(x.node.rel, 'obl'))
     || isAdvmodParticle(dep)
 }
@@ -882,6 +1061,23 @@ export function isNonverbialPredicate(t: TokenNode) {
   return (t.node.interp.isNounish() || t.node.interp.isAdjective()) && t.children.some(
     x => uEqSome(x.node.rel, ['cop', 'nsubj', 'csubj'])
   )
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function hasPredication(t: TokenNode) {
+  return t.node.hasTag('itsubj')
+    || t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
+    || (t.node.interp.isVerb() && !isInfinitive(t))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function areOkToBeGlued(t: TokenNode, tNext: TokenNode) {
+  return t.node.interp.isPunctuation()
+    || tNext.node.isElided()
+    || tNext.node.interp.isPunctuation()
+    || tNext.node.interp.isSymbol() && uEqSome(tNext.node.rel, ['discourse'])
+    || ['~', '$', '#', '+', '×', '№', '€', '-', '°'].includes(t.node.interp.lemma)
+    || ['%', '°', '+', '×', '$'].includes(tNext.node.interp.lemma)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1140,6 +1336,7 @@ export const ALLOWED_RELATIONS/* : Array<UdMiRelation> */ = [
   'advcl:svc',
   'advcl',
   'advmod:amtgov',
+  // 'advmod:det',
   'advmod',
   'amod',
   'appos:nonnom',
@@ -1188,6 +1385,7 @@ export const ALLOWED_RELATIONS/* : Array<UdMiRelation> */ = [
   'nummod',
   'obj',
   'obl:agent',
+  'obl:arg',
   'obl',
   'orphan',
   'parataxis:discourse',
@@ -1199,6 +1397,7 @@ export const ALLOWED_RELATIONS/* : Array<UdMiRelation> */ = [
   'reparandum',
   'root',
   'vocative',
+  'vocative:cl',
   'xcomp:sp',
   'xcomp',
 ]
@@ -1223,6 +1422,7 @@ export const RIGHT_POINTED_RELATIONS = [
   'conj',
   'fixed',
   'flat',
+  'goeswith',
   'list',
 ]
 
@@ -1299,7 +1499,7 @@ export const CURRENCY_SYMBOLS = [
   '€',
 ]
 
-export const WORDS_WITH_INS_VALENCY = [
+export const INS_VALENCY_VERBS = [
   // 'даний',
   // 'одмітний',
   // 'переповнений',

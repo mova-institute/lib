@@ -61,7 +61,7 @@ function main() {
           }
           el.setAttribute('comment', span.comment)
           let tags = new Array<string>()
-          for (let tag of ['Promoted', 'Graft']) {
+          for (let tag of ['Promoted', 'Graft', 'ItSubj']) {
             if (span.annotations[tag]) {
               tags.push(tag.toLowerCase())
             }

@@ -6,6 +6,24 @@ import { Dict } from './types'
 export const r = String.raw
 
 ////////////////////////////////////////////////////////////////////////////////
+export function o() {
+  return {} as any
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function safe<T extends Object>(obj: T) {
+  return new Proxy(obj, {
+    get(target, name) {
+      const result = target[name]
+      if (result) {
+        return (result instanceof Object) ? safe(result) : result
+      }
+      return safe({})
+    }
+  })
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function buildObject<ValueType>(kevalues: Iterable<[string, ValueType]>) {
   let ret = {} as Dict<ValueType>
   for (let [key, value] of kevalues) {
@@ -54,7 +72,7 @@ export function matchNth(str: string, re: RegExp, n: number) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function arrayed(value: any | Array<any>) {
+export function arrayed<T>(value: T | Array<T>) {
   if (Array.isArray(value)) {
     return value
   }
@@ -67,6 +85,11 @@ export function arrayed(value: any | Array<any>) {
 ////////////////////////////////////////////////////////////////////////////////
 export function last<T>(array: Array<T>) {
   return array[array.length - 1]
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function intbool(value: any) {
+  return value ? 1 : 0
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1130,6 +1130,14 @@ export class MorphInterp {
 
   setCase(value: Case) { this.features.case = value; return this }
 
+  dropAdjectiveAsNounFeatures() {
+    this.dropFeature(AdjectiveAsNoun)
+      .dropFeature(Animacy)
+    if (this.isPlural()) {
+      this.dropFeature(Gender)
+    }
+  }
+
   unproper() {
     this.features.nounType = NounType.common
     this.features.nameType = undefined    // todo

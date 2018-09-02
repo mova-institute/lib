@@ -48,6 +48,8 @@ export type TokenTag =
   | 'right-nummod'
   | 'not-shchojiji'
   | 'pred-right'
+  | 'pred-right'
+  | 'itsubj'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {

@@ -120,7 +120,7 @@
     "no-string-throw": true,
     "no-submodule-imports": false,
     "no-switch-case-fall-through": true,
-    "no-this-assignment": true,
+    // "no-this-assignment": true,
     "no-unbound-method": true,
     "no-unnecessary-class": false,
     "no-unsafe-any": true,

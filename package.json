@@ -42,6 +42,7 @@
     "typescript": "^3.0.1"
   },
   "dependencies": {
+    "@types/lodash.clonedeep": "^4.5.4",
     "@types/lodash.sorteduniq": "^4.2.3",
     "@types/tldjs": "^1.7.1",
     "body-parser": "^1.18.3",
