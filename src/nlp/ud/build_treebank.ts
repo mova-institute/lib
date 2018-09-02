@@ -61,7 +61,7 @@ function main() {
 
   let [globStr, outDir] = args._
   let xmlPaths = glob.sync(globStr)
-  let id2bratPath = args.id2bratPath ? parseJsonFileSync(args.id2bratPath) : {}
+  let id2bratPath: Dict<[string, number]> = args.id2bratPath ? parseJsonFileSync(args.id2bratPath) : {}
 
   let rerouteMap = createDatasetRerouteMap(args.datasetReroute)
   console.error(`Reroutes:`, rerouteMap)
@@ -128,7 +128,6 @@ function main() {
       let hasMorphErrors = tokens.some(x => x.interp.isError())
       let curDocId = document.getAttribute('id')
       let curParId = paragraph.getAttribute('id')
-      let bratPath = id2bratPath[tokens[0].id] || ''
 
       dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
       setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
@@ -156,7 +155,6 @@ function main() {
             sentenceId,
             problems: [{ message: 'цикл' }],
             tokens,
-            bratPath,
           })
           continue
         } else if (!isComplete && args.reportHoles) {
@@ -167,7 +165,6 @@ function main() {
               indexes: roots,
             }],
             tokens,
-            bratPath,
           })
         }
 
@@ -180,7 +177,6 @@ function main() {
               problems,
               sentenceId,
               tokens,
-              bratPath,
             })
           }
         }
@@ -222,7 +218,6 @@ function main() {
               indexes: [],
             }],
             tokens,
-            bratPath,
           })
         }
       }
@@ -253,7 +248,7 @@ function main() {
     }
   }
 
-  writeErrors(sentenseErrors, sentenseHoles, outDir)
+  writeErrors(sentenseErrors, sentenseHoles, outDir, id2bratPath)
   printStats(setRegistry, 'synt')
   printStats(setRegistryMorpho, 'morpho')
 
@@ -266,10 +261,10 @@ function main() {
 }
 
 //------------------------------------------------------------------------------
-function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
+function writeErrors(sentenseErrors, sentenseHoles, outDir: string, id2bratPath: Dict<[string, number]>) {
   if (sentenseErrors.length) {
     sentenseErrors = transposeProblems(sentenseErrors)
-    fs.writeFileSync(path.join(outDir, 'errors.html'), formatProblemsHtml(sentenseErrors))
+    fs.writeFileSync(path.join(outDir, 'errors.html'), formatProblemsHtml(sentenseErrors, id2bratPath))
   }
 
   if (sentenseHoles.length) {
@@ -283,7 +278,7 @@ function writeErrors(sentenseErrors, sentenseHoles, outDir: string) {
       algo.indexComparator(sentenseHoles),  // for stability
     )
     sentenseHoles.sort(comparator)
-    fs.writeFileSync(path.join(outDir, 'holes.html'), formatProblemsHtml(sentenseHoles))
+    fs.writeFileSync(path.join(outDir, 'holes.html'), formatProblemsHtml(sentenseHoles, id2bratPath))
   }
 }
 
@@ -313,7 +308,7 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
       'exported s': sentencesExported,
     }))
   stats.push({
-    set: 'TOTAL',
+    'set': 'TOTAL',
     'blocked': stats.map(x => x['blocked']).reduce((a, b) => a + b, 0),
     'holes': stats.map(x => x['holes']).reduce((a, b) => a + b, 0),
     'exported': stats.map(x => x['exported']).reduce((a, b) => a + b, 0),
@@ -342,10 +337,17 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
 }
 
 //------------------------------------------------------------------------------
-function formatProblemsHtml(sentenceProblems: Array<any>) {
+function formatProblemsHtml(
+  sentenceProblems: Array<any>,
+  id2bratPath: Dict<[string, number]>
+) {
   let body = ''
-  for (let [i, { sentenceId, problems, tokens, bratPath }] of sentenceProblems.entries()) {
-    let href = `https://lab.mova.institute/brat/#/${bratPath}`
+  for (let [i, { sentenceId, problems, tokens }] of sentenceProblems.entries()) {
+    let firsProblemTokenId = problems.length && problems[0].indexes && problems[0].indexes.length
+      ? tokens[problems[0].indexes[0]].id
+      : tokens[0].id
+    let [bratPath, bratIndex] = id2bratPath[firsProblemTokenId]
+    let href = `https://lab.mova.institute/brat/#/${bratPath}?focus=T${bratIndex + 1}`
     let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
 
     body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`

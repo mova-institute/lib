@@ -6,6 +6,8 @@ import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
 import { titlecase, trimAfterFirst } from '../../string'
 import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole } from './uk_grammar'
+import { Dict } from '../../types'
+
 import sortby = require('lodash.sortby')
 import sorteduniq = require('lodash.sorteduniq')
 
@@ -481,7 +483,7 @@ export interface BratSpan {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function parseBratFile(lines: Iterable<string>) {
-  let tokens = {} as { [key: string]: BratSpan }
+  let tokens: Dict<BratSpan> = {}
   let counter = 0
   for (let line of lines) {
     // span

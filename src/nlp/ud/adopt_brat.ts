@@ -11,11 +11,12 @@ import { firstMatch } from '../../string'
 import { serializeMiDocument } from '../utils'
 import { parseBratFile, BratArc } from './utils'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
+import { HELPER_RELATIONS } from './uk_grammar'
+import { Dict } from '../../types'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
 import groupby = require('lodash.groupby')
-import { HELPER_RELATIONS } from './uk_grammar'
 
 
 
@@ -36,7 +37,7 @@ function main() {
   let syntBratFilesGrouped = groupby(allSyntBratFiles, x => firstMatch(x, /\/([^/]+)\/\d+\.ann$/, 1))
   let corefBratFilesGrouped = groupby(allCorefBratFiles, x => firstMatch(x, /([^/]+)\/[^/]+\.ann$/, 1))
 
-  let id2bratPath = {} as any
+  let id2bratPath: Dict<[string, number]> = {}
   for (let [bratName, syntBratFiles] of Object.entries(syntBratFilesGrouped)) {
     let xmlFile = path.join(goldenDir, `${bratName}.xml`)
     if (!fs.existsSync(xmlFile)) {
@@ -82,7 +83,10 @@ function main() {
             .map(({ relation, head }) => `${head.annotations.N}-${relation}`)
             .join('|') || undefined
           el.setAttribute('dep', dependencies)
-          id2bratPath[span.annotations.N] = trimExtension(path.relative(bratFilesRoot, bratFile))
+          id2bratPath[span.annotations.N] = [
+            trimExtension(path.relative(bratFilesRoot, bratFile)),
+            span.index
+          ]
         }
       }
     }
