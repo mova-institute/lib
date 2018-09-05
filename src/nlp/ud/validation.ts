@@ -1974,6 +1974,13 @@ export function validateSentenceSyntax(
       t.node.index < sentence.length - 1
       && t.node.gluedNext
       && !g.areOkToBeGlued(t, nodes[t.node.index + 1])
+      && !t.node.hasTag('ok-glued-next')
+    )
+
+    reportIf(`дискурсивне слово не discourse`, t =>
+      !t.isRoot()
+      && !uEqSome(t.node.rel, ['discourse'])
+      && ['наприклад'].includes(t.node.interp.lemma)
     )
 
     // trash >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1993,40 +2000,14 @@ export function validateSentenceSyntax(
         t => uEqSome(t.node.rel, ['conj'])
           && t.children.some(x => /[-–—]/.test(x.node.form) && x.node.index < t.node.index)
       )
+      xreportIf2(`_test: тераса за терасою`,
+        ({ i, r }) => !uEq(r, 'nsubj')
+          && i.isNominative()
+      )
     }
   }
 
   // **********
-
-
-  // reportIf2(`_test: тераса за терасою`,
-  //   ({ n, i, r }) => !uEq(r, 'nsubj')
-  //     && i.isNominative()
-
-  // t => ['obj', 'iobj', 'obl'].some(x => uEq(t.node.rel, x))
-  //   && g.thisOrGovernedCase(t) === f.Case.nominative
-  //   && !t.node.interp.isXForeign()
-  //   && !t.node.isGraft
-  //   && t.parent.node.interp.isReversive()
-  //   && !(uEq(t.node.rel, 'obl') && g.isTerasaZaTerasoyu(t))
-  // // && !t.children.some(x => isNumgov(x.node.rel))
-  // // && !t.children.some(x => x.node.interp.isAdverb())
-  // )
-
-
-  // наістотнення
-  // treedReportIf(`obj в родовому`,
-  //   (t, i) => uEq(t.node.rel, 'obj')
-  //     && t.node.interp.isGenitive()
-  //     && !t.children.some(x => isNumgov(x.node.rel))
-  //     && !t.parent.node.interp.isNegative()
-  //     && !t.parent.children.some(x => uEq(x.node.rel, 'advmod') && x.node.interp.isNegative())
-  // )
-
-
-  // ** done **
-  // конкеретні дозволені відмінки в :gov-реляціях
-
 
   // thisOrGovernedCase скрізь
   // _від 0 до 512 байтів даних_ — що flat:range?
@@ -2097,7 +2078,6 @@ export function validateSentenceSyntax(
   // остання крапка не з кореня
   // коми належать підрядним: Подейкують,
   // conj в "і т. д." йде в "д."
-  // mark не з підкореня https://lab.mova.institute/brat/index.xhtml#/ud/prokhasko__opovidannia/047
   // якщо коренем є NP, і в кінці "!", то корінь і конжі мають бути кличними
   // дробовий числівник nummod:?
   // наприклад, — чия кома?
@@ -2110,7 +2090,6 @@ export function validateSentenceSyntax(
   // Ми не в змозі встановити — тест на узгодження підмета з присудком щоб був acl
   // колишні :марки тільки в рел
   // крім — не конж
-  // mark лише від голови підрядного
   // advcl входить в вузол з то
   // з правого боку приклаки не виходить зовнішнє
   // appos’и йдуть пучком, а не як однорідні
@@ -2141,12 +2120,11 @@ export function validateSentenceSyntax(
   // шасі, що прибиралось — узгодження навіть з таким аклом
   // стінки не проб’єш і їжака голіруч не візьмеш — от де родовий і не аніміш
   // узгодж Добре видно арматуру, характерні лишайники, що живуть тільки на бетоні.
-  // наприклад — discourse
   // так захопився, що — з вказівних advcl а не з кореня (що робити з порівняннями?)
   // Крім світлин , я крав рогалики — заборонити advcl(, світлин)
   // conj:parataxis не коли однорідні підрядні
   // ціль завбільшки з табуретку — consistent acl
-  // рослина висотою сантиметр — flat:title
+  // рослина висотою сантиметр — flat:title?
   // вказують як синонім — xcomp:sp
   // кома-риска з-від праворуч
   // між двома inf коли друге без спол не підр зв
@@ -2163,7 +2141,6 @@ export function validateSentenceSyntax(
   // 31 січня — що 31 порядковий!
   // наш з мамою — consistency
   // заповнюйте форму: http:// — consistency
-  // підрядні без спол/рел
   // експли не з іменників
   // це <nsubj _ чи навпаки?
   // _будьте свідомі_ — що не буває копул в наказовому?
@@ -2178,13 +2155,7 @@ export function validateSentenceSyntax(
   // ins obj з якимоось ще obj
   // NON_CHAINABLE_RELS
   // const NEVER_CONJUNCT_POS = [ 'PUNCT', 'SCONJ' ]
-  // ins valency навпаки
   // однакове в дробах
-  // більше 30-ти літрів — більше до літрів
-
-
-  // одне одного доповнюють — obl, а не nsubj коли _вони_ пропущене
-  // spaceafter=no між двома словами
 
   /*
 
@@ -2205,20 +2176,6 @@ export function validateSentenceSyntax(
 
   */
 
-  // treedReportIf(`bubu`,
-  //   (t, i) => t.node.rel === 'nmod' && t.parent.node.rel === 'nmod'
-  //     && !t.children.some(x => x.node.interp.isPreposition())
-  //     && !t.node.interp.isGenitive()
-  // )
-
-
-  /*
-
-    treedReportIf(``,
-      t =>
-    )
-
-  */
 
   return problems
 }

@@ -1528,8 +1528,7 @@ export const INS_VALENCY_VERBS = [
   'володіти',
   'опікуватися',
   'відати',
-  'пахнути',
-  'затискати',
+  // 'пахнути',
 ]
 
 export const SOME_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict

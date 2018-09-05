@@ -346,7 +346,7 @@ function formatProblemsHtml(
     let firsProblemTokenId = problems.length && problems[0].indexes && problems[0].indexes.length
       ? tokens[problems[0].indexes[0]].id
       : tokens[0].id
-    let [bratPath, bratIndex] = id2bratPath[firsProblemTokenId]
+    let [bratPath, bratIndex] = id2bratPath[firsProblemTokenId] || ['', 0]
     let href = `https://lab.mova.institute/brat/#/${bratPath}?focus=T${bratIndex + 1}`
     let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
 

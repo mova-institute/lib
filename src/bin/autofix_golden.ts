@@ -17,7 +17,6 @@ import {
   createMultitokenElement,
   createTokenElement,
 } from '../nlp/utils'
-// import { $t } from '../nlp/text_token'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime, fromUnixStr, ukMonthMap } from '../date'
 import { mu } from '../mu'
@@ -352,7 +351,7 @@ async function main() {
               token.rel = 'discourse'
             }
             interp.resetFromVesumStr('part:conseq', token.interp.lemma)
-            saveToken(token, id2el.get(token.id))
+            saveToken(token, id2el.get(token.id), nodes)
           }
 
           if (['це', 'то'].includes(token.form.toLowerCase())
@@ -556,6 +555,13 @@ async function main() {
             if (tags) {
               token.setAttribute('tags', undefined)
             }
+          }
+
+          if (interp.isPronominal()
+            && interp.isAdjectiveAsNoun()
+            && !interp.isNeuter()
+          ) {
+            interp.dropAdjectiveAsNounFeatures()
           }
 
 

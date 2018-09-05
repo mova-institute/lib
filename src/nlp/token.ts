@@ -50,6 +50,7 @@ export type TokenTag =
   | 'pred-right'
   | 'pred-right'
   | 'itsubj'
+  | 'ok-glued-next'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {
