@@ -28,6 +28,7 @@ import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 import { buildCoreferenceClusters } from '../coreference'
 import { intbool } from '../../lang'
+import { generateEnhancedDeps2 } from './enhanced'
 
 
 
@@ -97,7 +98,7 @@ function main() {
       sentenceId, dataset, document, paragraph, } of sentenceStream
     ) {
       if (!args.noEnhanced) {
-        g.generateEnhancedDeps2(nodes, corefClusterization)
+        generateEnhancedDeps2(nodes, corefClusterization)
       }
 
       // count some stats

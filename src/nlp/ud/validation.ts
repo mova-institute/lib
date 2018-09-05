@@ -15,7 +15,7 @@ import * as g from './uk_grammar'
 
 import { groupBy } from 'lodash'
 import { SimpleGrouping } from '../../grouping'
-import { compareAscending } from '../../algo';
+import { compareAscending } from '../../algo'
 
 
 
@@ -584,17 +584,10 @@ export function validateSentenceSyntax(
       && !t.node.rel.endsWith(':sp')
   )
 
-  xreportIf(`тест: зворотне має obj/iobj`,
-    t => !t.isRoot()
-      && uEqSome(t.node.rel, ['obj', 'iobj'])
-      && t.parent.node.interp.isReversive()
-      && !t.node.interp.isDative()
-      && !t.node.interp.isGenitive()
-      && !t.node.interp.isInstrumental()
+  reportIf(`зворотне має два додатки`,
+    t => t.node.interp.isReversive()
+      && t.children.filter(x => uEqSome(x.node.rel, ['obj', 'iobj', 'ccomp'])).length > 1
   )
-
-
-  // coordination
 
   reportIf(`неузгодження відмінків прийменника`,
     t => uEq(t.node.rel, 'case')

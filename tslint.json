@@ -1,5 +1,6 @@
 {
   "rules": {
+    // "file-name-casing": [true, ""],
     "semicolon": [
       true,
       "never"
@@ -126,7 +127,6 @@
     "no-unsafe-any": true,
     "no-unsafe-finally": true,
     "no-unused-expression": true,
-    // "no-unused-variable": true,
     "no-use-before-declare": true,
     // "no-var-keyword": true,
     "no-void-expression": true,
@@ -236,6 +236,6 @@
       true,
       "check-format",
       "ban-keywords"
-    ]
+    ],
   }
 }

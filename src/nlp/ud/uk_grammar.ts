@@ -16,7 +16,7 @@ import cloneDeep = require('lodash.clonedeep')
 
 
 export type TokenNode = GraphNode<Token>
-export type TokenNode2 = DirectedGraphNode<Token, string>
+export type EnhancedNode = DirectedGraphNode<Token, string>
 export type TokenArrow = Arrow<string, Token>
 export type Node2indexMap = Map<TokenNode, number>
 
@@ -39,147 +39,6 @@ export function isNonprojective(node: TokenNode) {
   }
 
   return false
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function buildEnhancedTree(basicNodes: Array<TokenNode>) {
-  let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
-
-  for (let [i, basicNode] of basicNodes.entries()) {
-    if (!isPromoted(basicNode)) {
-      // 1.1: copy basic arrows except for orphans
-      basicNode.node.deps.forEach(x =>
-        ret[i].addIncomingArrow(ret[x.headIndex], x.relation))
-    } else {
-      // 1.2: add deps touching elided tokens
-      // UD: “Null nodes for elided predicates”
-      basicNodes[i].node.deps
-        .filter(x => basicNodes[x.headIndex].node.isElided())
-        .forEach(x =>
-          ret[i].addIncomingArrow(ret[x.headIndex], x.relation))
-    }
-  }
-
-  return ret
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// http://universaldependencies.org/u/overview/enhanced-syntax.html
-//
-// sent_id = 3bgj do not distribute to promoted!!
-// todo: dislocated?
-// todo: у такому становищі [є] один крок для того — в enhanced інший корінь!
-//       https://lab.mova.institute/brat/#/ud/vislotska__kohannia/30
-// todo: fix duplicate edeps
-// todo: test nested conj
-// todo: check conj paths are followed
-// todo: 5-10 м/с не конж
-// todo: do everything on enhanced tree after propagation of conjuncts??
-// todo: do not conj-propagate parataxis/clauses?, id=1286, Id=36ej
-// bug: Id=37d4
-// todo: where are conj in conj propagations?
-// todo: no orphans in enhanced
-// todo: ~Id=2gst
-// todo: Id=141k
-//
-////////////////////////////////////////////////////////////////////////////////
-export function generateEnhancedDeps2(
-  basicNodes: Array<TokenNode>,
-  corefClusterization: SimpleGrouping<Token>,
-) {
-  let enhancedNodes = buildEnhancedTree(basicNodes)
-
-  // 2: propagation of conjuncts
-  // _Paul and Mary+Zina are watching a movie or rapidly (reading or eating)._
-  // 2.1: conjuncts are governors: eating->rapidly, reading->Paul, eating->Paul
-  for (let node of enhancedNodes) {
-    let firstConjChain = node.walkBack(({ attrib: rel }) => uEq(rel, 'conj') && rel !== 'conj:parataxis')
-      .map(x => x.start)
-    for (let firstConj of firstConjChain) {
-      firstConj.outgoingArrows
-        .filter(x => x.end !== node && x.end.node.helperDeps.some(helperDep =>
-          helperDep.headId === firstConj.node.id
-          && ['distrib', 'collect'].includes(helperDep.relation)
-        ))
-        .forEach(x => x.end.addIncomingArrow(node, x.attrib))
-    }
-  }
-
-  // 2.2: conjuncts are dependents: _a long and wide river_
-  for (let [i, node] of enhancedNodes.entries()) {
-    let conjHead = node.walkBack(({ attrib: rel }) => uEq(rel, 'conj')).last()
-    if (conjHead && conjHead.start.hasIncoming()) {
-      // wrong, redo
-      let newRel = findRelationAnalog(basicNodes[i], basicNodes[conjHead.start.node.index])
-      conjHead.start.incomingArrows
-        .filter(x => !uEqSome(x.attrib, ['parataxis']))
-        .forEach(x => node.addIncomingArrow(x.start, newRel))
-    }
-  }
-
-  // 3: `xcomp` subject
-  // UD: “Additional subject relations for control and raising constructions”
-  for (let node of enhancedNodes) {
-    node.walkBack(({ attrib: rel }) => uEq(rel, 'xcomp'))
-      .map(x => findXcompSubjects(x.start))
-      .filter(x => x)
-      .take(1)
-      .forEach(subjArrows => subjArrows.forEach(subjArow => {
-        let rel = uEqSome(subjArow.attrib, ['obj', 'iobj']) ? 'nsubj' : subjArow.attrib
-        // node.addOutgoingArrow(subjArow.end, rel)
-      }))
-  }
-
-  // 4: coreference in relative clause constructions
-  // todo: adv?
-  // todo: check deep backward
-
-  // let relRoot = findRelativeClauseRoot(node)
-  // if (relRoot) {
-  //   if (node.node.interp.isRelative()) {
-  //     // handleRelcl(relRoot, node)
-  //   } else {
-  //     let antecedent = findShchojijiAntecedent(node)
-  //     if (antecedent && corefClusterization.areSameGroup(antecedent.node, node.node)) {
-  //       // handleRelcl(relRoot, node)
-  //     }
-  //   }
-  // }
-
-  // (5): secondary predication (`advcl:sp`)
-  // todo: Id=1765
-  for (let node of enhancedNodes) {
-    node.incomingArrows.filter(x => x.attrib === 'advcl:sp')
-      .forEach(advclArrow => {
-        let subjArrow = advclArrow.start.outgoingArrows.find(x => uEqSome(x.attrib, SUBJECTS))
-        // todo:
-        // || advclArrow.start.outgoingArrows.find(x => uEqSome(x.attrib, COMPLEMENTS))
-        if (subjArrow) {
-          // subjArrow.end.addIncomingArrow(node, subjArrow.attrib)
-        }
-      })
-  }
-
-  saveEnhancedGraphToTokens(enhancedNodes)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function findXcompSubjects(xcompHead: TokenNode2) {
-  return mu(['obj', 'iobj', 'nsubj', 'csubj'])
-    .map(r => xcompHead.outgoingArrows.filter(x => uEq(x.attrib, r)))
-    .filter(x => x.length)
-    .first()
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function saveEnhancedGraphToTokens(enhancedNodes: Array<TokenNode2>) {
-  for (let node of enhancedNodes) {
-    node.node.edeps.push(...node.incomingArrows.map(x => ({
-      headId: x.start.node.id,
-      headIndex: x.start.node.index,
-      relation: x.attrib,
-    })))
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -325,8 +184,8 @@ export function isSecondaryPredication(rel: string) {
   return rel === 'advcl:sp' || rel === 'xcomp:sp'
 }
 
-//------------------------------------------------------------------------------
-function findRelationAnalog(newDependent: TokenNode, existingDependent: TokenNode) {
+////////////////////////////////////////////////////////////////////////////////
+export function findRelationAnalog(newDependent: TokenNode, existingDependent: TokenNode) {
   let { pos: newDepPos } = toUd(newDependent.node.interp)
   let { pos: existingDepPos } = toUd(existingDependent.node.interp)
   let existingRel = existingDependent.node.rel
@@ -450,7 +309,7 @@ export function findClauseRoot(node: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function findClauseRoot2(node: TokenNode2) {
+export function findClauseRoot2(node: EnhancedNode) {
   // return node.walkBack
 }
 
@@ -1327,7 +1186,7 @@ export const CONJ_PROPAGATION_RELS = new Set(CONJ_PROPAGATION_RELS_ARR)
 
 export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
 
-export const ALLOWED_RELATIONS/* : Array<UdMiRelation> */ = [
+export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'acl:adv',
   'acl:parataxis',
   'acl',
