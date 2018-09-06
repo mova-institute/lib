@@ -1,9 +1,18 @@
 import { mu } from './mu'
-
+import { last } from './lang'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export interface Arrow<ArrowAttrib, NodeAttrib> {
+export type DirectedGraphPath<NodeAttrib, ArrowAttrib> = Array<Arrow<NodeAttrib, ArrowAttrib>>
+
+////////////////////////////////////////////////////////////////////////////////
+export interface PathTraversalParams<NodeAttrib, ArrowAttrib> {
+  cutAndFilter?: (path: DirectedGraphPath<NodeAttrib, ArrowAttrib>) => any
+  cutAndInclude?: (path: DirectedGraphPath<NodeAttrib, ArrowAttrib>) => any
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export interface Arrow<NodeAttrib, ArrowAttrib> {
   start: DirectedGraphNode<NodeAttrib, ArrowAttrib>
   end: DirectedGraphNode<NodeAttrib, ArrowAttrib>
   attrib: ArrowAttrib
@@ -11,20 +20,12 @@ export interface Arrow<ArrowAttrib, NodeAttrib> {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
-  private arrows = new Array<Arrow<ArrowAttrib, NodeAttrib>>()
+  readonly incomingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()
+  readonly outgoingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()
 
   constructor(
     public node: NodeAttrib
   ) {
-
-  }
-
-  get incomingArrows() {
-    return this.arrows.filter(x => x.end === this)
-  }
-
-  get outgoingArrows() {
-    return this.arrows.filter(x => x.start === this)
   }
 
   get incomingNodes() {
@@ -43,18 +44,18 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return !!this.outgoingArrows.length
   }
 
-  walkBack(parentSelector: (arrow: Arrow<ArrowAttrib, NodeAttrib>) => any) {
-    return mu(this.walkBack_(parentSelector))
-  }
-
   addIncomingArrow(from: this, attrib: ArrowAttrib) {
+    if (from === this) {
+      throw new Error(`Self-loops are currently unsupported`)
+    }
+
     let arrow = {
       start: from,
       end: this,
       attrib,
     }
-    this.arrows.push(arrow)
-    from.arrows.push(arrow)
+    this.incomingArrows.push(arrow)
+    from.outgoingArrows.push(arrow)
 
     return this
   }
@@ -64,7 +65,7 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return this
   }
 
-  private *walkBack_(parentSelector: (arrow: Arrow<ArrowAttrib, NodeAttrib>) => any) {
+  *walkBack(parentSelector: (arrow: Arrow<NodeAttrib, ArrowAttrib>) => any) {
     let cur = this as DirectedGraphNode<NodeAttrib, ArrowAttrib>
     while (true) {
       let ret = cur.incomingArrows.find(parentSelector)
@@ -74,5 +75,43 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
       yield ret
       cur = ret.start
     }
+  }
+
+  walkBackMu(parentSelector: (arrow: Arrow<NodeAttrib, ArrowAttrib>) => any) {
+    return mu(this.walkBack(parentSelector))
+  }
+
+  *pathsBackWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
+    let activePaths = new Set<Array<Arrow<NodeAttrib, ArrowAttrib>>>()
+    for (let arrow of this.incomingArrows) {
+      let firstStep = [arrow]
+      if (!params || !params.cutAndFilter || !params.cutAndFilter(firstStep)) {
+        if (!params || !params.cutAndInclude || !params.cutAndInclude(firstStep)) {
+          activePaths.add(firstStep)
+        }
+        yield firstStep
+      }
+    }
+
+    while (activePaths.size) {
+      for (let path of [...activePaths]) {
+        for (let newSegment of last(path).start.incomingArrows) {
+          if (!path.includes(newSegment)) {  // no cycle
+            let newPath = [...path, newSegment]
+            if (!params || !params.cutAndFilter || !params.cutAndFilter(newPath)) {
+              if (!params || !params.cutAndInclude || !params.cutAndInclude(newPath)) {
+                activePaths.add(newPath)
+              }
+              yield newPath
+            }
+          }
+        }
+        activePaths.delete(path)
+      }
+    }
+  }
+
+  pathsBackWidthMu(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
+    return mu(this.pathsBackWidth(params))
   }
 }

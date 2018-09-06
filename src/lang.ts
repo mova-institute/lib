@@ -267,7 +267,26 @@ export function flip(value, a, b) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isShallowEqual(a, b) {
+export function shallowEqualArrays<T>(arrA: Array<T>, arrB: Array<T>) {
+  if (arrA === arrB) {
+    return true
+  }
+
+  if (arrB.length !== arrB.length) {
+    return false
+  }
+
+  for (var i = 0; i < arrB.length; ++i) {
+    if (arrA[i] !== arrB[i]) {
+      return false
+    }
+  }
+
+  return true
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function shallowEquals(a, b) {
   if (a === b) {
     return true
   }

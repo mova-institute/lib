@@ -1,9 +1,10 @@
 import { Token } from '../token'
 import { uEq, uEqSome } from './utils'
 import { SimpleGrouping } from '../../grouping'
-import { TokenNode, findRelationAnalog, SUBJECTS, isPromoted, EnhancedNode } from './uk_grammar'
+import { TokenNode, findRelationAnalog, SUBJECTS, isPromoted, EnhancedNode, CLAUSE_RELS, EnhancedArrow } from './uk_grammar'
 import { DirectedGraphNode } from '../../directed_graph'
-import { mu } from '../../mu';
+import { mu } from '../../mu'
+import { last } from '../../lang'
 
 
 
@@ -33,6 +34,7 @@ export function generateEnhancedDeps2(
   corefClusterization: SimpleGrouping<Token>,
 ) {
   let enhancedNodes = buildEnhancedTree(basicNodes)
+
   propagateConjuncts(enhancedNodes)
   addXcompSubject(enhancedNodes)
   addAdvclspSubject(enhancedNodes)
@@ -48,8 +50,16 @@ export function addCoreferenceInRelcl(
 ) {
   // todo: adv?
   // todo: check deep backward
+  // todo: test _men and women that we loved and hated_
+  // todo: Автор заслуговує високої нагороди за **те** , що зрозумів
 
-  // let relRoot = findRelativeClauseRoot(node)
+  for (let node of enhancedNodes) {
+    if (node.node.interp.isRelative()) {
+      findRelcls(node).forEach(x => addEnhancedForRelcl(last(x), x[0]))
+    } else if (node.node.interp.isPersonal() && node.node.interp.isNounish()) {
+
+    }
+  }
   // if (relRoot) {
   //   if (node.node.interp.isRelative()) {
   //     // handleRelcl(relRoot, node)
@@ -58,6 +68,68 @@ export function addCoreferenceInRelcl(
   //     if (antecedent && corefClusterization.areSameGroup(antecedent.node, node.node)) {
   //       // handleRelcl(relRoot, node)
   //     }
+  //   }
+  // }
+}
+
+//------------------------------------------------------------------------------
+function addEnhancedForRelcl(relclArrow: EnhancedArrow, relativeArrow: EnhancedArrow) {
+
+  // 1: чоловік, якого ми бачили: add чоловік ref> якого
+  // todo: should we still ad ref for relclArrow === relativeArrow?
+  relativeArrow.end.addIncomingArrow(relclArrow.start, 'ref')
+
+
+  if (relclArrow === relativeArrow) {
+    // _He became chairman, which he still is._: chairman nsubj> which
+    // https://github.com/UniversalDependencies/docs/issues/531
+    // We should […] add a nsubj relation from the antecedent
+    //   to the nsubj of the relative pronoun.
+  } else {
+    // чоловік, якого ми бачили: add чоловік <obj бачили
+    if (relclArrow.end === relativeArrow.start) {
+      relclArrow.start.addIncomingArrow(relativeArrow.start, relativeArrow.attrib)
+    }
+  }
+
+  // if (relRoot === relative) {
+
+  // } else {
+
+  //   antecedentArrows.forEach(antecedentArrow => {
+  //     let relation: string
+  //     if (
+  //       antecedentArrow.start.node.interp.isNounish()
+  //       && relative.node.interp.isPossessive()
+  //       && uEq(relative.node.rel, 'det')
+  //     ) {
+  //       // Сергія, чию смерть
+  //       relation = 'nmod'
+  //     } else {
+  //       relation = relative.incomingArrows.find(x => !uEq(x.attrib, 'conj')).attrib  // todo
+  //     }
+  //     // antecedentArrow.start.addIncomingArrow(relative, relation)
+  //   })
+  // }
+
+  // if (relRoot === node) {
+
+  //   let subject = node.children.find(x => uEqSome(x.node.rel, ['nsubj'/* , 'csubj' */]))
+  //   if (subject) {
+  //     // todo: csubj?
+  //     subject.node.edeps.push(buildDep(antecedent.node, 'nsubj'))
+  //   } else {
+  //     throw new Error(`Notice this!`)
+  //   }
+  // } else {
+  //   if (node.node.rel !== 'advmod'/*  && relRoot.children.some(x => x === node) */) {
+  //     // let headOfTheRelative = node.parent
+  //     let rel = node.node.rel
+  //     if (antecedent.node.interp.isNounish() && uEq(node.node.rel, 'det')) {
+  //       // Сергія, чию смерть
+  //       rel = 'nmod'
+  //     }
+  //     antecedent.node.edeps.push(buildDep(node.parent.node, rel))
   //   }
   // }
 }
@@ -82,7 +154,7 @@ export function addAdvclspSubject(enhancedNodes: Array<EnhancedNode>) {
 export function addXcompSubject(enhancedNodes: Array<EnhancedNode>) {
   // UD: “Additional subject relations for control and raising constructions”
   for (let node of enhancedNodes) {
-    node.walkBack(({ attrib: rel }) => uEq(rel, 'xcomp'))
+    node.walkBackMu(({ attrib: rel }) => uEq(rel, 'xcomp'))
       .map(x => findXcompSubjectsArrows(x.start))
       .take(1)  // хтось почне розглядати його як нормальний варіант — stop on розглядати
       // .filter(x => x.length)
@@ -100,7 +172,7 @@ export function propagateConjuncts(enhancedTree: Array<EnhancedNode>) {
 
   // 1: conjuncts are governors: eating->rapidly, reading->Paul, eating->Paul
   for (let node of enhancedTree) {
-    let firstConjChain = node.walkBack(({ attrib: rel }) => uEq(rel, 'conj') && rel !== 'conj:parataxis')
+    let firstConjChain = node.walkBackMu(({ attrib: rel }) => uEq(rel, 'conj') && rel !== 'conj:parataxis')
       .map(x => x.start)
     for (let firstConj of firstConjChain) {
       firstConj.outgoingArrows
@@ -112,7 +184,7 @@ export function propagateConjuncts(enhancedTree: Array<EnhancedNode>) {
 
   // 2: conjuncts are dependents: _a long and wide river_
   for (let node of enhancedTree) {
-    let topConj = node.walkBack(({ attrib: rel }) => uEq(rel, 'conj'))
+    let topConj = node.walkBackMu(({ attrib: rel }) => uEq(rel, 'conj'))
       .map(x => x.start)
       .last()
     if (topConj && topConj.hasIncoming()) {
@@ -146,6 +218,15 @@ export function buildEnhancedTree(basicNodes: Array<TokenNode>) {
   }
 
   return ret
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findRelcls(relative: EnhancedNode) {
+  return relative.pathsBackWidthMu({
+    cutAndFilter: path => uEqSome(last(path).attrib, ['conj']),
+    cutAndInclude: path => uEqSome(last(path).attrib, ['acl']),
+  })
+    .filter(x => uEqSome(last(x).attrib, ['acl']))
 }
 
 ////////////////////////////////////////////////////////////////////////////////

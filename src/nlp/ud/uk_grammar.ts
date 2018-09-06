@@ -17,7 +17,7 @@ import cloneDeep = require('lodash.clonedeep')
 
 export type TokenNode = GraphNode<Token>
 export type EnhancedNode = DirectedGraphNode<Token, string>
-export type TokenArrow = Arrow<string, Token>
+export type EnhancedArrow = Arrow<Token, string>
 export type Node2indexMap = Map<TokenNode, number>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,144 +39,6 @@ export function isNonprojective(node: TokenNode) {
   }
 
   return false
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// http://universaldependencies.org/u/overview/enhanced-syntax.html
-export function generateEnhancedDeps(
-  nodes: Array<TokenNode>,
-  corefClusterization: SimpleGrouping<Token>,
-) {
-  // 1: build enhanced **tree**: basic, but with null nodes
-  for (let node of nodes) {
-    if (node.node.edeps.length) {
-      throw new Error(`Should not happen`)
-    }
-
-    // 1.1: copy basic edges that don't touch promoted tokens
-    if (!isPromoted(node)) {
-      node.node.edeps.push(...cloneDeep(node.node.deps))  // todo: why multiple?
-    } else {
-      // 1.2: add deps touching elided tokens
-      // UD: “Null nodes for elided predicates”
-      let phantomDeps = node.node.deps.filter(x => nodes[x.headIndex].node.isElided())
-      node.node.edeps.push(...cloneDeep(phantomDeps))
-    }
-  }
-
-  for (let node of nodes) {
-    // sent_id = 3bgj do not distribute to promoted!!
-    // todo: dislocated?
-    // todo: у такому становищі [є] один крок для того — в enhanced інший корінь!
-    //       https://lab.mova.institute/brat/#/ud/vislotska__kohannia/30
-    // todo: fix duplicate edeps
-    // todo: filter elided? e.g. 20:nsubj|20.1:nsubj
-    // todo: test nested conj
-    // todo: check conj paths are followed
-    // todo: 5-10 м/с не конж
-    // todo: do everything on enhanced tree after propagation of conjuncts??
-    // todo: secondary predication
-
-
-    // 2: propagation of conjuncts
-    if (uEq(node.node.rel, 'conj') && node.node.rel !== 'conj:parataxis') {
-      // 2.1: conjuncts are governors (easy): _She was watching a movie or reading._
-      // todo: share marks and stuff?
-      let firstConj = node.parent
-      let sharedDependents = firstConj.children.filter(x => x !== node
-        && x.node.helperDeps.some(helperDep =>
-          helperDep.headId === firstConj.node.id
-          && ['distrib', 'collect'].includes(helperDep.relation)
-        )
-      )
-      for (let t of sharedDependents) {
-        // messy, todo
-        // node.node.edeps.push(buildEDep(t.node, t.node.rel))
-        t.node.edeps.push(buildEDep(node.node, t.node.rel))
-      }
-
-      // 2.2: conjuncts are dependents (harder): _a long and wide river_
-      let conjHead = node.ancestors0().find(x => !uEq(x.node.rel, 'conj'))
-      if (conjHead.parent) {
-        let newRel = findRelationAnalog(node, conjHead)
-        if (newRel) {
-          // todo: do not strip?
-          node.node.edeps.push(buildDep(conjHead.parent.node, newRel))
-        }
-      }
-    }
-
-    // 3: `xcomp` subject
-    // UD: “Additional subject relations for control and raising constructions”
-    // todo: Mary and John wanted to buy a hat.
-    if (uEq(node.node.rel, 'xcomp')) {
-      let subj = findXcompSubject(node)
-      if (subj) {
-        let rel = uEqSome(subj.node.rel, ['obj', 'iobj']) ? 'nsubj' : subj.node.rel
-        // subj.node.edeps.push(buildEDep(node.node, rel))
-      }
-    }
-
-    // 4: coreference in relative clause constructions
-    // todo: adv?
-    // todo: дівчина, що її
-    // todo: check deep backward
-    let relRoot = findRelativeClauseRoot(node)
-    if (relRoot) {
-      if (node.node.interp.isRelative()) {
-        // handleRelcl(relRoot, node)
-      } else {
-        let antecedent = findShchojijiAntecedent(node)
-        if (antecedent && corefClusterization.areSameGroup(antecedent.node, node.node)) {
-          // handleRelcl(relRoot, node)
-        }
-      }
-    }
-
-    // (5): secondary predication advcl
-    if (isSecondaryPredication(node.node.rel)) {
-      if (node.node.rel === 'advcl:sp') {
-        let subj = node.parent.children.find(x => uEqSome(x.node.rel, SUBJECTS))
-        // || node.parent.children.find(x => uEqSome(x.node.rel, COMPLEMENTS))
-        if (subj) {
-          // subj.node.edeps.push(buildDep(node.node, subj.node.rel))
-        }
-      }
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-function handleRelcl(relRoot: TokenNode, node: TokenNode) {
-  let antecedent = relRoot.parent
-
-  // add `ref`
-  node.node.edeps.push(buildDep(antecedent.node, 'ref'))
-
-  if (relRoot === node) {
-    // https://github.com/UniversalDependencies/docs/issues/531
-    // He became chairman, which he still is.
-    // We should […] add a nsubj relation from the antecedent
-    //   to the nsubj of the relative pronoun.
-    let subject = node.children.find(x => uEqSome(x.node.rel, ['nsubj'/* , 'csubj' */]))
-    if (subject) {
-      // todo: csubj?
-      subject.node.edeps.push(buildDep(antecedent.node, 'nsubj'))
-    } else {
-      throw new Error(`Notice this!`)
-    }
-  } else {
-    // backward
-    if (node.node.rel !== 'advmod'/*  && relRoot.children.some(x => x === node) */) {
-      // let headOfTheRelative = node.parent
-      let rel = node.node.rel
-      if (antecedent.node.interp.isNounish() && uEq(node.node.rel, 'det')) {
-        // Сергія, чию смерть
-        rel = 'nmod'
-      }
-      antecedent.node.edeps.push(buildDep(node.parent.node, rel))
-    }
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -336,6 +198,24 @@ export function findRelativeClauseRoot(relative: TokenNode) {
     return clauseRoot
   }
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+// export function findShchojijiAntecedentEnh(node: EnhancedNode) {
+//   if (!node.node.interp.isPersonal() || !node.node.interp.isNounish()) {
+//     return
+//   }
+//   let clauseRoot = findRelativeClauseRoot(node)
+//   if (!clauseRoot) {
+//     return
+//   }
+//   if (clauseRoot.parent
+//     && clauseRoot.children.some(x => x.node.interp.lemma === 'що' && uEq(x.node.rel, 'mark'))
+//     && clauseRoot.parent.node.interp.equalsByFeatures(node.node.interp, [f.MorphNumber, f.Gender])
+//   ) {
+//     return clauseRoot.parent
+//   }
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function findShchojijiAntecedent(node: TokenNode) {
