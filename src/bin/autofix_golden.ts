@@ -571,7 +571,6 @@ async function main() {
             interp.dropAdjectiveAsNounFeatures()
           }
 
-
           if (transormIds && transormIds.has(token.id)) {
             TRANSFORMS[args.transform](node)
           }

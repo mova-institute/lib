@@ -54,7 +54,7 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
     t => (t.node.interp.isNominative() || t.node.interp.isInstrumental())
       && (t.node.interp.isNoun() || t.node.interp.isAdjective())
   ],
-  [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник`, t => t.node.interp.isAdjective()],
+  [`amod`, `з іменника`, t => canActAsNoun(t), `в прикметник без предикації`, t => t.node.interp.isAdjective() && !g.hasPredication(t)],
   [`nummod`, `з іменника`, t => canActAsNoun(t), `в незайменниковий числівник`, t => t.node.interp.isCardinalNumeral() && !t.node.interp.isPronominal()],
   [`det:numgov`, `з іменника`, t => canActAsNoun(t), `в займенниковий числівник`, t => t.node.interp.isCardinalNumeral() && t.node.interp.isPronominal()],
   [`advmod`,
@@ -138,8 +138,10 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
         f.PronominalType.general,
         f.PronominalType.indefinite
       ].includes(t.node.interp.getFeature(f.PronominalType))),
-    `в присудок (з умовами)`, t => g.isFeasibleAclRoot(t)
-      || t.node.interp.isParticiple()  // temp
+    `в присудок/інфінітив/:relless/:adv`, t =>
+      g.hasPredication(t)
+      || t.node.interp.isInfinitive()
+      || t.node.rel === 'acl:relless'  // todo: comprehend
       || t.node.rel === 'acl:adv'
   ],
   [`acl:adv`, `з іменника`, t => canActAsNoun(t)
@@ -147,7 +149,7 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
       && [
         f.PronominalType.demonstrative,
         f.PronominalType.general,
-        f.PronominalType.indefinite
+        f.PronominalType.indefinite,
       ].includes(t.node.interp.getFeature(f.PronominalType))),
     `в одинокий (діє)прислівник`, t =>
       (t.node.interp.isAdverb() || t.node.interp.isConverb())
@@ -1458,12 +1460,6 @@ export function validateSentenceSyntax(
     t => (t.node.interp.isNounish() || t.node.interp.isAdjective())
       && (t.node.interp.isNominative() || t.node.interp.isAccusative())
       && t.children.some(x => x.node.interp.lemma === 'як')
-  )
-
-  xreportIf(`amod в вираз`,
-    t => uEq(t.node.rel, 'amod')
-      && g.isFeasibleAclRoot(t)
-      && t.node.interp.isParticiple()
   )
 
   reportIf(`„більш/менш ніж“ не fixed`,

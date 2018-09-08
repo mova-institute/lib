@@ -547,7 +547,7 @@ export function isCompounSvcCandidate(t: TokenNode) {
 ////////////////////////////////////////////////////////////////////////////////
 export function isInfinitive(t: TokenNode) {
   return t.node.interp.isInfinitive()
-    && !t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && !x.node.interp.isInfinitive())
+    && !t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isFinite())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -581,20 +581,6 @@ export function isAdverbialAcl(t: TokenNode) {
     && (t.node.interp.isAdverb() && !t.hasChildren()  // двері праворуч
       || t.node.interp.isConverb() && !t.hasChildren()  // бокс лежачи
     )
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function isFeasibleAclRoot(t: TokenNode) {
-  return isInfinitive(t)
-    || isInfinitiveCop(t)
-    || t.children.some(x => uEqSome(x.node.rel, ['mark']))
-    || t.children.some(x => (x.node.rel === 'xcomp' || uEqSome(x.node.rel, ['csubj']))
-      && x.node.interp.isInfinitive())
-    || hasOwnRelative(t)
-    // || t.children.some(x => x.node.interp.isRelative())
-    // || t.node.interp.isParticiple()  // temp
-    // || isAdverbialAcl(t)
-    || t.children.some(x => uEq(x.node.rel, 'nsubj'))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -787,14 +773,6 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
       t.rel = stripSubrel(t.rel)
     }
 
-    // set participle acl to amod
-    if (uEq(t.rel, 'acl')
-      && !isFeasibleAclRoot(node)
-      && t.interp.isParticiple()
-    ) {
-      t.rel = 'amod'
-    }
-
     // todo: test
     if (t.interp.isParticiple()) {
       node.children.filter(x => uEq(x.node.rel, 'aux'))
@@ -874,6 +852,7 @@ export function isNonverbialPredicate(t: TokenNode) {
 export function hasPredication(t: TokenNode) {
   return t.node.hasTag('itsubj')
     || t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
+    || t.children.some(x => uEqSome(x.node.rel, ['cop']))
     || (t.node.interp.isVerb() && !isInfinitive(t))
 }
 

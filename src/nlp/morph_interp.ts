@@ -1045,6 +1045,7 @@ export class MorphInterp {
   isImperative() { return this.features.verbType === VerbType.imperative }
   isInanimate() { return this.features.animacy === Animacy.inanimate }
   isIndicative() { return this.features.verbType === undefined || this.features.verbType === VerbType.indicative || this.features.verbType === VerbType.impersonal }
+  isFinite() { return this.isVerb() && !this.isInfinitive() }
   isInfinitive() { return this.features.verbType === VerbType.infinitive }
   isMasculine() { return this.features.gender === Gender.masculine }
   isNegative() { return this.features.polarity === Polarity.negative }
