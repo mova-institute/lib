@@ -9,6 +9,7 @@ import { stripSubrel, uEq } from './ud/utils'
 
 ////////////////////////////////////////////////////////////////////////////////
 export type TokenType = 'word' | 'glue'
+export type CoreferenceType = 'equality' | 'bridge'
 export type Structure =
   | 'gap'
   | 'document'
@@ -61,7 +62,7 @@ export interface Dependency {
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Coreference {
-  type: 'equality' | 'bridge'
+  type: CoreferenceType
   headId: string
   // headIndex?: number
 }

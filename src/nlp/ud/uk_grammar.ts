@@ -1,24 +1,92 @@
 import { GraphNode, walkDepthNoSelf, walkDepth } from '../../graph'
-import { Token, buildDep, buildEDep, Dependency } from '../token'
+import { Token, Dependency } from '../token'
 import { MorphInterp } from '../morph_interp'
 import { uEq, uEqSome, stripSubrel } from './utils'
 import { mu } from '../../mu'
 import { last, wiith } from '../../lang'
 import { UdPos, toUd } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
-import { SimpleGrouping } from '../../grouping'
 import { compareAscending, clusterize } from '../../algo'
 import { DirectedGraphNode, Arrow } from '../../directed_graph'
 import * as f from '../morph_features'
 
-import cloneDeep = require('lodash.clonedeep')
 
 
-
+////////////////////////////////////////////////////////////////////////////////
 export type TokenNode = GraphNode<Token>
 export type EnhancedNode = DirectedGraphNode<Token, string>
 export type EnhancedArrow = Arrow<Token, string>
 export type Node2indexMap = Map<TokenNode, number>
+
+////////////////////////////////////////////////////////////////////////////////
+export function isFeasibleRelclWithoutRel(node: TokenNode) {
+  return uEq(node.node.rel, 'acl')
+    && node.children.some(x => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що')
+  // && !node.children.some(x => uEqSome(x.node.rel, [/* 'obj', 'iobj', */ 'nsubj', 'csubj']))
+  // && !node.node.interp.isImpersonal()  // todo: why autofix doesn't pick this from agreement?
+  // && nsubjAgreesWithPredicate(node.parent, node)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function nsubjAgreesWithPredicate(noun: TokenNode, predicate: TokenNode) {
+  if (noun.node.interp.isX() || noun.node.isGraft) {
+    return true
+  }
+
+  let verbInterp = predicate.node.interp
+  if (verbInterp.isInfinitive() || !predicate.node.interp.isVerb()) {
+    let aux = predicate.children.find(x => uEqSome(x.node.rel, ['aux', 'cop']))
+    if (aux) {
+      verbInterp = aux.node.interp
+    }
+  }
+
+  if (verbInterp.hasGender()
+    && !isValidGenderlesNoun(noun)
+    // && !(noun.node.interp.isPronominal() && !noun.node.interp.hasFeature(f.Gender))
+    && !verbInterp.equalsByFeature(noun.node.interp, f.Gender)
+  ) {
+    return false
+  }
+
+  if (!verbInterp.equalsByFeature(noun.node.interp, f.MorphNumber)
+    && !(verbInterp.isSingular() && noun.node.interp.hasGender() && !noun.node.interp.hasNumber())
+    && !(verbInterp.isPlural()
+      && noun.children.some(x => uEq(x.node.rel, 'conj') || isConjlikeNmod(x))
+    )
+    && !(verbInterp.isPlural()
+      && noun.children.some(x => isGoverning(x.node.rel) && x.node.interp.isPlural()
+        || x.node.rel === 'advmod:amtgov'
+      )
+    )
+  ) {
+    return false
+  }
+
+  if (verbInterp.hasFeature(f.Person)
+    && verbInterp.getFeature(f.Person) !== f.Person.third
+    && !verbInterp.equalsByFeature(noun.node.interp, f.Person)
+  ) {
+    return false
+  }
+
+  return true
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isConjlikeNmod(node: TokenNode) {
+  return uEq(node.node.rel, 'nmod')
+    && node.node.interp.isInstrumental()
+    && node.children.some(x => uEq(x.node.rel, 'case')
+      && ['з', 'зі', 'із'].includes(x.node.interp.lemma)
+    )
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isValidGenderlesNoun(node: TokenNode) {
+  return node.node.interp.isPronominal()
+    && ['хтось', 'ніхто', 'я', 'ти'].includes(node.node.interp.lemma)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function isPromoted(node: TokenNode) {
@@ -178,9 +246,9 @@ export function findClauseRoot2(node: EnhancedNode) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function findRelativeClauseRoot(relative: TokenNode) {
-  // if (!relative.node.interp.isRelative()) {
-  //   return
-  // }
+  if (!relative.node.interp.isRelative()) {
+    return
+  }
   let clauseRoot = findClauseRoot(relative)
   if (!clauseRoot) {
     return
@@ -820,6 +888,14 @@ export function areOkToBeGlued(t: TokenNode, tNext: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isRelativeSpecificAcl(rel: string) {
+  return rel === 'acl:irrel'
+    || rel === 'acl:relpers'
+    || rel === 'acl:relfull'
+    || rel === 'acl:relless'
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export const ADVMOD_NONADVERBIAL_LEMMAS = [
   'не',
   'ні',
@@ -1069,6 +1145,10 @@ export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
 export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'acl:adv',
   'acl:parataxis',
+  'acl:irrel',  // nothing relative about it
+  'acl:relfull',  // has an overt PronType=Rel descendant
+  'acl:relless',  // relative, but no overt PronType=Rel descendant, <nsubj back to antecedent
+  'acl:relpers',  // relative, no PronType=Rel, but antecedent doubled by PronType=Pers
   'acl',
   'advcl:cmp',
   'advcl:sp',

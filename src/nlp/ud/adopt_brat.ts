@@ -9,7 +9,7 @@ import { isString } from '../../lang'
 import { trimExtension } from '../../string'
 import { firstMatch } from '../../string'
 import { serializeMiDocument } from '../utils'
-import { parseBratFile, BratArc } from './utils'
+import { parseBratFile, BratArrow } from './utils'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { HELPER_RELATIONS } from './uk_grammar'
 import { Dict } from '../../types'
@@ -73,16 +73,18 @@ function main() {
             el.removeAttribute('tags')
           }
 
-          let dependencies = span.arcs
+          let arrows = span.arrows
             .filter(x => isString(x.head.annotations.N))
-            .map(x => {
-              x.relation = x.relation.replace('_', ':')
-              return x
-            })
-            .sort(basicRelationsFirstCompare)
-            .map(({ relation, head }) => `${head.annotations.N}-${relation}`)
-            .join('|') || undefined
-          el.setAttribute('dep', dependencies)
+          arrows.forEach(x => x.relation = x.relation.replace('_', ':'))
+          let [basicArrows, enhancedArrows] = algo.clusterize(arrows,
+            x => x.relation.startsWith('-'), [[], []])
+
+          basicArrows.sort(basicRelationsFirstCompare)
+          el.setAttribute('dep', bratArrowsToAttribute(basicArrows))
+
+          enhancedArrows.forEach(x => x.relation = x.relation.substr(1))
+          el.setAttribute('edep', bratArrowsToAttribute(enhancedArrows))
+
           id2bratPath[span.annotations.N] = [
             trimExtension(path.relative(bratFilesRoot, bratFile)),
             span.index
@@ -100,7 +102,7 @@ function main() {
           continue
         }
         el.setAttribute('comment-coref', span.comment)
-        let coref = span.arcs
+        let coref = span.arrows
           .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
           .join('|') || undefined
         el.setAttribute('coref', coref)
@@ -115,7 +117,17 @@ function main() {
 }
 
 //------------------------------------------------------------------------------
-function basicRelationsFirstCompare(a: BratArc, b: BratArc) {
+function bratArrowsToAttribute(arrows: Array<BratArrow>) {
+  return arrows.map(bratArrowToAttibute).join('|') || undefined
+}
+
+//------------------------------------------------------------------------------
+function bratArrowToAttibute(value: BratArrow) {
+  return `${value.head.annotations.N}-${value.relation}`
+}
+
+//------------------------------------------------------------------------------
+function basicRelationsFirstCompare(a: BratArrow, b: BratArrow) {
   return Number(HELPER_RELATIONS.has(a.relation))
     - Number(HELPER_RELATIONS.has(b.relation))
 }

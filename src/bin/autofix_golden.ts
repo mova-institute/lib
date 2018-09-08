@@ -33,6 +33,7 @@ import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
 import { uniq } from 'lodash'
 import { stableSort } from '../algo'
+import { tuple } from '../lang'
 
 
 
@@ -41,8 +42,11 @@ const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
 const INSERTION_RE = /#<(\S+)/
 
 //------------------------------------------------------------------------------
-interface Args {
-
+interface CliArgs {
+  tranformIds: string
+  tranform: string
+  glob: string
+  seq: string
 }
 
 // temp
@@ -57,19 +61,17 @@ const ukMonthsGen = new Set(ukMonthMap.keys())
 
 //------------------------------------------------------------------------------
 async function main() {
-  let args = minimist<Args>(process.argv.slice(2), {
+  let args = minimist<CliArgs>(process.argv.slice(2), {
     boolean: [
-      'tranformIds',
       'afterAnnotator',
     ],
   })
-  let [globStr, sequencePath] = args._
-  let files = glob.sync(globStr)
+  let files = glob.sync(args.glob)
   let tokenCount = 0
 
   let idSequence: number
-  if (fs.existsSync(sequencePath)) {
-    idSequence = Number.parseInt(fs.readFileSync(sequencePath, 'utf8').trim())
+  if (fs.existsSync(args.seq)) {
+    idSequence = Number.parseInt(fs.readFileSync(args.seq, 'utf8').trim())
   }
 
   // prepare xml
@@ -238,6 +240,11 @@ async function main() {
         ids.add(id)
         id2el.set(id, el)
       }
+
+      if (args.tranformIds) {
+        var transormIds = new Set(args.tranformIds.trim().split(/\s+/g))
+      }
+
 
       let documentTokens = mu(mixml2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
@@ -565,6 +572,9 @@ async function main() {
           }
 
 
+          if (transormIds && transormIds.has(token.id)) {
+            TRANSFORMS[args.transform](node)
+          }
 
           // цікавий вивід
           // if (uEqSome(token.rel, ['acl', 'advmod'])
@@ -689,8 +699,8 @@ async function main() {
     }
   }
 
-  if (sequencePath) {
-    fs.writeFileSync(sequencePath, idSequence)
+  if (args.seq) {
+    fs.writeFileSync(args.seq, idSequence)
   }
   console.log(`${tokenCount} tokens`)
 }
@@ -724,12 +734,17 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
   interp0.setAttribute('lemma', token.interp.lemma)
   stableSort(token.deps, (a, b) => Number(nodes[a.headIndex].node.isElided())
     - Number(nodes[b.headIndex].node.isElided()))
-  let dep = mu(token.getAllDeps())
-    .map(x => `${x.headId}-${x.relation}`)
-    .join('|')
-  if (dep) {
-    element.setAttribute('dep', dep)
+
+  let config = tuple(tuple(mu(token.getAllDeps()).toArray(), 'dep'), tuple(token.edeps, 'edep'))
+  for (let [deps, attr] of config) {
+    let dep = deps
+      .map(x => `${x.headId}-${x.relation}`)
+      .join('|')
+    if (dep) {
+      element.setAttribute(attr, dep)
+    }
   }
+
   let coref = uniq(token.corefs.map(x => `${x.headId}-${x.type}`)).join('|')
   if (coref) {
     element.setAttribute('coref', coref)
@@ -1248,6 +1263,12 @@ const TRANSFORMS = {
   toObl(t: GraphNode<Token>) {
     t.node.rel = 'obl'
   },
+  toRelfull(t: GraphNode<Token>) {
+    t.node.rel = 'acl:relfull'
+  },
+  toIrrel(t: GraphNode<Token>) {
+    t.node.rel = 'acl:irrel'
+  },
 }
 
 //------------------------------------------------------------------------------
@@ -1334,19 +1355,6 @@ function splitPiv(
   return false
 }
 
-//------------------------------------------------------------------------------
-function addRefRelation(node: GraphNode<Token>) {
-  let token = node.node
-  if (!token.deps.some(x => uEq(x.relation, 'ref'))
-    && g.findRelativeClauseRoot(node)
-  ) {
-    let aclRoot = g.findClauseRoot(node)
-    token.deps.push({
-      headId: aclRoot.parent.node.id,
-      relation: 'ref',
-    })
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {

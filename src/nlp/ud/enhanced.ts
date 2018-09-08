@@ -35,6 +35,10 @@ export function generateEnhancedDeps2(
 ) {
   let enhancedNodes = buildEnhancedTree(basicNodes)
 
+  // Плакати й стрічки , що повишивали дівчата
+  // todo: propagate obj повишивали > стрічки
+
+  // loadEnhancedGraphFromTokens(enhancedNodes)
   propagateConjuncts(enhancedNodes)
   addXcompSubject(enhancedNodes)
   addAdvclspSubject(enhancedNodes)
@@ -52,6 +56,7 @@ export function addCoreferenceInRelcl(
   // todo: check deep backward
   // todo: test _men and women that we loved and hated_
   // todo: Автор заслуговує високої нагороди за **те** , що зрозумів
+  // todo: а читала все, що запорву — не nsubj у все
 
   for (let node of enhancedNodes) {
     if (node.node.interp.isRelative()) {
@@ -196,6 +201,23 @@ export function propagateConjuncts(enhancedTree: Array<EnhancedNode>) {
         .forEach(x => node.addIncomingArrow(x.start, newRel))
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function loadEnhancedGraphFromTokens(nodes: Array<EnhancedNode>) {
+  for (let node of nodes) {
+    for (let edep of node.node.edeps) {
+      node.addIncomingArrow(nodes[edep.headIndex], edep.relation)
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function buildEnhancedGraphFromTokens(basicNodes: Array<TokenNode>) {
+  let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
+  loadEnhancedGraphFromTokens(ret)
+
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////

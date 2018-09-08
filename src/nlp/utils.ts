@@ -19,7 +19,7 @@ import {
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
 import { startsWithCapital, loopReplace } from '../string'
-import { Token, TokenTag, Structure } from './token'
+import { Token, TokenTag, Structure, CoreferenceType } from './token'
 import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
 import { keyvalue2attributesNormalized } from './noske'
 import { XmlFormatter } from '../xml/xml_formatter'
@@ -1123,17 +1123,22 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
       if (name === 'w_') {
         let depsStr = el.attribute('dep')
         if (depsStr) {
-          let deps = depsStr.split('|')
-            .map(x => x.split('-'))
-            .map(([head, relation]) => ({ headId: head, relation }))
-          clusterize(deps, x => HELPER_RELATIONS.has(x.relation), [tok.deps, tok.helperDeps])
+          clusterize(parseDepStr(depsStr), x => HELPER_RELATIONS.has(x.relation), [tok.deps, tok.helperDeps])
+        }
+
+        let edepsStr = el.attribute('edep')
+        if (edepsStr) {
+          tok.edeps = parseDepStr(edepsStr)
         }
 
         let corefStr = el.attribute('coref')
         if (corefStr) {
           tok.corefs = corefStr.split('|')
             .map(x => x.split('-'))
-            .map(([head, type]) => ({ headId: head, type }))
+            .map(([head, type]) => ({
+              headId: head,
+              type: type as CoreferenceType,
+            }))
         }
 
         tok.tags.addAll((el.attribute('tags') || '')
@@ -1149,6 +1154,13 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
       yield tok
     }
   }
+}
+
+//------------------------------------------------------------------------------
+function parseDepStr(value: string) {
+  return value.split('|')
+    .map(x => x.split('-'))
+    .map(([headId, relation]) => ({ headId, relation }))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1331,10 +1343,12 @@ function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
   for (let [i, token] of sentence.entries()) {
     token.index = i
-    for (let dep of token.deps) {
-      dep.headIndex = id2i.get(dep.headId)
-      if (dep.headIndex === undefined) {
-        throw new Error(`head outside a sentence #${sentenceId} token #${token.getAttribute('id')}`)
+    for (let deps of [token.deps, token.edeps]) {
+      for (let dep of deps) {
+        dep.headIndex = id2i.get(dep.headId)
+        if (dep.headIndex === undefined) {
+          throw new Error(`head outside a sentence #${sentenceId} token #${token.getAttribute('id')}`)
+        }
       }
     }
   }

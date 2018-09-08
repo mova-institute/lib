@@ -325,6 +325,11 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
         let dependant = n2id[token.node.id]
         yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
       }
+      for (let dep of token.node.edeps) {
+        let head = n2id[dep.headId]
+        let dependant = n2id[token.node.id]
+        yield `R${rId++}\t-${dep.relation} Arg1:T${head} Arg2:T${dependant}`
+      }
     }
   }
 }
@@ -467,7 +472,7 @@ export function mergeAmbiguityFeaturewise(arr: Array<Array<any>>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export interface BratArc {
+export interface BratArrow {
   relation: string
   head: BratSpan
 }
@@ -477,7 +482,7 @@ export interface BratSpan {
   index: number
   form: string
   annotations: any
-  arcs?: Array<BratArc>
+  arrows?: Array<BratArrow>
   comment?: string
 }
 
@@ -490,7 +495,7 @@ export function parseBratFile(lines: Iterable<string>) {
     let match = line.match(/^T(\d+).*\s(\S+)$/)
     if (match) {
       let [, id, form] = match
-      tokens[id] = { form, index: counter++, annotations: {}, arcs: [] }
+      tokens[id] = { form, index: counter++, annotations: {}, arrows: [] }
       continue
     }
 
@@ -510,7 +515,7 @@ export function parseBratFile(lines: Iterable<string>) {
     match = line.match(/^R\d+\s(\S+)\sArg1:T(\S+)\sArg2:T(\S+)\s*$/)
     if (match) {
       let [, relation, headId, depId] = match
-      tokens[depId].arcs.push({
+      tokens[depId].arrows.push({
         relation,
         head: tokens[headId],
       })

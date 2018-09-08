@@ -28,7 +28,7 @@ import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 import { buildCoreferenceClusters } from '../coreference'
 import { intbool } from '../../lang'
-import { generateEnhancedDeps2 } from './enhanced'
+import { generateEnhancedDeps2, buildEnhancedGraphFromTokens } from './enhanced'
 
 
 
@@ -119,6 +119,7 @@ function main() {
       }
 
       // ~~~ bake some vars from sentence stream data
+      let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
       let roots = mu(nodes).findAllIndexes(g.isRootOrHole).toArray()
       // x => !x.deps.find(xx => !g.HELPER_RELATIONS.has(xx.relation))).toArray()
       let numComplete = tokens.length - roots.length + 1
@@ -171,7 +172,13 @@ function main() {
 
         let hasProblems = false
         if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
-          let problems = validateSentenceSyntax(nodes, analyzer, corefClusterization, valencyDict)
+          let problems = validateSentenceSyntax(
+            nodes,
+            manualEnhancedNodes,
+            analyzer,
+            corefClusterization,
+            valencyDict
+          )
           hasProblems = !!problems.length
           if (hasProblems && args.reportErrors) {
             sentenseErrors.push({
@@ -356,7 +363,7 @@ function formatProblemsHtml(
       body += `<p class="message">- ${escape(message)}`
       if (indexes !== undefined) {
         let ids = indexes.map(x => tokens[x].id).join(` `)
-        body += ` @ ${ids}</p>`
+        body += ` <input type="checkbox" value="${ids}" onchange="copyIds()" /> ${ids}</p>`
 
         for (let j = 0; j < tokens.length; ++j) {
           if (indexes.length < tokens.length && indexes.includes(j)) {
@@ -375,16 +382,30 @@ function formatProblemsHtml(
 
   let timestamp = toSortableDatetime(new Date())
 
-  return `<html><head><style>
-    html { padding: 3em; font-size: 14px; font-family: "Lucida Console", Menlo, Monaco, monospace; }
-    .error { padding: 0.25em; border: 2px solid #FFAB40; color: #555; }
-    .message { color: #555; margin-left:-2ch; }
-  </style></head><body>
+  return `<html>
+  <head>
+    <style>
+      html { padding: 3em; font-size: 14px; font-family: "Lucida Console", Menlo, Monaco, monospace; }
+      .error { padding: 0.25em; border: 2px solid #FFAB40; color: #555; }
+      .message { color: #555; margin-left:-2ch; }
+    </style>
+    <script>
+      function copyIds() {
+        document.getElementById('ids').innerHTML =
+          [...document.querySelectorAll('input[type=checkbox]:checked')]
+          .map(x => x.value)
+          .join(' ')
+      }
+    </script>
+  </head>
+  <body>
   <p style="margin-top:-2em;">створено: <b>${timestamp}</b> (час київський)</p>
   <br/>
   <br/>
+  <p id="ids"></p>
   ${body}
-  </body></html>`
+  </body>
+  </html>`
 }
 
 //------------------------------------------------------------------------------

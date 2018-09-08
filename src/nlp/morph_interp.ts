@@ -902,6 +902,10 @@ export class MorphInterp {
     return this.toVesumStr() === other.toVesumStr() && this.lemma === other.lemma
   }
 
+  equalsByFeature(other: MorphInterp, feature) {
+    return this.equalsByFeatures(other, [feature])
+  }
+
   equalsByFeatures(other: MorphInterp, features: Array<any>) {
     return features.every(f => this.getFeature(f) === other.getFeature(f))
   }
