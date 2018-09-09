@@ -28,6 +28,10 @@ import { last } from '../../lang'
 // todo: Id=141k
 // todo: multilevel conj
 //
+// Плакати й стрічки , що повишивали дівчата
+// todo: propagate obj повишивали > стрічки
+// треба двічі propagateConjuncts?
+//
 ////////////////////////////////////////////////////////////////////////////////
 export function generateEnhancedDeps2(
   basicNodes: Array<TokenNode>,
@@ -35,10 +39,7 @@ export function generateEnhancedDeps2(
 ) {
   let enhancedNodes = buildEnhancedTree(basicNodes)
 
-  // Плакати й стрічки , що повишивали дівчата
-  // todo: propagate obj повишивали > стрічки
-
-  // loadEnhancedGraphFromTokens(enhancedNodes)
+  loadEnhancedGraphFromTokens(enhancedNodes)
   propagateConjuncts(enhancedNodes)
   addXcompSubject(enhancedNodes)
   addAdvclspSubject(enhancedNodes)
@@ -59,22 +60,55 @@ export function addCoreferenceInRelcl(
   // todo: а читала все, що запорву — не nsubj у все
 
   for (let node of enhancedNodes) {
-    if (node.node.interp.isRelative()) {
-      findRelcls(node).forEach(x => addEnhancedForRelcl(last(x), x[0]))
-    } else if (node.node.interp.isPersonal() && node.node.interp.isNounish()) {
+    for (let relclArrow of node.incomingArrows) {
+      if (relclArrow.attrib === 'acl:relless') {
+        // the backward arrow was annotated manually
+        // no `ref` for :relless
+        // nothing to do
+      } else if (relclArrow.attrib === 'acl:relpers') {
+        // `ref` was annotated manually, now add backward arrow automatically
+        relclArrow.start.outgoingArrows
+          .filter(x => x.attrib === 'ref')
+          .forEach(ref => addBackwardForRelcl(relclArrow, ref))
 
+        /*
+         ref.end.incomingArrows
+         .filter(x => x !== ref && !uEq(x.attrib, 'conj'))
+         .forEach(persIncoming =>
+           persIncoming.start.addOutgoingArrow(relclArrow.start, persIncoming.attrib)
+           // todo: predict rel
+           // todo: переможець, що ним є ти
+         )
+       ) */
+      } else if (relclArrow.attrib === 'acl:relfull') {
+        let arrowsInRelative = relclArrow.end.pathsForwardWidth({
+          // cutAndFilter: path => uEqSome(last(path).attrib, CLAUSE_RELS),
+          // cutAndInclude: path => uEqSome(last(path).attrib, ['acl']),
+        })
+          .map(x => last(x))
+          .filter(x => x.end.node.interp.isRelative() && !uEqSome(x.attrib, ['ref', 'conj']))
+          .toArray()
+
+        if (!arrowsInRelative.length) {
+          // console.error(arrow.end.node)
+        }
+
+        arrowsInRelative.forEach(arrowInRelative => {
+          if (arrowInRelative.end !== relclArrow.start) {
+            relclArrow.start.addOutgoingArrow(arrowInRelative.end, 'ref')
+          }
+          arrowInRelative.start.addOutgoingArrow(relclArrow.start, arrowInRelative.attrib)
+        })
+      }
     }
   }
-  // if (relRoot) {
-  //   if (node.node.interp.isRelative()) {
-  //     // handleRelcl(relRoot, node)
-  //   } else {
-  //     let antecedent = findShchojijiAntecedent(node)
-  //     if (antecedent && corefClusterization.areSameGroup(antecedent.node, node.node)) {
-  //       // handleRelcl(relRoot, node)
-  //     }
-  //   }
-  // }
+}
+
+//------------------------------------------------------------------------------
+function addBackwardForRelcl(relclArrow: EnhancedArrow, refArrow: EnhancedArrow) {
+  if (refArrow.end === relclArrow.end) {
+
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -207,6 +241,10 @@ export function propagateConjuncts(enhancedTree: Array<EnhancedNode>) {
 export function loadEnhancedGraphFromTokens(nodes: Array<EnhancedNode>) {
   for (let node of nodes) {
     for (let edep of node.node.edeps) {
+      if (node.node.id === edep.headId) {
+        console.error(node.node.id)
+        console.error(nodes)
+      }
       node.addIncomingArrow(nodes[edep.headIndex], edep.relation)
     }
   }
@@ -244,7 +282,7 @@ export function buildEnhancedTree(basicNodes: Array<TokenNode>) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function findRelcls(relative: EnhancedNode) {
-  return relative.pathsBackWidthMu({
+  return relative.pathsBackWidth({
     cutAndFilter: path => uEqSome(last(path).attrib, ['conj']),
     cutAndInclude: path => uEqSome(last(path).attrib, ['acl']),
   })

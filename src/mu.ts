@@ -160,6 +160,30 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
+  takeWhile(fn: Predicate<T>) {
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        if (!fn) {
+          return
+        }
+        yield x
+      }
+    })())
+  }
+
+  takeWhileIncluding(fn: Predicate<T>) {
+    const thiss = this
+    return mu((function* () {
+      for (let x of thiss) {
+        yield x
+        if (!fn) {
+          return
+        }
+      }
+    })())
+  }
+
   entries() {
     const thiss = this
     let i = 0

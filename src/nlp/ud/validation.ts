@@ -1983,6 +1983,19 @@ export function validateSentenceSyntax(
       && g.hasChild(t, 'mark')
     )
 
+    reportIf(`:relfull без Rel`, t =>
+      t.node.rel === 'acl:relfull'
+      && nodes.some(x => g.findRelativeClauseRoot(x) === t)
+    )
+
+    xreportIf(`особовий в :irrel з _що_`, t =>
+      t.node.interp.isPersonal()
+      && wiith(mu(t.walkThisAndUp0()).find(x => x.node.rel === 'acl:irrel'), acl =>
+        acl
+        && acl.children.some(x => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що')
+      )
+    )
+
     reportIf(`нерозрізнений acl зі сполучником _що_`, t =>
       uEq(t.node.rel, 'acl')
       && t.children.some(x => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що')
@@ -2021,7 +2034,7 @@ export function validateSentenceSyntax(
       && !manualEnhancedNodes[t.parent.node.index].outgoingArrows.some(x => x.attrib === 'ref')
     )
 
-    reportIf(`відносний в чистому acl’і`, t =>
+    reportIf(`відносний в нерозрізненому acl’і`, t =>
       t.node.interp.isRelative()
       && wiith(g.findRelativeClauseRoot(t), relclRoot =>
         relclRoot && relclRoot.node.rel === 'acl'
@@ -2043,6 +2056,13 @@ export function validateSentenceSyntax(
           message: `не єдиний відносний`,
         }))
     }
+
+    reportIf(`xcomp без enhanced підмета`, t =>
+      uEqSome(t.node.rel, ['xcomp'])
+      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
+      && t.ancestors0()
+        .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
+    )
 
     xreportIf(`flat має неочікувані залежники`, t =>
       t.parent

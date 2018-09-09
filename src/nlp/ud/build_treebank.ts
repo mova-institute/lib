@@ -97,6 +97,8 @@ function main() {
     for (let { tokens, multitokens, nodes,
       sentenceId, dataset, document, paragraph, } of sentenceStream
     ) {
+      let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
+
       if (!args.noEnhanced) {
         generateEnhancedDeps2(nodes, corefClusterization)
       }
@@ -119,7 +121,6 @@ function main() {
       }
 
       // ~~~ bake some vars from sentence stream data
-      let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
       let roots = mu(nodes).findAllIndexes(g.isRootOrHole).toArray()
       // x => !x.deps.find(xx => !g.HELPER_RELATIONS.has(xx.relation))).toArray()
       let numComplete = tokens.length - roots.length + 1

@@ -217,7 +217,7 @@ function dumbDownUdPos(upos: UdPos) {
 ////////////////////////////////////////////////////////////////////////////////
 export function findXcompSubject(node: TokenNode) {
   let topParent = node.ancestors0().find(x =>
-    !uEqSome(x.node.rel, ['xcomp', 'conj'])/*  || x.node.rel === 'conj:parataxis' */)
+    !uEqSome(x.node.rel, ['xcomp', 'conj', 'parataxis'])/*  || x.node.rel === 'conj:parataxis' */)
 
   return mu(['obj', 'iobj', 'nsubj', 'csubj'])
     .map(r => topParent.children.find(x => uEq(x.node.rel, r)))
@@ -981,6 +981,11 @@ export const OBLIQUES = [
 export const SUBJECTS = [
   'nsubj',
   'csubj',
+]
+
+export const CORE_ARGUMENTS = [
+  ...SUBJECTS,
+  ...COMPLEMENTS,
 ]
 
 export const NOMINAL_HEAD_MODIFIERS = [

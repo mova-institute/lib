@@ -81,9 +81,17 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return mu(this.walkBack(parentSelector))
   }
 
-  *pathsBackWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
+  *pathsWidth(
+    direction: 'forward' | 'backward',
+    params?: PathTraversalParams<NodeAttrib, ArrowAttrib>,
+  ) {
+    let inOrOutArrows: keyof DirectedGraphNode<NodeAttrib, ArrowAttrib> =
+      direction === 'backward' ? 'incomingArrows' : 'outgoingArrows'
+    let startOrEnd: keyof Arrow<NodeAttrib, ArrowAttrib> =
+      direction === 'backward' ? 'start' : 'end'
+
     let activePaths = new Set<Array<Arrow<NodeAttrib, ArrowAttrib>>>()
-    for (let arrow of this.incomingArrows) {
+    for (let arrow of this[inOrOutArrows]) {
       let firstStep = [arrow]
       if (!params || !params.cutAndFilter || !params.cutAndFilter(firstStep)) {
         if (!params || !params.cutAndInclude || !params.cutAndInclude(firstStep)) {
@@ -95,7 +103,7 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
 
     while (activePaths.size) {
       for (let path of [...activePaths]) {
-        for (let newSegment of last(path).start.incomingArrows) {
+        for (let newSegment of last(path)[startOrEnd][inOrOutArrows]) {
           if (!path.includes(newSegment)) {  // no cycle
             let newPath = [...path, newSegment]
             if (!params || !params.cutAndFilter || !params.cutAndFilter(newPath)) {
@@ -111,7 +119,11 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     }
   }
 
-  pathsBackWidthMu(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
-    return mu(this.pathsBackWidth(params))
+  pathsForwardWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
+    return mu(this.pathsWidth('forward', params))
+  }
+
+  pathsBackWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
+    return mu(this.pathsWidth('backward', params))
   }
 }
