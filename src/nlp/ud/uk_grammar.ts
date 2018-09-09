@@ -1508,3 +1508,10 @@ export const PROMOTION_PRECEDENCE = [
   'obl',
   'advmod',
 ]
+
+export const ENHANCED_DEPENDENCIES = [
+  'ref',
+  'nsubj:xsubj',
+  'nsubj:rel',
+  'obj:rel',
+]

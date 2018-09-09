@@ -328,7 +328,7 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
       for (let dep of token.node.edeps) {
         let head = n2id[dep.headId]
         let dependant = n2id[token.node.id]
-        yield `R${rId++}\t-${dep.relation} Arg1:T${head} Arg2:T${dependant}`
+        yield `R${rId++}\t${dep.relation} Arg1:T${head} Arg2:T${dependant}`
       }
     }
   }
