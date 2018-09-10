@@ -11,7 +11,7 @@ import { firstMatch } from '../../string'
 import { serializeMiDocument } from '../utils'
 import { parseBratFile, BratArrow } from './utils'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
-import { HELPER_RELATIONS, ENHANCED_DEPENDENCIES } from './uk_grammar'
+import { HELPER_RELATIONS, isEnhanced } from './uk_grammar'
 import { Dict } from '../../types'
 
 import * as glob from 'glob'
@@ -77,7 +77,7 @@ function main() {
             .filter(x => isString(x.head.annotations.N))
           arrows.forEach(x => x.relation = x.relation.replace('_', ':'))
           let [basicArrows, enhancedArrows] = algo.clusterize(arrows,
-            x => ENHANCED_DEPENDENCIES.includes(x.relation), [[], []])
+            x => isEnhanced(x.relation), [[], []])
 
           basicArrows.sort(basicRelationsFirstCompare)
           el.setAttribute('dep', bratArrowsToAttribute(basicArrows))

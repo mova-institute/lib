@@ -875,6 +875,11 @@ export function isRelativeSpecificAcl(rel: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isEnhanced(dependency: string) {
+  return ENHANCED_DEPENDENCIES.includes(dependency)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export const ADVMOD_NONADVERBIAL_LEMMAS = [
   'не',
   'ні',
@@ -1511,6 +1516,7 @@ export const PROMOTION_PRECEDENCE = [
 
 export const ENHANCED_DEPENDENCIES = [
   'ref',
+  'nsubj:sp',
   'nsubj:xsubj',
   'nsubj:rel',
   'obj:rel',
