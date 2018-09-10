@@ -236,6 +236,6 @@
       true,
       "check-format",
       "ban-keywords"
-    ],
+    ]
   }
 }
