@@ -389,7 +389,8 @@ async function main() {
             && interp.isDative()
             && !node.children.some(x => uEq(x.node.rel, 'case'))
           ) {
-            token.rel = 'iobj'
+            // не хочеться вечеряти самій; треба було самому вибирати
+            // token.rel = 'iobj'
           }
 
           if (uEqSome(token.rel, ['det'])
