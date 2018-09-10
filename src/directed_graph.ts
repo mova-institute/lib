@@ -19,6 +19,13 @@ export interface Arrow<NodeAttrib, ArrowAttrib> {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export const enum DupePolicy {
+  insert,
+  ignore,
+  throw,
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
   readonly incomingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()
   readonly outgoingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()
@@ -44,34 +51,35 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return !!this.outgoingArrows.length
   }
 
-  addIncomingArrow(from: this, attrib: ArrowAttrib, throwOnSelfLoop = true, throwOnDuplicate = false) {
-    if (throwOnSelfLoop && from === this) {
+  addIncomingArrow(from: this, attrib: ArrowAttrib, dupePolicy = DupePolicy.throw, throwOnLoop = false) {
+    if (throwOnLoop && from === this) {
       throw new Error(`Trying to add a self-loop`)
     }
 
-    let arrow = {
+    let arrow: Arrow<NodeAttrib, ArrowAttrib> = {
       start: from,
       end: this,
       attrib,
     }
 
-    if (this.incomingArrows.some(x => shallowEqualObj(x, arrow))) {
-      if (throwOnDuplicate) {
-        throw new Error(`Trying to add a duplicate arrow`)
+    if (dupePolicy !== DupePolicy.insert) {
+      let dupe = this.incomingArrows.find(x => x.start === from && x.end === this && x.attrib === attrib)
+      if (dupe) {
+        if (dupePolicy === DupePolicy.throw) {
+          throw new Error(`Trying to add a duplicate arrow`)
+        }
+        return dupe
       }
-      // console.error(arrow)
-      return
     }
 
     this.incomingArrows.push(arrow)
     from.outgoingArrows.push(arrow)
 
-    return this
+    return arrow
   }
 
-  addOutgoingArrow(to: this, attrib: ArrowAttrib, throwOnSelfLoop = true, throwOnDuplicate = false) {
-    to.addIncomingArrow(this, attrib, throwOnSelfLoop, throwOnDuplicate)
-    return this
+  addOutgoingArrow(to: this, attrib: ArrowAttrib, dupePolicy = DupePolicy.throw, throwOnLoop = false) {
+    return to.addIncomingArrow(this, attrib, dupePolicy, throwOnLoop)
   }
 
   *walkBack(parentSelector: (arrow: Arrow<NodeAttrib, ArrowAttrib>) => any) {

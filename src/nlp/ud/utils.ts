@@ -123,13 +123,8 @@ export function sentence2conllu(
       }
     }
 
-    let edeps = sortby(token.edeps, x => x.headIndex)
-      .map(x => `${indices[x.headIndex]}:${x.relation}`)
-    let prevLen = edeps.length
-    edeps = sorteduniq(edeps)
-    if (edeps.length !== prevLen) {
-      // throw new Error(`edeps.length !== prevLen`)
-    }
+    let edeps = sortby(token.edeps, x => x.headIndex, x => x.relation)
+      .map(x => `${indices[x.headIndex] || 0}:${x.relation}`)
 
     lines.push([
       indices[i],

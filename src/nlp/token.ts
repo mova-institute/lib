@@ -3,7 +3,7 @@ import { keyvalue2attributesNormalized } from '../xml/utils'
 import { Dict } from '../types'
 import { CONJ_PROPAGATION_RELS } from './ud/uk_grammar'
 import { CoolSet } from '../data_structures/cool_set'
-import { stripSubrel, uEq } from './ud/utils'
+import { uEq } from './ud/utils'
 
 
 
@@ -274,15 +274,6 @@ export class Token {
 export function buildDep(head: Token, relation = head.rel): Dependency {
   return {
     relation,
-    headId: head.id,
-    headIndex: head.index,
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function buildEDep(head: Token, relation = head.rel): Dependency {
-  return {
-    relation: stripSubrel(relation),
     headId: head.id,
     headIndex: head.index,
   }

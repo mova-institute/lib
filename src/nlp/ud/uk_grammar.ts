@@ -747,7 +747,7 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
     for (let edep of t.edeps) {
       // remove non-exportable subrels
       if (!SUBRELS_TO_EXPORT.has(edep.relation)) {
-        edep.relation = stripSubrel(edep.relation)
+        // edep.relation = stripSubrel(edep.relation)
       }
     }
 

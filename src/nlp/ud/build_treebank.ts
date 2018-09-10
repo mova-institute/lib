@@ -98,7 +98,7 @@ function main() {
       let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
 
       if (!cliArgs.noEnhanced) {
-        generateEnhancedDeps2(nodes, corefClusterization)
+        generateEnhancedDeps2(nodes)
       }
 
       // count some stats
