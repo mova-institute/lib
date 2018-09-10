@@ -1,5 +1,5 @@
 import { mu } from './mu'
-import { last } from './lang'
+import { last, shallowEqualObj } from './lang'
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,9 +44,9 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return !!this.outgoingArrows.length
   }
 
-  addIncomingArrow(from: this, attrib: ArrowAttrib) {
-    if (from === this) {
-      throw new Error(`Self-loops are currently unsupported`)
+  addIncomingArrow(from: this, attrib: ArrowAttrib, throwOnSelfLoop = true, throwOnDuplicate = false) {
+    if (throwOnSelfLoop && from === this) {
+      throw new Error(`Trying to add a self-loop`)
     }
 
     let arrow = {
@@ -54,14 +54,23 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
       end: this,
       attrib,
     }
+
+    if (this.incomingArrows.some(x => shallowEqualObj(x, arrow))) {
+      if (throwOnDuplicate) {
+        throw new Error(`Trying to add a duplicate arrow`)
+      }
+      // console.error(arrow)
+      return
+    }
+
     this.incomingArrows.push(arrow)
     from.outgoingArrows.push(arrow)
 
     return this
   }
 
-  addOutgoingArrow(to: this, attrib: ArrowAttrib) {
-    to.addIncomingArrow(this, attrib)
+  addOutgoingArrow(to: this, attrib: ArrowAttrib, throwOnSelfLoop = true, throwOnDuplicate = false) {
+    to.addIncomingArrow(this, attrib, throwOnSelfLoop, throwOnDuplicate)
     return this
   }
 

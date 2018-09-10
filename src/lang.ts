@@ -6,7 +6,7 @@ import { Dict } from './types'
 export const r = String.raw
 
 ////////////////////////////////////////////////////////////////////////////////
-export function tuple<T extends any[]> (...data: T){
+export function tuple<T extends Array<any>>(...data: T) {
   return data
 }
 
@@ -291,7 +291,7 @@ export function shallowEqualArrays<T>(arrA: Array<T>, arrB: Array<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function shallowEquals(a, b) {
+export function shallowEqualObj(a: object, b: object) {
   if (a === b) {
     return true
   }
@@ -307,7 +307,7 @@ export function shallowEquals(a, b) {
   }
 
   for (let key in b) {
-    if (!(key in a) || a[key] !== b[key]) {
+    if (!(key in a)) {
       return false
     }
   }
