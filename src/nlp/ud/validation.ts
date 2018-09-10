@@ -2067,9 +2067,10 @@ export function validateSentenceSyntax(
     )
 
     reportIf(`advcl:sp без enhanced підмета`, t =>
-      // uEqSome(t.node.rel, ['xcomp'])
       t.node.rel === 'advcl:sp'
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
+      && t.ancestors0()
+        .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
     )
 
     reportIf(`сам не obl/det`, t =>
