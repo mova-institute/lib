@@ -2057,11 +2057,25 @@ export function validateSentenceSyntax(
         }))
     }
 
+    // todo: це — дірки
     reportIf(`xcomp без enhanced підмета`, t =>
-      uEqSome(t.node.rel, ['xcomp'])
+      // uEqSome(t.node.rel, ['xcomp'])
+      t.node.rel === 'xcomp'
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
       && t.ancestors0()
         .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
+    )
+
+    reportIf(`advcl:sp без enhanced підмета`, t =>
+      // uEqSome(t.node.rel, ['xcomp'])
+      t.node.rel === 'advcl:sp'
+      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
+    )
+
+    reportIf(`сам не obl/det`, t =>
+      t.node.interp.lemma === 'сам'
+      && !t.isRoot()
+      && !uEqSome(t.node.rel, ['obl', 'det'])
     )
 
     xreportIf(`flat має неочікувані залежники`, t =>
@@ -2100,7 +2114,7 @@ export function validateSentenceSyntax(
   // **********
 
   // ref не з :relpers
-  // Про те як часто чи згідно якої системи Поліція Думок смикає — не відносні — відносні без відносності
+  // Про те як часто чи згідно якої системи Поліція Думок смикає — не відносні — відносні без відносності
   // від міста Южноукраїнська , що в Миколаївській області — acl було з Южноукраїнська
   // acl:rel either have explicit rel or (що-SCONJ and are subject), if що is object, it's PRON
   // що SCONJ vs PRON
