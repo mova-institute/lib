@@ -18,6 +18,7 @@ export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos' | 'ud'
   morphOnly?: boolean
   // noBasic?: boolean
+  addIdToFeats?: boolean
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +65,10 @@ export function sentence2conllu(
     }
 
     let { pos, features } = toUd(token.interp)
+
+    if (options.addIdToFeats) {
+      features['Id'] = token.id
+    }
 
     let udFeatureStr = udFeatures2conlluString(features)
 

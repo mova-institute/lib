@@ -33,43 +33,41 @@ import { generateEnhancedDeps2, buildEnhancedGraphFromTokens } from './enhanced'
 
 
 //------------------------------------------------------------------------------
-interface Args {
-  dryRun: boolean
-  noEnhanced: boolean
-  noBasic: boolean
-  noStandartizing: boolean
-  includeIncomplete: boolean
-  oneSet: string
-
-  datasetSchema: string
-  datasetReroute: string  // --datasetReroute "->train test->train"
-  reportHoles: boolean
-  reportErrors: 'all' | 'complete' | 'none'
-  validOnly: boolean
-  morphonlyThreshold: string
-  xpos: any
-
-
-  id2bratPath: string
-
-  valencyDict: string
+interface CliArgs {
+  addIdToFeats: boolean
   addValency: boolean
+  datasetReroute: string  // --datasetReroute "->train test->train"
+  datasetSchema: string
+  dryRun: boolean
+  id2bratPath: string
+  includeIncomplete: boolean
+  morphonlyThreshold: string
+  noBasic: boolean
+  noEnhanced: boolean
+  noMorphonly: boolean
+  noStandartizing: boolean
+  oneSet: string
+  reportErrors: 'all' | 'complete' | 'none'
+  reportHoles: boolean
+  valencyDict: string
+  validOnly: boolean
+  xpos: any
 }
 
 //------------------------------------------------------------------------------
 function main() {
-  let args = getArgs()
+  let cliArgs = getArgs()
 
-  let [globStr, outDir] = args._
+  let [globStr, outDir] = cliArgs._
   let xmlPaths = glob.sync(globStr)
-  let id2bratPath: Dict<[string, number]> = args.id2bratPath ? parseJsonFileSync(args.id2bratPath) : {}
-
-  let rerouteMap = createDatasetRerouteMap(args.datasetReroute)
+  let id2bratPath: Dict<[string, number]> = cliArgs.id2bratPath ? parseJsonFileSync(cliArgs.id2bratPath) : {}
+  let morphonlyThreshold = cliArgs.noMorphonly ? 2 : Number.parseFloat(cliArgs.morphonlyThreshold)
+  let rerouteMap = createDatasetRerouteMap(cliArgs.datasetReroute)
   console.error(`Reroutes:`, rerouteMap)
 
   let analyzer = createMorphAnalyzerSync()
-  let valencyDict = args.valencyDict
-    ? createValencyDictFromKotsybaTsvs(args.valencyDict)
+  let valencyDict = cliArgs.valencyDict
+    ? createValencyDictFromKotsybaTsvs(cliArgs.valencyDict)
     : undefined
   let openedFiles = {} as any
   let setRegistry: Dict<DatasetDescriptor> = {}
@@ -88,7 +86,7 @@ function main() {
     console.error(`exporting ${basename}`)
 
     let root = parseXmlFileSync(xmlPath)
-    let docTokens = mu(mixml2tokenStream(root, args.datasetSchema))
+    let docTokens = mu(mixml2tokenStream(root, cliArgs.datasetSchema))
       .transform(x => x.interp && g.denormalizeInterp(x.interp))
       .toArray()
     let corefClusterization = buildCoreferenceClusters(docTokens)
@@ -99,7 +97,7 @@ function main() {
     ) {
       let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
 
-      if (!args.noEnhanced) {
+      if (!cliArgs.noEnhanced) {
         generateEnhancedDeps2(nodes, corefClusterization)
       }
 
@@ -115,7 +113,7 @@ function main() {
             }
           }
         }
-        if (args.addValency) {
+        if (cliArgs.addValency) {
           tokens.forEach(x => g.fillWithValencyFromDict(x.interp, valencyDict))
         }
       }
@@ -132,7 +130,7 @@ function main() {
       let curDocId = document.getAttribute('id')
       let curParId = paragraph.getAttribute('id')
 
-      dataset = args.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
+      dataset = cliArgs.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
       setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
       let curDataset = setRegistry[dataset]
       let opensDoc = curDataset.curDocId !== curDocId
@@ -160,7 +158,7 @@ function main() {
             tokens,
           })
           continue
-        } else if (!isComplete && args.reportHoles) {
+        } else if (!isComplete && cliArgs.reportHoles) {
           sentenseHoles.push({
             sentenceId,
             problems: [{
@@ -172,7 +170,7 @@ function main() {
         }
 
         let hasProblems = false
-        if (args.reportErrors === 'all' || args.reportErrors === 'complete' && isComplete || args.validOnly) {
+        if (cliArgs.reportErrors === 'all' || cliArgs.reportErrors === 'complete' && isComplete || cliArgs.validOnly) {
           let problems = validateSentenceSyntax(
             nodes,
             manualEnhancedNodes,
@@ -181,7 +179,7 @@ function main() {
             valencyDict
           )
           hasProblems = !!problems.length
-          if (hasProblems && args.reportErrors) {
+          if (hasProblems && cliArgs.reportErrors) {
             sentenseErrors.push({
               problems,
               sentenceId,
@@ -190,26 +188,27 @@ function main() {
           }
         }
 
-        if (args.dryRun) {
+        if (cliArgs.dryRun) {
           continue
         }
 
-        if (args.validOnly && hasProblems || hasMorphErrors) {
+        if (cliArgs.validOnly && hasProblems || hasMorphErrors) {
           curDataset.accountBlocked(numComplete, tokens.length)
         } else {
-          if (isComplete || args.includeIncomplete) {
+          if (isComplete || cliArgs.includeIncomplete) {
             let sentLevelInfoSynt = { ...sentLevelInfo }
             if (curDataset.followsAnnotationalGap) {
               sentLevelInfoSynt['annotation_gap'] = true
             }
             curDataset.accountExported(tokens.length)
-            if (!args.noStandartizing) {
+            if (!cliArgs.noStandartizing) {
               g.standartizeSentenceForUd23(nodes)
             }
-            let filename = set2filename(outDir, args.datasetSchema || 'mi', dataset)
+            let filename = set2filename(outDir, cliArgs.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
             let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, {
-              xpos: args.xpos,
+              xpos: cliArgs.xpos,
+              addIdToFeats: cliArgs.addIdToFeats,
               // noBasic: args.noBasic,
             })
             fs.writeSync(file, conlluedSentence + '\n\n')
@@ -219,7 +218,7 @@ function main() {
         }
       } else {
         curDataset.accountEmpty(tokens.length)
-        if (args.reportHoles && !skipReportingEmptyFromDocs.has(curDocId)) {
+        if (cliArgs.reportHoles && !skipReportingEmptyFromDocs.has(curDocId)) {
           sentenseHoles.push({
             sentenceId,
             problems: [{
@@ -231,23 +230,23 @@ function main() {
         }
       }
 
-      if (args.dryRun) {
+      if (cliArgs.dryRun) {
         continue
       }
 
       setRegistryMorpho[dataset] = setRegistryMorpho[dataset] || new DatasetDescriptor()
 
-      let morphonlyThreshold = Number.parseFloat(args.morphonlyThreshold)
       if (completionRatio >= morphonlyThreshold && !hasMorphErrors) {
         // standartizeMorpho(tokens)
-        if (!args.noStandartizing) {
+        if (!cliArgs.noStandartizing) {
           g.standartizeSentenceForUd23(nodes)
         }
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
         let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfo, {
           // morphOnly: true,
-          xpos: args.xpos,
+          xpos: cliArgs.xpos,
+          addIdToFeats: cliArgs.addIdToFeats,
         })
         fs.writeSync(file, conlluedSentence + '\n\n')
         setRegistryMorpho[dataset].accountExported(tokens.length)
@@ -506,16 +505,18 @@ class DatasetDescriptor {
 
 //------------------------------------------------------------------------------
 function getArgs() {
-  return minimist<Args>(process.argv.slice(2), {
+  return minimist<CliArgs>(process.argv.slice(2), {
     boolean: [
-      'noEnhanced',
-      'noBasic',
-      'noStandartizing',
-      'includeIncomplete',
-      'dryRun',
-      'reportHoles',
-      'onlyValid',
+      'addIdToFeats',
       'addValency',
+      'dryRun',
+      'includeIncomplete',
+      'noBasic',
+      'noEnhanced',
+      'noMorphonly',
+      'noStandartizing',
+      'onlyValid',
+      'reportHoles',
     ],
     alias: {
       oneSet: 'one-set',
