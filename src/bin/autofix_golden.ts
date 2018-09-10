@@ -735,7 +735,11 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
   stableSort(token.deps, (a, b) => Number(nodes[a.headIndex].node.isElided())
     - Number(nodes[b.headIndex].node.isElided()))
 
-  let config = tuple(tuple(mu(token.getAllDeps()).toArray(), 'dep'), tuple(token.edeps, 'edep'))
+  let config = tuple(
+    tuple(token.deps, 'dep'),
+    tuple(token.hdeps, 'hdep'),
+    tuple(token.edeps, 'edep')
+  )
   for (let [deps, attr] of config) {
     let dep = deps
       .map(x => `${x.headId}-${x.relation}`)

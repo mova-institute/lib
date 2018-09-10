@@ -5,7 +5,7 @@ import {
 import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
-import { r, makeObject, last } from '../lang'
+import { r, makeObject, last, tuple } from '../lang'
 import { uniqueSmall as unique, uniqueJson, arr2indexObj, rfind, clusterize } from '../algo'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
@@ -1121,14 +1121,16 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
       }
 
       if (name === 'w_') {
-        let depsStr = el.attribute('dep')
-        if (depsStr) {
-          clusterize(parseDepStr(depsStr), x => HELPER_RELATIONS.has(x.relation), [tok.deps, tok.helperDeps])
-        }
-
-        let edepsStr = el.attribute('edep')
-        if (edepsStr) {
-          tok.edeps = parseDepStr(edepsStr)
+        let config = tuple(
+          tuple('dep', tok.deps),
+          tuple('edep', tok.edeps),
+          tuple('hdep', tok.hdeps),
+        )
+        for (let [xmlAttr, tokenAttr] of config) {
+          let depsStr = el.attribute(xmlAttr)
+          if (depsStr) {
+            tokenAttr.push(...parseDepStr(depsStr))
+          }
         }
 
         let corefStr = el.attribute('coref')

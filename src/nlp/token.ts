@@ -80,9 +80,8 @@ export class Token {
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
   edeps = new Array<Dependency>()
-  helperDeps = new Array<Dependency>()
+  hdeps = new Array<Dependency>()
   corefs = new Array<Coreference>()
-  // corefs2 = new Array<Coreference>()
   tags = new CoolSet<TokenTag>()
   index: number
 
@@ -225,11 +224,6 @@ export class Token {
 
   set comment(comment: string) {
     this.attributes.comment = comment
-  }
-
-  *getAllDeps() {
-    yield* this.deps
-    yield* this.helperDeps
   }
 
   hasDeps() {

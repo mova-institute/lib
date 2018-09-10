@@ -875,8 +875,28 @@ export function isRelativeSpecificAcl(rel: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isEnhanced(dependency: string) {
-  return ENHANCED_DEPENDENCIES.includes(dependency)
+export function isEnhanced(relation: string) {
+  return ENHANCED_RELATIONS.includes(relation)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isHelper(relation: string) {
+  return HELPER_RELATIONS.has(relation)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export const enum DependencyType { basic, enhanced, helper }
+
+////////////////////////////////////////////////////////////////////////////////
+export function classifyRelation(relation: string) {
+  if (isEnhanced(relation)) {
+    return DependencyType.enhanced
+  }
+  if (isHelper(relation)) {
+    return DependencyType.helper
+  }
+
+  return DependencyType.basic
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1514,7 +1534,7 @@ export const PROMOTION_PRECEDENCE = [
   'advmod',
 ]
 
-export const ENHANCED_DEPENDENCIES = [
+export const ENHANCED_RELATIONS = [
   'ref',
   'nsubj:sp',
   'nsubj:xsubj',

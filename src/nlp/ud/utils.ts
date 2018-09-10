@@ -242,7 +242,7 @@ function isAmbigCoordModifier(node: GraphNode<Token>) {
     && !(uEq(node.node.rel, 'discourse') && (node.node.interp.isConsequential()
       || node.node.interp.lemma === 'тощо')
     )
-    && !node.node.helperDeps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
+    && !node.node.hdeps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
 }
 
 //------------------------------------------------------------------------------
@@ -325,15 +325,12 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
   let rId = 1
   for (let sentence of sentences) {
     for (let token of sentence) {
-      for (let dep of token.node.getAllDeps()) {
-        let head = n2id[dep.headId]
-        let dependant = n2id[token.node.id]
-        yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
-      }
-      for (let dep of token.node.edeps) {
-        let head = n2id[dep.headId]
-        let dependant = n2id[token.node.id]
-        yield `R${rId++}\t${dep.relation} Arg1:T${head} Arg2:T${dependant}`
+      for (let deps of [token.node.deps, token.node.edeps, token.node.hdeps]) {
+        for (let dep of deps) {
+          let head = n2id[dep.headId]
+          let dependant = n2id[token.node.id]
+          yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
+        }
       }
     }
   }

@@ -5,13 +5,13 @@ import * as path from 'path'
 import * as algo from '../../algo'
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { linesSync, writeTojsonFile } from '../../utils.node'
-import { isString } from '../../lang'
+import { isString, tuple } from '../../lang'
 import { trimExtension } from '../../string'
 import { firstMatch } from '../../string'
 import { serializeMiDocument } from '../utils'
 import { parseBratFile, BratArrow } from './utils'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
-import { HELPER_RELATIONS, isEnhanced } from './uk_grammar'
+import { HELPER_RELATIONS, classifyRelation } from './uk_grammar'
 import { Dict } from '../../types'
 
 import * as glob from 'glob'
@@ -76,14 +76,17 @@ function main() {
           let arrows = span.arrows
             .filter(x => isString(x.head.annotations.N))
           arrows.forEach(x => x.relation = x.relation.replace('_', ':'))
-          let [basicArrows, enhancedArrows] = algo.clusterize(arrows,
-            x => isEnhanced(x.relation), [[], []])
+          let [basicArrows, enhancedArrows, helperArrows] = algo.clusterize(arrows,
+            x => classifyRelation(x.relation), [[], [], []])
 
-          basicArrows.sort(basicRelationsFirstCompare)
-          el.setAttribute('dep', bratArrowsToAttribute(basicArrows))
-
-          // enhancedArrows.forEach(x => x.relation = x.relation.substr(1))
-          el.setAttribute('edep', bratArrowsToAttribute(enhancedArrows))
+          let config = tuple(
+            tuple(basicArrows, 'dep'),
+            tuple(enhancedArrows, 'edep'),
+            tuple(helperArrows, 'hdep'),
+          )
+          for (let [specificArrows, attribute] of config) {
+            el.setAttribute(attribute, bratArrowsToAttribute(specificArrows))
+          }
 
           id2bratPath[span.annotations.N] = [
             trimExtension(path.relative(bratFilesRoot, bratFile)),
