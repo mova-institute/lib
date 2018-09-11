@@ -32,7 +32,7 @@ import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
 import { uniq } from 'lodash'
-import { stableSort } from '../algo'
+import { clusterize } from '../algo'
 import { tuple } from '../lang'
 
 
@@ -732,8 +732,16 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)
-  stableSort(token.deps, (a, b) => Number(nodes[a.headIndex].node.isElided())
-    - Number(nodes[b.headIndex].node.isElided()))
+
+  {
+    let [deps, edeps] = clusterize(
+      token.deps,
+      t => g.isEnhanced(t.relation) || nodes[t.headIndex].node.isElided(),
+      [[], []]
+    )
+    token.deps = deps
+    token.edeps.push(...edeps)
+  }
 
   let config = tuple(
     tuple(token.deps, 'dep'),
@@ -741,8 +749,8 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
     tuple(token.edeps, 'edep')
   )
   for (let [deps, attr] of config) {
-    let dep = deps
-      .map(x => `${x.headId}-${x.relation}`)
+    let dep = uniq(deps.map(x => `${x.headId}-${x.relation}`))
+      .sort()
       .join('|')
     if (dep) {
       element.setAttribute(attr, dep)
