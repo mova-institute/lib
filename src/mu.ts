@@ -164,7 +164,7 @@ export class Mu<T> implements Iterable<T> {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
-        if (!fn) {
+        if (!fn(x)) {
           return
         }
         yield x
@@ -177,7 +177,7 @@ export class Mu<T> implements Iterable<T> {
     return mu((function* () {
       for (let x of thiss) {
         yield x
-        if (!fn) {
+        if (!fn(x)) {
           return
         }
       }
