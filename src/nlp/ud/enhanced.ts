@@ -1,7 +1,7 @@
 import { Token } from '../token'
 import { uEq, uEqSome } from './utils'
 import {
-  TokenNode, findRelationAnalog, SUBJECTS, isPromoted, EnhancedNode,
+  TokenNode, SUBJECTS, isPromoted, EnhancedNode,
   EnhancedArrow,
 } from './uk_grammar'
 import { DirectedGraphNode, DupePolicy } from '../../directed_graph'
@@ -26,15 +26,16 @@ import { last } from '../../lang'
 //
 // Плакати й стрічки , що повишивали дівчата
 // todo: propagate obj повишивали > стрічки
-// треба двічі propagateConjuncts?
+// todo: треба двічі propagateConjuncts?
 //
-// does ref conj-propagate?
+// todo: does ref conj-propagate?
 // todo: adv?
 // todo: check deep backward
 // todo: test _men and women that we loved and hated_
 // todo: Автор заслуговує високої нагороди за **те** , що зрозумів
 // todo: а читала все, що запорву — не nsubj у все
 // todo: parataxis:rel
+// todo: findRelationAnalog
 //
 ////////////////////////////////////////////////////////////////////////////////
 export function generateEnhancedDeps2(
@@ -42,10 +43,11 @@ export function generateEnhancedDeps2(
 ) {
   let enhancedNodes = buildEnhancedTree(basicNodes)
   connectEphemeralRoot(enhancedNodes)  // to conj-propagate root
-  loadEnhancedGraphFromTokens(enhancedNodes)  // include manual enhanced annotation
+  loadEnhancedGraphFromTokens(enhancedNodes)  // read manual enhanced annotation
   propagateConjuncts(enhancedNodes)
   addCoreferenceForPersonalRelcl(enhancedNodes)
   addCoreferenceForClassicalRelcl(enhancedNodes)
+  // (relcls without a Rel only have `ref` (annotated manually))
   // propagateConjuncts(enhancedNodes, true)  // propagate what we just generated
 
   saveEnhancedGraphToTokens(enhancedNodes, true)

@@ -416,13 +416,12 @@ export function validateSentenceSyntax(
 
   oldReportIf(`токен позначено error’ом`, t => t.hasTag('error'))
 
-  reportIf('більше однієї стрілки в слово',
+  reportIf('більше однієї стрілки в токен',
     t => mu(t.node.deps)
       .filter(x => !uEq(x.relation, 'punct')
         && !g.HELPER_RELATIONS.has(x.relation)
         && !tokens[x.headIndex].isElided()  // todo
-      )
-      .longerThan(1))
+      ).count() > 1)
 
   g.RIGHT_POINTED_RELATIONS.forEach(rel => reportIf2(`${rel} ліворуч`,
     ({ r, t }) => uEq(r, rel) && t.headIndex > t.index))
@@ -1985,7 +1984,7 @@ export function validateSentenceSyntax(
 
     reportIf(`:relfull без Rel`, t =>
       t.node.rel === 'acl:relfull'
-      && nodes.some(x => g.findRelativeClauseRoot(x) === t)
+      && !nodes.some(x => g.findRelativeClauseRoot(x) === t)
     )
 
     xreportIf(`особовий в :irrel з _що_`, t =>
@@ -2063,6 +2062,24 @@ export function validateSentenceSyntax(
       t.node.rel === 'xcomp'
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
       && t.ancestors0()
+        .takeWhile(x => !uEqSome(x.node.rel, ['amod'])
+          && !x.node.interp.isConverb()
+          && !g.isRelativeSpecificAcl(x.node.rel)
+          && !uEqSome(x.node.rel, g.CLAUSE_RELS)
+        )
+        .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
+    )
+
+    reportIf(`xcomp:sp без enhanced підмета`, t =>
+      // uEqSome(t.node.rel, ['xcomp'])
+      t.node.rel === 'xcomp:sp'
+      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
+      && t.ancestors0()
+        .takeWhile(x => !uEqSome(x.node.rel, ['amod'])
+          && !x.node.interp.isConverb()
+          && !g.isRelativeSpecificAcl(x.node.rel)
+          && !uEqSome(x.node.rel, g.CLAUSE_RELS)
+        )
         .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
     )
 
@@ -2114,6 +2131,14 @@ export function validateSentenceSyntax(
 
   // **********
 
+  // `obl` в `Acc`: _зробив раз_ і навпаки `(Acc !>case _) <obl _`
+  // вживання _тому_
+  // щоб не навішували на батьків `xcomp`’ів й `csubj`’ів зайвого
+  // enforce тип і бік розділових
+  // `X` не `:foreign`
+  // проставити `:prop` для UD щоб виконати `PROPN`?
+  // проглянути `obl`’и без прийменників на можливі прямі додатки
+  // 1. проглянути `obj`’і в не знахідному і `iobj`’і в не давальному на можливі `obl`’и
   // no orphans in enhanced
   // ref не з :relpers
   // Про те як часто чи згідно якої системи Поліція Думок смикає — не відносні — відносні без відносності
