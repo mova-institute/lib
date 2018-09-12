@@ -239,12 +239,6 @@ export function findClauseRoot(node: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function findClauseRoot2(node: EnhancedNode) {
-  // return node.walkBack
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
 export function findRelativeClauseRoot(relative: TokenNode) {
   if (!relative.node.interp.isRelative()) {
     return
@@ -266,24 +260,6 @@ export function findRelativeClauseRoot(relative: TokenNode) {
     return clauseRoot
   }
 }
-
-
-////////////////////////////////////////////////////////////////////////////////
-// export function findShchojijiAntecedentEnh(node: EnhancedNode) {
-//   if (!node.node.interp.isPersonal() || !node.node.interp.isNounish()) {
-//     return
-//   }
-//   let clauseRoot = findRelativeClauseRoot(node)
-//   if (!clauseRoot) {
-//     return
-//   }
-//   if (clauseRoot.parent
-//     && clauseRoot.children.some(x => x.node.interp.lemma === 'що' && uEq(x.node.rel, 'mark'))
-//     && clauseRoot.parent.node.interp.equalsByFeatures(node.node.interp, [f.MorphNumber, f.Gender])
-//   ) {
-//     return clauseRoot.parent
-//   }
-// }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function findShchojijiAntecedent(node: TokenNode) {
@@ -1536,8 +1512,12 @@ export const PROMOTION_PRECEDENCE = [
 
 export const ENHANCED_RELATIONS = [
   'ref',
-  'nsubj:sp',
-  'nsubj:xsubj',
+
   'nsubj:rel',
   'obj:rel',
+
+  'nsubj:x',
+  'csubj:x',
+  'nsubj:xsp',
+  'csubj:xsp',
 ]

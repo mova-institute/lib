@@ -1,6 +1,6 @@
 import { isOddball, isNumber, last } from './lang'
 import { HashSet } from './data_structures'  // todo remove dep
-import { Dict, Predicate } from './types'
+import { Dict, Predicate, Comparator } from './types'
 
 
 
@@ -60,8 +60,12 @@ export function indexComparator<T>(array: Array<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function stableSort<T>(array: Array<T>, comparator: (a: T, b: T) => number = lexCompare) {
-  let stableComparator = chainComparators(comparator, indexComparator(array))
+export function stableSort<T>(
+  array: Array<T>,
+  comparator = lexCompare,
+  ...comparators: Array<Comparator<T>>
+) {
+  let stableComparator = chainComparators(comparator, ...comparators, indexComparator(array))
   return array.sort(stableComparator)
 }
 
