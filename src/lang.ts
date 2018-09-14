@@ -243,7 +243,7 @@ export function parseIntStrict(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function wiith<T>(value: T, f: (value: T) => any) {
+export function wiith<TValue, TRet>(value: TValue, f: (value: TValue) => TRet) {
   return f(value)
 }
 

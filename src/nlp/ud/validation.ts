@@ -998,7 +998,7 @@ export function validateSentenceSyntax(
     t => t.node.interp.lemma === 'то'
       && t.parent
       && uEqSome(t.parent.node.rel, g.SUBORDINATE_CLAUSES)
-      && !t.node.interp.isNominative()
+      && !t.node.interp.isNoun()
   )
 
   reportIf(`заперечення під’єднане не до cop/aux`,
@@ -1364,7 +1364,7 @@ export function validateSentenceSyntax(
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  xreportIf(`означення при займеннику`,
+  reportIf(`означення при займеннику`,
     t => uEqSome(t.node.rel, ['amod', 'det'])
       && t.parent.node.interp.isNoun()
       && t.parent.node.interp.isPronominal()
@@ -2035,6 +2035,7 @@ export function validateSentenceSyntax(
 
     reportIf(`відносний в нерозрізненому acl’і`, t =>
       t.node.interp.isRelative()
+      && !t.node.interp.isAdverb()
       && wiith(g.findRelativeClauseRoot(t), relclRoot =>
         relclRoot && relclRoot.node.rel === 'acl'
       )
@@ -2096,6 +2097,10 @@ export function validateSentenceSyntax(
       && !uEqSome(t.node.rel, ['obl', 'det'])
     )
 
+    reportIf(`емфатичний займенник (забули розбити?)`, t =>
+      t.node.interp.isEmphatic()
+    )
+
     xreportIf(`flat має неочікувані залежники`, t =>
       t.parent
       && !t.parent.node.isGraft
@@ -2131,6 +2136,8 @@ export function validateSentenceSyntax(
 
   // **********
 
+  // узгодження з рефом
+  // acl з відносним замість питального
   // `obl` в `Acc`: _зробив раз_ і навпаки `(Acc !>case _) <obl _`
   // вживання _тому_
   // щоб не навішували на батьків `xcomp`’ів й `csubj`’ів зайвого

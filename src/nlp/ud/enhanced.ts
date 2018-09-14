@@ -36,6 +36,7 @@ import { last } from '../../lang'
 // todo: а читала все, що запорву — не nsubj у все
 // todo: parataxis:rel
 // todo: findRelationAnalog
+// todo: Недарма казали в народі : " Не той козак , хто переміг , а той , хто викрутився
 //
 ////////////////////////////////////////////////////////////////////////////////
 export function generateEnhancedDeps2(
@@ -69,11 +70,11 @@ function addCoreferenceForClassicalRelcl(enhancedNodes: Array<EnhancedNode>) {
       if (uEq(arrow.attrib, 'acl:relfull')) {
         let relclArrow = arrow
 
-        if (arrow.end.node.interp.isRelative()) {
+        if (relclArrow.end.node.interp.isRelative()) {
           let refArrow = relclArrow.start.addOutgoingArrow(relclArrow.end, 'ref', DupePolicy.throw, true)
           addFromNominalRelclHeadBackToAntecedent(refArrow)
         } else {
-          let arrowsIntoRelative = arrow.end.pathsForwardWidth({
+          let arrowsIntoRelative = relclArrow.end.pathsForwardWidth({
             // cutAndFilter: path => uEqSome(last(path).attrib, CLAUSE_RELS),
             // cutAndInclude: path => uEqSome(last(path).attrib, ['acl']),
           })

@@ -576,6 +576,16 @@ async function main() {
             TRANSFORMS[args.transform](node)
           }
 
+          // if (node.node.interp.isRelative()
+          //   && !node.node.interp.isAdverb()
+          //   && !['3aan', '3amx', '3anj', '2yar', '14gz', '38w6'].includes(token.id)
+          // ) {
+          //   let relclRoot = g.findRelativeClauseRoot(node)
+          //   if (relclRoot) {
+          //     relclRoot.node.rel = 'acl:relfull'
+          //   }
+          // }
+
           // цікавий вивід
           // if (uEqSome(token.rel, ['acl', 'advmod'])
           //   && token.rel !== 'advmod:amtgov'

@@ -386,9 +386,8 @@ function mapFeatureValue2ud(featureName, value) {
 export function toUd(interp: MorphInterp) {
   interp.denormalize()  // todo: remove
 
-  // throw on not supported
   if (interp.isEmphatic()) {
-    // throw new Error(`Emphatic pronoun conversion is not implemented`)
+    throw new Error(`Emphatic pronouns are to be split to multitokens`)
   }
 
   let pos: UdPos

@@ -29,6 +29,7 @@ import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factorie
 import { buildCoreferenceClusters } from '../coreference'
 import { intbool } from '../../lang'
 import { generateEnhancedDeps2, buildEnhancedGraphFromTokens } from './enhanced'
+import { TrebankStatister } from './trebank_statister';
 
 
 
@@ -78,6 +79,7 @@ function main() {
   let numVerbsCoveredByValencyDict = 0
   let numVerbsTotal = 0
   let verbsUncoveredByValencyDict = new Set<string>()
+  let statister = new TrebankStatister()
 
   mkdirp.sync(outDir)
   for (let xmlPath of xmlPaths) {
@@ -200,6 +202,7 @@ function main() {
             if (curDataset.followsAnnotationalGap) {
               sentLevelInfoSynt['annotation_gap'] = true
             }
+            // statister.feedSentence(nodes)
             curDataset.accountExported(tokens.length)
             if (!cliArgs.noStandartizing) {
               g.standartizeSentenceForUd23(nodes)
@@ -264,6 +267,8 @@ function main() {
   console.error(`\n${numVerbsCoveredByValencyDict}/${numVerbsTotal} (${valencyCoverage}%) verb hits covered by valency dict`)
   console.error(`Uncovered are ${verbsUncoveredByValencyDict.size} lemmas`)
   // console.error(mu(verbsUncoveredByValencyDict).toArray().sort(ukComparator).join('\n'))
+
+  // console.dir(statister.produceStats())
 
   console.error()
 }
