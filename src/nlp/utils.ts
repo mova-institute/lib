@@ -23,14 +23,12 @@ import { Token, TokenTag, Structure, CoreferenceType } from './token'
 import { interp2udVertFeatures, mergeAmbiguityFeaturewise } from './ud/utils'
 import { keyvalue2attributesNormalized } from './noske'
 import { XmlFormatter } from '../xml/xml_formatter'
-
-import * as uniq from 'lodash.uniq'
-import * as sortedUniq from 'lodash.sorteduniq'
 import { GraphNode } from '../graph'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { AbstractDocument } from '../xml/xmlapi/abstract_document'
-import { HELPER_RELATIONS } from './ud/uk_grammar'
 
+import uniq = require('lodash.uniq')
+import sortedUniq = require('lodash.sorteduniq')
 
 
 ////////////////////////////////////////////////////////////////////////////////
