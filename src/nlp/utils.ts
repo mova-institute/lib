@@ -1251,8 +1251,24 @@ export interface MultitokenDescriptor {
   startIndex: number
   spanLength: number
 }
+
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenStream2sentences(stream: Iterable<Token>) {
+export function* initIndexes(sentences: ReturnType<typeof tokenStream2sentencesRaw>) {
+  for (let sentence of sentences) {
+    initLocalHeadIndexes(sentence.tokens, sentence.sentenceId)
+    yield {
+      ...sentence,
+      nodes: sentenceArray2treeNodes(sentence.tokens)
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function tokenStream2sentences(stream: Iterable<Token>) {
+  return initIndexes(tokenStream2sentencesRaw(stream))
+}
+////////////////////////////////////////////////////////////////////////////////
+export function* tokenStream2sentencesRaw(stream: Iterable<Token>) {
   let buf = new Array<Token>()
   let multitokens = new Array<MultitokenDescriptor>()
   let curDoc: Token
@@ -1266,13 +1282,10 @@ export function* tokenStream2sentences(stream: Iterable<Token>) {
   let skip = false  // todo: gap
 
   const makeYield = () => {
-    initLocalHeadIndexes(buf, sentenceId)
-    let nodes = sentenceArray2treeNodes(buf)
     let ret = {
       sentenceId,
       tokens: buf,
       multitokens,
-      nodes,
       dataset,
       document: curDoc,
       paragraph: curPar,

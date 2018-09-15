@@ -3,9 +3,12 @@ import { uEq, uEqSome } from './utils'
 import {
   TokenNode, SUBJECTS, isPromoted, EnhancedNode,
   EnhancedArrow,
+  CLAUSAL_MODIFIERS,
+  CLAUSAL_TO_PLAIN,
 } from './uk_grammar'
 import { DirectedGraphNode, DupePolicy } from '../../directed_graph'
 import { last } from '../../lang'
+import { UdPos, toUd } from './tagset'
 
 
 
@@ -128,8 +131,17 @@ function addFromRelclBackToAntecedent(refArrow: EnhancedArrow) {
     .filter(x => x !== refArrow && !uEqSome(x.attrib, ['conj', 'ref']))
     // todo: predict rel
     .forEach(incomingArrow =>
-      incomingArrow.start.addOutgoingArrow(refArrow.start, `${incomingArrow.attrib}:rel`, DupePolicy.ignore, true)
+      incomingArrow.start.addOutgoingArrow(refArrow.start, relativizeRel(incomingArrow.attrib),
+        DupePolicy.ignore, true)
     )
+}
+
+//------------------------------------------------------------------------------
+function relativizeRel(relation: string) {
+  if (relation.includes(':')) {  // todo
+    return relation
+  }
+  return `${relation}:rel`
 }
 
 //------------------------------------------------------------------------------
@@ -168,15 +180,101 @@ function propagateConjuncts(enhancedTree: Array<EnhancedNode>, dupesExpected = f
     let topConj = node.walkBackMu(({ attrib: rel }) => uEq(rel, 'conj'))
       .map(x => x.start)
       .last()
-    if (topConj && topConj.hasIncoming()) {
-      // wrong, redo
-      // let newRel = findRelationAnalog(basicNodes[i], basicNodes[conjHead.start.node.index])
-      let newRel = topConj.incomingArrows[0].attrib
+    if (topConj) {
       topConj.incomingArrows
         .filter(x => !uEqSome(x.attrib, ['parataxis']))
-        .forEach(x => node.addIncomingArrow(x.start, newRel, dupePolicy, !dupesExpected))
+        .forEach(x => node.addIncomingArrow(
+          x.start,
+          findRelationAnalog(x, x.start, node),  // todo
+          dupePolicy,
+          !dupesExpected)
+        )
     }
   }
+}
+
+//------------------------------------------------------------------------------
+function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode, newDependent: EnhancedNode) {
+  let existingRel = existingArrow.attrib
+  let existingDependent = existingArrow.start
+  let { pos: newDepPos } = toUd(newDependent.node.interp)
+  let { pos: existingDepPos } = toUd(existingArrow.end.node.interp)
+  newDepPos = dumbDownUdPos(newDepPos)
+  existingDepPos = dumbDownUdPos(existingDepPos)
+
+  if (newDependent.node.interp.isX()) {
+    // what else can we do?..
+    return existingRel
+  }
+
+  if (uEqSome(existingRel, [
+    'cop',
+    'aux',
+    'mark',
+    'case',
+    'dep',
+    'cc',
+    'vocative',
+    'xcomp',  // ~
+    'appos',  // ~
+  ])) {
+    return existingRel
+  }
+
+  if (uEq(existingRel, 'obl') && newDependent.node.interp.isAdverb()) {
+    // todo: виколоти і т.д.
+    return 'advmod'
+  }
+  if (uEq(existingRel, 'advmod') && newDependent.node.interp.isNounish()) {
+    // todo: то там, то сям, то те, то се; скрізь і всім допомагати
+    return 'obl'
+  }
+  if (uEq(existingRel, 'amod') && newDepPos === 'DET') {
+    return 'det'
+  }
+  if (uEq(existingRel, 'det') && newDepPos === 'ADJ') {
+    return 'amod'
+  }
+  if (uEqSome(existingRel, ['amod', 'det']) && newDependent.node.interp.isNounish()) {
+    return 'nmod'
+  }
+
+  // if (uEqSome(existingRel, CLAUSAL_MODIFIERS) && definitelyIsPredicate(newDependent)) {
+  //   return existingRel
+  // }
+
+  if (uEq(existingRel, 'advcl')
+    && existingDependent.node.interp.isConverb()
+    && newDependent.node.interp.isAdjective()
+  ) {
+    return 'advcl:sp'
+  }
+
+  // for (let [clausal, plain] of CLAUSAL_TO_PLAIN) {
+  //   if (uEq(existingRel, clausal)
+  //     && !definitelyIsPredicate(newDependent)
+  //     && !newDependent.node.interp.isVerbial()
+  //   ) {
+  //     // return plain
+  //   }
+  //   if (uEq(existingRel, plain) && definitelyIsPredicate(newDependent)) {
+  //     // return clausal
+  //   }
+  // }
+
+  if (newDepPos === existingDepPos) {
+    return existingRel  // risky
+  }
+
+  return existingRel  // last resort
+}
+
+//------------------------------------------------------------------------------
+function dumbDownUdPos(upos: UdPos) {
+  if (upos === 'PROPN' || upos === 'PRON') {
+    return 'NOUN'
+  }
+  return upos
 }
 
 ////////////////////////////////////////////////////////////////////////////////

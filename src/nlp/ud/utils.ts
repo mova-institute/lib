@@ -91,6 +91,7 @@ export function sentence2conllu(
     }
     if (options.translit) {
       misc.push(`Translit=${cyrToJirechekish(token.getForm())}`)
+      misc.push(`LTranslit=${cyrToJirechekish(token.interp.lemma)}`)
     }
 
     // conj propagation
@@ -143,7 +144,8 @@ export function sentence2conllu(
       head || '_',
       deprel || '_',
       edeps.join('|') || '_',
-      misc.sort().join('|') || '_',
+      misc.filter(x => !x.includes('|')).sort().join('|') || '_',
+      // ↑ see https://github.com/UniversalDependencies/docs/issues/569#issuecomment-421630560
     ].join('\t'))
   }
 

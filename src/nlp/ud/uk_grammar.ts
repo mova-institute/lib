@@ -193,12 +193,6 @@ export function findRelationAnalog(newDependent: TokenNode, existingDependent: T
   // todo: хто і як слухатиме його
 }
 
-const CLAUSAL_TO_PLAIN = new Map([
-  ['csubj', 'nsubj'],
-  ['ccomp', 'obj'],
-  ['advcl', 'adv'],
-])
-
 //------------------------------------------------------------------------------
 function definitelyIsPredicate(node: TokenNode) {
   return hasChild(node, 'nsubj')
@@ -692,24 +686,6 @@ export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNod
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const SUBRELS_TO_EXPORT = new Set([
-  'admod:amntgov',
-  'advcl:sp',
-  'advcl:svc',
-  'ccomp:svc',
-  'compound:svc',
-  'conj:svc',
-  'det:numgov',
-  'det:nummod',
-  'flat:foreign',
-  'flat:name',
-  'flat:repeat',
-  'flat:title',
-  'nummod:gov',
-  'parataxis:discourse',
-  'parataxis:newsent',
-  'xcomp:sp',
-])
 export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
   let lastToken = last(sentence).node
   let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
@@ -722,8 +698,8 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
 
     for (let edep of t.edeps) {
       // remove non-exportable subrels
-      if (!SUBRELS_TO_EXPORT.has(edep.relation)) {
-        // edep.relation = stripSubrel(edep.relation)
+      if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
+        edep.relation = stripSubrel(edep.relation)
       }
     }
 
@@ -744,8 +720,12 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
       t.rel = 'obj'
     }
 
+    if (isRelativeSpecificAcl(t.rel)) {
+      t.rel = 'acl:relcl'
+    }
+
     // remove non-exportable subrels
-    if (t.rel && !SUBRELS_TO_EXPORT.has(t.rel)) {
+    if (t.rel && !UD_23_OFFICIAL_SUBRELS.has(t.rel)) {
       t.rel = stripSubrel(t.rel)
     }
 
@@ -1297,6 +1277,13 @@ export const POSES_NEVER_ROOT: Array<UdPos> = [
   'PUNCT',
 ]
 
+////////////////////////////////////////////////////////////////////////////////
+export const CLAUSAL_TO_PLAIN = new Map([
+  ['csubj', 'nsubj'],
+  ['ccomp', 'obj'],
+  ['advcl', 'adv'],
+])
+
 export const CURRENCY_SYMBOLS = [
   '₴',
   '$',
@@ -1513,11 +1500,46 @@ export const PROMOTION_PRECEDENCE = [
 export const ENHANCED_RELATIONS = [
   'ref',
 
+  'iobj:rel',
   'nsubj:rel',
   'obj:rel',
+  'obl:rel',
 
   'nsubj:x',
   'csubj:x',
+
   'nsubj:xsp',
   'csubj:xsp',
 ]
+
+//------------------------------------------------------------------------------
+const UD_23_OFFICIAL_SUBRELS = new Set([
+  'acl:adv',
+  'acl:relcl',
+  'admod:amntgov',
+  'advcl:sp',
+  'advcl:svc',
+  // 'advmod:amtgov',
+  'ccomp:svc',
+  'compound:svc',
+  'conj:svc',
+  'det:numgov',
+  'det:nummod',
+  'flat:foreign',
+  'flat:name',
+  'flat:pack',
+  'flat:range',
+  'flat:rcp',
+  'flat:repeat',
+  'flat:title',
+  'nummod:gov',
+  'parataxis:discourse',
+  'parataxis:newsent',
+  'xcomp:sp',
+])
+
+//------------------------------------------------------------------------------
+const UD_23_OFFICIAL_SUBRELS_ENHANCED = new Set([
+  ...UD_23_OFFICIAL_SUBRELS,
+  ...ENHANCED_RELATIONS.filter(x => x.includes(':'))
+])

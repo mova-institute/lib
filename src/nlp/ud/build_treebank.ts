@@ -13,7 +13,7 @@ import * as g from './uk_grammar'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { escape } from '../../xml/utils'
-import { mixml2tokenStream, tokenStream2sentences } from '../utils'
+import { mixml2tokenStream, tokenStream2sentencesRaw, initIndexes } from '../utils'
 import * as algo from '../../algo'
 import { parseJsonFileSync } from '../../utils.node'
 import { Dict } from '../../types'
@@ -46,6 +46,8 @@ interface CliArgs {
   noBasic: boolean
   noEnhanced: boolean
   noMorphonly: boolean
+  noTranslit: boolean
+  // noElided: boolean
   noStandartizing: boolean
   oneSet: string
   reportErrors: 'all' | 'complete' | 'none'
@@ -92,14 +94,17 @@ function main() {
       .transform(x => x.interp && g.denormalizeInterp(x.interp))
       .toArray()
     let corefClusterization = buildCoreferenceClusters(docTokens)
-    let sentenceStream = tokenStream2sentences(docTokens)
+    let sentenceStreamRaw = tokenStream2sentencesRaw(docTokens)
+    let sentenceStream = initIndexes(sentenceStreamRaw)
 
-    for (let { tokens, multitokens, nodes,
-      sentenceId, dataset, document, paragraph, } of sentenceStream
-    ) {
+    for (let sentence of sentenceStream) {
+      let { tokens, multitokens, nodes, sentenceId, dataset, document, paragraph, } = sentence
+
       let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
 
-      if (!cliArgs.noEnhanced) {
+      if (cliArgs.noEnhanced) {
+        tokens.forEach(x => x.edeps = [])
+      } else {
         generateEnhancedDeps2(nodes)
       }
 
@@ -212,7 +217,7 @@ function main() {
             let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, {
               xpos: cliArgs.xpos,
               addIdToFeats: cliArgs.addIdToFeats,
-              translit: true,
+              translit: !cliArgs.noTranslit,
               // noBasic: args.noBasic,
             })
             fs.writeSync(file, conlluedSentence + '\n\n')
@@ -510,6 +515,14 @@ class DatasetDescriptor {
 }
 
 //------------------------------------------------------------------------------
+function* dropElided(sentences: ReturnType<typeof tokenStream2sentencesRaw>) {
+  for (let sentence of sentences) {
+    sentence.tokens = sentence.tokens.filter(x => !x.isElided())
+    yield sentence
+  }
+}
+
+//------------------------------------------------------------------------------
 function getArgs() {
   return minimist<CliArgs>(process.argv.slice(2), {
     boolean: [
@@ -523,6 +536,8 @@ function getArgs() {
       'noStandartizing',
       'onlyValid',
       'reportHoles',
+      'noTranslit',
+      'noElided',
     ],
     alias: {
       oneSet: 'one-set',
