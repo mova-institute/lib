@@ -697,8 +697,10 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
     // todo: choose punct relation from the rigthtest token
 
     for (let edep of t.edeps) {
-      // remove non-exportable subrels
-      if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
+      if (isRelativeSpecificAcl(edep.relation)) {
+        edep.relation = 'acl:relcl'
+      } else if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
+        // remove non-exportable subrels
         edep.relation = stripSubrel(edep.relation)
       }
     }
