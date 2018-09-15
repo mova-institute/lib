@@ -572,6 +572,13 @@ async function main() {
             interp.dropAdjectiveAsNounFeatures()
           }
 
+          // if (token.isElided() && node.isRoot()) {
+          //   if (token.interp.lemma === 'міститися') {
+          //     token.interp.lemma = 'існувати'
+          //     token.interp.setIsReversive(false)
+          //   }
+          // }
+
           if (transormIds && transormIds.has(token.id)) {
             TRANSFORMS[args.transform](node)
           }

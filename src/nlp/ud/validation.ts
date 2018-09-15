@@ -89,6 +89,18 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
     `в іменникове`,
     t => canActAsNounForObj(t)
   ],
+  [`nsubj:x`,
+    `з чистого xcomp’а`,
+    t => t.node.rel === 'xcomp',
+    `в іменникове`,
+    t => canActAsNounForObj(t)
+  ],
+  [`nsubj:xsp`,
+    `з xcomp:sp’а`,
+    t => t.node.rel === 'xcomp:sp',
+    `в іменникове`,
+    t => canActAsNounForObj(t)
+  ],
   [`csubj`,
     `з присудка чи валентного прикметника`,
     t => canBePredicate(t) || g.isValencyHavingAdjective(t.node),
@@ -2136,6 +2148,7 @@ export function validateSentenceSyntax(
 
   // **********
 
+  // це втрата obj> свободи
   // узгодження з рефом
   // acl з відносним замість питального
   // `obl` в `Acc`: _зробив раз_ і навпаки `(Acc !>case _) <obl _`
