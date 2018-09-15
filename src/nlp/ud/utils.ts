@@ -9,7 +9,7 @@ import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole } from './uk_grammar'
 import { Dict } from '../../types'
 
 import sortby = require('lodash.sortby')
-import sorteduniq = require('lodash.sorteduniq')
+import { cyrToJirechekish } from '../../translit_jirechkish';
 
 
 
@@ -19,6 +19,7 @@ export interface Sentence2conlluParams {
   morphOnly?: boolean
   // noBasic?: boolean
   addIdToFeats?: boolean
+  translit?: boolean
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,6 +31,9 @@ export function sentence2conllu(
 ) {
   let text = mu(tokenStream2plaintext(tokens.filter(x => !x.isElided()), multitokens)).join('')
   let comments = [`text = ${text}`]
+  if (options.translit) {
+    comments.push(`translit = ${cyrToJirechekish(text)}`)
+  }
   for (let [k, v] of Object.entries(sentenceLevelData)) {
     if (v === undefined) {
       continue
@@ -84,6 +88,9 @@ export function sentence2conllu(
     }
     if (!isInsideMultitoken && !token.isElided() && token.gluedNext) {
       misc.push('SpaceAfter=No')
+    }
+    if (options.translit) {
+      misc.push(`Translit=${cyrToJirechekish(token.getForm())}`)
     }
 
     // conj propagation

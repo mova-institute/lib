@@ -212,6 +212,7 @@ function main() {
             let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, {
               xpos: cliArgs.xpos,
               addIdToFeats: cliArgs.addIdToFeats,
+              translit: true,
               // noBasic: args.noBasic,
             })
             fs.writeSync(file, conlluedSentence + '\n\n')
