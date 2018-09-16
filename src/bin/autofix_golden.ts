@@ -572,6 +572,13 @@ async function main() {
             interp.dropAdjectiveAsNounFeatures()
           }
 
+          if (interp.isPunctuation()
+            // interp.hasFeature(f.PunctuationSide)
+            // && [')', '(', '«', '»', '"', '“', '”'].includes(interp.lemma)
+          ) {
+            interp.dropFeature(f.PunctuationSide)
+          }
+
           // if (token.isElided() && node.isRoot()) {
           //   if (token.interp.lemma === 'міститися') {
           //     token.interp.lemma = 'існувати'
