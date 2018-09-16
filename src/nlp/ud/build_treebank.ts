@@ -29,7 +29,7 @@ import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factorie
 import { buildCoreferenceClusters } from '../coreference'
 import { intbool } from '../../lang'
 import { generateEnhancedDeps2, buildEnhancedGraphFromTokens } from './enhanced'
-import { TrebankStatister } from './trebank_statister';
+import { TrebankStatister } from './trebank_statister'
 
 
 

@@ -9,7 +9,7 @@ import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole } from './uk_grammar'
 import { Dict } from '../../types'
 
 import sortby = require('lodash.sortby')
-import { cyrToJirechekish } from '../../translit_jirechkish';
+import { cyrToJirechekish } from '../../translit_jirechkish'
 
 
 

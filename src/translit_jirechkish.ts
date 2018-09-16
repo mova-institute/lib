@@ -1,5 +1,5 @@
 import { last } from './lang'
-import { capitalizeFirst } from './string';
+import { capitalizeFirst } from './string'
 import { APOSTROPHES_COMMON } from './nlp/static'
 
 
