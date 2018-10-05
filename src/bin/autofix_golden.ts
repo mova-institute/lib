@@ -694,7 +694,7 @@ async function main() {
           //   console.log(`велика літера без :prop, ${token2string(token)}`)
           // }
 
-          if (1) {
+          if (0) {
             fixtestMorpho(node, nextNode, analyzer)
           }
         }
