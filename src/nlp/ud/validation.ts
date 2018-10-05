@@ -107,7 +107,7 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
     `в присудок`, t => canBePredicate(t)],
   [`obj`,
     `з присудка чи валентного прикметника`,
-    t => canBePredicate(t) || g.isValencyHavingAdjective(t.node),
+    t => t.node.interp.isVerbial() || g.isValencyHavingAdjective(t.node),
     `в іменникове`,
     t => canActAsNounForObj(t) /* || canTheoreticallyActAsNoun(t) */],
   [`iobj`,
@@ -2148,6 +2148,8 @@ export function validateSentenceSyntax(
 
   // **********
 
+  // two dets of the same type
+  // куди треба їй піти — csubj vs xcomp
   // це втрата obj> свободи
   // узгодження з рефом
   // acl з відносним замість питального

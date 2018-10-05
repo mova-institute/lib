@@ -280,7 +280,7 @@ async function main() {
               while (match = token.comment.match(INSERTION_RE)) {
                 let insertionPoint = id2el.get(token.id)
                 let [, formToInsert] = match
-                let interps = analyzer.tag(formToInsert, token.form)
+                let interps = analyzer.tag(formToInsert, token.getForm())
                   .filter(x => x.lemma !== 'бути' || !x.isAuxillary())
                   .filter(x => !x.isColloquial())
                 let toInsert = createTokenElement(insertionPoint.document(), formToInsert,
@@ -694,7 +694,7 @@ async function main() {
           //   console.log(`велика літера без :prop, ${token2string(token)}`)
           // }
 
-          if (0) {
+          if (1) {
             fixtestMorpho(node, nextNode, analyzer)
           }
         }
@@ -865,7 +865,7 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   }
 
   if (interp.isProper() && !strUtils.startsWithCapital(interp.lemma)) {
-    // console.error(`lowercase lemma for proper "${token.form}" #${token.id}`)
+    console.error(`lowercase lemma for proper "${token.form}" #${token.id}`)
     // interp.lemma = capitalizeFirst(interp.lemma)
   }
 
@@ -917,10 +917,10 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   // missing in dict
   if (!interp.isStem()  // temp
     && !interp.isPunctuation()  // temp
-    // && !interp.isBeforeadj()  // temp
+    && !interp.isBeforeadj()  // temp
     && !interp.lemma.includes('-')  // temp
   ) {
-    let interpsFromDict = analyzer.tag(token.form, nextNode && nextNode.node.form)
+    let interpsFromDict = analyzer.tag(token.getForm(), nextNode && nextNode.node.getForm())
 
     let closestFixable = findClosestFixable(token.interp, interpsFromDict)
     if (closestFixable) {
@@ -930,7 +930,7 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
     } else {
       let interpsFromDictStr = interpsFromDict.map(x => `${x.toVesumStr()}@${x.lemma}`)
       let message = `>>> interp not in dict: ${
-        token2stringRaw(token.id, token.form, token.interp.lemma, token.interp.toVesumStr())}`
+        token2stringRaw(token.id, token.getForm(), token.interp.lemma, token.interp.toVesumStr())}`
       if (interpsFromDictStr.length) {
         // message += ` dict:\n${interpsFromDictStr.slice(0, 10).join('\n' )}\n=========`
       }
@@ -983,10 +983,6 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let inCorp2 = inCorp.clone().dropFeature(f.ParadigmOmonym)
   let inDict2 = inDict.map(x => x.clone().dropFeature(f.ParadigmOmonym))
 
-  if (inCorp.isCardinalNumeral()) {  // one-time thing
-    inCorp2.dropFeature(f.MorphNumber)
-  }
-
   for (let [i, feature] of DROP_ORDER.entries()) {
     inCorp2.dropFeature(feature)
     inDict2.forEach(x => x.dropFeature(feature))
@@ -1002,6 +998,16 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
         return ret
       }
       return inCorp
+    }
+  }
+
+  // now try lemma
+  if (!inCorp.isProper()) {
+    inCorp2.lemma = ''
+    inDict2.forEach(x => x.lemma = '')
+    let index = inDict2.findIndex(x => x.featurewiseEquals(inCorp2))
+    if (index >= 0) {
+      return inDict[index]
     }
   }
 }
@@ -1112,7 +1118,7 @@ function token2stringRaw(id: string, form: string, lemma: string, tag: string) {
 
 //------------------------------------------------------------------------------
 function token2string(token: Token) {
-  return token2stringRaw(token.id, token.form, token.interp.lemma, token.interp.toVesumStr())
+  return token2stringRaw(token.id, token.getForm(), token.interp.lemma, token.interp.toVesumStr())
 }
 
 //------------------------------------------------------------------------------

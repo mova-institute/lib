@@ -133,6 +133,7 @@ const INTERJECTION_RE_STRS = [
   r`і?(хі)+х?`,
   r`б+ах`,
   r`хм+`,
+  r`б+(аб)?ах`,
 ]
 const INTERJECTION_RE_STR = INTERJECTION_RE_STRS.join('|')
 export const INTERJECTION_RE = new RegExp(`^(${INTERJECTION_RE_STR})$`, 'i')

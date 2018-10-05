@@ -212,6 +212,11 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isNoun(),
   },
   {
+    prefixes: ['де', 'зне'],
+    test: (x: MorphInterp) => x.isNoun()
+      && ['ція', 'ння'].some(ending => x.lemma.endsWith(ending)),
+  },
+  {
     prefixes: ['за', 'не'],
     test: (x: MorphInterp) => x.isAdverb(),
   },
@@ -229,6 +234,7 @@ const PREFIX_SPECS = [
     prefixes: ['не'],
     pretest: (x: string) => x.length > 4,
     test: (x: MorphInterp) => x.isVerbial2(),
+    postprocess(x: MorphInterp) { x.setIsNegative() }
   },
   {
     prefixes: ['за', 'пере'],
@@ -327,8 +333,8 @@ export class MorphAnalyzer {
       if (regexes.some(x => x.test(token))) {
         return tagStrs.map(x => {
           let ret = MorphInterp.fromVesumStr(x, token)
-          if (ret.isCardinalNumeral() && /^[\d\s]+$/.test(token)) {
-            ret.lemma = ret.lemma.replace(/\s+/g, '')  // todo
+          if (ret.isCardinalNumeral() && /^[\d\s,]+$/.test(token)) {
+            ret.lemma = ret.lemma.replace(/[\s,]+/g, '')  // todo
           }
           return ret
         })
@@ -428,7 +434,7 @@ export class MorphAnalyzer {
       res.addAll(toadd)
     }
 
-    // try ґ→г
+    // try ґ→г [2]
     if (!presentInDict) {
       if (!res.size) {
         res.addAll(this.fromGH([titlecase]))
