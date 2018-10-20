@@ -52,6 +52,7 @@ export function generateEnhancedDeps2(
   addCoreferenceForPersonalRelcl(enhancedNodes)
   addCoreferenceForClassicalRelcl(enhancedNodes)
   // (relcls without a Rel only have `ref` (annotated manually))
+  // todo
   // propagateConjuncts(enhancedNodes, true)  // propagate what we just generated
 
   saveEnhancedGraphToTokens(enhancedNodes, true)
@@ -129,11 +130,11 @@ function addCoreferenceForPersonalRelcl(enhancedNodes: Array<EnhancedNode>) {
 function addFromRelclBackToAntecedent(refArrow: EnhancedArrow) {
   refArrow.end.incomingArrows
     .filter(x => x !== refArrow && !uEqSome(x.attrib, ['conj', 'ref']))
-    // todo: predict rel
-    .forEach(incomingArrow =>
-      incomingArrow.start.addOutgoingArrow(refArrow.start, relativizeRel(incomingArrow.attrib),
+    .forEach(incomingArrow => {
+      let newRel = findRelationAnalog(incomingArrow, refArrow.end, refArrow.start)
+      incomingArrow.start.addOutgoingArrow(refArrow.start, relativizeRel(newRel),
         DupePolicy.ignore, true)
-    )
+    })
 }
 
 //------------------------------------------------------------------------------
