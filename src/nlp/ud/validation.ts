@@ -136,10 +136,10 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
     `в іменник`,
     t => canActAsNounForObj(t)
       || t.node.interp.lemma === 'який' && (
-        g.findRelativeClauseRoot(t) || t.parent.node.rel === 'flat:pack'
+        g.findRelativeClauseRoot(t) || t.parent.node.rel === 'flat:sibl'
       )
       || /* t.node.interp.isAdjective() && t.node.interp.isPronominal()
-      && */ g.hasChild(t, 'flat:rcp')
+      && */ g.hasChild(t, 'flat:abs')
     ,
   ],
   [`nmod`, `з іменника`, t => canActAsNoun(t) || g.isDenUDen(t) /* temp */,
@@ -318,10 +318,10 @@ export function validateSentenceSyntax(
   if (0) {
     let interesting = tokens.filter(x =>
       (['один', 'другий'].includes(x.interp.lemma))
-      && x.rel !== 'flat:rcp'
+      && x.rel !== 'flat:abs'
     )
     if (interesting.length > 1) {
-      problems.push({ indexes: interesting.map(x => x.index), message: `flat:rcp?` })
+      problems.push({ indexes: interesting.map(x => x.index), message: `flat:abs?` })
     }
   }
 
@@ -559,7 +559,7 @@ export function validateSentenceSyntax(
       && !t.node.interp.isXForeign()
       && !t.node.isGraft
       && t.parent.node.interp.isReversive()
-      && !t.children.some(x => x.node.rel === 'flat:rcp')
+      && !t.children.some(x => x.node.rel === 'flat:abs')
   )
 
   reportIf(`місцевий без прийменника`,
@@ -1324,7 +1324,7 @@ export function validateSentenceSyntax(
       && t.node.interp.isVerb()
       && !t.node.interp.isAuxillary()
       && !uEqSome(t.node.rel, [...g.CLAUSE_RELS, 'conj'])
-      && !['compound:svc', 'orphan', 'flat:repeat', 'flat:pack'].includes(t.node.rel)
+      && !['compound:svc', 'orphan', 'flat:repeat', 'flat:sibl'].includes(t.node.rel)
       && !(uEq(t.node.rel, 'appos') && t.node.interp.isInfinitive())
       && !(uEq(t.node.rel, 'obl') && t.node.hasTag('inf_prep'))
   )
@@ -1335,7 +1335,7 @@ export function validateSentenceSyntax(
       && toUd(t.node.interp).pos === 'DET'  // todo: .isDet()
       && !uEqSome(t.node.rel, ['det', 'conj', 'fixed', 'xcomp:sp', 'advcl:sp'])
       && !uEqSome(t.node.rel, ['nsubj', 'obj', 'iobj', 'obl', 'nmod'])
-      && !uEqSome(t.node.rel, ['advmod:det', 'flat:rcp'])
+      && !uEqSome(t.node.rel, ['advmod:det', 'flat:abs'])
       && !g.findRelativeClauseRoot(t)
   )
 
@@ -1603,8 +1603,8 @@ export function validateSentenceSyntax(
     // &&
   )
 
-  reportIf(`flat:pack не з conj / не з присудка`, t =>
-    t.node.rel === 'flat:pack'
+  reportIf(`flat:sibl не з conj / не з присудка`, t =>
+    t.node.rel === 'flat:sibl'
     && !uEq(t.parent.node.rel, 'conj')
     && !t.parent.children.some(x => uEqSome(x.node.rel, ['conj', 'nsubj']))
   )
@@ -1702,7 +1702,7 @@ export function validateSentenceSyntax(
       )
       && !g.hasSiblink(t, 'ccomp')
       && !(t.node.interp.isNominative()
-        && g.hasChild(t, 'flat:rcp')
+        && g.hasChild(t, 'flat:abs')
       )
   )
 
@@ -2163,7 +2163,7 @@ export function validateSentenceSyntax(
       t.parent
       && !t.parent.node.isGraft
       && uEq(t.parent.node.rel, 'flat')
-      // && t.parent.node.rel !== 'flat:pack'
+      // && t.parent.node.rel !== 'flat:sibl'
       // && !uEqSome(t.node.rel, ['conj', 'flat', 'punct'])
       && uEqSome(t.node.rel, g.CLAUSE_RELS)
     )
@@ -2220,18 +2220,18 @@ export function validateSentenceSyntax(
   //   with the second as analyzed as a mark.
   //   — advcl:cmp
   // набувати майнових та особистих немайнових прав — було еліпсом наперед ззамість
-  //   flat:pack
+  //   flat:sibl
   // xcomp з нема
   // punct-nonproj має сенс
   // goeswith не йде в _пів_
-  // flat:pack не з conj
-  // flat:pack не з nummod etc
+  // flat:sibl не з conj
+  // flat:sibl не з nummod etc
   // посунути пропуски _до_ риски
   // найкращий за всю історію — що з найкращий
   // по-третє discourse
   // близько 830 осіб — з нумерала
-  // cop з flat:pack
-  // один одного :rcp has PronType=
+  // cop з flat:sibl
+  // один одного :abs has PronType=
   // Час від часу — перший час називний
   // так само
   // lemmas for punct types
@@ -2509,7 +2509,7 @@ function canActAsNounForObj(node: GraphNode<Token>) {
     || (node.node.interp.isAdjective()
       && node.node.interp.isPronominal()
       && ['один'].includes(node.node.interp.lemma)
-      && node.children.some(x => x.node.rel === 'flat:rcp')
+      && node.children.some(x => x.node.rel === 'flat:abs')
     )
 }
 
