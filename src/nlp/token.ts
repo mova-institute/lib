@@ -52,6 +52,8 @@ export type TokenTag =
   | 'pred-right'
   | 'itsubj'
   | 'ok-glued-next'
+  | 'ok-nonnom-subj'
+  | 'promoted-not-adj'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {

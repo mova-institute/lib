@@ -699,6 +699,8 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
     for (let edep of t.edeps) {
       if (isRelativeSpecificAcl(edep.relation)) {
         edep.relation = 'acl:relcl'
+      } else if (edep.relation.endsWith(':xsp') || edep.relation.endsWith(':asp')) {
+        edep.relation = stripSubrel(edep.relation) + ':sp'
       } else if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
         // remove non-exportable subrels
         edep.relation = stripSubrel(edep.relation)
@@ -927,10 +929,15 @@ const NUM_ADV_AMBIG = [
 
 export const QAUNTITATIVE_ADVERBS = [
   ...NUM_ADV_AMBIG,
+  'багацько',
   'більше',
+  'достатньо',
   'мало',
   'менше',
+  'найбільше',
+  'найменше',
   'немало',
+  'стільки',
   'трохи',
   'трошки',
   'чимало',
@@ -1122,7 +1129,7 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'advcl:svc',
   'advcl',
   'advmod:amtgov',
-  // 'advmod:det',
+  'advmod:det',
   'advmod',
   'amod',
   'appos:nonnom',
@@ -1222,8 +1229,7 @@ export const DISCOURSE_DESTANATIONS = [
 export const COPULA_LEMMAS = [
   'бути',
   'бувати',
-  'бувши',
-  'будучи',
+  'будучи',  // ?
 ]
 
 export const CONDITIONAL_AUX_LEMMAS = [
@@ -1323,6 +1329,19 @@ export const INS_VALENCY_VERBS = [
   'відати',
   // 'пахнути',
 ]
+
+export const AMTGOV_ADVS = new Set([
+  'багато',
+  'більше',
+  'трохи',
+  'найбільше',
+  'скільки',
+  'чимало',
+  'достатньо',
+  '',
+  '',
+  '',
+])
 
 export const SOME_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
   'бігати',
@@ -1486,6 +1505,12 @@ const INF_VALENCY_ADJECTIVES = [
   'покликаний',
 ]
 
+export const ADVMOD_DETS = new Set([
+  'такий',
+  'такенький',
+  'який',
+])
+
 export const QUANTIF_PREP = [
   'понад',
   'близько',
@@ -1512,16 +1537,18 @@ export const ENHANCED_RELATIONS = [
 
   'nsubj:xsp',
   'csubj:xsp',
+
+  'nsubj:asp',
 ]
 
 //------------------------------------------------------------------------------
 const UD_23_OFFICIAL_SUBRELS = new Set([
   'acl:adv',
   'acl:relcl',
-  'admod:amntgov',
+  'admod:amtgov',
   'advcl:sp',
   'advcl:svc',
-  // 'advmod:amtgov',
+  'advmod:det',
   'ccomp:svc',
   'compound:svc',
   'conj:svc',

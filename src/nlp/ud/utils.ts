@@ -105,7 +105,12 @@ export function sentence2conllu(
     // XPOS
     let xpos: string
     if (options.xpos === 'mte') {
-      xpos = token.interp.toMte()
+      try {
+        xpos = token.interp.toMte()
+      } catch (e) {
+        console.error(`Problem at token ${token.id}`)
+        throw e
+      }
     } else if (options.xpos === 'upos') {
       xpos = pos
     } else if (options.xpos === 'ud') {

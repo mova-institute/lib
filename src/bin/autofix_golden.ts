@@ -586,6 +586,12 @@ async function main() {
           //   }
           // }
 
+          for (let edep of token.edeps) {
+            if (edep.relation === 'nsubj:xsp' && nodes[edep.headIndex].node.rel === 'advcl:sp') {
+              edep.relation = 'nsubj:asp'
+            }
+          }
+
           if (transormIds && transormIds.has(token.id)) {
             TRANSFORMS[args.transform](node)
           }
