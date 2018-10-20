@@ -13,8 +13,8 @@ if (require.main === module) {
 }
 
 async function main() {
-  let clobStrFromArgs = process.argv[2]
-  let globs = [clobStrFromArgs] || (await allLinesFromStdin())
+  let globStrFromArgs = process.argv[2]
+  let globs = [globStrFromArgs] || (await allLinesFromStdin())
   let files = mu(globs).map(x => glob.sync(x)).flatten()
   let stream = new CatStream(files)
   stream.pipe(process.stdout)
