@@ -281,6 +281,16 @@ export function* linesSync(filename: string) {  // todo: do not buffer file
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function* trimmedNonemptyLinesSync(filename: string) {  // todo: do not buffer file
+  for (let line of linesSync(filename)) {
+    line = line.trim()
+    if (line) {
+      yield line
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function readTsvMapSync(filePath: string, to?: Map<string, string>) {
   let ret = to || new Map<string, string>()
   for (let line of linesSync(filePath)) {

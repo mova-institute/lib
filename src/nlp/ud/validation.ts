@@ -17,15 +17,7 @@ import { groupBy } from 'lodash'
 import { SimpleGrouping } from '../../grouping'
 import { compareAscending } from '../../algo'
 
-const foo = [
-  ['acl:adv не в одинокий (діє)прислівник', '1sxv 36or'],
-  ['', ''],
-  ['', ''],
-  ['', ''],
-  ['', ''],
-  ['', ''],
-  ['', ''],
-]
+
 
 //------------------------------------------------------------------------------
 const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentencePredicate2]> = [

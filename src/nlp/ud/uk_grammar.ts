@@ -1330,19 +1330,6 @@ export const INS_VALENCY_VERBS = [
   // 'пахнути',
 ]
 
-export const AMTGOV_ADVS = new Set([
-  'багато',
-  'більше',
-  'трохи',
-  'найбільше',
-  'скільки',
-  'чимало',
-  'достатньо',
-  '',
-  '',
-  '',
-])
-
 export const SOME_WORDS_WITH_ACC_VALENCY = new Set([  // not in valency dict
   'бігати',
   'бігти',

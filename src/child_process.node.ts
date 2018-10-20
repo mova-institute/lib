@@ -1,4 +1,5 @@
-import { exec, execSync } from 'child_process'
+import { exec, execSync, spawn } from 'child_process'
+import { tuple } from './lang'
 
 
 
@@ -22,4 +23,15 @@ export function execPipe(command: string, stdin?: NodeJS.ReadableStream, stdout?
       child.stdout.pipe(stdout)
     }
   })
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function spawnPromise(command: string, params: ReadonlyArray<string> = []) {
+  let child = spawn(command, params)
+  let promise = new Promise<number>((resolve, reject) => {
+    child.on('close', resolve)
+      .on('error', reject)
+  })
+
+  return tuple(child, promise)
 }
