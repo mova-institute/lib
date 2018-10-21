@@ -207,21 +207,22 @@ async function main() {
 //------------------------------------------------------------------------------
 async function annotate(alignFiles: Array<string>) {
   for (let alignFile of alignFiles) {
-    let { alignDoc, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
+    let { leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
       prepareFromAlignment(alignFile)
 
-    if (leftLang === 'cs' || rightLang === 'cs') {
+    if (leftLang === 'cs' || rightLang === 'cs') {  // belongs to InterCorp
       continue
     }
 
     console.error(`processing "${leftLang}_${rightLang}" alignment file: ${alignFile}`)
 
-    for (let [doc, docName, lang, oppositeLang] of [
+    let outDir = 'conllu'
+    mkdirp.sync('conllu')
+
+    for (let [doc, docName, lang] of [
       [leftDoc, leftDocName, leftLang, rightLang],
       [rigtDoc, rightDocName, rightLang, leftLang],
     ]) {
-      let outDir = 'conllu'
-      mkdirp.sync(outDir)
       let destConllu = path.join(outDir, docName as string)
       if (fs.existsSync(destConllu)) {
         console.error(`skipping ${docName}: conllu exists`)
@@ -229,8 +230,9 @@ async function annotate(alignFiles: Array<string>) {
       }
 
       if (!(lang in udpipeApiLangMap)) {
-        console.error(`skipping "${lang}": no model set`)
-        continue
+        // console.error(`skipping "${lang}": no model set`)
+        // continue
+        throw new Error(`no model set for ${lang}`)
       }
       let { url, model } = udpipeApiLangMap[lang as string]  // todo
       let udpipe = new UdpipeApiClient(url, model)
@@ -241,7 +243,6 @@ async function annotate(alignFiles: Array<string>) {
       console.error(
         `annotating ${plaintext.length} chars of "${lang}" via "${url}", model "${model}"`)
       let conllu = await udpipe.tokTagParseHorizontal(plaintext)
-      // console.error(conllu)
 
       let numSents = countNumMatches(conllu, /^1\t/gm)
       console.error(`  got ${numSents} sents back`)
@@ -271,6 +272,7 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
 
   let metaTable = indexTableByColumn(
     parseSeparatedValues(linesSync(params.meta)).toArray(), 'intertext_id')
+  let meta = buildMeta(linesSync(params.meta))
 
   let langPairs = new HashSet<Array<string>>()
   for (let alignFile of alignFiles) {
@@ -285,13 +287,15 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
 
     if (!metaTable.has(intertextId)) {
       let message = `Intertext id "${intertextId}" is missing from the meta table`
-      // throw new Error(message)
-      console.error(message)
+      throw new Error(message)
+      // console.error(message)
       // continue
     }
     let metaRecord = metaTable.get(intertextId) || {}
     if (!metaRecord['title_uk']) {
-      console.error(`title_uk is missing from ${intertextId} meta`)
+      let message = `title_uk is missing from ${intertextId} meta`
+      // console.error(message)
+      throw new Error(message)
     }
     if (!metaRecord['original_language']) {
       let message = `original_language is missing from ${intertextId} meta`
@@ -459,6 +463,23 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
 }
 
 //------------------------------------------------------------------------------
+interface MetaTableRecord {
+  intertext_id
+  title_uk
+  language
+  is_original
+  author_uk
+  author_native
+  translator_uk
+}
+
+//------------------------------------------------------------------------------
+function buildMeta(tsvLines: Iterable<string>) {
+  let tsv = parseSeparatedValues<MetaTableRecord>(tsvLines).toArray()
+  // return ret
+}
+
+//------------------------------------------------------------------------------
 function reverseAlignmentLine(val: string) {
   let [, type, xtargets, rest] = val.match(/^<link type='([^']+)' xtargets='([^']+)'(.*)$/)
   let newType = type.split('-').reverse().join('-')
@@ -560,10 +581,10 @@ function getSentIdsFromIntertextDoc(root: AbstractElement) {
 }
 
 //------------------------------------------------------------------------------
-function parseSeparatedValues(lines: Iterable<string>, separator: string | RegExp = '\t') {
+function parseSeparatedValues<T>(lines: Iterable<string>, separator: string | RegExp = '\t') {
   let linesIt = mu(lines)
   let keys = linesIt.first().split(separator)
-  return linesIt.map(l => createObject2(keys, l.split(separator)))
+  return linesIt.map(l => createObject2(keys, l.split(separator))) as Mu<T>
 }
 
 ////////////////////////////////////////////////////////////////////////////////
