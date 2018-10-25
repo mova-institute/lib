@@ -586,15 +586,14 @@ async function main() {
           //   }
           // }
 
-          for (let edep of token.edeps) {
-            if (edep.relation === 'nsubj:xsp' && nodes[edep.headIndex].node.rel === 'advcl:sp') {
-              edep.relation = 'nsubj:asp'
-            }
-          }
-
           if (transormIds && transormIds.has(token.id)) {
             TRANSFORMS[args.transform](node)
           }
+
+          // if (isNegated(token.getForm(), token.interp, analyzer)) {
+          //   token.interp.setIsNegative()
+          //   token.interp.lemma = token.interp.lemma.substr(2)
+          // }
 
           // if (node.node.interp.isRelative()
           //   && !node.node.interp.isAdverb()
@@ -733,6 +732,18 @@ async function main() {
     fs.writeFileSync(args.seq, idSequence)
   }
   console.log(`${tokenCount} tokens`)
+}
+
+//------------------------------------------------------------------------------
+function isNegated(form: string, interp: MorphInterp, analyzer: MorphAnalyzer) {
+  let lc = form.toLowerCase()
+  if (lc.startsWith('не')) {
+    let stem = lc.substr(2)
+    let interps = analyzer.tag(stem).filter(x => x.gramfeaturewiseEquals(interp))
+    if (interps.length) {
+      return true
+    }
+  }
 }
 
 //------------------------------------------------------------------------------

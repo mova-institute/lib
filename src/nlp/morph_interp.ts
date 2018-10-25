@@ -914,9 +914,8 @@ export class MorphInterp {
     return this.lemma === other.lemma && this.equalsByFeatures(other, features)
   }
 
-  nongrammaticallyEquals(other: MorphInterp) {
-    return this.lemma === other.lemma &&
-      this.clone()
+  gramfeaturewiseEquals(other: MorphInterp) {
+    return this.clone()
         .dropNongrammaticalFeatures()
         .featurewiseEquals(other.clone().dropNongrammaticalFeatures())
   }

@@ -86,9 +86,9 @@ export enum VerbType {
   indicative,
   imperative,
   impersonal,
-  conditional,  // би
+  conditional,  // б/би
   participle,  // дієприкметник
-  converb,  // advp
+  converb,  // дієприслівник
 }
 export enum Tense {
   past,

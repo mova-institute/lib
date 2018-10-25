@@ -41,6 +41,17 @@ export function nsubjAgreesWithPredicate(noun: TokenNode, predicate: TokenNode) 
     }
   }
 
+  if (verbInterp.isInstant()) {
+    return true
+  }
+
+  if (verbInterp.hasFeature(f.Person)
+    && verbInterp.getFeature(f.Person) !== f.Person.third
+    && !verbInterp.equalsByFeature(noun.node.interp, f.Person)
+  ) {
+    return false
+  }
+
   if (verbInterp.hasGender()
     && !isValidGenderlesNoun(noun)
     // && !(noun.node.interp.isPronominal() && !noun.node.interp.hasFeature(f.Gender))
@@ -50,7 +61,7 @@ export function nsubjAgreesWithPredicate(noun: TokenNode, predicate: TokenNode) 
   }
 
   if (!verbInterp.equalsByFeature(noun.node.interp, f.MorphNumber)
-    && !(verbInterp.isSingular() && noun.node.interp.hasGender() && !noun.node.interp.hasNumber())
+    && (noun.node.interp.hasGender() || noun.node.interp.hasNumber())
     && !(verbInterp.isPlural()
       && noun.children.some(x => uEq(x.node.rel, 'conj') || isConjlikeNmod(x))
     )
@@ -59,13 +70,6 @@ export function nsubjAgreesWithPredicate(noun: TokenNode, predicate: TokenNode) 
         || x.node.rel === 'advmod:amtgov'
       )
     )
-  ) {
-    return false
-  }
-
-  if (verbInterp.hasFeature(f.Person)
-    && verbInterp.getFeature(f.Person) !== f.Person.third
-    && !verbInterp.equalsByFeature(noun.node.interp, f.Person)
   ) {
     return false
   }
@@ -699,8 +703,6 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
     for (let edep of t.edeps) {
       if (isRelativeSpecificAcl(edep.relation)) {
         edep.relation = 'acl:relcl'
-      } else if (edep.relation.endsWith(':xsp') || edep.relation.endsWith(':asp')) {
-        edep.relation = stripSubrel(edep.relation) + ':sp'
       } else if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
         // remove non-exportable subrels
         edep.relation = stripSubrel(edep.relation)
@@ -1522,10 +1524,8 @@ export const ENHANCED_RELATIONS = [
   'nsubj:x',
   'csubj:x',
 
-  'nsubj:xsp',
-  'csubj:xsp',
-
-  'nsubj:asp',
+  'nsubj:sp',
+  'csubj:sp',
 ]
 
 //------------------------------------------------------------------------------
@@ -1551,7 +1551,9 @@ const UD_23_OFFICIAL_SUBRELS = new Set([
   'nummod:gov',
   'parataxis:discourse',
   'parataxis:newsent',
+  'parataxis:rel',
   'xcomp:sp',
+  'vocative:cl',
 ])
 
 //------------------------------------------------------------------------------

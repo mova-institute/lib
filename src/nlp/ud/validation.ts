@@ -106,9 +106,9 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
     `в іменникове`,
     t => canActAsNounForObj(t)
   ],
-  [`nsubj:xsp`,
-    `з xcomp:sp’а`,
-    t => t.node.rel === 'xcomp:sp',
+  [`nsubj:sp`,
+    `з :sp’а`,
+    t => ['xcomp:sp', 'advcl:sp'].includes(t.node.rel),
     `в іменникове`,
     t => canActAsNounForObj(t)
   ],
@@ -203,8 +203,6 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
       || g.isValencyHavingAdjective(t.node),
     `в присудок (тест: фінітний)`,
     t => canBePredicate(t)
-      && !g.isInfinitiveVerbAnalytically(t)
-      && !t.node.hasTag('inf-ccomp')
   ],
   [`xcomp:sp`,
     `з присудка`,
@@ -215,7 +213,7 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
       || g.canBeAsSomethingForXcomp2(t)
       || t.node.isGraft
   ],
-  [`vocative`,
+  [`vocative:`,
     `з присудка`,
     t => canBePredicate(t),
     `в кличний іменник`,
@@ -224,6 +222,12 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
       || canActAsNoun(t) && (t.node.interp.isVocative()
         || t.node.hasTag('nomvoc')
       )
+  ],
+  [`vocative:cl`,
+    `з присудка`,
+    t => canBePredicate(t),
+    `в присудок`,
+    t => canBePredicate(t),
   ],
   [`appos:`, `з іменника`, t => canActAsNoun(t), `в іменник`, t => canActAsNoun(t)],
   [`dislocated`, `~з присудка`, t => canBePredicate(t), ``, t => t],
@@ -298,6 +302,7 @@ export function validateSentenceSyntax(
   }
 
   const xreportIf = (message: string, fn: TreedSentencePredicate) => undefined
+  const tmpxreportIf = (message: string, fn: TreedSentencePredicate) => undefined
   const xreportIf2 = (message: string, fn: TreedSentencePredicate2) => undefined
   const xoldReportIf = (message: string, fn: SentencePredicate) => undefined
 
@@ -416,7 +421,7 @@ export function validateSentenceSyntax(
     t => t.children.filter(x => isGoverning(x.node.rel)).length > 1
   )
   reportIf(`декілька cc`,
-    t => t.children.filter(x => uEq(x.node.rel, 'cc')).length > 1
+    t => !t.node.hasTag('mult-cc') && t.children.filter(x => uEq(x.node.rel, 'cc')).length > 1
   )
   reportIf(`декілька mark’ів`,
     t => t.children.filter(x => uEq(x.node.rel, 'mark')).length > 1
@@ -548,7 +553,7 @@ export function validateSentenceSyntax(
 
   reportIf(`день у день`, t => g.isDenUDen(t))
 
-  reportIf(`займенник :&noun`, t =>
+  tmpxreportIf(`займенник :&noun`, t =>
     t.node.interp.isAdjectiveAsNoun()
     && t.node.interp.isPronominal()
   )
@@ -723,14 +728,14 @@ export function validateSentenceSyntax(
     // (
   )
 
-  reportIf(`неузгодження однорідних іменників`,
+  reportIf(`неузгодження відмінків однорідних іменників`,
     t => uEq(t.node.rel, 'conj')
+      && !t.node.interp.equalsByFeatures(t.parent.node.interp, [f.Case/* , f.MorphNumber */])
       && t.node.rel !== 'conj:parataxis'
       && !uEqSome(t.parent.node.rel, ['obl'])
       && t.node.interp.isNounish()
       && t.parent.node.interp.isNounish()
       && !t.node.interp.isXForeign()
-      && !t.node.interp.equalsByFeatures(t.parent.node.interp, [f.Case/* , f.MorphNumber */])
       && g.thisOrGovernedCase(t) !== g.thisOrGovernedCase(t.parent)
       && !g.isQuantitativeAdverbModified(t)
       // && !g.isQuantitativeAdverbModified(t.parent)
@@ -1379,7 +1384,7 @@ export function validateSentenceSyntax(
       && t.node.interp.isAdverb()
       && t.parent.node.interp.isNounish()
       && !uEqSome(t.node.rel, ['discourse', 'parataxis', 'orphan'])
-      && !uEqSome(t.parent.node.rel, ['obl'])
+      && !uEqSome(t.parent.node.rel, ['obl', 'orphan'])
       && t.node.rel !== 'acl:adv'
       && !t.parent.children.some(x => uEqSome(x.node.rel, ['nsubj', 'cop']))
       && !t.node.interp.isNegative()
@@ -1398,12 +1403,18 @@ export function validateSentenceSyntax(
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  reportIf(`означення при займеннику`,
+  tmpxreportIf(`означення при займеннику`,
     t => uEqSome(t.node.rel, ['amod', 'det'])
+      && !g.isNumericModifier(t.node.rel)
       && t.parent.node.interp.isNoun()
       && t.parent.node.interp.isPronominal()
       && !t.parent.node.interp.isIndefinite()
       && !t.parent.node.interp.isGeneral()
+    // && ![
+    //   ['весь', 'це'],
+    // ].some(([adjLemma, pronLemma]) => t.node.interp.lemma === adjLemma
+    //   && t.parent.node.interp.lemma === pronLemma
+    // )
   )
 
   reportIf(`nummod праворуч`,
@@ -1577,7 +1588,7 @@ export function validateSentenceSyntax(
       && !g.hasChild(n, 'obl')
   )
 
-  reportIf2(`вказівне _тому_ вжите як часове`,
+  xreportIf2(`вказівне _тому_ вжите як часове`,
     ({ t, pr, n, l }) => l === 'тому'
       && t.interp.isDemonstrative()
       && (uEq(pr, 'obl') || g.hasChild(n, 'obl'))
@@ -1949,14 +1960,15 @@ export function validateSentenceSyntax(
       uEqSome(t.node.rel, ['nsubj'/* , 'csubj' */])
       && t.node.index > t.parent.node.index
       && !t.parent.node.interp.isVerbial()
+      && !t.parent.node.interp.isAdjective()  // ~
+      && !t.parent.node.interp.isAdverb()
       && !t.parent.node.interp.isInstrumental()
       && !t.parent.node.interp.isInterrogative()
-      && !t.parent.node.interp.isAdjective()  // ~
       && !g.hasChild(t.parent, 'expl')
       && !t.node.hasTag('pred-right')
     )
 
-    reportIf(`присудок є залежником`, t =>
+    xreportIf(`присудок є залежником`, t =>
       uEqSome(t.node.rel, ['nsubj', 'csubj', 'cop'])
       && t.parent.parent
       && !uEqSome(t.parent.node.rel, [...g.CLAUSE_RELS, 'conj'])
@@ -1975,7 +1987,7 @@ export function validateSentenceSyntax(
       //   f.Pos.sym,
       // ].includes(sentenceWithoutPunct[0].interp.getFeature(f.Pos))
       if (!skip) {
-        reportIf(`корінь без предикації`, t =>
+        tmpxreportIf(`корінь без предикації`, t =>
           t.isRoot()
           && !t.node.hasTag('itsubj')
           && !t.node.interp.isInfinitive()  // todo
@@ -2065,6 +2077,7 @@ export function validateSentenceSyntax(
 
     reportIf(`відносний _що_ у acl:relfull`, t =>
       t.node.form === 'що'
+      && !uEqSome(t.node.rel, ['obl'])
       && t.node.interp.isRelative()
       && wiith(g.findRelativeClauseRoot(t), relclRoot =>
         relclRoot && relclRoot.node.rel === 'acl:relfull'
@@ -2105,7 +2118,7 @@ export function validateSentenceSyntax(
       )
     )
 
-    if (0) {
+    if (1) {
       let relRoots = nodes.filter(x => x.node.interp.isRelative())
         .map(x => g.findRelativeClauseRoot(x))
       relRoots.filter((x, i) => relRoots.find((xx, ii) => ii !== i && xx === x))
@@ -2115,38 +2128,58 @@ export function validateSentenceSyntax(
         }))
     }
 
+    tmpxreportIf(`ccomp в інфінітив без #inf-ccomp`, t =>
+      uEq(t.node.rel, 'ccomp')
+      && g.isInfinitiveVerbAnalytically(t)
+      && !t.node.hasTag('inf-ccomp')
+    )
+
+    // todo: через advcl? https://lab.mova.institute/brat/#/ud/zvidusil__27/23?focus=T24
+    // todo: кожі до xcomp’ів https://lab.mova.institute/brat/#/ud/zvidusil__26/76?focus=T21
+    // todo: go transclausal? https://github.com/UniversalDependencies/docs/issues/568
+    // todo: nsubj sp в rel а не далекий підмет
+    // todo: acl-amod’и
+
+    reportIf(`неочікуваний #xsubj-from-head`, t =>
+      t.node.hasTag('xsubj-from-head')
+      && (t.node.rel !== 'xcomp' && t.node.rel !== 'xcomp:sp'
+        || t.parent.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))  // todo: conj
+      )
+    )
+    reportIf(`неочікуваний #xsubj-is-phantom-iobj`, t =>
+      t.node.hasTag('xsubj-is-phantom-iobj')  // todo: rename
+      && (t.node.rel !== 'xcomp'
+        || t.parent.children.some(x => uEqSome(x.node.rel, ['obj', 'iobj']))  // todo: conj
+      )
+    )
+    reportIf(`неочікуваний #xsubj-is-obl`, t =>
+      t.node.hasTag('xsubj-is-obl')  // todo: rename
+      && (t.node.rel !== 'xcomp'
+        || !t.parent.children.some(x => uEqSome(x.node.rel, ['obl']))  // todo: conj
+      )
+    )
+
     // todo: це — дірки
     reportIf(`xcomp без enhanced підмета`, t =>
-      // uEqSome(t.node.rel, ['xcomp'])
       t.node.rel === 'xcomp'
+      && !t.node.hasTag('xsubj-from-head')
+      && !t.node.hasTag('xsubj-is-phantom-iobj')
+      && !t.node.hasTag('xsubj-is-obl')
+      && !t.parent.node.interp.isConverb()
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
-      && t.ancestors0()
-        .takeWhile(x => !uEqSome(x.node.rel, ['amod'])
-          && !x.node.interp.isConverb()
-          && !g.isRelativeSpecificAcl(x.node.rel)
-          && !uEqSome(x.node.rel, g.CLAUSE_RELS)
-        )
-        .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
+      // && !t.parent.node.interp.isReversive()  // temp
     )
 
     reportIf(`xcomp:sp без enhanced підмета`, t =>
-      // uEqSome(t.node.rel, ['xcomp'])
       t.node.rel === 'xcomp:sp'
+      && !t.node.hasTag('xsubj-from-head')
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
-      && t.ancestors0()
-        .takeWhile(x => !uEqSome(x.node.rel, ['amod'])
-          && !x.node.interp.isConverb()
-          && !g.isRelativeSpecificAcl(x.node.rel)
-          && !uEqSome(x.node.rel, g.CLAUSE_RELS)
-        )
-        .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
+      && !t.parent.node.interp.isConverb()
     )
 
     reportIf(`advcl:sp без enhanced підмета`, t =>
       t.node.rel === 'advcl:sp'
-      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:asp']))
-      && t.ancestors0()
-        .some(x => x.children.some(xx => uEqSome(xx.node.rel, g.CORE_ARGUMENTS)))
+      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:sp']))
     )
 
     reportIf(`сам не obl/det`, t =>
@@ -2166,6 +2199,13 @@ export function validateSentenceSyntax(
       // && t.parent.node.rel !== 'flat:sibl'
       // && !uEqSome(t.node.rel, ['conj', 'flat', 'punct'])
       && uEqSome(t.node.rel, g.CLAUSE_RELS)
+    )
+
+    xreportIf(`виразова реляція в безпре`, t =>
+      uEqSome(t.node.rel, g.CLAUSAL_MODIFIERS)
+      && !g.hasPredication(t)
+      && !g.isInfinitiveVerbAnalytically(t)
+      && !t.node.rel.endsWith(':sp')
     )
 
     // trash >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2190,6 +2230,7 @@ export function validateSentenceSyntax(
           && i.isNominative()
       )
     }
+    // <<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
 
   // **********

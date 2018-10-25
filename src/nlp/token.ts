@@ -54,6 +54,10 @@ export type TokenTag =
   | 'ok-glued-next'
   | 'ok-nonnom-subj'
   | 'promoted-not-adj'
+  | 'mult-cc'
+  | 'xsubj-from-head'
+  | 'xsubj-is-phantom-iobj'
+  | 'xsubj-is-obl'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {
