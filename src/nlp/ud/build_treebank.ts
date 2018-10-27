@@ -102,12 +102,6 @@ function main() {
 
       let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
 
-      if (cliArgs.noEnhanced) {
-        tokens.forEach(x => x.edeps = [])
-      } else {
-        generateEnhancedDeps2(nodes)
-      }
-
       // count some stats
       if (valencyDict) {
         for (let token of tokens) {
@@ -209,6 +203,16 @@ function main() {
             }
             // statister.feedSentence(nodes)
             curDataset.accountExported(tokens.length)
+            if (!cliArgs.noStandartizing) {
+              g.standartizeSentForUd23BeforeEnhGeneration(nodes)
+            }
+
+            if (cliArgs.noEnhanced) {
+              tokens.forEach(x => x.edeps = [])
+            } else {
+              generateEnhancedDeps2(nodes)
+            }
+
             if (!cliArgs.noStandartizing) {
               g.standartizeSentenceForUd23(nodes)
             }

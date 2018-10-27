@@ -1,7 +1,7 @@
 import { GraphNode, walkDepthNoSelf, walkDepth } from '../../graph'
-import { Token, Dependency } from '../token'
+import { Token, Dependency, TokenTag } from '../token'
 import { MorphInterp } from '../morph_interp'
-import { uEq, uEqSome, stripSubrel } from './utils'
+import { uEq, uEqSome, stripSubrel, changeUniversal } from './utils'
 import { mu } from '../../mu'
 import { last, wiith } from '../../lang'
 import { UdPos, toUd } from './tagset'
@@ -690,24 +690,9 @@ export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNod
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
-  let lastToken = last(sentence).node
-  let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
-
+export function standartizeSentForUd23BeforeEnhGeneration(sentence: Array<TokenNode>) {
   for (let node of sentence) {
     let t = node.node
-
-    // todo? set obj from rev to obl
-    // todo: choose punct relation from the rigthtest token
-
-    for (let edep of t.edeps) {
-      if (isRelativeSpecificAcl(edep.relation)) {
-        edep.relation = 'acl:relcl'
-      } else if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
-        // remove non-exportable subrels
-        edep.relation = stripSubrel(edep.relation)
-      }
-    }
 
     normalizePunct(t.deps, sentence)
 
@@ -726,6 +711,49 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
       t.rel = 'obj'
     }
 
+    // administratively make all participles have cop not aux
+    if (t.interp.isParticiple()) {
+      node.children.filter(x => uEq(x.node.rel, 'aux'))
+        .forEach(x => x.node.rel = 'cop')
+    }
+
+    // change xcomp to ccomp
+    if (uEq(t.rel, 'xcomp')
+      && ['xsubj-is-phantom-iobj', 'xsubj-is-obl'].some(x => t.hasTag(x as TokenTag))
+    ) {
+      t.rel = 'ccomp'
+    }
+  }
+
+  let lastToken = last(sentence).node
+  let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
+
+  // todo: remove?
+  // set parataxis punct to the root
+  if (lastToken.interp.isPunctuation()
+    && uEq(lastToken.rel, 'parataxis')
+  ) {
+    lastToken.headIndex = rootIndex
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
+  for (let node of sentence) {
+    let t = node.node
+
+    // todo? set obj from rev to obl
+    // todo: choose punct relation from the rigthtest token
+
+    for (let edep of t.edeps) {
+      if (isRelativeSpecificAcl(edep.relation)) {
+        edep.relation = 'acl:relcl'
+      } else if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
+        // remove non-exportable subrels
+        edep.relation = stripSubrel(edep.relation)
+      }
+    }
+
     if (isRelativeSpecificAcl(t.rel)) {
       t.rel = 'acl:relcl'
     }
@@ -735,20 +763,7 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
       t.rel = stripSubrel(t.rel)
     }
 
-    // todo: test
-    if (t.interp.isParticiple()) {
-      node.children.filter(x => uEq(x.node.rel, 'aux'))
-        .forEach(x => x.node.rel = 'cop')
-    }
-
     standartizeMorphoForUd23(t.interp, t.form)
-  }
-
-  // set parataxis punct to the root
-  if (lastToken.interp.isPunctuation()
-    && uEq(lastToken.rel, 'parataxis')
-  ) {
-    lastToken.headIndex = rootIndex
   }
 }
 
@@ -1452,7 +1467,7 @@ const GEN_VALENCY_ADJECTIVES = new Set([
   'сповнений',
   'позбавлений',
   'повний',
-  'певний',
+  'повнісінький',
 ])
 
 const DAT_VALENCY_ADJECTIVES = new Set([
