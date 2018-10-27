@@ -4,7 +4,7 @@ import { MorphInterp } from '../morph_interp'
 import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
-import { titlecase, trimAfterFirst } from '../../string'
+import { titlecase, trimAfterFirst, trimBeforeFirst } from '../../string'
 import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole } from './uk_grammar'
 import { Dict } from '../../types'
 
@@ -548,6 +548,11 @@ export function parseBratFile(lines: Iterable<string>) {
 ////////////////////////////////////////////////////////////////////////////////
 export function stripSubrel(rel: string) {
   return trimAfterFirst(rel, ':')
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function changeUniversal(specRel: string, to: string) {
+  return to + trimBeforeFirst(specRel, ':')
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -58,6 +58,9 @@ export type TokenTag =
   | 'xsubj-from-head'
   | 'xsubj-is-phantom-iobj'
   | 'xsubj-is-obl'
+  | 'ok-root'
+  | 'orphanless-elision'
+  | 'nominal-ellipsis'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {

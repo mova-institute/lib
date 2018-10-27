@@ -302,9 +302,11 @@ export function validateSentenceSyntax(
   }
 
   const xreportIf = (message: string, fn: TreedSentencePredicate) => undefined
-  const tmpxreportIf = (message: string, fn: TreedSentencePredicate) => undefined
   const xreportIf2 = (message: string, fn: TreedSentencePredicate2) => undefined
   const xoldReportIf = (message: string, fn: SentencePredicate) => undefined
+
+  const tmpxreportIf = (message: string, fn: TreedSentencePredicate) => undefined
+  const tmpxreportIf2 = (message: string, fn: TreedSentencePredicate2) => undefined
 
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     tokens.some((xx, ii) => xx.headIndex === i && fn(xx, ii))
@@ -313,7 +315,7 @@ export function validateSentenceSyntax(
   // ~~~~~~~ rules ~~~~~~~~
 
   // invalid roots
-  if (sentenceHasOneRoot) {
+  if (sentenceHasOneRoot && !roots[0].node.hasTag('ok-root')) {
     let udPos = toUd(roots[0].node.interp).pos
     if (g.POSES_NEVER_ROOT.includes(udPos)) {
       problems.push({ indexes: [node2index.get(roots[0])], message: `${udPos} як корінь` })
@@ -1096,6 +1098,7 @@ export function validateSentenceSyntax(
         // console.error(sentence.map(x => x.form).join(' '))
         // console.error(indexes)
         // console.error(holes)
+        continue
         problems.push({ indexes: [...holes], message: `чужі токени всередині ${token.node.rel}` })
       }
     }
@@ -1330,7 +1333,7 @@ export function validateSentenceSyntax(
       && !t.node.interp.isAuxillary()
       && !uEqSome(t.node.rel, [...g.CLAUSE_RELS, 'conj'])
       && !['compound:svc', 'orphan', 'flat:repeat', 'flat:sibl'].includes(t.node.rel)
-      && !(uEq(t.node.rel, 'appos') && t.node.interp.isInfinitive())
+      && !(uEq(t.node.rel, 'appos') /* && t.node.interp.isInfinitive() */)
       && !(uEq(t.node.rel, 'obl') && t.node.hasTag('inf_prep'))
   )
 
@@ -1366,7 +1369,7 @@ export function validateSentenceSyntax(
     t => t.node.rel
       && t.node.interp.isNominative()
       && t.node.interp.isNounish()
-      && uEqSome(t.node.rel, ['nmod'])
+      && uEqSome(t.node.rel, ['nmod', 'orphan'])
     // && !uEqSome(t.node.rel, ['nsubj', 'flat:title', 'flat:name',
     //   'flat:repeat', 'parataxis', 'conj', 'appos', 'expl',
     // ])
@@ -1894,7 +1897,7 @@ export function validateSentenceSyntax(
         )
     )
 
-    reportIf2(`чистий flat`,
+    tmpxreportIf2(`чистий flat`,
       ({ r }) => r === 'flat'
     )
 
@@ -1948,6 +1951,8 @@ export function validateSentenceSyntax(
         && !i.isCardinalNumeral()
         && !n.parents.some(x => x.node.isElided())
         && !t.hasTag('promoted-not-adj')
+        && !t.hasTag('orphanless-elision')
+        && !t.hasTag('nominal-ellipsis')
     )
 
     reportIf2(`токен позначено “ожеледиця”`,
@@ -2013,16 +2018,32 @@ export function validateSentenceSyntax(
       && !t.parent.node.interp.isComparable()
     )
 
-    reportIf(`advcl під’єднане напряму до вказівного`, t =>
+    xreportIf(`advcl під’єднане напряму до вказівного`, t =>
       uEq(t.node.rel, 'advmod')
       && t.node.interp.isDemonstrative()
       && t.children.some(x => uEq(x.node.rel, 'advcl'))
     )
 
-    reportIf(`advcl під’єднане не напряму до вказівного`, t =>
+    tmpxreportIf(`advcl: під’єднане не напряму до вказівного`, t =>
       uEq(t.node.rel, 'advmod')
       && t.node.interp.isDemonstrative()
-      && t.parent.children.some(x => uEq(x.node.rel, 'advcl'))
+      && t.parent.children.some(x => uEq(x.node.rel, 'advcl')
+        && x.node.rel !== 'advcl:cmp'
+      )
+      && !g.hasChild(t, 'advcl')
+      // todo: ~тому, тоді навпаки
+
+      // коли наш лікнеп зробить своє діло серед нашого пролетаріату ,
+      // тоді те пролетарське мистецтво , що про нього ми зараз будемо говорити ,
+      // воістину буде творити чудеса
+    )
+
+    tmpxreportIf(`advcl:cmp під’єднане не напряму до вказівного`, t =>
+      uEq(t.node.rel, 'advmod')
+      && t.node.interp.isDemonstrative()
+      && t.parent.children.some(x => uEq(x.node.rel, 'advcl')
+        && x.node.rel === 'advcl:cmp'
+      )
     )
 
     reportIf(`неочікуваний клей між цим і наступним словом`, t =>
@@ -2038,7 +2059,7 @@ export function validateSentenceSyntax(
       && ['наприклад'].includes(t.node.interp.lemma)
     )
 
-    reportIf(`:relfull має сполучник`, t =>
+    tmpxreportIf(`:relfull має сполучник`, t =>
       t.node.rel === 'acl:relfull'
       && g.hasChild(t, 'mark')
     )
@@ -2046,6 +2067,7 @@ export function validateSentenceSyntax(
     reportIf(`:relfull без Rel`, t =>
       t.node.rel === 'acl:relfull'
       && !nodes.some(x => g.findRelativeClauseRoot(x) === t)
+      && !t.node.isElided()  // temp
     )
 
     xreportIf(`особовий в :irrel з _що_`, t =>
@@ -2175,17 +2197,12 @@ export function validateSentenceSyntax(
       && !t.node.hasTag('xsubj-from-head')
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
       && !t.parent.node.interp.isConverb()
-    )
+      )
 
-    reportIf(`advcl:sp без enhanced підмета`, t =>
+      reportIf(`advcl:sp без enhanced підмета`, t =>
       t.node.rel === 'advcl:sp'
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:sp']))
-    )
-
-    reportIf(`сам не obl/det`, t =>
-      t.node.interp.lemma === 'сам'
-      && !t.isRoot()
-      && !uEqSome(t.node.rel, ['obl', 'det'])
+      && !t.node.hasTag('xsubj-from-head')
     )
 
     reportIf(`емфатичний займенник (забули розбити?)`, t =>
@@ -2206,6 +2223,59 @@ export function validateSentenceSyntax(
       && !g.hasPredication(t)
       && !g.isInfinitiveVerbAnalytically(t)
       && !t.node.rel.endsWith(':sp')
+    )
+
+    xreportIf(`expl без підмета`, t =>
+      uEqSome(t.node.rel, ['expl'])
+      && !t.parent.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
+    )
+
+    reportIf(`підмет з інфінітиву`, t =>
+      uEqSome(t.node.rel, g.SUBJECTS)
+      && t.parent.node.interp.isInfinitive()
+    )
+
+    reportIf(`сам obl`, t =>
+      t.node.interp.lemma === 'сам'
+      && uEq(t.node.rel, 'obl')
+    )
+    reportIf(`сам det`, t =>
+      t.node.interp.lemma === 'сам'
+      && uEq(t.node.rel, 'det')
+    )
+    reportIf(`сам nsubj`, t =>
+      t.node.interp.lemma === 'сам'
+      && uEq(t.node.rel, 'nsubj')
+    )
+    reportIf(`сам advcl:sp`, t =>
+      t.node.interp.lemma === 'сам'
+      && uEq(t.node.rel, 'advcl:sp')
+    )
+    reportIf(`сам ?`, t =>
+      t.node.interp.lemma === 'сам'
+      && !uEqSome(t.node.rel, ['obl', 'det', 'nsubj', 'advcl', 'parataxis', 'conj'])
+      && !t.isRoot()
+    )
+    reportIf(`самий obl`, t =>
+      t.node.interp.lemma === 'самий'
+      && uEq(t.node.rel, 'obl')
+    )
+    reportIf(`самий det`, t =>
+      t.node.interp.lemma === 'самий'
+      && uEq(t.node.rel, 'det')
+    )
+    reportIf(`самий nsubj`, t =>
+      t.node.interp.lemma === 'самий'
+      && uEq(t.node.rel, 'nsubj')
+    )
+    reportIf(`самий advcl:sp`, t =>
+      t.node.interp.lemma === 'самий'
+      && uEq(t.node.rel, 'advcl:sp')
+    )
+    reportIf(`самий ?`, t =>
+      t.node.interp.lemma === 'самий'
+      && !uEqSome(t.node.rel, ['obl', 'det', 'nsubj', 'advcl', 'parataxis', 'conj'])
+      && !t.isRoot()
     )
 
     // trash >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
