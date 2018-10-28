@@ -174,6 +174,7 @@ function main() {
         if (cliArgs.reportErrors === 'all' || cliArgs.reportErrors === 'complete' && isComplete || cliArgs.validOnly) {
           let problems = validateSentenceSyntax(
             nodes,
+            multitokens,
             manualEnhancedNodes,
             analyzer,
             corefClusterization,

@@ -10,12 +10,13 @@ import { startsWithCapital } from '../../string'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
 import { PREDICATES, isNumericModifier, isGoverning, EnhancedNode } from './uk_grammar'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
+import { SimpleGrouping } from '../../grouping'
+import { compareAscending } from '../../algo'
+import { MultitokenDescriptor } from '../utils'
 import * as f from '../morph_features'
 import * as g from './uk_grammar'
 
 import { groupBy } from 'lodash'
-import { SimpleGrouping } from '../../grouping'
-import { compareAscending } from '../../algo'
 
 
 
@@ -133,13 +134,14 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
       || (t.node.interp.isAdjective() && !t.node.interp.isPronominal())
       || g.isNonverbialPredicate(t)
     ,
-    `в іменник`,
+    `в іменник / DET`,
     t => canActAsNounForObj(t)
-      || t.node.interp.lemma === 'який' && (
-        g.findRelativeClauseRoot(t) || t.parent.node.rel === 'flat:sibl'
-      )
-      || /* t.node.interp.isAdjective() && t.node.interp.isPronominal()
-      && */ g.hasChild(t, 'flat:abs')
+      // || t.node.interp.lemma === 'який' && (
+      //   g.findRelativeClauseRoot(t) || t.parent.node.rel === 'flat:sibl'
+      // )
+      || t.node.interp.isAdjective() && t.node.interp.isPronominal()
+      // && g.hasChild(t, 'flat:abs')
+      || 1  // temp, todo
     ,
   ],
   [`nmod`, `з іменника`, t => canActAsNoun(t) || g.isDenUDen(t) /* temp */,
@@ -264,6 +266,7 @@ export interface Problem {
 ////////////////////////////////////////////////////////////////////////////////
 export function validateSentenceSyntax(
   nodes: Array<GraphNode<Token>>,
+  multitokens: Array<MultitokenDescriptor>,
   manualEnhancedNodes: Array<EnhancedNode>,
   analyzer: MorphAnalyzer,
   corefClusterization: SimpleGrouping<Token>,
@@ -405,7 +408,8 @@ export function validateSentenceSyntax(
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   reportIf(`декілька підметів (${g.SUBJECTS.join('|')})`,
-    t => t.children.filter(x => uEqSome(x.node.rel, g.SUBJECTS)).length > 1
+    t => t.children.filter(x => uEqSome(x.node.rel, g.SUBJECTS)
+      && !x.node.isElided()).length > 1
   )
   reportIf(`декілька прямих додатків`,
     t => t.children.filter(x => !x.node.isElided()
@@ -567,6 +571,7 @@ export function validateSentenceSyntax(
       && !t.node.isGraft
       && t.parent.node.interp.isReversive()
       && !t.children.some(x => x.node.rel === 'flat:abs')
+      && !(uEqSome(t.node.rel, ['obl']) && ['сам'].includes(t.node.interp.lemma))
   )
 
   reportIf(`місцевий без прийменника`,
@@ -617,9 +622,10 @@ export function validateSentenceSyntax(
       && !t.node.rel.endsWith(':sp')
   )
 
-  reportIf(`зворотне має два додатки`,
+  xreportIf(`зворотне має два додатки`,
     t => t.node.interp.isReversive()
-      && t.children.filter(x => uEqSome(x.node.rel, ['obj', 'iobj', 'ccomp'])).length > 1
+      && t.children.filter(x => uEqSome(x.node.rel, ['obj', 'iobj', 'ccomp'])
+        && !x.node.isElided()).length > 1
   )
 
   reportIf(`неузгодження відмінків прийменника`,
@@ -1386,14 +1392,15 @@ export function validateSentenceSyntax(
     t => !t.isRoot()
       && t.node.interp.isAdverb()
       && t.parent.node.interp.isNounish()
+      && t.node.rel !== 'acl:adv'
       && !uEqSome(t.node.rel, ['discourse', 'parataxis', 'orphan'])
       && !uEqSome(t.parent.node.rel, ['obl', 'orphan'])
-      && t.node.rel !== 'acl:adv'
       && !t.parent.children.some(x => uEqSome(x.node.rel, ['nsubj', 'cop']))
-      && !t.node.interp.isNegative()
+      && !(['не'].includes(t.node.interp.lemma) && t.node.interp.isNegative())
       && !g.isQuantitativeAdverbModifier(t)
       && !g.isModalAdv(t)
-      && !g.ADVERBS_MODIFYING_NOUNS.includes(t.node.interp.lemma)
+      && !g.NOUN_MODIFIABLE_ADVS.includes(t.node.interp.lemma)
+      && !(uEqSome(t.node.rel, g.CLAUSAL_MODIFIERS) && g.hasPredication(t))
   )
 
   xreportIf(`неочікувана реляція в прислівник`,
@@ -1874,15 +1881,13 @@ export function validateSentenceSyntax(
     )
 
     {
-      let cutoff = [...g.SUBORDINATE_CLAUSES, 'parataxis', 'conj']
-      reportIf(`не єдиний відносний в підрядному реченні`,
-        t => t.node.interp.isRelative()
-          && t.parent
-          && uEqSome(t.parent.node.rel, g.SUBORDINATE_CLAUSES)
-          && mu(walkDepthNoSelf(t.parent, x => uEqSome(x.node.rel, cutoff)))
+      let cutoff = [/* ...g.SUBORDINATE_CLAUSES, */ 'parataxis'/* , 'conj' */]
+      reportIf(`не єдиний відносний в acl:relfull`,
+        t => t.node.rel === 'acl:relfull'
+          && mu(walkDepthNoSelf(t, x => uEqSome(x.node.rel, cutoff)))
             .filter(x => x.node.interp.isRelative()
               // з ким і про що розмовляє президент
-              && !(uEq(x.node.rel, 'conj') && x.parent.node.interp.isRelative())
+              // && !(uEq(x.node.rel, 'conj') && x.parent.node.interp.isRelative())
             )
             .unique()  // shared-private paths
             .longerThan(1)
@@ -1945,7 +1950,7 @@ export function validateSentenceSyntax(
       }
     ) */
 
-    reportIf2(`Promoted не прикметник`,
+    tmpxreportIf2(`Promoted не прикметник`,
       ({ n, t, i }) => t.isPromoted
         && !i.isAdjectivish()
         && !i.isCardinalNumeral()
@@ -2140,7 +2145,7 @@ export function validateSentenceSyntax(
       )
     )
 
-    if (1) {
+    if (0) {
       let relRoots = nodes.filter(x => x.node.interp.isRelative())
         .map(x => g.findRelativeClauseRoot(x))
       relRoots.filter((x, i) => relRoots.find((xx, ii) => ii !== i && xx === x))
@@ -2197,9 +2202,9 @@ export function validateSentenceSyntax(
       && !t.node.hasTag('xsubj-from-head')
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, g.SUBJECTS))
       && !t.parent.node.interp.isConverb()
-      )
+    )
 
-      reportIf(`advcl:sp без enhanced підмета`, t =>
+    reportIf(`advcl:sp без enhanced підмета`, t =>
       t.node.rel === 'advcl:sp'
       && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:sp']))
       && !t.node.hasTag('xsubj-from-head')
@@ -2298,6 +2303,10 @@ export function validateSentenceSyntax(
       xreportIf2(`_test: тераса за терасою`,
         ({ i, r }) => !uEq(r, 'nsubj')
           && i.isNominative()
+      )
+      xreportIf(`немає`, t =>
+        g.isNemaje(t.node.interp)
+        && findMultitoken(t.node.index, multitokens)
       )
     }
     // <<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2494,6 +2503,13 @@ export function validateSentenceSyntax(
 
 
   return problems
+}
+
+//------------------------------------------------------------------------------
+function findMultitoken(tokenIndex: number, multitokens: Array<MultitokenDescriptor>) {
+  let ret = multitokens.find(x => x.startIndex <= tokenIndex && x.startIndex + x.spanLength > tokenIndex)
+  // console.error(tokenIndex, multitokens)
+  return ret
 }
 
 //------------------------------------------------------------------------------

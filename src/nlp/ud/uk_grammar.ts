@@ -78,6 +78,11 @@ export function nsubjAgreesWithPredicate(noun: TokenNode, predicate: TokenNode) 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isNemaje(interp: MorphInterp) {
+  return ['немати', 'ні'].includes(interp.lemma) && interp.isVerb()
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function isConjlikeNmod(node: TokenNode) {
   return uEq(node.node.rel, 'nmod')
     && node.node.interp.isInstrumental()
@@ -960,7 +965,7 @@ export const QAUNTITATIVE_ADVERBS = [
   'чимало',
 ]
 
-export const ADVERBS_MODIFYING_NOUNS = [
+export const NOUN_MODIFIABLE_ADVS = [
   'майже',
 ]
 

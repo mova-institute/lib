@@ -535,7 +535,10 @@ async function main() {
             // console.log(token.id)
           }
 
-          if (token.rel === 'xcomp' && !g.isInfinitiveVerbAnalytically(node)) {
+          if (token.rel === 'xcomp'
+            && token.isPromoted
+            && !g.isInfinitiveVerbAnalytically(node)
+          ) {
             token.rel = 'ccomp'
           }
 
