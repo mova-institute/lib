@@ -1140,12 +1140,13 @@ export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
 
 export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'acl:adv',
-  'acl:parataxis',
   'acl:irrel',  // nothing relative about it
+  'acl:parataxis',
   'acl:relfull',  // has an overt PronType=Rel descendant
   'acl:relless',  // relative, but no overt PronType=Rel descendant, <nsubj back to antecedent
   'acl:relpers',  // relative, no PronType=Rel, but antecedent doubled by PronType=Pers
   'acl',
+  'adv:gerund',
   'advcl:cmp',
   'advcl:sp',
   'advcl:svc',
@@ -1178,22 +1179,23 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'dislocated',
   'expl',
   'fixed',
+  'flat:abs',
   'flat:foreign',
   'flat:name',
-  'flat:sibl',
   'flat:range',
-  'flat:abs',
   'flat:repeat',
+  'flat:sibl',
   'flat:title',
   'flat',
   'goeswith',
+  'iobj:agent',
   'iobj',
   'list',
   'mark',
-  'nmod',
   'nmod:iobj',
   'nmod:obj',
   'nmod:xcompsp',
+  'nmod',
   'nsubj:pass',
   'nsubj',
   'nummod:gov',
@@ -1211,8 +1213,8 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'punct',
   'reparandum',
   'root',
-  'vocative',
   'vocative:cl',
+  'vocative',
   'xcomp:sp',
   'xcomp',
 ]
