@@ -29,7 +29,7 @@ export function sentence2conllu(
   sentenceLevelData,
   options: Sentence2conlluParams = {}
 ) {
-  let text = mu(tokenStream2plaintext(tokens.filter(x => !x.isElided()), multitokens)).join('')
+  let text = mu(tokenStream2plaintext(tokens, multitokens)).join('')
   let comments = [`text = ${text}`]
   if (options.translit) {
     comments.push(`translit = ${cyrToJirechekish(text)}`)
@@ -48,8 +48,14 @@ export function sentence2conllu(
   let lines = comments.sort().map(x => `# ${x}`)
 
   let indices = buildConlluIndexMap(tokens)
+  let numElided = 0
   let multitokenIdx = 0
   for (let [i, token] of tokens.entries()) {
+
+    if (token.isElided()) {
+      ++numElided
+    }
+
     // deal with multitoken
     let isInsideMultitoken: boolean
     if (multitokenIdx < multitokens.length) {
@@ -57,7 +63,7 @@ export function sentence2conllu(
       isInsideMultitoken = i >= mt.startIndex
       if (i === mt.startIndex) {
         lines.push([
-          `${i + 1}-${i + mt.spanLength}`,
+          `${i + 1 - numElided}-${i + mt.spanLength - numElided}`,  // todo: simplify
           mt.form,
           ...'_'.repeat(7),
         ].join('\t'))

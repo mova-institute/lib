@@ -1215,6 +1215,10 @@ export function* tokenStream2plaintext(
   let space = ''
   let multitokenI = 0
   for (let [i, token] of mu(stream).entries()) {
+    if (token.isElided()) {
+      continue
+    }
+
     if (token.isGlue()) {
       space = ''
     } else if (token.getStructureName() === 'paragraph') {  // todo
