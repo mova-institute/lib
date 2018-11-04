@@ -248,6 +248,13 @@ export function wiith<TValue, TRet>(value: TValue, f: (value: TValue) => TRet) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function wiithNonempty<TValue, TRet>(value: TValue, f: (value: TValue) => TRet) {
+  if (value) {
+    return f(value)
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function mapInplace<T>(
   array: Array<T>,
   f: (element: T) => T,

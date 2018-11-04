@@ -58,7 +58,6 @@ export type Ud20MiSpecificRelation =
   | 'flat:title'
   | 'nsubj:pass'
   | 'nummod:gov'
-  | 'obl:agent'
   | 'parataxis:discourse'
   | 'parataxis:newsent'
   | 'parataxis:thatis'

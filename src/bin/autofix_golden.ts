@@ -258,6 +258,8 @@ async function main() {
           let interp = token.interp
           const udInterp = toUd(interp.clone())
 
+          let tokenElement = id2el.get(token.id)
+
           if (token.comment) {
             // morpho alteration
             {
@@ -436,6 +438,23 @@ async function main() {
             token.rel = 'amod'
           }
 
+          if (0 && interp.isAdverb()) {
+            let csubj = node.children.find(x => uEqSome(x.node.rel, ['csubj']))
+            if (csubj) {
+              if (token.isPromoted) {
+                // console.error(`PROMOKA ${token.id}`)
+                throw `PROMOKA ${token.id}`
+              }
+              csubj.node.rel = 'ccomp'
+
+              let tagsElStr = tokenElement.attribute('tags') || ''
+              tagsElStr += ' subjless-predication'
+              tagsElStr = tagsElStr.trim()
+              tokenElement.setAttribute('tags', tagsElStr)
+              // token.tags.add('subjless-predication')
+            }
+          }
+
           if (uEq(token.rel, 'discourse')
             && interp.lemma === 'це'
             && interp.isParticle()
@@ -536,8 +555,8 @@ async function main() {
           }
 
           if (token.rel === 'xcomp'
-            && token.isPromoted
-            && !g.isInfinitiveVerbAnalytically(node)
+            && !token.isPromoted
+            && !g.isInfinitiveAnalytically(node)
           ) {
             token.rel = 'ccomp'
           }
@@ -545,7 +564,7 @@ async function main() {
           if (interp.hasFeature(f.PunctuationType) && !interp.isPunctuation()) {
             interp.dropFeature(f.PunctuationType)
           }
-          // interp.dropFeature(f.PunctuationSide)
+          interp.dropFeature(f.PunctuationSide)
 
           if (token.getForm(false) === token.getForm(true)
             && [f.Pos.adverb, f.Pos.conjunction, f.Pos.interjection,
@@ -580,6 +599,27 @@ async function main() {
             // && [')', '(', '«', '»', '"', '“', '”'].includes(interp.lemma)
           ) {
             interp.dropFeature(f.PunctuationSide)
+          }
+
+          if (g.SOME_QUOTES.test(token.getForm())
+            && !interp.hasFeature(f.PunctuationType)
+          ) {
+            interp.setFeature(f.PunctuationType, f.PunctuationType.quote)
+          }
+
+          // if (token.rel === 'iobj:agent') {
+          //   token.rel = 'iobj'
+          //   let tags = tokenElement.attribute('tags') || ''
+          //   tags += ' iobj-agent'
+          //   tokenElement.setAttribute('tags', tags.trim())
+          // }
+
+          for (let edep of token.edeps) {
+            if (edep.relation === 'nsubj:x'
+              && nodes[edep.headIndex].node.rel === 'xcomp:sp'
+            ) {
+              edep.relation = 'nsubj:sp'
+            }
           }
 
           // if (token.isElided() && node.isRoot()) {
@@ -933,6 +973,16 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   ) {
     console.error(`no animacy for ${token2string(node.node)}`)
   }
+
+  // missing punctuation type
+  if (!interp.hasFeature(f.PunctuationType)) {
+    let interps = analyzer.tag(token.getForm())
+    let firstWithType = interps.find(x => x.hasFeature(f.PunctuationType))
+    if (firstWithType) {
+      token.interp = firstWithType
+    }
+  }
+
 
   // missing in dict
   if (!interp.isStem()  // temp

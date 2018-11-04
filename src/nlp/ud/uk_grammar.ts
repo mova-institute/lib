@@ -282,6 +282,26 @@ export function findShchojijiAntecedent(node: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// foofil
+export function findNeighbourAncestor(
+  sentence: Array<TokenNode>,
+  focusIndex: number,
+  rel: string,
+) {
+  for (let i = focusIndex + 1; i < sentence.length; ++i) {
+    let t = sentence[i]
+    if (t.node.interp.isPunctuation()) {
+      continue
+    }
+    if (t.ancestors0().some(x => x === t)) {
+      continue
+    }
+
+    return t.ancestors0().find(x => uEqSome(x.node.rel, [rel]))
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function isDativeValencyAdjective(t: Token) {
   return t.interp.isAdjective() && (
     DAT_VALENCY_ADJECTIVES.has(t.interp.lemma)
@@ -540,8 +560,14 @@ export function isInfinitiveCop(t: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isInfinitiveVerbAnalytically(t: TokenNode) {
+export function isInfinitiveAnalytically(t: TokenNode) {
   return isInfinitive(t) || isInfinitiveCop(t)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isFinite(t: TokenNode) {
+  return t.node.interp.isVerb() && !t.node.interp.isInfinitive()
+    || t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && !x.node.interp.isFinite())
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -647,14 +673,6 @@ export function standartizeMorphoForUd23(interp: MorphInterp, form: string) {
   interp.dropFeature(f.Oddness)
   interp.dropFeature(f.Colloquiality)
 
-  // temp
-  if (interp.isPunctuation()
-    && form === '—'  // m-dash
-    && !interp.hasFeature(f.PunctuationType)
-  ) {
-    interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
-  }
-
   if (interp.isForeign()) {
     interp.setFromVesumStr('x:foreign', interp.lemma)
   }
@@ -701,6 +719,10 @@ export function standartizeSentForUd23BeforeEnhGeneration(sentence: Array<TokenN
 
     normalizePunct(t.deps, sentence)
 
+    if (t.hasTag('iobj-agent')) {  // todo
+      t.edeps = t.edeps.filter(x => x.relation !== 'nsubj:x')
+    }
+
     // set AUX and Cond
     if (uEqSome(t.rel, ['aux', 'cop'])) {
       t.interp.setIsAuxillary()
@@ -713,6 +735,7 @@ export function standartizeSentForUd23BeforeEnhGeneration(sentence: Array<TokenN
     if (uEq(t.rel, 'iobj')
       && !node.parent.children.some(x => uEqSome(x.node.rel, CORE_COMPLEMENTS))
     ) {
+      // t.rel = changeUniversal(t.rel, 'obj')
       t.rel = 'obj'
     }
 
@@ -751,7 +774,7 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
     // todo: choose punct relation from the rigthtest token
 
     for (let edep of t.edeps) {
-      if (isRelativeSpecificAcl(edep.relation)) {
+      if (isRelativeClause(edep.relation)) {
         edep.relation = 'acl:relcl'
       } else if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
         // remove non-exportable subrels
@@ -759,7 +782,7 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
       }
     }
 
-    if (isRelativeSpecificAcl(t.rel)) {
+    if (isRelativeClause(t.rel)) {
       t.rel = 'acl:relcl'
     }
 
@@ -833,9 +856,11 @@ export function isNonverbialPredicate(t: TokenNode) {
 ////////////////////////////////////////////////////////////////////////////////
 export function hasPredication(t: TokenNode) {
   return t.node.hasTag('itsubj')
+    // || t.node.hasTag('subjless-predication')
     || t.children.some(x => uEqSome(x.node.rel, SUBJECTS))
-    || t.children.some(x => uEqSome(x.node.rel, ['cop']))
-    || (t.node.interp.isVerb() && !isInfinitive(t))
+    // || t.children.some(x => uEqSome(x.node.rel, ['cop']))
+    // || t.node.interp.isVerb() && !isInfinitive(t)
+    || isFinite(t)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -849,11 +874,15 @@ export function areOkToBeGlued(t: TokenNode, tNext: TokenNode) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function isRelativeSpecificAcl(rel: string) {
-  return rel === 'acl:irrel'
+export function isRelativeClause(rel: string) {
+  return rel === 'acl:relfull'
     || rel === 'acl:relpers'
-    || rel === 'acl:relfull'
     || rel === 'acl:relless'
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isRelativeSpecificAcl(rel: string) {
+  return isRelativeClause(rel) || rel === 'acl:irrel'
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -983,11 +1012,6 @@ export const CORE_COMPLEMENTS_XCOMP = [
 export const COMPLEMENTS = [
   ...CORE_COMPLEMENTS,
   'iobj',
-]
-
-export const OBLIQUES = [
-  'obl',
-  'obl:agent',
 ]
 
 export const SUBJECTS = [
@@ -1155,6 +1179,7 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'advmod:det',
   'advmod',
   'amod',
+  'appos:spec',
   'appos:nonnom',
   'appos:reverse',
   'appos',
@@ -1188,7 +1213,6 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'flat:title',
   'flat',
   'goeswith',
-  'iobj:agent',
   'iobj',
   'list',
   'mark',
@@ -1201,7 +1225,6 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'nummod:gov',
   'nummod',
   'obj',
-  'obl:agent',
   'obl:arg',
   'obl',
   'orphan',
@@ -1549,6 +1572,8 @@ export const ENHANCED_RELATIONS = [
   'nsubj:sp',
   'csubj:sp',
 ]
+
+export const SOME_QUOTES = /^[«»"”“„']+$/
 
 //------------------------------------------------------------------------------
 const UD_23_OFFICIAL_SUBRELS = new Set([

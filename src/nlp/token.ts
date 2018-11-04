@@ -61,6 +61,7 @@ export type TokenTag =
   | 'ok-root'
   | 'orphanless-elision'
   | 'nominal-ellipsis'
+  | 'iobj-agent'
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {
