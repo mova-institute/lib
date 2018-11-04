@@ -5,10 +5,12 @@ import {
   EnhancedArrow,
   CLAUSAL_MODIFIERS,
   CLAUSAL_TO_PLAIN,
+  CLAUSE_RELS,
 } from './uk_grammar'
 import { DirectedGraphNode, DupePolicy } from '../../directed_graph'
 import { last } from '../../lang'
 import { UdPos, toUd } from './tagset'
+import { uniq } from '../../algo'
 
 
 
@@ -50,10 +52,8 @@ export function generateEnhancedDeps2(
   loadEnhancedGraphFromTokens(enhancedNodes)  // read manual enhanced annotation
   propagateConjuncts(enhancedNodes)
   addCoreferenceForPersonalRelcl(enhancedNodes)
-  addCoreferenceForClassicalRelcl(enhancedNodes)
-  // (relcls without a Rel only have `ref` (annotated manually))
-  // todo
-  // propagateConjuncts(enhancedNodes, true)  // propagate what we just generated
+  addCoreferenceForClassicalRelcl(enhancedNodes)  // acl:relles has _:rel annotated manually
+  // propagateConjuncts(enhancedNodes, true)  // propagate what we've just generated
 
   saveEnhancedGraphToTokens(enhancedNodes, true)
 }
@@ -71,32 +71,46 @@ function connectEphemeralRoot(enhancedNodes: Array<EnhancedNode>) {
 function addCoreferenceForClassicalRelcl(enhancedNodes: Array<EnhancedNode>) {
   for (let node of enhancedNodes) {
     for (let arrow of node.incomingArrows) {
-      if (uEq(arrow.attrib, 'acl:relfull')) {
-        let relclArrow = arrow
+      if (!uEq(arrow.attrib, 'acl:relfull')) {
+        continue
+      }
 
-        if (relclArrow.end.node.interp.isRelative()) {
-          let refArrow = relclArrow.start.addOutgoingArrow(relclArrow.end, 'ref', DupePolicy.throw, true)
-          addFromNominalRelclHeadBackToAntecedent(refArrow)
+      let relclArrow = arrow
+
+      if (relclArrow.end.node.interp.isRelative()) {
+        let refArrow = relclArrow.start.addOutgoingArrow(relclArrow.end, 'ref', DupePolicy.throw, true)
+        addFromNominalRelclHeadBackToAntecedent(refArrow)
+      } else {
+        let arrowsIntoRelatives = relclArrow.end.pathsForwardWidth({
+          cutAndFilter: path => uEqSome(last(path).attrib, ['parataxis']),
+          // cutAndInclude: path => uEqSome(last(path).attrib, ['acl']),
+        })
+          .map(x => last(x))
+          .filter(x => x.end.node.interp.isRelative() && !uEqSome(x.attrib, ['ref', 'conj']))
+          .toArray()
+
+        if (!arrowsIntoRelatives.length) {
+          let message = `No relative in acl:relfull: Id=${relclArrow.end.node.id}`
+          // console.error(message)
+          continue
+          throw new Error(message)
+        }
+
+        let relatives = uniq(arrowsIntoRelatives.map(x => x.end))
+        if (relatives.length > 1) {  // multiple relative mode: we choose only those with manual ref>
+          let manualRefs = relclArrow.start.outgoingArrows
+            .filter(x => x.attrib === 'ref' && relatives.includes(x.end))
+          if (!manualRefs.length) {
+            let message = `Id=${relclArrow.end.node.id}: No refs in acl:relfull with multiple relatives`
+            console.error(message)
+            // console.error(relclArrow.start.outgoingArrows)
+            continue
+            throw new Error(message)
+          }
+          manualRefs.forEach(addFromRelclBackToAntecedent)
         } else {
-          let arrowsIntoRelative = relclArrow.end.pathsForwardWidth({
-            // cutAndFilter: path => uEqSome(last(path).attrib, CLAUSE_RELS),
-            // cutAndInclude: path => uEqSome(last(path).attrib, ['acl']),
-          })
-            .map(x => last(x))
-            .filter(x => x.end.node.interp.isRelative() && !uEqSome(x.attrib, ['ref', 'conj']))
-            .toArray()
-
-          if (!arrowsIntoRelative.length) {
-            // throw new Error(`No relative in acl:relfull: Id=${relclArrow.end.node.id}`)
-          }
-          if (arrowsIntoRelative.length > 1) {
-            // throw new Error(`${arrowsIntoRelative.length} relatives in acl:relfull`)
-          }
-          if (arrowsIntoRelative.length) {
-            // todo: duped
-            let refArrow = relclArrow.start.addOutgoingArrow(arrowsIntoRelative[0].end, 'ref', DupePolicy.ignore, true)
-            addFromRelclBackToAntecedent(refArrow)
-          }
+          let refArrow = relclArrow.start.addOutgoingArrow(arrowsIntoRelatives[0].end, 'ref', DupePolicy.ignore, true)
+          addFromRelclBackToAntecedent(refArrow)
         }
       }
     }
@@ -111,7 +125,8 @@ function addCoreferenceForPersonalRelcl(enhancedNodes: Array<EnhancedNode>) {
         let refArrow = arrow  // to name
         let relclArrows = refArrow.start.outgoingArrows.filter(x => x.attrib === 'acl:relpers')
         if (!relclArrows.length) {
-          throw new Error(`ref not from acl:relpers`)
+          continue
+          // throw new Error(`ref not from acl:relpers`)
         }
         let refAsPredicate = relclArrows.some(x => x.end === refArrow.end)
         if (refAsPredicate) {
@@ -160,21 +175,25 @@ function propagateConjuncts(enhancedTree: Array<EnhancedNode>, dupesExpected = f
   let dupePolicy = dupesExpected ? DupePolicy.ignore : DupePolicy.throw
 
   // 1: conjuncts are governors: eating->rapidly, reading->Paul, eating->Paul
+  // if (!dupesExpected) {
   for (let node of enhancedTree) {
     let firstConjChain = node.walkBackMu(({ attrib: rel }) => uEq(rel, 'conj') && rel !== 'conj:parataxis')
       .map(x => x.start)
     for (let firstConj of firstConjChain) {
       firstConj.outgoingArrows
         .filter(x => x.end !== node
-          && (uEq(x.attrib, 'ref')
-            || x.end.node.hdeps.some(helperDep => helperDep.headId === firstConj.node.id
-              && ['distrib', 'collect'].includes(helperDep.relation)
+          // todo: share ref depending on helpers for :relcl
+          && (/* uEq(x.attrib, 'ref') || */ x.end.node.hdeps.some(helperDep => helperDep.headId === firstConj.node.id
+            && (['distrib', 'collect'].includes(helperDep.relation)
+              // || uEqSome(x.attrib, ['nsubj', 'csubj'])  // temp
             )
+          )
           )
         )
         .forEach(x => x.end.addIncomingArrow(node, x.attrib, dupePolicy, !dupesExpected))
     }
   }
+  // }
 
   // 2: conjuncts are dependents: _a long and wide river_
   for (let node of enhancedTree) {
