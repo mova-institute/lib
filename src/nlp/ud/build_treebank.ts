@@ -209,7 +209,7 @@ function main() {
             }
 
             if (cliArgs.noEnhanced) {
-              tokens.forEach(x => x.edeps = [])
+              // tokens.forEach(x => x.edeps = [])
             } else {
               generateEnhancedDeps2(nodes)
             }
