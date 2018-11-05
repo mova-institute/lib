@@ -21,6 +21,9 @@ import groupby = require('lodash.groupby')
 
 
 //------------------------------------------------------------------------------
+const GUI_SUPPORTED_TAGS = ['Promoted', 'Graft', 'ItSubj']
+
+//------------------------------------------------------------------------------
 function main() {
   // const now = toSortableDatetime(new Date())
 
@@ -61,14 +64,18 @@ function main() {
             continue
           }
           el.setAttribute('comment', span.comment)
-          let tags = new Array<string>()
-          for (let tag of ['Promoted', 'Graft', 'ItSubj']) {
+          let tags = el.attribute('tags')
+            ? new Set(el.attribute('tags').trim().split(/\s+/))
+            : new Set<string>()
+          for (let tag of GUI_SUPPORTED_TAGS) {
             if (span.annotations[tag]) {
-              tags.push(tag.toLowerCase())
+              tags.add(tag.toLowerCase())
+            } else {
+              tags.delete(tag.toLowerCase())
             }
           }
-          if (tags.length) {
-            el.setAttribute('tags', tags.join(' '))
+          if (tags.size) {
+            el.setAttribute('tags', [...tags].join(' '))
           } else {
             el.removeAttribute('tags')
           }
