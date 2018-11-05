@@ -140,7 +140,17 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return mu(this.pathsWidth('forward', params))
   }
 
+  walkForwardWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
+    return this.pathsForwardWidth(params)
+      .map(x => last(x))
+  }
+
   pathsBackWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
     return mu(this.pathsWidth('backward', params))
+  }
+
+  walkBackWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
+    return this.pathsBackWidth(params)
+      .map(x => last(x))
   }
 }

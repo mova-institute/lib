@@ -614,6 +614,17 @@ async function main() {
           //   tokenElement.setAttribute('tags', tags.trim())
           // }
 
+          // {
+          //   let relclRoot = g.findRelativeClauseRoot(node)
+          //   if (relclRoot && relclRoot.node.rel === 'acl:relfull') {
+          //     token.edeps.push({ headId: relclRoot.parent.node.id, relation: 'ref' })
+          //     relclRoot.node.rel = 'acl'
+          //   }
+          // }
+          // if (token.rel === 'acl:relpers') {
+          //   token.rel = 'acl'
+          // }
+
           for (let edep of token.edeps) {
             if (edep.relation === 'nsubj:x'
               && nodes[edep.headIndex].node.rel === 'xcomp:sp'

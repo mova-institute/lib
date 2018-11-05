@@ -9,6 +9,7 @@ import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import { compareAscending, clusterize } from '../../algo'
 import { DirectedGraphNode, Arrow } from '../../directed_graph'
 import * as f from '../morph_features'
+import { buildEnhancedGraphFromTokens, buildEnhancedTree, loadEnhancedGraphFromTokens } from './enhanced'
 
 
 
@@ -262,6 +263,20 @@ export function findRelativeClauseRoot(relative: TokenNode) {
   if (clauseRoot && uEq(clauseRoot.node.rel, 'acl')) {
     return clauseRoot
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isRelclByRef(aclArrow: EnhancedArrow) {
+  if (!uEq(aclArrow.attrib, 'acl')) {
+    return false
+  }
+
+  let relativesFromStart = aclArrow.start.outgoingArrows
+    .filter(x => x.attrib === 'ref')
+    .map(x => x.end)
+
+  return aclArrow.end.walkForwardWidth()
+    .some(arrow => relativesFromStart.includes(arrow.end))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -713,14 +728,31 @@ export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNod
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function standartizeSentForUd23BeforeEnhGeneration(sentence: Array<TokenNode>) {
-  for (let node of sentence) {
+export function standartizeSentForUd23BeforeEnhGeneration(
+  basicNodes: Array<TokenNode>,
+) {
+  let enhancedNodes = buildEnhancedTree(basicNodes)
+  loadEnhancedGraphFromTokens(enhancedNodes)
+  for (let enode of enhancedNodes) {
+    for (let arrow of enode.incomingArrows) {
+      if (isRelclByRef(arrow)) {
+        enode.node.rel = 'acl:relcl'
+      }
+    }
+  }
+
+  for (let node of basicNodes) {
     let t = node.node
 
-    normalizePunct(t.deps, sentence)
+    normalizePunct(t.deps, basicNodes)
 
     if (t.hasTag('iobj-agent')) {  // todo
       t.edeps = t.edeps.filter(x => x.relation !== 'nsubj:x')
+    }
+
+    // set :relles to :relcl
+    if (t.rel === 'acl:relless') {
+      t.rel = 'acl:relcl'
     }
 
     // set AUX and Cond
@@ -753,8 +785,8 @@ export function standartizeSentForUd23BeforeEnhGeneration(sentence: Array<TokenN
     }
   }
 
-  let lastToken = last(sentence).node
-  let rootIndex = sentence.findIndex(x => !x.node.hasDeps())
+  let lastToken = last(basicNodes).node
+  let rootIndex = basicNodes.findIndex(x => !x.node.hasDeps())
 
   // todo: remove?
   // set parataxis punct to the root
@@ -766,8 +798,8 @@ export function standartizeSentForUd23BeforeEnhGeneration(sentence: Array<TokenN
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
-  for (let node of sentence) {
+export function standartizeSentenceForUd23(basicNodes: Array<TokenNode>) {
+  for (let node of basicNodes) {
     let t = node.node
 
     // todo? set obj from rev to obl
@@ -782,9 +814,6 @@ export function standartizeSentenceForUd23(sentence: Array<TokenNode>) {
       }
     }
 
-    if (isRelativeClause(t.rel)) {
-      t.rel = 'acl:relcl'
-    }
 
     // remove non-exportable subrels
     if (t.rel && !UD_23_OFFICIAL_SUBRELS.has(t.rel)) {
@@ -850,6 +879,13 @@ export function fillWithValencyFromDict(interp: MorphInterp, valencyDict: Valenc
 export function isNonverbialPredicate(t: TokenNode) {
   return (t.node.interp.isNounish() || t.node.interp.isAdjective()) && t.children.some(
     x => uEqSome(x.node.rel, ['cop', 'nsubj', 'csubj'])
+  )
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isNonverbialPredicateEnh(t: EnhancedNode) {
+  return (t.node.interp.isNounish() || t.node.interp.isAdjective()) && t.outgoingArrows.some(
+    x => uEqSome(x.attrib, ['cop', 'nsubj', 'csubj'])
   )
 }
 

@@ -6,11 +6,10 @@ import {
   CLAUSAL_MODIFIERS,
   CLAUSAL_TO_PLAIN,
   CLAUSE_RELS,
+  isNonverbialPredicateEnh,
 } from './uk_grammar'
 import { DirectedGraphNode, DupePolicy } from '../../directed_graph'
-import { last } from '../../lang'
 import { UdPos, toUd } from './tagset'
-import { uniq } from '../../algo'
 
 
 
@@ -51,8 +50,7 @@ export function generateEnhancedDeps2(
   connectEphemeralRoot(enhancedNodes)  // to conj-propagate root
   loadEnhancedGraphFromTokens(enhancedNodes)  // read manual enhanced annotation
   propagateConjuncts(enhancedNodes)
-  addCoreferenceForPersonalRelcl(enhancedNodes)
-  addCoreferenceForClassicalRelcl(enhancedNodes)  // acl:relles has _:rel annotated manually
+  addRelclBackwardLinks(enhancedNodes)
   // propagateConjuncts(enhancedNodes, true)  // propagate what we've just generated
 
   saveEnhancedGraphToTokens(enhancedNodes, true)
@@ -68,73 +66,26 @@ function connectEphemeralRoot(enhancedNodes: Array<EnhancedNode>) {
 }
 
 //------------------------------------------------------------------------------
-function addCoreferenceForClassicalRelcl(enhancedNodes: Array<EnhancedNode>) {
-  for (let node of enhancedNodes) {
-    for (let arrow of node.incomingArrows) {
-      if (!uEq(arrow.attrib, 'acl:relfull')) {
-        continue
-      }
-
-      let relclArrow = arrow
-
-      if (relclArrow.end.node.interp.isRelative()) {
-        let refArrow = relclArrow.start.addOutgoingArrow(relclArrow.end, 'ref', DupePolicy.throw, true)
-        addFromNominalRelclHeadBackToAntecedent(refArrow)
-      } else {
-        let arrowsIntoRelatives = relclArrow.end.pathsForwardWidth({
-          cutAndFilter: path => uEqSome(last(path).attrib, ['parataxis']),
-          // cutAndInclude: path => uEqSome(last(path).attrib, ['acl']),
-        })
-          .map(x => last(x))
-          .filter(x => x.end.node.interp.isRelative() && !uEqSome(x.attrib, ['ref', 'conj']))
-          .toArray()
-
-        if (!arrowsIntoRelatives.length) {
-          let message = `No relative in acl:relfull: Id=${relclArrow.end.node.id}`
-          // console.error(message)
-          continue
-          throw new Error(message)
-        }
-
-        let relatives = uniq(arrowsIntoRelatives.map(x => x.end))
-        if (relatives.length > 1) {  // multiple relative mode: we choose only those with manual ref>
-          let manualRefs = relclArrow.start.outgoingArrows
-            .filter(x => x.attrib === 'ref' && relatives.includes(x.end))
-          if (!manualRefs.length) {
-            let message = `Id=${relclArrow.end.node.id}: No refs in acl:relfull with multiple relatives`
-            console.error(message)
-            // console.error(relclArrow.start.outgoingArrows)
-            continue
-            throw new Error(message)
-          }
-          manualRefs.forEach(addFromRelclBackToAntecedent)
-        } else {
-          let refArrow = relclArrow.start.addOutgoingArrow(arrowsIntoRelatives[0].end, 'ref', DupePolicy.ignore, true)
-          addFromRelclBackToAntecedent(refArrow)
-        }
-      }
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-function addCoreferenceForPersonalRelcl(enhancedNodes: Array<EnhancedNode>) {
+function addRelclBackwardLinks(enhancedNodes: Array<EnhancedNode>) {
   for (let node of enhancedNodes) {
     for (let arrow of node.incomingArrows) {
       if (uEq(arrow.attrib, 'ref')) {  // annotated manually
-        let refArrow = arrow  // to name
-        let relclArrows = refArrow.start.outgoingArrows.filter(x => x.attrib === 'acl:relpers')
-        if (!relclArrows.length) {
-          continue
-          // throw new Error(`ref not from acl:relpers`)
-        }
-        let refAsPredicate = relclArrows.some(x => x.end === refArrow.end)
-        if (refAsPredicate) {
-          // переможець, що ним є ти
-          addFromNominalRelclHeadBackToAntecedent(refArrow)
+        let ref = arrow
+        let isNonverbalPredication = isNonverbialPredicateEnh(ref.end)
+        if (ref.end.node.interp.isRelative()) {
+          if (isNonverbalPredication) {
+            addFromNominalRelclHeadBackToAntecedent(ref)
+          } else {
+            addFromRelclBackToAntecedent(ref)
+          }
         } else {
-          // дівчина, що нею милувався
-          addFromRelclBackToAntecedent(refArrow)
+          if (isNonverbalPredication) {
+            // переможець, що ним є ти
+            addFromNominalRelclHeadBackToAntecedent(ref)
+          } else {
+            // дівчина, що нею милувався
+            addFromRelclBackToAntecedent(ref)
+          }
         }
       }
     }
