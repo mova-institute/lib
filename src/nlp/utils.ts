@@ -1122,6 +1122,7 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
         let config = tuple(
           tuple('dep', tok.deps),
           tuple('edep', tok.edeps),
+          tuple('pdep', tok.pdeps),
           tuple('hdep', tok.hdeps),
         )
         for (let [xmlAttr, tokenAttr] of config) {

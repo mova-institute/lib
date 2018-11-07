@@ -90,6 +90,7 @@ export class Token {
   opensParagraph: boolean  // temp
   deps = new Array<Dependency>()
   edeps = new Array<Dependency>()
+  pdeps = new Array<Dependency>()
   hdeps = new Array<Dependency>()
   corefs = new Array<Coreference>()
   tags = new CoolSet<TokenTag>()

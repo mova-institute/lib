@@ -932,7 +932,12 @@ export function isHelper(relation: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export const enum DependencyType { basic, enhanced, helper }
+export function isProposition(relation: string) {
+  return PROPBANK_RELATIONS.has(relation)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export const enum DependencyType { basic, enhanced, proposition, helper }
 
 ////////////////////////////////////////////////////////////////////////////////
 export function classifyRelation(relation: string) {
@@ -941,6 +946,9 @@ export function classifyRelation(relation: string) {
   }
   if (isHelper(relation)) {
     return DependencyType.helper
+  }
+  if (isProposition(relation)) {
+    return DependencyType.proposition
   }
 
   return DependencyType.basic
@@ -1192,11 +1200,26 @@ export const COMPARATIVE_SCONJS = [
 export const CONJ_PROPAGATION_RELS_ARR = [
   'private',
   'distrib',
-  'collect',
+  'collect'
 ]
 export const CONJ_PROPAGATION_RELS = new Set(CONJ_PROPAGATION_RELS_ARR)
 
 export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
+
+export const PROPBANK_RELATIONS = new Set([
+  'agent',
+  'patient',
+  'benefactor',
+  'instrument',
+  'com',
+  'dir',
+  'loc',
+  'tmp',
+  'mnr',
+  'ext',
+  'prp',
+  'cau'
+])
 
 export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'acl:adv',

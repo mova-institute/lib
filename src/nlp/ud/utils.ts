@@ -340,7 +340,7 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
   let rId = 1
   for (let sentence of sentences) {
     for (let token of sentence) {
-      for (let deps of [token.node.deps, token.node.edeps, token.node.hdeps]) {
+      for (let deps of [token.node.deps, token.node.edeps, token.node.pdeps, token.node.hdeps]) {
         for (let dep of deps) {
           let head = n2id[dep.headId]
           let dependant = n2id[token.node.id]

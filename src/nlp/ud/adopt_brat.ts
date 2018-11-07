@@ -83,16 +83,23 @@ function main() {
           let arrows = span.arrows
             .filter(x => isString(x.head.annotations.N))
           arrows.forEach(x => x.relation = x.relation.replace('_', ':'))
-          let [basicArrows, enhancedArrows, helperArrows] = algo.clusterize(arrows,
-            x => classifyRelation(x.relation), [[], [], []])
+          let [
+            basicArrows,
+            enhancedArrows,
+            propositionArrows,
+            helperArrows
+          ] = algo.clusterize(arrows, x => classifyRelation(x.relation))
 
           let config = tuple(
             tuple(basicArrows, 'dep'),
             tuple(enhancedArrows, 'edep'),
+            tuple(propositionArrows, 'pdep'),
             tuple(helperArrows, 'hdep'),
           )
           for (let [specificArrows, attribute] of config) {
-            el.setAttribute(attribute, bratArrowsToAttribute(specificArrows))
+            if (specificArrows) {
+              el.setAttribute(attribute, bratArrowsToAttribute(specificArrows))
+            }
           }
 
           id2bratPath[span.annotations.N] = [
