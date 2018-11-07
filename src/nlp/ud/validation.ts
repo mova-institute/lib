@@ -1415,7 +1415,6 @@ export function validateSentenceSyntax(
       && !(uEqSome(t.node.rel, g.CLAUSAL_MODIFIERS) && g.hasPredication(t))
       // [росте] ліщина колючого горіха, ялини , де-не-де берізки, берестина
       && !(uEqSome(t.node.rel, ['conj']) && g.hasChild(t, 'flat:sibl'))
-
   )
 
   xreportIf(`неочікувана реляція в прислівник`,
