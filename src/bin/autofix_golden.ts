@@ -607,24 +607,6 @@ async function main() {
             interp.setFeature(f.PunctuationType, f.PunctuationType.quote)
           }
 
-          // if (token.rel === 'iobj:agent') {
-          //   token.rel = 'iobj'
-          //   let tags = tokenElement.attribute('tags') || ''
-          //   tags += ' iobj-agent'
-          //   tokenElement.setAttribute('tags', tags.trim())
-          // }
-
-          // {
-          //   let relclRoot = g.findRelativeClauseRoot(node)
-          //   if (relclRoot && relclRoot.node.rel === 'acl:relfull') {
-          //     token.edeps.push({ headId: relclRoot.parent.node.id, relation: 'ref' })
-          //     relclRoot.node.rel = 'acl'
-          //   }
-          // }
-          // if (token.rel === 'acl:relpers') {
-          //   token.rel = 'acl'
-          // }
-
           for (let edep of token.edeps) {
             if (edep.relation === 'nsubj:x'
               && nodes[edep.headIndex].node.rel === 'xcomp:sp'
@@ -643,21 +625,6 @@ async function main() {
           if (transormIds && transormIds.has(token.id)) {
             TRANSFORMS[args.transform](node)
           }
-
-          // if (isNegated(token.getForm(), token.interp, analyzer)) {
-          //   token.interp.setIsNegative()
-          //   token.interp.lemma = token.interp.lemma.substr(2)
-          // }
-
-          // if (node.node.interp.isRelative()
-          //   && !node.node.interp.isAdverb()
-          //   && !['3aan', '3amx', '3anj', '2yar', '14gz', '38w6'].includes(token.id)
-          // ) {
-          //   let relclRoot = g.findRelativeClauseRoot(node)
-          //   if (relclRoot) {
-          //     relclRoot.node.rel = 'acl:relfull'
-          //   }
-          // }
 
           // цікавий вивід
           // if (uEqSome(token.rel, ['acl', 'advmod'])
@@ -1388,9 +1355,6 @@ async function getFbPostMeta(url: string) {
 const TRANSFORMS = {
   toObl(t: GraphNode<Token>) {
     t.node.rel = 'obl'
-  },
-  toRelfull(t: GraphNode<Token>) {
-    t.node.rel = 'acl:relfull'
   },
   toIrrel(t: GraphNode<Token>) {
     t.node.rel = 'acl:irrel'

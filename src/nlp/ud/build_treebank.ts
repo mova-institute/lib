@@ -28,7 +28,7 @@ import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 import { buildCoreferenceClusters } from '../coreference'
 import { intbool } from '../../lang'
-import { generateEnhancedDeps2, buildEnhancedGraphFromTokens } from './enhanced'
+import { generateEnhancedDeps2, buildEnhancedGraphFromTokens, loadEnhancedGraphFromTokens, buildEnhancedTreeFromBasic } from './enhanced'
 import { TrebankStatister } from './trebank_statister'
 
 
@@ -100,7 +100,9 @@ function main() {
     for (let sentence of sentenceStream) {
       let { tokens, multitokens, nodes, sentenceId, dataset, document, paragraph, } = sentence
 
-      let manualEnhancedNodes = buildEnhancedGraphFromTokens(nodes)
+      let manualEnhancedNodesOnly = buildEnhancedGraphFromTokens(nodes)
+      let enhancedNodes = buildEnhancedTreeFromBasic(nodes)
+      loadEnhancedGraphFromTokens(enhancedNodes)
 
       // count some stats
       if (valencyDict) {
@@ -175,7 +177,8 @@ function main() {
           let problems = validateSentenceSyntax(
             nodes,
             multitokens,
-            manualEnhancedNodes,
+            manualEnhancedNodesOnly,
+            enhancedNodes,
             analyzer,
             corefClusterization,
             valencyDict

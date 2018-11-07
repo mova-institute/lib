@@ -46,7 +46,7 @@ import { UdPos, toUd } from './tagset'
 export function generateEnhancedDeps2(
   basicNodes: Array<TokenNode>,
 ) {
-  let enhancedNodes = buildEnhancedTree(basicNodes)
+  let enhancedNodes = buildEnhancedTreeFromBasic(basicNodes)
   connectEphemeralRoot(enhancedNodes)  // to conj-propagate root
   loadEnhancedGraphFromTokens(enhancedNodes)  // read manual enhanced annotation
   propagateConjuncts(enhancedNodes)
@@ -270,7 +270,7 @@ export function buildEnhancedGraphFromTokens(basicNodes: Array<TokenNode>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function buildEnhancedTree(basicNodes: Array<TokenNode>) {
+export function buildEnhancedTreeFromBasic(basicNodes: Array<TokenNode>) {
   let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
 
   for (let [i, basicNode] of basicNodes.entries()) {

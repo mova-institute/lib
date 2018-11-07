@@ -8,7 +8,7 @@ import { last, arrayed, wiith, wiithNonempty } from '../../lang'
 import { uEq, uEqSome } from './utils'
 import { startsWithCapital } from '../../string'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
-import { PREDICATES, isNumericModifier, isGoverning, EnhancedNode } from './uk_grammar'
+import { PREDICATES, isNumericModifier, isGoverning, EnhancedArrow, EnhancedNode } from './uk_grammar'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import { SimpleGrouping } from '../../grouping'
 import { compareAscending } from '../../algo'
@@ -253,6 +253,7 @@ interface ReoprtIf2Arg {
 type SentencePredicate = (x: Token, i?: number) => any
 type SentencePredicate2 = (t: Token, s: Array<Token>, i: number/*, node: GraphNode<Token>*/) => any
 type TreedSentencePredicate = (t: GraphNode<Token>) => any
+type EnhancedArrowPredicate = (arrow: EnhancedArrow) => any
 type TreedSentencePredicateParent = (parent: GraphNode<Token>, child?: GraphNode<Token>) => any
 type TreedSentencePredicate2 = (a: ReoprtIf2Arg) => any
 
@@ -266,7 +267,8 @@ export interface Problem {
 export function validateSentenceSyntax(
   nodes: Array<GraphNode<Token>>,
   multitokens: Array<MultitokenDescriptor>,
-  manualEnhancedNodes: Array<EnhancedNode>,
+  enhancedOnlyNodes: Array<EnhancedNode>,
+  enhancedNodes: Array<EnhancedNode>,
   analyzer: MorphAnalyzer,
   corefClusterization: SimpleGrouping<Token>,
   valencyDict?: ValencyDict,
@@ -285,6 +287,13 @@ export function validateSentenceSyntax(
 
   const reportIf = (message: string, fn: TreedSentencePredicate) => {
     problems.push(...mu(nodes).findAllIndexes(fn).map(index => ({ message, indexes: [index] })))
+  }
+
+  const ereportIf = (message: string, fn: EnhancedArrowPredicate) => {
+    problems.push(...mu(enhancedNodes)
+      .findAllIndexes(enode => enode.incomingArrows.some(fn))
+      .map(index => ({ message, indexes: [index] }))
+    )
   }
 
   const reportIf2 = (message: string, fn: TreedSentencePredicate2) => {
@@ -312,6 +321,7 @@ export function validateSentenceSyntax(
 
   const hasDependantWhich = (i: number, fn: SentencePredicate) =>
     tokens.some((xx, ii) => xx.headIndex === i && fn(xx, ii))
+
 
 
   // ~~~~~~~ rules ~~~~~~~~
@@ -1887,20 +1897,6 @@ export function validateSentenceSyntax(
         && !valencyDict.hasGerund(t.parent.node.interp.lemma)
     )
 
-    {
-      let cutoff = [/* ...g.SUBORDINATE_CLAUSES, */ 'parataxis'/* , 'conj' */]
-      reportIf(`не єдиний відносний в acl:relfull`,
-        t => t.node.rel === 'acl:relfull'
-          && mu(walkDepthNoSelf(t, x => uEqSome(x.node.rel, cutoff)))
-            .filter(x => x.node.interp.isRelative()
-              // з ким і про що розмовляє президент
-              // && !(uEq(x.node.rel, 'conj') && x.parent.node.interp.isRelative())
-            )
-            .unique()  // shared-private paths
-            .longerThan(1)
-      )
-    }
-
     reportIf2(`в звороті типу _вчити дитину математики_ переплутані patient з addressee`,
       ({ r, i, p }) => uEq(r, 'iobj')
         && i.isGenitive()
@@ -2071,17 +2067,6 @@ export function validateSentenceSyntax(
       && ['наприклад'].includes(t.node.interp.lemma)
     )
 
-    tmpxreportIf(`:relfull має сполучник`, t =>
-      t.node.rel === 'acl:relfull'
-      && g.hasChild(t, 'mark')
-    )
-
-    reportIf(`:relfull без Rel`, t =>
-      t.node.rel === 'acl:relfull'
-      && !nodes.some(x => g.findRelativeClauseRoot(x) === t)
-      && !t.node.isElided()  // temp
-    )
-
     xreportIf(`особовий в :irrel з _що_`, t =>
       t.node.interp.isPersonal()
       && wiith(mu(t.walkThisAndUp0()).find(x => x.node.rel === 'acl:irrel'), acl =>
@@ -2090,26 +2075,64 @@ export function validateSentenceSyntax(
       )
     )
 
-    reportIf(`нерозрізнений acl зі сполучником _що_`, t =>
+    xreportIf(`нерозрізнений acl зі сполучником _що_`, t =>
       uEq(t.node.rel, 'acl')
       && t.children.some(x => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що')
-      && !g.isRelativeSpecificAcl(t.node.rel)
+      // && !g.isRelativeSpecificAcl(t.node.rel)
     )
 
     xreportIf(`нерозрізнений acl зі сполучником іншим від _що_`, t =>
       uEq(t.node.rel, 'acl')
       && t.children.some(x => uEq(x.node.rel, 'mark') && x.node.interp.lemma !== 'що')
-      && !g.isRelativeSpecificAcl(t.node.rel)
+      // && !g.isRelativeSpecificAcl(t.node.rel)
     )
 
     xreportIf(`нерозрізнений acl без сполучника`, t =>
       uEq(t.node.rel, 'acl')
       && !t.children.some(x => uEq(x.node.rel, 'mark'))
-      && !g.isRelativeSpecificAcl(t.node.rel)
+      // && !g.isRelativeSpecificAcl(t.node.rel)
       && !['acl:adv'].includes(t.node.rel)
     )
 
-    reportIf(`відносний _що_ у acl:relfull`, t =>
+    xreportIf(`нерозрізнений acl з відносним ADV`, t =>
+      t.node.interp.isRelative()
+      && t.node.interp.isAdverb()
+      && wiithNonempty(g.findRelativeClauseRoot(t), relclRoot =>
+        // relclRoot.node.rel === 'acl'
+        g.isRelclByRef(enhancedNodes[relclRoot.node.index]
+          .incomingArrows.find(x => uEq(x.attrib, 'acl'))
+        )
+      )
+    )
+
+    // reportIf(``, t =>
+    //   t.node.interp.isRelative()
+    //   && t.node.interp.isAdverb()
+    //   && wiithNonempty(g.findRelativeClauseRoot(t), relclRoot =>
+    //     // relclRoot.node.rel === 'acl'
+    //     g.isRelclByRef(enhancedNodes[relclRoot.node.index]
+    //       .incomingArrows.find(x => uEq(x.attrib, 'acl'))
+    //     )
+    //   )
+    // )
+
+    ereportIf(`acl без ref’а з відносним прислівником`, a =>
+      uEq(a.attrib, 'acl')
+      && !g.isRelclByRef(a)
+      && a.end.walkForwardWidth({ cutAndFilter: (x) => uEq(last(x).attrib, 'acl') })
+        .some(x => x.end.node.interp.isAdverb() && x.end.node.interp.isRelative())
+    )
+
+    // ereportIf(`відносний ADV в acl’і без ref`, a =>
+    //   // uEq(a.attrib, 'acl')
+    //   a.end.node.interp.isAdverb()
+    //   && a.end.node.interp.isRelative()
+    //   && !a.end.walkBackWidth()
+    //     .filter(x => uEq(x.attrib, 'acl'))
+    //     .some(x => x.start.outgoingArrows.some(xx => xx.attrib === 'rel' && xx.end === a.end))
+    // )
+
+    xreportIf(`відносний _що_ у acl:relfull`, t =>
       t.node.form === 'що'
       && !uEqSome(t.node.rel, ['obl'])
       && t.node.interp.isRelative()
@@ -2118,24 +2141,16 @@ export function validateSentenceSyntax(
       )
     )
 
-    xreportIf(`відносний ADV в нерозрізненому acl’і`, t =>
-      t.node.interp.isRelative()
-      && t.node.interp.isAdverb()
-      && wiith(g.findRelativeClauseRoot(t), relclRoot =>
-        relclRoot && relclRoot.node.rel === 'acl'
-      )
-    )
-
     reportIf(`acl:relless не має назаднього nsubj/obj`, t =>
       t.node.rel === 'acl:relless'
-      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x =>
+      && !enhancedOnlyNodes[t.node.index].outgoingArrows.some(x =>
         x.end.node.index === t.parent.node.index
         && uEqSome(x.attrib, ['obj', 'nsubj']))
     )
 
     reportIf(`acl:relpers без ref`, t =>
       t.node.rel === 'acl:relpers'
-      && !manualEnhancedNodes[t.parent.node.index].outgoingArrows.some(x => x.attrib === 'ref')
+      && !enhancedOnlyNodes[t.parent.node.index].outgoingArrows.some(x => x.attrib === 'ref')
     )
 
     reportIf(`відносний в нерозрізненому acl’і`, t =>
@@ -2200,20 +2215,20 @@ export function validateSentenceSyntax(
       && !t.node.hasTag('xsubj-is-phantom-iobj')
       && !t.node.hasTag('xsubj-is-obl')
       && !t.parent.node.interp.isConverb()
-      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:x']))
+      && !enhancedOnlyNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:x']))
       // && !t.parent.node.interp.isReversive()  // temp
     )
 
     reportIf(`xcomp:sp без enhanced підмета`, t =>
       t.node.rel === 'xcomp:sp'
       && !t.node.hasTag('xsubj-from-head')
-      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:sp']))
+      && !enhancedOnlyNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:sp']))
       && !t.parent.node.interp.isConverb()
     )
 
     reportIf(`advcl:sp без enhanced підмета`, t =>
       t.node.rel === 'advcl:sp'
-      && !manualEnhancedNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:sp']))
+      && !enhancedOnlyNodes[t.node.index].outgoingArrows.some(x => uEqSome(x.attrib, ['nsubj:sp']))
       && !t.node.hasTag('xsubj-from-head')
     )
 
@@ -2305,8 +2320,12 @@ export function validateSentenceSyntax(
       uEqSome(t.node.rel, ['nsubj'])
       && t.parent.node.interp.isAdverb()
     )
-    xreportIf(`_ ccomp з прислівника`, t =>
+    reportIf(`ccomp з прислівника`, t =>
       uEqSome(t.node.rel, ['ccomp'])
+      && t.parent.node.interp.isAdverb()
+    )
+    reportIf(`xcomp з прислівника`, t =>
+      uEqSome(t.node.rel, ['xcomp'])
       && t.parent.node.interp.isAdverb()
     )
     xreportIf(`_ ccomp з прислівника без #subjless-predication`, t =>
@@ -2335,9 +2354,9 @@ export function validateSentenceSyntax(
       uEqSome(t.node.rel, ['fixed'])
       && t.node.interp.isPunctuation()
     )
-    reportIf(`relative clause не фінітний`, t =>
-      g.isRelativeSpecificAcl(t.node.rel)
-    )
+    // reportIf(`relative clause не фінітний`, t =>
+    //   g.isRelativeSpecificAcl(t.node.rel)
+    // )
 
     // test сам >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     xreportIf(`сам obl`, t =>
@@ -2400,8 +2419,10 @@ export function validateSentenceSyntax(
       )
     )
 
+    reportIf(`розбір позначено сумнівним`, t => t.node.comment && t.node.comment.includes('~'))
+
     // trash >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    {
+    if (0) {
       xoldReportIf(`:pass-реляція?`,
         t => !t.isPromoted
           && ['aux', 'csubj', 'nsubj'].includes(t.rel)
@@ -2425,12 +2446,35 @@ export function validateSentenceSyntax(
         g.isNemaje(t.node.interp)
         && findMultitoken(t.node.index, multitokens)
       )
+      xreportIf(`:relfull має сполучник`, t =>
+        t.node.rel === 'acl:relfull'
+        && g.hasChild(t, 'mark')
+      )
+      xreportIf(`:relfull без Rel`, t =>
+        t.node.rel === 'acl:relfull'
+        && !nodes.some(x => g.findRelativeClauseRoot(x) === t)
+        && !t.node.isElided()  // temp
+      )
+      {
+        let cutoff = [/* ...g.SUBORDINATE_CLAUSES, */ 'parataxis'/* , 'conj' */]
+        xreportIf(`не єдиний відносний в acl:relfull`,
+          t => t.node.rel === 'acl:relfull'
+            && mu(walkDepthNoSelf(t, x => uEqSome(x.node.rel, cutoff)))
+              .filter(x => x.node.interp.isRelative()
+                // з ким і про що розмовляє президент
+                // && !(uEq(x.node.rel, 'conj') && x.parent.node.interp.isRelative())
+              )
+              .unique()  // shared-private paths
+              .longerThan(1)
+        )
+      }
     }
     // <<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   }
 
   // **********
 
+  // не було чого пообідать — acl через місточок
   // на те , хто і як слухатиме його (L=те&!те >acl:relfull _)
   // two dets of the same type
   // куди треба їй піти — csubj vs xcomp

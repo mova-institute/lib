@@ -9,7 +9,7 @@ import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import { compareAscending, clusterize } from '../../algo'
 import { DirectedGraphNode, Arrow } from '../../directed_graph'
 import * as f from '../morph_features'
-import { buildEnhancedGraphFromTokens, buildEnhancedTree, loadEnhancedGraphFromTokens } from './enhanced'
+import { buildEnhancedTreeFromBasic, loadEnhancedGraphFromTokens } from './enhanced'
 
 
 
@@ -240,6 +240,18 @@ export function isRootOrHole(node: TokenNode) {
 export function findClauseRoot(node: TokenNode) {
   return mu(node.walkThisAndUp0())
     .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findClauseArrows(node: EnhancedNode) {
+  return node.walkBackWidth()
+    .filter(x => uEqSome(x.attrib, CLAUSE_RELS))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function findRelativeClauseRootsEnh(relative: EnhancedNode) {
+  return findClauseArrows(relative)
+    .filter(a => uEq(a.attrib, 'acl'))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -731,7 +743,9 @@ export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNod
 export function standartizeSentForUd23BeforeEnhGeneration(
   basicNodes: Array<TokenNode>,
 ) {
-  let enhancedNodes = buildEnhancedTree(basicNodes)
+  // todo: orphan acl:relcl, 0kfy
+  // or kill :relcl?
+  let enhancedNodes = buildEnhancedTreeFromBasic(basicNodes)
   loadEnhancedGraphFromTokens(enhancedNodes)
   for (let enode of enhancedNodes) {
     for (let arrow of enode.incomingArrows) {
@@ -806,9 +820,7 @@ export function standartizeSentenceForUd23(basicNodes: Array<TokenNode>) {
     // todo: choose punct relation from the rigthtest token
 
     for (let edep of t.edeps) {
-      if (isRelativeClause(edep.relation)) {
-        edep.relation = 'acl:relcl'
-      } else if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
+      if (!UD_23_OFFICIAL_SUBRELS_ENHANCED.has(edep.relation)) {
         // remove non-exportable subrels
         edep.relation = stripSubrel(edep.relation)
       }
@@ -907,18 +919,6 @@ export function areOkToBeGlued(t: TokenNode, tNext: TokenNode) {
     || tNext.node.interp.isSymbol() && uEqSome(tNext.node.rel, ['discourse'])
     || ['~', '$', '#', '+', '×', '№', '€', '-', '°'].includes(t.node.interp.lemma)
     || ['%', '°', '+', '×', '$'].includes(tNext.node.interp.lemma)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function isRelativeClause(rel: string) {
-  return rel === 'acl:relfull'
-    || rel === 'acl:relpers'
-    || rel === 'acl:relless'
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function isRelativeSpecificAcl(rel: string) {
-  return isRelativeClause(rel) || rel === 'acl:irrel'
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1225,9 +1225,9 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'acl:adv',
   'acl:irrel',  // nothing relative about it
   'acl:parataxis',
-  'acl:relfull',  // has an overt PronType=Rel descendant
+  // 'acl:relfull',  // has an overt PronType=Rel descendant
   'acl:relless',  // relative, but no overt PronType=Rel descendant, <nsubj back to antecedent
-  'acl:relpers',  // relative, no PronType=Rel, but antecedent doubled by PronType=Pers
+  // 'acl:relpers',  // relative, no PronType=Rel, but antecedent doubled by PronType=Pers
   'acl',
   'adv:gerund',
   'advcl:cmp',
