@@ -2418,6 +2418,15 @@ export function validateSentenceSyntax(
       )
     )
 
+    reportIf(`неочікуваний розбір _все одно_`, t =>
+      ['одно', 'рівно'].includes(t.node.interp.lemma)
+      && t.node.index > 0
+      && t.node.index < nodes.length
+      && ['все', 'усе'].includes(nodes[t.node.index - 1].node.interp.lemma)
+      && !(uEq(t.node.rel, 'fixed') && t.parent === nodes[t.node.index - 1])
+      // todo: все-іменник
+    )
+
     reportIf(`розбір позначено сумнівним`, t => t.node.comment && t.node.comment.includes('~'))
 
     // trash >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2473,6 +2482,14 @@ export function validateSentenceSyntax(
 
   // **********
 
+  // нумерація типу 1)
+  // давальний з інфінітиву
+  // так ніби
+  // сама до себе теж flat:abs
+  // такий, як
+  // що ref йде з кореня NP
+  //   їхнім настоятелям - отцям Юрію ( Кав'юку ) та Івану ( Марковському ) , без яких ця поїздка була б
+  // якщо shared підмет embedded в дієслові — все одно conj: Йшли - йшли , дійшли до лісу
   // не було чого пообідать — acl через місточок
   // на те , хто і як слухатиме його (L=те&!те >acl:relfull _)
   // two dets of the same type
