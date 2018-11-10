@@ -98,7 +98,7 @@ function main() {
     let sentenceStream = initIndexes(sentenceStreamRaw)
 
     for (let sentence of sentenceStream) {
-      let { tokens, multitokens, nodes, sentenceId, dataset, document, paragraph, } = sentence
+      let { tokens, multitokens, nodes, sentenceId, dataset, documentAttribs, paragraphAttribs, } = sentence
 
       let manualEnhancedNodesOnly = buildEnhancedGraphFromTokens(nodes)
       let enhancedNodes = buildEnhancedTreeFromBasic(nodes)
@@ -130,8 +130,8 @@ function main() {
         ? 1
         : 1 - ((roots.length - 1) / (tokens.length - 1))
       let hasMorphErrors = tokens.some(x => x.interp.isError())
-      let curDocId = document.getAttribute('id')
-      let curParId = paragraph.getAttribute('id')
+      let curDocId = documentAttribs['id']
+      let curParId = paragraphAttribs['id']
 
       dataset = cliArgs.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
       setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
@@ -146,7 +146,7 @@ function main() {
         'newdoc id': opensDoc && curDocId || undefined,
       }
       if (opensDoc) {
-        sentLevelInfo['doc_title'] = document.getAttribute('title') || ''
+        sentLevelInfo['doc_title'] = documentAttribs['title'] || ''
       } else if (prevSet !== dataset) {
         Object.values(setRegistry).forEach(set => set.followsAnnotationalGap = false)
       }
@@ -374,10 +374,11 @@ function formatProblemsHtml(
       ? tokens[problems[0].indexes[0]].id
       : tokens[0].id
     let [bratPath, bratIndex] = id2bratPath[firsProblemTokenId] || ['', 0]
+    let tbRelativePath = bratPath.split('/').slice(2).join('/')
     let href = `https://lab.mova.institute/brat/#/${bratPath}?focus=T${bratIndex + 1}`
     let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
 
-    body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${bratPath}</a><br/>`
+    body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${tbRelativePath}</a><br/>`
     for (let { indexes, message } of problems) {
       body += `<p class="message">- ${escape(message)}`
       if (indexes !== undefined) {

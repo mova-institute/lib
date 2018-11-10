@@ -1,0 +1,4 @@
+////////////////////////////////////////////////////////////////////////////////
+export function flatten2d<T>(array: Iterable<Array<T>>) {
+  return ([] as Array<T>).concat(...array)
+}

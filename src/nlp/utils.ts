@@ -26,6 +26,7 @@ import { XmlFormatter } from '../xml/xml_formatter'
 import { GraphNode } from '../graph'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { AbstractDocument } from '../xml/xmlapi/abstract_document'
+import { Unpacked } from '../types'
 
 import uniq = require('lodash.uniq')
 import sortedUniq = require('lodash.sorteduniq')
@@ -1272,6 +1273,11 @@ export function* initIndexes(sentences: ReturnType<typeof tokenStream2sentencesR
 export function tokenStream2sentences(stream: Iterable<Token>) {
   return initIndexes(tokenStream2sentencesRaw(stream))
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export type SentenceStreamElement = Unpacked<ReturnType<typeof tokenStream2sentences>>
+export type SentenceStream = Iterable<SentenceStreamElement>
+
 ////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentencesRaw(stream: Iterable<Token>) {
   let buf = new Array<Token>()
@@ -1292,8 +1298,8 @@ export function* tokenStream2sentencesRaw(stream: Iterable<Token>) {
       tokens: buf,
       multitokens,
       dataset,
-      document: curDoc,
-      paragraph: curPar,
+      documentAttribs: curDoc.getAttributes(),
+      paragraphAttribs: curPar.getAttributes(),
     }
 
     buf = []

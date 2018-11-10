@@ -180,7 +180,7 @@ export function capitalizeFirst(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function numDigits(integer: number) {
+export function numDecDigits(integer: number) {
   if (integer === 0) {
     return 1
   }
@@ -189,7 +189,7 @@ export function numDigits(integer: number) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function zerofill(n: number, width: number) {
-  let numZeroes = width - numDigits(n)
+  let numZeroes = width - numDecDigits(n)
   if (numZeroes > 0) {
     return '0'.repeat(numZeroes) + n
   }
@@ -198,7 +198,7 @@ export function zerofill(n: number, width: number) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function zerofillMax(n: number, max: number) {
-  return zerofill(n, numDigits(max))
+  return zerofill(n, numDecDigits(max))
 }
 
 ////////////////////////////////////////////////////////////////////////////////

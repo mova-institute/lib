@@ -20,6 +20,29 @@ export type EnhancedArrow = Arrow<Token, string>
 export type Node2indexMap = Map<TokenNode, number>
 
 ////////////////////////////////////////////////////////////////////////////////
+export function isAmbigCoordModifier(node: GraphNode<Token>) {
+  return node.parent
+    && node.parent.children.some(x => uEq(x.node.rel, 'conj')
+      && !x.node.rel.endsWith(':parataxis'))
+    && !uEqSome(node.node.rel, [
+      'conj',
+      'cc',
+      'sconj',
+      'mark',
+      'punct',
+      'xcomp',
+      'appos',
+      'parataxis',
+      'flat',
+      'compound',
+    ])
+    && !(uEq(node.node.rel, 'discourse') && (node.node.interp.isConsequential()
+      || node.node.interp.lemma === 'тощо')
+    )
+    && !node.node.hdeps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function isFeasibleRelclWithoutRel(node: TokenNode) {
   return uEq(node.node.rel, 'acl')
     && node.children.some(x => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що')
@@ -1207,11 +1230,18 @@ export const CONJ_PROPAGATION_RELS = new Set(CONJ_PROPAGATION_RELS_ARR)
 export const HELPER_RELATIONS = CONJ_PROPAGATION_RELS
 
 export const PROPBANK_RELATIONS = new Set([
-  'agent',
-  'patient',
+  'arg0',  // obsolete
+  'arg1',  // obsolete
+  'arg2',  // obsolete
+  'agent',  // obsolete
+  'patient',  // obsolete
   'benefactor',
   'instrument',
+
+  'pag',
+  'ppt',
   'com',
+  'gol',
   'dir',
   'loc',
   'tmp',

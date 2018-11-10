@@ -5,7 +5,7 @@ import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
 import { titlecase, trimAfterFirst, trimBeforeFirst } from '../../string'
-import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole } from './uk_grammar'
+import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole, isAmbigCoordModifier } from './uk_grammar'
 import { Dict } from '../../types'
 
 import sortby = require('lodash.sortby')
@@ -238,27 +238,7 @@ export function tokenSentence2bratPlaintext(sentence: Array<Token>) {
 }
 
 //------------------------------------------------------------------------------
-function isAmbigCoordModifier(node: GraphNode<Token>) {
-  return node.parent
-    && node.parent.children.some(x => uEq(x.node.rel, 'conj')
-      && !x.node.rel.endsWith(':parataxis'))
-    && !uEqSome(node.node.rel, [
-      'conj',
-      'cc',
-      'sconj',
-      'mark',
-      'punct',
-      'xcomp',
-      'appos',
-      'parataxis',
-      'flat',
-      'compound',
-    ])
-    && !(uEq(node.node.rel, 'discourse') && (node.node.interp.isConsequential()
-      || node.node.interp.lemma === 'тощо')
-    )
-    && !node.node.hdeps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
-}
+
 
 //------------------------------------------------------------------------------
 function hasAmbigCoordDependents(node: GraphNode<Token>) {

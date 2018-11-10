@@ -6,12 +6,13 @@ import * as glob from 'glob'
 
 import { mu } from '../mu'
 import { tokenStream2bratSynt, tokenStream2bratPlaintext, tokenStream2bratCoref } from '../nlp/ud/utils'
-import { mixml2tokenStream, tokenStream2sentences } from '../nlp/utils'
+import { mixml2tokenStream, tokenStream2sentences, SentenceStream, SentenceStreamElement } from '../nlp/utils'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { zerofillMax, trimExtension } from '../string'
 
 import { Token } from '../nlp/token'
 import { writeFileSyncMkdirp } from '../utils.node'
+import { isAmbigCoordModifier } from '../nlp/ud/uk_grammar';
 
 
 
@@ -20,6 +21,21 @@ interface Args {
   maxWordsPerFile: number
   dest: string
 }
+
+//------------------------------------------------------------------------------
+interface BratZoneConfig {
+  dirPath: Array<string>
+  sentenceFilter: (sentence: SentenceStreamElement) => any
+}
+
+const zones: Array<BratZoneConfig> = [
+  {
+    dirPath: ['treebank', 'conjpropagation_only'],
+    sentenceFilter(sentence: SentenceStreamElement) {
+      return sentence.nodes.some(x => isAmbigCoordModifier(x))
+    }
+  }
+]
 
 //------------------------------------------------------------------------------
 function main() {
@@ -31,6 +47,7 @@ function main() {
   })
 
   let inputFiles = glob.sync(args._[0], { nodir: true })
+  let allSentences = new Array<SentenceStreamElement>()
   for (let file of inputFiles) {
     // console.error(file)
     try {
@@ -42,12 +59,40 @@ function main() {
         .transform(x => x.form = x.getForm())  // todo
         .toArray()
 
-      doUd(tokens, args.maxWordsPerFile, join(args.dest, 'ud', base))
-      doCoref(tokens, join(args.dest, 'coref', base))
+      let sentences = [...tokenStream2sentences(tokens)]
+      allSentences.push(...sentences)
+
+      doUd(sentences, args.maxWordsPerFile, join(args.dest, 'treebank', 'by_file', base))
+      doCoref(tokens, join(args.dest, 'coref', 'by_file', base))
     } catch (e) {
       console.error(`Error processing ${file}`)
       throw e
     }
+  }
+  zones.forEach(x => doGeneric(x, allSentences, args.dest))
+}
+
+//------------------------------------------------------------------------------
+function doGeneric(
+  config: BratZoneConfig,
+  sentences: SentenceStream,
+  dest: string,
+) {
+  let chunks = mu(sentences)
+    .filter(config.sentenceFilter)
+    .map(x => x.nodes)
+    .chunkByMax(55, x => mu(x).count(xx => xx.node.isWord()))
+    .toArray()
+
+  for (let [i, chunk] of chunks.entries()) {
+    let filename = `${zerofillMax(i + 1, chunks.length)}`
+
+    let str = mu(tokenStream2bratSynt(chunk)).join('\n', true)
+    writeFileSyncMkdirp(join(dest, ...config.dirPath, `${filename}.ann`), str)
+
+    let chunkTokens = chunk.map(x => x.map(xx => xx.node))
+    str = mu(tokenStream2bratPlaintext(chunkTokens)).join('\n', true)
+    writeFileSyncMkdirp(join(dest, ...config.dirPath, `${filename}.txt`), str)
   }
 }
 
@@ -87,11 +132,10 @@ function doCoref(
 
 //------------------------------------------------------------------------------
 function doUd(
-  tokens: Array<Token>,
+  sentenceStream: SentenceStream,
   maxWordsPerFile: number,
   dest: string,
 ) {
-  let sentenceStream = tokenStream2sentences(tokens)
   let chunks = mu(sentenceStream)
     .map(x => x.nodes)
     .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.node.isWord()))
