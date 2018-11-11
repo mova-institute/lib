@@ -12,7 +12,7 @@ import { zerofillMax, trimExtension } from '../string'
 
 import { Token } from '../nlp/token'
 import { writeFileSyncMkdirp } from '../utils.node'
-import { isAmbigCoordModifier } from '../nlp/ud/uk_grammar';
+import * as g from '../nlp/ud/uk_grammar'
 
 
 
@@ -24,15 +24,18 @@ interface Args {
 
 //------------------------------------------------------------------------------
 interface BratZoneConfig {
+  enabled: boolean
   dirPath: Array<string>
   sentenceFilter: (sentence: SentenceStreamElement) => any
 }
 
 const zones: Array<BratZoneConfig> = [
   {
+    enabled: false,
     dirPath: ['treebank', 'conjpropagation_only'],
     sentenceFilter(sentence: SentenceStreamElement) {
-      return sentence.nodes.some(x => isAmbigCoordModifier(x))
+      return g.isCompleteSentence(sentence.nodes)
+        && sentence.nodes.some(x => g.isAmbigCoordModifier(x))
     }
   }
 ]
@@ -78,6 +81,10 @@ function doGeneric(
   sentences: SentenceStream,
   dest: string,
 ) {
+  if (config.enabled === false) {
+    return
+  }
+
   let chunks = mu(sentences)
     .filter(config.sentenceFilter)
     .map(x => x.nodes)

@@ -46,10 +46,9 @@ function main() {
     }
   }
 
-  console.error(`adopting brat changes…`)
   let allBratFiles = glob.sync(bratGlob)
   let bratFilesRoot = algo.commonPrefix(allBratFiles).slice(0, -1)
-  let allSyntBratFiles = allBratFiles.filter(x => x.substr(bratFilesRoot.length).startsWith('/treebank/'))
+  let allSyntBratFiles = allBratFiles.filter(x => x.substr(bratFilesRoot.length).startsWith('/treebank/by_file'))
   let allCorefBratFiles = allBratFiles.filter(x => x.substr(bratFilesRoot.length).startsWith('/coref/'))
 
   let id2bratPath: Dict<[string, number]> = {}
@@ -110,6 +109,7 @@ function main() {
   }
 
   // todo: dedup
+  console.error(`adopting coref changes…`)
   for (let bratFile of allCorefBratFiles) {
     for (let span of parseBratFile(linesSync(bratFile))) {
       let el = id2element.get(span.annotations.N)
