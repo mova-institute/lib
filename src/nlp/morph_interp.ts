@@ -669,6 +669,17 @@ export class MorphInterp {
       this.features.pos = Pos.verb
     }
 
+    // // todo: remove ambig
+    // if (this.isPronominal()) {
+    //   if (this.features.polarity === Polarity.negative) {
+    //     this.features.pronominalType = PronominalType.negative
+    //     this.features.polarity = undefined
+    //   }
+    // } else if (this.features.pronominalType === PronominalType.negative) {
+    //   this.features.pronominalType = undefined
+    //   this.features.polarity = Polarity.negative
+    // }
+
     if (this.isPronominal() && this.features.polarity === Polarity.negative) {
       this.features.pronominalType = PronominalType.negative
       this.features.polarity = undefined
@@ -916,8 +927,8 @@ export class MorphInterp {
 
   gramfeaturewiseEquals(other: MorphInterp) {
     return this.clone()
-        .dropNongrammaticalFeatures()
-        .featurewiseEquals(other.clone().dropNongrammaticalFeatures())
+      .dropNongrammaticalFeatures()
+      .featurewiseEquals(other.clone().dropNongrammaticalFeatures())
   }
 
   dropNongrammaticalFeatures() {
@@ -1048,6 +1059,7 @@ export class MorphInterp {
   isInfinitive() { return this.features.verbType === VerbType.infinitive }
   isMasculine() { return this.features.gender === Gender.masculine }
   isNegative() { return this.features.polarity === Polarity.negative }
+  isNegativePron() { return this.features.pronominalType === PronominalType.negative }
   isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?
   isOdd() { return this.features.oddness === Oddness.yes }
   isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }

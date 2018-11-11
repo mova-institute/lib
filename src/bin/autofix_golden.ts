@@ -626,6 +626,10 @@ async function main() {
             TRANSFORMS[args.transform](node)
           }
 
+          // if (g.isAmbigCoordModifier(node) && uEqSome(token.rel, g.SUBJECTS)) {
+          //   token.hdeps.push({ headId: node.parent.node.id, relation: 'distrib' })
+          // }
+
           // цікавий вивід
           // if (uEqSome(token.rel, ['acl', 'advmod'])
           //   && token.rel !== 'advmod:amtgov'
@@ -953,7 +957,7 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   }
 
   // missing punctuation type
-  if (!interp.hasFeature(f.PunctuationType)) {
+  if (!interp.hasFeature(f.PunctuationType) && !interp.isSymbol()) {
     let interps = analyzer.tag(token.getForm())
     let firstWithType = interps.find(x => x.hasFeature(f.PunctuationType))
     if (firstWithType) {
@@ -961,6 +965,11 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
     }
   }
 
+  // wrong :beforeadj lemma
+  if (interp.isBeforeadj() && !interp.lemma.endsWith('ий')) {
+    interp.lemma = interp.lemma.replace(/(.*)н{0,2}о$/, '$1ий')
+    return
+  }
 
   // missing in dict
   if (!interp.isStem()  // temp

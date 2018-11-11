@@ -1,7 +1,7 @@
 import { GraphNode, walkDepthNoSelf, walkDepth } from '../../graph'
 import { Token, Dependency, TokenTag } from '../token'
 import { MorphInterp } from '../morph_interp'
-import { uEq, uEqSome, stripSubrel, changeUniversal } from './utils'
+import { uEq, uEqSome, stripSubrel } from './utils'
 import { mu } from '../../mu'
 import { last, wiith } from '../../lang'
 import { UdPos, toUd } from './tagset'
@@ -39,6 +39,8 @@ export function isAmbigCoordModifier(node: GraphNode<Token>) {
     && !(uEq(node.node.rel, 'discourse') && (node.node.interp.isConsequential()
       || node.node.interp.lemma === 'тощо')
     )
+    // && uEqSome(node.node.rel, ['nsubj'])
+    // && wiithNonempty(node.children.find(x => uEq(x.node.rel, 'conj')), x => x.children.some(xx => uEqSome(xx.node.rel, ['nsubj'])))
     && !node.node.hdeps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
 }
 
@@ -257,6 +259,16 @@ export function isRootOrHole(node: TokenNode) {
   return !node.node.deps.some(x => !uEq(x.relation, 'orphan'))
   // || !node.parents.every(x => hasChild(x, 'orphan')
   //   && !x.parents.some(xx => xx.node.isElided()))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function calcNumRoots(nodes: Iterable<TokenNode>) {
+  return mu(nodes).count(isRootOrHole)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function isCompleteSentence(nodes: Iterable<TokenNode>) {
+  return calcNumRoots(nodes) === 1
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -533,6 +545,7 @@ export function isDeceimalFraction(t: TokenNode) {
 ////////////////////////////////////////////////////////////////////////////////
 export function isNegated(t: TokenNode) {
   return t.node.interp.isNegative()
+    || t.node.interp.isNegativePron()
     || t.children.some(x => x.node.interp.isNegative()
       || x.node.interp.isAuxillary() && x.children.some(xx => xx.node.interp.isNegative()
       )

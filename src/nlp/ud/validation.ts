@@ -637,7 +637,7 @@ export function validateSentenceSyntax(
         && !x.node.isElided()).length > 1
   )
 
-  reportIf(`неузгодження відмінків прийменника`,
+  reportIf(`неузгодження відмінків прийменника`,  // todo: додати conj
     t => uEq(t.node.rel, 'case')
       && (t.node.interp.features.requiredCase as number) !== g.thisOrGovernedCase(t.parent)
       && !t.parent.node.interp.isXForeign()
@@ -1519,7 +1519,29 @@ export function validateSentenceSyntax(
       )
   )
 
-  reportIf2(`:animish з запереченням`,
+  xreportIf(`омонімічний родовому знахідний прямий додаток без заперечення`, t =>
+    uEqSome(t.node.rel, ['obj'])
+    && g.thisOrGovernedCase(t) === f.Case.accusative
+    && !g.isNegated(t.parent)
+    // same form in gen exists
+    && analyzer.tag(t.node.getForm()).some(x => x.isGenitive()
+      && x.equalsByLemmaAndFeatures(t.node.interp, [f.Pos, f.Animacy, f.Gender, f.MorphNumber]))
+    // && t.node.interp.isAnimate()
+  )
+
+  xreportIf(`омонімічний родовому знахідний прямий додаток із запереченням`, t =>
+    uEqSome(t.node.rel, ['obj'])
+    && g.thisOrGovernedCase(t) === f.Case.accusative
+    && g.isNegated(t.parent)
+    && !t.node.interp.isPersonal()  // temp
+    && !['ніхто', 'ніщо'].includes(t.node.interp.lemma)  // temp
+    // same form in gen exists
+    && analyzer.tag(t.node.getForm()).some(x => x.isGenitive()
+      && x.equalsByLemmaAndFeatures(t.node.interp, [f.Pos, f.Animacy, f.Gender, f.MorphNumber]))
+    // && t.node.interp.isAnimate()
+  )
+
+  reportIf2(`:animish із запереченням`,
     ({ i, p }) => p
       && i.isGrammaticallyAnimate()
       && g.isNegated(p)
@@ -1630,6 +1652,12 @@ export function validateSentenceSyntax(
     ({ r, t, i, pl }) => uEq(r, 'amod')
       && i.isOrdinalNumeral()
       && g.MONTHS.includes(pl)
+  )
+
+  reportIf2(`неочікуване морфо числа при місяці`,
+    ({ r, pi, l }) => uEq(r, 'nmod')
+      && g.MONTHS.includes(l)
+      && !(pi.isOrdinalNumeral() && pi.isNeuter())
   )
 
   // яке, що
@@ -2001,13 +2029,17 @@ export function validateSentenceSyntax(
       if (!skip) {
         tmpxreportIf(`корінь без предикації`, t =>
           t.isRoot()
-          && !t.node.hasTag('itsubj')
-          && !t.node.interp.isInfinitive()  // todo
-          && !t.children.some(x => uEqSome(x.node.rel, g.SUBJECTS))
-          && !(t.node.interp.isVerb() && !g.isInfinitive(t))
+          && !g.hasPredication(t)
         )
       }
     }
+
+    xreportIf(`давальний з інфінітиву`, t =>
+      uEqSome(t.node.rel, ['obj', 'iobj'])
+      && t.node.interp.isDative()
+      && g.isInfinitive(t.parent)
+      && !uEqSome(t.parent.node.rel, g.SUBORDINATE_CLAUSES)
+    )
 
     // disablable
     xreportIf(`такий xxx не advmod:det`, t =>

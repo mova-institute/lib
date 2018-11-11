@@ -39,7 +39,7 @@ async function main() {
       ].join('\t'))
       writer.write('\n')
     } catch (e) {
-      if (!e.message.startsWith('Emphatic pronoun conversion is not implemented')) {
+      if (!e.message.startsWith('Emphatic pronouns are to be split to multitokens')) {
         throw e
       }
     }
