@@ -393,15 +393,11 @@ export function toUd(interp: MorphInterp) {
   let pos: UdPos
   let features = new UdFeats()
 
-  // special-treat conjunctions
-  if (interp.isConjunction()) {
-    return interp.isSubordinative()
-      ? { pos: 'SCONJ' as UdPos, features }
-      : { pos: 'CCONJ' as UdPos, features }
-  }
-
   // auto-map pos and features
   for (let featureName of Object.keys(interp.features)) {
+    if (featureName === 'conjunctionType') {
+      continue
+    }
     let keyvalue = mapFeatureValue2ud(featureName, interp.features[featureName])
     if (keyvalue) {
       let [key, value] = keyvalue
@@ -411,6 +407,11 @@ export function toUd(interp: MorphInterp) {
         features[key] = value
       }
     }
+  }
+
+  // special-treat conjunction PoS
+  if (interp.isConjunction()) {
+    pos = interp.isSubordinative() ? 'SCONJ' : 'CCONJ'
   }
 
   // encode plurale tantum in Number feature
