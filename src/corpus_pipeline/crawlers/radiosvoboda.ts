@@ -11,9 +11,8 @@ const DOMAINS = [
 
 async function main() {
   let crawler = new Crawler('saved_web')
-    .setUrlsToSave(({ pathname, hash, hostname, protocol }) => {
-      let ret = !hash
-        && /^\/a\/([^/]+\/)?\d+\.html/.test(pathname)
+    .setUrlsToSave(({ pathname, hostname, protocol }) => {
+      let ret = /^\/a\/([^/]+\/)?\d+\.html/.test(pathname)
         && !pathname.startsWith('/a/news/news')
         && !pathname.includes('.html/')
         && DOMAINS.includes(hostname)
@@ -27,7 +26,6 @@ async function main() {
         && DOMAINS.includes(x.hostname)
         && /^\/archives\/date_\d+\/$/.test(x.pathname)
         && !x.search
-        && !x.hash
         && !DOMAINS.some(xx => x.pathname.includes(xx))
         && x.protocol === 'https:',
     ])

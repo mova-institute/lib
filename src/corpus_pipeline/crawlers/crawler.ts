@@ -1,7 +1,7 @@
 import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request'
 import { sleep } from '../../lang'
-import { allMatchesArr } from '../../string'
+import { allMatchesArr, trimAfterFirst } from '../../string'
 
 import * as chalk from 'chalk'
 
@@ -16,8 +16,8 @@ export type UrlPredicate = (value: Url) => any
 ////////////////////////////////////////////////////////////////////////////////
 export class Crawler {
   private saved: FsMap
-  private visited: /* FileSaved */Set<string>
-  private failed: /* FileSaved */Set<string>
+  private visited = new Set<string>()
+  private failed = new Set<string>()
   private visiting = new Set<string>()
 
   private isUrlToSave: UrlPredicate
@@ -27,13 +27,7 @@ export class Crawler {
   private numRetries = 5
 
   constructor(saveDir: string/* , workspaceDir: string */) {
-    // this.visited = new FileSavedSet(join(workspaceDir, 'processed'))
-    // this.failed = new FileSavedSet(join(workspaceDir, 'failed'))
-    this.visited = new Set()
-    this.failed = new Set()
     this.saved = new FsMap(saveDir)
-    // this.saved = new FolderSavedMap(join(workspacePath, 'saved'), '**/*.html')
-    // console.log(this.saved)
   }
 
   setTimeout(value: number) {
@@ -53,22 +47,22 @@ export class Crawler {
 
   async seed(urlStrs: Array<string>) {
     for (let urlStr of urlStrs) {
+      urlStr = trimAfterFirst(urlStr, '#')
       let url = parse(urlStr)
       let fileishUrl = `${url.hostname}${url.path}`
       if (!fileishUrl.endsWith('.html')) {
         fileishUrl = fileishUrl.endsWith('/') ? `${fileishUrl}index.html` : `${fileishUrl}.html`
       }
-      if (this.visited.has(urlStr)
-        || this.visiting.has(urlStr)
+      if (this.visited.has(url.href)
+        || this.visiting.has(url.href)
         || this.saved.has(fileishUrl)
-        || this.failed.has(urlStr)
-        // || urlStr.startsWith('http://ukr')
+        || this.failed.has(url.href)
       ) {
         return
       }
-      this.visiting.add(urlStr)
+      this.visiting.add(url.href)
 
-      process.stderr.write(`processing ${urlStr} `)
+      process.stderr.write(`processing ${url.href} `)
       let content: string
       if (this.isUrlToSave(url) && this.saved.has(fileishUrl)) {
         process.stderr.write(` exists\n`)
@@ -78,21 +72,21 @@ export class Crawler {
           // process.stderr.write(`fetching `)
           // let timeout = setTimeout(() => exec(`say 'Stupid website!' -v Karen`), 2000)
           process.stderr.write(' ')
-          content = await Promise.race([fetchText(urlStr), sleep(1000)])
+          content = await Promise.race([fetchText(url.href), sleep(1000)])
           for (let i = 0; !content && i < this.numRetries; ++i) {
             process.stderr.write(chalk.default.bold(`×`))
             await sleep(500)
-            content = await Promise.race([fetchText(urlStr), sleep(2000)])
+            content = await Promise.race([fetchText(url.href), sleep(2000)])
           }
           if (!content) {
             // exec(`say 'auch!' -v Karen`)
             process.stderr.write(`✖️\n`)
-            this.failed.add(urlStr)
+            this.failed.add(url.href)
             return
           }
           // clearTimeout(timeout)
         } catch (e) {
-          console.error(`error fetching ${urlStr}`)
+          console.error(`error fetching ${url.href}`)
           console.error(e.message.substr(0, 80))
           return
         }
@@ -119,7 +113,7 @@ export class Crawler {
       //   .map(x => parse(resolve(urlStr, x)))
       //   .filter(x => x.hostname === url.hostname)
 
-      let urls = extractHrefs(content).map(x => parse(resolve(urlStr, x)))
+      let urls = extractHrefs(content).map(x => parse(resolve(url.href, x)))
       let urlsToSave = urls.filter(x => x && this.isUrlToSave(x))
       let urlsToFollow = urls.filter(x => x && this.isUrlToFollow.some(xx => xx(x)))
         .sort((a, b) =>
@@ -134,8 +128,8 @@ export class Crawler {
         await this.seed([href])
       }
 
-      this.visited.add(urlStr)
-      // console.log(`fully processed ${urlStr}`)
+      this.visited.add(url.href)
+      // console.log(`fully processed ${url.href}`)
     }
   }
 }

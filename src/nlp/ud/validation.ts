@@ -2034,7 +2034,7 @@ export function validateSentenceSyntax(
       }
     }
 
-    xreportIf(`давальний з інфінітиву`, t =>
+    xreportIf(`давальний з інфінітива`, t =>
       uEqSome(t.node.rel, ['obj', 'iobj'])
       && t.node.interp.isDative()
       && g.isInfinitive(t.parent)
@@ -2514,8 +2514,10 @@ export function validateSentenceSyntax(
 
   // **********
 
+  // parataxis:discourse з підрядного: розуміється, що
+  // одиним зі способів — узгодження родів
   // нумерація типу 1)
-  // давальний з інфінітиву
+  // давальний з інфінітива
   // так ніби
   // сама до себе теж flat:abs
   // такий, як

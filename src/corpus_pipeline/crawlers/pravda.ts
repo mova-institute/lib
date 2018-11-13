@@ -15,13 +15,12 @@ const DOMAINS = [
 async function main() {
   // 'health|culture|society|travel|columns'
   let crawler = new Crawler('saved_web')
-    .setUrlsToSave(({ pathname, hash, hostname, protocol }) => {
+    .setUrlsToSave(({ pathname, hostname, protocol }) => {
       // if (hostname === 'life.pravda.com.ua') {
 
       // }
       // console.log(`testing ${x}`)
-      let ret = !hash
-        && /^\/(news|articles|columns|digest|short|health|culture|society|travel|interview)\/\d{4}\/\d+\/\d+\/\d+\/$/.test(pathname)
+      let ret = /^\/(news|articles|columns|digest|short|health|culture|society|travel|interview)\/\d{4}\/\d+\/\d+\/\d+\/$/.test(pathname)
         && DOMAINS.includes(hostname)
         && protocol === 'http:'
       return ret
@@ -31,13 +30,11 @@ async function main() {
         && DOMAINS.includes(x.hostname)
         && /^\/archives\/date_\d+\/$/.test(x.pathname)
         && !x.search
-        && !x.hash
         && x.protocol === 'http:',
       x => x
         && DOMAINS.includes(x.hostname)
         && /^\/archives\/year_\d+\/$/.test(x.pathname)
         && !x.search
-        && !x.hash
         && x.protocol === 'http:',
     ])
 
