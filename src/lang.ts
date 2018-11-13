@@ -16,6 +16,16 @@ export function o() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function chainFuncs<T>(functs: Iterable<(a: T) => T>) {
+  return (a: T) => {
+    for (let f of functs) {
+      a = f(a)
+    }
+    return a
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function safe<T extends Object>(obj: T) {
   return new Proxy(obj, {
     get(target, name) {
@@ -257,11 +267,13 @@ export function wiithNonempty<TValue, TRet>(value: TValue, f: (value: TValue) =>
 ////////////////////////////////////////////////////////////////////////////////
 export function mapInplace<T>(
   array: Array<T>,
-  f: (element: T) => T,
+  maps: ((element: T) => T) | Array<(element: T) => T>,  // test
   start = 0,
 ) {
   for (let i = start; i < array.length; ++i) {
-    array[i] = f(array[i])
+    for (let f of arrayed(maps)) {
+      array[i] = f(array[i])
+    }
   }
   return array
 }

@@ -19,6 +19,7 @@ export const ukMonthMap = new Map([
 ])
 
 const dayUkMonthCommaYearRe = /^(\d+)\s+([^,]+),\s+(\d{4})/
+const dayUkMonthYearRe = /^(\d+)\s+(\S+)\s+(\d{4})/
 
 ////////////////////////////////////////////////////////////////////////////////
 export function fromUnixStr(timestamp: string) {
@@ -63,6 +64,13 @@ export function isDayUkMonthCommaYear(value: string) {
 // '20 жовтня, 1998' —> Date
 export function dayUkmonthCommaYear2date(value: string) {
   let [, d, m, y] = value.match(dayUkMonthCommaYearRe)
+  return new Date(Number(y), ukMonthMap.get(m), Number(d))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// '20 жовтня 1998' —> Date
+export function dayUkmonthYear2date(value: string) {
+  let [, d, m, y] = value.match(dayUkMonthYearRe)
   return new Date(Number(y), ukMonthMap.get(m), Number(d))
 }
 

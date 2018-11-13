@@ -443,7 +443,7 @@ async function main() {
             if (csubj) {
               if (token.isPromoted) {
                 // console.error(`PROMOKA ${token.id}`)
-                throw `PROMOKA ${token.id}`
+                throw new Error(`PROMOKA ${token.id}`)
               }
               csubj.node.rel = 'ccomp'
 
