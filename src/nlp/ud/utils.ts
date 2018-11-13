@@ -82,29 +82,29 @@ export function sentence2conllu(
 
     let udFeatureStr = udFeatures2conlluString(features)
 
-    let misc = [`Id=${token.id}`]
+    let miscs = [['Id', token.id]]
     if (i && token.opensParagraph) {
-      misc.push('NewPar=Yes')
+      miscs.push(['NewPar', 'Yes'])
     }
     if (token.isPromoted) {
-      misc.push('Promoted=Yes')
+      miscs.push(['Promoted', 'Yes'])
     }
     if (token.isGraft) {
-      misc.push('Graft=Yes')
+      miscs.push(['Graft', 'Yes'])
     }
     if (!isInsideMultitoken && !token.isElided() && token.gluedNext) {
-      misc.push('SpaceAfter=No')
+      miscs.push(['SpaceAfter', 'No'])
     }
     if (options.translit) {
-      misc.push(`Translit=${cyrToJirechekish(token.getForm())}`)
-      misc.push(`LTranslit=${cyrToJirechekish(token.interp.lemma)}`)
+      miscs.push(['Translit', escapeMiscVal(cyrToJirechekish(token.getForm()))])
+      miscs.push(['LTranslit', escapeMiscVal(cyrToJirechekish(token.interp.lemma))])
     }
 
     // conj propagation
     {
       let conjPropagation = token.getConjPropagation()
       if (conjPropagation) {
-        misc.push(`ConjPropagation=${titlecase(conjPropagation)}`)
+        miscs.push(['ConjPropagation', titlecase(conjPropagation)])
       }
     }
 
@@ -144,6 +144,7 @@ export function sentence2conllu(
 
     let edeps = sortby(token.edeps, x => x.headIndex, x => x.relation)
       .map(x => `${indices[x.headIndex] || 0}:${x.relation}`)
+    let misc = sortby(miscs, 0).map(x => x.join('=')).join('|')
 
     lines.push([
       indices[i],
@@ -155,12 +156,17 @@ export function sentence2conllu(
       head || '_',
       deprel || '_',
       edeps.join('|') || '_',
-      misc.filter(x => !x.includes('|')).sort().join('|') || '_',
-      // ↑ see https://github.com/UniversalDependencies/docs/issues/569#issuecomment-421630560
+      misc || '_',
+      // ↑ see https://github.com/UniversalDependencies/docs/issues/569
     ].join('\t'))
   }
 
   return lines.join('\n')
+}
+
+//------------------------------------------------------------------------------
+function escapeMiscVal(val: string) {
+  return val.replace(/\\/g, '\\\\').replace(/\|/g, '\\p')
 }
 
 //------------------------------------------------------------------------------
@@ -236,9 +242,6 @@ export function* tokenStream2bratPlaintext(stream: Iterable<Array<Token>>) {
 export function tokenSentence2bratPlaintext(sentence: Array<Token>) {
   return sentence.filter(x => x.isWord()).map(x => x.getForm()).join(' ')
 }
-
-//------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 function hasAmbigCoordDependents(node: GraphNode<Token>) {
