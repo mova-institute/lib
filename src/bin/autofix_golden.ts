@@ -696,6 +696,12 @@ async function main() {
             }
           }
 
+          if (1) {
+            if (interp.isIndefinite() && interp.lemma.includes('-')) {
+              idSequence = splitIndefinite(token, tokenElement, idSequence)
+            }
+          }
+
           // makeDatesPromoted(node)
 
           // for (let coref of token.corefs) {
@@ -798,6 +804,7 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)
+  interp0.text(token.form)
 
   {
     let [deps, edeps, hdeps] = clusterize(
@@ -1191,6 +1198,85 @@ function insertGlueIfNeeded(el: AbstractElement) {
     el.insertBefore(el.document().createElement('g'))
     // el.insertAfter(el.document().createElement('g'))
   }
+}
+
+//------------------------------------------------------------------------------
+function splitIndefinite(token: Token, element: AbstractElement, idSequence: number) {
+  if (token.interp.lemma.endsWith('-небудь')) {
+    token.interp.lemma = token.interp.lemma.slice(0, -'-небудь'.length)
+    token.form = token.form.slice(0, -'-небудь'.length)
+    token.interp.setFeature(f.PronominalType, f.PronominalType.relative)
+
+    let dashId = id2str(idSequence++)
+    let nebudId = id2str(idSequence++)
+
+    let dashW_ = element.document().createElement('w_').setAttributes({
+      id: dashId,
+      dep: `${nebudId}-punct`,
+    })
+    let dashW = element.document().createElement('w').setAttributes({
+      ana: 'punct:hyphen',
+      lemma: '-'
+    })
+    dashW.text('-')
+    dashW_.appendChild(dashW)
+
+    let nebudW_ = element.document().createElement('w_').setAttributes({
+      dep: `${token.id}-discourse`,
+      id: nebudId,
+    })
+    let nebudW = element.document().createElement('w').setAttributes({
+      ana: 'part',
+      lemma: 'небудь'
+    })
+    nebudW.text('небудь')
+    nebudW_.appendChild(nebudW)
+
+    let glue1 = element.document().createElement('g')
+    let glue2 = element.document().createElement('g')
+    element.insertAfter(glue1)
+    glue1.insertAfter(dashW_)
+    dashW_.insertAfter(glue2)
+    glue2.insertAfter(nebudW_)
+  } else if (token.interp.lemma.startsWith('будь-')) {
+    token.interp.lemma = token.interp.lemma.substr('будь-'.length)
+    token.form = token.form.substr('будь-'.length)
+    token.interp.setFeature(f.PronominalType, f.PronominalType.relative)
+
+    let dashId = id2str(idSequence++)
+    let budId = id2str(idSequence++)
+
+    let dashW_ = element.document().createElement('w_').setAttributes({
+      id: dashId,
+      dep: `${budId}-punct`,
+    })
+    let dashW = element.document().createElement('w').setAttributes({
+      ana: 'punct:hyphen',
+      lemma: '-'
+    })
+    dashW.text('-')
+    dashW_.appendChild(dashW)
+
+    let nebudW_ = element.document().createElement('w_').setAttributes({
+      dep: `${token.id}-discourse`,
+      id: budId,
+    })
+    let nebudW = element.document().createElement('w').setAttributes({
+      ana: 'part',
+      lemma: 'будь'
+    })
+    nebudW.text('будь')
+    nebudW_.appendChild(nebudW)
+
+    let glue1 = element.document().createElement('g')
+    let glue2 = element.document().createElement('g')
+    element.insertBefore(glue1)
+    glue1.insertBefore(dashW_)
+    dashW_.insertBefore(glue2)
+    glue2.insertBefore(nebudW_)
+  }
+
+  return idSequence
 }
 
 //------------------------------------------------------------------------------
