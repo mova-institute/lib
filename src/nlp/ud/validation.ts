@@ -532,14 +532,7 @@ export function validateSentenceSyntax(
   for (let leafrel of g.LEAF_RELATIONS) {
     reportIf(`${leafrel} має залежників`,
       t => uEq(t.node.rel, leafrel)
-        && (uEqSome(t.node.rel, ['cop', 'aux'])
-          ? !t.children.every(x => x.node.interp.isPunctuation()
-            || x.node.interp.lemma === 'не'
-            || x.node.interp.lemma === 'б' && x.node.interp.isParticle()
-            || x.node.interp.lemma === 'би' && x.node.interp.isParticle()
-          )
-          : !t.children.every(x => x.node.interp.isPunctuation())
-        )
+        && !t.children.every(x => x.node.interp.isPunctuation())
     )
   }
 
@@ -2208,10 +2201,14 @@ export function validateSentenceSyntax(
         }))
     }
 
-    tmpxreportIf(`ccomp в інфінітив без #inf-ccomp`, t =>
+    reportIf(`ccomp в інфінітив без #inf-ccomp`, t =>
       uEq(t.node.rel, 'ccomp')
       && g.isInfinitiveAnalytically(t)
       && !t.node.hasTag('inf-ccomp')
+    )
+
+    xreportIf(`#inf-ccomp`, t =>
+      t.node.hasTag('inf-ccomp')
     )
 
     // todo: через advcl? https://lab.mova.institute/brat/#/ud/zvidusil__27/23?focus=T24
@@ -2384,6 +2381,11 @@ export function validateSentenceSyntax(
     reportIf(`розділовий у fixed’і`, t =>
       uEqSome(t.node.rel, ['fixed'])
       && t.node.interp.isPunctuation()
+    )
+
+    reportIf(`goeswith без пробіла поперед`, t =>
+      uEqSome(t.node.rel, ['goeswith'])
+      && nodes[t.node.index - 1].node.gluedNext
     )
     // reportIf(`relative clause не фінітний`, t =>
     //   g.isRelativeSpecificAcl(t.node.rel)

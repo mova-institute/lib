@@ -35,6 +35,8 @@ export type TokenTag =
   | 'gendisagr'
   | 'numdisagr'
 
+  | 'phrasemod'
+
   | 'commed_conj'
   | 'legal_alien'
   | 'conj_no_cc'
@@ -57,6 +59,7 @@ export type TokenTag =
   | 'mult-cc'
   | 'xsubj-from-head'
   | 'xsubj-is-phantom-iobj'
+  | 'xsubj-is-phantom-obj'
   | 'xsubj-is-obl'
   | 'ok-root'
   | 'orphanless-elision'
@@ -93,7 +96,8 @@ export class Token {
   pdeps = new Array<Dependency>()
   hdeps = new Array<Dependency>()
   corefs = new Array<Coreference>()
-  tags = new CoolSet<TokenTag>()
+  dedicatedTags = new CoolSet<TokenTag>()
+  commentTags = new CoolSet<TokenTag>()
   index: number
 
   static structure(structure: Structure, closing: boolean, attributes?: any) {
@@ -116,7 +120,7 @@ export class Token {
   }
 
   get isPromoted() {
-    return this.tags.has('promoted')
+    return this.dedicatedTags.has('promoted')
   }
 
   get isGraft() {
@@ -124,7 +128,7 @@ export class Token {
   }
 
   hasTag(tag: TokenTag) {
-    return this.tags.has(tag)
+    return this.dedicatedTags.has(tag) || this.commentTags.has(tag)
   }
 
   setType(type: TokenType) {

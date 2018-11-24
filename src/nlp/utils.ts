@@ -1143,9 +1143,9 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
             }))
         }
 
-        tok.tags.addAll((el.attribute('tags') || '')
+        tok.dedicatedTags.addAll((el.attribute('tags') || '')
           .split(/\s+/g).filter(x => x) as Iterable<TokenTag>)
-        tok.tags.addAll((el.attribute('comment') || '')
+        tok.commentTags.addAll((el.attribute('comment') || '')
           .split(/\s+/g)
           .filter(x => x.startsWith('#'))
           .map(x => x.substr(1)) as Iterable<TokenTag>)

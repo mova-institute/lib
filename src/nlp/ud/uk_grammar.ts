@@ -829,7 +829,7 @@ export function standartizeSentForUd23BeforeEnhGeneration(
 
     // change xcomp to ccomp
     if (uEq(t.rel, 'xcomp')
-      && ['xsubj-is-phantom-iobj', 'xsubj-is-obl'].some(x => t.hasTag(x as TokenTag))
+      && [/* 'xsubj-is-phantom-iobj', */ 'xsubj-is-obl'].some(x => t.hasTag(x as TokenTag))
     ) {
       t.rel = 'ccomp'
     }

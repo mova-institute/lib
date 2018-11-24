@@ -16,6 +16,9 @@ import {
   tokenStream2plaintextString,
   createMultitokenElement,
   createTokenElement,
+  tokenizeUk,
+  tokenStream2plaintext,
+  MultitokenDescriptor,
 } from '../nlp/utils'
 import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
 import { toSortableDatetime, fromUnixStr, ukMonthMap } from '../date'
@@ -33,7 +36,7 @@ import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
 import { uniq } from 'lodash'
 import { clusterize, stableSort } from '../algo'
-import { tuple } from '../lang'
+import { tuple, shallowEqualArrays } from '../lang'
 
 
 
@@ -248,7 +251,9 @@ async function main() {
 
       let documentTokens = mu(mixml2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
-      for (let { sentenceId, dataset, nodes } of sentenceStream) {
+      for (let { nodes, multitokens } of sentenceStream) {
+        // testTokenization(nodes, multitokens, analyzer)
+
         let roots = nodes.filter(x => x.isRoot())
         let sentenceHasOneRoot = roots.length === 1
 
@@ -615,6 +620,20 @@ async function main() {
             }
           }
 
+          if (token.rel === 'advmod'
+            && ['cop', 'aux'].includes(node.parent.node.rel)
+          ) {
+            token.deps[0].headId = node.parent.parent.node.id
+            token.dedicatedTags.add('phrasemod')
+          }
+
+          if ((token.hasTag('xsubj-is-phantom-iobj')
+            || token.hasTag('xsubj-is-phantom-obj'))
+            && token.rel === 'ccomp'
+          ) {
+            token.rel = 'xcomp'
+          }
+
           // if (token.isElided() && node.isRoot()) {
           //   if (token.interp.lemma === 'міститися') {
           //     token.interp.lemma = 'існувати'
@@ -696,7 +715,7 @@ async function main() {
             }
           }
 
-          if (1) {
+          if (0) {
             if (interp.isIndefinite() && interp.lemma.includes('-')) {
               idSequence = splitIndefinite(token, tokenElement, idSequence)
             }
@@ -766,6 +785,24 @@ async function main() {
 }
 
 //------------------------------------------------------------------------------
+function testTokenization(
+  nodes: Array<GraphNode<Token>>,
+  multitokens: Array<MultitokenDescriptor>,
+  analyzer: MorphAnalyzer,
+) {
+  let tokens = nodes.map(x => x.node).filter(x => !x.isElided())
+  let plaintext = mu(tokenStream2plaintext(tokens, multitokens, false)).join(' ')
+  let goldenForms = tokens.map(x => x.form)
+  let tokenizedForms = tokenizeUk(plaintext, analyzer).map(x => x.token)
+  if (!shallowEqualArrays(goldenForms, tokenizedForms)) {
+    console.error(`###########`)
+    console.error(`Tokenization mismatch, #${nodes[0].node.id}`)
+    console.error(`G: ${goldenForms.join('\t')}`)
+    console.error(`A: ${tokenizedForms.join('\t')}`)
+  }
+}
+
+//------------------------------------------------------------------------------
 function isNegated(form: string, interp: MorphInterp, analyzer: MorphAnalyzer) {
   let lc = form.toLowerCase()
   if (lc.startsWith('не')) {
@@ -793,7 +830,7 @@ function makeDatesPromoted(node: GraphNode<Token>) {
     && node.parent
     && node.parent.node.interp.isOrdinalNumeral()
   ) {
-    node.parent.node.tags.add('promoted')
+    node.parent.node.dedicatedTags.add('promoted')
   }
 }
 
@@ -837,10 +874,8 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
   if (coref) {
     element.setAttribute('coref', coref)
   }
-  // let tags = element.attribute('tags') || ''
-  // if (token.hasTag('promoted') && !/\bpromoted\b/.test(tags)) {
-  //   element.setAttribute('tags', `${tags} promoted`.trim())
-  // }
+  let tags = mu(token.dedicatedTags).join(' ') || undefined
+  element.setAttribute('tags', tags)
 }
 
 //------------------------------------------------------------------------------
