@@ -101,12 +101,31 @@ export function* domesticateDictCorpViz(fileStr: string) {
     .filter(x => !/^\s*$/.test(x))
     .map(x => x.replace(/'/g, '’'))
 
+  let prevLemma: string
+
+  lexeme:
   for (let lexeme of expandDictCorpViz(lines)) {
     let mustDropNumber = /\snumr:/.test(lexeme[0])
       && lexeme.some(x => /\s.*\b:p\b/.test(x))
       && !lexeme.some(x => !/\s.*\b:p\b/.test(x))
 
     for (let { form, tag, lemma, lemmaTag, isLemma } of iterateDictCorpVizLines(lexeme)) {
+
+      // remove dashed repeats
+      if (lexeme.length === 1 && form !== '-') {
+        let split = form.split('-')
+        if (split.length > 1) {
+          if (split.every(x => x === split[0])) {
+            form = split[0]
+            lemma = split[0]
+            if (prevLemma === lemma) {
+              continue lexeme
+            }
+          }
+        }
+      }
+      prevLemma = lemma
+
       let interp = MorphInterp.fromVesumStr(tag, lemma, lemmaTag)
 
       if (mustDropNumber) {
