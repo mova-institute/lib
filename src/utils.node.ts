@@ -81,6 +81,12 @@ export async function* lines(readable: NodeJS.ReadableStream & { [Symbol.asyncIt
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function createBackpressedWriter(fsPath: string, pauser: StreamPauser) {
+  let fsStream = fs.createWriteStream(fsPath)
+  return new BufferedBackpressWriter(fsStream, pauser)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // todo: rerwrite with async iterators once avail
 export function linesAsync(
   readable: NodeJS.ReadableStream,
@@ -205,12 +211,12 @@ export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
   pauser: StreamPauser,
-  listener: (line: string, writer: BufferedBackpressWriter) => any,
+  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => any,
 ) {
   return new Promise<void>((resolve, reject) => {
     let writer = new BufferedBackpressWriter(dest, pauser)
     createInterface(source)
-      .on('line', line => listener(line, writer))
+      .on('line', line => listener(line, writer, pauser))
       .on('close', (e) => {
         console.error(`close`, e)
         writer.flush()
@@ -225,7 +231,7 @@ export function linesBackpressed(
 ////////////////////////////////////////////////////////////////////////////////
 export function linesMultibackpressedStdPipeable(
   pauser: StreamPauser,
-  listener: (line: string, writer: BufferedBackpressWriter) => void,
+  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => void,
 ) {
   exitOnStdoutPipeError()
   return linesBackpressedStd(pauser, listener)
@@ -233,7 +239,7 @@ export function linesMultibackpressedStdPipeable(
 
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStdPipeable(
-  listener: (line: string, writer: BufferedBackpressWriter) => void,
+  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => void,
 ) {
   exitOnStdoutPipeError()
   return linesBackpressedStd(new StreamPauser(process.stdin), listener)
@@ -242,7 +248,7 @@ export function linesBackpressedStdPipeable(
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
   pauser: StreamPauser,
-  listener: (line: string, writer: BufferedBackpressWriter) => void,
+  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => void,
 ) {
   return linesBackpressed(process.stdin, process.stdout, pauser, listener)
 }

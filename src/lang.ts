@@ -103,7 +103,7 @@ export function last<T>(array: Array<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function intbool(value: any) {
+export function ibool(value: any) {
   return value ? 1 : 0
 }
 
@@ -113,24 +113,12 @@ export function wrappedOrNull<T>(construct: { new(val): T; }, val) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/*export function countGenerated<T>(generator: Iterator<T>) {
+export function* enumerate<T>(iterable: Iterable<T>) {
   let i = 0
-  while (!generator.next().done) {
-    ++i
+  for (let v of iterable) {
+    yield [i++, v]
   }
-
-  return i
-}*/
-
-////////////////////////////////////////////////////////////////////////////////
-/*export function ithGenerated<T>(generator: Iterator<T>, index: number) {
-  let cur = generator.next()
-  while (index-- && !cur.done) {
-    cur = generator.next()
-  }
-
-  return cur.value
-}*/
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function complement<T>(a: Set<T>, b: Set<T>) {

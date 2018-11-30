@@ -27,7 +27,7 @@ import { toSortableDatetime } from '../../date'
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 import { buildCoreferenceClusters } from '../coreference'
-import { intbool } from '../../lang'
+import { ibool } from '../../lang'
 import { generateEnhancedDeps2, buildEnhancedGraphFromTokens, loadEnhancedGraphFromTokens, buildEnhancedTreeFromBasic } from './enhanced'
 import { TrebankStatister } from './trebank_statister'
 
@@ -297,7 +297,7 @@ function writeErrors(sentenseErrors, sentenseHoles, outDir: string, id2bratPath:
   if (sentenseHoles.length) {
     let comparator = algo.chainComparators<any>(
       // (a, b) => b.tokens.filter(x => x.hasDeps()).length - a.tokens.filter(x => x.hasDeps()).length,
-      (a, b) => intbool(b.problems[0].indexes.length) - intbool(a.problems[0].indexes.length),  //
+      (a, b) => ibool(b.problems[0].indexes.length) - ibool(a.problems[0].indexes.length),  //
       (a, b) => (a.problems[0].indexes.length - 1) / a.tokens.length
         - (b.problems[0].indexes.length - 1) / b.tokens.length,
       (a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length,

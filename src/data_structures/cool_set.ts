@@ -6,6 +6,12 @@ export class CoolSet<T> extends Set<T> {
     }
   }
 
+  async addAllAsync(iterable: AsyncIterableIterator<T>) {
+    for await (let val of iterable) {
+      this.add(val)
+    }
+  }
+
   addHas(value: T) {
     if (this.has(value)) {
       return false

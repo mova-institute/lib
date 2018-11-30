@@ -33,6 +33,10 @@ export class BufferedBackpressWriter {
     return true
   }
 
+  writeLn(what: string) {
+    return this.write(what) && this.write('\n')
+  }
+
   flush() {
     let ret = this.dest.write(this.buf)
     if (!ret) {

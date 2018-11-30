@@ -1,3 +1,18 @@
+import { linesBackpressedStdPipeable } from '../../../utils.node'
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+export async function compactJsonLog() {
+  let reader = new JsonObjectLogReader().setIgnoreErrors(true)
+  await linesBackpressedStdPipeable((line, writer) => {
+    let obj = reader.feed(line)
+    if (obj) {
+      writer.writeLn(JSON.stringify(obj))
+    }
+  })
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 export class JsonObjectLogReader {
   private buf = ''
