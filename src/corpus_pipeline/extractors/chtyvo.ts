@@ -38,6 +38,8 @@ const docFormatBooktypes = [
 export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
   let metaPath = `${basePath}.meta.html`
 
+  // todo: skip словники?
+
   try {
     let format = [
       'fb2',

@@ -1,15 +1,19 @@
+import { FsMap } from '../../fs_map'
+import { fetchText } from '../../request'
+import { tryParseHtml, parseHtml } from '../../xml/utils.node'
+import { arr2indexMap } from '../../algo'
+import { trimBeforeFirst, trimBeforeLast } from '../../string'
+import { logErrAndExit } from '../../utils.node'
+
+import * as minimist from 'minimist'
+import * as _ from 'lodash'
+import { get } from 'request'
+import chalk from 'chalk'
+
 import { join } from 'path'
 import { parse } from 'url'
 import { readFileSync } from 'fs'
-import * as minimist from 'minimist'
 
-import { FsMap } from '../../fs_map'
-import { fetchText } from '../../request'
-import { tryParseHtml } from '../../xml/utils.node'
-import { get } from 'request'
-import { arr2indexMap } from '../../algo'
-import * as _ from 'lodash'
-import { trimBeforeFirst, trimBeforeLast } from '../../string'
 
 
 interface Args {
@@ -29,10 +33,10 @@ const extensionPriorityKeyer = arr2indexMap([
   'txt',
   'doc',
   'rtf',
+  'djvu',  // do prefer djvu over pdf
+  'pdf',
   'epub',
   'mobi',
-  'pdf',
-  'djvu',
 ])
 
 if (require.main === module) {
@@ -47,14 +51,16 @@ if (require.main === module) {
     },
   }) as any
 
-  main(args)
+  main(args).catch(logErrAndExit)
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
 async function main(args: Args) {
+  let fetchThroughPage = await getMaxPages() - (args.oldNumPages || 0)
+  console.log(chalk.bold(`Will scan pages from ${args.satartWithPage} to ${fetchThroughPage}`))
+
   let fetchedPagesDir = join(args.workspace, 'chtyvo', 'data')
   let pages = new FsMap(fetchedPagesDir)
-  let fetchThroughPage = args.curNumPages - args.oldNumPages
   for (let i = args.satartWithPage; i <= fetchThroughPage; ++i) {
     let baseName = `updates/page-${i}`
     let indexUrl = baseHref + baseName + `/`
@@ -78,7 +84,7 @@ async function main(args: Args) {
       let metaContent: string
       if (pages.has(metaFilishName)) {
         metaContent = readFileSync(join(fetchedPagesDir, metaFilishName), 'utf8')
-        console.log(`exists ${bookHref.pathname}`)
+        // console.log(`exists ${bookHref.pathname}`)
       } else {
         console.log(`processing ${bookHref.pathname}`)
         metaContent = await fetchText(bookHref.href)
@@ -93,13 +99,13 @@ async function main(args: Args) {
         .map(x => x.value())
         .filter(x => !!x
           && /\/authors\/.*\./.test(x)
-          && !['djvu', 'pdf'].some(xx => x.endsWith(`.${xx}`))
+          // && !['djvu', 'pdf'].some(xx => x.endsWith(`.${xx}`))
         )
         .map(x => parse(x))
         .toArray()
 
       if (!dataUrls.length) {
-        console.error(`No data urls`)
+        // console.error(`No data urls`)
         continue
       }
 
@@ -127,4 +133,14 @@ async function main(args: Args) {
       }
     }
   }
+}
+
+//------------------------------------------------------------------------------
+async function getMaxPages() {
+  let content = await fetchText(`http://chtyvo.org.ua/updates/`)
+  let root = parseHtml(content)
+  let elem = root.evaluateElement(`(//div[@class="paging"]//a)[last()]`)
+  let ret = elem.text()
+
+  return ret
 }

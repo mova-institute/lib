@@ -6,12 +6,22 @@ import { allMatchesArr, trimAfterFirst } from '../../string'
 import * as chalk from 'chalk'
 
 import { resolve, parse, Url } from 'url'
+import he = require('he')
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export type StringPredicate = (value: string) => any
 export type UrlPredicate = (value: Url) => any
+
+////////////////////////////////////////////////////////////////////////////////
+export interface CrawlerConfig {
+  timeout?: number
+  isUrlToSave: UrlPredicate
+  isUrlToFollow: UrlPredicate
+  urlPathToFilename?: (path: string) => string
+  urlTransformer?: (url: string) => string
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 export class Crawler {
@@ -23,11 +33,31 @@ export class Crawler {
   private isUrlToSave: UrlPredicate
   private isUrlToFollow: Array<UrlPredicate>
 
+  private urlPathToFilename = (x: string) => x
+  private urlTransformer = (x: string) => x
+
   private timeout = 0
   private numRetries = 5
 
-  constructor(saveDir: string/* , workspaceDir: string */) {
+  constructor(saveDir: string, config?: CrawlerConfig) {
     this.saved = new FsMap(saveDir)
+    if (config) {
+      if (config.timeout !== undefined) {
+        this.timeout = config.timeout
+      }
+      if (config.isUrlToSave) {
+        this.isUrlToSave = config.isUrlToSave
+      }
+      if (config.isUrlToFollow) {
+        this.isUrlToFollow = [config.isUrlToFollow]
+      }
+      if (config.urlPathToFilename) {
+        this.urlPathToFilename = config.urlPathToFilename
+      }
+      if (config.urlTransformer) {
+        this.urlTransformer = config.urlTransformer
+      }
+    }
   }
 
   setTimeout(value: number) {
@@ -47,9 +77,8 @@ export class Crawler {
 
   async seed(urlStrs: Array<string>) {
     for (let urlStr of urlStrs) {
-      urlStr = trimAfterFirst(urlStr, '#')
       let url = parse(urlStr)
-      let fileishUrl = `${url.hostname}${url.path}`
+      let fileishUrl = `${url.hostname}${this.urlPathToFilename(url.path)}`
       if (!fileishUrl.endsWith('.html')) {
         fileishUrl = fileishUrl.endsWith('/') ? `${fileishUrl}index.html` : `${fileishUrl}.html`
       }
@@ -69,14 +98,13 @@ export class Crawler {
       } else {
         try {
           await sleep(this.timeout / 2 + Math.random() * this.timeout)
-          // process.stderr.write(`fetching `)
-          // let timeout = setTimeout(() => exec(`say 'Stupid website!' -v Karen`), 2000)
           process.stderr.write(' ')
-          content = await Promise.race([fetchText(url.href), sleep(1000)])
           for (let i = 0; !content && i < this.numRetries; ++i) {
-            process.stderr.write(chalk.default.bold(`×`))
-            await sleep(500)
-            content = await Promise.race([fetchText(url.href), sleep(2000)])
+            content = await Promise.race([this.fetch(url.href), sleep(2000)])
+            if (!content)  {
+              process.stderr.write(chalk.default.bold(`×`))
+              await sleep(500)
+            }
           }
           if (!content) {
             // exec(`say 'auch!' -v Karen`)
@@ -84,7 +112,6 @@ export class Crawler {
             this.failed.add(url.href)
             return
           }
-          // clearTimeout(timeout)
         } catch (e) {
           console.error(`error fetching ${url.href}`)
           console.error(e.message.substr(0, 80))
@@ -107,13 +134,10 @@ export class Crawler {
         }
       }
 
+      let urls = extractHrefs(content)
+        .map(this.urlTransformer)
+        .map(x => parse(resolve(url.href, x)))
 
-      // let root = parseHtml(content)
-      // let hrefToFollow = this.followUrlsExtractor(root)
-      //   .map(x => parse(resolve(urlStr, x)))
-      //   .filter(x => x.hostname === url.hostname)
-
-      let urls = extractHrefs(content).map(x => parse(resolve(url.href, x)))
       let urlsToSave = urls.filter(x => x && this.isUrlToSave(x))
       let urlsToFollow = urls.filter(x => x && this.isUrlToFollow.some(xx => xx(x)))
         .sort((a, b) =>
@@ -132,11 +156,18 @@ export class Crawler {
       // console.log(`fully processed ${url.href}`)
     }
   }
+
+  private fetch(href: string) {
+    return fetchText(href, {
+      jar: true,
+    })
+  }
 }
 
 //------------------------------------------------------------------------------
 function extractHrefs(html: string) {
   return allMatchesArr(html, /<\s*a\b[^>]+\bhref="([^"]+)"/g)
-    .map(x => x[1])
+    .map(x => he.unescape(x[1]))
+    .map(x => trimAfterFirst(x, '#'))
     .filter(x => x.startsWith('http') || !/^\w+:/.test(x))
 }
