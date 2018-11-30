@@ -111,6 +111,10 @@ async function main() {
             w.removeAttribute('nn')
             w.removeAttribute('disamb')
             w.removeAttribute('author')
+            // w.removeAttribute('mark')
+            for (let ww of w.evaluateElements('./w')) {
+              ww.removeAttribute('author')
+            }
           }
         }
         if (0) {
