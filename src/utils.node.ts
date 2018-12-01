@@ -1,4 +1,3 @@
-import { writePromiseDrain } from './stream.node'
 import { mu } from './mu'
 
 import { readFileSync } from 'fs'
@@ -17,49 +16,17 @@ const readFile = promisify(fs.readFile)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// todo: rerwrite with async iterators once avail
-export function lineBulksAsync(
-  readable: NodeJS.ReadableStream,
-  pauser: StreamPauser,
-  callback: (lineBulk: Array<string>) => void,
-  newline: string | RegExp = '\n',
-) {
-  pauser = pauser || new StreamPauser(readable)
-
-  let pauseId = {}
-  return new Promise<void>((resolve, reject) => {
-    let leftover = ''
-
-    const onData = async (chunk: string) => {
-      leftover += chunk
-      let splitted = leftover.split(newline)
-      if (splitted.length > 1) {
-        leftover = splitted.pop()
-        pauser.pause(pauseId)
-        try {
-          await callback(splitted)
-        } catch (e) {
-          readable  // todo: investigate if this is necessary
-            .removeListener('error', reject)
-            .removeListener('data', onData)
-            .removeListener('end', onEnd)
-          reject(e)
-        } finally {
-          pauser.resume(pauseId)
-        }
-      }
-    }
-
-    const onEnd = async () => {
-      await callback([leftover])
-      resolve()
-    }
-
-    readable
-      .on('error', reject)
-      .on('data', onData)
-      .on('end', onEnd)
-  })
+export async function* liness(readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] }) {
+  let leftover = ''
+  for await (let chunk of readable) {
+    leftover += chunk
+    let yld = leftover.split('\n')
+    leftover = yld.pop()
+    yield yld
+  }
+  if (leftover) {
+    yield [leftover]
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,81 +45,6 @@ export async function* lines(readable: NodeJS.ReadableStream & { [Symbol.asyncIt
   if (buf) {
     yield buf
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function createBackpressedWriter(fsPath: string, pauser: StreamPauser) {
-  let fsStream = fs.createWriteStream(fsPath)
-  return new BufferedBackpressWriter(fsStream, pauser)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// todo: rerwrite with async iterators once avail
-export function linesAsync(
-  readable: NodeJS.ReadableStream,
-  pauser: StreamPauser,
-  callback: (line: string) => void,
-  newline: string | RegExp = '\n',
-) {
-  return lineBulksAsync(readable, pauser, async lineBulk => {
-    for (let line of lineBulk) {
-      await callback(line)
-    }
-  }, newline)
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function linesAsyncStd(
-  callback: (line: string) => void,
-  newline: string | RegExp = '\n',
-) {
-  return linesAsync(process.stdin, new StreamPauser(process.stdin), callback, newline)
-}
-////////////////////////////////////////////////////////////////////////////////
-// todo: rerwrite with async iterators once avail
-export function chunksAsync(
-  readable: NodeJS.ReadableStream,
-  callback: (chunkBulk: Array<Buffer>) => void,
-  splitter: Buffer,
-) {
-  if (splitter.length !== 1) {
-    throw new Error(`Only 1-byte splitters are currently supported`)
-  }
-
-  return new Promise<void>((resolve, reject) => {
-    let leftover = Buffer.allocUnsafe(0)
-
-    const consumer = async (chunk: Buffer) => {
-      let ret = new Array<Buffer>()
-      let start = 0
-      let end = -1
-      while ((end = chunk.indexOf(splitter, start)) >= 0) {
-        if (leftover.length) {
-          ret.push(Buffer.concat([leftover, chunk], leftover.length + end))
-          // await callback(Buffer.concat([leftover, chunk], leftover.length + end))
-          leftover = Buffer.allocUnsafe(0)
-        } else {
-          ret.push(chunk.slice(start, end))
-          // await callback(chunk.slice(start, end))
-        }
-        start = end + splitter.length
-      }
-
-      if (start < chunk.length) {
-        leftover = Buffer.allocUnsafe(chunk.length - start)
-        chunk.copy(leftover, 0, start)
-      }
-
-      readable.pause()
-      await callback(ret)
-      readable.resume()
-    }
-
-    readable.on('data', consumer).on('end', async () => {
-      await callback([leftover])
-      resolve()
-    })
-  })
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -211,35 +103,25 @@ export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
   pauser: StreamPauser,
-  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => any,
+  listener: (line: string, writer: BufferedBackpressWriter) => any,
 ) {
   return new Promise<void>((resolve, reject) => {
     let writer = new BufferedBackpressWriter(dest, pauser)
     createInterface(source)
-      .on('line', line => listener(line, writer, pauser))
+      .on('line', line => listener(line, writer))
       .on('close', (e) => {
-        console.error(`close`, e)
         writer.flush()
         resolve()
       })
-      .on('SIGCONT', () => console.error('SIGCONT'))
-      .on('SIGINT', () => console.error('SIGINT'))
-      .on('SIGTSTP', () => console.error('SIGTSTP'))
+    // .on('SIGCONT', () => console.error('SIGCONT'))
+    // .on('SIGINT', () => console.error('SIGINT'))
+    // .on('SIGTSTP', () => console.error('SIGTSTP'))
   })
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function linesMultibackpressedStdPipeable(
-  pauser: StreamPauser,
-  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => void,
-) {
-  exitOnStdoutPipeError()
-  return linesBackpressedStd(pauser, listener)
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStdPipeable(
-  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => void,
+  listener: (line: string, writer: BufferedBackpressWriter) => void,
 ) {
   exitOnStdoutPipeError()
   return linesBackpressedStd(new StreamPauser(process.stdin), listener)
@@ -248,7 +130,7 @@ export function linesBackpressedStdPipeable(
 ////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
   pauser: StreamPauser,
-  listener: (line: string, writer: BufferedBackpressWriter, pauser: StreamPauser) => void,
+  listener: (line: string, writer: BufferedBackpressWriter) => void,
 ) {
   return linesBackpressed(process.stdin, process.stdout, pauser, listener)
 }
@@ -309,17 +191,6 @@ export function readTsvMapSync(filePath: string, to?: Map<string, string>) {
 ////////////////////////////////////////////////////////////////////////////////
 export function linesSyncArray(filePath: string) {
   return readFileSync(filePath, 'utf8').trim().split('\n')
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function linesSet(filePath: string) {
-  let ret = new Set<string>()
-  return new Promise<Set<string>>((resolve, reject) => {
-    createInterface(fs.createReadStream(filePath, 'utf8'))
-      .on('line', line => ret.add(line))
-      .on('close', () => resolve(ret))
-      .on('error', reject)
-  })
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -385,27 +256,6 @@ export function writeTojsonColored(writer: { write(what) }, obj: any) {
   return writer.write(objDump)
 }
 
-//////////////////////////////////////////////////////////////////////////////
-export async function joinToStream(
-  strings: Iterable<string>,
-  stream: NodeJS.WritableStream,
-  joiner = '',
-  trailing = false,
-) {
-  let isFirst = true
-  for await (let x of strings) {
-    if (!isFirst) {
-      await writePromiseDrain(stream, joiner)
-    } else {
-      isFirst = false
-    }
-    await writePromiseDrain(stream, x)
-  }
-  if (trailing) {
-    await writePromiseDrain(stream, joiner)
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 export async function writeJoin(
   what: Iterable<string>,
@@ -428,12 +278,6 @@ export async function writeLines(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function logErrAndExit(e) {
-  console.error(`logErrAndExit at process ${process.pid}`, process.argv, e)
-  process.exit(1)
-}
-
-////////////////////////////////////////////////////////////////////////////////
 export function joinToFileSync(
   //todo
   filePath: string,
@@ -442,4 +286,10 @@ export function joinToFileSync(
   trail = true
 ) {
   fs.writeFileSync(filePath, mu(strings).join(joiner, trail))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function logErrAndExit(e) {
+  console.error(`logErrAndExit at process ${process.pid}`, process.argv, e)
+  process.exit(1)
 }

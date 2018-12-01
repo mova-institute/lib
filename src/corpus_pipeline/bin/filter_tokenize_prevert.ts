@@ -3,25 +3,23 @@
 import { conlluStrAndMeta2vertical } from '../tovert'
 import { ZvidusilDocFilter } from '../filter'
 import {
-  writeLines, writeTojsonColored,
-  logErrAndExit, linesAsync,
+  writeLines,
+  writeTojsonColored,
+  logErrAndExit,
   createWriteStreamMkdirpSync,
-  lines,
 } from '../../utils.node'
+import { Io } from '../../io'
 import { renprop, mapInplace } from '../../lang'
 import { PrevertDocBuilder } from '../prevert_doc_builder'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { normalizeZvidusilParaNondestructive, normalizeZvidusilParaAggressive } from '../../nlp/utils'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
+import { prepareZvidusilMeta } from '../utils'
+import { AsyncTaskRunner } from '../../async_task_runner'
 
 import * as minimist from 'minimist'
-import { prepareZvidusilMeta } from '../utils'
-import { BufferedBackpressWriter } from '../../backpressing_writer'
-import { StreamPauser } from '../../stream_pauser'
-
-import { AsyncTaskRunner } from '../../async_task_runner'
-// import { ObjApiClient } from '../../object_api_client'
-// import { hashStringLatin1 } from '../../crypto';
+import { CoolSet } from '../../data_structures/cool_set'
+import { hashStringLatin1 } from '../../crypto'
 
 
 
@@ -32,86 +30,88 @@ interface Args {
   udpipeConcurrency?: number
   outFile?: string
   filterLog: string
-  seenDocsSocket: string
+  // seenDocsSocket: string
+  filterDuplicates: boolean
 }
 
 //------------------------------------------------------------------------------
 async function main() {
-  const args = minimist<Args>(process.argv.slice(2))
+  const args = minimist<Args>(process.argv.slice(2), {
+    boolean: ['filterDuplicates'],
+  })
 
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency || 10)
   let docBuilder = new PrevertDocBuilder()
   let analyzer = createMorphAnalyzerSync()
   let filter = new ZvidusilDocFilter(analyzer)
   let udpipe = new UdpipeApiClient(args.udpipeUrl, args.udpipeModel)
-  let logStream = createWriteStreamMkdirpSync(args.filterLog)
-  let stdinPauser = new StreamPauser(process.stdin)
+  let seenUrls = new CoolSet<string>()
+
+  let io = new Io(process.stdin)
   let outStream = args.outFile ? createWriteStreamMkdirpSync(args.outFile) : process.stdout
-  let outWriter = new BufferedBackpressWriter(outStream, stdinPauser)
-  let filterLogWriter = new BufferedBackpressWriter(logStream, stdinPauser)
-  // let seenUrls = new ObjApiClient(args.seenDocsSocket)
+  let outWriter = io.getWriter(outStream)
+  let filterLogStream = createWriteStreamMkdirpSync(args.filterLog)
+  let filterLogWriter = io.getWriter(filterLogStream)
 
-  for await (let line of lines(process.stdin)) {
-  // await linesAsync(process.stdin, stdinPauser, async (line) => {
-    let doc = docBuilder.feedLine(line)
-    if (!doc) {
-      return
-    }
-    let { meta, paragraphs } = doc
-    // {
-    //   let hash = hashStringLatin1(meta.url).substr(0, 6)
-    //   let isDuplicateDoc = await seenUrls.call('addHas', [hash])
-    //   if (!isDuplicateDoc) {
-    //     writeTojsonColored(filterLogWriter, {
-    //       docValid: false,
-    //       message: `duplicate url: ${meta.url}`,
-    //       meta,
-    //     })
-    //     return
-    //   }
-    // }
-
-    mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
-
-    let filterResult = filter.filter(paragraphs, meta)
-    let { docValid, filteredParagraphs, gapFollowerIndexes } = filterResult
-
-    if (!docValid || !filteredParagraphs.length || !meta) {
-      writeTojsonColored(filterLogWriter, filterResult)
-      filterLogWriter.write('\n')
-      filterLogWriter.flush()
-      return
-    }
-
-    mapInplace(filteredParagraphs, x => normalizeZvidusilParaAggressive(x, analyzer))
-
-    normalizeMeta(meta)
-    prepareZvidusilMeta(meta)
-
-    await runner.post(async () => {
-      try {
-        var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
-      } catch (e) {
-        console.error(e)
-        return
+  for await (let lines of io.liness()) {
+    for (let line of lines) {
+      let doc = docBuilder.feedLine(line)
+      if (!doc) {
+        continue
       }
-      if (!conllu) {
-        console.error(`conllu missing!`)
-        return
+      let { meta, paragraphs } = doc
+
+      if (args.filterDuplicates) {
+        let hash = hashStringLatin1(meta.url).substr(0, 6)
+        if (!seenUrls.addNew(hash)) {
+          writeTojsonColored(filterLogWriter, {
+            docValid: false,
+            message: `duplicate url: ${meta.url}`,
+            meta,
+          })
+          continue
+        }
       }
 
-      let vertStream = conlluStrAndMeta2vertical(
-        conllu, {
-          meta: meta,
-          formOnly: true,
-          pGapIndexes: gapFollowerIndexes,
-        })
+      mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
 
-      writeLines(vertStream, outWriter)
-    })
+      let filterResult = filter.filter(paragraphs, meta)
+      let { docValid, filteredParagraphs, gapFollowerIndexes } = filterResult
+
+      if (!docValid || !filteredParagraphs.length || !meta) {
+        writeTojsonColored(filterLogWriter, filterResult)
+        filterLogWriter.write('\n')
+        continue
+      }
+
+      mapInplace(filteredParagraphs, x => normalizeZvidusilParaAggressive(x, analyzer))
+
+      normalizeMeta(meta)
+      prepareZvidusilMeta(meta)
+
+      await runner.post(async () => {
+        try {
+          var conllu = await udpipe.tokenizeParagraphs(filteredParagraphs)
+        } catch (e) {
+          console.error(e)
+          return
+        }
+        if (!conllu) {
+          console.error(`conllu missing!`)
+          return
+        }
+
+        let vertStream = conlluStrAndMeta2vertical(
+          conllu, {
+            meta: meta,
+            formOnly: true,
+            pGapIndexes: gapFollowerIndexes,
+          })
+
+        writeLines(vertStream, outWriter)
+      })
+    }
   }
-  filterLogWriter.flush()
-  outWriter.flush()
 }
 
 

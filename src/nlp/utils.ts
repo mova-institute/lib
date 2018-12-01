@@ -158,16 +158,18 @@ export function normalizeZvidusilParaAggressive(
   para = fixCyrillicMixinGentle(para)
   para = fixApostrophes(para)
 
-  para = mu(tokenizeUkNew(para, analyzer)).map(([token, glued]) => {
-    token = normalizeDash(token, analyzer)
-    token = fixLatinMixinDict(token, analyzer)
+  para = mu(tokenizeUkNew(para, analyzer))
+    .map(([token, glued]) => {
+      token = normalizeDash(token, analyzer)
+      token = fixLatinMixinDict(token, analyzer)
 
-    if (!glued) {
-      token = ` ${token}`
-    }
+      if (!glued) {
+        token = ` ${token}`
+      }
 
-    return token
-  }).join('')
+      return token
+    })
+    .join('')
 
   para = para.trim()
 

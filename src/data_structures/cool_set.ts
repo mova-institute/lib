@@ -12,7 +12,7 @@ export class CoolSet<T> extends Set<T> {
     }
   }
 
-  addHas(value: T) {
+  addNew(value: T) {
     if (this.has(value)) {
       return false
     }
