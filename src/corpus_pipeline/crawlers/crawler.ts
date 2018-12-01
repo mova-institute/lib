@@ -4,9 +4,10 @@ import { sleep } from '../../lang'
 import { allMatchesArr, trimAfterFirst } from '../../string'
 
 import * as chalk from 'chalk'
+import he = require('he')
 
 import { resolve, parse, Url } from 'url'
-import he = require('he')
+import * as fs from 'fs'
 
 
 
@@ -95,30 +96,24 @@ export class Crawler {
       let content: string
       if (this.isUrlToSave(url) && this.saved.has(fileishUrl)) {
         process.stderr.write(` exists\n`)
+        content = fs.readFileSync(fileishUrl, 'utf8')
       } else {
         try {
-          await sleep(this.timeout / 2 + Math.random() * this.timeout)
-          process.stderr.write(' ')
-          for (let i = 0; !content && i < this.numRetries; ++i) {
-            content = await Promise.race([this.fetch(url.href), sleep(2000)])
-            if (!content)  {
-              process.stderr.write(chalk.default.bold(`×`))
-              await sleep(500)
-            }
-          }
-          if (!content) {
-            // exec(`say 'auch!' -v Karen`)
-            process.stderr.write(`✖️\n`)
-            this.failed.add(url.href)
-            return
-          }
+          content = await this.fetchContent(url.href)
         } catch (e) {
           console.error(`error fetching ${url.href}`)
           console.error(e.message.substr(0, 80))
           return
         }
 
-        if (url && this.isUrlToSave(url)) {
+        if (!content) {
+          // exec(`say 'auch!' -v Karen`)
+          process.stderr.write(`✖️\n`)
+          this.failed.add(url.href)
+          return
+        }
+
+        if (this.isUrlToSave(url)) {
           try {
             this.saved.set(fileishUrl, content)
           } catch (e) {
@@ -155,6 +150,20 @@ export class Crawler {
       this.visited.add(url.href)
       // console.log(`fully processed ${url.href}`)
     }
+  }
+
+  private async fetchContent(href: string) {
+    await sleep(this.timeout / 2 + Math.random() * this.timeout)
+    process.stderr.write(' ')
+    for (let i = 0; !ret && i < this.numRetries; ++i) {
+      var ret = await Promise.race([this.fetch(href), sleep(2000)])
+      if (!ret) {
+        process.stderr.write(chalk.default.bold(`×`))
+        await sleep(500)
+      }
+    }
+
+    return ret
   }
 
   private fetch(href: string) {

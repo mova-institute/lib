@@ -1,5 +1,3 @@
-import * as glob from 'glob'
-import { parseXmlFileSync } from '../xml/utils.node'
 import { CorpusDoc } from './doc_meta'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { writeFileSyncMkdirp } from '../utils.node'
@@ -9,18 +7,6 @@ import { Dict } from '../types'
 import { getDomain } from 'tldjs'
 
 
-
-export interface SplitRotateTrainingSetsParams {
-  inputXmlGlob: string
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function splitRotateTrainingSets(params: SplitRotateTrainingSetsParams) {
-  let xmlPaths = glob.sync(params.inputXmlGlob)
-  for (let xmlPath of xmlPaths) {
-    let doc = parseXmlFileSync(xmlPath)
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 export function processDoc(
@@ -37,7 +23,7 @@ export function processDoc(
     return
   }
 
-  normalizeCorpusDoc(doc)
+  normalizeDocNondestructive(doc)
 
   if (!doc.paragraphs || !doc.paragraphs.length) {
     console.error('missing paragraphs ✖️')
@@ -47,10 +33,11 @@ export function processDoc(
     console.error(`no date ✖️`)
     return
   }
-  if (/* args.checkUkr &&  */!isConsideredUkrainan(doc.paragraphs, analyzer)) {
-    console.error(`considered foreign ✖️  ${doc.paragraphs[0].substr(0, 20)} ${doc.url}`)
-    return
-  }
+  // volatile, in development, deferring to later stages
+  // if (/* args.checkUkr &&  */!isConsideredUkrainan(doc.paragraphs, analyzer)) {
+  //   console.error(`considered foreign ✖️  ${doc.paragraphs[0].substr(0, 20)} ${doc.url}`)
+  //   return
+  // }
 
 
   writeFileSyncMkdirp(paraPath, JSON.stringify(doc.paragraphs, undefined, 2))
@@ -61,7 +48,7 @@ export function processDoc(
 }
 
 //------------------------------------------------------------------------------
-function normalizeCorpusDoc(doc: CorpusDoc) {
+function normalizeDocNondestructive(doc: CorpusDoc) {
   doc.paragraphs = doc.paragraphs.map(x => normalizeZvidusilParaNondestructive(x)).filter(x => x)
   doc.title = doc.title && normalizeZvidusilParaNondestructive(doc.title)
   doc.author = doc.author && normalizeZvidusilParaNondestructive(doc.author)

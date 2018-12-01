@@ -128,6 +128,7 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
   }
 }
 
+/*
 type chtyvoSection =
   'Химерна' |
   'Художня' |
@@ -159,7 +160,7 @@ const typeMap = {
   'Гумор': '',
   'Любовна': '',
   'Часописи': '',
-}
+} */
 
 
 //------------------------------------------------------------------------------

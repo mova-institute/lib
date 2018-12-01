@@ -17,7 +17,7 @@ import { processDoc, getMetaParaPaths } from './utils'
 
 //------------------------------------------------------------------------------
 interface SpecificExtractor {
-  streamDocs?(inputStr: string): Iterable<CorpusDoc>
+  streamDocs?(inputStr: string, filename?: string): Iterable<CorpusDoc>
   extract?(inputStr: string): CorpusDoc
 }
 
@@ -57,7 +57,7 @@ function main(args: Args) {
       console.log(tolog)
       let inputStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
       let i = 0
-      for (let doc of specificExtractor.streamDocs(inputStr)) {
+      for (let doc of specificExtractor.streamDocs(inputStr, filePath)) {
         let docId = join(relPath, zerofill(i++, 4))
         processDoc(doc, outDir, docId, analyzer)
       }
