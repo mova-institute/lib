@@ -63,3 +63,14 @@ export class PrevertDocBuilder {
     }
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export async function* itPrevertDocs(lines: AsyncIterableIterator<string>) {
+  let docBuilder = new PrevertDocBuilder()
+  for await (let line of lines) {
+    let doc = docBuilder.feedLine(line)
+    if (doc) {
+      yield doc
+    }
+  }
+}

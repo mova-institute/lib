@@ -17,6 +17,12 @@ export class Io {
   }
 
   async *lines() {
+    for await (let lines of this.liness()) {
+      yield* lines
+    }
+  }
+
+  async *lines2() {
     for await (let line of rawLines(this.source)) {
       yield line
       await this.allDrained()
