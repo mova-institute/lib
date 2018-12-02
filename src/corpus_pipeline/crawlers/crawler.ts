@@ -75,80 +75,87 @@ export class Crawler {
     return this
   }
 
-  async seed(urlStrs: Array<string>) {
-    for (let urlStr of urlStrs) {
-      let url = parse(urlStr)
-      let fileishUrl = `${url.hostname}${this.urlPathToFilename(url.path)}`
-      if (!fileishUrl.endsWith('.html')) {
-        fileishUrl = fileishUrl.endsWith('/') ? `${fileishUrl}index.html` : `${fileishUrl}.html`
-      }
-      if (this.visited.has(url.href)
-        || this.visiting.has(url.href)
-        // || this.saved.has(fileishUrl)
-        || this.failed.has(url.href)
-      ) {
+  async seed(urlStr: string) {
+    let url = parse(urlStr)
+    if (this.visited.has(url.href)
+      || this.visiting.has(url.href)
+      || this.failed.has(url.href)
+    ) {
+      return
+    }
+
+    this.visiting.add(url.href)
+
+    process.stderr.write(`processing ${url.href} `)
+    let content: string
+    let fileishUrl = this.fileizeUrl(url)
+    if (this.isUrlToSave(url) && this.saved.has(fileishUrl)) {
+      // process.stderr.write(` exists\n`)
+      content = this.saved.get(fileishUrl)
+    } else {
+      try {
+        content = await this.fetchContent(url.href)
+      } catch (e) {
+        console.error(`error fetching ${url.href}`)
+        console.error(e.message.substr(0, 80))
         return
       }
-      this.visiting.add(url.href)
 
-      process.stderr.write(`processing ${url.href} `)
-      let content: string
-      if (this.isUrlToSave(url) && this.saved.has(fileishUrl)) {
-        process.stderr.write(` exists\n`)
-        content = this.saved.get(fileishUrl)
-      } else {
+      if (!content) {
+        // exec(`say 'auch!' -v Karen`)
+        process.stderr.write(`✖️\n`)
+        this.failed.add(url.href)
+        return
+      }
+
+      if (this.isUrlToSave(url)) {
         try {
-          content = await this.fetchContent(url.href)
+          this.saved.set(fileishUrl, content)
         } catch (e) {
-          console.error(`error fetching ${url.href}`)
-          console.error(e.message.substr(0, 80))
-          return
-        }
-
-        if (!content) {
-          // exec(`say 'auch!' -v Karen`)
-          process.stderr.write(`✖️\n`)
-          this.failed.add(url.href)
-          return
-        }
-
-        if (this.isUrlToSave(url)) {
-          try {
-            this.saved.set(fileishUrl, content)
-          } catch (e) {
-            if (e.code === 'ENAMETOOLONG') {
-              console.error(`Name too long, not writing`)
-              continue
-            }
-            throw e
+          if (e.code === 'ENAMETOOLONG') {
+            console.error(`Name too long, not writing`)
+            return
           }
-          process.stderr.write(`✔\n`)
-        } else {
-          process.stderr.write(chalk.default.bold(`+\n`))
+          throw e
         }
+        process.stderr.write(`✔\n`)
+      } else {
+        process.stderr.write(chalk.default.bold(`+\n`))
       }
-
-      let urls = extractHrefs(content)
-        .map(this.urlTransformer)
-        .map(x => parse(resolve(url.href, x)))
-
-      let urlsToSave = urls.filter(x => x && this.isUrlToSave(x))
-      let urlsToFollow = urls.filter(x => x && this.isUrlToFollow.some(xx => xx(x)))
-        .sort((a, b) =>
-          (this.isUrlToFollow.findIndex(x => x(a)) - this.isUrlToFollow.findIndex(x => x(b)))
-          || (a > b ? 1 : (a === b ? 0 : -1))
-        )
-
-      for (let { href } of urlsToSave) {
-        await this.seed([href])
-      }
-      for (let { href } of urlsToFollow) {
-        await this.seed([href])
-      }
-
-      this.visited.add(url.href)
-      // console.log(`fully processed ${url.href}`)
     }
+
+    let { urlsToSave, urlsToFollow } = this.extractHrefs(url.href, content)
+
+    for (let { href } of urlsToSave) {
+      await this.seed(href)
+    }
+    for (let { href } of urlsToFollow) {
+      await this.seed(href)
+    }
+
+    this.visited.add(url.href)
+    // console.log(`fully processed ${url.href}`)
+  }
+
+  async seedAll(urlStrs: Iterable<string>) {
+    for (let urlStr of urlStrs) {
+      this.seed(urlStr)
+    }
+  }
+
+  private extractHrefs(curHref: string, content: string) {
+    let urls = extractHrefs(content)
+      .map(this.urlTransformer)
+      .map(x => parse(resolve(curHref, x)))
+
+    let urlsToSave = urls.filter(x => x && this.isUrlToSave(x))
+    let urlsToFollow = urls.filter(x => x && this.isUrlToFollow.some(xx => xx(x)))
+      .sort((a, b) =>
+        (this.isUrlToFollow.findIndex(x => x(a)) - this.isUrlToFollow.findIndex(x => x(b)))
+        || (a > b ? 1 : (a === b ? 0 : -1))
+      )
+
+    return { urlsToSave, urlsToFollow }
   }
 
   private async fetchContent(href: string) {
@@ -160,6 +167,15 @@ export class Crawler {
         process.stderr.write(chalk.default.bold(`×`))
         await sleep(500)
       }
+    }
+
+    return ret
+  }
+
+  private fileizeUrl(url: Url) {
+    let ret = `${url.hostname}${this.urlPathToFilename(url.path)}`
+    if (!ret.endsWith('.html')) {
+      ret = ret.endsWith('/') ? `${ret}index.html` : `${ret}.html`
     }
 
     return ret

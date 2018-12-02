@@ -22,9 +22,7 @@ async function main() {
     // urlTransformer: url => url.replace(/PHPSESSID=\w+&?/g, ''),
   })
 
-  await crawler.seed([
-    'https://forum.pravda.com.ua/',
-  ])
+  await crawler.seed('https://forum.pravda.com.ua/')
 }
 
 

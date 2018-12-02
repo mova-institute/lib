@@ -51,7 +51,7 @@ async function main(args: Args) {
           && !/\/(Gallery|Video|Author)\//.test(x.path)
       ])
       .setUrlsToSave(x => re.test(x.path) && x.hostname === 'tyzhden.ua')
-    await crawler.seed([args.seed])
+    await crawler.seed(args.seed)
   } catch (e) {
     console.error(e)
   }

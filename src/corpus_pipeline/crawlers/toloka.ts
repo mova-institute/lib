@@ -13,9 +13,7 @@ async function main() {
       x => x.hostname === 'toloka.to' && /^\/f\d+$/.test(x.path)
     ])
 
-  await crawler.seed([
-    'https://toloka.to',
-  ])
+  await crawler.seed('https://toloka.to')
 }
 
 //------------------------------------------------------------------------------

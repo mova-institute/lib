@@ -13,9 +13,7 @@ async function main() {
       x => /\/forum\/\d+\/(page__prune_day\S*)?$/.test(x.pathname),
     ])
 
-  await crawler.seed([
-    'http://tereveni.org/index',
-  ])
+  await crawler.seed('http://tereveni.org/index')
 }
 
 ////////////////////////////////////////////////////////////////////////////////

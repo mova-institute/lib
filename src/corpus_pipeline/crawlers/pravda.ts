@@ -38,7 +38,7 @@ async function main() {
         && x.protocol === 'http:',
     ])
 
-  await crawler.seed([
+  await crawler.seedAll([
     'http://www.pravda.com.ua/archives/',
     'http://www.istpravda.com.ua/archives/',
     'http://www.epravda.com.ua/archives/',

@@ -35,7 +35,7 @@ async function main() {
   let cur = new Date().getTime()
   while (cur > earliest) {
     let [y, m, d] = toSortableDateParts(new Date(cur))
-    await crawler.seed([`https://www.radiosvoboda.org/z/630/${y}/${m}/${d}`])
+    await crawler.seed(`https://www.radiosvoboda.org/z/630/${y}/${m}/${d}`)
     cur -= 24 * 3600
   }
 }
