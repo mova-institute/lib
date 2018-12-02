@@ -16,7 +16,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "lib": [
-      "es2018",
+      "esnext",
       "dom"
     ]
   },
