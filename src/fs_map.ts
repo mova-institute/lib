@@ -16,6 +16,10 @@ export class FsMap {
     fs.writeFileSync(this.preparePath(key), value)
   }
 
+  get(key: string) {
+    return fs.readFileSync(this.getPath(key), 'utf8')
+  }
+
   setStream(key: string, value: Stream) {
     return new Promise<void>((resolve, reject) => {
       value

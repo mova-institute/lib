@@ -7,7 +7,6 @@ import * as chalk from 'chalk'
 import he = require('he')
 
 import { resolve, parse, Url } from 'url'
-import * as fs from 'fs'
 
 
 
@@ -85,7 +84,7 @@ export class Crawler {
       }
       if (this.visited.has(url.href)
         || this.visiting.has(url.href)
-        || this.saved.has(fileishUrl)
+        // || this.saved.has(fileishUrl)
         || this.failed.has(url.href)
       ) {
         return
@@ -96,7 +95,7 @@ export class Crawler {
       let content: string
       if (this.isUrlToSave(url) && this.saved.has(fileishUrl)) {
         process.stderr.write(` exists\n`)
-        content = fs.readFileSync(fileishUrl, 'utf8')
+        content = this.saved.get(fileishUrl)
       } else {
         try {
           content = await this.fetchContent(url.href)
