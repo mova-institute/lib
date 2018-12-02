@@ -14,8 +14,11 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
+    "@types/camelcase": "^4.1.0",
     "@types/cookie-parser": "^1.4.1",
     "@types/debug": "~0.0.28",
+    "@types/decamelize": "^1.2.0",
+    "@types/detect-character-encoding": "^0.7.0",
     "@types/express": "^4.16.0",
     "@types/express-jwt": "0.0.37",
     "@types/glob": "^7.1.1",
@@ -47,14 +50,14 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
-    "camelcase": "^3.0.0",
+    "camelcase": "^5.0.0",
     "chalk": "^2.4.1",
     "columnify": "^1.5.4",
     "cookie-parser": "^1.4.3",
     "dawgjs": "^0.1.4",
-    "debug": "^2.6.9",
-    "decamelize": "^1.2.0",
-    "emoji-regex": "^6.1.0",
+    "debug": "^4.1.0",
+    "decamelize": "^2.0.0",
+    "emoji-regex": "^7.0.1",
     "express": "^4.16.3",
     "express-jwt": "^3.4.0",
     "glob": "^7.0.5",
@@ -77,7 +80,6 @@
     "lru-cache": "^5.1.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "n-readlines": "^0.2.8",
     "passport": "^0.4.0",
     "passport-google-oauth": "^1.0.0",
     "pg": "4.5.6",
@@ -89,6 +91,6 @@
     "tmp": "^0.0.33"
   },
   "optionalDependencies": {
-    "detect-character-encoding": "^0.2.1"
+    "detect-character-encoding": "^0.7.0"
   }
 }

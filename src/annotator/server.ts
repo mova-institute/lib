@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser'
 import { PgClient } from '../postrges'
 import * as debugFactory from 'debug'
 import { parseJsonFileSync } from '../utils.node'
-const jwt = require('express-jwt')
+import jwt = require('express-jwt')
 
 
 

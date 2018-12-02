@@ -10,7 +10,6 @@ import { promisify } from 'util'
 import { BufferedBackpressWriter } from './backpressing_writer'
 import { StreamPauser } from './stream_pauser'
 
-const lineIterator = require('n-readlines')
 const readFile = promisify(fs.readFile)
 
 
@@ -150,15 +149,6 @@ export async function allLinesFromStdin() {
   let ret = new Array<string>()
   await forEachLine(process.stdin, line => ret.push(line))
   return ret
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export function* linesStreamSync(filename: string) {
-  let it = new lineIterator(filename)
-  let bytes: Buffer
-  while (bytes = it.next()) {
-    yield bytes.toString('utf8')
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

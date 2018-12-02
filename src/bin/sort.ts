@@ -1,8 +1,10 @@
 #!/usr/bin/env node --max_old_space_size=4096
 
-import { linesStreamSync } from '../utils.node'
+import { linesSync } from '../utils.node'
 
 
+
+//------------------------------------------------------------------------------
 function main() {
   const args = require('minimist')(process.argv.slice(2), {
     boolean: [
@@ -19,7 +21,7 @@ function main() {
   })
 
   console.error(`uniqueing…`)
-  let arr = [...new Set(linesStreamSync(process.argv[2]))]
+  let arr = [...new Set(linesSync(process.argv[2]))]
   console.error(`sorting…`)
   process.stdout.write(arr.sort(collator.compare).join('\n'))
 
@@ -34,6 +36,7 @@ function main() {
   // })
 }
 
+////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

@@ -1,15 +1,17 @@
-import * as fs from 'fs'
-import { join } from 'path'
-import { sync as globSync } from 'glob'
 import { mu } from '../mu'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { linesStreamSync } from '../utils.node'
 import { mixml2tokenStream } from './utils'
 import { iterateDictCorpVizLines } from './vesum'
 import { NS } from '../xml/utils'
 import { startsWithCapital } from '../string'
 import { MorphInterp } from './morph_interp'
+import { linesSync } from '../utils.node'
+
 import { sync as mkdirpSync } from 'mkdirp'
+import { sync as globSync } from 'glob'
+
+import * as fs from 'fs'
+import { join } from 'path'
 
 
 
@@ -72,7 +74,7 @@ export function build4TreeTagger(args: Args) {
     })
 
   console.log(`Building lexicon…`)
-  let lines = iterateDictCorpVizLines(linesStreamSync(args.vesumPath))
+  let lines = iterateDictCorpVizLines(linesSync(args.vesumPath))
   for (let line of lines) {
     let interp = MorphInterp.fromVesumStr(line.tag, line.lemma, line.lemmaTag)
     if (isJohojiji(interp)) {
