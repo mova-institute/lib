@@ -11,12 +11,12 @@ import {
 } from '../static'
 
 import { HashSet } from '../../data_structures'
-import { CacheMap } from '../../cache_map'
 import * as algo from '../../algo'
 import { CachedValue } from '../../cached_value'
 import { parseIntStrict, r } from '../../lang'
 import * as stringUtils from '../../string'
 import * as tlds from 'tlds'
+import * as Lru from 'lru-cache'
 
 
 const dictOverride = new Map([
@@ -260,15 +260,12 @@ type NumeralMapObj = { digit: number, form: string, interp: MorphInterp, lemma: 
 
 ////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
+  private numeralMap = new CachedValue<Array<NumeralMapObj>>(this.buildNumeralMap.bind(this))
+  private pivInterps: Array<MorphInterp>
+  private cache = new Lru<string, Array<MorphInterp>>({ max: 50000 })
   expandAdjectivesAsNouns = false
   keepN2adj = false
   keepParadigmOmonyms = false
-  private numeralMap = new CachedValue<Array<NumeralMapObj>>(this.buildNumeralMap.bind(this))
-  private dictCache = new CacheMap<string, Array<MorphInterp>>(10000, token =>
-    this.lookupRaw(token).map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags)/*.denormalize()*/))
-  private dictCacheNaive = new Map<string, Array<MorphInterp>>()  // ~800K / first GB
-  private naiveCacheLimit = 0
-  private pivInterps: Array<MorphInterp>
 
   constructor(private dictionary: Dictionary) {
     this.buildNumeralMap()
@@ -287,17 +284,6 @@ export class MorphAnalyzer {
 
   setKeepParadigmOmonyms(value = true) {
     this.keepParadigmOmonyms = value
-    return this
-  }
-
-  setNaiveCacheLimit(value: number) {
-    this.naiveCacheLimit = value
-    return this
-  }
-
-  setDebugNaiveCache() {
-    const f = () => console.error(`cache size: ${this.dictCacheNaive.size} items`)
-    setInterval(f, 5 * 60 * 1000)
     return this
   }
 
@@ -321,8 +307,24 @@ export class MorphAnalyzer {
     return interps.length > 0
   }
 
-  /** @token is atomic */
-  tag(token: string, nextToken?: string, prevToken?: string) {
+  tag(token: string, nextToken?: string) {
+    let cacheKey = token
+    if (nextToken) {
+      cacheKey += `\n${nextToken}`
+    }
+
+    let cached = this.cache.get(cacheKey)
+    if (cached) {
+      return cached.map(x => x.clone())
+    }
+
+    let interps = this.tagUncached(token, nextToken)
+    this.cache.set(cacheKey, interps.map(x => x.clone()))
+
+    return interps
+  }
+
+  tagUncached(token: string, nextToken?: string) {
     token = token.replace(/\u0301/g, '')  // kill stress
     if (!token.length) {
       return []
@@ -726,20 +728,8 @@ export class MorphAnalyzer {
   }
 
   private lookup(token: string) {
-    if (this.naiveCacheLimit) {
-      var interps = this.dictCacheNaive.get(token)
-      if (!interps) {
-        interps = this.lookupRaw(token)
-          .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
-        if (this.dictCacheNaive.size <= this.naiveCacheLimit) {
-          this.dictCacheNaive.set(token, interps)
-        }
-      }
-      interps = interps.map(x => x.clone())
-    } else {
-      interps = this.lookupRaw(token)
-        .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
-    }
+    let interps = this.lookupRaw(token)
+      .map(x => MorphInterp.fromVesumStr(x.flags, x.lemma, x.lemmaFlags))
     if (!this.keepParadigmOmonyms) {
       interps.forEach(x => x.features.paradigmOmonym = undefined)
     }
