@@ -227,7 +227,7 @@ export function parseJsonFileSync(filePath: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function writeTojsonFile(filePath: string, obj: any) {
+export function writeToJsonSync(filePath: string, obj: any) {
   let json = JSON.stringify(obj)
   fs.writeFileSync(filePath, json)
 }

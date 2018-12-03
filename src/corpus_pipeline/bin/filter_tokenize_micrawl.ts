@@ -10,13 +10,14 @@ import {
   normalizeZvidusilParaAggressive,
 } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
-import { mu, Mu } from '../../mu'
+import { mu } from '../../mu'
 import { writePromiseDrain } from '../../stream.node'
 import { AsyncTaskRunner } from '../../async_task_runner'
+import { prepareZvidusilMeta } from '../utils'
+import { CorpusDoc } from '../doc_meta'
 
 import * as minimist from 'minimist'
 import * as path from 'path'
-import { prepareZvidusilMeta } from '../utils'
 
 
 
@@ -38,9 +39,7 @@ async function main() {
 
   await superLinesStd(async paraPath => {
     try {
-      var paragraphs = await parseJsonFile(paraPath) as Array<string>
-      let metaPath = paraPath2metaPath(paraPath, args.basePath)
-      var meta = await parseJsonFile(metaPath)
+      var doc = await parseJsonFile(paraPath) as CorpusDoc
     } catch (e) {
       if (e.code === 'ENOENT') {
         console.error(e.message)
@@ -49,10 +48,12 @@ async function main() {
       }
     }
 
-    prepareZvidusilMeta(meta)
+    prepareZvidusilMeta(doc)
 
-    let { docValid, filteredParagraphs, gapFollowerIndexes } =
-      filter.filter(paragraphs, meta)
+    let { docValid,
+      filteredParagraphs,
+      gapFollowerIndexes,
+    } = filter.filter(doc)
 
     if (!docValid || !filteredParagraphs.length) {
       return
@@ -65,8 +66,9 @@ async function main() {
         console.error(`Udpipe error for`, filteredParagraphs)
         return
       }
+      let { paragraphs, authors, ...meta } = doc
       let vertStream = conlluStrAndMeta2vertical(conllu, {
-        meta,
+        meta: meta as any,  // todo
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })
@@ -84,20 +86,16 @@ export class MicrawlFilter {
     filterPreviews: false
   })
 
-  filter(paragraphs: Array<string>, meta) {
-    mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
-    mapInplace(paragraphs, x => normalizeZvidusilParaAggressive(x, this.analyzer))
+  filter(doc: CorpusDoc) {
+    mapInplace(doc.paragraphs, normalizeZvidusilParaNondestructive)
+    mapInplace(doc.paragraphs, x => normalizeZvidusilParaAggressive(x, this.analyzer))
 
-    if (!paragraphs || !paragraphs.length) {
-      console.error(`Paragraphs are empty or invalid`, paragraphs)
-      return
-    }
-    if (!meta) {
-      console.error(`Meta is empty or invalid`)
+    if (!doc.paragraphs || !doc.paragraphs.length) {
+      console.error(`Paragraphs are empty or invalid`, doc.paragraphs)
       return
     }
 
-    return this.zvidusilFilter.filter(paragraphs, meta)
+    return this.zvidusilFilter.filter(doc)
   }
 }
 

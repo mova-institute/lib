@@ -4,10 +4,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as algo from '../../algo'
 import { parseXmlFileSync } from '../../xml/utils.node'
-import { linesSync, writeTojsonFile } from '../../utils.node'
+import { linesSync, writeToJsonSync } from '../../utils.node'
 import { isString, tuple } from '../../lang'
 import { trimExtension } from '../../string'
-import { firstMatch } from '../../string'
 import { serializeMiDocument } from '../utils'
 import { parseBratFile, BratArrow } from './utils'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
@@ -16,7 +15,6 @@ import { Dict } from '../../types'
 
 import * as glob from 'glob'
 import * as minimist from 'minimist'
-import groupby = require('lodash.groupby')
 
 
 
@@ -127,7 +125,7 @@ function main() {
   console.error(`writing docs back to xml…`)
   mixmlDocuments.forEach(x => fs.writeFileSync(x.path, serializeMiDocument(x.doc)))
   if (args.id2bratPath) {
-    writeTojsonFile(args.id2bratPath, id2bratPath)
+    writeToJsonSync(args.id2bratPath, id2bratPath)
   }
 }
 

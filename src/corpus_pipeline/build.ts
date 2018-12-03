@@ -11,7 +11,7 @@ import * as minimist from 'minimist'
 import { join } from 'path'
 import * as fs from 'fs'
 import * as path from 'path'
-import { processDoc, getMetaParaPaths } from './utils'
+import { processDoc } from './utils'
 
 
 
@@ -25,7 +25,9 @@ interface SpecificExtractor {
 function main(args: Args) {
   let outDir = join(args.workspace, args.part)
 
-  let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(false).setKeepN2adj(true)
+  let analyzer = createMorphAnalyzerSync()
+    .setExpandAdjectivesAsNouns(false)
+    .setKeepN2adj(true)
 
   let inputFiles = globInforming(args.inputRoot, args.inputGlob)
   if (args.part === 'chtyvo') {  // todo
@@ -44,22 +46,24 @@ function main(args: Args) {
 
     let relPath = path.relative(args.inputRoot, filePath)
     if (specificExtractor.extract) {
-      if (getMetaParaPaths(outDir, relPath).some(x => !fs.existsSync(x))) {
-        console.log(tolog)
-        let fileStr = fs.readFileSync(filePath, 'utf8')
-        processDoc(specificExtractor.extract(fileStr), outDir, relPath, analyzer)
+      let outPath = join(outDir, `${relPath}.json`)
+      if (fs.existsSync(outPath)) {
+        continue
       }
+      console.log(tolog)
+      let fileStr = fs.readFileSync(filePath, 'utf8')
+      processDoc(specificExtractor.extract(fileStr), outPath, analyzer)
       ++docCounter
     } else if (specificExtractor.streamDocs) {
-      if (fs.existsSync(join(outDir, 'meta', relPath))) {
+      if (fs.existsSync(join(outDir, relPath))) {  // if _dir_ exists
         continue
       }
       console.log(tolog)
       let inputStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
       let i = 0
       for (let doc of specificExtractor.streamDocs(inputStr, filePath)) {
-        let docId = join(relPath, zerofill(i++, 4))
-        processDoc(doc, outDir, docId, analyzer)
+        let outPath = join(outDir, relPath, `${zerofill(i++, 4)}.json`)
+        processDoc(doc, outPath, analyzer)
       }
       docCounter += i
     } else {
@@ -93,6 +97,7 @@ if (require.main === module) {
     },
     default: {
       workspace: '.',
+      inputGlob: '**/*',
     },
     boolean: [
       'checkDate',

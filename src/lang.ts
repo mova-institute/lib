@@ -116,7 +116,22 @@ export function wrappedOrNull<T>(construct: { new(val): T; }, val) {
 export function* enumerate<T>(iterable: Iterable<T>) {
   let i = 0
   for (let v of iterable) {
-    yield [i++, v]
+    yield [i++, v] as [number, T]
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function* enumerateAsync<T>(iterable: AsyncIterable<T>) {
+  let i = 0
+  for await (let v of iterable) {
+    yield [i++, v] as [number, T]
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export async function* flattenAsync<T>(iterable: AsyncIterable<Iterable<T> | AsyncIterable<T>>) {
+  for await (let v of iterable) {
+    yield* v
   }
 }
 

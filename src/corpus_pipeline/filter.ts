@@ -14,6 +14,8 @@ import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { Dawg } from 'dawgjs'
 
 import { parse } from 'url'
+import { FasttextClient } from '../ext/fasstext_client'
+import { CorpusDoc } from './doc_meta'
 
 
 
@@ -126,12 +128,17 @@ const defaultOptions = {
 
 ////////////////////////////////////////////////////////////////////////////////
 export class ZvidusilDocFilter {
+  private fasttextClient: FasttextClient
   private ruLexicon?: Dawg<string>
 
   constructor(
     private analyzer = createMorphAnalyzerSync(),
     private options = defaultOptions,
   ) {
+  }
+
+  setFasttextHandle(value: string) {
+    this.fasttextClient = new FasttextClient(value)
   }
 
   setRuLexicon(ruLexicon: Dawg<string>) {
@@ -144,15 +151,29 @@ export class ZvidusilDocFilter {
     return this
   }
 
-  filter(
-    paragraphs: Array<string>,
-    meta: any,
+  async filter2(
+    doc: CorpusDoc,
   ) {
+    // let's first feed it to fasstext
+    if (this.fasttextClient) {
+      let [lang, prob] = await this.fasttextClient.classify(doc.paragraphs.join(' '))
+      if (lang !== 'uk') {
+        return {
+          docValid: false,
+          message: `Fasstext says it’s "${lang}" with P=${prob}`
+        }
+      }
+    }
+
+    return this.filter(doc)
+  }
+
+  filter(doc: CorpusDoc) {
     let filteredParagraphs = new Array<string>()
     let gapFollowerIndexes = new Array<number>()
 
     let { docValid, filteredIndexes, message } = filterParagraphedDoc(
-      paragraphs, meta, this.analyzer, this.options, this.ruLexicon)
+      doc, this.analyzer, this.options, this.ruLexicon)
 
     if (!docValid) {
       return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes, message }
@@ -160,7 +181,7 @@ export class ZvidusilDocFilter {
 
     let ii = 0
     filteredIndexes.sort(compareAscending)
-    for (let i = 0; i < paragraphs.length; ++i) {
+    for (let i = 0; i < doc.paragraphs.length; ++i) {
       if (i === filteredIndexes[ii]) {
         if (!gapFollowerIndexes.length
           || last(gapFollowerIndexes) !== filteredParagraphs.length
@@ -170,7 +191,7 @@ export class ZvidusilDocFilter {
         ++ii
         continue
       }
-      filteredParagraphs.push(paragraphs[i])
+      filteredParagraphs.push(doc.paragraphs[i])
     }
 
     return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes, message }
@@ -179,38 +200,38 @@ export class ZvidusilDocFilter {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function filterParagraphedDoc(
-  pp: Array<string>,
-  meta: any,
+  doc: CorpusDoc,
   analyzer: MorphAnalyzer,
   options = defaultOptions,
   ruLexicon?: Dawg<string>
 ) {
-  if (meta) {
-    if (meta.title) {
+  if (doc) {
+    if (doc.title) {
       for (let re of titleRegsRejectingDoc) {
-        if (re.test(meta.title)) {
+        if (re.test(doc.title)) {
           return invalidDoc(`killed by title regex: ${re.source}`)
         }
       }
     }
-    if (meta.url) {
-      let url = parse(meta.url)
+    if (doc.url) {
+      let url = parse(doc.url)
       let match = url.hostname.match(domainsRejectingDocRe)
       if (match) {
         return invalidDoc(`killed by domain: ${match[0]}`)
       }
       for (let re of urlRegsRejectingDoc) {
-        if (re.test(meta.url)) {
+        if (re.test(doc.url)) {
           return invalidDoc(`killed by url regex: ${re.source}`)
         }
       }
-      match = meta.url.match(urlsRejectingDoc)
+      match = doc.url.match(urlsRejectingDoc)
       if (match) {
         return invalidDoc(`killed by url regex: ${match[0]}`)
       }
     }
   }
 
+  let pp = doc.paragraphs
   let filtered = new Array<number>()
   let internalHypens = new Array<string>()
 
