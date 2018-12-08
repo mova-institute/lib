@@ -21,7 +21,7 @@ import { renderFeatvals, STRUCTURE_G, positionalAttrGeneric } from '../registry_
 import { indexTableByColumn } from '../../algo'
 import { execSync } from 'child_process'
 import { Dict } from '../../types'
-import { udpipeApiLangMap } from '../updipe_api_lang_map'
+import { getEndpoint } from '../updipe_api_handles'
 
 
 
@@ -190,6 +190,10 @@ STRUCTURE s {
 }
 `
 
+const viewParams = `
+SHORTREF "=doc.title_uk"
+`
+
 //------------------------------------------------------------------------------
 async function main() {
   let [stage, alignFilesGlob] = process.argv.slice(2)
@@ -214,7 +218,6 @@ async function annotate(alignFiles: Array<string>) {
       continue
     }
 
-    console.error(`processing "${leftLang}_${rightLang}" alignment file: ${alignFile}`)
 
     let outDir = 'conllu'
     mkdirp.sync('conllu')
@@ -225,16 +228,17 @@ async function annotate(alignFiles: Array<string>) {
     ]) {
       let destConllu = path.join(outDir, docName as string)
       if (fs.existsSync(destConllu)) {
-        console.error(`skipping ${docName}: conllu exists`)
+        // console.error(`skipping ${docName}: conllu exists`)
         continue
       }
+      console.error(`processing "${lang}" of ${alignFile}`)
 
-      if (!(lang in udpipeApiLangMap)) {
-        // console.error(`skipping "${lang}": no model set`)
-        // continue
-        throw new Error(`no model set for ${lang}`)
-      }
-      let { url, model } = udpipeApiLangMap[lang as string]  // todo
+      // if (!(lang in udpipeApiLangMap)) {
+      //   // console.error(`skipping "${lang}": no model set`)
+      //   // continue
+      //   throw new Error(`no model set for ${lang}`)
+      // }
+      let { url, model } = getEndpoint(lang as string)  // todo
       let udpipe = new UdpipeApiClient(url, model)
 
       let plaintext = intertextDoc2horizontalPlaintext(doc as AbstractElement)
@@ -242,7 +246,16 @@ async function annotate(alignFiles: Array<string>) {
 
       console.error(
         `annotating ${plaintext.length} chars of "${lang}" via "${url}", model "${model}"`)
-      let conllu = await udpipe.tokTagParseHorizontal(plaintext)
+      try {
+        var conllu = await udpipe.tokTagParseHorizontal(plaintext)
+      } catch (e) {
+        if (e.name === 'StatusCodeError' && e.statusCode === 413) {
+          console.error(`request too large`)
+          continue
+        } else {
+          throw e
+        }
+      }
 
       let numSents = countNumMatches(conllu, /^1\t/gm)
       console.error(`  got ${numSents} sents back`)
@@ -257,52 +270,36 @@ async function annotate(alignFiles: Array<string>) {
 
 //------------------------------------------------------------------------------
 async function therest(alignFiles: Array<string>, params: Dict<string>) {
-  console.error(`Gathering morph features from conllus…`)
+  const alignmentSketchDir = 'alignment-sketch'
 
-  let langFeats = new DefaultMap<string, Set<string>>(Set)
-  for (let conlluPath of glob.sync(path.join('conllu', '*'))) {
-    let lang = conlluPath.match(/\.(\w+)\.xml$/)[1]
-    getFeatsFromConllu2(linesSync(conlluPath), langFeats.get(lang))
-  }
-  let langFeatsArr = buildMap(
-    mu(langFeats).map(([lang, set]) => [lang, [...set].sort()] as [string, Array<string>])  // todo
-  )
+  console.error(`Gathering morph features from conllus…`)
+  let featsInLang = buildLangFetureMap()
+
 
   console.error(`Generating vertical files…`)
 
-  let metaTable = indexTableByColumn(
-    parseSeparatedValues(linesSync(params.meta)).toArray(), 'intertext_id')
   let meta = buildMeta(linesSync(params.meta))
 
   let langPairs = new HashSet<Array<string>>()
   for (let alignFile of alignFiles) {
-    let { intertextId, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang } =
-      prepareFromAlignment(alignFile)
+    let {
+      intertextId, leftDoc, rigtDoc, leftDocName, rightDocName, leftLang, rightLang
+    } = prepareFromAlignment(alignFile)
 
     if (leftLang === 'cs' || rightLang === 'cs') {
       continue
     }
 
-    console.error(`processing texts from ${alignFile}`)
+    console.error(`verticalizing texts from ${alignFile}`)
 
-    if (!metaTable.has(intertextId)) {
-      let message = `Intertext id "${intertextId}" is missing from the meta table`
-      throw new Error(message)
-      // console.error(message)
+    let titleMeta = meta.get(intertextId)
+    try {
+      checkMetaIsSane(meta, intertextId)
+    } catch (e) {
+      // console.error(e)
       // continue
+      throw e
     }
-    let metaRecord = metaTable.get(intertextId) || {}
-    if (!metaRecord['title_uk']) {
-      let message = `title_uk is missing from ${intertextId} meta`
-      // console.error(message)
-      throw new Error(message)
-    }
-    if (!metaRecord['original_language']) {
-      let message = `original_language is missing from ${intertextId} meta`
-      // throw new Error(message)
-      // console.error(message)
-    }
-    // console.error(metaRecord)
 
     for (let [doc, docName, lang, oppositeLang] of [
       [leftDoc, leftDocName, leftLang, rightLang],
@@ -316,23 +313,23 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
       let corporaId = `${lang}_${oppositeLang}`
       let destVertical = path.join(outDir, corporaId)
 
-      let meta = {
-        ...subobject(metaRecord, [
-          'title_uk',
-          'original_language',
-          'original_author_uk',
-          'translator_uk',
-        ]),
-        is_original: yesNoUk(metaRecord['original_language'] === lang),
+      let textMeta = titleMeta.texts.get(lang as string)
+      let docMeta = {
+        title_uk: titleMeta.originalText.title_uk,
+        original_language: titleMeta.originalText.language,
+        is_original: yesNoUk(titleMeta.originalText.language === textMeta.language),
+        translator_uk: textMeta.translator_uk,
+        original_author_uk: titleMeta.originalText.original_author_uk,
       }
+      // console.error(docMeta)
 
-      if (meta['original_language']) {
-        meta['original_language'] = langMetas.get(meta['original_language']).ukName
+      if (docMeta['original_language']) {
+        docMeta['original_language'] = langMetas.get(docMeta['original_language']).ukName
       }
 
       let vertStream = conlluStrAndMeta2vertical(conllu, {
-        meta: meta as any,
-        featsOrder: langFeatsArr.get(lang as string)
+        meta: docMeta as any,
+        featsOrder: featsInLang.get(lang as string)
       })
       let sIdx = 0
       let vertLines = mu(vertStream).map(line => {
@@ -346,85 +343,36 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
     }
   }
 
+  let corpora = mu(langPairs)
+    .map(([lang, alignedLang]) => ({ lang, alignedLang, corpusId: `${lang}_${alignedLang}` }))
+    .toArray()
+
+
   console.error(`Generating registry files…`)
 
-  let alignmentSketchDir = 'alignment-sketch'
-  let registry = 'registry'//process.env['MANATEE_REGISTRY']
-  if (!registry) {
-    throw new Error(`MANATEE_REGISTRY env var not set`)
+  for (let { lang, alignedLang, corpusId } of corpora) {
+    let registryFileStr = buildRegistry(lang, alignedLang, featsInLang, 'registry', alignmentSketchDir)
+    writeFileSyncMkdirp(path.join('registry', corpusId), registryFileStr)
   }
-  for (let [lang, alignedLang] of langPairs) {
-    let corporaId = `${lang}_${alignedLang}`
 
-    let langMeta = langMetas.get(lang) || {}
-    let alignedLangMeta = langMetas.get(alignedLang) || {}
-    if (!langMeta || !alignedLangMeta) {
-      throw new Error(`Missing lang meta for "${lang}" or "${alignedLangMeta}`)
-    }
-
-    let langFeats = langFeatsArr.get(lang)
-      .map(x => adaptFeatName(x))
-
-    let abbrs = [langMeta.ukAbbr, alignedLangMeta.ukAbbr]
-    if (alignedLangMeta.code === 'uk') {
-      abbrs.reverse()
-    }
-    let registryFile = renderFeatvals({
-      name: `${langMeta.ukName} || ${alignedLangMeta.ukNameDat}`,
-      path: path.resolve(`${registry}/../manatee/${corporaId}`),
-      vertical: path.resolve('vertical', corporaId),
-      // infohref: '',
-      maintainer: 'org@mova.institute',
-      language: langMeta.name,
-      encoding: 'utf8',
-      locale: `${langMeta.locale}.UTF-8`,
-      nonwordre: langMeta.nonwordre,
-      // tagsetdoc: '',
-      alignstruct: 's',
-      aligned: `${alignedLang}_${lang}`,
-      aligndef: path.resolve(alignmentSketchDir, corporaId),
-    })
-    registryFile += firstRegistryPositionals
-    registryFile += Mu.chain(
-      ['pos'],
-      langFeats,
-      [
-        'tag',
-        'sentindex',
-        'rel',
-        'urel',
-        'head',
-        'relativehead'
-      ],
-    )
-      .map(x => positionalAttrGeneric(x, {
-        multivalue: 'yes',
-        multisep: '||',
-      }))
-      .join('\n', true)
-    registryFile += registryStructures
-    registryFile += STRUCTURE_G
-
-    writeFileSyncMkdirp(path.join(registry, corporaId), registryFile)
-  }
 
   console.error(`Indexing corpora…`)
 
-  for (let [lang, alignedLang] of langPairs) {
-    let corporaId = `${lang}_${alignedLang}`
-    console.error(`Indexing ${corporaId}…`)
-    execSync(`MANATEE_REGISTRY="${registry}" compilecorp --recompile-corpus --no-ske --no-align ${corporaId}`, {
-      // stdio: 'inherit'
+  fs.mkdirSync('manatee', { recursive: true })
+  for (let { corpusId } of corpora) {
+    console.error(`Indexing ${corpusId}…`)
+    execSync(`MANATEE_REGISTRY="registry" compilecorp --recompile-corpus --no-ske --no-align ${corpusId}`, {
+      // stdio: 'inherit',
     })
   }
+
 
   console.error(`Creating unified alignment files…`)
 
   let alignmentTeiDir = 'alignment-tei'
   mkdirp.sync(alignmentTeiDir)
-  for (let [lang, alignedLang] of langPairs) {
-    let corporaId = `${lang}_${alignedLang}`
-    let dest = path.join(alignmentTeiDir, corporaId)
+  for (let { lang, alignedLang, corpusId } of corpora) {
+    let dest = path.join(alignmentTeiDir, corpusId)
     // let ws = fs.createWriteStream(dest)
     for (let alignFile of alignFiles) {
       let toWrite = mu(linesSync(alignFile)).filter(x => x.includes(' xtargets='))
@@ -442,13 +390,13 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
     }
   }
 
+
   console.error(`Creating indexed alignment files…`)
 
   mkdirp.sync(alignmentSketchDir)
-  for (let [lang, alignedLang] of langPairs) {
-    let corporaId = `${lang}_${alignedLang}`
-    let dest = path.join(alignmentSketchDir, corporaId)
-    let command = `${params.calign} ${corporaId} ${alignedLang}_${lang} s.id ${alignmentTeiDir}/${corporaId}`
+  for (let { lang, alignedLang, corpusId } of corpora) {
+    let dest = path.join(alignmentSketchDir, corpusId)
+    let command = `${params.calign} ${corpusId} ${alignedLang}_${lang} s.id ${alignmentTeiDir}/${corpusId}`
       + ` | ${params.fixgaps} | ${params.compressrng} > ${dest}`
     console.error(command)
     execSync(command, {
@@ -456,27 +404,65 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
     })
   }
 
+
   console.error(`Aligning corpora…`)
 
-  mu(langPairs).map(([lang, alignedLang]) => `${lang}_${alignedLang}`)
-    .forEach(x => execSync(`MANATEE_REGISTRY="${registry}" compilecorp --no-ske --recompile-align ${x}`))
+  corpora.forEach(({ corpusId }) =>
+    execSync(`MANATEE_REGISTRY="registry" compilecorp --no-ske --recompile-align ${corpusId}`))
+}
+
+//------------------------------------------------------------------------------
+function align() {
+
 }
 
 //------------------------------------------------------------------------------
 interface MetaTableRecord {
-  intertext_id
-  title_uk
-  language
-  is_original
-  author_uk
-  author_native
-  translator_uk
+  intertext_id: string
+  title_uk: string
+  language: string
+  is_original: string
+  original_author_uk: string
+  original_author_native: string
+  translator_uk: string
+}
+
+//------------------------------------------------------------------------------
+interface Text {
+  language: string
+  is_original: string
+  original_author_uk: string
+  original_author_native: string
+  translator_uk: string
+  title_uk: string
+}
+
+//------------------------------------------------------------------------------
+class Title {
+  texts = new DefaultMap<string, Text>(Object as any)
+
+  get originalText() {
+    return mu(this.texts.values()).find(x => x.is_original === '1')
+  }
 }
 
 //------------------------------------------------------------------------------
 function buildMeta(tsvLines: Iterable<string>) {
   let tsv = parseSeparatedValues<MetaTableRecord>(tsvLines).toArray()
-  // return ret
+  let titles = new DefaultMap<string, Title>(Title)
+  for (let record of tsv) {
+    let title = titles.get(record.intertext_id)
+    let isOldStyleRow = /^\w\w$/.test(record.is_original)
+    if (isOldStyleRow) {
+      let original = { ...record, language: record.is_original, is_original: '1' }
+      let translation = { ...record, is_original: '0' }
+      title.texts.set(original.language, original)
+      title.texts.set(translation.language, translation)
+    } else {
+      title.texts.set(record.language, record)
+    }
+  }
+  return titles
 }
 
 //------------------------------------------------------------------------------
@@ -508,11 +494,11 @@ function getFeatsFromConllu2(conllu: Iterable<string>, set = new Set<string>()) 
 }
 
 //------------------------------------------------------------------------------
-function subobject(from, props: Iterable<string>, filter = (x) => !!x) {
+function subobject<T>(from: T, props: Iterable<keyof T>, filter = (x) => !!x) {
   let ret = {}
   for (let prop of props) {
     if (prop in from && filter(from[prop])) {
-      ret[prop] = from[prop]
+      ret[prop as string] = from[prop]
     }
   }
 
@@ -584,7 +570,103 @@ function getSentIdsFromIntertextDoc(root: AbstractElement) {
 function parseSeparatedValues<T>(lines: Iterable<string>, separator: string | RegExp = '\t') {
   let linesIt = mu(lines)
   let keys = linesIt.first().split(separator)
-  return linesIt.map(l => createObject2(keys, l.split(separator))) as Mu<T>
+  return linesIt.map(l => createObject2(keys, l.split(separator).map(x => x.trim()))) as Mu<T>
+}
+
+//------------------------------------------------------------------------------
+function buildLangFetureMap() {
+  let langToFeats = new DefaultMap<string, Set<string>>(Set)
+  for (let conlluPath of glob.sync(path.join('conllu', '*'))) {
+    let lang = conlluPath.match(/\.(\w+)\.xml$/)[1]
+    getFeatsFromConllu2(linesSync(conlluPath), langToFeats.get(lang))
+  }
+  return buildMap(
+    mu(langToFeats).map(([lang, set]) => [lang, [...set].sort()] as [string, Array<string>])  // todo
+  )
+}
+
+//------------------------------------------------------------------------------
+function checkMetaIsSane(meta: DefaultMap<string, Title>, intertextId: string) {
+  if (!meta.has(intertextId)) {
+    let message = `Intertext id "${intertextId}" is missing from the meta table`
+    throw new Error(message)
+    // console.error(message)
+    // continue
+  }
+  let titleMeta = meta.get(intertextId)
+  if (!titleMeta) {
+    let message = `title_uk is missing from ${intertextId} meta`
+    // console.error(message)
+    throw new Error(message)
+  }
+  if (!titleMeta.originalText.language) {
+    let message = `original_language is missing from ${intertextId} meta`
+    throw new Error(message)
+    console.error(message)
+  }
+}
+
+//------------------------------------------------------------------------------
+function buildRegistry(
+  lang: string,
+  alignedLang: string,
+  featsInLang: Map<string, Array<string>>,
+  registryDir: string,
+  alignmentSketchDir: string,
+) {
+  let corporaId = `${lang}_${alignedLang}`
+
+  let langMeta = langMetas.get(lang)
+  let alignedLangMeta = langMetas.get(alignedLang)
+  if (!langMeta || !alignedLangMeta) {
+    throw new Error(`Missing lang meta for "${lang}" or "${alignedLangMeta}`)
+  }
+
+  let langFeats = featsInLang.get(lang)
+    .map(x => adaptFeatName(x))
+
+  // let abbrs = [langMeta.ukAbbr, alignedLangMeta.ukAbbr]
+  // if (alignedLangMeta.code === 'uk') {
+  //   abbrs.reverse()
+  // }
+  let ret = renderFeatvals({
+    name: `${langMeta.ukName} || ${alignedLangMeta.ukNameDat}`,
+    path: path.resolve(`${registryDir}/../manatee/${corporaId}`),
+    vertical: path.resolve('vertical', corporaId),
+    // infohref: '',
+    maintainer: 'org@mova.institute',
+    language: langMeta.name,
+    encoding: 'utf8',
+    locale: `${langMeta.locale}.UTF-8`,
+    nonwordre: langMeta.nonwordre,
+    // tagsetdoc: '',
+    alignstruct: 's',
+    aligned: `${alignedLang}_${lang}`,
+    aligndef: path.resolve(alignmentSketchDir, corporaId),
+  })
+  ret += firstRegistryPositionals
+  ret += Mu.chain(
+    ['pos'],
+    langFeats,
+    [
+      'tag',
+      'sentindex',
+      'rel',
+      'urel',
+      'head',
+      'relativehead'
+    ],
+  )
+    .map(x => positionalAttrGeneric(x, {
+      multivalue: 'yes',
+      multisep: '||',
+    }))
+    .join('\n', true)
+  ret += registryStructures
+  ret += STRUCTURE_G
+  ret += viewParams
+
+  return ret
 }
 
 ////////////////////////////////////////////////////////////////////////////////
