@@ -16,7 +16,9 @@ export type UrlPredicate = (value: Url) => any
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface CrawlerConfig {
-  timeout?: number
+  delay?: number
+  retryTimeout?: number
+  numRetries?: number
   isUrlToSave: UrlPredicate
   isUrlToFollow: UrlPredicate
   urlPathToFilename?: (path: string) => string
@@ -36,14 +38,21 @@ export class Crawler {
   private urlPathToFilename = (x: string) => x
   private urlTransformer = (x: string) => x
 
-  private timeout = 0
+  private delay = 0
   private numRetries = 5
+  private retryTimeout = 500
 
   constructor(saveDir: string, config?: CrawlerConfig) {
     this.saved = new FsMap(saveDir)
     if (config) {
-      if (config.timeout !== undefined) {
-        this.timeout = config.timeout
+      if (config.numRetries !== undefined) {
+        this.numRetries = config.numRetries
+      }
+      if (config.delay !== undefined) {
+        this.delay = config.delay
+      }
+      if (config.retryTimeout !== undefined) {
+        this.retryTimeout = config.retryTimeout
       }
       if (config.isUrlToSave) {
         this.isUrlToSave = config.isUrlToSave
@@ -61,7 +70,7 @@ export class Crawler {
   }
 
   setTimeout(value: number) {
-    this.timeout = value
+    this.delay = value
     return this
   }
 
@@ -86,13 +95,14 @@ export class Crawler {
 
     this.visiting.add(url.href)
 
-    process.stderr.write(`processing ${url.href} `)
     let content: string
     let fileishUrl = this.fileizeUrl(url)
     if (this.isUrlToSave(url) && this.saved.has(fileishUrl)) {
       // process.stderr.write(` exists\n`)
+      // process.stderr.write(`\n`)
       content = this.saved.get(fileishUrl)
     } else {
+      process.stderr.write(`processing ${url.href} `)
       try {
         content = await this.fetchContent(url.href)
       } catch (e) {
@@ -134,7 +144,7 @@ export class Crawler {
     }
 
     this.visited.add(url.href)
-    // console.log(`fully processed ${url.href}`)
+    // console.log(`${chalk.default.bold('done')}       ${url.href}`)
   }
 
   async seedAll(urlStrs: Iterable<string>) {
@@ -159,10 +169,11 @@ export class Crawler {
   }
 
   private async fetchContent(href: string) {
-    await sleep(this.timeout / 2 + Math.random() * this.timeout)
+    await sleep(this.delay / 2 + Math.random() * this.delay)
     process.stderr.write(' ')
-    for (let i = 0; !ret && i < this.numRetries; ++i) {
-      var ret = await Promise.race([this.fetch(href), sleep(2000)])
+    for (let i = 0; !ret && i <= this.numRetries; ++i) {
+      let timeout = i ? this.retryTimeout : 2000
+      var ret = await Promise.race([this.fetch(href), sleep(timeout)])
       if (!ret) {
         process.stderr.write(chalk.default.bold(`×`))
         await sleep(500)

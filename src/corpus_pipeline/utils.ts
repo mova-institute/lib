@@ -27,13 +27,13 @@ export function processDoc(
     return
   }
   if (/* args.checkDate && */ !doc.date) {
-    console.error(`no date ✖️  ${doc.url}`)
-    return
+    // console.error(`no date ✖️  ${doc.url}`)
+    // return
   }
   // early filtering
   if (/* args.checkUkr &&  */!isConsideredUkrainan(doc.paragraphs, analyzer)) {
     let sample = mu(doc.paragraphs).join(' ').substr(0, 38)
-    console.error(`considered foreign ✖️  ${sample} ${doc.url}`)
+    console.error(`considered foreign ✖️  ${sample} ${doc.url || ''}`)
     return
   }
 

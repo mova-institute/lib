@@ -4,6 +4,14 @@ export function mu<T>(iterable: Iterable<T> = []) {
   return new Mu(iterable)
 }
 
+export function rmu<T>(array: Array<T>) {
+  return new Mu((function* () {
+    for (let i = array.length - 1; i >= 0; --i) {
+      yield array[i]
+    }
+  })())
+}
+
 export type Predicate<T> = (x: T) => any
 export type PredicateWithIndex<T> = (x: T, i: number) => any
 
@@ -199,6 +207,7 @@ export class Mu<T> implements Iterable<T> {
     for (let x of this) {
       fn(x, i++)
     }
+    return this
   }
 
   filter(fn: Predicate<T>) {

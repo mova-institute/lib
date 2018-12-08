@@ -2,7 +2,7 @@ import { CorpusDoc } from '../doc_meta'
 import { tryParseHtml } from '../../xml/utils.node'
 import { normalizeZvidusilParaNondestructive } from '../../nlp/utils'
 import { dayUkmonthCommaYear2date, isDayUkMonthCommaYear, toSortableDate, dayUkmonth2date } from '../../date'
-import { matchNth } from '../../lang'
+import { matchGroup } from '../../lang'
 import { textsOf } from './utils'
 
 
@@ -22,7 +22,7 @@ export function extract(html: string) {
     + '//div[@class="bf4"]/span[contains(@style, "color:Gray")]/text())')
     .trim()
   if (!isDayUkMonthCommaYear(datetimeStr)) {
-    let curYear = matchNth(html, /©2007-(\d{4}) Тиждень\.ua/, 1)
+    let curYear = matchGroup(html, /©2007-(\d{4}) Тиждень\.ua/, 1)
     if (curYear) {
       var dateObj = dayUkmonth2date(datetimeStr)
       dateObj.setFullYear(Number(curYear))

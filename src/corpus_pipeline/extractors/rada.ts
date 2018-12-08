@@ -71,7 +71,7 @@ export function extract(fileContents: string): CorpusDoc {
   }
 
   return {
-    source: 'Стенограми засідань Верховної Ради',
+    source: 'Стенограми засідань ВР',
     title: `Засідання Верховної Ради ${date}`,  // ~
     date,
     paragraphs,

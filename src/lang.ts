@@ -79,7 +79,7 @@ export function match(str: string, re: RegExp) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function matchNth(str: string, re: RegExp, n: number) {
+export function matchGroup(str: string, re: RegExp, n = 1) {
   let match = str.match(re)
   if (match) {
     return match[n]

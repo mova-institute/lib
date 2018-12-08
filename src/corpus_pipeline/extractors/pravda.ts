@@ -94,16 +94,26 @@ export function extract(html: string) {
       author = undefined
     }
 
+    let [, source] = domainToSourceName.find(([re]) => re.test(url.hostname))
+
     return {
       title,
       author,
       url: url.href,
       date,
       paragraphs,
-      source: 'Українська правда',
+      source,
     } as CorpusDoc
   }
 }
+
+//------------------------------------------------------------------------------
+const domainToSourceName: Array<[RegExp, string]> = [
+  [/\blife.pravda.com.ua$/, 'Українська правда: Життя'],
+  // [/\bepravda.com.ua$/, 'Українська правда: економіка'],
+  [/\bistpravda.com.ua$/, 'Історична правда'],
+  [/.*/, 'Українська правда'],
+]
 
 //------------------------------------------------------------------------------
 function getDate(root: AbstractElement, xpath: string) {

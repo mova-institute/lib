@@ -1,18 +1,22 @@
 #!/usr/bin / env node
 
 import { Crawler } from './crawler'
-import { matchNth } from '../../lang'
+import { matchGroup } from '../../lang'
+
+import { Url } from 'url'
 
 
 
 //------------------------------------------------------------------------------
 async function main() {
   let crawler = new Crawler('saved_web', {
-    timeout: 3000,
-    isUrlToSave: x => x.hostname === 'forum.pravda.com.ua' && /^\/index\.php\?topic=\d+\.\d+$/.test(x.path),
-    isUrlToFollow: x => x.hostname === 'forum.pravda.com.ua' && /\bboard=\d+\.\d+$/.test(x.search),
+    delay: 3000,
+    numRetries: 1,
+    retryTimeout: 10000,
+    isUrlToSave: x => isFup(x) && /^\/index\.php\?topic=\d+\.\d+$/.test(x.path),
+    isUrlToFollow: x => isFup(x) && /\bboard=\d+\.\d+$/.test(x.search),
     urlPathToFilename(path) {
-      let match = matchNth(path, /\btopic=([\d.]+)/, 1)
+      let match = matchGroup(path, /\btopic=([\d.]+)/, 1)
       if (match) {
         return `/${match.replace('.', '/')}`
       }
@@ -23,6 +27,11 @@ async function main() {
   })
 
   await crawler.seed('https://forum.pravda.com.ua/')
+}
+
+//------------------------------------------------------------------------------
+function isFup(url: Url) {
+  return url.protocol === 'https:' && url.hostname === 'forum.pravda.com.ua'
 }
 
 
