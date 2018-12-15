@@ -14,15 +14,17 @@ const DOMAINS = [
 
 async function main() {
   // 'health|culture|society|travel|columns'
-  let crawler = new Crawler('saved_web')
-    .setUrlsToSave(({ pathname, hostname, protocol }) => {
+  let crawler = new Crawler('saved_web', {
+    readFromSaved: false,
+  })
+    .setUrlsToSave(({ path, hostname, protocol }) => {
       // if (hostname === 'life.pravda.com.ua') {
 
       // }
       // console.log(`testing ${x}`)
-      let ret = /^\/(news|articles|columns|digest|short|health|culture|society|travel|interview)\/\d{4}\/\d+\/\d+\/\d+\/$/.test(pathname)
+      let ret = /^\/(news|articles|columns|digest|short|health|culture|society|travel|interview)\/\d{4}\/\d+\/\d+\/\d+\/$/.test(path)
         && DOMAINS.includes(hostname)
-        && protocol === 'http:'
+        && protocol === 'https:'
       return ret
     })
     .setUrlsToFollow([
@@ -30,20 +32,20 @@ async function main() {
         && DOMAINS.includes(x.hostname)
         && /^\/archives\/date_\d+\/$/.test(x.pathname)
         && !x.search
-        && x.protocol === 'http:',
+        && x.protocol === 'https:',
       x => x
         && DOMAINS.includes(x.hostname)
         && /^\/archives\/year_\d+\/$/.test(x.pathname)
         && !x.search
-        && x.protocol === 'http:',
+        && x.protocol === 'https:',
     ])
 
   await crawler.seedAll([
-    'http://www.pravda.com.ua/archives/',
-    'http://www.istpravda.com.ua/archives/',
-    'http://www.epravda.com.ua/archives/',
-    'http://life.pravda.com.ua/archives/',
-    'http://www.eurointegration.com.ua/archives/',
+    'https://www.pravda.com.ua/archives/',
+    'https://www.istpravda.com.ua/archives/',
+    'https://www.epravda.com.ua/archives/',
+    'https://life.pravda.com.ua/archives/',
+    'https://www.eurointegration.com.ua/archives/',
   ])
 }
 

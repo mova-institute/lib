@@ -44,7 +44,7 @@ class Crawler {
     this.visiting.add(url)
 
     console.log(`seeding ${url}`)
-    // await sleep(100)
+    await sleep(3000)
     let content = await fetchText(url)
     for (let link of this.saveLinkExtractor(content)) {
       let saveTo = link.match(articleSavePath)[1]

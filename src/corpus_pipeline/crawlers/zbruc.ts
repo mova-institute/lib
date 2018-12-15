@@ -50,7 +50,8 @@ async function main(args: Args) {
       try {
         content = await fetchText(`http://zbruc.eu/node/${i}?theme=zbruc`)
       } catch (e) {
-        console.error(e)
+        delete e.error
+        console.error(e.statusCode)
         continue
       }
       articleRegistry.set(`${i}.html`, content)
