@@ -25,7 +25,10 @@ export class DrainwaitingBufferedWriter {
   }
 
   writeLn(what: string) {
-    return this.write(what) && this.write('\n')
+    let ok1 = this.write(what)
+    let ok2 = this.write('\n')
+
+    return ok1 && ok2
   }
 
   flush() {
