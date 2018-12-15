@@ -39,32 +39,39 @@ export function* streamDocs(html: string) {
 }
 
 //------------------------------------------------------------------------------
-const allowedTextElems = ['a', 'b', 'i', 'strike', 'emph']
+const allowedTextElems = ['a', 'b', 'i', 'strike', 'em', 'strong']  // no <s>!
 //------------------------------------------------------------------------------
 function getPostParagraphs(contentRoot: AbstractElement) {
-  let ret = ['']
+  let ret = new Array<string>()
   let oldStyleQuotes = false
 
-  for (let child of contentRoot.children()) {
+  let cur = ''
+  for (let [child, next] of contentRoot.children().window(2)) {
     if (child.isText()
       || child.isElement() && allowedTextElems.includes(child.asElement().localName())
     ) {
-      let text = child.text()
-      if (/^\S+ Написав:\s*$/.test(text)) {
+      cur += child.text()
+    }
+
+    if (child.isElement() && child.asElement().localName() === 'br' || !next) {
+      let toPush = cur
+      cur = ''
+
+      if (/\S Написав:\s*$/.test(toPush)) {
         oldStyleQuotes = true
         continue
       }
-      if (oldStyleQuotes && /^\s*-{4,}\s*$/.test(text)) {
+      if (oldStyleQuotes && /^(> )*\s*-{4,}\s*$/.test(toPush)) {
         continue
       }
-      if (/\s*>/.test(text)) {
+      if (/\s*>/.test(toPush)) {
+        continue
+      }
+      if (/^\s*(Редаговано разів|Останнє редагування):/.test(toPush)) {
         continue
       }
 
-      ret[ret.length - 1] += text
-    }
-    if (child.isElement() && child.asElement().localName() === 'br') {
-      ret.push('')
+      ret.push(toPush)
     }
   }
 
