@@ -139,6 +139,13 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.shuffle@^4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@types/lodash.shuffle/-/lodash.shuffle-4.2.4.tgz#3931aeafe65770c132e3a4061c833eaf5936c2b2"
+  integrity sha512-GnqZmVNNRDbDTzaFOf5TaumjlN+Nq83+kTSnU1EsTo6NtKlifBKU0oNM2wsL3BAxMWk4E6WVtzoBu+2Vg7RIjw==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.sortby@^4.7.2":
   version "4.7.4"
   resolved "https://registry.yarnpkg.com/@types/lodash.sortby/-/lodash.sortby-4.7.4.tgz#14f9d45b6214b32cbe2f6332990b386d4b2dd09a"

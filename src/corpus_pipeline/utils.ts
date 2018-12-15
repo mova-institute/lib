@@ -3,8 +3,10 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { writeFileSyncMkdirp } from '../utils.node'
 import { tokenizeUk, normalizeZvidusilParaNondestructive } from '../nlp/utils'
 import { getDomain } from 'tldjs'
-import { mapInplace } from '../lang';
-import { mu } from '../mu';
+import { mapInplace } from '../lang'
+import { mu } from '../mu'
+
+import shuffle = require('lodash.shuffle')
 
 
 
@@ -53,6 +55,7 @@ function normalizeDocNondestructive(doc: CorpusDoc) {
 function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer) {
   const THRESHOLD = 0.2
 
+  paragraphs = shuffle(paragraphs)
   let numTotal = 0
   let numX = 0
   for (let i = paragraphs.length - 1; i >= 0; --i) {
