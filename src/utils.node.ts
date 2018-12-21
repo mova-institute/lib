@@ -9,6 +9,7 @@ import { sync as mkdirpSync } from 'mkdirp'
 import { promisify } from 'util'
 import { BufferedBackpressWriter } from './backpressing_writer'
 import { StreamPauser } from './stream_pauser'
+import { Io } from './io'
 
 const readFile = promisify(fs.readFile)
 
@@ -44,6 +45,17 @@ export async function* lines(readable: NodeJS.ReadableStream & { [Symbol.asyncIt
   if (buf) {
     yield buf
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function stdio() {
+  exitOnStdoutPipeError()
+
+  let io = new Io(process.stdin)
+  let out = io.getWriter(process.stdout)
+  let input = io.lines()
+
+  return { input, out, io }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

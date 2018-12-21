@@ -1,6 +1,5 @@
 import { AbstractElement } from './xmlapi/abstract_element'
 import { AbstractNode } from './xmlapi/abstract_node'
-import * as he from 'he'
 import { Dict } from '../types'
 
 
@@ -20,8 +19,10 @@ export function cantBeXml(str: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function escape(value: string) {   // todo: call he everywhere directly
-  return he.escape(value)
+export function escapeText(value: string) {   // todo: call he everywhere directly
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +129,7 @@ export function keyvalue2attributesNormalized(obj: any) {
     .filter(key => key.trim() && obj[key] !== undefined)
     .map(key => {
       let value = obj[key].toString().replace(/\s+/g, ' ').trim()
-      value = escape(value)
+      value = escapeText(value)
       return `${key}="${value}"`
     })
     .join(' ')

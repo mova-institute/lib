@@ -8,8 +8,19 @@ export function flatten2d<T>(array: Iterable<Array<T>>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function trimBack<T>(array: Array<T>, pred = x => x) {
-  while (pred(last(array))) {
+export function trimBack<T>(array: Array<T>, trimPred = x => !x) {
+  while (array.length && trimPred(last(array))) {
     array.pop()
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function trimFront<T>(array: Array<T>, trimPred = x => !x) {
+  array.splice(0, array.findIndex(x => !trimPred(x)))
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function trim<T>(array: Array<T>, trimPred = x => !x) {
+  trimBack(array, trimPred)
+  trimFront(array, trimPred)
 }

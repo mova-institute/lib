@@ -12,7 +12,7 @@ import * as _ from 'lodash'
 import * as g from './uk_grammar'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
-import { escape } from '../../xml/utils'
+import { escapeText } from '../../xml/utils'
 import { mixml2tokenStream, tokenStream2sentencesRaw, initIndexes } from '../utils'
 import * as algo from '../../algo'
 import { parseJsonFileSync } from '../../utils.node'
@@ -380,14 +380,14 @@ function formatProblemsHtml(
 
     body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${tbRelativePath}</a><br/>`
     for (let { indexes, message } of problems) {
-      body += `<p class="message">- ${escape(message)}`
+      body += `<p class="message">- ${escapeText(message)}`
       if (indexes !== undefined) {
         let ids = indexes.map(x => tokens[x].id).join(` `)
         body += ` <input type="checkbox" value="${ids}" onchange="copyIds()" /> ${ids}</p>`
 
         for (let j = 0; j < tokens.length; ++j) {
           if (indexes.length < tokens.length && indexes.includes(j)) {
-            body += `<span class="error">${escape(tokens[j].getForm())}</span> `
+            body += `<span class="error">${escapeText(tokens[j].getForm())}</span> `
           } else {
             body += `${tokens[j].getForm()} `
           }

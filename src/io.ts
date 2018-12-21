@@ -1,5 +1,6 @@
 import { DrainwaitingBufferedWriter } from './drainwaiting_buffered_writer'
 import { lines as rawLines, liness } from './utils.node'
+import { amu } from './async_mu'
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,6 +15,10 @@ export class Io {
     this.dests.push(ret)
 
     return ret
+  }
+
+  linesMu() {
+    return amu(this.lines())
   }
 
   async *lines() {

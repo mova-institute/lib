@@ -1098,6 +1098,7 @@ export class MorphInterp {
   isClosing() { return this.getFeature(PunctuationSide) === PunctuationSide.close }
   isOpening() { return this.getFeature(PunctuationSide) === PunctuationSide.open }
   isMock() { return this.otherFlags.has('mock') }
+  isAuto() { return this.features.auto === Auto.yes }
 
 
   hasAnimacy() { return this.features.animacy !== undefined }

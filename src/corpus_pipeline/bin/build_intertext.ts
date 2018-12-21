@@ -412,11 +412,6 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
 }
 
 //------------------------------------------------------------------------------
-function align() {
-
-}
-
-//------------------------------------------------------------------------------
 interface MetaTableRecord {
   intertext_id: string
   title_uk: string

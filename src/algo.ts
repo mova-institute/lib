@@ -217,12 +217,12 @@ export function uniq<T>(array: Array<T>) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function uniqueSmall(array: Array<any>) {
+export function uniqSmall(array: Array<any>) {
   return array.filter((x, i) => array.indexOf(x) === i)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function uniqueJson<T>(iterable: Iterable<T>) {
+export function uniqJson<T>(iterable: Iterable<T>) {
   return [...new HashSet<T>().addAll(iterable)]
 }
 
