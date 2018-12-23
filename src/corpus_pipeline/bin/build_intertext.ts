@@ -198,6 +198,7 @@ SHORTREF "=doc.title_uk"
 async function main() {
   let [stage, alignFilesGlob] = process.argv.slice(2)
   let alignFiles = glob.sync(alignFilesGlob)
+    .filter(x => !x.includes('Exupery_Petit-Prince'))  // temp
 
   if (stage === 'annotate') {
     await annotate(alignFiles)
@@ -250,8 +251,9 @@ async function annotate(alignFiles: Array<string>) {
         var conllu = await udpipe.tokTagParseHorizontal(plaintext)
       } catch (e) {
         if (e.name === 'StatusCodeError' && e.statusCode === 413) {
-          console.error(`request too large`)
-          continue
+          throw e
+          // console.error(`request too large`)
+          // continue
         } else {
           throw e
         }
@@ -292,7 +294,12 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
 
     console.error(`verticalizing texts from ${alignFile}`)
 
-    let titleMeta = meta.get(intertextId)
+    if (!meta.has(intertextId)) {
+      console.error(`Missing meta, skipping!`)
+      continue
+    }
+
+    let compositionMeta = meta.get(intertextId)
     try {
       checkMetaIsSane(meta, intertextId)
     } catch (e) {
@@ -313,13 +320,13 @@ async function therest(alignFiles: Array<string>, params: Dict<string>) {
       let corporaId = `${lang}_${oppositeLang}`
       let destVertical = path.join(outDir, corporaId)
 
-      let textMeta = titleMeta.texts.get(lang as string)
+      let textMeta = compositionMeta.texts.get(lang as string)
       let docMeta = {
-        title_uk: titleMeta.originalText.title_uk,
-        original_language: titleMeta.originalText.language,
-        is_original: yesNoUk(titleMeta.originalText.language === textMeta.language),
+        title_uk: compositionMeta.originalText.title_uk,
+        original_language: compositionMeta.originalText.language,
+        is_original: yesNoUk(compositionMeta.originalText.language === textMeta.language),
         translator_uk: textMeta.translator_uk,
-        original_author_uk: titleMeta.originalText.original_author_uk,
+        original_author_uk: compositionMeta.originalText.original_author_uk,
       }
       // console.error(docMeta)
 
