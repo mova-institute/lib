@@ -2,7 +2,7 @@
 export function getEndpoint(lang: string) {
   let { url, model } = udpipeApiLangMap[lang]
   if (!url) {
-    url = 'http://lindat.mff.cuni.cz/services/udpipe/api/process'
+    url = 'https://api.mova.institute/udpipe/process'
   }
 
   return { url, model }
@@ -11,7 +11,6 @@ export function getEndpoint(lang: string) {
 //------------------------------------------------------------------------------
 const udpipeApiLangMap = {
   'uk': {
-    url: 'https://api.mova.institute/udpipe/process',
     model: 'uk-180610',
   },
   'de': {
@@ -30,7 +29,6 @@ const udpipeApiLangMap = {
     model: 'spanish-ancora-ud-2.3-181115',
   },
   'fr': {
-    url: 'https://api.mova.institute/udpipe/process',
     model: 'french-gsd-ud-2.3-181115',
   },
   'pl': {
