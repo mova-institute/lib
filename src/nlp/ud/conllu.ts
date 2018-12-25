@@ -112,8 +112,8 @@ export function* streamparseConllu(lines: Iterable<string>) {
         let temp = parseConlluTokenLine(line)
         multitoken.surfaceForm = temp.form
         multitoken.misc = temp.misc
-        multitoken.indexFrom = Number.parseInt(multitokenMatch[1])
-        multitokenLastToken = Number.parseInt(multitokenMatch[2])
+        multitoken.indexFrom = Number(multitokenMatch[1])
+        multitokenLastToken = Number(multitokenMatch[2])
       } else if (multitoken) {
         let subtoken = parseConlluTokenLine(line)
         multitoken.tokens.push(subtoken)
@@ -144,8 +144,8 @@ export function parseConlluTokenCells(value: Array<string>) {
   mapInplace(value, x => x === '_' ? '' : x, 3)
   let [indexStr, form, lemma, upos, xpos, featsStr, headStr, rel, , miscStr] = value
 
-  let index = Number.parseInt(indexStr)
-  let head = Number.parseInt(headStr)
+  let index = Number(indexStr)
+  let head = Number(headStr)
   let feats = parseUdKeyvalues(featsStr)
   let misc = parseUdKeyvalues(miscStr)
 

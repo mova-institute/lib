@@ -260,7 +260,7 @@ const paradigmExplanations = new Map([
 ])
 
 function xpNumber(line: string) {
-  return Number.parseInt(line.match(/:xp([1-9])/)[1])
+  return Number(line.match(/:xp([1-9])/)[1])
 }
 export function* gatherXps(lines: Iterable<string>) {
   lines = mu(lines)

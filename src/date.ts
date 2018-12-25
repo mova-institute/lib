@@ -24,7 +24,7 @@ const dayUkMonthYearTimeRe = /^(\d+)\s+(\S+)\s+(\d{4}) (\d\d):(\d\d):(\d\d)/
 
 ////////////////////////////////////////////////////////////////////////////////
 export function fromUnixStr(timestamp: string) {
-  return new Date(Number.parseInt(timestamp) * 1000)
+  return new Date(Number(timestamp) * 1000)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

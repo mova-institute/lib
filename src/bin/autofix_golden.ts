@@ -74,7 +74,7 @@ async function main() {
 
   let idSequence: number
   if (fs.existsSync(args.seq)) {
-    idSequence = Number.parseInt(fs.readFileSync(args.seq, 'utf8').trim())
+    idSequence = Number(fs.readFileSync(args.seq, 'utf8').trim())
   }
 
   // prepare xml

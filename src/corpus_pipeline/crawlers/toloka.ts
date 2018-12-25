@@ -23,7 +23,7 @@ function isTopicPage(path: string) {
     return false
   }
 
-  return !match[1] || !(Number.parseInt(match[1]) % 30)
+  return !match[1] || !(Number(match[1]) % 30)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

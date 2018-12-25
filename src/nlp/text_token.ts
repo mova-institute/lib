@@ -321,7 +321,7 @@ export class TextToken {
   private getDisambIndexes() {
     let attr = this.elem.attribute(TextToken.DISAMB_ATTR)
     if (attr) {
-      return attr.split(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR).map(x => Number.parseInt(x))
+      return attr.split(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR).map(x => Number(x))
     }
     return []
   }

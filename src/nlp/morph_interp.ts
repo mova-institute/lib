@@ -1303,7 +1303,7 @@ export function tryMapVesumFlag(value: string) {
     return {
       featStr: value.charAt(1) === 'p' ? 'paradigmOmonym' : 'semanticOmonym',
       feat: value.charAt(1) === 'p' ? ParadigmOmonym : SemanticOmonym,
-      vesum: Number.parseInt(match[1]) - 1,
+      vesum: Number(match[1]) - 1,
       vesumStr: value,
     }
   }

@@ -702,7 +702,7 @@ export function numerateTokensGently(root: AbstractElement, attributeName = 'n')
   let numbers = mu(root.evaluateAttributes(`//@${attributeName}`))
     .map(x => x.value())
     .filter(x => /^\d+$/.test(x))
-    .map(x => Number.parseInt(x))
+    .map(x => Number(x))
     .toArray()
 
   let idGen = Math.max(-1, ...numbers)
@@ -797,7 +797,7 @@ export function firstNWords(n: number, from: AbstractElement) {
 export function sortInterps(root: AbstractElement) {
   for (let miw of root.evaluateElements('//mi:w_', NS).toArray()) {
 
-    let disambIndex = Number.parseInt(miw.attribute('disamb'))
+    let disambIndex = Number(miw.attribute('disamb'))
     let disambElem
     if (!Number.isNaN(disambIndex)) {
       disambElem = miw.elementChild(disambIndex)

@@ -66,7 +66,7 @@ async function getLatestNode() {
   let indexCOntent = await fetchText(`https://zbruc.eu?theme=zbruc`)
   let nodes = allMatchesArr(indexCOntent, /href="\/node\/(\d+)"/g)
     .map(x => x[1])
-    .map(x => Number.parseInt(x))
+    .map(Number)
 
     return Math.max(...nodes)
 }
