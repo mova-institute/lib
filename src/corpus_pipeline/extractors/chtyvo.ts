@@ -1,18 +1,21 @@
-import { parse } from 'url'
-import * as fs from 'fs'
-import * as path from 'path'
-
-import { decode } from 'iconv-lite'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
-
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
-import { autofixDirtyText, plaintext2paragraphsTrimmed } from '../../nlp/utils'
+import { autofixDirtyText, plaintext2paragraphsTrimmed, tokenizeUkNew } from '../../nlp/utils'
 import { mu } from '../../mu'
 import { CorpusDoc } from '../doc_meta'
 import { execSync } from 'child_process'
-import { trimExtension } from '../../string'
+import { trimExtension, isAllcaps } from '../../string'
+import { match } from '../../lang'
+import { trimBack, trim } from '../../array'
+import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
 
 import detectCharacterEncoding = require('detect-character-encoding')
+import { decode } from 'iconv-lite'
+import * as glob from 'glob'
+
+import { parse } from 'url'
+import * as fs from 'fs'
+import * as path from 'path'
 
 
 
@@ -35,11 +38,19 @@ const docFormatBooktypes = [
 ]
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
+export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer }) {
+  if (filePath.endsWith('.meta.html')) {
+    return
+  }
+
+  let basePath = trimExtension(filePath)
+  if (basePath.endsWith('.epub')) {
+    basePath = trimExtension(basePath)
+  }
   let metaPath = `${basePath}.meta.html`
 
-  // todo: skip словники?
 
+  // todo: skip словники?
   try {
     let format = [
       'fb2',
@@ -48,11 +59,16 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
       'txt',
       'doc',
       'rtf',
+      // 'djvu',
+      // 'pdf',
+      'epub.dir',
     ].find(x => fs.existsSync(`${basePath}.${x}`))
+
     if (!format) {
-      // console.log(`format not supported ${basePath}`)
+      console.log(`format not supported ${basePath}`)
       return
     }
+
     let dataPath = `${basePath}.${format}`
 
     console.log(`processing ${dataPath}`)
@@ -78,49 +94,55 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
       if (paragraphs) {
         yield { paragraphs, ...meta } as CorpusDoc
       }
-
-      return
-    }
-
-    let content = readFileSyncAutodetect(dataPath)
-    if (!content) {
-      console.log(`bad encoding`)
-      return
-    }
-
-    if (format === 'fb2') {
-      // content = renameTag(content, 'poem', 'p')
-      // content = renameTag(content, 'stanza', 'lg type="stanza"')
-      // content = renameTag(content, 'v', 'l')
-      let root = parseHtml(content)
-      mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
-      let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
-        // todo: inline verses
-        .map(x => autofixDirtyText(x.text().trim()))
-        .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
-        .toArray()
-
+    } else if (format === 'epub.dir') {
+      let paragraphs = processEpub(dataPath)
       yield { paragraphs, ...meta } as CorpusDoc
-    } else if (format === 'htm' || format === 'html') {
-      let root = parseHtml(content)
-      let paragraphsIt = root.evaluateElements(
-        // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
-        '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
-        .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
-        .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
-      let paragraphs = paragraphsIt.toArray()
-
-      yield { paragraphs, ...meta } as CorpusDoc
-    } else if (format === 'txt') {
-      content = extractTextFromTxt(content)
-      content = normalizeText(content)
-      content = content.replace(/\n+/g, '\n').trim()
-
-      let paragraphs = plaintext2paragraphsTrimmed(content)
-
-      yield { paragraphs, ...meta } as CorpusDoc
+    } else if (format === 'pdf') {
+      yield* processPdf(dataPath, meta, opts.analyzer)
     } else {
-      console.log(`skipping (format "${format}" not supported yet)`)
+      let content = readFileSyncAutodetect(dataPath)
+      if (!content) {
+        console.log(`bad encoding`)
+        return
+      }
+
+      if (format === 'fb2') {
+        // content = renameTag(content, 'poem', 'p')
+        // content = renameTag(content, 'stanza', 'lg type="stanza"')
+        // content = renameTag(content, 'v', 'l')
+        let root = parseHtml(content)
+        mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
+        let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
+          // todo: inline verses
+          .map(x => autofixDirtyText(x.text().trim()))
+          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+          .toArray()
+
+        yield { paragraphs, ...meta } as CorpusDoc
+      } else if (format === 'htm' || format === 'html') {
+        let root = parseHtml(content)
+        let paragraphsIt = root.evaluateElements(
+          // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
+          '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
+          .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
+          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
+        let paragraphs = paragraphsIt.toArray()
+
+        yield { paragraphs, ...meta } as CorpusDoc
+      } else if (format === 'txt') {
+        if (/\.(djvu|pdf)\.txt$/.test(dataPath)) {  // skip OCR for now
+          return
+        }
+        content = extractTextFromTxt(content)
+        content = normalizeText(content)
+        content = content.replace(/\n+/g, '\n').trim()
+
+        let paragraphs = plaintext2paragraphsTrimmed(content)
+
+        yield { paragraphs, ...meta } as CorpusDoc
+      } else {
+        console.log(`skipping (format "${format}" not supported yet)`)
+      }
     }
   } catch (e) {
     console.error(`errr ${metaPath}`)
@@ -128,40 +150,37 @@ export function* streamDocs(basePath: string/*, analyzer: MorphAnalyzer*/) {
   }
 }
 
-/*
-type chtyvoSection =
-  'Химерна' |
-  'Художня' |
-  'Історична' |
-  'Народна' |
-  'Дитяча' |
-  'Наукова' |
-  'Навчальна' |
-  'Детективи' |
-  'Пригоди' |
-  'Релігія' |
-  'Публіцистика' |
-  'Гумор' |
-  'Любовна' |
-  'Часописи'
+//------------------------------------------------------------------------------
+function processEpub(dataPath: string) {
+  // caution, out of order possible
+  return glob.sync(`${dataPath}/**/*.{html,xhtml}`)
+    .map(parseHtmlFileSync)
+    .map(x => x.evaluateElements(`//p`).toArray())
+    .flat()
+    .map(x => x.text())
+  // console.error(els)
+  // return els
+}
 
-const typeMap = {
-  'Химерна': '',
-  'Художня': '',
-  'Історична': '',
-  'Народна': '',
-  'Дитяча': '',
-  'Наукова': '',
-  'Навчальна': '',
-  'Детективи': '',
-  'Пригоди': '',
-  'Релігія': '',
-  'Публіцистика': '',
-  'Гумор': '',
-  'Любовна': '',
-  'Часописи': '',
-} */
+//------------------------------------------------------------------------------
+function* processPdf(dataPath: string, meta, analyzer: MorphAnalyzer) {
+  let hasImages = !!getNumImagesInPdfSync(dataPath)
+  let hasFonts = !!getNumFontsInPdfSync(dataPath)
 
+  if (!hasImages && !hasFonts) {
+    console.error(`PDF contains no images, no fonts`)
+    return
+  }
+  if (!hasImages) {
+    let toTxt = execSync(`pdf2txt -M 3 -L 0.6 "${dataPath}"`, { encoding: 'utf8' })
+    let paragraphs = postprocessPdf2txt(toTxt, analyzer)
+    yield { paragraphs, ...meta, source_type: 'pdf-txt' } as CorpusDoc
+  } else if (!hasFonts) {
+
+  } else {
+
+  }
+}
 
 //------------------------------------------------------------------------------
 function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
@@ -275,98 +294,87 @@ function extractParsFromDocWithLibre(filePath: string) {
   return paragraphs
 }
 
+//------------------------------------------------------------------------------
+function getNumImagesInPdfSync(filePath: string) {
+  let outLines = execSync(`pdfimages -list "${filePath}" 2> /dev/null`, { encoding: 'utf8' })
+    .trim()
+    .split('\n')
+  return outLines.length - 2
+}
 
+//------------------------------------------------------------------------------
+function getNumFontsInPdfSync(filePath: string) {
+  let outLines = execSync(`pdffonts "${filePath}" 2> /dev/null`, { encoding: 'utf8' })
+    .trim()
+    .split('\n')
+  return outLines.length - 2
+}
 
-/*
+//------------------------------------------------------------------------------
+function postprocessPdf2txt(txt: string, analyzer: MorphAnalyzer) {
+  let pages = txt.trim()
+    .split('\f')
+    .map(x => x.split('\n')
+      .map(xx => xx.trim())
+    )
 
-Альбом
-Альманах
-Байка
-Газета
-Довідник
-Документ
-Драма
-Енциклопедія
-Есей
-Журнал
-Казка
-Каталог
-Комедія
-Комікс
-Легенда/Міт
-Нарис
-Не визначено
-Новела
-Оповідання
-П'єса
-Підручник
-Повість
-Поезія
-Поема
-Посібник
-Праця
-Притча
-Рецензія
-Роман
-Словник
-Спогади
-Стаття
+  // remove headers
+  pages.forEach(x => x.pop())  // this usually is an empty line if no headers
 
+  for (let lines of pages) {
+    trim(lines)
+    trimBack(lines, x => /^\d+$|^[~─]\s*\d+\s*[~─]$/.test(x))  // page numbers
+    trimBack(lines)
+  }
 
-Байка
-Довідник
-Документ
-Драма
-Енциклопедія
-Есей
-Казка
-Комедія
-Нарис
-Не визначено
-Новела
-Оповідання
-П'єса
-Підручник
-Повість
-Поезія
-Поема
-Посібник
-Праця
-Роман
---Словник
-Спогади
-Стаття
+  let lines = pages.map(x => x.map((xx, i) => [xx, i === x.length - 1] as [string, boolean]))
+    .flat()
+  let paragraphs = new Array<string>()
+  let curPar = ''
+  for (let [[line, isLastOnPage], nextLineDescr] of mu(lines).window(2)) {
+    let nextLine = nextLineDescr && nextLineDescr[0]
+    if (!line || isLastOnPage && nextLine && isAllcaps(nextLine[0])) {
+      paragraphs.push(curPar)
+      curPar = ''
+      continue
+    }
 
+    if (nextLine) {
+      let [, leftie, hyphen] = match(line, /(\S+)([‑\-–])$/)
+      if (leftie) {
+        leftie = mu(tokenizeUkNew(leftie, analyzer)).last()[0]
+        let [, rightie] = match(nextLine, /^(\S+)/)
+        rightie = mu(tokenizeUkNew(rightie, analyzer)).first()[0]
+        let hyphenFriends = leftie + hyphen + rightie
+        if (!analyzer.canBeToken(hyphenFriends)) {  // it’s syllabication
+          line = line.slice(0, -1)
+        }
+      } else {
+        line += ' '
+      }
+    }
+    curPar += line
+  }
+  paragraphs.push(curPar)
 
-
-художня проза
-  казка
-  справжній лист
-  решта
-  драма
-поезія
-  (поема
-  (решта
-публіцистика
-інтернет
-документалістика
-  праця
-  підр
-  посібник
-  енцик
-  спогади
-правниче
-  закон
-  угоди та інше
-невизначене
-
-*/
-
-
+  return paragraphs
+}
 
 /*
 
-find . -name "*.zip" | while read filename; do unzip -ou -d "`dirname "$filename"`" "$filename"; done;
+to filter:z
+- footnotes, both слово6 and the body
+
+
+
+"Слід відзначити, що джерела з “татарського відділу” АКВ АГАД постійно перебували в центрі уваги польських орієнталістів, певна частина їх була вже видана, наприклад, ін
+струкція для посла Речі Посполитої до Криму М. Яскульського 1654 p. (388)2, їх використовували при написанні праць з історії польсько-кримських відносин, наприклад, видатний
+ польський тюрколог-кримознавець Богдан Барановський. Окремі джерела",
+    "__________________________________________________________________",
+    "1 Сигнатури документів “татарського відділу” АКВ АГАД є досить незручними. Подаємо тут і далі лише порядковий номер справи, без вказівок на “картон” чи “теку”. Цього, о
+днак, достатньо, щоб розшукати без проблем необхідну справу у фонді. 2 Загальни
+
+http://shron1.chtyvo.org.ua/Mytsyk_Yurii/Ohliad_dokumentatsii_tatarskoho_viddilu_fondu_Arkhiv_koronnyi_u_Varshavi_AHAD.pdf
 
 
 */

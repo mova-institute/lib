@@ -33,7 +33,7 @@ export class DrainwaitingBufferedWriter {
 
   flush() {
     let ret = this.stream.write(this.buf)
-    if (!ret) {
+    if (!ret && !this.isDraining) {
       this.isDraining = true
       this.drainPromise = new Promise((resolve, reject) => {
         this.stream.once('drain', () => {

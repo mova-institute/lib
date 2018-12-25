@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { conlluStrAndMeta2vertical } from '../tovert'
+import { conlluStreamAndMeta2vertical } from '../tovert'
 import { ZvidusilDocFilter } from '../filter'
 import {
   writeLines,
@@ -16,11 +16,13 @@ import { normalizeZvidusilParaNondestructive, normalizeZvidusilParaAggressive } 
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
 import { prepareZvidusilMeta } from '../utils'
 import { AsyncTaskRunner } from '../../async_task_runner'
+import { streamparseConllu } from '../../nlp/ud/conllu'
+import { fixUdpipeTokenization } from '../fix_udpipe_tokenization'
+import { CorpusDoc } from '../doc_meta'
+import { toSortableDatetime } from '../../date'
+import { RedisClientPromisified } from '../../redis'
 
 import * as minimist from 'minimist'
-import { CoolSet } from '../../data_structures/cool_set'
-import { hashStringLatin1 } from '../../crypto'
-
 
 
 //------------------------------------------------------------------------------
@@ -44,7 +46,8 @@ async function main() {
   let analyzer = createMorphAnalyzerSync()
   let filter = new ZvidusilDocFilter(analyzer)
   let udpipe = new UdpipeApiClient(args.udpipeUrl, args.udpipeModel)
-  let seenUrls = new CoolSet<string>()
+  let redisClient = RedisClientPromisified.create({ path: 'redis.sock' })
+  let numUnique = 0
   let numDuplicates = 0
 
   let io = new Io(process.stdin)
@@ -57,9 +60,7 @@ async function main() {
     let { meta, paragraphs } = doc
 
     if (args.filterDuplicates) {
-      let key = meta.url.substr('http'.length)
-      let hash = hashStringLatin1(key).substr(0, 6)
-      if (!seenUrls.addNew(hash)) {
+      if (!await redisClient.sadd('seen-urls', meta.url)) {
         writeTojsonColored(filterLogWriter, {
           docValid: false,
           message: `duplicate url: ${meta.url}`,
@@ -68,15 +69,18 @@ async function main() {
         ++numDuplicates
         continue
       } else {
-        if (seenUrls.size >= 512 && Number.isInteger(Math.log2(seenUrls.size))) {
-          console.error(`seen ${seenUrls.size} urls, ${numDuplicates} dupes`)
+        ++numUnique
+        if (numUnique >= 512 && Number.isInteger(Math.log2(numUnique))) {
+          let mbUsed = (process.memoryUsage().rss / 1024 ** 2).toFixed(0)
+          console.error(`[${toSortableDatetime(new Date())}] — ${mbUsed} MB —`
+            + ` unique ${numUnique} urls, ${numDuplicates} dupes`)
         }
       }
     }
 
     mapInplace(paragraphs, normalizeZvidusilParaNondestructive)
 
-    let filterResult = filter.filter(paragraphs, meta)
+    let filterResult = filter.filter({ paragraphs, ...meta } as CorpusDoc)
     let { docValid, filteredParagraphs, gapFollowerIndexes } = filterResult
 
     if (!docValid || !filteredParagraphs.length || !meta) {
@@ -102,12 +106,13 @@ async function main() {
         return
       }
 
-      let vertStream = conlluStrAndMeta2vertical(
-        conllu, {
-          meta: meta,
-          formOnly: true,
-          pGapIndexes: gapFollowerIndexes,
-        })
+      let tokStream = streamparseConllu(conllu.split('\n'))
+      tokStream = fixUdpipeTokenization(tokStream, analyzer)
+      let vertStream = conlluStreamAndMeta2vertical(tokStream, {
+        meta: meta,
+        formOnly: true,
+        pGapIndexes: gapFollowerIndexes,
+      })
 
       writeLines(vertStream, outWriter)
     })

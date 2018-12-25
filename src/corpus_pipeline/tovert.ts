@@ -3,14 +3,13 @@ import { tokenObj2verticalLineUk, tokenOrMulti2verticalLineGeneric } from './ud'
 import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
-import { Dict } from '../types'
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 export interface ConlluAndMeta2verticalOptions {
   formOnly?: boolean
-  meta?: Dict<string>
+  meta?: any
   pGapIndexes?: Array<number>
   featsOrder?: Array<string>
 }
@@ -24,8 +23,8 @@ export function* conlluStrAndMeta2vertical(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* conlluAndMeta2vertical(
-  conlluLines: Iterable<string>,
+export function* conlluStreamAndMeta2vertical(
+  stream: ReturnType<typeof streamparseConllu>,
   options: ConlluAndMeta2verticalOptions = {},
 ) {
   if (options.meta) {
@@ -40,7 +39,7 @@ export function* conlluAndMeta2vertical(
 
   let pCount = 0
   let gapPointer = 0
-  for (let tok of streamparseConllu(conlluLines)) {
+  for (let tok of stream) {
     if (tok.structure) {
       if (tok.structure.type === Structure.document) {
         continue
@@ -76,7 +75,7 @@ export function* conlluAndMeta2vertical(
       }
     } else {
       if (options.formOnly) {
-        // with multiple cols tags can be distinguished, but not with a single col
+        // with multiple cols structures can be distinguished, but not with a single col
         yield escape(tok.token.form)
       } else {
         if (options.featsOrder) {
@@ -92,4 +91,12 @@ export function* conlluAndMeta2vertical(
   }
 
   yield `</doc>`
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function* conlluAndMeta2vertical(
+  conlluLines: Iterable<string>,
+  options: ConlluAndMeta2verticalOptions = {},
+) {
+  yield* conlluStreamAndMeta2vertical(streamparseConllu(conlluLines), options)
 }

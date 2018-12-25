@@ -4,6 +4,7 @@ import { tryParseHtml, parseHtml } from '../../xml/utils.node'
 import { arr2indexMap } from '../../algo'
 import { trimBeforeFirst, trimBeforeLast } from '../../string'
 import { logErrAndExit } from '../../utils.node'
+import { parseIntStrict } from '../../lang'
 
 import * as minimist from 'minimist'
 import * as _ from 'lodash'
@@ -19,8 +20,9 @@ import { readFileSync } from 'fs'
 interface Args {
   workspace: string
   curNumPages: number
-  satartWithPage: number
+  startWithPage: number
   oldNumPages: number
+  dontStopEarly: boolean
 }
 
 
@@ -47,8 +49,11 @@ if (require.main === module) {
     default: {
       workspace: '.',
       oldNumPages: 0,
-      satartWithPage: 1,
+      startWithPage: 1,
     },
+    boolean: [
+      'dontStopEarly,'
+    ]
   }) as any
 
   main(args).catch(logErrAndExit)
@@ -57,14 +62,14 @@ if (require.main === module) {
 ////////////////////////////////////////////////////////////////////////////////
 async function main(args: Args) {
   let fetchThroughPage = await getMaxPages() - (args.oldNumPages || 0)
-  console.log(chalk.bold(`Will scan pages from ${args.satartWithPage} to ${fetchThroughPage}`))
+  console.log(chalk.bold(`Will scan pages from ${args.startWithPage} to ${fetchThroughPage}`))
 
   let fetchedPagesDir = join(args.workspace, 'chtyvo', 'data')
   let pages = new FsMap(fetchedPagesDir)
-  for (let i = args.satartWithPage; i <= fetchThroughPage; ++i) {
+  for (let i = args.startWithPage; i <= fetchThroughPage; ++i) {
     let baseName = `updates/page-${i}`
     let indexUrl = baseHref + baseName + `/`
-    console.log(`processing ${indexUrl} #########`)
+    process.stdout.write(`processing ${indexUrl} #########\n`)
     try {
       var indexContent = await fetchText(indexUrl)
     } catch (e) {
@@ -79,6 +84,7 @@ async function main(args: Args) {
     let bookHrefs = indexRoot.evaluateAttributes('//a[@class="new_book_book"]/@href')
       .map(x => parse(x.value()))
 
+    let hasNewCovers = false
     for (let bookHref of bookHrefs) {
       let metaFilishName = `${bookHref.pathname.slice(1, -1)}.meta.html`
       let metaContent: string
@@ -86,9 +92,10 @@ async function main(args: Args) {
         metaContent = readFileSync(join(fetchedPagesDir, metaFilishName), 'utf8')
         // console.log(`exists ${bookHref.pathname}`)
       } else {
-        console.log(`processing ${bookHref.pathname}`)
+        process.stdout.write(`processing ${bookHref.pathname}`)
         metaContent = await fetchText(bookHref.href)
         pages.set(metaFilishName, metaContent)
+        hasNewCovers = true
       }
       let root = tryParseHtml(metaContent)
       if (!root) {
@@ -121,16 +128,23 @@ async function main(args: Args) {
 
       if (!dataUrl) {
         console.error(`Cannot choose url`, dataUrls.map(x => x.href))
-        continue
+        throw new Error(`Unknown extension in "${dataUrl}"`)
+        // continue
       }
 
       let filish = dataUrl.pathname.substr(1)
       if (!pages.has(filish)
+        && !(filish.endsWith('.epub') && pages.has(`${filish}.dir`))
         && (!filish.endsWith('.zip') || !pages.has(filish.slice(0, -4)))
       ) {
         await pages.setStream(filish, get(dataUrl.href))
-        console.log(`saved ${filish}`)
+        console.log(` ✔ ${trimBeforeFirst(filish, '.')}`)
       }
+    }
+
+    if (!args.dontStopEarly && !hasNewCovers) {
+      console.error(`No new covers, stopping early`)
+      return
     }
   }
 }
@@ -140,7 +154,7 @@ async function getMaxPages() {
   let content = await fetchText(`http://chtyvo.org.ua/updates/`)
   let root = parseHtml(content)
   let elem = root.evaluateElement(`(//div[@class="paging"]//a)[last()]`)
-  let ret = elem.text()
+  let ret = parseIntStrict(elem.text())
 
   return ret
 }

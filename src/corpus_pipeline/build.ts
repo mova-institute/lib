@@ -2,8 +2,7 @@
 
 import { CorpusDoc } from './doc_meta'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
-import { trimExtension, zerofill, toFloorPercent } from '../string'
-import { mu } from '../mu'
+import { zerofill, toFloorPercent } from '../string'
 
 import { sync as globSync } from 'glob'
 import * as minimist from 'minimist'
@@ -12,12 +11,16 @@ import { join } from 'path'
 import * as fs from 'fs'
 import * as path from 'path'
 import { processDoc } from './utils'
+import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 
 
 
 //------------------------------------------------------------------------------
 interface SpecificExtractor {
-  streamDocs?(inputStr: string, filename?: string): Iterable<CorpusDoc>
+  streamDocs?(inputStr: string, opts: {
+    filename?: string
+    analyzer: MorphAnalyzer
+  }): Iterable<CorpusDoc>
   extract?(inputStr: string): CorpusDoc
 }
 
@@ -30,14 +33,6 @@ function main(args: Args) {
     .setKeepN2adj(true)
 
   let inputFiles = globInforming(args.inputRoot, args.inputGlob)
-  if (args.part === 'chtyvo') {  // todo
-    inputFiles = mu(inputFiles)
-      .map(x => trimExtension(x))
-      .filter(x => !x.endsWith('.meta'))
-      .unique()
-      .toArray()
-  }
-
   let specificExtractor = require(`./extractors/${args.part}`) as SpecificExtractor
   let docCounter = 0
 
@@ -61,7 +56,7 @@ function main(args: Args) {
       console.log(tolog)
       let inputStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
       let i = 0
-      for (let doc of specificExtractor.streamDocs(inputStr, filePath)) {
+      for (let doc of specificExtractor.streamDocs(inputStr, { analyzer })) {
         let outPath = join(outDir, relPath, `${zerofill(i++, 4)}.json`)
         processDoc(doc, outPath, analyzer)
       }
@@ -76,7 +71,7 @@ function main(args: Args) {
 function globInforming(inputRoot: string, inputGlob = '**/*') {
   let globStr = join(inputRoot, inputGlob)
   console.log(`globbing input files: ${globStr}`)
-  let ret = globSync(globStr, { nodir: true })
+  let ret = globSync(globStr)
   console.log(`globbed ${ret.length} files`)
   return ret
 }
@@ -100,8 +95,6 @@ if (require.main === module) {
       inputGlob: '**/*',
     },
     boolean: [
-      'checkDate',
-      'checkUkr',
     ],
   }) as any
 

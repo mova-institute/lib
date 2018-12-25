@@ -5,17 +5,17 @@ import { Dictionary } from '../dictionary/dictionary'
 import { MorphInterp } from '../morph_interp'
 import { Case, Pos, Gender } from '../morph_features'
 import {
-  FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE,
-  APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE, SYMBOL_RE,
-  EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE, INTERJECTION_RE, NUMERAL_PREFIXED_TOKEN_RE,
+  FOREIGN_RE, WCHAR_UK_UPPERCASE, ANY_PUNC_OR_DASH_RE, LETTER_UK_UPPERCASE,
+  LETTER_UK_LOWERCASE, APOSTROPES_REPLACE_RE, URL_RE, ARABIC_NUMERAL_RE, ROMAN_NUMERAL_RE,
+  SYMBOL_RE, EMAIL_RE, LITERAL_SMILE_RE, EMOJI_RE, SMILE_RE, INTERJECTION_RE,
+  NUMERAL_PREFIXED_TOKEN_RE, DOMAIN_AS_NAME_RE,
 } from '../static'
 
 import { HashSet } from '../../data_structures'
 import * as algo from '../../algo'
 import { CachedValue } from '../../cached_value'
-import { parseIntStrict, r } from '../../lang'
+import { parseIntStrict } from '../../lang'
 import * as stringUtils from '../../string'
-import * as tlds from 'tlds'
 import * as Lru from 'lru-cache'
 
 
@@ -36,8 +36,6 @@ const adHocDict = new Map([
   ['ні', [['ні', 'verb:imperf:pres:neg']]],
   // ['', ['']],
 ])
-
-const DOMAIN_AS_NAME = new RegExp(r`^\w+\.(${tlds.join('|')})$`)
 
 const CASES = [
   'v_naz',
@@ -104,7 +102,7 @@ const REGEX2TAG_IMMEDIATE = [
   [[ARABIC_NUMERAL_RE], [...NONIFL_ARABIC_CARDINAL_PARADIGM_3_0, ...NONIFL_ORDINAL_PARADIGM]],
   [[ANY_PUNC_OR_DASH_RE], ['punct']],
   [[URL_RE,
-    EMOJI_RE,
+    new RegExp(`^(${EMOJI_RE.source})$`),
     SMILE_RE], ['sym']],
 ] as Array<[Array<RegExp>, Array<string>]>
 
@@ -115,12 +113,12 @@ const REGEX2TAG_ADDITIONAL_LC_LEMMA = [
 const REGEX2TAG_ADDITIONAL = [
   [[ROMAN_NUMERAL_RE], [...NONIFL_ORDINAL_PARADIGM]],
   [[SYMBOL_RE], ['sym']],
-  [[FOREIGN_RE], [
-    // 'noun:foreign',
-    // 'adj:foreign',
-    // 'verb:foreign',
-    'x:foreign',
-  ]],
+  // [[FOREIGN_RE], [
+  //   // 'noun:foreign',
+  //   // 'adj:foreign',
+  //   // 'verb:foreign',
+  //   'x:foreign',
+  // ]],
 ] as Array<[Array<RegExp>, Array<string>]>
 
 const gluedPrefixes = [
@@ -225,7 +223,7 @@ const PREFIX_SPECS = [
     test: (x: MorphInterp) => x.isAdverb(),
   },
   {
-    prefixes: ['не', 'між', 'недо', 'поза', 'по', 'пів', 'напів'],
+    prefixes: ['не', 'між', 'недо', 'поза', 'пів', 'напів'],
     test: (x: MorphInterp) => x.isAdjective(),
   },
   {
@@ -295,13 +293,16 @@ export class MorphAnalyzer {
     return this.dictionary.hasAnyCase(token)
   }
 
-  canBeToken(token: string) {
+  canBeToken(token: string, noAuto = false) {
     if (this.isCompoundAdjective(token)) {
       return false
     }
     let interps = this.tag(token)
     if (token.endsWith('.')) {
       return !interps.every(x => x.isAbbreviation())
+    }
+    if (noAuto) {
+      interps = interps.filter(x => !x.isAuto())
     }
 
     return interps.length > 0
@@ -348,7 +349,7 @@ export class MorphAnalyzer {
     }
 
     // try domain as names
-    if (DOMAIN_AS_NAME.test(token)) {
+    if (DOMAIN_AS_NAME_RE.test(token)) {
       return NONIFL_NOUN_PARADIGM.map(tag => MorphInterp.fromVesumStr(`${tag}:prop`, token))
     }
 
@@ -466,11 +467,15 @@ export class MorphAnalyzer {
       }
     }
 
-    // по-*ськи, по-*:v_dav
+    // по-*ськи, по-*:v_dav, по-дев’яте
     if (!presentInDict && lowercase.startsWith('по-')) {
       let right = lowercase.substr(3)
       let rightRes = this.lookup(right)
-        .filter(x => x.isAdjective() && x.isMasculine() && x.isDative())
+        .filter(x => x.isAdjective()
+          && (x.isMasculine() && x.isDative()
+            || x.isNeuter() && x.isNominative() && x.isOrdinalNumeral()
+          )
+        )
       if (rightRes.length || lowercase.endsWith('ськи') || lowercase.endsWith('цьки')) {
         res.add(MorphInterp.fromVesumStr('adv').setLemma(lowercase).setIsAuto())
       }
@@ -711,6 +716,11 @@ export class MorphAnalyzer {
 
   hasInterps(token: string, nextToken?: string) {
     return !!this.tag(token, nextToken).length
+  }
+
+  hasNonforeignInterps(token: string, nextToken?: string) {
+    return this.tag(token, nextToken)
+      .some(x => !x.isForeign())
   }
 
   private lookupRaw(token: string) {

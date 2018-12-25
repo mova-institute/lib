@@ -50,7 +50,7 @@ export class LibxmljsNode extends AbstractNode {
     if (value !== undefined) {
       this.wrapee.text(value)
     } else {
-      return this.wrapee.text()
+      return this.wrapee.text() as string
     }
   }
 

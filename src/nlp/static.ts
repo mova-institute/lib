@@ -1,13 +1,16 @@
 import { r } from '../lang'
 import { flipObjMap } from '../algo'
 
+import * as tlds from 'tlds'
+
+
+
 export const ukComparator = new Intl.Collator('uk-UA').compare
 
 export const APOSTROPES = '\'"*`’ʼ‘"'
 
-export const EMOJIS = r`\ud83c[\udf00-\udfff]|\ud83d[\udc00-\ude4f]|\ud83d[\ude80-\udeff]`
 export const LETTER_CYR = r`А-ЯІЇЄҐа-яіїєґ`
-export const LETTER_CYR_EXCLUSIVE = r`БбВвГгҐґДдЄєЖжЗзИиЙйКкЛлмнПпТУФфЦцЧчШшЩщЬьЮюЯя`
+export const LETTER_CYR_EXCLUSIVE = r`БбвГгҐґДдЄєЖжЗзИиЙйКкЛлмнПпТтУФфЦцЧчШшЩщЬьЮюЯя`
 export const LETTER_LAT_EXCLUSIVE = r`QqWwRtYUuSsDdFfGghJjkLlZzVvbNnm`
 export const LETTER_UK = r`АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЬьЮюЯя`
 export const LETTER_UK_UPPERCASE = r`АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ`
@@ -20,6 +23,7 @@ export const APOSTROPHE_FOLLOWERS = `єїюя`
 
 
 export const EMOJI_RE = require('emoji-regex')()
+export const EMOJI_RE_STR = EMOJI_RE.source
 export const INVISIBLES_RE = /[\u0000-\u0008\u000E-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2060]/gu
 export const WCHAR_UK = r`\-’${LETTER_UK}`
 export const WCHAR_UK_UPPERCASE = r`\-’${LETTER_UK_UPPERCASE}`
@@ -27,19 +31,20 @@ export const FOREIGN_RE = new RegExp(`^[${WCHAR_UK}]*[A-Za-zЫыЁёЪъЭэ]+[$
 export const WORDCHAR_UK_RE = new RegExp(`^[${WCHAR_UK}]+$`)
 export const WCHAR_NOT_UK_RE = new RegExp(`^[^${WCHAR_UK}]+$`)
 export const WCHAR_OTHER = r`\u0301А-Яа-яóéëá`
-export const WORDCHAR = r`\w${WCHAR_UK}${WCHAR_OTHER}'\``
+export const WORDCHAR = r`\w${WCHAR_UK}${WCHAR_OTHER}'` + '`'
 export const WORDCHAR_RE = new RegExp(`^[${WORDCHAR}]+$`)
 
 export const URL_RE = /^(https?:\/\/|www\.)\w+(\.\w+)+(\/([\w/\-]+)?)?$/
 export const EMAIL_RE = /^[\w\.]+@\w+(\.\w+)+$/
 export const ARABIC_NUMERAL_RE = /^(\d+[½]?|\d+[,.]\d+|\d+([ ,]\d{3})+)$/  // keep enclosing ()
 export const ROMAN_NUMERAL_RE = /^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/
-export const SYMBOL_RE = new RegExp(r`^([@#$*+×÷=<>♥∙·❤❄~←→↑↓✓☀]|${EMOJIS}|:\()$`)
+export const SYMBOL_RE = new RegExp(r`^([@#$*+×÷=<>♥∙·❤❄~←→↑↓✓☀]|${EMOJI_RE.source}|:\()$`)
 export const LITERAL_SMILE_RE = /^:\w+:$/
 export const HASHTAG_RE = new RegExp(`^#${WORDCHAR}$`)
 
 export const APOSTROPES_REPLACE_RE = new RegExp(r`[${APOSTROPES}]`)
 export const NUMERAL_PREFIXED_TOKEN_RE = new RegExp(r`^(\d+)-([${APOSTROPES}${LETTER_UK}]+)$`)
+export const DOMAIN_AS_NAME_RE = new RegExp(r`^\w+\.(${tlds.join('|')})$`)
 
 
 const SMILE_RE_STRS = [
@@ -139,9 +144,14 @@ const INTERJECTION_RE_STR = INTERJECTION_RE_STRS.join('|')
 export const INTERJECTION_RE = new RegExp(`^(${INTERJECTION_RE_STR})$`, 'i')
 
 export const latToCyrUnaccented = {
+  'ı': 'і',
+  'i': 'і',
+  'ȉ': 'ї',
+  'Ȉ': 'Ї',
+  'ï': 'ї',
+  'Ï': 'Ї',
   'e': 'е',
   'y': 'у',
-  'i': 'і',
   'o': 'о',
   'p': 'р',
   'a': 'а',
@@ -159,11 +169,6 @@ export const latToCyrUnaccented = {
   'C': 'С',
   'B': 'В',
   'M': 'М',
-  'ï': 'ї',
-  'Ï': 'Ї',
-  'ȉ': 'ї',
-  'Ȉ': 'Ї',
-  'ı': 'і',
   'r': 'г',
   'u': 'и',  // ~
 }
@@ -178,21 +183,21 @@ export const latToCyrAccented = {
   'Ò': 'О',
   'Ó': 'О',
   'à': 'а',
-  'á': 'а',
+  'á': 'а\u0301',
   'ȁ': 'а',
   'è': 'е',
   'ѐ': 'е',
-  'é': 'е',
+  'é': 'е\u0301',
   'ì': 'і',
-  'í': 'і',
+  'í': 'і\u0301',
   'ȉ': 'ї',
-  'ḯ': 'ї',
+  'ḯ': 'ї\u0301',
   'ò': 'о',
-  'ó': 'о',
+  'ó': 'о\u0301',
   'ȍ': 'о',
-  'ú': 'и',
+  'ú': 'и\u0301',
   'ù': 'и',
-  'ý': 'у',
+  'ý': 'у\u0301',
   'ỳ': 'у',
 }
 

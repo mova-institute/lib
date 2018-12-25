@@ -6,7 +6,7 @@ import * as xmlutils from '../xml/utils'
 import { W, W_, PC, SE, P } from './common_elements'
 import * as elementNames from './common_elements'
 import { r, makeObject, last, tuple } from '../lang'
-import { uniqueSmall as unique, uniqueJson, arr2indexObj, rfind, clusterize } from '../algo'
+import { uniqSmall as unique, uniqJson, arr2indexObj, rfind } from '../algo'
 import { MorphAnalyzer } from './morph_analyzer/morph_analyzer'
 import { $t } from './text_token'
 import { IStringMorphInterp } from './interfaces'
@@ -14,7 +14,7 @@ import { MorphInterp, compareTags } from './morph_interp'
 import {
   WORDCHAR, PUNC_SPACING, ANY_PUNC, ANY_PUNC_OR_DASH_RE, cyrToLat,
   INVISIBLES_RE, latMixins, latToCyr,
-  APOSTROPHES_COMMON, cyrMixins, LETTER_CYR, LETTER_LAT_EXCLUSIVE, LETTER_CYR_EXCLUSIVE,
+  APOSTROPHES_COMMON, cyrMixins, LETTER_CYR, LETTER_LAT_EXCLUSIVE, LETTER_CYR_EXCLUSIVE, ROMAN_NUMERAL_RE, EMOJI_RE_STR,
 } from './static'
 import { $d } from './mi_tei_document'
 import { mu, Mu } from '../mu'
@@ -49,10 +49,10 @@ const latMixinsGentleReLeft = new RegExp(
   r`([${latMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_CYR_EXCLUSIVE}])`, 'g')
 const latMixinsGentleReRight = new RegExp(
   r`([${LETTER_CYR_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${latMixins}])`, 'g')
-// const latMixinsRudeReLeft = new RegExp(
-//   r`([${latMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_CYR}])`, 'g')
-// const latMixinsRudeReRight = new RegExp(
-//   r`([${LETTER_CYR_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${latMixins}])`, 'g')
+const latMixinsRudeReLeft = new RegExp(
+  r`([${latMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_CYR}])`, 'g')
+const latMixinsRudeReRight = new RegExp(
+  r`([${LETTER_CYR_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${latMixins}])`, 'g')
 const latMixinsReLeft = new RegExp(
   r`([${latMixins}])([${APOSTROPHES_COMMON}]?[${LETTER_CYR}])`, 'g')
 const latMixinsReRight = new RegExp(
@@ -63,39 +63,60 @@ const cyrMixinsReRight = new RegExp(
   r`([${LETTER_LAT_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${cyrMixins}])`, 'g')
 
 ////////////////////////////////////////////////////////////////////////////////
-export function fixLatinMixinGentle(text: string) {
-  text = text.replace(latMixinsGentleReLeft, (match, lat, cyr) =>
+export function fixLatinMixin(text: string, reLeft: RegExp, reRight: RegExp) {
+  text = text.replace(reLeft, (match, lat, cyr) =>
     latToCyr[lat] + cyr)
 
-  text = text.replace(latMixinsGentleReRight, (match, cyr, lat) =>
+  text = text.replace(reRight, (match, cyr, lat) =>
     cyr + latToCyr[lat])
 
   return text
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function fixCyrillicMixinGentle(text: string) {
-  text = text.replace(cyrMixinsReLeft, (match, cyr, lat) =>
+export function fixCyrillicMixin(text: string, reLeft: RegExp, reRight: RegExp) {
+  text = text.replace(reLeft, (match, cyr, lat) =>
     cyrToLat[cyr] + lat)
 
-  text = text.replace(cyrMixinsReRight, (match, lat, cyr) =>
+  text = text.replace(reRight, (match, lat, cyr) =>
     lat + cyrToLat[cyr])
 
   return text
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function fixLatinMixinGentle(text: string) {
+  return fixLatinMixin(text, latMixinsGentleReLeft, latMixinsGentleReRight)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function fixCyrillicMixinGentle(text: string) {
+  return fixCyrillicMixin(text, cyrMixinsReLeft, cyrMixinsReRight)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function fixLatinMixinRude(text: string) {
+  return fixLatinMixin(text, latMixinsRudeReLeft, latMixinsRudeReRight)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// export function fixCyrillicMixinRude(text: string) {
+//   return fixCyrillicMixin(text, cyrMixinsReLeft, cyrMixinsReRight)
+// }
+
+////////////////////////////////////////////////////////////////////////////////
 export function hasLatCyrMix(text: string) {
-  return latMixinsReLeft.test(text) || latMixinsReRight.test(text)
+  // return latMixinsReLeft.test(text) || latMixinsReRight.test(text)
+  return /[а-яА-ЯґҐїЇєЄіІ]/.test(text) && /[a-zA-Z]/.test(text)
 }
 
 //------------------------------------------------------------------------------
 const latMixinRe = new RegExp(`[${latMixins}]`, 'g')
 ////////////////////////////////////////////////////////////////////////////////
-export function fixLatinMixinDict(token: string, analyzer: MorphAnalyzer) {
-  if (hasLatCyrMix(token)) {
+export function fixLatinMixinDict(token: string, analyzer: MorphAnalyzer, includeSolid = false) {
+  if (includeSolid || hasLatCyrMix(token)) {
     let replaced = token.replace(latMixinRe, match => latToCyr[match])
-    if (analyzer.hasInterps(replaced)) {
+    if (analyzer.hasNonforeignInterps(replaced)) {
       return replaced
     }
   }
@@ -103,6 +124,7 @@ export function fixLatinMixinDict(token: string, analyzer: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// todo: add MC
 export function fixRomanNumeralCyrMixin(text: string) {
   text = loopReplace(text, /([XVI])([ХІ])/g, (match, lat, cyr) => lat + cyrToLat[cyr])
   text = loopReplace(text, /([ХІ])([XVI])/g, (match, cyr, lat) => cyrToLat[cyr] + lat)
@@ -111,21 +133,69 @@ export function fixRomanNumeralCyrMixin(text: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function fixRomanNumeralCyrMixinToken(token: string, analyzer: MorphAnalyzer) {
+  if (token.length === 1) {
+    return token
+  }
+  if (analyzer.hasNonforeignInterps(token)) {
+    return token
+  }
+  if (['СС'].includes(token)) {  // todo: ~
+    return token
+  }
+
+  let latinized = ''
+  for (let char of token) {
+    if (/[IVXLCDM]/.test(char)) {
+      latinized += char
+    } else if (/[ІХСМ]/.test(char)) {
+      latinized += cyrToLat[char]
+    } else {
+      return token
+    }
+  }
+
+  // return latinized
+  if (ROMAN_NUMERAL_RE.test(latinized)) {
+    return latinized
+  }
+
+  return token
+}
+
+//------------------------------------------------------------------------------
+const cyrMixinRe = new RegExp(`[${cyrMixins}]`, 'g')
+const latExclusiveRe = new RegExp(`[${LETTER_LAT_EXCLUSIVE}]`)
+const cyrExclusiveRe = new RegExp(`[${LETTER_CYR_EXCLUSIVE}]`)
+////////////////////////////////////////////////////////////////////////////////
+export function fixCyrMixin(token: string) {
+  if (latExclusiveRe.test(token) && !cyrExclusiveRe.test(token)) {
+    return token.replace(cyrMixinRe, match => cyrToLat[match])
+  }
+  return token
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function removeRenderedHypenation(str: string, analyzer: MorphAnalyzer) {
   let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-]\s+([${WORDCHAR}]+|$)`, 'g')
   return str.replace(re, (match, beforeLeft, left, right) => {
+    if (!right.trim()) {
+      return match
+    }
     // if (right === 'і') {
     //   return beforeLeft + left + right
     // }
     let together = left + right
-    if (analyzer.canBeToken(together)) {  // it's a hypen
+    // todo: refix недбалоокремі
+    if (analyzer.canBeToken(together, true)) {  // it's a hypen
       return beforeLeft + left + right
     }
     let dashed = left + '-' + right
-    if (analyzer.canBeToken(dashed)) {
+    if (analyzer.canBeToken(dashed, true)) {
       return beforeLeft + dashed
     }
-    return beforeLeft + left + right
+    // return beforeLeft + left + right
+    return match  // conservative
   })
     .replace(/\u00AD/g, '')  // just kill the rest
 }
@@ -162,6 +232,7 @@ export function normalizeZvidusilParaAggressive(
     .map(([token, glued]) => {
       token = normalizeDash(token, analyzer)
       token = fixLatinMixinDict(token, analyzer)
+      token = fixRomanNumeralCyrMixinToken(token, analyzer)
 
       if (!glued) {
         token = ` ${token}`
@@ -212,8 +283,9 @@ export function removeSoftHypen(val: string) {
 ////////////////////////////////////////////////////////////////////////////////
 export function normalizeDiacritics(str: string) {
   return str
-    .replace(/і\u{308}/gui, x => startsWithCapital(x) ? 'Ї' : 'ї')
-    .replace(/и\u{306}/gui, x => startsWithCapital(x) ? 'Й' : 'й')
+    .replace(/[ії]\s*\u{308}/gui, x => startsWithCapital(x) ? 'Ї' : 'ї')
+    .replace(/[ий]\u{306}/gui, x => startsWithCapital(x) ? 'Й' : 'й')
+  // .replace(/[\u{306}\u{308}]/gui, '')
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -274,7 +346,8 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
 }
 
 //------------------------------------------------------------------------------
-const SPLIT_REGEX = new RegExp(`(${ANY_PUNC}|[^${WORDCHAR}])`)
+const SPLIT_REGEX = new RegExp(`((?:${EMOJI_RE_STR})|${ANY_PUNC}|[^${WORDCHAR}])`, '')
+// todo: unicode flag breaks compound emojis: `mi-tag --tokenize -t 'aa👨‍🚒bb'`
 ////////////////////////////////////////////////////////////////////////////////
 export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
   let ret: Array<{ token: string, glue: boolean }> = []
@@ -466,7 +539,7 @@ function tagOrXVesum(interps: Array<MorphInterp>) {
 //------------------------------------------------------------------------------
 function tagOrXMte(interps: Array<MorphInterp>) {
   let res = interps.map(x => x.toMteMorphInterp())
-  return uniqueJson(res)
+  return uniqJson(res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -807,9 +880,9 @@ export function keepDisambedOnly(root: AbstractElement) {
 ////////////////////////////////////////////////////////////////////////////////
 export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
   let ret = removeInvisibles(value)
-    // .replace(/[\xa0]/g, ' ')
     .replace(/\r/g, '\n')
     .replace(/(\s*)\n\s*\n(\s*)/g, '$1\n$2')
+  // .replace(/[\xa0]/g, ' ')
 
   ret = fixLatinMixinGentle(ret)
   if (analyzer) {
@@ -1393,12 +1466,13 @@ function sentenceArray2treeNodes(sentence: Array<Token>) {
   return nodeArray
 }
 
-////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------
 const miXmlFormatter = new XmlFormatter({
   preferSpaces: true,
   tabSize: 2,
 })
 
+////////////////////////////////////////////////////////////////////////////////
 export function serializeMiDocument(root: AbstractElement, prettify = false) {
   root.evaluateElements('//*').forEach(x => sortAttributes(x))
 

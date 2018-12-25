@@ -55,6 +55,7 @@ const regsRejectingDoc: Array<[RegExp, string]> = [
   [/[Ђћџ]/, `possible encoding error`],
   [/\[(\w+)\][^[]*\[\/\1\]/i, 'bb code'],
   [/\[\[\s*{{\w+:[^}]*}}\s*:\s*.*\]\]/, 'wiki code'],
+  [/_[а-яА-ЯґҐїЇєЄіІ]|[а-яА-ЯґҐїЇєЄіІ]_|\b_{2,}\b/, 'underscore'],
 ]
 
 //------------------------------------------------------------------------------
@@ -100,6 +101,8 @@ const stringsRejectingParagraph = [
   '[[Media:',
   'Текстовый документ',
   'скажите пожалуйста',
+  'Публикацию читайте на',
+  'This book made available by the Internet Archive',
   // '',
 ].map(x => x.toLowerCase())
 
@@ -138,7 +141,8 @@ export class ZvidusilDocFilter {
   }
 
   setFasttextHandle(value: string) {
-    this.fasttextClient = new FasttextClient(value)
+    this.fasttextClient = value ? new FasttextClient(value) : undefined
+    return this
   }
 
   setRuLexicon(ruLexicon: Dawg<string>) {
@@ -157,10 +161,13 @@ export class ZvidusilDocFilter {
     // let's first feed it to fasstext
     if (this.fasttextClient) {
       let [lang, prob] = await this.fasttextClient.classify(doc.paragraphs.join(' '))
-      if (lang !== 'uk') {
+      if (!(lang === 'uk' && prob > 0.94)) {
         return {
           docValid: false,
-          message: `Fasstext says it’s "${lang}" with P=${prob}`
+          message: `Fasstext says it’s "${lang}" with P=${prob}`,
+          filteredParagraphs: [],
+          filteredIndexes: [],
+          gapFollowerIndexes: [],
         }
       }
     }
@@ -378,3 +385,11 @@ function findInternalHypenations(tokens: Array<string>, analyzer: MorphAnalyzer)
     && analyzer.hasInterps(l + r)
   ).map(x => x.join(''))
 }
+
+/*
+
+todo: references відновлення Польщі”59.",
+                   чоло переважаючим силам ворога64.
+  В І С Н И К
+
+*/

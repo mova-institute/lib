@@ -24,3 +24,8 @@ export function trim<T>(array: Array<T>, trimPred = x => !x) {
   trimBack(array, trimPred)
   trimFront(array, trimPred)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function appendLast(array: Array<string>, what: string) {
+  array[array.length - 1] += what
+}

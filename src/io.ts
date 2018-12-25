@@ -25,6 +25,7 @@ export class Io {
     for await (let lines of this.liness()) {
       yield* lines
     }
+    await this.flushAllAndDrain()
   }
 
   async *lines2() {
@@ -32,7 +33,7 @@ export class Io {
       yield line
       await this.allDrained()
     }
-    await this.allFlushed()
+    await this.flushAllAndDrain()
   }
 
   async *liness() {
@@ -40,14 +41,15 @@ export class Io {
       yield lines
       await this.allDrained()
     }
-    await this.allFlushed()
+    await this.flushAllAndDrain()
   }
 
   private allDrained() {
     return Promise.all(this.dests.map(x => x.drained))
   }
 
-  private allFlushed() {
-    return Promise.all(this.dests.map(x => x.drained))
+  private async flushAllAndDrain() {
+    this.dests.forEach(x => x.flush())
+    await this.allDrained()
   }
 }

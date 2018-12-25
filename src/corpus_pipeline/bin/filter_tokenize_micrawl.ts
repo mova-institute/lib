@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { conlluStrAndMeta2vertical } from '../tovert'
-import { parseJsonFile, logErrAndExit, superLinesStd } from '../../utils.node'
+import { conlluStreamAndMeta2vertical } from '../tovert'
+import { parseJsonFile, logErrAndExit, stdio } from '../../utils.node'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 import { ZvidusilDocFilter } from '../filter'
 import { createMorphAnalyzerSync } from '../../nlp/morph_analyzer/factories.node'
@@ -11,52 +11,60 @@ import {
 } from '../../nlp/utils'
 import { mapInplace } from '../../lang'
 import { mu } from '../../mu'
-import { writePromiseDrain } from '../../stream.node'
 import { AsyncTaskRunner } from '../../async_task_runner'
 import { prepareZvidusilMeta } from '../utils'
 import { CorpusDoc } from '../doc_meta'
 
 import * as minimist from 'minimist'
-import * as path from 'path'
+import { streamparseConllu } from '../../nlp/ud/conllu'
+import { fixUdpipeTokenization } from '../fix_udpipe_tokenization'
 
 
 
 //------------------------------------------------------------------------------
 interface Args {
-  basePath: string
   udpipeUrl: string
   udpipeModel: string
+  fasttextHandle?: string
   udpipeConcurrency?: number
+  mode: 'filenames' | 'json'
 }
 
 //------------------------------------------------------------------------------
 async function main() {
-  const args = minimist<Args>(process.argv.slice(2))
+  const args: Args = minimist<Args>(process.argv.slice(2))
 
-  let filter = new MicrawlFilter()
   let udpipe = new UdpipeApiClient(args.udpipeUrl, args.udpipeModel)
   let runner = new AsyncTaskRunner()
+  let analyzer = createMorphAnalyzerSync()
+  let filter = new ZvidusilDocFilter(analyzer, {
+    filterPreviews: false
+  }).setFasttextHandle(args.fasttextHandle)
 
-  await superLinesStd(async paraPath => {
-    try {
-      var doc = await parseJsonFile(paraPath) as CorpusDoc
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        console.error(e.message)
-      } else {
-        throw e
-      }
-    }
+  let { out, io } = stdio()
+  let docStream = args.mode === 'json'
+    ? io.linesMu().map(x => JSON.parse(x) as CorpusDoc)
+    : io.linesMu().mapAwait(x => parseJsonFile(x) as Promise<CorpusDoc>)
 
+
+  for await (let doc of docStream) {
     prepareZvidusilMeta(doc)
+
+    mapInplace(doc.paragraphs, normalizeZvidusilParaNondestructive)
+    mapInplace(doc.paragraphs, x => normalizeZvidusilParaAggressive(x, analyzer))
+
+    if (!doc.paragraphs || !doc.paragraphs.length) {
+      console.error(`Paragraphs are empty or invalid`, doc.paragraphs)
+      continue
+    }
 
     let { docValid,
       filteredParagraphs,
       gapFollowerIndexes,
-    } = filter.filter(doc)
+    } = await filter.filter2(doc)
 
     if (!docValid || !filteredParagraphs.length) {
-      return
+      continue
     }
 
     await runner.post(async () => {
@@ -67,42 +75,20 @@ async function main() {
         return
       }
       let { paragraphs, authors, ...meta } = doc
-      let vertStream = conlluStrAndMeta2vertical(conllu, {
-        meta: meta as any,  // todo
+      let tokStream = streamparseConllu(conllu.split('\n'))
+      tokStream = fixUdpipeTokenization(tokStream, analyzer)
+      let vertStream = conlluStreamAndMeta2vertical(tokStream, {
+        meta,  // todo
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })
       if (vertStream) {
-        await writePromiseDrain(process.stdout, mu(vertStream).join('\n', true))
+        out.write(mu(vertStream).join('\n', true))
       }
     })
-  })
-}
-
-////////////////////////////////////////////////////////////////////////////////
-export class MicrawlFilter {
-  private analyzer = createMorphAnalyzerSync()
-  private zvidusilFilter = new ZvidusilDocFilter(this.analyzer, {
-    filterPreviews: false
-  })
-
-  filter(doc: CorpusDoc) {
-    mapInplace(doc.paragraphs, normalizeZvidusilParaNondestructive)
-    mapInplace(doc.paragraphs, x => normalizeZvidusilParaAggressive(x, this.analyzer))
-
-    if (!doc.paragraphs || !doc.paragraphs.length) {
-      console.error(`Paragraphs are empty or invalid`, doc.paragraphs)
-      return
-    }
-
-    return this.zvidusilFilter.filter(doc)
   }
 }
 
-//------------------------------------------------------------------------------
-function paraPath2metaPath(paraPath: string, base: string) {
-  return path.join(base, paraPath.substr(base.length).replace(/(^|\/)para\//, '$1meta/'))
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {

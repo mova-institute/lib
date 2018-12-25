@@ -7,4 +7,5 @@ export interface CorpusDoc {
   authors?: Array<string>
   date?: string
   author?: string
+  // source_type?: 'txt' | 'pdf-txt' | 'ocr'
 }

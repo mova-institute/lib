@@ -21,6 +21,10 @@ export function extract(html: string) {
     return
   }
 
+  root.evaluateElements('//script')  // todo
+    .toArray()
+    .forEach(x => x.remove())
+
   let title = ogValue(root, 'title')
   if (!title) {
     console.error(`no title`)
