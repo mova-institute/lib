@@ -210,7 +210,7 @@ export class Mu<T> implements Iterable<T> {
     return this
   }
 
-  filter(fn: Predicate<T>) {
+  filter(fn: Predicate<T> = x => x) {
     const thiss = this
     return mu((function* () {
       for (let x of thiss) {
@@ -283,7 +283,7 @@ export class Mu<T> implements Iterable<T> {
     })())
   }
 
-  transform<MappedT>(fn: (x: T, i: number) => void) {
+  transform(fn: (x: T, i: number) => void) {
     const thiss = this
     let i = 0
     return mu((function* () {

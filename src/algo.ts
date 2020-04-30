@@ -363,3 +363,7 @@ export function clusterize<T>(
 
   return clusters
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function cartesian(...arrays) {
+}

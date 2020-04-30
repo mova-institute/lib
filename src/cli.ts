@@ -52,3 +52,10 @@ export function ioArgsPlain(f: (input, output) => any, args = minimist(process.a
   let [filename1, filename2] = args
   ioArgs(filename1, filename2, f)
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function objToLongParams(obj) {
+  return Object.entries(obj)
+    .map(([k, v]) => v === true ? `--${k}` : `--${k}=${v}`)
+    .join(' ')
+}

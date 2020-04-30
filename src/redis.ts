@@ -10,6 +10,7 @@ export class RedisClientPromisified {
   }
 
   sadd = promisify(this.client.sadd).bind(this.client)
+  quit = promisify(this.client.quit).bind(this.client)
 
   constructor(private client: redis.RedisClient) {
   }

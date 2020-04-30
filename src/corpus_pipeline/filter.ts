@@ -103,6 +103,7 @@ const stringsRejectingParagraph = [
   'скажите пожалуйста',
   'Публикацию читайте на',
   'This book made available by the Internet Archive',
+  '▶▶ЗАВАНТАЖИТИ',
   // '',
 ].map(x => x.toLowerCase())
 

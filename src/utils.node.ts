@@ -213,6 +213,14 @@ export function writeFileSyncMkdirp(filePath: string, value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function writeLinesSyncMkdirp(filePath: string, lines: Array<string>) {
+  let content = lines.join('\n')
+  content += '\n'
+
+  return writeFileSyncMkdirp(filePath, content)
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function openSyncMkdirp(filePath: string, flags: string) {
   mkdirpSync(path.dirname(filePath))
   return fs.openSync(filePath, flags)
@@ -294,4 +302,9 @@ export function joinToFileSync(
 export function logErrAndExit(e) {
   console.error(`logErrAndExit at process ${process.pid}`, process.argv, e)
   process.exit(1)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function mbUsed() {
+  return Math.ceil(process.memoryUsage().rss / 1024 ** 2)
 }

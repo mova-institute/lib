@@ -7,6 +7,7 @@ import {
   writeTojsonColored,
   logErrAndExit,
   createWriteStreamMkdirpSync,
+  mbUsed,
 } from '../../utils.node'
 import { Io } from '../../io'
 import { renprop, mapInplace } from '../../lang'
@@ -50,11 +51,10 @@ async function main() {
   let numUnique = 0
   let numDuplicates = 0
 
-  let io = new Io(process.stdin)
+  let io = Io.std()
   let outStream = args.outFile ? createWriteStreamMkdirpSync(args.outFile) : process.stdout
   let outWriter = io.getWriter(outStream)
-  let filterLogStream = createWriteStreamMkdirpSync(args.filterLog)
-  let filterLogWriter = io.getWriter(filterLogStream)
+  let filterLogWriter = io.getFileWriter(args.filterLog)
 
   for await (let doc of itPrevertDocs(io.lines())) {
     let { meta, paragraphs } = doc
@@ -71,8 +71,7 @@ async function main() {
       } else {
         ++numUnique
         if (numUnique >= 512 && Number.isInteger(Math.log2(numUnique))) {
-          let mbUsed = (process.memoryUsage().rss / 1024 ** 2).toFixed(0)
-          console.error(`[${toSortableDatetime(new Date())}] — ${mbUsed} MB —`
+          console.error(`[${toSortableDatetime(new Date())}] — ${mbUsed()} MB —`
             + ` unique ${numUnique} urls, ${numDuplicates} dupes`)
         }
       }
@@ -117,6 +116,7 @@ async function main() {
       writeLines(vertStream, outWriter)
     })
   }
+  await redisClient.quit()
 }
 
 
