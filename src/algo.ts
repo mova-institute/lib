@@ -3,10 +3,6 @@ import { HashSet } from './data_structures'  // todo remove dep
 import { Dict, Predicate, Comparator } from './types'
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-export type Comparator<T> = (a: T, b: T) => number
-
 ////////////////////////////////////////////////////////////////////////////////
 export function compare(a, b) {
   if (isOddball(a) && !isOddball(b)) {
@@ -365,5 +361,15 @@ export function clusterize<T>(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function cartesian(...arrays) {
+export function cartesian(...arrays: Array<Array<any>>) {
+  if (arrays.length === 1) {
+    return arrays[0]
+  }
+
+  return cartesian(cartesianInline(arrays.shift(), arrays.shift()), ...arrays)
+}
+
+//------------------------------------------------------------------------------
+function cartesianInline(a: Array<any>, b: Array<any>) {
+  return [].concat(...a.map(aa => b.map(bb => [].concat(aa, bb))))
 }

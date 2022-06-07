@@ -68,7 +68,7 @@
     "he": "^1.1.1",
     "iconv-lite": "^0.4.23",
     "json-stable-stringify": "^1.0.1",
-    "libxmljs": "^0.19.5",
+    "libxmljs": "^0.19.7",
     "lodash": "^4.17.10",
     "lodash.capitalize": "^4.2.1",
     "lodash.clone": "^4.5.0",

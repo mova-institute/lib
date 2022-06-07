@@ -1,7 +1,7 @@
 import { Token, TokenTag } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
-import { MultitokenDescriptor, tokenStream2plaintext } from '../utils'
+import { MultitokenDescriptor, tokenStream2plaintext, removeCombiningAccent } from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
 import { titlecase, trimAfterFirst, trimBeforeFirst } from '../../string'
@@ -32,7 +32,9 @@ export function sentence2conllu(
   let text = mu(tokenStream2plaintext(tokens, multitokens)).join('')
   let comments = [`text = ${text}`]
   if (options.translit) {
-    comments.push(`translit = ${cyrToJirechekish(text)}`)
+    let translit = cyrToJirechekish(text)
+    translit = removeCombiningAccent(translit)
+    comments.push(`translit = ${translit}`)
   }
   for (let [k, v] of Object.entries(sentenceLevelData)) {
     if (v === undefined) {
@@ -96,8 +98,15 @@ export function sentence2conllu(
       miscs.push(['SpaceAfter', 'No'])
     }
     if (options.translit) {
-      miscs.push(['Translit', escapeMiscVal(cyrToJirechekish(token.getForm()))])
-      miscs.push(['LTranslit', escapeMiscVal(cyrToJirechekish(token.interp.lemma))])
+      let formTranslit = cyrToJirechekish(token.getForm())
+      formTranslit = removeCombiningAccent(formTranslit)  // todo
+      formTranslit = escapeMiscVal(formTranslit)
+      miscs.push(['Translit', formTranslit])
+
+      let lemmaTranslit = cyrToJirechekish(token.interp.lemma)
+      lemmaTranslit = removeCombiningAccent(lemmaTranslit)  // todo
+      lemmaTranslit = escapeMiscVal(lemmaTranslit)
+      miscs.push(['LTranslit', lemmaTranslit])
     }
 
     // conj propagation

@@ -118,7 +118,7 @@ export async function logout(req: IReq, res: express.Response, client: PgClient)
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function checkDocName(req: IReq, res: express.Response, client: PgClient) {
-  if (req.bag.user.roles[req.query.projectName] !== 'supervisor') {
+  if (req.bag.user.roles[req.query.projectName as string] !== 'supervisor') {
     throw new HttpError(400)
   }
   // let projectId = await client.select1('project', 'id', 'name=$1', req.query.projectName)
@@ -192,7 +192,7 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
 
 ////////////////////////////////////////////////////////////////////////////////
 export async function assignTask(req: IReq, res: express.Response, client: PgClient) {  // todo: rename +forAnnotation?
-  if (!req.bag.user.roles[req.query.projectName]) {
+  if (!req.bag.user.roles[req.query.projectName  as string]) {
     throw new HttpError(400)
   }
 

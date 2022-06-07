@@ -98,7 +98,8 @@ function main() {
     let sentenceStream = initIndexes(sentenceStreamRaw)
 
     for (let sentence of sentenceStream) {
-      let { tokens, multitokens, nodes, sentenceId, dataset, documentAttribs, paragraphAttribs, } = sentence
+      let { tokens, multitokens, nodes, sentenceId, dataset,
+        documentAttribs, paragraphAttribs, } = sentence
 
       let manualEnhancedNodesOnly = buildEnhancedGraphFromTokens(nodes)
       let enhancedNodes = buildEnhancedTreeFromBasic(nodes)
@@ -327,16 +328,19 @@ function transposeProblems(problems: Array<any>) {
 //------------------------------------------------------------------------------
 function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
   let stats = Object.entries(datasetRegistry)
-    .map(([set, { counts: { tokensBlocked, tokensExported, tokensInUnfinishedSentenses, sentencesExported } }]) => ({
-      set,
-      'blocked': tokensBlocked,
-      'holes': tokensInUnfinishedSentenses - tokensBlocked,
-      'exported': tokensExported,
-      'exported s': sentencesExported,
-    }))
+    .map(([set, { counts: { tokensBlocked, sentsBlocked, tokensExported,
+      tokensInUnfinishedSentenses, sentencesExported } }]) => ({
+        set,
+        'blocked': tokensBlocked,
+        'blocked s': sentsBlocked,
+        'holes': tokensInUnfinishedSentenses - tokensBlocked,
+        'exported': tokensExported,
+        'exported s': sentencesExported,
+      }))
   stats.push({
     'set': 'TOTAL',
     'blocked': stats.map(x => x['blocked']).reduce((a, b) => a + b, 0),
+    'blocked s': stats.map(x => x['blocked s']).reduce((a, b) => a + b, 0),
     'holes': stats.map(x => x['holes']).reduce((a, b) => a + b, 0),
     'exported': stats.map(x => x['exported']).reduce((a, b) => a + b, 0),
     'exported s': stats.map(x => x['exported s']).reduce((a, b) => a + b, 0),
@@ -347,6 +351,9 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
     config: {
       align: 'right',
       blocked: {
+        align: 'right',
+      },
+      'blocked s': {
         align: 'right',
       },
       exported: {
@@ -490,6 +497,7 @@ class DatasetDescriptor {
     tokensInUnfinishedSentenses: 0,
     tokensEmpty: 0,
     tokensBlocked: 0,
+    sentsBlocked: 0,
     tokensExported: 0,
     sentencesExported: 0,
   }
@@ -515,11 +523,13 @@ class DatasetDescriptor {
     this.counts.tokensBlocked += numComplete
     this.counts.tokensInUnfinishedSentenses += numTotal
     this.followsAnnotationalGap = true
+    ++this.counts.sentsBlocked
   }
 
   accountEmpty(numTokens: number) {
     this.counts.tokensEmpty += numTokens
     this.followsAnnotationalGap = true
+    // ++this.counts.sentsBlocked
   }
 }
 

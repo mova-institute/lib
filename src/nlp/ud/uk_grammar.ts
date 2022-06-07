@@ -770,9 +770,11 @@ export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNod
     [[], []]
   )
   if (puncts.length) {
-    puncts.sort((a, b) => a.headIndex - b.headIndex)
+    puncts.sort((a, b) => b.headIndex - a.headIndex)
     deps = [puncts[0], ...nonpunts]
   }
+
+  return deps
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -794,7 +796,7 @@ export function standartizeSentForUd23BeforeEnhGeneration(
   for (let node of basicNodes) {
     let t = node.node
 
-    normalizePunct(t.deps, basicNodes)
+    t.deps = normalizePunct(t.deps, basicNodes)
 
     if (t.hasTag('iobj-agent')) {  // todo
       t.edeps = t.edeps.filter(x => x.relation !== 'nsubj:x')
@@ -1351,6 +1353,7 @@ export const LEAF_RELATIONS = [
   // 'flat',
   'goeswith',
   'punct',
+  'case',
 ]
 
 export const LEFT_POINTED_RELATIONS = [

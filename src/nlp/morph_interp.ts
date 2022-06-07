@@ -785,7 +785,7 @@ export class MorphInterp {
       } else {
         type = map2mte(PronominalType, this.features.pronominalType)
       }
-      let possessiveness = this.isPossessive() ? 'p' : '-'
+      let possessiveness = this.isPossessive() ? 's' : '-'
       let person = map2mteOrDash(Person, this.features.person)
       let gender = map2mteOrDash(Gender, this.features.gender)
       let animacy = tryMap2mte(RequiredAnimacy, this.features.requiredAnimacy)

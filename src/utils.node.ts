@@ -213,11 +213,26 @@ export function writeFileSyncMkdirp(filePath: string, value: string) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+export function appendFileSyncMkdirp(filePath: string, value: string) {
+  mkdirpSync(path.dirname(filePath))
+  fs.appendFileSync(filePath, value)
+  return filePath
+}
+
+////////////////////////////////////////////////////////////////////////////////
 export function writeLinesSyncMkdirp(filePath: string, lines: Array<string>) {
   let content = lines.join('\n')
   content += '\n'
 
   return writeFileSyncMkdirp(filePath, content)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+export function appendLinesSyncMkdirp(filePath: string, lines: Array<string>) {
+  let content = lines.join('\n')
+  content += '\n'
+
+  return appendFileSyncMkdirp(filePath, content)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

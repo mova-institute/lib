@@ -177,7 +177,7 @@ export function fixCyrMixin(token: string) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function removeRenderedHypenation(str: string, analyzer: MorphAnalyzer) {
-  let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-]\s+([${WORDCHAR}]+|$)`, 'g')
+  let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-¬]\s+([${WORDCHAR}]+|$)`, 'g')
   return str.replace(re, (match, beforeLeft, left, right) => {
     if (!right.trim()) {
       return match
@@ -349,9 +349,9 @@ export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): bool
 const SPLIT_REGEX = new RegExp(`((?:${EMOJI_RE_STR})|${ANY_PUNC}|[^${WORDCHAR}])`, '')
 // todo: unicode flag breaks compound emojis: `mi-tag --tokenize -t 'aa👨‍🚒bb'`
 ////////////////////////////////////////////////////////////////////////////////
-export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
+export function tokenizeUk(val: string, analyzer?: MorphAnalyzer, regex = SPLIT_REGEX) {
   let ret: Array<{ token: string, glue: boolean }> = []
-  let toks = val.trim().split(SPLIT_REGEX)
+  let toks = val.trim().split(regex)
   let glue = false
   for (let i = 0; i < toks.length; ++i) {
     let token = toks[i]
@@ -370,7 +370,7 @@ export function tokenizeUk(val: string, analyzer?: MorphAnalyzer) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer) {
+export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer, regex = SPLIT_REGEX) {
   for (let chunk of val.trim().split(/\s+/g)) {
     if (chunk) {
       yield* splitNospace(chunk, analyzer)

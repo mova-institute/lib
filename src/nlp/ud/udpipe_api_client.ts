@@ -20,14 +20,6 @@ export class UdpipeApiClient {
     return this
   }
 
-  tokenizeSentencesAndParagraphs(paragraphs: Array<string>) {
-    return this.requestConllu({
-      tokenizer: '',
-      input: 'horizontal',
-      data: paragraphs.join('\n\n') + '\n',
-    })
-  }
-
   tokenizeParagraphs(paragraphs: Array<string>) {
     return this.requestConllu({
       tokenizer: '',

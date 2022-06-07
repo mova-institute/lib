@@ -29,3 +29,10 @@ export function trim<T>(array: Array<T>, trimPred = x => !x) {
 export function appendLast(array: Array<string>, what: string) {
   array[array.length - 1] += what
 }
+
+////////////////////////////////////////////////////////////////////////////////
+export function pushTruthy<T>(array: Array<T>, value: T) {
+  if (value) {
+    array.push(value)
+  }
+}
