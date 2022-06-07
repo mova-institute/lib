@@ -3,13 +3,14 @@ import { Token, Dependency, TokenTag } from '../token'
 import { MorphInterp } from '../morph_interp'
 import { uEq, uEqSome, stripSubrel } from './utils'
 import { mu } from '../../mu'
-import { last, wiith } from '../../lang'
+import { last, wiith, mapInplace } from '../../lang'
 import { UdPos, toUd } from './tagset'
 import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import { compareAscending, clusterize } from '../../algo'
 import { DirectedGraphNode, Arrow } from '../../directed_graph'
 import * as f from '../morph_features'
 import { buildEnhancedTreeFromBasic, loadEnhancedGraphFromTokens } from './enhanced'
+import { initLocalHeadIndexes } from '../utils';
 
 
 
@@ -877,6 +878,35 @@ export function standartizeSentenceForUd2_11(basicNodes: Array<TokenNode>) {
 
     if (uEq(t.rel, 'goeswith')) {
       node.parent.node.interp.setFeature(f.Typo, f.Typo.yes)
+    }
+
+    // temp, bad, todo: raise an issue on github
+    {
+
+      if (['discourse'].some(x => uEq(t.rel, x)) && ['cc', 'mark', 'case'].some(x => uEq(node.parent.node.rel, x))) {
+        // node.node.deps[0].headId = node.parent.parent.node.id
+        node.node.deps[0].headIndex = basicNodes.findIndex(x => x.node.id === node.parent.parent.node.id)
+      }
+      if (['flat'].some(x => uEq(t.rel, x)) && ['cc', 'mark', 'case'].some(x => uEq(node.parent.node.rel, x))) {
+        // node.node.deps[0].headId = node.parent.parent.node.id
+        // node.node.deps[0].headIndex = basicNodes.findIndex(x => x.node.id=== node.parent.parent.node.id)
+        node.node.deps[0].relation = 'fixed'
+      }
+    }
+
+    // https://github.com/UniversalDependencies/docs/issues/873
+    for (let edep of t.edeps) {
+      let [base, spec] = edep.relation.split(':', 2)
+      if (spec === 'x') {
+        spec = 'xsubj'
+      }
+      if (spec === 'rel') {
+        spec = ''
+      }
+      if (spec === 'sp') {
+        spec = ''
+      }
+      edep.relation = [base, spec].filter(x => x).join(':')
     }
 
     standartizeMorphoForUd2_11(t.interp, t.form)
