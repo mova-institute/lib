@@ -14,7 +14,6 @@
     // "strictNullChecks": true,
     // "noImplicitAny": true,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
     "lib": [
       "esnext",
       "dom"
