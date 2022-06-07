@@ -4,7 +4,7 @@ import { logErrAndExit, linesBackpressedStdPipeable } from '../../utils.node'
 import { DictCorpVizIterator } from '../vesum'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
-import { standartizeMorphoForUd23, fillWithValencyFromDict } from './uk_grammar'
+import { standartizeMorphoForUd2_11, fillWithValencyFromDict } from './uk_grammar'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 
 import * as minimist from 'minimist'
@@ -23,7 +23,7 @@ async function main() {
   linesBackpressedStdPipeable((line, writer) => {
     let { form, tag, lemma } = iterator.feedLine(line)
     let interp = MorphInterp.fromVesumStr(tag, lemma)
-    standartizeMorphoForUd23(interp, form)
+    standartizeMorphoForUd2_11(interp, form)
     if (valencyDict) {
       fillWithValencyFromDict(interp, valencyDict)
     }

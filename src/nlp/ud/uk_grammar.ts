@@ -708,7 +708,7 @@ export function denormalizeInterp(interp: MorphInterp) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function standartizeMorphoForUd23(interp: MorphInterp, form: string) {
+export function standartizeMorphoForUd2_11(interp: MorphInterp, form: string) {
   denormalizeInterp(interp)
 
   setTenseIfConverb(interp, form)  // redundant?
@@ -751,6 +751,11 @@ export function standartizeMorphoForUd23(interp: MorphInterp, form: string) {
   ) {
     interp.dropAdjectiveAsNounFeatures()
   }
+
+  // todo: bring back
+  if ([f.PunctuationType.bullet, f.PunctuationType.hyphen, f.PunctuationType.ndash].includes(interp.getFeature(f.PunctuationType))) {
+    interp.setFeature(f.PunctuationType, f.PunctuationType.dash)
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -778,7 +783,7 @@ export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNod
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function standartizeSentForUd23BeforeEnhGeneration(
+export function standartizeSentForUd2_11BeforeEnhGeneration(
   basicNodes: Array<TokenNode>,
 ) {
   // todo: orphan acl:relcl, 0kfy
@@ -850,7 +855,7 @@ export function standartizeSentForUd23BeforeEnhGeneration(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function standartizeSentenceForUd23(basicNodes: Array<TokenNode>) {
+export function standartizeSentenceForUd2_11(basicNodes: Array<TokenNode>) {
   for (let node of basicNodes) {
     let t = node.node
 
@@ -870,7 +875,11 @@ export function standartizeSentenceForUd23(basicNodes: Array<TokenNode>) {
       t.rel = stripSubrel(t.rel)
     }
 
-    standartizeMorphoForUd23(t.interp, t.form)
+    if (uEq(t.rel, 'goeswith')) {
+      node.parent.node.interp.setFeature(f.Typo, f.Typo.yes)
+    }
+
+    standartizeMorphoForUd2_11(t.interp, t.form)
   }
 }
 

@@ -103,10 +103,12 @@ export function sentence2conllu(
       formTranslit = escapeMiscVal(formTranslit)
       miscs.push(['Translit', formTranslit])
 
-      let lemmaTranslit = cyrToJirechekish(token.interp.lemma)
-      lemmaTranslit = removeCombiningAccent(lemmaTranslit)  // todo
-      lemmaTranslit = escapeMiscVal(lemmaTranslit)
-      miscs.push(['LTranslit', lemmaTranslit])
+      if (token.interp.lemma) {
+        let lemmaTranslit = cyrToJirechekish(token.interp.lemma)
+        lemmaTranslit = removeCombiningAccent(lemmaTranslit)  // todo
+        lemmaTranslit = escapeMiscVal(lemmaTranslit)
+        miscs.push(['LTranslit', lemmaTranslit])
+      }
     }
 
     // conj propagation
@@ -158,7 +160,7 @@ export function sentence2conllu(
     lines.push([
       indices[i],
       token.getForm(),
-      token.interp.lemma,
+      token.interp.lemma || '_',
       pos,
       xpos,
       udFeatureStr || '_',

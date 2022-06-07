@@ -15,7 +15,7 @@ import { toUd } from '../nlp/ud/tagset'
 import { token2verticalLineUk } from './ud'
 import { mu } from '../mu'
 import { keyvalue2attributesNormalized } from '../nlp/noske'
-import { standartizeMorphoForUd23 } from '../nlp/ud/uk_grammar'
+import { standartizeMorphoForUd2_11 } from '../nlp/ud/uk_grammar'
 
 
 
@@ -114,7 +114,7 @@ function* streamVertical(root: AbstractElement, docMeta) {
       if (token.isElided()) {
         continue
       }
-      standartizeMorphoForUd23(token.interp, token.form)
+      standartizeMorphoForUd2_11(token.interp, token.form)
       let { pos, features } = toUd(token.interp)
       yield token2verticalLineUk(token.form, token.interp.lemma,
         pos, features, token.rel, token.index, token.headIndex, token.getAttribute('id'))

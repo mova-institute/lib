@@ -209,7 +209,7 @@ function main() {
             // statister.feedSentence(nodes)
             curDataset.accountExported(tokens.length)
             if (!cliArgs.noStandartizing) {
-              g.standartizeSentForUd23BeforeEnhGeneration(nodes)
+              g.standartizeSentForUd2_11BeforeEnhGeneration(nodes)
             }
 
             if (cliArgs.noEnhanced) {
@@ -219,7 +219,7 @@ function main() {
             }
 
             if (!cliArgs.noStandartizing) {
-              g.standartizeSentenceForUd23(nodes)
+              g.standartizeSentenceForUd2_11(nodes)
             }
             let filename = set2filename(outDir, cliArgs.datasetSchema || 'mi', dataset)
             let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
@@ -257,7 +257,7 @@ function main() {
       if (completionRatio >= morphonlyThreshold && !hasMorphErrors) {
         // standartizeMorpho(tokens)
         if (!cliArgs.noStandartizing) {
-          g.standartizeSentenceForUd23(nodes)
+          g.standartizeSentenceForUd2_11(nodes)
         }
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
         let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
@@ -444,7 +444,7 @@ function set2filename(dir: string, setSchema: string, setName: string) {
 // const FOREIGN = MorphInterp.fromVesumStr('x:foreign')
 function standartizeMorpho(sentence: Array<Token>) {
   for (let token of sentence) {
-    g.standartizeMorphoForUd23(token.interp, token.form)
+    g.standartizeMorphoForUd2_11(token.interp, token.form)
 
     // token.interp.killNongrammaticalFeatures()
     token.interp.setIsAuxillary(false)
