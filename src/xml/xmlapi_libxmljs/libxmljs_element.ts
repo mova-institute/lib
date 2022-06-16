@@ -148,19 +148,19 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   }
 
   // mixins
-  name: () => string
-  attributeUp: (name: string) => string
-  prependChild: () => LibxmljsNode
-  children: () => Mu<LibxmljsNode>
-  rchildren: () => Mu<LibxmljsNode>
-  elementChildren: () => Mu<LibxmljsElement>
-  elementChild: (index: number) => LibxmljsElement
-  firstElementChild: () => LibxmljsElement
-  setAttributes: (keyvalue: Object) => LibxmljsElement
-  countChildren: () => number
-  countElementChildren: () => number
-  clear: () => void
-  unwrap: () => LibxmljsElement
-  rewrap: (replacement: LibxmljsElement) => LibxmljsElement
-  attributesObj: () => any
+  declare name: () => string
+  declare attributeUp: (name: string) => string
+  declare prependChild: () => LibxmljsNode
+  declare children: () => Mu<LibxmljsNode>
+  declare rchildren: () => Mu<LibxmljsNode>
+  declare elementChildren: () => Mu<LibxmljsElement>
+  declare elementChild: (index: number) => LibxmljsElement
+  declare firstElementChild: () => LibxmljsElement
+  declare setAttributes: (keyvalue: Object) => LibxmljsElement
+  declare countChildren: () => number
+  declare countElementChildren: () => number
+  declare clear: () => void
+  declare unwrap: () => LibxmljsElement
+  declare rewrap: (replacement: LibxmljsElement) => LibxmljsElement
+  declare attributesObj: () => any
 }

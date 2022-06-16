@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import fs from 'fs'
 import { dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 

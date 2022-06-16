@@ -438,7 +438,7 @@ export function toUd(interp: MorphInterp) {
       let [key, value] = keyvalue
       if (key === 'POS') {
         pos = value
-      } else {
+      } else if (value !== undefined) {
         features[key] = value
       }
     }
@@ -542,6 +542,7 @@ export function toUd(interp: MorphInterp) {
 const comparator = new Intl.Collator('en', { sensitivity: 'base' }).compare
 export function udFeatures2conlluString(features: UdFeats, separator = '|') {
   return Object.keys(features)
+    .filter((x) => features[x] !== undefined)
     .sort(comparator)
     .map((key) => `${key}=${features[key]}`)
     .join(separator)

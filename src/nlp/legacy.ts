@@ -24,7 +24,7 @@ export function* polishXml2verticalStream(root: AbstractElement) {
         //   .elementChildren()
         //   .map(x => x.text())
         yield [form, lemma, tag].join('\t')
-        pointer = iterator.next('skip')
+        pointer = iterator.next('skip' as any) // todo
         continue
       } else if (name === 'p' || name === 's') {
         yield tagStr2(name, !entering, el.attributesObj())

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'fs'
+import path from 'path'
 
 import * as glob from 'glob'
 import minimist from 'minimist'
-import * as mkdirp from 'mkdirp'
-import * as columnify from 'columnify'
+import mkdirp from 'mkdirp'
+import columnify from 'columnify'
 import * as _ from 'lodash'
 
 import * as g from './uk_grammar'

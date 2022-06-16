@@ -1,7 +1,7 @@
 import { r } from '../lang'
 import { flipObjMap } from '../algo'
 
-import * as tlds from 'tlds'
+import tlds from 'tlds'
 
 export const ukComparator = new Intl.Collator('uk-UA').compare
 

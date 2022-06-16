@@ -1,4 +1,4 @@
-import * as flatten from 'lodash.flatten'
+import flatten from 'lodash/flatten'
 
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'

@@ -634,7 +634,7 @@ export function iterateCorpusTokens(
             if (name === 'w_') {
               yield { el, entering }
             }
-            pointer = iterator.next('skip')
+            pointer = iterator.next('skip' as any) // todo
             continue
           }
           if (elementsOfInterest.has(name)) {

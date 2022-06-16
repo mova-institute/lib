@@ -7,21 +7,21 @@ export function wrappedOrNull<T>(ctor: { new (val): T }, val): T {
 /** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
 export function mixin(...baseCtors: Array<any>) {
   return (derivedCtor) => {
-    for (let baseCtor of baseCtors) {
-      for (let name of Object.getOwnPropertyNames(baseCtor.prototype)) {
-        if (
-          name !== 'constructor' &&
-          !derivedCtor.prototype.hasOwnProperty(name)
-        ) {
-          Object.defineProperty(
-            derivedCtor.prototype,
-            name,
-            Object.getOwnPropertyDescriptor(baseCtor.prototype, name),
-          )
-        }
-      }
-    }
+    baseCtors.forEach((baseCtor) => {
+      applyMixin(derivedCtor, baseCtor)
+    })
   }
+}
+
+export function applyMixin(derivedCtor: any, baseCtor) {
+  Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+    Object.defineProperty(
+      derivedCtor.prototype,
+      name,
+      Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+        Object.create(null),
+    )
+  })
 }
 
 export function countGenerated<T>(generator: Iterator<T>) {
