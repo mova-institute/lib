@@ -5,16 +5,62 @@ import { indexTableByColumns, overflowNegative, flipMap } from '../algo'
 import { isOddball, zipLongest } from '../lang'
 import { compare } from '../algo'
 import {
-  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy, GrammaticalAnimacy,
-  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquiality, ConjunctionType,
-  Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
-  Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
-  PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Foreign, Formality,
-  PrepositionRequirement, Typo, PartType, VerbReversivity, PunctuationType, PunctuationSide,
-  NounNumeral, DictValency, Feature, NONGRAMMATICAL_FEATURES,
+  NumeralForm,
+  Abbreviation,
+  AdjectiveAsNoun,
+  Alternativity,
+  Animacy,
+  GrammaticalAnimacy,
+  Aspect,
+  Auto,
+  Badness,
+  Beforeadj,
+  Case,
+  Inflectability,
+  Colloquiality,
+  ConjunctionType,
+  Degree,
+  Dimin,
+  Gender,
+  VerbType,
+  MorphNumber,
+  N2adjness,
+  NameType,
+  NounType,
+  NumberTantum,
+  Oddness,
+  OrdinalNumeral,
+  ParadigmOmonym,
+  Person,
+  Pos,
+  Possessiveness,
+  PronominalType,
+  Pronoun,
+  Rarity,
+  Reflexivity,
+  RequiredAnimacy,
+  RequiredCase,
+  SemanticOmonym,
+  Slang,
+  Tense,
+  Variant,
+  Polarity,
+  VerbAuxilarity,
+  Voice,
+  VuAlternativity,
+  Foreign,
+  Formality,
+  PrepositionRequirement,
+  Typo,
+  PartType,
+  VerbReversivity,
+  PunctuationType,
+  PunctuationSide,
+  NounNumeral,
+  DictValency,
+  Feature,
+  NONGRAMMATICAL_FEATURES,
 } from './morph_features'
-
 
 export const featureObj2nameMap = new Map<any, string>([
   [Abbreviation, 'abbreviation'],
@@ -77,15 +123,15 @@ const NONGRAMMATIACAL_FEATURES = [
   Alternativity,
   Auto,
   Badness,
-  Inflectability,  // ~
+  Inflectability, // ~
   Colloquiality,
-  Formality,  // ~
+  Formality, // ~
   N2adjness,
   NameType,
   NumberTantum,
   Oddness,
   ParadigmOmonym,
-  PrepositionRequirement,  // ~
+  PrepositionRequirement, // ~
   Rarity,
   SemanticOmonym,
   Slang,
@@ -94,217 +140,910 @@ const NONGRAMMATIACAL_FEATURES = [
   PartType,
 ]
 
-
 export const FEATURE_TABLE = [
+  {
+    featStr: 'n2adjness',
+    feat: N2adjness,
+    vesum: N2adjness.yes,
+    vesumStr: 'n2adj',
+  },
 
-  { featStr: 'n2adjness', feat: N2adjness, vesum: N2adjness.yes, vesumStr: 'n2adj' },
-
-  { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.digit, vesumStr: 'digit', mte: 'd' },  // todo: not vesum?
-  { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.roman, vesumStr: 'roman', mte: 'r' },  // todo: not vesum?
-  { featStr: 'numeralForm', feat: NumeralForm, vesum: NumeralForm.letter, vesumStr: 'letter', mte: 'l' },  // todo: not vesum?
+  {
+    featStr: 'numeralForm',
+    feat: NumeralForm,
+    vesum: NumeralForm.digit,
+    vesumStr: 'digit',
+    mte: 'd',
+  }, // todo: not vesum?
+  {
+    featStr: 'numeralForm',
+    feat: NumeralForm,
+    vesum: NumeralForm.roman,
+    vesumStr: 'roman',
+    mte: 'r',
+  }, // todo: not vesum?
+  {
+    featStr: 'numeralForm',
+    feat: NumeralForm,
+    vesum: NumeralForm.letter,
+    vesumStr: 'letter',
+    mte: 'l',
+  }, // todo: not vesum?
 
   { featStr: 'nounType', feat: NounType, mi: NounType.common, mte: 'c' },
-  { featStr: 'nounType', feat: NounType, vesum: NounType.proper, vesumStr: 'prop', mte: 'p' },
+  {
+    featStr: 'nounType',
+    feat: NounType,
+    vesum: NounType.proper,
+    vesumStr: 'prop',
+    mte: 'p',
+  },
 
-  { featStr: 'verbAuxilarity', feat: VerbAuxilarity, vesum: VerbAuxilarity.yes, vesumStr: 'aux', mte: 'a' },
-  { featStr: 'verbRevesivity', feat: VerbReversivity, vesum: VerbReversivity.yes, vesumStr: 'rev' },
+  {
+    featStr: 'verbAuxilarity',
+    feat: VerbAuxilarity,
+    vesum: VerbAuxilarity.yes,
+    vesumStr: 'aux',
+    mte: 'a',
+  },
+  {
+    featStr: 'verbRevesivity',
+    feat: VerbReversivity,
+    vesum: VerbReversivity.yes,
+    vesumStr: 'rev',
+  },
 
   { featStr: 'rarity', feat: Rarity, vesum: Rarity.rare, vesumStr: 'rare' },
-  { featStr: 'colloquial', feat: Colloquiality, vesum: Colloquiality.yes, vesumStr: 'coll' },
+  {
+    featStr: 'colloquial',
+    feat: Colloquiality,
+    vesum: Colloquiality.yes,
+    vesumStr: 'coll',
+  },
   { featStr: 'slang', feat: Slang, vesum: Slang.yes, vesumStr: 'slang' },
   { featStr: 'bad', feat: Badness, vesum: Badness.yes, vesumStr: 'bad' },
 
-  { featStr: 'nameType', feat: NameType, vesum: NameType.first, vesumStr: 'fname' },
-  { featStr: 'nameType', feat: NameType, vesum: NameType.last, vesumStr: 'lname' },
-  { featStr: 'nameType', feat: NameType, vesum: NameType.patronym, vesumStr: 'patr' },
-  { featStr: 'nameType', feat: NameType, vesum: NameType.nick, vesumStr: 'nick' },
+  {
+    featStr: 'nameType',
+    feat: NameType,
+    vesum: NameType.first,
+    vesumStr: 'fname',
+  },
+  {
+    featStr: 'nameType',
+    feat: NameType,
+    vesum: NameType.last,
+    vesumStr: 'lname',
+  },
+  {
+    featStr: 'nameType',
+    feat: NameType,
+    vesum: NameType.patronym,
+    vesumStr: 'patr',
+  },
+  {
+    featStr: 'nameType',
+    feat: NameType,
+    vesum: NameType.nick,
+    vesumStr: 'nick',
+  },
 
-  { featStr: 'animacy', feat: Animacy, vesum: Animacy.animate, vesumStr: 'anim', mte: 'y' },
-  { featStr: 'animacy', feat: Animacy, vesum: Animacy.inanimate, vesumStr: 'inanim', mte: 'n' },
-  { featStr: 'animacy', feat: Animacy, vesum: Animacy.bacteria, vesumStr: 'unanim' },
+  {
+    featStr: 'animacy',
+    feat: Animacy,
+    vesum: Animacy.animate,
+    vesumStr: 'anim',
+    mte: 'y',
+  },
+  {
+    featStr: 'animacy',
+    feat: Animacy,
+    vesum: Animacy.inanimate,
+    vesumStr: 'inanim',
+    mte: 'n',
+  },
+  {
+    featStr: 'animacy',
+    feat: Animacy,
+    vesum: Animacy.bacteria,
+    vesumStr: 'unanim',
+  },
 
-  { featStr: 'grammaticalAnimacy', feat: GrammaticalAnimacy, vesum: GrammaticalAnimacy.animate, vesumStr: 'animish' },
-  { featStr: 'grammaticalAnimacy', feat: GrammaticalAnimacy, vesum: GrammaticalAnimacy.inanimate, vesumStr: 'inanimish' },
+  {
+    featStr: 'grammaticalAnimacy',
+    feat: GrammaticalAnimacy,
+    vesum: GrammaticalAnimacy.animate,
+    vesumStr: 'animish',
+  },
+  {
+    featStr: 'grammaticalAnimacy',
+    feat: GrammaticalAnimacy,
+    vesum: GrammaticalAnimacy.inanimate,
+    vesumStr: 'inanimish',
+  },
 
-  { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.animate, vesumStr: 'ranim', mte: 'y' },  // ?
-  { featStr: 'requiredAnimacy', feat: RequiredAnimacy, vesum: RequiredAnimacy.inanimate, vesumStr: 'rinanim', mte: 'n' },  // ?
+  {
+    featStr: 'requiredAnimacy',
+    feat: RequiredAnimacy,
+    vesum: RequiredAnimacy.animate,
+    vesumStr: 'ranim',
+    mte: 'y',
+  }, // ?
+  {
+    featStr: 'requiredAnimacy',
+    feat: RequiredAnimacy,
+    vesum: RequiredAnimacy.inanimate,
+    vesumStr: 'rinanim',
+    mte: 'n',
+  }, // ?
 
-  { featStr: 'reflexivity', feat: Reflexivity, vesum: Reflexivity.yes, vesumStr: 'refl' },
+  {
+    featStr: 'reflexivity',
+    feat: Reflexivity,
+    vesum: Reflexivity.yes,
+    vesumStr: 'refl',
+  },
 
-  { featStr: 'case', feat: Case, vesum: Case.nominative, vesumStr: 'v_naz', mte: 'n' },
-  { featStr: 'case', feat: Case, vesum: Case.genitive, vesumStr: 'v_rod', mte: 'g' },
-  { featStr: 'case', feat: Case, vesum: Case.dative, vesumStr: 'v_dav', mte: 'd' },
-  { featStr: 'case', feat: Case, vesum: Case.accusative, vesumStr: 'v_zna', mte: 'a' },
-  { featStr: 'case', feat: Case, vesum: Case.instrumental, vesumStr: 'v_oru', mte: 'i' },
-  { featStr: 'case', feat: Case, vesum: Case.locative, vesumStr: 'v_mis', mte: 'l' },
-  { featStr: 'case', feat: Case, vesum: Case.vocative, vesumStr: 'v_kly', mte: 'v' },
+  {
+    featStr: 'case',
+    feat: Case,
+    vesum: Case.nominative,
+    vesumStr: 'v_naz',
+    mte: 'n',
+  },
+  {
+    featStr: 'case',
+    feat: Case,
+    vesum: Case.genitive,
+    vesumStr: 'v_rod',
+    mte: 'g',
+  },
+  {
+    featStr: 'case',
+    feat: Case,
+    vesum: Case.dative,
+    vesumStr: 'v_dav',
+    mte: 'd',
+  },
+  {
+    featStr: 'case',
+    feat: Case,
+    vesum: Case.accusative,
+    vesumStr: 'v_zna',
+    mte: 'a',
+  },
+  {
+    featStr: 'case',
+    feat: Case,
+    vesum: Case.instrumental,
+    vesumStr: 'v_oru',
+    mte: 'i',
+  },
+  {
+    featStr: 'case',
+    feat: Case,
+    vesum: Case.locative,
+    vesumStr: 'v_mis',
+    mte: 'l',
+  },
+  {
+    featStr: 'case',
+    feat: Case,
+    vesum: Case.vocative,
+    vesumStr: 'v_kly',
+    mte: 'v',
+  },
 
-  { featStr: 'requiredCase', feat: RequiredCase, vesum: RequiredCase.genitive, vesumStr: 'rv_rod', mte: 'g' },
-  { featStr: 'requiredCase', feat: RequiredCase, vesum: RequiredCase.dative, vesumStr: 'rv_dav', mte: 'd' },
-  { featStr: 'requiredCase', feat: RequiredCase, vesum: RequiredCase.accusative, vesumStr: 'rv_zna', mte: 'a' },
-  { featStr: 'requiredCase', feat: RequiredCase, vesum: RequiredCase.instrumental, vesumStr: 'rv_oru', mte: 'i' },
-  { featStr: 'requiredCase', feat: RequiredCase, vesum: RequiredCase.locative, vesumStr: 'rv_mis', mte: 'l' },
+  {
+    featStr: 'requiredCase',
+    feat: RequiredCase,
+    vesum: RequiredCase.genitive,
+    vesumStr: 'rv_rod',
+    mte: 'g',
+  },
+  {
+    featStr: 'requiredCase',
+    feat: RequiredCase,
+    vesum: RequiredCase.dative,
+    vesumStr: 'rv_dav',
+    mte: 'd',
+  },
+  {
+    featStr: 'requiredCase',
+    feat: RequiredCase,
+    vesum: RequiredCase.accusative,
+    vesumStr: 'rv_zna',
+    mte: 'a',
+  },
+  {
+    featStr: 'requiredCase',
+    feat: RequiredCase,
+    vesum: RequiredCase.instrumental,
+    vesumStr: 'rv_oru',
+    mte: 'i',
+  },
+  {
+    featStr: 'requiredCase',
+    feat: RequiredCase,
+    vesum: RequiredCase.locative,
+    vesumStr: 'rv_mis',
+    mte: 'l',
+  },
 
-  { featStr: 'aspect', feat: Aspect, vesum: Aspect.imperfect, vesumStr: 'imperf', mte: 'p' },
-  { featStr: 'aspect', feat: Aspect, vesum: Aspect.perfect, vesumStr: 'perf', mte: 'e' },
+  {
+    featStr: 'aspect',
+    feat: Aspect,
+    vesum: Aspect.imperfect,
+    vesumStr: 'imperf',
+    mte: 'p',
+  },
+  {
+    featStr: 'aspect',
+    feat: Aspect,
+    vesum: Aspect.perfect,
+    vesumStr: 'perf',
+    mte: 'e',
+  },
 
-  { featStr: 'tense', feat: Tense, vesum: Tense.past, vesumStr: 'past', mte: 's' },
-  { featStr: 'tense', feat: Tense, vesum: Tense.present, vesumStr: 'pres', mte: 'p' },
-  { featStr: 'tense', feat: Tense, vesum: Tense.future, vesumStr: 'futr', mte: 'f' },
+  {
+    featStr: 'tense',
+    feat: Tense,
+    vesum: Tense.past,
+    vesumStr: 'past',
+    mte: 's',
+  },
+  {
+    featStr: 'tense',
+    feat: Tense,
+    vesum: Tense.present,
+    vesumStr: 'pres',
+    mte: 'p',
+  },
+  {
+    featStr: 'tense',
+    feat: Tense,
+    vesum: Tense.future,
+    vesumStr: 'futr',
+    mte: 'f',
+  },
 
   { featStr: 'verbType', feat: VerbType, mi: VerbType.indicative, mte: 'i' },
-  { featStr: 'verbType', feat: VerbType, vesum: VerbType.imperative, vesumStr: 'impr', mte: 'm' },
-  { featStr: 'verbType', feat: VerbType, vesum: VerbType.infinitive, vesumStr: 'inf', mte: 'n' },
-  { featStr: 'verbType', feat: VerbType, vesum: VerbType.impersonal, vesumStr: 'impers', mte: 'o' },
-  { featStr: 'verbType', feat: VerbType, vesum: VerbType.converb, vesumStr: 'advp' },
-  { featStr: 'verbType', feat: VerbType, vesum: VerbType.participle, vesumStr: '&adjp' },
+  {
+    featStr: 'verbType',
+    feat: VerbType,
+    vesum: VerbType.imperative,
+    vesumStr: 'impr',
+    mte: 'm',
+  },
+  {
+    featStr: 'verbType',
+    feat: VerbType,
+    vesum: VerbType.infinitive,
+    vesumStr: 'inf',
+    mte: 'n',
+  },
+  {
+    featStr: 'verbType',
+    feat: VerbType,
+    vesum: VerbType.impersonal,
+    vesumStr: 'impers',
+    mte: 'o',
+  },
+  {
+    featStr: 'verbType',
+    feat: VerbType,
+    vesum: VerbType.converb,
+    vesumStr: 'advp',
+  },
+  {
+    featStr: 'verbType',
+    feat: VerbType,
+    vesum: VerbType.participle,
+    vesumStr: '&adjp',
+  },
 
-  { featStr: 'voice', feat: Voice, vesum: Voice.active, vesumStr: 'actv', mte: 'a' },
-  { featStr: 'voice', feat: Voice, vesum: Voice.passive, vesumStr: 'pasv', mte: 'p' },
+  {
+    featStr: 'voice',
+    feat: Voice,
+    vesum: Voice.active,
+    vesumStr: 'actv',
+    mte: 'a',
+  },
+  {
+    featStr: 'voice',
+    feat: Voice,
+    vesum: Voice.passive,
+    vesumStr: 'pasv',
+    mte: 'p',
+  },
 
-  { featStr: 'degree', feat: Degree, vesum: Degree.positive, vesumStr: 'compb', mte: 'p' },
-  { featStr: 'degree', feat: Degree, vesum: Degree.comparative, vesumStr: 'compr', mte: 'c' },
-  { featStr: 'degree', feat: Degree, vesum: Degree.superlative, vesumStr: 'super', mte: 's' },
-  { featStr: 'degree', feat: Degree, vesum: Degree.absolute, vesumStr: 'abs', mte: undefined },
+  {
+    featStr: 'degree',
+    feat: Degree,
+    vesum: Degree.positive,
+    vesumStr: 'compb',
+    mte: 'p',
+  },
+  {
+    featStr: 'degree',
+    feat: Degree,
+    vesum: Degree.comparative,
+    vesumStr: 'compr',
+    mte: 'c',
+  },
+  {
+    featStr: 'degree',
+    feat: Degree,
+    vesum: Degree.superlative,
+    vesumStr: 'super',
+    mte: 's',
+  },
+  {
+    featStr: 'degree',
+    feat: Degree,
+    vesum: Degree.absolute,
+    vesumStr: 'abs',
+    mte: undefined,
+  },
 
-  { featStr: 'variant', feat: Variant, vesum: Variant.short, vesumStr: 'short', mte: 's' },
-  { featStr: 'variant', feat: Variant, vesum: Variant.uncontracted, vesumStr: 'uncontr', mte: 'f' },
-  { featStr: 'variant', feat: Variant, vesum: Variant.symbolical, vesumStr: 'symbol' },
+  {
+    featStr: 'variant',
+    feat: Variant,
+    vesum: Variant.short,
+    vesumStr: 'short',
+    mte: 's',
+  },
+  {
+    featStr: 'variant',
+    feat: Variant,
+    vesum: Variant.uncontracted,
+    vesumStr: 'uncontr',
+    mte: 'f',
+  },
+  {
+    featStr: 'variant',
+    feat: Variant,
+    vesum: Variant.symbolical,
+    vesumStr: 'symbol',
+  },
   { featStr: 'variant', feat: Variant, vesum: Variant.stem, vesumStr: 'stem' },
 
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.personal, vesumStr: 'pers', mte: 'p' },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.personal,
+    vesumStr: 'pers',
+    mte: 'p',
+  },
   // { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.reflexive, vesumStr: 'refl', mte: 'x' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.demonstrative, vesumStr: 'dem', mte: 'd' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.interrogative, vesumStr: 'int', mte: 'q' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.relative, vesumStr: 'rel', mte: 'r' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.negative, vesumStr: 'neg', mte: 'z' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.indefinite, vesumStr: 'ind', mte: 'i' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.general, vesumStr: 'gen', mte: 'g' },
-  { featStr: 'pronominalType', feat: PronominalType, vesum: PronominalType.emphatic, vesumStr: 'emph', mte: 'h' },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.demonstrative,
+    vesumStr: 'dem',
+    mte: 'd',
+  },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.interrogative,
+    vesumStr: 'int',
+    mte: 'q',
+  },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.relative,
+    vesumStr: 'rel',
+    mte: 'r',
+  },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.negative,
+    vesumStr: 'neg',
+    mte: 'z',
+  },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.indefinite,
+    vesumStr: 'ind',
+    mte: 'i',
+  },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.general,
+    vesumStr: 'gen',
+    mte: 'g',
+  },
+  {
+    featStr: 'pronominalType',
+    feat: PronominalType,
+    vesum: PronominalType.emphatic,
+    vesumStr: 'emph',
+    mte: 'h',
+  },
   { featStr: 'pronominalType', feat: undefined, mte: 's' },
 
-  { featStr: 'polarity', feat: Polarity, vesum: Polarity.negative, vesumStr: 'neg' },  // <-- ambig!!
+  {
+    featStr: 'polarity',
+    feat: Polarity,
+    vesum: Polarity.negative,
+    vesumStr: 'neg',
+  }, // <-- ambig!!
 
-  { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.coordinating, vesumStr: 'coord', mte: 'c' },
-  { featStr: 'conjunctionType', feat: ConjunctionType, vesum: ConjunctionType.subordinative, vesumStr: 'subord', mte: 's' },
+  {
+    featStr: 'conjunctionType',
+    feat: ConjunctionType,
+    vesum: ConjunctionType.coordinating,
+    vesumStr: 'coord',
+    mte: 'c',
+  },
+  {
+    featStr: 'conjunctionType',
+    feat: ConjunctionType,
+    vesum: ConjunctionType.subordinative,
+    vesumStr: 'subord',
+    mte: 's',
+  },
 
   { featStr: 'pos', feat: Pos, vesum: Pos.noun, vesumStr: 'noun', mte: 'N' },
   { featStr: 'pos', feat: undefined, mte: 'P' },
   { featStr: 'pos', feat: Pos, vesum: Pos.verb, vesumStr: 'verb', mte: 'V' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.adjective, vesumStr: 'adj', mte: 'A' },
+  {
+    featStr: 'pos',
+    feat: Pos,
+    vesum: Pos.adjective,
+    vesumStr: 'adj',
+    mte: 'A',
+  },
   { featStr: 'pos', feat: Pos, vesum: Pos.adverb, vesumStr: 'adv', mte: 'R' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.preposition, vesumStr: 'prep', mte: 'S' },
+  {
+    featStr: 'pos',
+    feat: Pos,
+    vesum: Pos.preposition,
+    vesumStr: 'prep',
+    mte: 'S',
+  },
   // { featStr: 'pos', feat: Pos, vesum: Pos.predicative, vesumStr: 'predic' },  // ?
   // { featStr: 'pos', feat: Pos, vesum: Pos.insert, vesumStr: 'insert' },  // ?
-  { featStr: 'pos', feat: Pos, vesum: Pos.conjunction, vesumStr: 'conj', mte: 'C' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.particle, vesumStr: 'part', mte: 'Q' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.interjection, vesumStr: 'intj', mte: 'I' },
-  { featStr: 'pos', feat: Pos, vesum: Pos.cardinalNumeral, vesumStr: 'numr', mte: 'M' },
+  {
+    featStr: 'pos',
+    feat: Pos,
+    vesum: Pos.conjunction,
+    vesumStr: 'conj',
+    mte: 'C',
+  },
+  {
+    featStr: 'pos',
+    feat: Pos,
+    vesum: Pos.particle,
+    vesumStr: 'part',
+    mte: 'Q',
+  },
+  {
+    featStr: 'pos',
+    feat: Pos,
+    vesum: Pos.interjection,
+    vesumStr: 'intj',
+    mte: 'I',
+  },
+  {
+    featStr: 'pos',
+    feat: Pos,
+    vesum: Pos.cardinalNumeral,
+    vesumStr: 'numr',
+    mte: 'M',
+  },
   { featStr: 'pos', feat: Pos, vesum: Pos.sym, vesumStr: 'sym' },
   { featStr: 'pos', feat: Pos, vesum: Pos.error, vesumStr: 'error' },
   { featStr: 'pos', feat: Pos, vesum: Pos.x, vesumStr: 'x', mte: 'X' },
   { featStr: 'pos', feat: Pos, vesum: Pos.punct, vesumStr: 'punct', mte: 'U' },
 
   { featStr: 'pronoun', feat: Pronoun, vesum: Pronoun.yes, vesumStr: '&pron' },
-  { featStr: 'ordinalNumeral', feat: OrdinalNumeral, vesum: OrdinalNumeral.yes, vesumStr: '&numr' },
-  { featStr: 'nounNumeral', feat: NounNumeral, vesum: NounNumeral.yes, vesumStr: '&_numr' },
-  { featStr: 'adjectiveAsNoun', feat: AdjectiveAsNoun, vesum: AdjectiveAsNoun.yes, vesumStr: '&noun' },
+  {
+    featStr: 'ordinalNumeral',
+    feat: OrdinalNumeral,
+    vesum: OrdinalNumeral.yes,
+    vesumStr: '&numr',
+  },
+  {
+    featStr: 'nounNumeral',
+    feat: NounNumeral,
+    vesum: NounNumeral.yes,
+    vesumStr: '&_numr',
+  },
+  {
+    featStr: 'adjectiveAsNoun',
+    feat: AdjectiveAsNoun,
+    vesum: AdjectiveAsNoun.yes,
+    vesumStr: '&noun',
+  },
 
-  { featStr: 'gender', feat: Gender, vesum: Gender.masculine, vesumStr: 'm', mte: 'm' },
-  { featStr: 'gender', feat: Gender, vesum: Gender.feminine, vesumStr: 'f', mte: 'f' },
-  { featStr: 'gender', feat: Gender, vesum: Gender.neuter, vesumStr: 'n', mte: 'n' },
+  {
+    featStr: 'gender',
+    feat: Gender,
+    vesum: Gender.masculine,
+    vesumStr: 'm',
+    mte: 'm',
+  },
+  {
+    featStr: 'gender',
+    feat: Gender,
+    vesum: Gender.feminine,
+    vesumStr: 'f',
+    mte: 'f',
+  },
+  {
+    featStr: 'gender',
+    feat: Gender,
+    vesum: Gender.neuter,
+    vesumStr: 'n',
+    mte: 'n',
+  },
 
-  { featStr: 'number', feat: MorphNumber, vesum: MorphNumber.plural, vesumStr: 'p', mte: 'p' },
-  { featStr: 'number', feat: MorphNumber, vesum: MorphNumber.singular, vesumStr: 's', mte: 's' },
+  {
+    featStr: 'number',
+    feat: MorphNumber,
+    vesum: MorphNumber.plural,
+    vesumStr: 'p',
+    mte: 'p',
+  },
+  {
+    featStr: 'number',
+    feat: MorphNumber,
+    vesum: MorphNumber.singular,
+    vesumStr: 's',
+    mte: 's',
+  },
 
-  { featStr: 'person', feat: Person, vesum: Person.first, vesumStr: '1', mte: '1' },
-  { featStr: 'person', feat: Person, vesum: Person.second, vesumStr: '2', mte: '2' },
-  { featStr: 'person', feat: Person, vesum: Person.third, vesumStr: '3', mte: '3' },
+  {
+    featStr: 'person',
+    feat: Person,
+    vesum: Person.first,
+    vesumStr: '1',
+    mte: '1',
+  },
+  {
+    featStr: 'person',
+    feat: Person,
+    vesum: Person.second,
+    vesumStr: '2',
+    mte: '2',
+  },
+  {
+    featStr: 'person',
+    feat: Person,
+    vesum: Person.third,
+    vesumStr: '3',
+    mte: '3',
+  },
 
-  { featStr: 'numberTantum', feat: NumberTantum, vesum: NumberTantum.noPlural, vesumStr: 'np' },
-  { featStr: 'numberTantum', feat: NumberTantum, vesum: NumberTantum.noSingular, vesumStr: 'ns' },
+  {
+    featStr: 'numberTantum',
+    feat: NumberTantum,
+    vesum: NumberTantum.noPlural,
+    vesumStr: 'np',
+  },
+  {
+    featStr: 'numberTantum',
+    feat: NumberTantum,
+    vesum: NumberTantum.noSingular,
+    vesumStr: 'ns',
+  },
 
-  { featStr: 'inflectability', feat: Inflectability, vesum: Inflectability.no, vesumStr: 'nv' },
+  {
+    featStr: 'inflectability',
+    feat: Inflectability,
+    vesum: Inflectability.no,
+    vesumStr: 'nv',
+  },
 
-  { featStr: 'alternative', feat: Alternativity, vesum: Alternativity.yes, vesumStr: 'alt' },
+  {
+    featStr: 'alternative',
+    feat: Alternativity,
+    vesum: Alternativity.yes,
+    vesumStr: 'alt',
+  },
 
-  { featStr: 'abbreviation', feat: Abbreviation, vesum: Abbreviation.yes, vesumStr: 'abbr' },
+  {
+    featStr: 'abbreviation',
+    feat: Abbreviation,
+    vesum: Abbreviation.yes,
+    vesumStr: 'abbr',
+  },
 
-  { featStr: 'vuAlternative', feat: VuAlternativity, vesum: VuAlternativity.yes, vesumStr: 'v-u' },
+  {
+    featStr: 'vuAlternative',
+    feat: VuAlternativity,
+    vesum: VuAlternativity.yes,
+    vesumStr: 'v-u',
+  },
 
   { featStr: 'dimin', feat: Dimin, vesum: Dimin.yes, vesumStr: 'dimin' },
 
-  { featStr: 'possessiveness', feat: Possessiveness, vesum: Possessiveness.yes, vesumStr: 'poss' },
+  {
+    featStr: 'possessiveness',
+    feat: Possessiveness,
+    vesum: Possessiveness.yes,
+    vesumStr: 'poss',
+  },
 
   { featStr: 'auto', feat: Auto, vesum: Auto.yes, vesumStr: 'auto' },
 
-  { featStr: 'beforeadj', feat: Beforeadj, vesum: Beforeadj.yes, vesumStr: 'beforeadj' },
+  {
+    featStr: 'beforeadj',
+    feat: Beforeadj,
+    vesum: Beforeadj.yes,
+    vesumStr: 'beforeadj',
+  },
 
   { featStr: 'oddness', feat: Oddness, vesum: Oddness.yes, vesumStr: 'odd' },
 
-  { featStr: 'prepositionRequirement', feat: PrepositionRequirement, vesum: PrepositionRequirement.yes, vesumStr: 'rprep' },
+  {
+    featStr: 'prepositionRequirement',
+    feat: PrepositionRequirement,
+    vesum: PrepositionRequirement.yes,
+    vesumStr: 'rprep',
+  },
 
-  { featStr: 'foreign', feat: Foreign, vesum: Foreign.yes, vesumStr: 'foreign' },
+  {
+    featStr: 'foreign',
+    feat: Foreign,
+    vesum: Foreign.yes,
+    vesumStr: 'foreign',
+  },
 
-  { featStr: 'formality', feat: Formality, vesum: Formality.yes, vesumStr: 'formal' },
+  {
+    featStr: 'formality',
+    feat: Formality,
+    vesum: Formality.yes,
+    vesumStr: 'formal',
+  },
 
   { featStr: 'typo', feat: Typo, vesum: Typo.yes, vesumStr: 'typo' },
 
-  { featStr: 'partType', feat: PartType, vesum: PartType.consequential, vesumStr: 'conseq' },
+  {
+    featStr: 'partType',
+    feat: PartType,
+    vesum: PartType.consequential,
+    vesumStr: 'conseq',
+  },
 
-  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.quote, vesumStr: 'quote' },
-  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.ellipsis, vesumStr: 'ellipsis' },
-  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.hyphen, vesumStr: 'hyphen' },
-  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.dash, vesumStr: 'dash' },
-  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.ndash, vesumStr: 'ndash' },
-  { featStr: 'punctType', feat: PunctuationType, vesum: PunctuationType.bullet, vesumStr: 'bullet' },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.quote,
+    vesumStr: 'quote',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.ellipsis,
+    vesumStr: 'ellipsis',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.hyphen,
+    vesumStr: 'hyphen',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.dash,
+    vesumStr: 'dash',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.ndash,
+    vesumStr: 'ndash',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.bullet,
+    vesumStr: 'bullet',
+  },
 
-  { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.open, vesumStr: 'open' },
-  { featStr: 'punctSide', feat: PunctuationSide, vesum: PunctuationSide.close, vesumStr: 'close' },
+  {
+    featStr: 'punctSide',
+    feat: PunctuationSide,
+    vesum: PunctuationSide.open,
+    vesumStr: 'open',
+  },
+  {
+    featStr: 'punctSide',
+    feat: PunctuationSide,
+    vesum: PunctuationSide.close,
+    vesumStr: 'close',
+  },
 
   // todo: dehardcode
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp1, vesumStr: 'xp1' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp2, vesumStr: 'xp2' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp3, vesumStr: 'xp3' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp4, vesumStr: 'xp4' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp5, vesumStr: 'xp5' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp6, vesumStr: 'xp6' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp7, vesumStr: 'xp7' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp8, vesumStr: 'xp8' },
-  { featStr: 'paradigmOmonym', feat: ParadigmOmonym, vesum: ParadigmOmonym.xp9, vesumStr: 'xp9' },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp1,
+    vesumStr: 'xp1',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp2,
+    vesumStr: 'xp2',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp3,
+    vesumStr: 'xp3',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp4,
+    vesumStr: 'xp4',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp5,
+    vesumStr: 'xp5',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp6,
+    vesumStr: 'xp6',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp7,
+    vesumStr: 'xp7',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp8,
+    vesumStr: 'xp8',
+  },
+  {
+    featStr: 'paradigmOmonym',
+    feat: ParadigmOmonym,
+    vesum: ParadigmOmonym.xp9,
+    vesumStr: 'xp9',
+  },
 
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv1, vesumStr: 'xv1' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv2, vesumStr: 'xv2' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv3, vesumStr: 'xv3' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv4, vesumStr: 'xv4' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv5, vesumStr: 'xv5' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv6, vesumStr: 'xv6' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv7, vesumStr: 'xv7' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv8, vesumStr: 'xv8' },
-  { featStr: 'semanticOmonym', feat: SemanticOmonym, vesum: SemanticOmonym.xv9, vesumStr: 'xv9' },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv1,
+    vesumStr: 'xv1',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv2,
+    vesumStr: 'xv2',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv3,
+    vesumStr: 'xv3',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv4,
+    vesumStr: 'xv4',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv5,
+    vesumStr: 'xv5',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv6,
+    vesumStr: 'xv6',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv7,
+    vesumStr: 'xv7',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv8,
+    vesumStr: 'xv8',
+  },
+  {
+    featStr: 'semanticOmonym',
+    feat: SemanticOmonym,
+    vesum: SemanticOmonym.xv9,
+    vesumStr: 'xv9',
+  },
 ]
 
 export const MTE_FEATURES = {
-  N: [Pos.noun, NounType, Gender, MorphNumber, Case, Animacy],  // todo: common gender
-  V: [undefined, VerbAuxilarity, Aspect, VerbType, Tense, Person, MorphNumber, Gender],
-  A: [Pos.adjective, undefined, Degree, Gender, MorphNumber, Case, undefined, RequiredAnimacy, Aspect, Voice, Tense],
-  P: [undefined, PronominalType, undefined, Person, Gender, RequiredAnimacy, MorphNumber, Case, undefined],
+  N: [Pos.noun, NounType, Gender, MorphNumber, Case, Animacy], // todo: common gender
+  V: [
+    undefined,
+    VerbAuxilarity,
+    Aspect,
+    VerbType,
+    Tense,
+    Person,
+    MorphNumber,
+    Gender,
+  ],
+  A: [
+    Pos.adjective,
+    undefined,
+    Degree,
+    Gender,
+    MorphNumber,
+    Case,
+    undefined,
+    RequiredAnimacy,
+    Aspect,
+    Voice,
+    Tense,
+  ],
+  P: [
+    undefined,
+    PronominalType,
+    undefined,
+    Person,
+    Gender,
+    RequiredAnimacy,
+    MorphNumber,
+    Case,
+    undefined,
+  ],
   R: [Pos.adverb, Degree],
   S: [Pos.preposition, undefined, undefined, RequiredCase],
   C: [Pos.conjunction, ConjunctionType, undefined],
-  M: [Pos.cardinalNumeral, NumeralForm, undefined, Gender, MorphNumber, Case, RequiredAnimacy],
+  M: [
+    Pos.cardinalNumeral,
+    NumeralForm,
+    undefined,
+    Gender,
+    MorphNumber,
+    Case,
+    RequiredAnimacy,
+  ],
   Q: [Pos.particle],
   I: [Pos.interjection],
   Y: [undefined],
   X: [Pos.x],
 }
 
-
-export const MAP_VESUM_FEAT = indexTableByColumns(FEATURE_TABLE, ['feat', 'vesum'])
-export const MAP_VESUM_FEAT_STR = indexTableByColumns(FEATURE_TABLE, ['featStr', 'vesum'])
-const MAP_VESUM: Map<string, any> =
-  indexTableByColumns(FEATURE_TABLE.filter((x: any) => x.vesum !== undefined), ['vesumStr'])
-export const MAP_MTE: Map<string, any> = indexTableByColumns(FEATURE_TABLE, ['feat', 'mte'])
+export const MAP_VESUM_FEAT = indexTableByColumns(FEATURE_TABLE, [
+  'feat',
+  'vesum',
+])
+export const MAP_VESUM_FEAT_STR = indexTableByColumns(FEATURE_TABLE, [
+  'featStr',
+  'vesum',
+])
+const MAP_VESUM: Map<string, any> = indexTableByColumns(
+  FEATURE_TABLE.filter((x: any) => x.vesum !== undefined),
+  ['vesumStr'],
+)
+export const MAP_MTE: Map<string, any> = indexTableByColumns(FEATURE_TABLE, [
+  'feat',
+  'mte',
+])
 
 //export const FEAT_MAP_STRING = new Map<Object, string>(
 //FEATURE_TABLE.filter(row => row.feat && !!row.featStr).map(x => [x.feat, x.featStr]))
@@ -319,7 +1058,9 @@ for (let row of FEATURE_TABLE) {
   }
 }
 
-const NONGRAMMATIACAL_FEATURE_NAMES = NONGRAMMATIACAL_FEATURES.map(x => FEAT_MAP_STRING.get(x as any)).filter(x => x)
+const NONGRAMMATIACAL_FEATURE_NAMES = NONGRAMMATIACAL_FEATURES.map((x) =>
+  FEAT_MAP_STRING.get(x as any),
+).filter((x) => x)
 // console.log(FEAT_MAP_STRING.get(PrepositionRequirement))
 
 export const FEATURE_ORDER = {
@@ -399,23 +1140,16 @@ export const FEATURE_ORDER = {
     PronominalType,
     Typo,
   ],
-  [Pos.punct]: [
-    Pos,
-    PunctuationType,
-    PunctuationSide,
-  ],
-  [Pos.x]: [
-    Pos,
-    Abbreviation,
-    Foreign,
-    Typo,
-  ],
-  other: [  // todo check
+  [Pos.punct]: [Pos, PunctuationType, PunctuationSide],
+  [Pos.x]: [Pos, Abbreviation, Foreign, Typo],
+  other: [
+    // todo check
     Pos,
     PartType,
     Degree,
     ConjunctionType,
-    Case, RequiredCase,
+    Case,
+    RequiredCase,
     GrammaticalAnimacy,
     RequiredAnimacy,
     Inflectability,
@@ -440,11 +1174,21 @@ export const FEATURE_ORDER = {
 }
 
 for (let pos of Object.keys(FEATURE_ORDER)) {
-  FEATURE_ORDER[pos].push(Colloquiality, Rarity, Badness, Oddness, Auto, SemanticOmonym, ParadigmOmonym)
+  FEATURE_ORDER[pos].push(
+    Colloquiality,
+    Rarity,
+    Badness,
+    Oddness,
+    Auto,
+    SemanticOmonym,
+    ParadigmOmonym,
+  )
 }
 
 const POSWISE_COMPARATORS = {}
-Object.keys(Pos).filter(x => /^\d+$/.test(x)).forEach(x => POSWISE_COMPARATORS[x] = createVesumFlagCompare(x as any))
+Object.keys(Pos)
+  .filter((x) => /^\d+$/.test(x))
+  .forEach((x) => (POSWISE_COMPARATORS[x] = createVesumFlagCompare(x as any)))
 
 export class Features {
   pos: Pos
@@ -477,7 +1221,7 @@ export class Features {
   paradigmOmonym: ParadigmOmonym
   partType: PartType
   person: Person
-  polarity: Polarity  // the only ambig flag (neg)
+  polarity: Polarity // the only ambig flag (neg)
   possessiveness: Possessiveness
   prepositionRequirement: PrepositionRequirement
   pronominalType: PronominalType
@@ -501,9 +1245,9 @@ export class Features {
 export class MorphInterp {
   private static otherFlagsAllowed = new Set([
     // 'xv1', 'xv2', 'xv3', 'xv4', 'xv5', 'xv6', 'xv7',
-    'mock', 'instant',
+    'mock',
+    'instant',
   ])
-
 
   lemma?: string
   features = new Features()
@@ -513,7 +1257,8 @@ export class MorphInterp {
     return value.toVesumStr() + (value.lemma ? ` ${value.lemma}` : '')
   }
 
-  static isValidVesumStr(value: string) {  // todo
+  static isValidVesumStr(value: string) {
+    // todo
     try {
       MorphInterp.fromVesumStr(value)
       return true
@@ -522,11 +1267,21 @@ export class MorphInterp {
     }
   }
 
-  static fromVesum(flags: Array<string>, lemma?: string, lemmaFlags?: Array<string>, strict = false) {
+  static fromVesum(
+    flags: Array<string>,
+    lemma?: string,
+    lemmaFlags?: Array<string>,
+    strict = false,
+  ) {
     return new MorphInterp().setFromVesum(flags, lemma, lemmaFlags, strict)
   }
 
-  static fromVesumStr(flags: string, lemma?: string, lemmaFlags?: string, strict = false) {
+  static fromVesumStr(
+    flags: string,
+    lemma?: string,
+    lemmaFlags?: string,
+    strict = false,
+  ) {
     return new MorphInterp().setFromVesumStr(flags, lemma, lemmaFlags, strict)
   }
 
@@ -534,11 +1289,14 @@ export class MorphInterp {
     let ret = new MorphInterp()
 
     let flags = [...tag]
-    ret.fromMte(flags)  // read all injections
+    ret.fromMte(flags) // read all injections
 
-    switch (flags[0]) {  // then tweak what's left
+    switch (
+      flags[0] // then tweak what's left
+    ) {
       case 'V': {
-        if (flags[2] === 'b') {  // treat biaspectuals as imperfect, todo
+        if (flags[2] === 'b') {
+          // treat biaspectuals as imperfect, todo
           ret.features.aspect = Aspect.imperfect
         }
         if (form && (form.endsWith('ся') || form.endsWith('сь'))) {
@@ -562,7 +1320,7 @@ export class MorphInterp {
         }
         break
 
-      case 'P':  // todo: Referent_Type
+      case 'P': // todo: Referent_Type
         ret.features.pronoun = Pronoun.yes
         switch (flags[8]) {
           case 'n':
@@ -580,7 +1338,8 @@ export class MorphInterp {
           default:
             throw new Error(`Unknown MTE pronoun Syntactic_Type: "${flags[8]}"`)
         }
-        if (flags[1] === 's') {  // possessive
+        if (flags[1] === 's') {
+          // possessive
           ret.features.possessiveness = Possessiveness.yes
           ret.features.pronominalType = PronominalType.personal
         }
@@ -601,7 +1360,8 @@ export class MorphInterp {
         break
 
       case 'N':
-        if (flags[2] === 'c') {  // treat common gender as feminine, todo
+        if (flags[2] === 'c') {
+          // treat common gender as feminine, todo
           ret.features.gender = Gender.feminine
         }
         if (flags[2] === '-') {
@@ -622,23 +1382,47 @@ export class MorphInterp {
     }
 
     // kill redundant info
-    if (!isOddball(ret.features.gender) && ret.features.number === MorphNumber.singular
-      && ret.features.pos !== Pos.cardinalNumeral && ret.features.ordinalNumeral === undefined) {
+    if (
+      !isOddball(ret.features.gender) &&
+      ret.features.number === MorphNumber.singular &&
+      ret.features.pos !== Pos.cardinalNumeral &&
+      ret.features.ordinalNumeral === undefined
+    ) {
       delete ret.features.number
     }
 
     return ret
   }
 
-  resetFromVesumStr(flags: string, lemma?: string, lemmaFlags?: string, strict = false) {
+  resetFromVesumStr(
+    flags: string,
+    lemma?: string,
+    lemmaFlags?: string,
+    strict = false,
+  ) {
     return this.reset().setFromVesumStr(flags, lemma, lemmaFlags, strict)
   }
 
-  setFromVesumStr(flags: string, lemma?: string, lemmaFlags?: string, strict = false) {
-    return this.setFromVesum(flags.split(':'), lemma, lemmaFlags && lemmaFlags.split(':'), strict)
+  setFromVesumStr(
+    flags: string,
+    lemma?: string,
+    lemmaFlags?: string,
+    strict = false,
+  ) {
+    return this.setFromVesum(
+      flags.split(':'),
+      lemma,
+      lemmaFlags && lemmaFlags.split(':'),
+      strict,
+    )
   }
 
-  setFromVesum(flags: Array<string>, lemma?: string, lemmaFlags?: Array<string>, strict = false) {
+  setFromVesum(
+    flags: Array<string>,
+    lemma?: string,
+    lemmaFlags?: Array<string>,
+    strict = false,
+  ) {
     for (let flag of flags) {
       let row = tryMapVesumFlag(flag)
       if (row) {
@@ -656,7 +1440,10 @@ export class MorphInterp {
 
       // gender for plural
       if (this.features.pos === Pos.noun) {
-        if (this.features.number === MorphNumber.plural && !isOddball(lemmaTag.features.gender)) {
+        if (
+          this.features.number === MorphNumber.plural &&
+          !isOddball(lemmaTag.features.gender)
+        ) {
           this.features.gender = lemmaTag.features.gender
         }
       }
@@ -698,7 +1485,7 @@ export class MorphInterp {
   clone() {
     let ret = new MorphInterp()
     ret.features = { ...this.features }
-    this.otherFlags.forEach(x => ret.otherFlags.add(x))
+    this.otherFlags.forEach((x) => ret.otherFlags.add(x))
     ret.lemma = this.lemma
 
     return ret
@@ -722,13 +1509,16 @@ export class MorphInterp {
 
     for (let name of Object.keys(this.features)) {
       let value = this.features[name]
-      if (value === undefined
+      if (
+        value === undefined
         // || this.features.number === Numberr.plural && name === 'gender' && !this.isAdjectiveAsNoun()
-        /*|| this.isConverb() && this.isPerfect() && name === 'tense'*/) {
+        /*|| this.isConverb() && this.isPerfect() && name === 'tense'*/
+      ) {
         continue
       }
       let flag = mapVesumFeatureValue(name, value)
-      if (flag && flag !== 'letter') {  // letter: temp, hack
+      if (flag && flag !== 'letter') {
+        // letter: temp, hack
         flags.push(flag)
       }
     }
@@ -769,9 +1559,14 @@ export class MorphInterp {
       let gender = map2mteOrDash(Gender, this.features.gender)
       let morphNumber = tryMap2mte(MorphNumber, this.getNumber())
       let morphCase = map2mteOrDash(Case, this.features.case)
-      let requiredAnimacy = tryMap2mte(RequiredAnimacy, this.features.requiredAnimacy)
+      let requiredAnimacy = tryMap2mte(
+        RequiredAnimacy,
+        this.features.requiredAnimacy,
+      )
 
-      return trimTrailingDash('M' + form + type + gender + morphNumber + morphCase + requiredAnimacy)
+      return trimTrailingDash(
+        'M' + form + type + gender + morphNumber + morphCase + requiredAnimacy,
+      )
     }
 
     if (this.isPronominal()) {
@@ -794,19 +1589,33 @@ export class MorphInterp {
       let morphCase = map2mteOrDash(Case, this.features.case)
       let syntacticType = map2mte(Pos, this.features.pos).toLowerCase()
 
-      return 'P' + type + possessiveness + person + gender + animacy + morphNumber + morphCase + syntacticType
+      return (
+        'P' +
+        type +
+        possessiveness +
+        person +
+        gender +
+        animacy +
+        morphNumber +
+        morphCase +
+        syntacticType
+      )
     }
 
     if (this.isNoun() /*|| this.isAdjectiveAsNoun()*/) {
       let type = tryMap2mte(NounType, this.features.nounType) || 'c'
       let gender = tryMap2mte(Gender, this.features.gender)
       if (!gender) {
-        if (this.isNoSingular() || this.isBad() || (this.isN2Adj() && this.isPlural())) {
+        if (
+          this.isNoSingular() ||
+          this.isBad() ||
+          (this.isN2Adj() && this.isPlural())
+        ) {
           gender = '-'
         } else if (lemmaTag) {
           gender = map2mteOrDash(Gender, lemmaTag.features.gender)
         } else {
-          gender = '-'    // todo: separate convertion from validation
+          gender = '-' // todo: separate convertion from validation
           // throw new Error(`No gender info for ${this.toVesumStr()} ${lemma}`)
         }
       }
@@ -818,7 +1627,7 @@ export class MorphInterp {
         if (this.isBacteria()) {
           animacy = 'y'
         } else {
-          animacy = '-'    // todo: separate convertion from validation
+          animacy = '-' // todo: separate convertion from validation
           // throw new Error('Animacy missing')
         }
       }
@@ -832,30 +1641,56 @@ export class MorphInterp {
       }
       let type = considerAuxVerb(lemma) ? 'a' : 'm'
       let aspect = map2mte(Aspect, this.features.aspect)
-      let verbForm = this.isConverb() ? 'g' : tryMap2mte(VerbType, this.features.verbType) || 'i'
+      let verbForm = this.isConverb()
+        ? 'g'
+        : tryMap2mte(VerbType, this.features.verbType) || 'i'
       let tense = map2mteOrDash(Tense, this.features.tense)
       let person = map2mteOrDash(Person, this.features.person)
       let morphNumber = map2mteOrDash(MorphNumber, this.getNumber())
       let gender = tryMap2mte(Gender, this.features.gender)
 
-      return trimTrailingDash('V' + type + aspect + verbForm + tense + person + morphNumber + gender)
+      return trimTrailingDash(
+        'V' + type + aspect + verbForm + tense + person + morphNumber + gender,
+      )
     }
 
     switch (this.features.pos) {
       case Pos.adjective: {
-        let type = this.isParticiple() ? 'p' : (this.isComparable() ? 'f' : 'o')
-        let degree = this.isParticiple() ? '-' : map2mteOrDash(Degree, this.features.degree)
+        let type = this.isParticiple() ? 'p' : this.isComparable() ? 'f' : 'o'
+        let degree = this.isParticiple()
+          ? '-'
+          : map2mteOrDash(Degree, this.features.degree)
         let gender = map2mteOrDash(Gender, this.features.gender)
         let morphNumber = map2mte(MorphNumber, this.getNumber())
         let morphCase = map2mteOrDash(Case, this.features.case)
-        let definiteness = tryMap2mte(Variant, this.features.variant)
-          || defaultMteDefiniteness(this.features.gender, this.features.number, this.features.case,
-            this.features.requiredAnimacy)
+        let definiteness =
+          tryMap2mte(Variant, this.features.variant) ||
+          defaultMteDefiniteness(
+            this.features.gender,
+            this.features.number,
+            this.features.case,
+            this.features.requiredAnimacy,
+          )
         if (!this.isParticiple()) {
-          let requiredAnimacy = tryMap2mte(RequiredAnimacy, this.features.requiredAnimacy)
-          return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy
+          let requiredAnimacy = tryMap2mte(
+            RequiredAnimacy,
+            this.features.requiredAnimacy,
+          )
+          return (
+            'A' +
+            type +
+            degree +
+            gender +
+            morphNumber +
+            morphCase +
+            definiteness +
+            requiredAnimacy
+          )
         }
-        let requiredAnimacy = map2mteOrDash(RequiredAnimacy, this.features.requiredAnimacy)
+        let requiredAnimacy = map2mteOrDash(
+          RequiredAnimacy,
+          this.features.requiredAnimacy,
+        )
         let aspect = tryMap2mte(Aspect, this.features.aspect)
         let voice = tryMap2mte(Voice, this.features.voice)
         let tense = tryMap2mte(Tense, this.features.tense)
@@ -863,7 +1698,19 @@ export class MorphInterp {
           tense = 'p'
         }
 
-        return 'A' + type + degree + gender + morphNumber + morphCase + definiteness + requiredAnimacy + aspect + voice + tense
+        return (
+          'A' +
+          type +
+          degree +
+          gender +
+          morphNumber +
+          morphCase +
+          definiteness +
+          requiredAnimacy +
+          aspect +
+          voice +
+          tense
+        )
       }
       case Pos.preposition: {
         if (!lemma) {
@@ -908,7 +1755,9 @@ export class MorphInterp {
   }
 
   equals(other: MorphInterp) {
-    return this.toVesumStr() === other.toVesumStr() && this.lemma === other.lemma
+    return (
+      this.toVesumStr() === other.toVesumStr() && this.lemma === other.lemma
+    )
   }
 
   equalsByFeature(other: MorphInterp, feature) {
@@ -916,7 +1765,7 @@ export class MorphInterp {
   }
 
   equalsByFeatures(other: MorphInterp, features: Array<any>) {
-    return features.every(f => this.getFeature(f) === other.getFeature(f))
+    return features.every((f) => this.getFeature(f) === other.getFeature(f))
   }
 
   equalsByLemmaAndFeatures(other: MorphInterp, features: Array<any>) {
@@ -942,11 +1791,12 @@ export class MorphInterp {
   //   // todo
   // }
 
-  denormalize() {  // todo: remove
+  denormalize() {
+    // todo: remove
     if (
-      (this.isVerb() || this.isAdjective() || this.isNoun())
-      && this.hasGender()
-      && !this.hasNumber()
+      (this.isVerb() || this.isAdjective() || this.isNoun()) &&
+      this.hasGender() &&
+      !this.hasNumber()
     ) {
       this.setIsSingular()
     }
@@ -971,7 +1821,7 @@ export class MorphInterp {
   }
 
   getFeatures() {
-    let others = [...this.otherFlags].map(x => {
+    let others = [...this.otherFlags].map((x) => {
       let row = tryMapVesumFlag(x)
       // if (!row) {
       //   return
@@ -979,13 +1829,13 @@ export class MorphInterp {
       return {
         featureName: row && row.featStr,
         feature: row && row.feat,
-        value: row && (row.vesum || row.mi) || true,
+        value: (row && (row.vesum || row.mi)) || true,
       }
     })
 
     let ret = Object.keys(this.features)
-      .filter(x => !isOddball(this.features[x]))
-      .map(x => ({
+      .filter((x) => !isOddball(this.features[x]))
+      .map((x) => ({
         featureName: x,
         feature: STRING_MAP_FEAT.get(x),
         value: this.features[x],
@@ -1001,153 +1851,456 @@ export class MorphInterp {
     return this
   }
 
-  isAdjective() { return this.features.pos === Pos.adjective && this.features.beforeadj !== Beforeadj.yes }
-  isAdjectivish() { return this.features.pos === Pos.adjective }  // todo: rename properly <^
-  isAdverb() { return this.features.pos === Pos.adverb }
-  isNumeric() { return this.isCardinalNumeral() || this.canBeOrdinalNumeral() }
-  isCardinalNumeral() { return this.features.pos === Pos.cardinalNumeral }
-  isCardinalNumerish() { return this.isCardinalNumeral() || this.isNounNumeral() }
-  isConjunction() { return this.features.pos === Pos.conjunction }
-  isNoun() { return this.features.pos === Pos.noun }
-  isParticle() { return this.features.pos === Pos.particle }
-  isPreposition() { return this.features.pos === Pos.preposition }
-  isPronominal() { return this.features.pronoun !== undefined }
-  isPunctuation() { return this.features.pos === Pos.punct }
-  isConverb() { return this.features.verbType === VerbType.converb }
-  isVerb() { return this.features.pos === Pos.verb }
-  isInterjection() { return this.features.pos === Pos.interjection }
-  isSymbol() { return this.features.pos === Pos.sym }
-  isX() { return this.features.pos === Pos.x }
-  isError() { return this.features.pos === Pos.error }
+  isAdjective() {
+    return (
+      this.features.pos === Pos.adjective &&
+      this.features.beforeadj !== Beforeadj.yes
+    )
+  }
+  isAdjectivish() {
+    return this.features.pos === Pos.adjective
+  } // todo: rename properly <^
+  isAdverb() {
+    return this.features.pos === Pos.adverb
+  }
+  isNumeric() {
+    return this.isCardinalNumeral() || this.canBeOrdinalNumeral()
+  }
+  isCardinalNumeral() {
+    return this.features.pos === Pos.cardinalNumeral
+  }
+  isCardinalNumerish() {
+    return this.isCardinalNumeral() || this.isNounNumeral()
+  }
+  isConjunction() {
+    return this.features.pos === Pos.conjunction
+  }
+  isNoun() {
+    return this.features.pos === Pos.noun
+  }
+  isParticle() {
+    return this.features.pos === Pos.particle
+  }
+  isPreposition() {
+    return this.features.pos === Pos.preposition
+  }
+  isPronominal() {
+    return this.features.pronoun !== undefined
+  }
+  isPunctuation() {
+    return this.features.pos === Pos.punct
+  }
+  isConverb() {
+    return this.features.verbType === VerbType.converb
+  }
+  isVerb() {
+    return this.features.pos === Pos.verb
+  }
+  isInterjection() {
+    return this.features.pos === Pos.interjection
+  }
+  isSymbol() {
+    return this.features.pos === Pos.sym
+  }
+  isX() {
+    return this.features.pos === Pos.x
+  }
+  isError() {
+    return this.features.pos === Pos.error
+  }
 
-  isNominative() { return this.features.case === Case.nominative }
-  isGenitive() { return this.features.case === Case.genitive }
-  isDative() { return this.features.case === Case.dative }
-  isAccusative() { return this.features.case === Case.accusative }
-  isInstrumental() { return this.features.case === Case.instrumental }
-  isLocative() { return this.features.case === Case.locative }
-  isVocative() { return this.features.case === Case.vocative }
+  isNominative() {
+    return this.features.case === Case.nominative
+  }
+  isGenitive() {
+    return this.features.case === Case.genitive
+  }
+  isDative() {
+    return this.features.case === Case.dative
+  }
+  isAccusative() {
+    return this.features.case === Case.accusative
+  }
+  isInstrumental() {
+    return this.features.case === Case.instrumental
+  }
+  isLocative() {
+    return this.features.case === Case.locative
+  }
+  isVocative() {
+    return this.features.case === Case.vocative
+  }
 
-  isAdjectiveAsNoun() { return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes }
-  isN2Adj() { return this.features.n2adjness === N2adjness.yes }
+  isAdjectiveAsNoun() {
+    return this.features.adjectiveAsNoun === AdjectiveAsNoun.yes
+  }
+  isN2Adj() {
+    return this.features.n2adjness === N2adjness.yes
+  }
 
-  canBeOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
-  isAbbreviation() { return this.features.abbreviation === Abbreviation.yes }
-  isActive() { return this.features.voice === Voice.active }
-  isAnimate() { return this.features.animacy === Animacy.animate }
-  isAuxillary() { return this.features.verbAuxilarity === VerbAuxilarity.yes }
-  isBacteria() { return this.features.animacy === Animacy.bacteria }
-  isBeforeadj() { return this.features.beforeadj === Beforeadj.yes }
-  isComparable() { return this.features.degree !== undefined }
-  isCoordinating() { return this.features.conjunctionType === ConjunctionType.coordinating }
-  isEmphatic() { return this.features.pronominalType === PronominalType.emphatic }
-  isFeminine() { return this.features.gender === Gender.feminine }
-  isNeuter() { return this.features.gender === Gender.neuter }
-  isForeign() { return this.features.foreign === Foreign.yes }
-  isXForeign() { return this.isForeign() && this.features.pos === Pos.x }
-  isTypo() { return this.features.typo === Typo.yes }
-  isImperfect() { return this.features.aspect === Aspect.imperfect }
-  isImpersonal() { return this.features.verbType === VerbType.impersonal }
-  isInterrogative() { return this.getFeature(PronominalType) === PronominalType.interrogative }
-  isNotPersonal() { return this.isImpersonal() || this.isInfinitive() }
-  isImperative() { return this.features.verbType === VerbType.imperative }
-  isInanimate() { return this.features.animacy === Animacy.inanimate }
-  isIndicative() { return this.features.verbType === undefined || this.features.verbType === VerbType.indicative || this.features.verbType === VerbType.impersonal }
-  isFinite() { return this.isVerb() && !this.isInfinitive() }
-  isInfinitive() { return this.features.verbType === VerbType.infinitive }
-  isMasculine() { return this.features.gender === Gender.masculine }
-  isNegative() { return this.features.polarity === Polarity.negative }
-  isNegativePron() { return this.features.pronominalType === PronominalType.negative }
-  isNoSingular() { return this.features.numberTantum === NumberTantum.noSingular }  // todo: tantum?
-  isOdd() { return this.features.oddness === Oddness.yes }
-  isOrdinalNumeral() { return this.features.ordinalNumeral === OrdinalNumeral.yes }
-  isParticiple() { return this.features.verbType === VerbType.participle }
-  isPassive() { return this.features.voice === Voice.passive }
-  isPerfect() { return this.features.aspect === Aspect.perfect }
-  isPlural() { return this.features.number === MorphNumber.plural }
-  isPast() { return this.features.tense === Tense.past }
-  isPossessive() { return this.features.possessiveness === Possessiveness.yes }
-  isReflexive() { return this.features.reflexivity === Reflexivity.yes }
-  isReversive() { return this.features.verbRevesivity === VerbReversivity.yes }
-  isPersonal() { return this.features.pronominalType === PronominalType.personal }
-  isPresent() { return this.features.tense === Tense.present }
-  isSingular() { return this.features.number === MorphNumber.singular }  // todo: tantum?
-  isSuperlative() { return this.features.degree === Degree.superlative }  // todo: tantum?
-  isComparative() { return this.features.degree === Degree.comparative }  // todo: tantum?
-  isSubordinative() { return this.features.conjunctionType === ConjunctionType.subordinative }
-  isName() { return this.features.nameType !== undefined }
-  isFirstname() { return this.features.nameType === NameType.first }
-  isLastname() { return this.features.nameType === NameType.last }
-  isUncontracted() { return this.features.variant === Variant.uncontracted }
-  isStem() { return this.features.variant === Variant.stem }
-  isDemonstrative() { return this.features.pronominalType === PronominalType.demonstrative }
-  isIndefinite() { return this.features.pronominalType === PronominalType.indefinite }
-  isGeneral() { return this.features.pronominalType === PronominalType.general }
-  isRelative() { return this.features.pronominalType === PronominalType.relative }
-  isQuote() { return this.features.punctType === PunctuationType.quote }
-  isConsequential() { return this.features.partType === PartType.consequential }
-  isInstant() { return this.otherFlags.has('instant') }
-  isUninflectable() { return this.features.inflectability === Inflectability.no }
-  isNounNumeral() { return this.features.nounNumeral === NounNumeral.yes }
-  isGrammaticallyAnimate() { return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.animate }
-  isGrammaticallyInanimate() { return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.inanimate }
-  isNonparticipleAdj() { return this.isAdjective() && !this.isParticiple() }
-  isNoPlural() { return this.getFeature(NumberTantum) === NumberTantum.noPlural }
-  isClosing() { return this.getFeature(PunctuationSide) === PunctuationSide.close }
-  isOpening() { return this.getFeature(PunctuationSide) === PunctuationSide.open }
-  isMock() { return this.otherFlags.has('mock') }
-  isAuto() { return this.features.auto === Auto.yes }
+  canBeOrdinalNumeral() {
+    return this.features.ordinalNumeral === OrdinalNumeral.yes
+  }
+  isAbbreviation() {
+    return this.features.abbreviation === Abbreviation.yes
+  }
+  isActive() {
+    return this.features.voice === Voice.active
+  }
+  isAnimate() {
+    return this.features.animacy === Animacy.animate
+  }
+  isAuxillary() {
+    return this.features.verbAuxilarity === VerbAuxilarity.yes
+  }
+  isBacteria() {
+    return this.features.animacy === Animacy.bacteria
+  }
+  isBeforeadj() {
+    return this.features.beforeadj === Beforeadj.yes
+  }
+  isComparable() {
+    return this.features.degree !== undefined
+  }
+  isCoordinating() {
+    return this.features.conjunctionType === ConjunctionType.coordinating
+  }
+  isEmphatic() {
+    return this.features.pronominalType === PronominalType.emphatic
+  }
+  isFeminine() {
+    return this.features.gender === Gender.feminine
+  }
+  isNeuter() {
+    return this.features.gender === Gender.neuter
+  }
+  isForeign() {
+    return this.features.foreign === Foreign.yes
+  }
+  isXForeign() {
+    return this.isForeign() && this.features.pos === Pos.x
+  }
+  isTypo() {
+    return this.features.typo === Typo.yes
+  }
+  isImperfect() {
+    return this.features.aspect === Aspect.imperfect
+  }
+  isImpersonal() {
+    return this.features.verbType === VerbType.impersonal
+  }
+  isInterrogative() {
+    return this.getFeature(PronominalType) === PronominalType.interrogative
+  }
+  isNotPersonal() {
+    return this.isImpersonal() || this.isInfinitive()
+  }
+  isImperative() {
+    return this.features.verbType === VerbType.imperative
+  }
+  isInanimate() {
+    return this.features.animacy === Animacy.inanimate
+  }
+  isIndicative() {
+    return (
+      this.features.verbType === undefined ||
+      this.features.verbType === VerbType.indicative ||
+      this.features.verbType === VerbType.impersonal
+    )
+  }
+  isFinite() {
+    return this.isVerb() && !this.isInfinitive()
+  }
+  isInfinitive() {
+    return this.features.verbType === VerbType.infinitive
+  }
+  isMasculine() {
+    return this.features.gender === Gender.masculine
+  }
+  isNegative() {
+    return this.features.polarity === Polarity.negative
+  }
+  isNegativePron() {
+    return this.features.pronominalType === PronominalType.negative
+  }
+  isNoSingular() {
+    return this.features.numberTantum === NumberTantum.noSingular
+  } // todo: tantum?
+  isOdd() {
+    return this.features.oddness === Oddness.yes
+  }
+  isOrdinalNumeral() {
+    return this.features.ordinalNumeral === OrdinalNumeral.yes
+  }
+  isParticiple() {
+    return this.features.verbType === VerbType.participle
+  }
+  isPassive() {
+    return this.features.voice === Voice.passive
+  }
+  isPerfect() {
+    return this.features.aspect === Aspect.perfect
+  }
+  isPlural() {
+    return this.features.number === MorphNumber.plural
+  }
+  isPast() {
+    return this.features.tense === Tense.past
+  }
+  isPossessive() {
+    return this.features.possessiveness === Possessiveness.yes
+  }
+  isReflexive() {
+    return this.features.reflexivity === Reflexivity.yes
+  }
+  isReversive() {
+    return this.features.verbRevesivity === VerbReversivity.yes
+  }
+  isPersonal() {
+    return this.features.pronominalType === PronominalType.personal
+  }
+  isPresent() {
+    return this.features.tense === Tense.present
+  }
+  isSingular() {
+    return this.features.number === MorphNumber.singular
+  } // todo: tantum?
+  isSuperlative() {
+    return this.features.degree === Degree.superlative
+  } // todo: tantum?
+  isComparative() {
+    return this.features.degree === Degree.comparative
+  } // todo: tantum?
+  isSubordinative() {
+    return this.features.conjunctionType === ConjunctionType.subordinative
+  }
+  isName() {
+    return this.features.nameType !== undefined
+  }
+  isFirstname() {
+    return this.features.nameType === NameType.first
+  }
+  isLastname() {
+    return this.features.nameType === NameType.last
+  }
+  isUncontracted() {
+    return this.features.variant === Variant.uncontracted
+  }
+  isStem() {
+    return this.features.variant === Variant.stem
+  }
+  isDemonstrative() {
+    return this.features.pronominalType === PronominalType.demonstrative
+  }
+  isIndefinite() {
+    return this.features.pronominalType === PronominalType.indefinite
+  }
+  isGeneral() {
+    return this.features.pronominalType === PronominalType.general
+  }
+  isRelative() {
+    return this.features.pronominalType === PronominalType.relative
+  }
+  isQuote() {
+    return this.features.punctType === PunctuationType.quote
+  }
+  isConsequential() {
+    return this.features.partType === PartType.consequential
+  }
+  isInstant() {
+    return this.otherFlags.has('instant')
+  }
+  isUninflectable() {
+    return this.features.inflectability === Inflectability.no
+  }
+  isNounNumeral() {
+    return this.features.nounNumeral === NounNumeral.yes
+  }
+  isGrammaticallyAnimate() {
+    return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.animate
+  }
+  isGrammaticallyInanimate() {
+    return this.getFeature(GrammaticalAnimacy) === GrammaticalAnimacy.inanimate
+  }
+  isNonparticipleAdj() {
+    return this.isAdjective() && !this.isParticiple()
+  }
+  isNoPlural() {
+    return this.getFeature(NumberTantum) === NumberTantum.noPlural
+  }
+  isClosing() {
+    return this.getFeature(PunctuationSide) === PunctuationSide.close
+  }
+  isOpening() {
+    return this.getFeature(PunctuationSide) === PunctuationSide.open
+  }
+  isMock() {
+    return this.otherFlags.has('mock')
+  }
+  isAuto() {
+    return this.features.auto === Auto.yes
+  }
 
+  hasAnimacy() {
+    return this.features.animacy !== undefined
+  }
+  hasNumber() {
+    return this.features.number !== undefined
+  }
+  hasGender() {
+    return this.features.gender !== undefined
+  }
+  hasPerson() {
+    return this.features.person !== undefined
+  }
+  hasCase() {
+    return this.features.case !== undefined
+  }
+  hasRequiredCase() {
+    return this.features.requiredCase !== undefined
+  }
+  hasPronominalType() {
+    return this.features.pronominalType !== undefined
+  }
+  hasNonpositiveDegree() {
+    return this.hasFeature(Degree) && this.features.degree !== Degree.positive
+  }
 
-  hasAnimacy() { return this.features.animacy !== undefined }
-  hasNumber() { return this.features.number !== undefined }
-  hasGender() { return this.features.gender !== undefined }
-  hasPerson() { return this.features.person !== undefined }
-  hasCase() { return this.features.case !== undefined }
-  hasRequiredCase() { return this.features.requiredCase !== undefined }
-  hasPronominalType() { return this.features.pronominalType !== undefined }
-  hasNonpositiveDegree() { return this.hasFeature(Degree) && this.features.degree !== Degree.positive }
+  isProper() {
+    return this.features.nounType === NounType.proper
+  }
+  isBad() {
+    return this.features.badness === Badness.yes
+  }
+  isColloquial() {
+    return this.features.colloquial === Colloquiality.yes
+  }
+  isRare() {
+    return this.features.rarity === Rarity.rare
+  }
 
-  isProper() { return this.features.nounType === NounType.proper }
-  isBad() { return this.features.badness === Badness.yes }
-  isColloquial() { return this.features.colloquial === Colloquiality.yes }
-  isRare() { return this.features.rarity === Rarity.rare }
+  isNounish() {
+    return this.isNoun() || this.isAdjectiveAsNoun()
+  }
+  isVerbial() {
+    return this.isVerb() || this.isConverb()
+  }
+  isVerbial2() {
+    return this.isVerb() || this.isConverb() || this.isParticiple()
+  }
 
-  isNounish() { return this.isNoun() || this.isAdjectiveAsNoun() }
-  isVerbial() { return this.isVerb() || this.isConverb() }
-  isVerbial2() { return this.isVerb() || this.isConverb() || this.isParticiple() }
+  setGrammaticalAnimacy(value = true) {
+    this.features.grammaticalAnimacy = value
+      ? GrammaticalAnimacy.animate
+      : GrammaticalAnimacy.inanimate
+    return this
+  }
+  setIsAccusative() {
+    this.features.case = Case.accusative
+    return this
+  }
+  setIsGenitive() {
+    this.features.case = Case.genitive
+    return this
+  }
+  setIsAbsolute(value = true) {
+    this.features.degree = value ? Degree.absolute : undefined
+    return this
+  }
+  setIsAdjectiveAsNoun(value = true) {
+    this.features.adjectiveAsNoun = value ? AdjectiveAsNoun.yes : undefined
+    return this
+  }
+  setIsAnimate(value = true) {
+    this.features.animacy = value ? Animacy.animate : Animacy.inanimate
+    return this
+  }
+  setIsAuto(value = true) {
+    this.features.auto = value ? Auto.yes : undefined
+    return this
+  }
+  setIsAuxillary(value = true) {
+    this.features.verbAuxilarity = value ? VerbAuxilarity.yes : undefined
+    return this
+  }
+  setIsConditional() {
+    this.features.verbType = VerbType.conditional
+    return this
+  }
+  setIsFuture(value = true) {
+    this.features.tense = value ? Tense.future : undefined
+    return this
+  }
+  setIsNegative(value = true) {
+    this.features.polarity = value ? Polarity.negative : undefined
+    return this
+  }
+  setIsOdd(value = true) {
+    this.features.oddness = value ? Oddness.yes : undefined
+    return this
+  }
+  setIsOrdinalNumeral(value = true) {
+    this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined
+    return this
+  }
+  setIsPerfect(value = true) {
+    this.features.aspect = value ? Aspect.perfect : undefined
+    return this
+  }
+  setIsSingular() {
+    this.features.number = MorphNumber.singular
+    return this
+  }
+  setIsPlural() {
+    this.features.number = MorphNumber.plural
+    return this
+  }
+  setIsPluraleTantum(value = true) {
+    this.features.numberTantum = value
+      ? NumberTantum.noSingular
+      : NumberTantum.noPlural
+    return this
+  }
+  setIsPresent(value = true) {
+    this.features.tense = value ? Tense.present : undefined
+    return this
+  }
+  setIsReversive(value = true) {
+    this.features.verbRevesivity = value ? VerbReversivity.yes : undefined
+    return this
+  }
+  setIsReflexive(value = true) {
+    this.features.reflexivity = value ? Reflexivity.yes : undefined
+    return this
+  }
+  setIsTypo(value = true) {
+    this.features.typo = value ? Typo.yes : undefined
+    return this
+  }
+  setIsProper(value = true) {
+    this.features.nounType = value ? NounType.proper : undefined
+    return this
+  }
+  setIsPronoun(value = true) {
+    this.features.pronoun = value ? Pronoun.yes : undefined
+    return this
+  }
+  setIsUninflectable(value = true) {
+    this.features.inflectability = value ? Inflectability.no : undefined
+    return this
+  }
+  setPos(pos: Pos) {
+    this.features.pos = pos
+    return this
+  }
 
-  setGrammaticalAnimacy(value = true) { this.features.grammaticalAnimacy = value ? GrammaticalAnimacy.animate : GrammaticalAnimacy.inanimate; return this }
-  setIsAccusative() { this.features.case = Case.accusative; return this }
-  setIsGenitive() { this.features.case = Case.genitive; return this }
-  setIsAbsolute(value = true) { this.features.degree = value ? Degree.absolute : undefined; return this }
-  setIsAdjectiveAsNoun(value = true) { this.features.adjectiveAsNoun = value ? AdjectiveAsNoun.yes : undefined; return this }
-  setIsAnimate(value = true) { this.features.animacy = value ? Animacy.animate : Animacy.inanimate; return this }
-  setIsAuto(value = true) { this.features.auto = value ? Auto.yes : undefined; return this }
-  setIsAuxillary(value = true) { this.features.verbAuxilarity = value ? VerbAuxilarity.yes : undefined; return this }
-  setIsConditional() { this.features.verbType = VerbType.conditional; return this }
-  setIsFuture(value = true) { this.features.tense = value ? Tense.future : undefined; return this }
-  setIsNegative(value = true) { this.features.polarity = value ? Polarity.negative : undefined; return this }
-  setIsOdd(value = true) { this.features.oddness = value ? Oddness.yes : undefined; return this }
-  setIsOrdinalNumeral(value = true) { this.features.ordinalNumeral = value ? OrdinalNumeral.yes : undefined; return this }
-  setIsPerfect(value = true) { this.features.aspect = value ? Aspect.perfect : undefined; return this }
-  setIsSingular() { this.features.number = MorphNumber.singular; return this }
-  setIsPlural() { this.features.number = MorphNumber.plural; return this }
-  setIsPluraleTantum(value = true) { this.features.numberTantum = value ? NumberTantum.noSingular : NumberTantum.noPlural; return this }
-  setIsPresent(value = true) { this.features.tense = value ? Tense.present : undefined; return this }
-  setIsReversive(value = true) { this.features.verbRevesivity = value ? VerbReversivity.yes : undefined; return this }
-  setIsReflexive(value = true) { this.features.reflexivity = value ? Reflexivity.yes : undefined; return this }
-  setIsTypo(value = true) { this.features.typo = value ? Typo.yes : undefined; return this }
-  setIsProper(value = true) { this.features.nounType = value ? NounType.proper : undefined; return this }
-  setIsPronoun(value = true) { this.features.pronoun = value ? Pronoun.yes : undefined; return this }
-  setIsUninflectable(value = true) { this.features.inflectability = value ? Inflectability.no : undefined; return this }
-  setPos(pos: Pos) { this.features.pos = pos; return this }
-
-  setCase(value: Case) { this.features.case = value; return this }
+  setCase(value: Case) {
+    this.features.case = value
+    return this
+  }
 
   dropAdjectiveAsNounFeatures() {
-    this.dropFeature(AdjectiveAsNoun)
-      .dropFeature(Animacy)
+    this.dropFeature(AdjectiveAsNoun).dropFeature(Animacy)
     if (this.isPlural()) {
       this.dropFeature(Gender)
     }
@@ -1155,7 +2308,7 @@ export class MorphInterp {
 
   unproper() {
     this.features.nounType = NounType.common
-    this.features.nameType = undefined    // todo
+    this.features.nameType = undefined // todo
     return this
   }
 
@@ -1169,7 +2322,11 @@ export class MorphInterp {
   }
 
   canBeKharkivSty() {
-    return this.isNoun() && this.isFeminine() && (this.isSingular() || !this.hasNumber())
+    return (
+      this.isNoun() &&
+      this.isFeminine() &&
+      (this.isSingular() || !this.hasNumber())
+    )
   }
 
   getNumber() {
@@ -1177,7 +2334,7 @@ export class MorphInterp {
       return this.features.number
     }
     if (this.hasGender()) {
-      return MorphNumber.singular  // tocheck
+      return MorphNumber.singular // tocheck
     }
   }
 
@@ -1197,7 +2354,7 @@ export class MorphInterp {
           // if (!(row.featStr in this.features)) {
           //   throw new Error(`${row.featStr} not in this`)
           // }
-          this.features[row.featStr] = ('vesum' in row) ? row.vesum : row.mi
+          this.features[row.featStr] = 'vesum' in row ? row.vesum : row.mi
           if (this.features[row.featStr] === undefined) {
             throw new Error(`Cannot map ${mteFlags.join('')}`)
           }
@@ -1232,16 +2389,27 @@ function map2mteOrDash(feature, value) {
 function map2mte(feature, value) {
   let ret = tryMap2mte(feature, value)
   if (!ret) {
-    throw new Error(`Unmappable feature "${Object.keys(feature).join(',')}" value "${value}"`)
+    throw new Error(
+      `Unmappable feature "${Object.keys(feature).join(',')}" value "${value}"`,
+    )
   }
   return ret
 }
 
-function defaultMteDefiniteness(gender: Gender, morphNumber: Number, morphCase: Case, requiredAnimacy: RequiredAnimacy) {  // todo: загалний
-  if ((gender === Gender.feminine || gender === Gender.neuter
-    || (morphNumber === MorphNumber.plural && requiredAnimacy !== RequiredAnimacy.animate))
-    && (morphCase === Case.nominative || morphCase === Case.accusative)) {
-
+function defaultMteDefiniteness(
+  gender: Gender,
+  morphNumber: Number,
+  morphCase: Case,
+  requiredAnimacy: RequiredAnimacy,
+) {
+  // todo: загалний
+  if (
+    (gender === Gender.feminine ||
+      gender === Gender.neuter ||
+      (morphNumber === MorphNumber.plural &&
+        requiredAnimacy !== RequiredAnimacy.animate)) &&
+    (morphCase === Case.nominative || morphCase === Case.accusative)
+  ) {
     return 's'
   }
 
@@ -1256,8 +2424,11 @@ function createVesumFlagCompare(pos: Pos) {
       let featA = rowA.feat
       let featB = rowB.feat
 
-      let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as Array<any>
-      return overflowNegative(order.indexOf(featA)) - overflowNegative(order.indexOf(featB))
+      let order = FEATURE_ORDER[pos] || (FEATURE_ORDER.other as Array<any>)
+      return (
+        overflowNegative(order.indexOf(featA)) -
+        overflowNegative(order.indexOf(featB))
+      )
     }
 
     // return a.localeCompare(b)
@@ -1266,9 +2437,12 @@ function createVesumFlagCompare(pos: Pos) {
 }
 
 function createVesumFlagComparator2(pos: Pos) {
-  let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as Array<any>
+  let order = FEATURE_ORDER[pos] || (FEATURE_ORDER.other as Array<any>)
   return (a, b) => {
-    return overflowNegative(order.indexOf(a.feature)) - overflowNegative(order.indexOf(b.feature))
+    return (
+      overflowNegative(order.indexOf(a.feature)) -
+      overflowNegative(order.indexOf(b.feature))
+    )
   }
 }
 

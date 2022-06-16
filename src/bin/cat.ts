@@ -7,10 +7,7 @@ import { mu } from '../mu'
 import { createInterface } from 'readline'
 import minimist = require('minimist')
 
-
-
-interface Args {
-}
+interface Args {}
 
 function main() {
   const args = minimist<Args>(process.argv.slice(2))
@@ -19,7 +16,9 @@ function main() {
   let stream = new CatStreamEnqueueable()
 
   if (fileWithNames) {
-    mu(trimmedNonemptyLinesSync(fileWithNames)).forEach(x => stream.enqueue(x))
+    mu(trimmedNonemptyLinesSync(fileWithNames)).forEach((x) =>
+      stream.enqueue(x),
+    )
   } else {
     createInterface(process.stdin)
       .on('line', stream.enqueue)

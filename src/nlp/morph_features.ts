@@ -11,16 +11,21 @@ export enum Pos {
   adjective,
   sym,
   error,
-  punct,  // todo
+  punct, // todo
   x,
 }
 export enum Pronoun {
   yes,
 }
-export enum OrdinalNumeral { yes }
-export enum AdjectiveAsNoun { yes }
-export enum NounNumeral { yes }
-
+export enum OrdinalNumeral {
+  yes,
+}
+export enum AdjectiveAsNoun {
+  yes,
+}
+export enum NounNumeral {
+  yes,
+}
 
 ///// Nominal /////
 
@@ -37,7 +42,7 @@ export enum Gender {
 export enum Animacy {
   animate,
   inanimate,
-  bacteria,  // ?
+  bacteria, // ?
 }
 export enum GrammaticalAnimacy {
   animate,
@@ -65,7 +70,7 @@ export enum Case {
   // other non-ukr
 }
 export enum RequiredCase {
-  genitive = 1,  // so we can comare to Case
+  genitive = 1, // so we can comare to Case
   dative,
   accusative,
   instrumental,
@@ -86,9 +91,9 @@ export enum VerbType {
   indicative,
   imperative,
   impersonal,
-  conditional,  // б/би
-  participle,  // дієприкметник
-  converb,  // дієприслівник
+  conditional, // б/би
+  participle, // дієприкметник
+  converb, // дієприслівник
 }
 export enum Tense {
   past,
@@ -168,25 +173,81 @@ export enum PartType {
   personal,
   consequential,
 }
-export enum NumberTantum { noPlural, noSingular }
-export enum NameType { first, last, patronym, nick }
+export enum NumberTantum {
+  noPlural,
+  noSingular,
+}
+export enum NameType {
+  first,
+  last,
+  patronym,
+  nick,
+}
 
-export enum Inflectability { no }
-export enum Alternativity { yes }
-export enum VuAlternativity { yes }
-export enum Abbreviation { yes }
-export enum Dimin { yes }
-export enum Beforeadj { yes }
-export enum Possessiveness { yes }
-export enum ParadigmOmonym { xp1, xp2, xp3, xp4, xp5, xp6, xp7, xp8, xp9 }
-export enum SemanticOmonym { xv1, xv2, xv3, xv4, xv5, xv6, xv7, xv8, xv9 }
-export enum Auto { yes }
-export enum Oddness { yes }
-export enum N2adjness { yes }
-export enum PrepositionRequirement { yes }
-export enum Foreign { yes }
-export enum Formality { yes }
-export enum Typo { yes }
+export enum Inflectability {
+  no,
+}
+export enum Alternativity {
+  yes,
+}
+export enum VuAlternativity {
+  yes,
+}
+export enum Abbreviation {
+  yes,
+}
+export enum Dimin {
+  yes,
+}
+export enum Beforeadj {
+  yes,
+}
+export enum Possessiveness {
+  yes,
+}
+export enum ParadigmOmonym {
+  xp1,
+  xp2,
+  xp3,
+  xp4,
+  xp5,
+  xp6,
+  xp7,
+  xp8,
+  xp9,
+}
+export enum SemanticOmonym {
+  xv1,
+  xv2,
+  xv3,
+  xv4,
+  xv5,
+  xv6,
+  xv7,
+  xv8,
+  xv9,
+}
+export enum Auto {
+  yes,
+}
+export enum Oddness {
+  yes,
+}
+export enum N2adjness {
+  yes,
+}
+export enum PrepositionRequirement {
+  yes,
+}
+export enum Foreign {
+  yes,
+}
+export enum Formality {
+  yes,
+}
+export enum Typo {
+  yes,
+}
 
 export enum PunctuationType {
   bullet,
@@ -208,7 +269,8 @@ export enum DictValency {
   ambiguous,
 }
 
-export type Feature = Abbreviation
+export type Feature =
+  | Abbreviation
   | AdjectiveAsNoun
   | Alternativity
   | Animacy

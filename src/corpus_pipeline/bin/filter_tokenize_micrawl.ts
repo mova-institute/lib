@@ -19,8 +19,6 @@ import minimist from 'minimist'
 import { streamparseConllu } from '../../nlp/ud/conllu'
 import { fixUdpipeTokenization } from '../fix_udpipe_tokenization'
 
-
-
 interface Args {
   udpipeUrl: string
   udpipeModel: string
@@ -36,30 +34,30 @@ async function main() {
   let runner = new AsyncTaskRunner()
   let analyzer = createMorphAnalyzerSync()
   let filter = new ZvidusilDocFilter(analyzer, {
-    filterPreviews: false
+    filterPreviews: false,
   }).setFasttextHandle(args.fasttextHandle)
 
   let { out, io } = stdio()
-  let docStream = args.mode === 'json'
-    ? io.linesMu().map(x => JSON.parse(x) as CorpusDoc)
-    : io.linesMu().mapAwait(x => parseJsonFile(x) as Promise<CorpusDoc>)
-
+  let docStream =
+    args.mode === 'json'
+      ? io.linesMu().map((x) => JSON.parse(x) as CorpusDoc)
+      : io.linesMu().mapAwait((x) => parseJsonFile(x) as Promise<CorpusDoc>)
 
   for await (let doc of docStream) {
     prepareZvidusilMeta(doc)
 
     mapInplace(doc.paragraphs, normalizeZvidusilParaNondestructive)
-    mapInplace(doc.paragraphs, x => normalizeZvidusilParaAggressive(x, analyzer))
+    mapInplace(doc.paragraphs, (x) =>
+      normalizeZvidusilParaAggressive(x, analyzer),
+    )
 
     if (!doc.paragraphs || !doc.paragraphs.length) {
       console.error(`Paragraphs are empty or invalid`, doc.paragraphs)
       continue
     }
 
-    let { docValid,
-      filteredParagraphs,
-      gapFollowerIndexes,
-    } = await filter.filter2(doc)
+    let { docValid, filteredParagraphs, gapFollowerIndexes } =
+      await filter.filter2(doc)
 
     if (!docValid || !filteredParagraphs.length) {
       continue
@@ -76,7 +74,7 @@ async function main() {
       let tokStream = streamparseConllu(conllu.split('\n'))
       tokStream = fixUdpipeTokenization(tokStream, analyzer)
       let vertStream = conlluStreamAndMeta2vertical(tokStream, {
-        meta,  // todo
+        meta, // todo
         formOnly: true,
         pGapIndexes: gapFollowerIndexes,
       })
@@ -86,7 +84,6 @@ async function main() {
     })
   }
 }
-
 
 if (require.main === module) {
   main().catch(logErrAndExit)

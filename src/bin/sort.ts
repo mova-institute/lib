@@ -2,13 +2,9 @@
 
 import { linesSync } from '../utils.node'
 
-
-
 function main() {
   const args = require('minimist')(process.argv.slice(2), {
-    boolean: [
-      'unique',
-    ],
+    boolean: ['unique'],
   })
 
   const collator = new Intl.Collator('uk-dict-UA', {

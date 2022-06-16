@@ -1,12 +1,13 @@
 import { StreamPauser } from './stream_pauser'
 
-
-
 export class BufferedBackpressWriter {
   private buf = ''
   private bufSize = 1024 ** 2
 
-  static fromStreams(source: NodeJS.ReadableStream, dest: NodeJS.WritableStream) {
+  static fromStreams(
+    source: NodeJS.ReadableStream,
+    dest: NodeJS.WritableStream,
+  ) {
     return new BufferedBackpressWriter(dest, new StreamPauser(source))
   }
 

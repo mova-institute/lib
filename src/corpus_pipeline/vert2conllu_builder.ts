@@ -4,8 +4,6 @@ import { last } from '../lang'
 import * as he from 'he'
 import { loopReplace } from '../string'
 
-
-
 const MIDDLE_PADDER = '\t_'.repeat(7) + '\t'
 
 export class Vert2conlluBuilder {
@@ -16,8 +14,6 @@ export class Vert2conlluBuilder {
   reset() {
     this.buf = []
   }
-
-
 
   feedLine(line: string) {
     if (!line) {

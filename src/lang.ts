@@ -1,7 +1,5 @@
 import { Dict } from './types'
 
-
-
 export const r = String.raw
 
 export function tuple<T extends Array<any>>(...data: T) {
@@ -26,14 +24,16 @@ export function safe<T extends Object>(obj: T) {
     get(target, name) {
       const result = target[name]
       if (result) {
-        return (result instanceof Object) ? safe(result) : result
+        return result instanceof Object ? safe(result) : result
       }
       return safe({})
-    }
+    },
   })
 }
 
-export function buildObject<ValueType>(kevalues: Iterable<[string, ValueType]>) {
+export function buildObject<ValueType>(
+  kevalues: Iterable<[string, ValueType]>,
+) {
   let ret = {} as Dict<ValueType>
   for (let [key, value] of kevalues) {
     ret[key] = value
@@ -41,7 +41,9 @@ export function buildObject<ValueType>(kevalues: Iterable<[string, ValueType]>) 
   return ret
 }
 
-export function buildMap<KeyType, ValueType>(kevalues: Iterable<[KeyType, ValueType]>) {
+export function buildMap<KeyType, ValueType>(
+  kevalues: Iterable<[KeyType, ValueType]>,
+) {
   let ret = new Map<KeyType, ValueType>()
   for (let [key, value] of kevalues) {
     ret.set(key, value)
@@ -93,7 +95,7 @@ export function ibool(value: any) {
   return value ? 1 : 0
 }
 
-export function wrappedOrNull<T>(construct: { new(val): T; }, val) {
+export function wrappedOrNull<T>(construct: { new (val): T }, val) {
   return val ? new construct(val) : null
 }
 
@@ -111,19 +113,21 @@ export async function* enumerateAsync<T>(iterable: AsyncIterable<T>) {
   }
 }
 
-export async function* flattenAsync<T>(iterable: AsyncIterable<Iterable<T> | AsyncIterable<T>>) {
+export async function* flattenAsync<T>(
+  iterable: AsyncIterable<Iterable<T> | AsyncIterable<T>>,
+) {
   for await (let v of iterable) {
     yield* v
   }
 }
 
 export function complement<T>(a: Set<T>, b: Set<T>) {
-  return new Set([...a].filter(x => !b.has(x)))
+  return new Set([...a].filter((x) => !b.has(x)))
 }
 
 export function sleep(ms = 0) {
   // todo
-  return new Promise<never>(resolve => setTimeout(resolve, ms))
+  return new Promise<never>((resolve) => setTimeout(resolve, ms))
 }
 
 export function isOddball(value) {
@@ -154,18 +158,19 @@ export function assureIterable<T>(thing: T | Iterable<T>) {
 }
 
 export function* zipLongest<T>(...iterables: Array<Iterable<T>>) {
-  let iterators = iterables.map(x => x[Symbol.iterator]())
+  let iterators = iterables.map((x) => x[Symbol.iterator]())
 
-  for (let state = iterators.map(x => x.next());
-    state.some(x => !x.done);
-    state = iterators.map(x => x.next())) {
-
-    yield state.map(x => x.done ? undefined : x.value)
+  for (
+    let state = iterators.map((x) => x.next());
+    state.some((x) => !x.done);
+    state = iterators.map((x) => x.next())
+  ) {
+    yield state.map((x) => (x.done ? undefined : x.value))
   }
 }
 
 export function* zip<T>(...iterables: Array<Iterable<T>>) {
-  let iterators = iterables.map(x => x[Symbol.iterator]())
+  let iterators = iterables.map((x) => x[Symbol.iterator]())
 
   let toyield: Array<T> = []
   while (true) {
@@ -183,11 +188,14 @@ export function* zip<T>(...iterables: Array<Iterable<T>>) {
 
 /** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
 export function mixin(...baseCtors: Array<any>) {
-  return derivedCtor => {
-    baseCtors.forEach(baseCtor => {
-      Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-        Object.defineProperty(derivedCtor.prototype, name,
-          Object.getOwnPropertyDescriptor(baseCtor.prototype, name))
+  return (derivedCtor) => {
+    baseCtors.forEach((baseCtor) => {
+      Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+        Object.defineProperty(
+          derivedCtor.prototype,
+          name,
+          Object.getOwnPropertyDescriptor(baseCtor.prototype, name),
+        )
       })
     })
   }
@@ -226,7 +234,10 @@ export function wiith<TValue, TRet>(value: TValue, f: (value: TValue) => TRet) {
   return f(value)
 }
 
-export function wiithNonempty<TValue, TRet>(value: TValue, f: (value: TValue) => TRet) {
+export function wiithNonempty<TValue, TRet>(
+  value: TValue,
+  f: (value: TValue) => TRet,
+) {
   if (value) {
     return f(value)
   }
@@ -234,7 +245,7 @@ export function wiithNonempty<TValue, TRet>(value: TValue, f: (value: TValue) =>
 
 export function mapInplace<T>(
   array: Array<T>,
-  maps: ((element: T) => T) | Array<(element: T) => T>,  // test
+  maps: ((element: T) => T) | Array<(element: T) => T>, // test
   start = 0,
 ) {
   for (let i = start; i < array.length; ++i) {

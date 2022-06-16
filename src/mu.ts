@@ -5,11 +5,13 @@ export function mu<T>(iterable: Iterable<T> = []) {
 }
 
 export function rmu<T>(array: Array<T>) {
-  return new Mu((function* () {
-    for (let i = array.length - 1; i >= 0; --i) {
-      yield array[i]
-    }
-  })())
+  return new Mu(
+    (function* () {
+      for (let i = array.length - 1; i >= 0; --i) {
+        yield array[i]
+      }
+    })(),
+  )
 }
 
 export type Predicate<T> = (x: T) => any
@@ -23,43 +25,49 @@ export class Mu<T> implements Iterable<T> {
   iterator: Iterator<T>
 
   static chain<T>(...iterables: Array<Iterable<T> | T>) {
-    return mu((function* () {
-      for (let it of iterables) {
-        if (isIterable(it)) {
-          yield* (it as Iterable<T>)
-        } else {
-          yield it as T
+    return mu(
+      (function* () {
+        for (let it of iterables) {
+          if (isIterable(it)) {
+            yield* it as Iterable<T>
+          } else {
+            yield it as T
+          }
         }
-      }
-    })())
+      })(),
+    )
   }
 
   static zip<T>(...iterables: Array<Iterable<T> | T>): Mu<Array<T>> {
-    return mu((function* () {
-      let iterators = iterables.map(x => x[Symbol.iterator]())
+    return mu(
+      (function* () {
+        let iterators = iterables.map((x) => x[Symbol.iterator]())
 
-      let toyield: Array<T> = []
-      while (true) {
-        for (let it of iterators) {
-          let { done, value } = it.next()
-          if (done) {
-            return
+        let toyield: Array<T> = []
+        while (true) {
+          for (let it of iterators) {
+            let { done, value } = it.next()
+            if (done) {
+              return
+            }
+            toyield.push(value)
           }
-          toyield.push(value)
+          yield toyield
+          toyield = []
         }
-        yield toyield
-        toyield = []
-      }
-    })())
+      })(),
+    )
   }
 
   static seq(start = 0, step = 1) {
-    return mu((function* () {
-      while (true) {
-        yield start
-        start += step
-      }
-    })())
+    return mu(
+      (function* () {
+        while (true) {
+          yield start
+          start += step
+        }
+      })(),
+    )
   }
 
   constructor(iterable: Iterable<T>) {
@@ -73,61 +81,67 @@ export class Mu<T> implements Iterable<T> {
   chunk(n: number) {
     let buf = new Array<T>()
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        if (buf.length >= n) {
-          yield buf
-          buf = []
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (buf.length >= n) {
+            yield buf
+            buf = []
+          }
+          buf.push(x)
         }
-        buf.push(x)
-      }
-      if (buf.length) {
-        yield buf
-      }
-    })())
+        if (buf.length) {
+          yield buf
+        }
+      })(),
+    )
   }
 
   chunkByMax(n: number, lengther: (x: T) => number) {
     let buf = new Array<T>()
     let curLength = 0
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        let xLength = lengther(x)
-        if (curLength + xLength > n && buf.length) {
-          yield buf
-          buf = []
-          curLength = 0
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          let xLength = lengther(x)
+          if (curLength + xLength > n && buf.length) {
+            yield buf
+            buf = []
+            curLength = 0
+          }
+          buf.push(x)
+          curLength += xLength
         }
-        buf.push(x)
-        curLength += xLength
-      }
-      if (buf.length) {
-        yield buf
-      }
-    })())
+        if (buf.length) {
+          yield buf
+        }
+      })(),
+    )
   }
 
   split(fn: Predicate<T>) {
     let buf = new Array<T>()
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        if (fn(x)) {
-          yield [buf, x] as [Array<T>, T]
-          buf = []
-        } else {
-          buf.push(x)
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (fn(x)) {
+            yield [buf, x] as [Array<T>, T]
+            buf = []
+          } else {
+            buf.push(x)
+          }
         }
-      }
-      if (buf.length) {
-        yield [buf, undefined] as [Array<T>, T]
-      }
-    })())
+        if (buf.length) {
+          yield [buf, undefined] as [Array<T>, T]
+        }
+      })(),
+    )
   }
 
   split0(fn: Predicate<T>) {
-    return this.split(fn).map(x => x[0])
+    return this.split(fn).map((x) => x[0])
   }
 
   window(n: number, focus = 0) {
@@ -139,67 +153,77 @@ export class Mu<T> implements Iterable<T> {
     let buf = new Array<T>(focus)
     buf.push(...this.take(n - 1 - focus))
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        buf.push(x)
-        yield [...buf]
-        buf.shift()
-      }
-      while (buf.length > focus) {
-        yield [...buf]
-        buf.shift()
-      }
-    })())
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          buf.push(x)
+          yield [...buf]
+          buf.shift()
+        }
+        while (buf.length > focus) {
+          yield [...buf]
+          buf.shift()
+        }
+      })(),
+    )
   }
 
   take(n: number) {
     const thiss = this
-    return mu((function* () {
-      if (n < 1) {
-        return
-      }
-      let i = 0
-      for (let x of thiss) {
-        yield x
-        if (++i >= n) {
-          break
+    return mu(
+      (function* () {
+        if (n < 1) {
+          return
         }
-      }
-    })())
+        let i = 0
+        for (let x of thiss) {
+          yield x
+          if (++i >= n) {
+            break
+          }
+        }
+      })(),
+    )
   }
 
   takeWhile(fn: Predicate<T>) {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        if (!fn(x)) {
-          return
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (!fn(x)) {
+            return
+          }
+          yield x
         }
-        yield x
-      }
-    })())
+      })(),
+    )
   }
 
   takeWhileIncluding(fn: Predicate<T>) {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        yield x
-        if (!fn(x)) {
-          return
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          yield x
+          if (!fn(x)) {
+            return
+          }
         }
-      }
-    })())
+      })(),
+    )
   }
 
   entries() {
     const thiss = this
     let i = 0
-    return mu((function* () {
-      for (let x of thiss) {
-        yield [i++, x] as [number, T]
-      }
-    })())
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          yield [i++, x] as [number, T]
+        }
+      })(),
+    )
   }
 
   forEach(fn: (x: T, i: number) => any) {
@@ -210,97 +234,113 @@ export class Mu<T> implements Iterable<T> {
     return this
   }
 
-  filter(fn: Predicate<T> = x => x) {
+  filter(fn: Predicate<T> = (x) => x) {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        if (fn(x)) {
-          yield x
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (fn(x)) {
+            yield x
+          }
         }
-      }
-    })())
+      })(),
+    )
   }
 
   findAllIndexes(fn: PredicateWithIndex<T>) {
     const thiss = this
     let i = 0
-    return mu((function* () {
-      for (let x of thiss) {
-        if (fn(x, i)) {
-          yield i
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (fn(x, i)) {
+            yield i
+          }
+          ++i
         }
-        ++i
-      }
-    })())
+      })(),
+    )
   }
 
   unique() {
     const thiss = this
     const seen = new Set()
-    return mu((function* () {
-      for (let x of thiss) {
-        if (!seen.has(x)) {
-          yield x
-          seen.add(x)
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (!seen.has(x)) {
+            yield x
+            seen.add(x)
+          }
         }
-      }
-      seen.clear()
-    })())
+        seen.clear()
+      })(),
+    )
   }
 
   flattenShallowNaive() {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        yield* x as any
-      }
-    })())
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          yield* x as any
+        }
+      })(),
+    )
   }
 
   flatten(shallow = false): Mu<any> {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        if (typeof x !== 'string' && isIterable(x)) {
-          if (shallow) {
-            yield* (x as any)
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (typeof x !== 'string' && isIterable(x)) {
+            if (shallow) {
+              yield* x as any
+            } else {
+              yield* mu(x as any).flatten()
+            }
           } else {
-            yield* mu(x as any).flatten()
+            yield x
           }
-        } else {
-          yield x
         }
-      }
-    })())
+      })(),
+    )
   }
 
   map<MappedT>(fn: (x: T) => MappedT) {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        yield fn(x)
-      }
-    })())
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          yield fn(x)
+        }
+      })(),
+    )
   }
 
   transform(fn: (x: T, i: number) => void) {
     const thiss = this
     let i = 0
-    return mu((function* () {
-      for (let x of thiss) {
-        fn(x, i++)
-        yield x
-      }
-    })())
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          fn(x, i++)
+          yield x
+        }
+      })(),
+    )
   }
 
   pluck<MappedT>(prop: string | number) {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        yield x[prop]
-      }
-    })())
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          yield x[prop]
+        }
+      })(),
+    )
   }
 
   /*
@@ -328,7 +368,7 @@ export class Mu<T> implements Iterable<T> {
   }
 
   has(thing: T) {
-    return this.some(x => x === thing)
+    return this.some((x) => x === thing)
   }
 
   every(fn: Predicate<T>) {
@@ -369,14 +409,16 @@ export class Mu<T> implements Iterable<T> {
 
   drop(n = 1) {
     const thiss = this
-    return mu((function* () {
-      for (let x of thiss) {
-        if (--n >= 0) {
-          continue
+    return mu(
+      (function* () {
+        for (let x of thiss) {
+          if (--n >= 0) {
+            continue
+          }
+          yield x
         }
-        yield x
-      }
-    })())
+      })(),
+    )
   }
 
   first() {

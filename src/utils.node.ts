@@ -13,9 +13,9 @@ import { Io } from './io'
 
 const readFile = promisify(fs.readFile)
 
-
-
-export async function* liness(readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] }) {
+export async function* liness(
+  readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] },
+) {
   let leftover = ''
   for await (let chunk of readable) {
     leftover += chunk
@@ -28,7 +28,9 @@ export async function* liness(readable: NodeJS.ReadableStream & { [Symbol.asyncI
   }
 }
 
-export async function* lines(readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] }) {
+export async function* lines(
+  readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] },
+) {
   let buf = ''
   for await (let chunk of readable) {
     buf += chunk
@@ -57,7 +59,7 @@ export function stdio() {
 
 // non-emply, trimmed, no-spill, pipeable
 export function superLinesStd(listener: (line: string) => Promise<any>) {
-  return linesNoSpillStdPipeable(line => {
+  return linesNoSpillStdPipeable((line) => {
     line = line.trim()
     if (line) {
       return listener(line)
@@ -65,7 +67,9 @@ export function superLinesStd(listener: (line: string) => Promise<any>) {
   })
 }
 
-export function linesNoSpillStdPipeable(listener: (line: string) => Promise<any>) {
+export function linesNoSpillStdPipeable(
+  listener: (line: string) => Promise<any>,
+) {
   exitOnStdoutPipeError()
   return linesNoSpill(process.stdin, listener)
 }
@@ -79,7 +83,7 @@ export function linesNoSpill(
     let buf = new Array<string>()
     let inProgress = false
     let rl = createInterface({ input: source })
-      .on('line', async line => {
+      .on('line', async (line) => {
         buf.push(line)
         if (!inProgress) {
           rl.pause()
@@ -112,7 +116,7 @@ export function linesBackpressed(
   return new Promise<void>((resolve, reject) => {
     let writer = new BufferedBackpressWriter(dest, pauser)
     createInterface(source)
-      .on('line', line => listener(line, writer))
+      .on('line', (line) => listener(line, writer))
       .on('close', (e) => {
         writer.flush()
         resolve()
@@ -137,7 +141,10 @@ export function linesBackpressedStd(
   return linesBackpressed(process.stdin, process.stdout, pauser, listener)
 }
 
-export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => void) {
+export function forEachLine(
+  stream: NodeJS.ReadableStream,
+  f: (line: string) => void,
+) {
   return new Promise<void>((resolve, reject) => {
     createInterface(stream)
       .on('line', f)
@@ -148,17 +155,19 @@ export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => 
 
 export async function allLinesFromStdin() {
   let ret = new Array<string>()
-  await forEachLine(process.stdin, line => ret.push(line))
+  await forEachLine(process.stdin, (line) => ret.push(line))
   return ret
 }
 
-export function* linesSync(filename: string) {  // todo: do not buffer file
+export function* linesSync(filename: string) {
+  // todo: do not buffer file
   for (let line of readFileSync(filename, 'utf8').split(/\r?\n/)) {
     yield line
   }
 }
 
-export function* trimmedNonemptyLinesSync(filename: string) {  // todo: do not buffer file
+export function* trimmedNonemptyLinesSync(filename: string) {
+  // todo: do not buffer file
   for (let line of linesSync(filename)) {
     line = line.trim()
     if (line) {
@@ -181,7 +190,7 @@ export function linesSyncArray(filePath: string) {
 }
 
 export function exitOnStdoutPipeError(code = 0) {
-  process.stdout.on('error', err => {
+  process.stdout.on('error', (err) => {
     if (err.code === 'EPIPE') {
       // console.error(`exitOnStdoutPipeError at process ${process.pid}`, err)
       process.exit(code)
@@ -278,7 +287,7 @@ export function joinToFileSync(
   filePath: string,
   strings: Iterable<string>,
   joiner = '\n',
-  trail = true
+  trail = true,
 ) {
   fs.writeFileSync(filePath, mu(strings).join(joiner, trail))
 }

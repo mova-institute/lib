@@ -7,7 +7,5 @@
     "strictNullChecks": false,
     "useUnknownInCatchVariables": false
   },
-  "include": [
-    "src/**/*.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }

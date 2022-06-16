@@ -2,8 +2,6 @@
 
 import { linesBackpressedStdPipeable } from '../../utils.node'
 
-
-
 async function main() {
   let isInsideDoc = false
   let currGapTypes = []
@@ -29,7 +27,6 @@ async function main() {
     }
   })
 }
-
 
 if (require.main === module) {
   main()

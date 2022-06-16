@@ -8,8 +8,6 @@ import { mu } from '../mu'
 
 import shuffle = require('lodash.shuffle')
 
-
-
 export function processDoc(
   // args: Args,
   doc: CorpusDoc,
@@ -32,7 +30,7 @@ export function processDoc(
     // return
   }
   // early filtering
-  if (/* args.checkUkr &&  */!isConsideredUkrainan(doc.paragraphs, analyzer)) {
+  if (/* args.checkUkr &&  */ !isConsideredUkrainan(doc.paragraphs, analyzer)) {
     let sample = mu(doc.paragraphs).join(' ').substr(0, 38)
     console.error(`considered foreign ✖️  ${sample} ${doc.url || ''}`)
     return
@@ -42,14 +40,22 @@ export function processDoc(
 }
 
 function normalizeDocNondestructive(doc: CorpusDoc) {
-  doc.paragraphs = mapInplace(doc.paragraphs, normalizeZvidusilParaNondestructive).filter(x => x)
+  doc.paragraphs = mapInplace(
+    doc.paragraphs,
+    normalizeZvidusilParaNondestructive,
+  ).filter((x) => x)
   doc.title = doc.title && normalizeZvidusilParaNondestructive(doc.title)
   doc.author = doc.author && normalizeZvidusilParaNondestructive(doc.author)
-  doc.authors = doc.authors && doc.authors.map(x => normalizeZvidusilParaNondestructive(x))
+  doc.authors =
+    doc.authors &&
+    doc.authors.map((x) => normalizeZvidusilParaNondestructive(x))
   doc.date = doc.date && doc.date.trim()
 }
 
-function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer) {
+function isConsideredUkrainan(
+  paragraphs: Array<string>,
+  analyzer: MorphAnalyzer,
+) {
   const THRESHOLD = 0.2
 
   paragraphs = shuffle(paragraphs)
@@ -57,8 +63,9 @@ function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer
   let numX = 0
   for (let i = paragraphs.length - 1; i >= 0; --i) {
     let tokens = tokenizeUk(paragraphs[i], analyzer)
-    numX += tokens.filter(({ token }) => !analyzer.tag(token).filter(x => !x.isX()).length)
-      .length
+    numX += tokens.filter(
+      ({ token }) => !analyzer.tag(token).filter((x) => !x.isX()).length,
+    ).length
     numTotal += tokens.length
     if (numTotal >= 30) {
       return numX / numTotal < THRESHOLD
@@ -67,10 +74,10 @@ function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer
 
   if (numTotal) {
     if (numTotal < 15) {
-      if (paragraphs.some(p => /[їєґі]/.test(p))) {
+      if (paragraphs.some((p) => /[їєґі]/.test(p))) {
         return true
       }
-      if (paragraphs.some(p => /[ыэёъ]/.test(p))) {
+      if (paragraphs.some((p) => /[ыэёъ]/.test(p))) {
         return false
       }
     }

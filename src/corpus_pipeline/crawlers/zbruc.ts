@@ -8,8 +8,6 @@ import * as _ from 'lodash'
 
 import * as path from 'path'
 
-
-
 interface Args {
   workspace: string
   latestNode: number
@@ -19,7 +17,7 @@ interface Args {
 if (require.main === module) {
   const args = minimist<Args>(process.argv.slice(2), {
     alias: {
-      'lastNode': ['last-node'],
+      lastNode: ['last-node'],
     },
     default: {
       oldestNode: 56850,
@@ -63,8 +61,8 @@ async function main(args: Args) {
 async function getLatestNode() {
   let indexCOntent = await fetchText(`https://zbruc.eu?theme=zbruc`)
   let nodes = allMatchesArr(indexCOntent, /href="\/node\/(\d+)"/g)
-    .map(x => x[1])
+    .map((x) => x[1])
     .map(Number)
 
-    return Math.max(...nodes)
+  return Math.max(...nodes)
 }

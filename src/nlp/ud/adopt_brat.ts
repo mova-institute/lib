@@ -16,36 +16,39 @@ import { Dict } from '../../types'
 import * as glob from 'glob'
 import minimist from 'minimist'
 
-
-
 const GUI_SUPPORTED_TAGS = ['Promoted', 'Graft', 'ItSubj']
 
 function main() {
   // const now = toSortableDatetime(new Date())
 
   const args = minimist(process.argv.slice(2), {
-    boolean: [
-    ],
+    boolean: [],
   })
 
   let [goldenDir, bratGlob] = args._
 
   console.error(`parsing all mixml docs…`)
-  let mixmlDocuments = glob.sync(path.join(goldenDir, '*.xml'))
-    .map(x => ({ path: x, doc: parseXmlFileSync(x) }))
+  let mixmlDocuments = glob
+    .sync(path.join(goldenDir, '*.xml'))
+    .map((x) => ({ path: x, doc: parseXmlFileSync(x) }))
 
   console.error(`building id2element…`)
   let id2element = new Map<string, AbstractElement>()
   for (let { doc } of mixmlDocuments) {
-    for (let el of doc.evaluateElements('//*[@id]')) {  // todo: speedup
+    for (let el of doc.evaluateElements('//*[@id]')) {
+      // todo: speedup
       id2element.set(el.attribute('id'), el)
     }
   }
 
   let allBratFiles = glob.sync(bratGlob)
   let bratFilesRoot = algo.commonPrefix(allBratFiles).slice(0, -1)
-  let allSyntBratFiles = allBratFiles.filter(x => x.substr(bratFilesRoot.length).startsWith('/treebank/by_file'))
-  let allCorefBratFiles = allBratFiles.filter(x => x.substr(bratFilesRoot.length).startsWith('/coref/'))
+  let allSyntBratFiles = allBratFiles.filter((x) =>
+    x.substr(bratFilesRoot.length).startsWith('/treebank/by_file'),
+  )
+  let allCorefBratFiles = allBratFiles.filter((x) =>
+    x.substr(bratFilesRoot.length).startsWith('/coref/'),
+  )
 
   let id2bratPath: Dict<[string, number]> = {}
 
@@ -54,7 +57,8 @@ function main() {
     for (let span of parseBratFile(linesSync(bratFile))) {
       if (isString(span.annotations.N)) {
         let el = id2element.get(span.annotations.N)
-        if (!el) {  // sometimes tokens are deleted in xml but remain in brat
+        if (!el) {
+          // sometimes tokens are deleted in xml but remain in brat
           continue
         }
         el.setAttribute('comment', span.comment)
@@ -74,15 +78,10 @@ function main() {
           el.removeAttribute('tags')
         }
 
-        let arrows = span.arrows
-          .filter(x => isString(x.head.annotations.N))
-        arrows.forEach(x => x.relation = x.relation.replace('_', ':'))
-        let [
-          basicArrows,
-          enhancedArrows,
-          propositionArrows,
-          helperArrows
-        ] = algo.clusterize(arrows, x => classifyRelation(x.relation))
+        let arrows = span.arrows.filter((x) => isString(x.head.annotations.N))
+        arrows.forEach((x) => (x.relation = x.relation.replace('_', ':')))
+        let [basicArrows, enhancedArrows, propositionArrows, helperArrows] =
+          algo.clusterize(arrows, (x) => classifyRelation(x.relation))
 
         let config = tuple(
           tuple(basicArrows, 'dep'),
@@ -98,7 +97,7 @@ function main() {
 
         id2bratPath[span.annotations.N] = [
           trimExtension(path.relative(bratFilesRoot, bratFile)),
-          span.index
+          span.index,
         ]
       }
     }
@@ -109,19 +108,26 @@ function main() {
   for (let bratFile of allCorefBratFiles) {
     for (let span of parseBratFile(linesSync(bratFile))) {
       let el = id2element.get(span.annotations.N)
-      if (!el) {  // sometimes tokens are deleted in xml but remain in brat
+      if (!el) {
+        // sometimes tokens are deleted in xml but remain in brat
         continue
       }
       el.setAttribute('comment-coref', span.comment)
-      let coref = span.arrows
-        .map(({ relation, head }) => `${head.annotations.N}-${relation.replace('_', ':')}`)
-        .join('|') || undefined
+      let coref =
+        span.arrows
+          .map(
+            ({ relation, head }) =>
+              `${head.annotations.N}-${relation.replace('_', ':')}`,
+          )
+          .join('|') || undefined
       el.setAttribute('coref', coref)
     }
   }
 
   console.error(`writing docs back to xml…`)
-  mixmlDocuments.forEach(x => fs.writeFileSync(x.path, serializeMiDocument(x.doc)))
+  mixmlDocuments.forEach((x) =>
+    fs.writeFileSync(x.path, serializeMiDocument(x.doc)),
+  )
   if (args.id2bratPath) {
     writeToJsonSync(args.id2bratPath, id2bratPath)
   }
@@ -136,8 +142,10 @@ function bratArrowToAttibute(value: BratArrow) {
 }
 
 function basicRelationsFirstCompare(a: BratArrow, b: BratArrow) {
-  return Number(HELPER_RELATIONS.has(a.relation))
-    - Number(HELPER_RELATIONS.has(b.relation))
+  return (
+    Number(HELPER_RELATIONS.has(a.relation)) -
+    Number(HELPER_RELATIONS.has(b.relation))
+  )
 }
 
 if (require.main === module) {

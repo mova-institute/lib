@@ -2,8 +2,6 @@
 
 import { Crawler } from './crawler'
 
-
-
 const DOMAINS = [
   'www.pravda.com.ua',
   'www.epravda.com.ua',
@@ -22,22 +20,27 @@ async function main() {
 
       // }
       // console.log(`testing ${x}`)
-      let ret = /^\/(news|articles|columns|digest|short|health|culture|society|travel|interview)\/\d{4}\/\d+\/\d+\/\d+\/$/.test(path)
-        && DOMAINS.includes(hostname)
-        && protocol === 'https:'
+      let ret =
+        /^\/(news|articles|columns|digest|short|health|culture|society|travel|interview)\/\d{4}\/\d+\/\d+\/\d+\/$/.test(
+          path,
+        ) &&
+        DOMAINS.includes(hostname) &&
+        protocol === 'https:'
       return ret
     })
     .setUrlsToFollow([
-      x => x
-        && DOMAINS.includes(x.hostname)
-        && /^\/archives\/date_\d+\/$/.test(x.pathname)
-        && !x.search
-        && x.protocol === 'https:',
-      x => x
-        && DOMAINS.includes(x.hostname)
-        && /^\/archives\/year_\d+\/$/.test(x.pathname)
-        && !x.search
-        && x.protocol === 'https:',
+      (x) =>
+        x &&
+        DOMAINS.includes(x.hostname) &&
+        /^\/archives\/date_\d+\/$/.test(x.pathname) &&
+        !x.search &&
+        x.protocol === 'https:',
+      (x) =>
+        x &&
+        DOMAINS.includes(x.hostname) &&
+        /^\/archives\/year_\d+\/$/.test(x.pathname) &&
+        !x.search &&
+        x.protocol === 'https:',
     ])
 
   await crawler.seedAll([

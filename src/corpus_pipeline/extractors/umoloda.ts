@@ -4,7 +4,6 @@ import * as capitalize from 'lodash.capitalize'
 import { CorpusDoc } from '../doc_meta'
 import { ogValue } from './utils'
 
-
 export function extract(html: string) {
   let root = parseHtml(html)
 
@@ -27,7 +26,10 @@ export function extract(html: string) {
   }
 
   let author = betweenTags(html, 'a', 'class="authorName"')
-  author = author.split(/\s/).map(x => capitalize(x))/*.reverse()*/.join(' ')
+  author = author
+    .split(/\s/)
+    .map((x) => capitalize(x)) /*.reverse()*/
+    .join(' ')
 
   let contentEl = root.evaluateElement('//p[@class="content"]')
   let content = ''
@@ -42,9 +44,8 @@ export function extract(html: string) {
   }
   content = removeTags(content)
   // content = nlpUtils.normalizeCorpusTextString(content)
-  let paragraphs = content && content.split(/[\n\r]+/).filter(x => x.trim()) || []
-
-
+  let paragraphs =
+    (content && content.split(/[\n\r]+/).filter((x) => x.trim())) || []
 
   return {
     title,
@@ -61,8 +62,15 @@ function paragraphByNewline(text: string) {
   return `<p>${text.replace(/[\n\r]+/g, '</p>\n<p>')}</p>`
 }
 
-function matchTag(html: string, tagName: string, includeTags: boolean, attributes = '') {
-  let re = new RegExp(String.raw`<${tagName}[^>]*${attributes}[^>]*>([^>]*)</${tagName}>`)
+function matchTag(
+  html: string,
+  tagName: string,
+  includeTags: boolean,
+  attributes = '',
+) {
+  let re = new RegExp(
+    String.raw`<${tagName}[^>]*${attributes}[^>]*>([^>]*)</${tagName}>`,
+  )
   let match = html.match(re)
   let i = includeTags ? 0 : 1
   if (match && match[i]) {

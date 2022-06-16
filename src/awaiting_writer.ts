@@ -1,14 +1,11 @@
 import { writePromiseDrain } from './stream.node'
 
-
-
 export class AwaitingWriter {
   private buf = ''
   private bufLength = 1 * 1024 ** 2
   private last = Promise.resolve()
 
-  constructor(private dest: NodeJS.WritableStream) {
-  }
+  constructor(private dest: NodeJS.WritableStream) {}
 
   write(what: string | Buffer) {
     this.buf += what

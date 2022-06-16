@@ -2,8 +2,6 @@
 
 import { forEachLine } from '../utils.node'
 
-
-
 if (require.main === module) {
   main()
 }
@@ -16,9 +14,12 @@ async function main() {
   }
 }
 
-export function id2i(input: NodeJS.ReadableStream, output: NodeJS.WritableStream) {
+export function id2i(
+  input: NodeJS.ReadableStream,
+  output: NodeJS.WritableStream,
+) {
   let i = 0
-  return forEachLine(input as any, line => {
+  return forEachLine(input as any, (line) => {
     if (isSentenceStart(line)) {
       let id = getId(line)
       if (id) {

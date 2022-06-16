@@ -5,8 +5,6 @@ import rimraf from 'rimraf'
 import { promises as fsp, PathLike } from 'fs'
 import * as pth from 'path'
 
-
-
 export async function exists(path: PathLike) {
   try {
     await fsp.stat(path)
@@ -18,7 +16,8 @@ export async function exists(path: PathLike) {
 
 export function mkdirp(path: string) {
   return new Promise((resolve, reject) =>
-    mkdirpLib(path, (err, made) => err ? reject(err) : resolve(made)))
+    mkdirpLib(path, (err, made) => (err ? reject(err) : resolve(made))),
+  )
 }
 
 export function writeJson(path: PathLike, obj, indent = 0) {
@@ -28,7 +27,8 @@ export function writeJson(path: PathLike, obj, indent = 0) {
 export function mktempdir(options: tmp.Options = {}) {
   return new Promise<string>((resolve, reject) => {
     tmp.dir(options, (err, path, cleanupCallback) =>
-      err ? reject(err) : resolve(path))
+      err ? reject(err) : resolve(path),
+    )
   })
 }
 
@@ -41,7 +41,7 @@ export async function mktempdirp(options: tmp.Options = {}) {
 
 export function rmrf(path: string) {
   return new Promise<void>((resolve, reject) => {
-    rimraf(path, e => e ? reject(e) : resolve())
+    rimraf(path, (e) => (e ? reject(e) : resolve()))
   })
 }
 

@@ -1,8 +1,6 @@
 import { AbstractAttribute } from '../xmlapi/abstract_attribute'
 import { isOddball } from '../xmlapi/utils'
 
-
-
 export class LibxmljsAttribute extends AbstractAttribute {
   constructor(private wrapee) {
     super()

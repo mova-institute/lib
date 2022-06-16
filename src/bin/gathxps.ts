@@ -7,8 +7,9 @@ const args = require('minimist')(process.argv.slice(2), {
   boolean: [],
 })
 
-let lines = glob.sync(args._[0])
-  .map(x => readFileSync(x, 'utf8'))
+let lines = glob
+  .sync(args._[0])
+  .map((x) => readFileSync(x, 'utf8'))
   .join('\n')
   .split('\n')
 

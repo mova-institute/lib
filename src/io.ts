@@ -1,7 +1,10 @@
 import { DrainwaitingBufferedWriter } from './drainwaiting_buffered_writer'
-import { lines as rawLines, liness, createWriteStreamMkdirpSync } from './utils.node'
+import {
+  lines as rawLines,
+  liness,
+  createWriteStreamMkdirpSync,
+} from './utils.node'
 import { amu } from './async_mu'
-
 
 export class Io {
   static std() {
@@ -10,8 +13,7 @@ export class Io {
 
   private dests = new Array<DrainwaitingBufferedWriter>()
 
-  constructor(private source: NodeJS.ReadableStream) {
-  }
+  constructor(private source: NodeJS.ReadableStream) {}
 
   getWriter(stream: NodeJS.WritableStream) {
     let ret = new DrainwaitingBufferedWriter(stream)
@@ -65,11 +67,11 @@ export class Io {
   // }
 
   private allDrained() {
-    return Promise.all(this.dests.map(x => x.drained))
+    return Promise.all(this.dests.map((x) => x.drained))
   }
 
   private async flushAllAndDrain() {
-    this.dests.forEach(x => x.flush())
+    this.dests.forEach((x) => x.flush())
     await this.allDrained()
   }
 }

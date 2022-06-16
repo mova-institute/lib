@@ -1,17 +1,15 @@
 import { JsonCompareMap, NumeratedSet } from '../../data_structures'
 import { longestCommonSubstring } from '../../algo'
 
-export const PARADIGM_PREFIXES = NumeratedSet.fromUniqueArray([''].sort())  // todo
+export const PARADIGM_PREFIXES = NumeratedSet.fromUniqueArray([''].sort()) // todo
 export const COMPARATOR = new Intl.Collator('uk-UA').compare
-
-
 
 export function compileDict(lexemes: Array<Array<[string, string]>>) {
   let allTags = new NumeratedSet<string>()
   let allWords = new Array<[string, number, number]>()
   let paradigmPopularity = new Array<number>()
 
-  let paradigmIds = new JsonCompareMap<any, number>()  // todo: type
+  let paradigmIds = new JsonCompareMap<any, number>() // todo: type
   let paradigms = new Array()
   let suffixBag = new Set<string>()
 
@@ -20,14 +18,17 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
     let { prefixes, suffixes, tags } = paradigm
 
     allTags.add(...tags)
-    suffixes.forEach(x => suffixBag.add(x))
+    suffixes.forEach((x) => suffixBag.add(x))
 
     if (!paradigmIds.has(paradigm)) {
-      paradigmIds.set(paradigm, paradigms.push({
-        prefixes: prefixes.map(x => PARADIGM_PREFIXES.id(x)),
-        suffixes,
-        tags: paradigm.tags.map(x => allTags.id(x)),
-      }) - 1)
+      paradigmIds.set(
+        paradigm,
+        paradigms.push({
+          prefixes: prefixes.map((x) => PARADIGM_PREFIXES.id(x)),
+          suffixes,
+          tags: paradigm.tags.map((x) => allTags.id(x)),
+        }) - 1,
+      )
     }
     let paradigmId = paradigmIds.get(paradigm)
     paradigmPopularity[paradigmId] = paradigmPopularity[paradigmId] + 1 || 1
@@ -41,10 +42,12 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
     }
   }
 
-  let allSuffixes = NumeratedSet.fromUniqueArray([...suffixBag].sort(COMPARATOR))
+  let allSuffixes = NumeratedSet.fromUniqueArray(
+    [...suffixBag].sort(COMPARATOR),
+  )
 
   for (let par of paradigms) {
-    par.suffixes = par.suffixes.map(x => allSuffixes.id(x))
+    par.suffixes = par.suffixes.map((x) => allSuffixes.id(x))
   }
 
   let linearizedParadigms = paradigms.map(linearizeParadigm)
@@ -78,23 +81,22 @@ export function* lexemes(lines: Array<string>) {
   yield curLexeme
 }
 
-
-
 function extractParadigm(lexeme: Array<[string, string]>, knownPrefixes) {
-  let forms = lexeme.map(x => x[0])
+  let forms = lexeme.map((x) => x[0])
   let stem = longestCommonSubstring(forms)
-  let prefixes = forms.map(x => x.substring(0, x.indexOf(stem)))
-  if (prefixes.some(x => !knownPrefixes.has(x))) {
+  let prefixes = forms.map((x) => x.substring(0, x.indexOf(stem)))
+  if (prefixes.some((x) => !knownPrefixes.has(x))) {
     prefixes.fill('')
     stem = ''
   }
-  let suffixes = forms.map(x => x.substr(x.indexOf(stem) + stem.length))
-  let tags = lexeme.map(x => x[1])
+  let suffixes = forms.map((x) => x.substr(x.indexOf(stem) + stem.length))
+  let tags = lexeme.map((x) => x[1])
 
   return { stem, forms, paradigm: { prefixes, suffixes, tags } }
 }
 
-function linearizeParadigm(paradigm) {  // todo: type
+function linearizeParadigm(paradigm) {
+  // todo: type
   let ret = new Uint16Array(3 * paradigm.prefixes.length)
   let wiew = new DataView(ret.buffer)
   let i = 0

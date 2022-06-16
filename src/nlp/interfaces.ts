@@ -8,8 +8,7 @@ export abstract class IStringMorphInterp {
 }
 
 export class StringMorphInterp implements IStringMorphInterp {
-  constructor(public flags: string, public lemma: string) {
-  }
+  constructor(public flags: string, public lemma: string) {}
 
   hash() {
     return this.flags + ' ' + this.lemma

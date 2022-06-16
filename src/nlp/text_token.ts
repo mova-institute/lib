@@ -6,8 +6,6 @@ import { uniq } from '../algo'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { AbstractNode } from '../xml/xmlapi/abstract_node'
 
-
-
 export function $t(elem: AbstractElement) {
   return elem ? new TextToken(elem) : null
 }
@@ -22,10 +20,10 @@ export class TextToken {
   private static AUTHOR_ATTR = 'author'
   private static UNRESOLVABLE_AMBIGUITY_SEPARATOR = '|'
 
-  constructor(public elem: AbstractElement, public hasSpaceBefore = true) {
-  }
+  constructor(public elem: AbstractElement, public hasSpaceBefore = true) {}
 
-  isWord() {  // todo: more name
+  isWord() {
+    // todo: more name
     return this.elem.localName() === 'w_'
   }
 
@@ -46,7 +44,7 @@ export class TextToken {
   }
 
   getDefiniteInterps() {
-    return this.getAllInterps().filter(x => x.flags !== TextToken.FLAGS_X)
+    return this.getAllInterps().filter((x) => x.flags !== TextToken.FLAGS_X)
   }
 
   disambedOrDefiniteInterps() {
@@ -55,7 +53,7 @@ export class TextToken {
       return disambedInterps
     }
     let interps = this.getAllInterps()
-    let definiteInterps = interps.filter(x => x.flags !== TextToken.FLAGS_X)
+    let definiteInterps = interps.filter((x) => x.flags !== TextToken.FLAGS_X)
     if (definiteInterps.length) {
       return definiteInterps
     }
@@ -64,11 +62,13 @@ export class TextToken {
   }
 
   hasDefiniteInterps() {
-    return !!this.getDefiniteInterps().length  // todo: optimize
+    return !!this.getDefiniteInterps().length // todo: optimize
   }
 
   hasInterp(flags: string, lemma?: string) {
-    return this.getAllInterps().some(x => x.flags === flags && (lemma === undefined || x.lemma === lemma))
+    return this.getAllInterps().some(
+      (x) => x.flags === flags && (lemma === undefined || x.lemma === lemma),
+    )
   }
 
   hasAllInterps(tags: Array<IStringMorphInterp>) {
@@ -76,14 +76,18 @@ export class TextToken {
   }
 
   getDisambedInterps() {
-    return this.getDisambedInterpElems().filter(x => x).map(x => ({
-      flags: x.attribute(TextToken.FLAGS_ATTR),
-      lemma: x.attribute(TextToken.LEMMA_ATTR),
-    }))
+    return this.getDisambedInterpElems()
+      .filter((x) => x)
+      .map((x) => ({
+        flags: x.attribute(TextToken.FLAGS_ATTR),
+        lemma: x.attribute(TextToken.LEMMA_ATTR),
+      }))
   }
 
   flagsIfSingleDisamb() {
-    let ret = this.getDisambedInterpElems().map(x => x.attribute(TextToken.FLAGS_ATTR))
+    let ret = this.getDisambedInterpElems().map((x) =>
+      x.attribute(TextToken.FLAGS_ATTR),
+    )
     if (ret.length === 1) {
       return ret
     }
@@ -97,11 +101,15 @@ export class TextToken {
   }
 
   lemmas() {
-    return this.getDisambedInterpElems().map(x => x.attribute(TextToken.LEMMA_ATTR))
+    return this.getDisambedInterpElems().map((x) =>
+      x.attribute(TextToken.LEMMA_ATTR),
+    )
   }
 
   interpAs(tags: Array<IStringMorphInterp>) {
-    this.setDisambIndexes(tags.map(x => this.assureHasInterp(x.flags, x.lemma)))
+    this.setDisambIndexes(
+      tags.map((x) => this.assureHasInterp(x.flags, x.lemma)),
+    )
   }
 
   onlyInterpAs(flags: string, lemma: string) {
@@ -134,8 +142,9 @@ export class TextToken {
   // }
 
   hasDisambedInterp(flags: string, lemma?: string) {
-    return !!this.getDisambedInterps().find(x =>
-      flags === x.flags && (lemma === undefined || x.lemma === lemma))
+    return !!this.getDisambedInterps().find(
+      (x) => flags === x.flags && (lemma === undefined || x.lemma === lemma),
+    )
   }
 
   toggleOnlyInterp(flags: string, lemma?: string) {
@@ -150,7 +159,8 @@ export class TextToken {
     this.toggleDisamb(this.assureHasInterp(flags, lemma))
   }
 
-  text() {  // todo
+  text() {
+    // todo
     if (this.elem.localName() === 'w_') {
       return this.elem.firstElementChild().text()
     }
@@ -168,12 +178,13 @@ export class TextToken {
 
   lemmaIfUnamb() {
     let tags = this.getAllInterps()
-    if (tags.every(x => x.lemma === tags[0].lemma)) {
+    if (tags.every((x) => x.lemma === tags[0].lemma)) {
       return tags[0].lemma
     }
   }
 
-  getDisambAuthors(flags: string, lemma?: string) {  // todo
+  getDisambAuthors(flags: string, lemma?: string) {
+    // todo
     let elem = this.findInterpElem(flags, lemma)
     if (elem) {
       let author = elem.attribute(TextToken.AUTHOR_ATTR)
@@ -193,7 +204,9 @@ export class TextToken {
   }
 
   setDisambedInterpsAuthor(value: string) {
-    this.getDisambedInterpElems().forEach(x => x.setAttribute(TextToken.AUTHOR_ATTR, value))
+    this.getDisambedInterpElems().forEach((x) =>
+      x.setAttribute(TextToken.AUTHOR_ATTR, value),
+    )
   }
 
   addInterpAuthor(flags: string, lemma: string, value: string) {
@@ -222,22 +235,28 @@ export class TextToken {
 
   insertSentenceEnd() {
     let where: AbstractNode = this.elem
-    traverseDocumentOrderEl(where, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.localName())) {
-
-      } else if (!el.nextElementSibling() || haveSpaceBetweenEl(el, el.nextElementSibling())) {
-        where = el
-        return 'stop'
-      }
-      if (el.localName() === 'w_') {
-        return 'skip'
-      }
-    }, el => {
-      if (ELEMS_BREAKING_SENTENCE_NS.has(el.localName())) {
-        where = el.lastChild()
-        return 'stop'
-      }
-    })
+    traverseDocumentOrderEl(
+      where,
+      (el) => {
+        if (ELEMS_BREAKING_SENTENCE_NS.has(el.localName())) {
+        } else if (
+          !el.nextElementSibling() ||
+          haveSpaceBetweenEl(el, el.nextElementSibling())
+        ) {
+          where = el
+          return 'stop'
+        }
+        if (el.localName() === 'w_') {
+          return 'skip'
+        }
+      },
+      (el) => {
+        if (ELEMS_BREAKING_SENTENCE_NS.has(el.localName())) {
+          where = el.lastChild()
+          return 'stop'
+        }
+      },
+    )
 
     if (where.isElement() && (where as AbstractElement).localName() !== 'sb') {
       let sb = where.document().createElement('mi:sb')
@@ -249,7 +268,7 @@ export class TextToken {
 
   next(f: (token: TextToken) => boolean) {
     let ret = null
-    traverseDocumentOrderEl(this.elem, el => {
+    traverseDocumentOrderEl(this.elem, (el) => {
       if (el !== this.elem && el.localName() === 'w_') {
         let token = new TextToken(el)
         if (f(token)) {
@@ -279,15 +298,21 @@ export class TextToken {
     let thisInterps = this.getDisambedInterps()
     let otherInterps = other.getDisambedInterps()
     if (thisInterps.length === otherInterps.length) {
-      return thisInterps.every(x => !!otherInterps.find(
-        xx => xx.flags === x.flags && xx.lemma === x.lemma))
+      return thisInterps.every(
+        (x) =>
+          !!otherInterps.find(
+            (xx) => xx.flags === x.flags && xx.lemma === x.lemma,
+          ),
+      )
     }
     return false
   }
 
   assureHasInterp(flags: string, lemma?: string) {
     lemma = lemma || this.text()
-    let index = this.getAllInterps().findIndex(x => x.lemma === lemma && x.flags === flags)
+    let index = this.getAllInterps().findIndex(
+      (x) => x.lemma === lemma && x.flags === flags,
+    )
     if (index === -1) {
       this.doAddMorphInterp(flags, lemma)
       index = this.elem.countElementChildren() - 1
@@ -296,20 +321,23 @@ export class TextToken {
   }
 
   private getDisambedInterpElems() {
-    return this.getDisambIndexes().map(x => this.elem.elementChild(x))
+    return this.getDisambIndexes().map((x) => this.elem.elementChild(x))
   }
 
   private getAllInterps() {
-    return this.elem.elementChildren().map(x => ({
-      flags: x.attribute(TextToken.FLAGS_ATTR),
-      lemma: x.attribute(TextToken.LEMMA_ATTR),
-    })).toArray() as Array<{ flags: string, lemma: string }>
+    return this.elem
+      .elementChildren()
+      .map((x) => ({
+        flags: x.attribute(TextToken.FLAGS_ATTR),
+        lemma: x.attribute(TextToken.LEMMA_ATTR),
+      }))
+      .toArray() as Array<{ flags: string; lemma: string }>
   }
 
   private toggleDisamb(index: number) {
     let disambIndexes = this.getDisambIndexes()
     if (disambIndexes.indexOf(index) >= 0) {
-      this.setDisambIndexes(disambIndexes.filter(x => x !== index))
+      this.setDisambIndexes(disambIndexes.filter((x) => x !== index))
     } else {
       disambIndexes.push(index)
       this.setDisambIndexes(disambIndexes)
@@ -319,14 +347,19 @@ export class TextToken {
   private getDisambIndexes() {
     let attr = this.elem.attribute(TextToken.DISAMB_ATTR)
     if (attr) {
-      return attr.split(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR).map(x => Number(x))
+      return attr
+        .split(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR)
+        .map((x) => Number(x))
     }
     return []
   }
 
   private setDisambIndexes(value: Array<number>) {
     value = uniq(value)
-    this.elem.setAttribute(TextToken.DISAMB_ATTR, value.join(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR))
+    this.elem.setAttribute(
+      TextToken.DISAMB_ATTR,
+      value.join(TextToken.UNRESOLVABLE_AMBIGUITY_SEPARATOR),
+    )
   }
 
   private doAddInterp(attributes: Object) {
@@ -346,7 +379,12 @@ export class TextToken {
   }
 
   private findInterpElem(flags: string, lemma?: string) {
-    return this.elem.elementChildren().find(x => x.attribute(TextToken.FLAGS_ATTR) === flags
-      && (!lemma || x.attribute(TextToken.LEMMA_ATTR) === lemma))
+    return this.elem
+      .elementChildren()
+      .find(
+        (x) =>
+          x.attribute(TextToken.FLAGS_ATTR) === flags &&
+          (!lemma || x.attribute(TextToken.LEMMA_ATTR) === lemma),
+      )
   }
 }

@@ -13,106 +13,107 @@ export function getEndpoint(lang: string) {
 const LINDAT_API_ENDPOINT = 'https://lindat.mff.cuni.cz/services/udpipe/api/'
 
 const udpipeApiLangMap = {
-  'uk': {
+  uk: {
     model: 'uk-180610',
   },
-  'de': {
+  de: {
     model: 'german-gsd-ud-2.3-181115',
   },
-  'du': {
+  du: {
     model: 'dutch-alpino-ud-2.3-181115',
   },
-  'cs': {
+  cs: {
     model: 'czech-pdt-ud-2.3-181115',
   },
-  'en': {
+  en: {
     model: 'english-ewt-ud-2.3-181115',
   },
-  'es': {
+  es: {
     model: 'spanish-gsd-ud-2.3-181115',
   },
-  'fr': {
+  fr: {
     model: 'french-gsd-ud-2.3-181115',
   },
-  'pl': {
+  pl: {
     model: 'polish-lfg-ud-2.3-181115',
   },
-  'pt': {
+  pt: {
     model: 'portuguese-bosque-ud-2.3-181115',
   },
-  'sk': {
+  sk: {
     model: 'slovak-snk-ud-2.3-181115',
   },
-    'ar': {
+  ar: {
     model: 'arabic-padt-ud-2.3-181115',
   },
-  'bg': {
+  bg: {
     model: 'bulgarian-btb-ud-2.3-181115',
   },
-  'be': {
+  be: {
     model: 'belarusian-hse-ud-2.3-181115',
   },
-  'et': {
+  et: {
     model: 'estonian-edt-ud-2.3-181115',
   },
-  'hr': {
+  hr: {
     model: 'croatian-set-ud-2.3-181115',
   },
-  'nl': {
+  nl: {
     model: 'dutch-alpino-ud-2.3-181115',
   },
-  'el': {
+  el: {
     model: 'greek-gdt-ud-2.3-181115',
   },
-  'ca': {
+  ca: {
     model: 'catalan-ancora-ud-2.3-181115',
   },
-  'eu': {  // Basque not in UD !!!!!!!!!
+  eu: {
+    // Basque not in UD !!!!!!!!!
     model: 'basque-bdt-ud-2.3-181115',
   },
-  'he': {
+  he: {
     model: 'hebrew-htb-ud-2.3-181115',
   },
-  'hu': {
+  hu: {
     model: 'hungarian-szeged-ud-2.3-181115',
   },
-  'it': {
+  it: {
     model: 'italian-isdt-ud-2.3-181115',
   },
-  'lt': {
+  lt: {
     model: 'lithuanian-hse-ud-2.3-181115',
   },
-  'lv': {
+  lv: {
     model: 'latvian-lvtb-ud-2.3-181115',
   },
-  'ro': {
+  ro: {
     model: 'romanian-rrt-ud-2.3-181115',
   },
-  'ru': {
+  ru: {
     model: 'russian-syntagrus-ud-2.3-181115',
   },
-  'tr': {
+  tr: {
     model: 'turkish-imst-ud-2.3-181115',
   },
-  'vi': {
+  vi: {
     model: 'vietnamese-vtb-ud-2.3-181115',
   },
-  'sr': {
+  sr: {
     model: 'serbian-set-ud-2.3-181115',
   },
-  'fa': {
+  fa: {
     model: 'persian-seraji-ud-2.3-181115',
   },
-  'hi': {
+  hi: {
     model: 'hindi-hdtb-ud-2.3-181115',
   },
-  'hy': {
+  hy: {
     model: 'armenian-armtdp-ud-2.3-181115',
   },
-  'id': {
+  id: {
     model: 'indonesian-gsd-ud-2.3-181115',
   },
-  'ja': {
+  ja: {
     model: 'japanese-gsd-ud-2.3-181115',
   },
   // 'ka': {  //?
@@ -142,7 +143,7 @@ const udpipeApiLangMap = {
   // 'uz': {
   //   model: '',
   // },
-  'zh': {
+  zh: {
     model: 'chinese-gsd-ud-2.3-181115',
   },
 }

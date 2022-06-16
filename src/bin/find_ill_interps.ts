@@ -7,8 +7,6 @@ import { mixml2tokenStream } from '../nlp/utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { mu } from '../mu'
 
-
-
 function main() {
   let analyzer = createMorphAnalyzerSync().setExpandAdjectivesAsNouns(true)
   let globStr = process.argv[2]
@@ -25,7 +23,7 @@ function main() {
           if (interp.isForeign()) {
             continue
           }
-          if (!newInterps.find(x => x.featurewiseEquals(interp))) {
+          if (!newInterps.find((x) => x.featurewiseEquals(interp))) {
             let message = basename
             if (n) {
               message += `::${n}`

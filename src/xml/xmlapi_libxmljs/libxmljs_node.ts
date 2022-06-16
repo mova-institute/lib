@@ -1,13 +1,16 @@
 import { LibxmljsDocument } from './libxmljs_document'
 import { LibxmljsElement } from './libxmljs_element'
 import { LibxmljsAttribute } from './libxmljs_attribute'
-import { nodeOrElement, nodeOrElementOrNull, isNode, nodeOrElementOrAttribute } from './utils'
+import {
+  nodeOrElement,
+  nodeOrElementOrNull,
+  isNode,
+  nodeOrElementOrAttribute,
+} from './utils'
 import { wrappedOrNull } from '../../lang'
 import { AbstractNode, XmlapiXpathResult } from '../xmlapi/abstract_node'
 import { isOddball } from '../xmlapi/utils'
 import { mu, Mu } from '../../mu'
-
-
 
 export class LibxmljsNode extends AbstractNode {
   constructor(protected wrapee) {
@@ -89,13 +92,19 @@ export class LibxmljsNode extends AbstractNode {
   evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult {
     let result = this.wrapee.find(xpath, nsMap)
     if (Array.isArray(result)) {
-      return mu((function* () {
-        for (let node of result) {
-          yield nodeOrElementOrAttribute(node)
-        }
-      })())
+      return mu(
+        (function* () {
+          for (let node of result) {
+            yield nodeOrElementOrAttribute(node)
+          }
+        })(),
+      )
     }
-    if (typeof result === 'boolean' || typeof result === 'number' || typeof result === 'string') {
+    if (
+      typeof result === 'boolean' ||
+      typeof result === 'number' ||
+      typeof result === 'string'
+    ) {
       return result
     }
 
@@ -136,16 +145,16 @@ export class LibxmljsNode extends AbstractNode {
   }
 
   evaluateNodes(xpath: string, nsMap?: Object) {
-    return this._evaluateMany(xpath, nsMap).map(x => {
+    return this._evaluateMany(xpath, nsMap).map((x) => {
       if (!isNode(x)) {
         throw new Error('XPath result is not a list of nodes')
       }
       return nodeOrElement(x)
-    }) as Mu<LibxmljsNode>  // todo: why not inferred?
+    }) as Mu<LibxmljsNode> // todo: why not inferred?
   }
 
   evaluateElements(xpath: string, nsMap?: Object) {
-    return this._evaluateMany(xpath, nsMap).map(x => {
+    return this._evaluateMany(xpath, nsMap).map((x) => {
       if (x.type() !== 'element') {
         throw new Error('XPath result is not a list of elements')
       }
@@ -154,7 +163,7 @@ export class LibxmljsNode extends AbstractNode {
   }
 
   evaluateAttributes(xpath: string, nsMap?: Object) {
-    return this._evaluateMany(xpath, nsMap).map(x => {
+    return this._evaluateMany(xpath, nsMap).map((x) => {
       if (x.type() !== 'attribute') {
         throw new Error('XPath result is not a list of attributes')
       }

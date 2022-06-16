@@ -4,19 +4,21 @@ import { AbstractDocument } from '../xmlapi/abstract_document'
 import { wrappedOrNull } from '../../lang'
 import { isOddball } from '../xmlapi/utils'
 
-
-
 export class WebapiDocument extends AbstractDocument {
-
   private static parser: DOMParser
   private static serializer: XMLSerializer
 
   static parse(xmlString: string) {
-    let nativeDocument = WebapiDocument.getParser().parseFromString(xmlString, 'application/xml')
+    let nativeDocument = WebapiDocument.getParser().parseFromString(
+      xmlString,
+      'application/xml',
+    )
 
     if (considerIsParseErrorDocument(nativeDocument)) {
-      throw new Error('XML Parse error\n\n'
-        + WebapiDocument.getSerializer().serializeToString(nativeDocument))
+      throw new Error(
+        'XML Parse error\n\n' +
+          WebapiDocument.getSerializer().serializeToString(nativeDocument),
+      )
     }
 
     return new WebapiDocument(nativeDocument)
@@ -27,7 +29,10 @@ export class WebapiDocument extends AbstractDocument {
   }
 
   private static getSerializer() {
-    return WebapiDocument.serializer || (WebapiDocument.serializer = new XMLSerializer())
+    return (
+      WebapiDocument.serializer ||
+      (WebapiDocument.serializer = new XMLSerializer())
+    )
   }
 
   constructor(private wrapee: XMLDocument) {
@@ -49,12 +54,13 @@ export class WebapiDocument extends AbstractDocument {
   }
 
   // @ts-ignore
-  createElement(name: string) {  // todo: ns
+  createElement(name: string) {
+    // todo: ns
     let [, prefix] = name.split(':').reverse()
     let uri = this.wrapee.lookupNamespaceURI(prefix || null)
     let elem = this.wrapee.createElementNS(uri, name)
 
-    return new WebapiElement(elem as HTMLElement)  // todo
+    return new WebapiElement(elem as HTMLElement) // todo
   }
 
   // @ts-ignore
@@ -67,13 +73,15 @@ export class WebapiDocument extends AbstractDocument {
   }
 }
 
-
 export function considerIsParseErrorDocument(document: XMLDocument) {
   const NS_XHTML = 'http://www.w3.org/1999/xhtml'
-  const NS_MOZILLA_ERROR = 'http://www.mozilla.org/newlayout/xml/parsererror.xml'
+  const NS_MOZILLA_ERROR =
+    'http://www.mozilla.org/newlayout/xml/parsererror.xml'
 
-  if (document.getElementsByTagNameNS(NS_XHTML, 'parsererror').length
-      || document.getElementsByTagNameNS(NS_MOZILLA_ERROR, 'parsererror').length) {
+  if (
+    document.getElementsByTagNameNS(NS_XHTML, 'parsererror').length ||
+    document.getElementsByTagNameNS(NS_MOZILLA_ERROR, 'parsererror').length
+  ) {
     return true
   }
 }

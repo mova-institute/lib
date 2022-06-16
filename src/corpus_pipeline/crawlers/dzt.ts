@@ -7,8 +7,6 @@ import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request'
 import { parseHtml } from '../../xml/utils.node'
 
-
-
 interface Args {
   workspace: string
   lastNumber: number
@@ -19,8 +17,8 @@ const baseHref = 'http://gazeta.dt.ua/'
 if (require.main === module) {
   const args = minimist<Args>(process.argv.slice(2), {
     alias: {
-      'workspace': ['ws'],
-      'lastNumber': ['last-number'],
+      workspace: ['ws'],
+      lastNumber: ['last-number'],
     },
     default: {
       lastNumber: 1076,
@@ -30,13 +28,14 @@ if (require.main === module) {
   main(args)
 }
 
-
 async function main(args: Args) {
   try {
     let fetchedArticlesDir = path.join(args.workspace, 'dzt/fetched_articles')
     mkdirpSync(fetchedArticlesDir)
 
-    let numbersRegistry = new FileSavedSet<number>(path.join(args.workspace, 'dzt/fully_fetched_numbers.txt'))
+    let numbersRegistry = new FileSavedSet<number>(
+      path.join(args.workspace, 'dzt/fully_fetched_numbers.txt'),
+    )
     let articleRegistry = new FsMap(fetchedArticlesDir)
 
     for (let i = 293; i <= args.lastNumber; ++i) {
@@ -47,11 +46,12 @@ async function main(args: Args) {
 
       let indexContent = await fetchText(`http://gazeta.dt.ua/archives/${i}`)
       let root = parseHtml(indexContent)
-      let hrefs = root.evaluateAttributes('//div[contains(@class, "articles")]/a/@href')
-        .map(x => x.value())
-        .filter(x => x.startsWith(baseHref))
-        .map(x => x.substr(baseHref.length))
-        .filter(x => !articleRegistry.has(x))
+      let hrefs = root
+        .evaluateAttributes('//div[contains(@class, "articles")]/a/@href')
+        .map((x) => x.value())
+        .filter((x) => x.startsWith(baseHref))
+        .map((x) => x.substr(baseHref.length))
+        .filter((x) => !articleRegistry.has(x))
 
       for (let articleHref of hrefs) {
         console.log(`processing ${articleHref}`)

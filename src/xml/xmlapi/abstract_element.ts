@@ -3,10 +3,7 @@ import { AbstractAttribute } from './abstract_attribute'
 import { mu, Mu } from '../../mu'
 import { Dict } from '../../types'
 
-
-
 export abstract class AbstractElement extends AbstractNode {
-
   /*
    * names
    */
@@ -25,7 +22,6 @@ export abstract class AbstractElement extends AbstractNode {
   abstract namespaceUri(): string
   abstract namespacePrefix(): string
 
-
   /*
    * children
    */
@@ -38,7 +34,7 @@ export abstract class AbstractElement extends AbstractNode {
   }
 
   elementChildren() {
-    return this.children().filter(x => x.isElement()) as Mu<AbstractElement>
+    return this.children().filter((x) => x.isElement()) as Mu<AbstractElement>
   }
 
   abstract firstChild(): AbstractNode
@@ -50,13 +46,17 @@ export abstract class AbstractElement extends AbstractNode {
   abstract child(index: number): AbstractNode
 
   elementChild(index: number) {
-    return this.elementChildren().drop(index).next().value || null  // todo: wait for method in wu
+    return this.elementChildren().drop(index).next().value || null // todo: wait for method in wu
   }
 
   abstract lastChild(): AbstractNode
 
   lastElementChild() {
-    return this.rchildren().filter(x => x.isElement()).next().value as AbstractElement || null
+    return (
+      (this.rchildren()
+        .filter((x) => x.isElement())
+        .next().value as AbstractElement) || null
+    )
   }
 
   rchildren(): Mu<AbstractNode> {
@@ -71,7 +71,9 @@ export abstract class AbstractElement extends AbstractNode {
   }
 
   countElementChildren() {
-    return this.children().filter(x => x.isElement()).count()
+    return this.children()
+      .filter((x) => x.isElement())
+      .count()
   }
 
   clear() {
@@ -79,7 +81,6 @@ export abstract class AbstractElement extends AbstractNode {
       child.remove()
     }
   }
-
 
   /*
    * manipulation
@@ -89,13 +90,12 @@ export abstract class AbstractElement extends AbstractNode {
     if (this.firstChild()) {
       this.firstChild().insertBefore(child)
     } else {
-      this.appendChild(child)  // see http://stackoverflow.com/a/13723325/5271870
+      this.appendChild(child) // see http://stackoverflow.com/a/13723325/5271870
     }
     return child
   }
 
   abstract appendChild(child: AbstractNode): AbstractNode
-
 
   /*
    * attributes
@@ -118,7 +118,11 @@ export abstract class AbstractElement extends AbstractNode {
   // }
 
   attributeUp(name: string) {
-    for (let cursor = this as AbstractElement /* wut?? */; cursor; cursor = cursor.parent()) {
+    for (
+      let cursor = this as AbstractElement /* wut?? */;
+      cursor;
+      cursor = cursor.parent()
+    ) {
       let value = cursor.attribute(name)
       if (value !== null) {
         return value
@@ -126,7 +130,8 @@ export abstract class AbstractElement extends AbstractNode {
     }
   }
 
-  setAttributes(keyvalue: Object): AbstractElement {  // todo: remove return typing when ts 2.0 comes out, see https://github.com/Microsoft/TypeScript/issues/3694
+  setAttributes(keyvalue: Object): AbstractElement {
+    // todo: remove return typing when ts 2.0 comes out, see https://github.com/Microsoft/TypeScript/issues/3694
     for (let key of Object.keys(keyvalue)) {
       this.setAttribute(key, keyvalue[key])
     }
@@ -136,7 +141,9 @@ export abstract class AbstractElement extends AbstractNode {
 
   attributesObj() {
     let ret: Dict<string> = {}
-    this.attributes().forEach(x => ret[x.nameLocal().toString()] = x.value().toString())
+    this.attributes().forEach(
+      (x) => (ret[x.nameLocal().toString()] = x.value().toString()),
+    )
     return ret
   }
 
@@ -144,17 +151,18 @@ export abstract class AbstractElement extends AbstractNode {
    * other
    */
 
-  lang() {  // ancestor-or-self::*[@xml:lang][1]/@xml:lang
+  lang() {
+    // ancestor-or-self::*[@xml:lang][1]/@xml:lang
     return Mu.chain([this], this.ancestors())
-      .map(x => x.attribute('lang'))
-      .find(x => x !== null)
+      .map((x) => x.attribute('lang'))
+      .find((x) => x !== null)
   }
 
   abstract buildNsMap(): { [prefix: string]: string }
 
   unwrap() {
     while (this.firstChild()) {
-      this.insertBefore(this.firstChild())  // todo: test webapi without remove()
+      this.insertBefore(this.firstChild()) // todo: test webapi without remove()
     }
 
     return this.remove() as AbstractElement

@@ -1,18 +1,15 @@
 import { Readable } from 'stream'
 
-
-
 export function writePromiseDrain(
   to: NodeJS.WritableStream,
   what: string | Buffer,
 ) {
   if (!to.write(what)) {
     return new Promise<void>((resolve, reject) => {
-      to.on('error', reject)
-        .once('drain', () => {
-          to.removeListener('error', reject)
-          resolve()
-        })
+      to.on('error', reject).once('drain', () => {
+        to.removeListener('error', reject)
+        resolve()
+      })
     })
   }
 }
@@ -24,7 +21,7 @@ export function writeBackpressing(
 ) {
   if (!to.write(what) && !backpressee.isPaused()) {
     backpressee.pause()
-    to.once('drain', () => backpressee.resume())  // =bind?
+    to.once('drain', () => backpressee.resume()) // =bind?
   }
 }
 
@@ -34,7 +31,6 @@ export function writeBackpressedStd(what: string | Buffer) {
 
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-
     let waitUntilNBytes = () => {
       let buf = istream.read(n)
       if (buf) {
@@ -45,7 +41,7 @@ export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
     }
 
     waitUntilNBytes()
-    reject()  // todo
+    reject() // todo
     throw new Error('should never happen')
   })
 }
@@ -54,9 +50,6 @@ export function readTillEnd(istream: Readable): Promise<string> {
   let ret = ''
 
   return new Promise((resolve, reject) => {
-
-    istream.on('data', chunk => ret += chunk)
-      .on('end', () => resolve(ret))
-
+    istream.on('data', (chunk) => (ret += chunk)).on('end', () => resolve(ret))
   })
 }

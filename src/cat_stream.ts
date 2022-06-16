@@ -1,8 +1,6 @@
 import { createReadStream, ReadStream } from 'fs'
 import { Readable, ReadableOptions } from 'stream'
 
-
-
 export class CatStream extends Readable {
   private currentReadStream: ReadStream
   private iterator: Iterator<string>
@@ -23,7 +21,7 @@ export class CatStream extends Readable {
       this.push(null)
     } else {
       this.currentReadStream = createReadStream(value)
-        .on('data', chunk => {
+        .on('data', (chunk) => {
           if (!this.push(chunk)) {
             this.currentReadStream.pause()
           }

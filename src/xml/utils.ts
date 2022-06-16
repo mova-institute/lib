@@ -2,8 +2,6 @@ import { AbstractElement } from './xmlapi/abstract_element'
 import { AbstractNode } from './xmlapi/abstract_node'
 import { Dict } from '../types'
 
-
-
 // todo: move out
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
@@ -12,15 +10,13 @@ export const NS = {
   mi: 'http://mova.institute/ns/corpora/0.1',
 }
 
-
 export function cantBeXml(str: string) {
   return !/^\s*\</.test(str)
 }
 
-export function escapeText(value: string) {   // todo: call he everywhere directly
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
+export function escapeText(value: string) {
+  // todo: call he everywhere directly
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 }
 
 export function unescape(value: string) {
@@ -29,11 +25,14 @@ export function unescape(value: string) {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, '\'')
+    .replace(/&apos;/g, "'")
 }
 
 export function renameTag(xmlstr: string, from: string, to: string) {
-  return xmlstr.replace(new RegExp(String.raw`<\s*${from}([\s>])`, 'g'), `<${to}$1`)
+  return xmlstr.replace(
+    new RegExp(String.raw`<\s*${from}([\s>])`, 'g'),
+    `<${to}$1`,
+  )
 }
 
 export function removeTags(value: string) {
@@ -42,7 +41,10 @@ export function removeTags(value: string) {
 
 export function removeElements(xmlstr: string, names: Array<string>) {
   let namesRe = names.join('|')
-  let re = new RegExp(String.raw`<\s*(${namesRe})[^>]*>[^<]*</\s*(${namesRe})\s*>`, 'g')
+  let re = new RegExp(
+    String.raw`<\s*(${namesRe})[^>]*>[^<]*</\s*(${namesRe})\s*>`,
+    'g',
+  )
   return xmlstr.replace(re, '')
 }
 
@@ -69,7 +71,9 @@ export function removeNamespacing(xmlstr: string) {
 }
 
 export function removeRoot(xmlstr: string) {
-  return xmlstr.replace(/^\s*(<\?xml[^>]+\?>)?\s*<[^>]+>/, '').replace(/<\/[^>]+>\s*$/, '')
+  return xmlstr
+    .replace(/^\s*(<\?xml[^>]+\?>)?\s*<[^>]+>/, '')
+    .replace(/<\/[^>]+>\s*$/, '')
 }
 
 export function removeProcessingInstructions(xmlstr: string) {
@@ -86,7 +90,11 @@ export function encloseInRoot(xmlstr: string, rootName = 'root') {
   return `<${rootName}>${xmlstr}</${rootName}>`
 }
 
-export function encloseInRootNs(value: string, rootName = 'mi:fragment', ns = ['tei', 'mi']) {
+export function encloseInRootNs(
+  value: string,
+  rootName = 'mi:fragment',
+  ns = ['tei', 'mi'],
+) {
   let ret = '<' + rootName
   if (NS[ns[0]]) {
     ret += ' xmlns="' + NS[ns[0]] + '"'
@@ -99,7 +107,11 @@ export function encloseInRootNs(value: string, rootName = 'mi:fragment', ns = ['
   return ret
 }
 
-export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = ['tei', 'mi']) {
+export function encloseInRootNsIf(
+  value: string,
+  rootName = 'mi:fragment',
+  ns = ['tei', 'mi'],
+) {
   if (cantBeXml(value)) {
     value = encloseInRootNs(value, rootName, ns)
   }
@@ -109,8 +121,8 @@ export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = 
 
 export function keyvalue2attributesNormalized(obj: any) {
   return Object.keys(obj)
-    .filter(key => key.trim() && obj[key] !== undefined)
-    .map(key => {
+    .filter((key) => key.trim() && obj[key] !== undefined)
+    .map((key) => {
       let value = obj[key].toString().replace(/\s+/g, ' ').trim()
       value = escapeText(value)
       return `${key}="${value}"`
@@ -120,13 +132,15 @@ export function keyvalue2attributesNormalized(obj: any) {
 
 export function parseTagStr(value: string) {
   let match = value.match(
-    /^<(\/)?([\w\-]+)((?:\s+[\w\-]+="[^"]*")*)*\s*(\/)?\s*>(?:([^<]*)<\/\2>)?$/)
+    /^<(\/)?([\w\-]+)((?:\s+[\w\-]+="[^"]*")*)*\s*(\/)?\s*>(?:([^<]*)<\/\2>)?$/,
+  )
   if (match) {
     let [, closer, name, attributes, empty, content] = match
     return {
       name,
       isClosing: !!closer,
-      attributes: attributes && parseAttributeStr(attributes.trim()) || undefined,
+      attributes:
+        (attributes && parseAttributeStr(attributes.trim())) || undefined,
       empty: !!empty,
       content,
     }
@@ -145,7 +159,12 @@ export function parseAttributeStr(value: string) {
   return ret
 }
 
-export function tagStr(open: boolean, prefix: string, elem: string, attrs = new Map()) {
+export function tagStr(
+  open: boolean,
+  prefix: string,
+  elem: string,
+  attrs = new Map(),
+) {
   if (!open) {
     return `</${namePrefixed(prefix, elem)}>`
   }
@@ -173,7 +192,6 @@ export function tagStr2(name: string, closing: boolean, attrs?: any) {
   return res + '>'
 }
 
-
 export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
   let ret = new Map()
   for (let [name, , , val] of attrs) {
@@ -183,7 +201,11 @@ export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
   return ret
 }
 
-export function traverseDepthEl(node: AbstractNode, onEnter: (el: AbstractElement) => any, onLeave?: (el: AbstractElement) => any) {
+export function traverseDepthEl(
+  node: AbstractNode,
+  onEnter: (el: AbstractElement) => any,
+  onLeave?: (el: AbstractElement) => any,
+) {
   traverseDepth(node, callbackIfElement(onEnter), callbackIfElement(onLeave))
 }
 
@@ -191,16 +213,21 @@ export type TraverseDirective = 'skip' | 'stop' | void
 export interface ITraverseCallback {
   (el: AbstractNode): TraverseDirective
 }
-export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
+export function traverseDepth(
+  node: AbstractNode,
+  onEnter: ITraverseCallback,
+  onLeave?: ITraverseCallback,
+) {
   let directive = onEnter(node)
   if (directive === 'stop') {
     return false
   }
   if (directive !== 'skip' && node.isElement()) {
-    for (let cur = node.asElement().firstChild(), next = cur && cur.nextSibling();
+    for (
+      let cur = node.asElement().firstChild(), next = cur && cur.nextSibling();
       cur;
-      cur = next, next = next && next.nextSibling()) {
-
+      cur = next, next = next && next.nextSibling()
+    ) {
       if (traverseDepth(cur, onEnter, onLeave) === false) {
         return false
       }
@@ -212,16 +239,20 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
   }
 }
 
-export function* traverseDepthGen2(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
+export function* traverseDepthGen2(
+  node: AbstractNode,
+): IterableIterator<{ node: AbstractNode; entering: boolean }> {
   let directive = yield { node, entering: true }
   if (directive === 'stop') {
     return false
   }
   if (directive !== 'skip' && node.isElement()) {
-    for (let curNode = node.asElement().firstChild(), next = curNode && curNode.nextSibling();
+    for (
+      let curNode = node.asElement().firstChild(),
+        next = curNode && curNode.nextSibling();
       curNode;
-      curNode = next, next = next && next.nextSibling()) {
-
+      curNode = next, next = next && next.nextSibling()
+    ) {
       if ((yield* traverseDepthGen2(curNode)) === false) {
         return false
       }
@@ -230,14 +261,18 @@ export function* traverseDepthGen2(node: AbstractNode): IterableIterator<{ node:
   yield { node, entering: false }
 }
 
-export function* traverseDepthGen(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
+export function* traverseDepthGen(
+  node: AbstractNode,
+): IterableIterator<{ node: AbstractNode; entering: boolean }> {
   yield { node, entering: true }
 
   if (node.isElement()) {
-    for (let curNode = node.asElement().firstChild(), next = curNode && curNode.nextSibling();
+    for (
+      let curNode = node.asElement().firstChild(),
+        next = curNode && curNode.nextSibling();
       curNode;
-      curNode = next, next = next && next.nextSibling()) {
-
+      curNode = next, next = next && next.nextSibling()
+    ) {
       yield* traverseDepthGen(curNode)
     }
   }
@@ -245,7 +280,9 @@ export function* traverseDepthGen(node: AbstractNode): IterableIterator<{ node: 
   yield { node, entering: false }
 }
 
-export function* traverseDocumentOrderGen(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
+export function* traverseDocumentOrderGen(
+  node: AbstractNode,
+): IterableIterator<{ node: AbstractNode; entering: boolean }> {
   let curNode = node
   for (; curNode; curNode = curNode.nextSibling()) {
     yield* traverseDepthGen(curNode)
@@ -258,7 +295,11 @@ export function* traverseDocumentOrderGen(node: AbstractNode): IterableIterator<
   }
 }
 
-export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
+export function traverseDocumentOrder(
+  node: AbstractNode,
+  onEnter: ITraverseCallback,
+  onLeave?: ITraverseCallback,
+) {
   let curNode = node
   for (; curNode; curNode = curNode.nextSibling()) {
     if (traverseDepth(curNode, onEnter, onLeave) === false) {
@@ -267,7 +308,9 @@ export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCall
   }
   for (curNode = node && node.parent(); curNode; curNode = curNode.parent()) {
     if (curNode.nextSibling()) {
-      if (traverseDocumentOrder(curNode.nextSibling(), onEnter, onLeave) === false) {
+      if (
+        traverseDocumentOrder(curNode.nextSibling(), onEnter, onLeave) === false
+      ) {
         return false
       }
       break
@@ -275,23 +318,45 @@ export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCall
   }
 }
 
-export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: AbstractElement) => TraverseDirective, onLeave?: (el: AbstractElement) => TraverseDirective) {
-  traverseDocumentOrder(node, callbackIfElement(onEnter), callbackIfElement(onLeave))
+export function traverseDocumentOrderEl(
+  node: AbstractNode,
+  onEnter: (el: AbstractElement) => TraverseDirective,
+  onLeave?: (el: AbstractElement) => TraverseDirective,
+) {
+  traverseDocumentOrder(
+    node,
+    callbackIfElement(onEnter),
+    callbackIfElement(onLeave),
+  )
 }
 
-export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
+export function nextElDocumentOrder(
+  context: AbstractElement,
+  elsOfInterest?: Set<string>,
+) {
   let ret: AbstractElement | undefined
-  traverseDocumentOrder(context, callbackIfElement(el => {
-    if (!context.isSame(el) && (!elsOfInterest || !elsOfInterest.size || elsOfInterest.has(el.localName()))) {
-      ret = el
-      return 'stop'
-    }
-  }))
+  traverseDocumentOrder(
+    context,
+    callbackIfElement((el) => {
+      if (
+        !context.isSame(el) &&
+        (!elsOfInterest ||
+          !elsOfInterest.size ||
+          elsOfInterest.has(el.localName()))
+      ) {
+        ret = el
+        return 'stop'
+      }
+    }),
+  )
 
   return ret
 }
 
-export function walkUpUntil(node: AbstractNode, predicate: (node: AbstractNode) => boolean) {
+export function walkUpUntil(
+  node: AbstractNode,
+  predicate: (node: AbstractNode) => boolean,
+) {
   while (node && predicate(node.parent())) {
     node = node.parent()
   }
@@ -301,21 +366,24 @@ export function walkUpUntil(node: AbstractNode, predicate: (node: AbstractNode) 
 
 export function nLevelsDeep(node, n: number) {
   while (node && n--) {
-    node = node.firstChild  // todo: element?
+    node = node.firstChild // todo: element?
   }
 
   return node
 }
 
 function callbackIfElement(cb?: (el: AbstractElement) => TraverseDirective) {
-  return node => {
+  return (node) => {
     if (cb && node.isElement()) {
       return cb(node)
     }
   }
 }
 
-export function sortChildElements(el: AbstractElement, compare: (a: AbstractElement, b: AbstractElement) => number) {
+export function sortChildElements(
+  el: AbstractElement,
+  compare: (a: AbstractElement, b: AbstractElement) => number,
+) {
   let childrenSorted = el.elementChildren().toArray().sort(compare)
   for (let child of childrenSorted) {
     el.appendChild(child.remove())
@@ -323,6 +391,5 @@ export function sortChildElements(el: AbstractElement, compare: (a: AbstractElem
 }
 
 export function autofixSomeEntitites(xmlstr: string) {
-  return xmlstr
-    .replace(/&(?!(amp|quot|lt|gt);)/g, '&amp;')
+  return xmlstr.replace(/&(?!(amp|quot|lt|gt);)/g, '&amp;')
 }

@@ -1,7 +1,5 @@
 import { zerofill } from './string'
 
-
-
 export const ukMonthMap = new Map([
   ['січня', 0],
   ['лютого', 1],
@@ -69,7 +67,14 @@ export function dayUkmonthYear2date(value: string) {
 // '20 жовтня 1998 14:30:43' —> Date
 export function dayUkmonthYearTime2date(value: string) {
   let [, day, month, year, hour, min, sec] = value.match(dayUkMonthYearTimeRe)
-  return new Date(Number(year), ukMonthMap.get(month), Number(day), Number(hour), Number(min), Number(sec))
+  return new Date(
+    Number(year),
+    ukMonthMap.get(month),
+    Number(day),
+    Number(hour),
+    Number(min),
+    Number(sec),
+  )
 }
 
 export function dayUkmonth2date(value: string) {

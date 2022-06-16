@@ -2,8 +2,6 @@
 
 import { linesBackpressedStdPipeable } from '../../utils.node'
 
-
-
 const enum GapType {
   none,
   par,
@@ -13,7 +11,8 @@ const enum GapType {
 async function main() {
   let gap = GapType.none
   await linesBackpressedStdPipeable((line, writer) => {
-    if (line.startsWith('1')) {  // onion marked it as a dupe
+    if (line.startsWith('1')) {
+      // onion marked it as a dupe
       if (!gap) {
         gap = /^..<doc[\s>]/.test(line) ? GapType.doc : GapType.par
       }
@@ -28,7 +27,6 @@ async function main() {
     }
   })
 }
-
 
 if (require.main === module) {
   main()

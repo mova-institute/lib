@@ -2,13 +2,15 @@ import { mu, Mu } from '../mu'
 import { cutOut, insert, trimExtension } from '../string'
 import { parseConlluSentences, ConlluToken } from './ud/conllu'
 import { zip, flip } from '../lang'
-import { linesSync, linesBackpressedStdPipeable, joinToFileSync } from '../utils.node'
+import {
+  linesSync,
+  linesBackpressedStdPipeable,
+  joinToFileSync,
+} from '../utils.node'
 import { join, dirname } from 'path'
 import { domesticateUdPos } from '../corpus_pipeline/ud'
 import { createValencyDictFromKotsybaTsvs } from './valency_dictionary/factories.node'
 import { createMorphAnalyzerSync } from './morph_analyzer/factories.node'
-
-
 
 export function toPlaintext() {
   linesBackpressedStdPipeable((line, writer) => {
@@ -33,7 +35,11 @@ export function evaluate(args: EvaluateArgs) {
   let testeeLines = linesSync(args.testee)
 
   let it = zip<TestCase | Array<ConlluToken>>(
-    mu(goldenLines).filter(x => x).map(parseGoldSentence), parseConlluSentences(testeeLines))
+    mu(goldenLines)
+      .filter((x) => x)
+      .map(parseGoldSentence),
+    parseConlluSentences(testeeLines),
+  )
 
   let outLinesGolden = new Array<string>()
   let outLinesTestee = new Array<string>()
@@ -49,8 +55,11 @@ export function evaluate(args: EvaluateArgs) {
       testeeAnnotated += testeeToken.form
       if (i === golden.johojijiIndex) {
         testeeAnnotated += '/'
-        testeeAnnotated += domesticateUdPos(testeeToken.upos, undefined, undefined)
-          .toLowerCase()
+        testeeAnnotated += domesticateUdPos(
+          testeeToken.upos,
+          undefined,
+          undefined,
+        ).toLowerCase()
       }
       i += testeeToken.form.length
       if (testeeToken.misc['SpaceAfter'] !== 'No') {
@@ -82,11 +91,12 @@ export function parseGoldSentence(line) {
   let match = line.match(/(\S+)\/([01])\/([^/]+)\/.../)
   let [, johojiji, isCorrect, pos] = match
   let johojijiIndex = match.index
-  let plaintext = cutOut(line, johojijiIndex + johojiji.length,
-    match[0].length - johojiji.length)
-  let hasToBe = isCorrect === '1'
-    ? pos
-    : flip(pos, 'adj', 'noun')
+  let plaintext = cutOut(
+    line,
+    johojijiIndex + johojiji.length,
+    match[0].length - johojiji.length,
+  )
+  let hasToBe = isCorrect === '1' ? pos : flip(pos, 'adj', 'noun')
 
   match = plaintext.match(/([^\s/]+)\/\S*\/.../)
   let gerundish = match[1]
@@ -125,7 +135,7 @@ export function calcValencyDictCoverage(args) {
     ++numLines
     let interps = analyzer.tag(line)
     if (interps.length) {
-      let has = analyzer.tag(line).some(x => dict.hasGerund(x.lemma))
+      let has = analyzer.tag(line).some((x) => dict.hasGerund(x.lemma))
       if (has) {
         ++numInDict
         console.error(`1 ${line}`)
@@ -139,8 +149,10 @@ export function calcValencyDictCoverage(args) {
   console.error([numLines, numInDict, numInDict / numLines])
 }
 
-
 function makeAnnotatedLine(testCase: TestCase) {
-  return insert(testCase.plaintext, `/${testCase.hasToBe}`,
-    testCase.johojijiIndex + testCase.johojiji.length)
+  return insert(
+    testCase.plaintext,
+    `/${testCase.hasToBe}`,
+    testCase.johojijiIndex + testCase.johojiji.length,
+  )
 }

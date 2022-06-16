@@ -17,8 +17,6 @@ import minimist from 'minimist'
 import * as os from 'os'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'
 
-
-
 interface Args {
   udpipeUrl: string
   tdozatUrl: string
@@ -30,13 +28,17 @@ async function main() {
   const args = minimist<Args>(process.argv.slice(2))
   exitOnStdoutPipeError()
 
-  args.udpipeConcurrency = args.udpipeConcurrency || Math.max(1, os.cpus().length - 1)
+  args.udpipeConcurrency =
+    args.udpipeConcurrency || Math.max(1, os.cpus().length - 1)
 
   let builder = new Vert2conlluBuilder()
   let udpipe = new UdpipeApiClient(args.udpipeUrl, args.udpipeModel)
   let runner = new AsyncTaskRunner().setConcurrency(args.udpipeConcurrency)
   let analyzer = createMorphAnalyzerSync()
-  let writer = BufferedBackpressWriter.fromStreams(process.stdin, process.stdout)
+  let writer = BufferedBackpressWriter.fromStreams(
+    process.stdin,
+    process.stdout,
+  )
 
   let lines = new Array<string>()
   for await (let line of linesIt(process.stdin)) {
@@ -51,9 +53,11 @@ async function main() {
       lines = []
       await runner.post(async () => {
         try {
-          var conllu = mu((await udpipe.tagParseConnluLines(inputAsConllu)).split('\n'))
-            .filter(x => /^\d/.test(x))
-            .map(x => x.split('\t'))
+          var conllu = mu(
+            (await udpipe.tagParseConnluLines(inputAsConllu)).split('\n'),
+          )
+            .filter((x) => /^\d/.test(x))
+            .map((x) => x.split('\t'))
           var taggedVert = mergeConlluIntoVert(myLines, conllu, analyzer)
           writer.write(taggedVert)
         } catch (e) {
@@ -73,7 +77,9 @@ function mergeConlluIntoVert(
   analyzer: MorphAnalyzer,
 ) {
   let ret = ''
-  let conlluTokens = mu(conlluCells).map(x => parseConlluTokenCells(x)).window(2)
+  let conlluTokens = mu(conlluCells)
+    .map((x) => parseConlluTokenCells(x))
+    .window(2)
   for (let l of vertLines) {
     if (l.startsWith('<')) {
       ret += l
@@ -87,7 +93,7 @@ function mergeConlluIntoVert(
       let dictInterps = analyzer.tag(tok.form, nextTok && nextTok.form)
       ret += '\t'
       ret += dictInterps
-        .map(x => `${x.lemma}/${toConlluishString(x)}`)
+        .map((x) => `${x.lemma}/${toConlluishString(x)}`)
         .join(';')
     }
     ret += '\n'
@@ -96,5 +102,5 @@ function mergeConlluIntoVert(
 }
 
 if (require.main === module) {
-  main().catch(e => console.error(e))
+  main().catch((e) => console.error(e))
 }

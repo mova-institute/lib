@@ -6,7 +6,7 @@ export class DrainwaitingBufferedWriter {
 
   constructor(private stream: NodeJS.WritableStream) {
     if ('writableHighWaterMark' in stream) {
-      this.bufSize = stream['writableHighWaterMark']// / 2 - 1
+      this.bufSize = stream['writableHighWaterMark'] // / 2 - 1
     }
   }
 
@@ -16,7 +16,8 @@ export class DrainwaitingBufferedWriter {
 
   write(what: string) {
     this.buf += what
-    if (this.buf.length > this.bufSize) { // todo: buffer?
+    if (this.buf.length > this.bufSize) {
+      // todo: buffer?
       return this.flush()
     }
 

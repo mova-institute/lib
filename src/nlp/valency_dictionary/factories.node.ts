@@ -6,8 +6,6 @@ import { linesSync } from '../../utils.node'
 import * as path from 'path'
 import { removeCombiningAccent } from '../utils'
 
-
-
 const formsRe = new RegExp(r`[${LETTER_UK_UPPERCASE}'#]{2,}`, 'g')
 const nounVerbFormsRe = new RegExp(r`[${LETTER_UK_LOWERCASE}'#]{2,}`, 'g')
 
@@ -21,22 +19,21 @@ export function createValencyDictFromKotsybaTsvs(directory: string) {
       throw new Error(`Cannot parse form column at line ${i}: "${cols[2]}"`)
     }
 
-    forms = forms.map(x => normalizeForm(x))
+    forms = forms.map((x) => normalizeForm(x))
     let trans = decodeTransitivity(cols[13])
-    forms.forEach(x => ret.valencies.get(x).addAll(trans))
+    forms.forEach((x) => ret.valencies.get(x).addAll(trans))
   }
   // console.error(`read dict with ${ret.valencies.size} entries`)
 
   it = createTsvIt(path.join(directory, 'noun.tsv'))
   for (let [, cols] of it) {
-
-    let forms = cols[1].match(formsRe).map(x => normalizeForm(x))
+    let forms = cols[1].match(formsRe).map((x) => normalizeForm(x))
     let baseVerbs = removeCombiningAccent(cols[4])
       .match(nounVerbFormsRe)
-      .map(x => x.replace(/#/g, ''))
+      .map((x) => x.replace(/#/g, ''))
 
-    if (baseVerbs.some(x => ret.hasVerb(x))) {
-      forms.forEach(x => ret.gerund2verb.get(x).addAll(baseVerbs))
+    if (baseVerbs.some((x) => ret.hasVerb(x))) {
+      forms.forEach((x) => ret.gerund2verb.get(x).addAll(baseVerbs))
     }
   }
 
@@ -59,10 +56,10 @@ function normalizeForm(val: string) {
 
 function createTsvIt(filePath: string) {
   return mu(linesSync(filePath))
-    .map(x => x.trim())
-    .filter(x => x)
+    .map((x) => x.trim())
+    .filter((x) => x)
     .drop()
-    .map(x => x.split('\t'))
+    .map((x) => x.split('\t'))
     .entries()
 }
 

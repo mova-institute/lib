@@ -4,11 +4,9 @@ import { normalizeApostrophes, removeCombiningAccent } from '../utils'
 import { DictValency } from '../morph_features'
 import { CoolSet } from '../../data_structures/cool_set'
 
-
-
 export const enum ValencyCase {
-  intransitive,  // 0, 0_acc, '' // немає obj/ccomp
-  accusative,  // {}, acc, acc_* не opt
+  intransitive, // 0, 0_acc, '' // немає obj/ccomp
+  accusative, // {}, acc, acc_* не opt
   // optional, // acc_opt.*, acc|
 }
 
@@ -41,7 +39,7 @@ export class ValencyDict {
       return mu(this.nounOverlayValencies.getRaw(lemma)).unique()
     }
     let res = this.lookupGerund2verb(lemma)
-      .map(x => this.lookupVerbCases(x))
+      .map((x) => this.lookupVerbCases(x))
       .flattenShallowNaive()
       .unique()
     // if (this.nounOverlayValencies.has(lemma)) {
@@ -72,33 +70,39 @@ export class ValencyDict {
   }
 
   isTransitiveOnlyGerund(lemma: string) {
-    return this.hasGerund(lemma)
-      && this.lookupGerundCases(lemma).every(x => x === ValencyCase.accusative)
+    return (
+      this.hasGerund(lemma) &&
+      this.lookupGerundCases(lemma).every((x) => x === ValencyCase.accusative)
+    )
   }
 
   isIntransitiveOnlyGerund(lemma: string) {
-    return this.hasGerund(lemma)
-      && this.lookupGerundCases(lemma).every(x => x === ValencyCase.intransitive)
+    return (
+      this.hasGerund(lemma) &&
+      this.lookupGerundCases(lemma).every((x) => x === ValencyCase.intransitive)
+    )
   }
 
   isAmbigiousGerund(lemma: string) {
-    return this.hasGerund(lemma)
-      && this.lookupGerundCases(lemma).count() > 1
+    return this.hasGerund(lemma) && this.lookupGerundCases(lemma).count() > 1
   }
 
   isAccusativeOnlyVerb(lemma: string) {
-    return this.hasVerb(lemma)
-      && this.lookupVerbCases(lemma).every(x => x === ValencyCase.accusative)
+    return (
+      this.hasVerb(lemma) &&
+      this.lookupVerbCases(lemma).every((x) => x === ValencyCase.accusative)
+    )
   }
 
   isIntransitiveOnlyVerb(lemma: string) {
-    return this.hasVerb(lemma)
-      && this.lookupVerbCases(lemma).every(x => x === ValencyCase.intransitive)
+    return (
+      this.hasVerb(lemma) &&
+      this.lookupVerbCases(lemma).every((x) => x === ValencyCase.intransitive)
+    )
   }
 
   isAmbigiousVerb(lemma: string) {
-    return this.hasVerb(lemma)
-      && this.lookupVerbCases(lemma).count() > 1
+    return this.hasVerb(lemma) && this.lookupVerbCases(lemma).count() > 1
   }
 
   lookupVerb(lemma: string) {
@@ -131,13 +135,25 @@ export class ValencyDict {
     let numVerbTotal = this.valencies.size
     let numGerundsTotal = this.gerund2verb.size
 
-    let numUnambigTransitiveVerbs = mu(this.valencies.keys()).count(x => this.isAccusativeOnlyVerb(x))
-    let numUnambigIntransitiveVerbs = mu(this.valencies.keys()).count(x => this.isIntransitiveOnlyVerb(x))
-    let numUnambigTransitiveGerunds = mu(this.gerund2verb.keys()).count(x => this.isTransitiveOnlyGerund(x))
-    let numUnambigIntransitiveGerunds = mu(this.gerund2verb.keys()).count(x => this.isIntransitiveOnlyGerund(x))
+    let numUnambigTransitiveVerbs = mu(this.valencies.keys()).count((x) =>
+      this.isAccusativeOnlyVerb(x),
+    )
+    let numUnambigIntransitiveVerbs = mu(this.valencies.keys()).count((x) =>
+      this.isIntransitiveOnlyVerb(x),
+    )
+    let numUnambigTransitiveGerunds = mu(this.gerund2verb.keys()).count((x) =>
+      this.isTransitiveOnlyGerund(x),
+    )
+    let numUnambigIntransitiveGerunds = mu(this.gerund2verb.keys()).count((x) =>
+      this.isIntransitiveOnlyGerund(x),
+    )
 
-    let numAmbigVerbs = numVerbTotal - numUnambigTransitiveVerbs - numUnambigIntransitiveVerbs
-    let numAmbigGerunds = numGerundsTotal - numUnambigTransitiveGerunds - numUnambigIntransitiveGerunds
+    let numAmbigVerbs =
+      numVerbTotal - numUnambigTransitiveVerbs - numUnambigIntransitiveVerbs
+    let numAmbigGerunds =
+      numGerundsTotal -
+      numUnambigTransitiveGerunds -
+      numUnambigIntransitiveGerunds
     let percentAmbigVerbs = numAmbigVerbs / numVerbTotal
     let percentAmbigGerunds = numAmbigGerunds / numGerundsTotal
 
@@ -152,7 +168,9 @@ export class ValencyDict {
       numUnambigTransitiveGerunds,
       numUnambigIntransitiveGerunds,
       numAmbigGerunds,
-      numAmbigGerunds2: mu(this.gerund2verb.keys()).count(x => this.isAmbigiousGerund(x)),
+      numAmbigGerunds2: mu(this.gerund2verb.keys()).count((x) =>
+        this.isAmbigiousGerund(x),
+      ),
       percentAmbigGerunds,
     }
   }

@@ -1,7 +1,10 @@
 export class HashSet<T> /*implements Set<T>*/ {
   protected map = new Map<string, T>()
 
-  constructor(protected hasher: (value: T) => string = JSON.stringify, source?: Iterable<T>) {
+  constructor(
+    protected hasher: (value: T) => string = JSON.stringify,
+    source?: Iterable<T>,
+  ) {
     if (source) {
       for (let value of source) {
         this.add(value)
@@ -76,7 +79,7 @@ export interface IMap<K, V> {
 export class JsonCompareMap<K, V> implements IMap<K, V> {
   map = new Map<string, [K, V]>()
 
-  constructor() { }
+  constructor() {}
 
   has(key: K) {
     return this.map.has(JSON.stringify(key))
@@ -99,7 +102,8 @@ export class JsonCompareMap<K, V> implements IMap<K, V> {
   }
 }
 
-export class NumeratedSet<T> {  // todo move somewhere
+export class NumeratedSet<T> {
+  // todo move somewhere
   values = new Array<T>()
   ids: IMap<T, number>
 
@@ -122,7 +126,7 @@ export class NumeratedSet<T> {  // todo move somewhere
     return ret
   }
 
-  constructor(mapConstructor: { new(): IMap<T, number> } = Map) {
+  constructor(mapConstructor: { new (): IMap<T, number> } = Map) {
     this.ids = new mapConstructor()
   }
 
@@ -145,9 +149,7 @@ export class CachedFunctionResult<T> {
   private value: T
   private argsHash: string = undefined
 
-  constructor(private calculator: (...args) => T) {
-
-  }
+  constructor(private calculator: (...args) => T) {}
 
   get(...args) {
     let hash = JSON.stringify(args)
@@ -169,10 +171,7 @@ export class CachedFunctionResult<T> {
 }
 
 export class DefaultMap<K, V> extends Map<K, V> {
-  constructor(
-    private v: { new(): V; },
-    iterable?: Iterable<[K, V]>,
-  ) {
+  constructor(private v: { new (): V }, iterable?: Iterable<[K, V]>) {
     super(iterable)
   }
 
@@ -190,4 +189,3 @@ export class DefaultMap<K, V> extends Map<K, V> {
     return super.get(key)
   }
 }
-

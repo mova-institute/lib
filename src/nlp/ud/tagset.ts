@@ -1,16 +1,60 @@
 import {
-  NumeralForm, Abbreviation, AdjectiveAsNoun, Alternativity, Animacy,
-  Aspect, Auto, Badness, Beforeadj, Case, Inflectability, Colloquiality, ConjunctionType,
-  Degree, Dimin, Gender, VerbType, MorphNumber, N2adjness, NameType, NounType, NumberTantum,
-  Oddness, OrdinalNumeral, ParadigmOmonym, Person, Pos, Possessiveness,
-  PronominalType, Pronoun, Rarity, Reflexivity, RequiredAnimacy, RequiredCase, SemanticOmonym,
-  Slang, Tense, Variant, Polarity, VerbAuxilarity, Voice, VuAlternativity, Typo,
-  booleanFeatures, PrepositionRequirement, Foreign, GrammaticalAnimacy, Formality,
-  PartType, PunctuationType, PunctuationSide, VerbReversivity, DictValency,
+  NumeralForm,
+  Abbreviation,
+  AdjectiveAsNoun,
+  Alternativity,
+  Animacy,
+  Aspect,
+  Auto,
+  Badness,
+  Beforeadj,
+  Case,
+  Inflectability,
+  Colloquiality,
+  ConjunctionType,
+  Degree,
+  Dimin,
+  Gender,
+  VerbType,
+  MorphNumber,
+  N2adjness,
+  NameType,
+  NounType,
+  NumberTantum,
+  Oddness,
+  OrdinalNumeral,
+  ParadigmOmonym,
+  Person,
+  Pos,
+  Possessiveness,
+  PronominalType,
+  Pronoun,
+  Rarity,
+  Reflexivity,
+  RequiredAnimacy,
+  RequiredCase,
+  SemanticOmonym,
+  Slang,
+  Tense,
+  Variant,
+  Polarity,
+  VerbAuxilarity,
+  Voice,
+  VuAlternativity,
+  Typo,
+  booleanFeatures,
+  PrepositionRequirement,
+  Foreign,
+  GrammaticalAnimacy,
+  Formality,
+  PartType,
+  PunctuationType,
+  PunctuationSide,
+  VerbReversivity,
+  DictValency,
 } from '../morph_features'
 
 import { MorphInterp, featureName2objMap } from '../morph_interp'
-
 
 export type UdBoolean = 'Yes'
 export type UdNegBoolean = 'No'
@@ -19,11 +63,11 @@ export type UdAnimacy = 'Anim' | 'Nhum' | 'Inan'
 export type UdAspect = 'Imp' | 'Perf'
 export type UdCase = 'Nom' | 'Gen' | 'Dat' | 'Acc' | 'Ins' | 'Loc' | 'Voc'
 export type UdDegree = 'Pos' | 'Cmp' | 'Sup' | 'Abs'
-export type UdForeign = UdBoolean    // todo
-export type UdHyph = UdBoolean    // todo
+export type UdForeign = UdBoolean // todo
+export type UdHyph = UdBoolean // todo
 export type UdGender = 'Masc' | 'Fem' | 'Neut' | 'Com'
 export type UdMood = 'Ind' | 'Imp' | 'Cnd'
-export type UdNameType = 'Giv' | 'Sur' | 'Pat' | 'Oth'    // todo
+export type UdNameType = 'Giv' | 'Sur' | 'Pat' | 'Oth' // todo
 export type UdNumber = 'Sing' | 'Plur' | 'Ptan'
 export type UdNumForm = 'Digit' | 'Roman' | 'Word'
 export type UdPerson = '0' | '1' | '2' | '3'
@@ -44,43 +88,42 @@ export type UdUninflect = UdBoolean
 export type UdReversivity = UdBoolean
 export type UdValency = 'Acc' | 'Intrans' | 'Ambig'
 export type UdPos =
-  'ADJ' |
-  'ADP' |
-  'ADV' |
-  'AUX' |
-  'CCONJ' |
-  'DET' |
-  'INTJ' |
-  'NOUN' |
-  'NUM' |
-  'PART' |
-  'PRON' |
-  'PROPN' |
-  'PUNCT' |
-  'SCONJ' |
-  'SYM' |
-  'VERB' |
-  'X'
+  | 'ADJ'
+  | 'ADP'
+  | 'ADV'
+  | 'AUX'
+  | 'CCONJ'
+  | 'DET'
+  | 'INTJ'
+  | 'NOUN'
+  | 'NUM'
+  | 'PART'
+  | 'PRON'
+  | 'PROPN'
+  | 'PUNCT'
+  | 'SCONJ'
+  | 'SYM'
+  | 'VERB'
+  | 'X'
 export type UdPronType =
-  'Prs' |
-  'Rcp' |
-  'Art' |
-  'Int' |
-  'Rel' |
-  'Dem' |
-  'Tot' |
-  'Neg' |
-  'Ind' |
-  'Emp'
+  | 'Prs'
+  | 'Rcp'
+  | 'Art'
+  | 'Int'
+  | 'Rel'
+  | 'Dem'
+  | 'Tot'
+  | 'Neg'
+  | 'Ind'
+  | 'Emp'
 export type UdNumType =
-  'Card' |
-  'Ord' |
-  'Mult' |
-  'Frac' |
-  'Sets' |
-  'Dist' |
-  'Range'
-
+  | 'Card'
+  | 'Ord'
+  | 'Mult'
+  | 'Frac'
+  | 'Sets'
+  | 'Dist'
+  | 'Range'
 
 export const featureObj2nameMapUd = new Map<any, string>([
   [Abbreviation, 'Abbr'],
@@ -131,7 +174,7 @@ export const featureObj2nameMapUd = new Map<any, string>([
 ])
 
 const posMap = new Map<Pos, UdPos>([
-  [Pos.noun, 'NOUN'],  // caution
+  [Pos.noun, 'NOUN'], // caution
   [Pos.adjective, 'ADJ'],
   [Pos.interjection, 'INTJ'],
   [Pos.verb, 'VERB'],
@@ -142,7 +185,7 @@ const posMap = new Map<Pos, UdPos>([
   [Pos.punct, 'PUNCT'],
   [Pos.preposition, 'ADP'],
   [Pos.cardinalNumeral, 'NUM'],
-  [Pos.error, 'X'],  // todo: throw
+  [Pos.error, 'X'], // todo: throw
   // [Pos, ''],
 ])
 
@@ -224,7 +267,7 @@ const promonialTypeMap = new Map<PronominalType, UdPronType>([
   [PronominalType.general, 'Tot'],
   [PronominalType.negative, 'Neg'],
   [PronominalType.indefinite, 'Ind'],
-  [PronominalType.emphatic, 'Emp'],    // temp?
+  [PronominalType.emphatic, 'Emp'], // temp?
   // [PronominalType.reflexive, ''],
 ])
 
@@ -258,13 +301,9 @@ const prepositionRequirementMap = new Map<PrepositionRequirement, UdPrepCase>([
   [PrepositionRequirement.yes, 'Pre'],
 ])
 
-const politeMap = new Map<Formality, UdPolite>([
-  [Formality.yes, 'Form'],
-])
+const politeMap = new Map<Formality, UdPolite>([[Formality.yes, 'Form']])
 
-const orthoMap = new Map<Alternativity, UdOrth>([
-  [Alternativity.yes, 'Alt'],
-])
+const orthoMap = new Map<Alternativity, UdOrth>([[Alternativity.yes, 'Alt']])
 
 const partTypeMap = new Map<PartType, UdPartType>([
   [PartType.personal, 'Prs'],
@@ -319,8 +358,6 @@ const mapMap = new Map<any, any>([
   [DictValency, valencyTypeMap],
 ])
 
-
-
 /* tslint:disable:variable-name */
 export class UdFeats {
   // POS: UdPos
@@ -367,7 +404,7 @@ function mapFeatureValue2ud(featureName, value) {
   }
   let udFeatureName = featureObj2nameMapUd.get(feature)
   if (udFeatureName) {
-    if (booleanFeatures.find(x => x === feature)) {
+    if (booleanFeatures.find((x) => x === feature)) {
       return [udFeatureName, 'Yes']
     } else {
       let udFeatureMap = mapMap.get(feature)
@@ -382,7 +419,7 @@ function mapFeatureValue2ud(featureName, value) {
 }
 
 export function toUd(interp: MorphInterp) {
-  interp.denormalize()  // todo: remove
+  interp.denormalize() // todo: remove
 
   if (interp.isEmphatic()) {
     throw new Error(`Emphatic pronouns are to be split to multitokens`)
@@ -506,11 +543,15 @@ const comparator = new Intl.Collator('en', { sensitivity: 'base' }).compare
 export function udFeatures2conlluString(features: UdFeats, separator = '|') {
   return Object.keys(features)
     .sort(comparator)
-    .map(key => `${key}=${features[key]}`)
+    .map((key) => `${key}=${features[key]}`)
     .join(separator)
 }
 
-export function ud2conlluishString(pos: UdPos, features: UdFeats, separator = '|') {
+export function ud2conlluishString(
+  pos: UdPos,
+  features: UdFeats,
+  separator = '|',
+) {
   let ret = pos
   let featuresConllu = udFeatures2conlluString(features, separator)
   if (featuresConllu) {
@@ -527,4 +568,3 @@ export function toConlluishString(interp: MorphInterp) {
 export function toUdString(interp: MorphInterp) {
   return udFeatures2conlluString(toUd(interp).features)
 }
-

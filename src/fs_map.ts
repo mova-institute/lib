@@ -4,11 +4,8 @@ import { sync as mkdirpSync } from 'mkdirp'
 
 import * as fs from 'fs'
 
-
-
 export class FsMap {
-  constructor(private directoryPath: string) {
-  }
+  constructor(private directoryPath: string) {}
 
   set(key: string, value: Buffer | string) {
     // console.log(`writingggggg to ${key} ${value.length}`)

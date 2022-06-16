@@ -1,13 +1,12 @@
 export class ModuloCounter {
-  constructor(private modulo: number, private state = 0) {
-  }
+  constructor(private modulo: number, private state = 0) {}
 
   get() {
     return this.state
   }
 
   inc() {
-    return this.state = ++this.state % this.modulo
+    return (this.state = ++this.state % this.modulo)
   }
 
   incPost() {

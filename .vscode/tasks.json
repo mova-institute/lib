@@ -9,9 +9,7 @@
       "isBuildCommand": true,
       "showOutput": "silent",
       "isBackground": true,
-      "problemMatcher": [
-        "$msCompile"
-      ]
+      "problemMatcher": ["$msCompile"]
     }
   ]
 }

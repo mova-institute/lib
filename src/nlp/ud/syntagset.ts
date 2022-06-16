@@ -64,6 +64,4 @@ export type Ud20MiSpecificRelation =
   | 'parataxis:rel'
   | 'xcomp:sp'
 
-
 export type UdMiRelation = Ud20UniversalRelation | Ud20MiSpecificRelation
-

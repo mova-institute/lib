@@ -2,14 +2,12 @@
 
 import { Crawler } from './crawler'
 
-
-
 async function main() {
   let crawler = new Crawler('saved_web')
     .setUrlsToSave(({ pathname }) => isForumPage(pathname))
     .setUrlsToFollow([
-      x => isForumPage(x.pathname),
-      x => /\/forum\/\d+\/(page__prune_day\S*)?$/.test(x.pathname),
+      (x) => isForumPage(x.pathname),
+      (x) => /\/forum\/\d+\/(page__prune_day\S*)?$/.test(x.pathname),
     ])
 
   await crawler.seed('http://tereveni.org/index')

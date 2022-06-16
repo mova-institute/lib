@@ -1,17 +1,23 @@
 import { Token, TokenTag } from '../token'
 import { toUd, udFeatures2conlluString } from './tagset'
 import { MorphInterp } from '../morph_interp'
-import { MultitokenDescriptor, tokenStream2plaintext, removeCombiningAccent } from '../utils'
+import {
+  MultitokenDescriptor,
+  tokenStream2plaintext,
+  removeCombiningAccent,
+} from '../utils'
 import { mu } from '../../mu'
 import { GraphNode } from '../../graph'
 import { titlecase, trimAfterFirst, trimBeforeFirst } from '../../string'
-import { CONJ_PROPAGATION_RELS_ARR, isRootOrHole, isAmbigCoordModifier } from './uk_grammar'
+import {
+  CONJ_PROPAGATION_RELS_ARR,
+  isRootOrHole,
+  isAmbigCoordModifier,
+} from './uk_grammar'
 import { Dict } from '../../types'
 
 import sortby = require('lodash.sortby')
 import { cyrToJirechekish } from '../../translit_jirechkish'
-
-
 
 export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos' | 'ud'
@@ -25,7 +31,7 @@ export function sentence2conllu(
   tokens: Array<Token>,
   multitokens: Array<MultitokenDescriptor>,
   sentenceLevelData,
-  options: Sentence2conlluParams = {}
+  options: Sentence2conlluParams = {},
 ) {
   let text = mu(tokenStream2plaintext(tokens, multitokens)).join('')
   let comments = [`text = ${text}`]
@@ -44,14 +50,12 @@ export function sentence2conllu(
     }
   }
 
-
-  let lines = comments.sort().map(x => `# ${x}`)
+  let lines = comments.sort().map((x) => `# ${x}`)
 
   let indices = buildConlluIndexMap(tokens)
   let numElided = 0
   let multitokenIdx = 0
   for (let [i, token] of tokens.entries()) {
-
     if (token.isElided()) {
       ++numElided
     }
@@ -62,11 +66,13 @@ export function sentence2conllu(
       let mt = multitokens[multitokenIdx]
       isInsideMultitoken = i >= mt.startIndex
       if (i === mt.startIndex) {
-        lines.push([
-          `${i + 1 - numElided}-${i + mt.spanLength - numElided}`,  // todo: simplify
-          mt.form,
-          ...'_'.repeat(7),
-        ].join('\t'))
+        lines.push(
+          [
+            `${i + 1 - numElided}-${i + mt.spanLength - numElided}`, // todo: simplify
+            mt.form,
+            ...'_'.repeat(7),
+          ].join('\t'),
+        )
       } else if (i === mt.startIndex + mt.spanLength - 1) {
         lines[lines.length - mt.spanLength] +=
           '\t' + (token.gluedNext ? 'SpaceAfter=No' : '_')
@@ -97,13 +103,13 @@ export function sentence2conllu(
     }
     if (options.translit) {
       let formTranslit = cyrToJirechekish(token.getForm())
-      formTranslit = removeCombiningAccent(formTranslit)  // todo
+      formTranslit = removeCombiningAccent(formTranslit) // todo
       formTranslit = escapeMiscVal(formTranslit)
       miscs.push(['Translit', formTranslit])
 
       if (token.interp.lemma) {
         let lemmaTranslit = cyrToJirechekish(token.interp.lemma)
-        lemmaTranslit = removeCombiningAccent(lemmaTranslit)  // todo
+        lemmaTranslit = removeCombiningAccent(lemmaTranslit) // todo
         lemmaTranslit = escapeMiscVal(lemmaTranslit)
         miscs.push(['LTranslit', lemmaTranslit])
       }
@@ -141,7 +147,7 @@ export function sentence2conllu(
     let head: string
     let deprel: string
     if (!options.morphOnly && !token.isElided()) {
-      let dep = token.deps.find(x => !tokens[x.headIndex].isElided())
+      let dep = token.deps.find((x) => !tokens[x.headIndex].isElided())
       if (dep) {
         head = indices[dep.headIndex]
         deprel = dep.relation
@@ -151,23 +157,30 @@ export function sentence2conllu(
       }
     }
 
-    let edeps = sortby(token.edeps, x => x.headIndex, x => x.relation)
-      .map(x => `${indices[x.headIndex] || 0}:${x.relation}`)
-    let misc = sortby(miscs, 0).map(x => x.join('=')).join('|')
+    let edeps = sortby(
+      token.edeps,
+      (x) => x.headIndex,
+      (x) => x.relation,
+    ).map((x) => `${indices[x.headIndex] || 0}:${x.relation}`)
+    let misc = sortby(miscs, 0)
+      .map((x) => x.join('='))
+      .join('|')
 
-    lines.push([
-      indices[i],
-      token.getForm(),
-      token.interp.lemma || '_',
-      pos,
-      xpos,
-      udFeatureStr || '_',
-      head || '_',
-      deprel || '_',
-      edeps.join('|') || '_',
-      misc || '_',
-      // ↑ see https://github.com/UniversalDependencies/docs/issues/569
-    ].join('\t'))
+    lines.push(
+      [
+        indices[i],
+        token.getForm(),
+        token.interp.lemma || '_',
+        pos,
+        xpos,
+        udFeatureStr || '_',
+        head || '_',
+        deprel || '_',
+        edeps.join('|') || '_',
+        misc || '_',
+        // ↑ see https://github.com/UniversalDependencies/docs/issues/569
+      ].join('\t'),
+    )
   }
 
   return lines.join('\n')
@@ -243,14 +256,19 @@ export function* tokenStream2bratPlaintext(stream: Iterable<Array<Token>>) {
 }
 
 export function tokenSentence2bratPlaintext(sentence: Array<Token>) {
-  return sentence.filter(x => x.isWord()).map(x => x.getForm()).join(' ')
+  return sentence
+    .filter((x) => x.isWord())
+    .map((x) => x.getForm())
+    .join(' ')
 }
 
 function hasAmbigCoordDependents(node: GraphNode<Token>) {
-  return node.children.some(x => isAmbigCoordModifier(x))
+  return node.children.some((x) => isAmbigCoordModifier(x))
 }
 
-export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>) {
+export function* tokenStream2bratSynt(
+  sentences: Array<Array<GraphNode<Token>>>,
+) {
   let offset = 0
   let t = 1
   let a = 1
@@ -276,8 +294,8 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
       let { pos, features } = toUd(token.interp)
 
       Object.keys(features)
-        .filter(x => /[[\]]/.test(x))
-        .forEach(x => delete features[x])
+        .filter((x) => /[[\]]/.test(x))
+        .forEach((x) => delete features[x])
 
       if (isAmbigCoordModifier(node)) {
         features['IsAmbigCoordModifier'] = 'Yes'
@@ -317,18 +335,26 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
       if (comment) {
         yield `#${commentN++}\tAnnotatorNotes ${tId}\t${comment}`
       }
-      offset = rightOffset + 1    // account for space
+      offset = rightOffset + 1 // account for space
     }
   }
 
   let rId = 1
   for (let sentence of sentences) {
     for (let token of sentence) {
-      for (let deps of [token.node.deps, token.node.edeps, token.node.pdeps, token.node.hdeps]) {
+      for (let deps of [
+        token.node.deps,
+        token.node.edeps,
+        token.node.pdeps,
+        token.node.hdeps,
+      ]) {
         for (let dep of deps) {
           let head = n2id[dep.headId]
           let dependant = n2id[token.node.id]
-          yield `R${rId++}\t${dep.relation.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
+          yield `R${rId++}\t${dep.relation.replace(
+            ':',
+            '_',
+          )} Arg1:T${head} Arg2:T${dependant}`
         }
       }
     }
@@ -370,7 +396,7 @@ export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
       if (comment) {
         yield `#${commentN++}\tAnnotatorNotes ${tId}\t${comment}`
       }
-      offset = rightOffset + 1    // account for space
+      offset = rightOffset + 1 // account for space
     }
   }
 
@@ -380,14 +406,17 @@ export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
       for (let dep of token.corefs) {
         let head = n2id[dep.headId]
         let dependant = n2id[token.id]
-        yield `R${rId++}\t${dep.type.replace(':', '_')} Arg1:T${head} Arg2:T${dependant}`
+        yield `R${rId++}\t${dep.type.replace(
+          ':',
+          '_',
+        )} Arg1:T${head} Arg2:T${dependant}`
       }
     }
   }
 }
 
 function mustHighlightHoles(sentence: Array<GraphNode<Token>>) {
-  let numRoots = mu(sentence).count(x => isRootOrHole(x))
+  let numRoots = mu(sentence).count((x) => isRootOrHole(x))
   if (numRoots === 1) {
     return false
   }
@@ -408,7 +437,7 @@ export function* conll2sentenceStream(lines: Iterable<string>) {
     } else if (/^\s*(#|$)/.test(line)) {
       continue
     } else {
-      buf.push(line.split('\t').map(x => x.trim()))
+      buf.push(line.split('\t').map((x) => x.trim()))
     }
   }
 }
@@ -427,16 +456,16 @@ export function interp2udVertFeatures(interp: MorphInterp) {
     features.Aspect,
     features.Case,
     features.Degree,
-    features.Foreign,  // todo
+    features.Foreign, // todo
     features.Gender,
     features.Mood,
-    features.NameType,  // todo
+    features.NameType, // todo
     features.Number,
-    features.NumForm,  // todo
+    features.NumForm, // todo
     features.NumType,
     features.Person,
     features.Poss,
-    features.PrepCase,  // todo
+    features.PrepCase, // todo
     features.PronType,
     features.Reflex,
     features.Tense,
@@ -534,10 +563,12 @@ export function changeUniversal(specRel: string, to: string) {
   return `${to}:${trimBeforeFirst(specRel, ':')}`
 }
 
-export function uEq(rel: string, unirel: string) {  // universally equals
-  return rel === unirel || rel && rel.startsWith(`${unirel}:`)
+export function uEq(rel: string, unirel: string) {
+  // universally equals
+  return rel === unirel || (rel && rel.startsWith(`${unirel}:`))
 }
 
-export function uEqSome(rel: string, unirels: Array<string>) {  // universally equals
-  return unirels.some(x => uEq(rel, x))
+export function uEqSome(rel: string, unirels: Array<string>) {
+  // universally equals
+  return unirels.some((x) => uEq(rel, x))
 }

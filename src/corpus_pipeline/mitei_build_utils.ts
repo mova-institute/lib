@@ -4,12 +4,20 @@ import { sync as globSync } from 'glob'
 
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { applyMiTeiDocTransforms, tokenizeMixml, morphInterpret, interpretedTeiDoc2sketchVertical2 } from '../nlp/utils'
+import {
+  applyMiTeiDocTransforms,
+  tokenizeMixml,
+  morphInterpret,
+  interpretedTeiDoc2sketchVertical2,
+} from '../nlp/utils'
 import { mu } from '../mu'
 import { $d } from '../nlp/mi_tei_document'
 
-
-export function buildMiteiVertical(miteiPath: string, analyzer: MorphAnalyzer, verticalFile: number) {
+export function buildMiteiVertical(
+  miteiPath: string,
+  analyzer: MorphAnalyzer,
+  verticalFile: number,
+) {
   let files = globSync(`${miteiPath}/**/*.xml`)
   for (let file of files) {
     console.log(`processing ${file}`)
@@ -26,6 +34,6 @@ export function buildMiteiVertical(miteiPath: string, analyzer: MorphAnalyzer, v
 
     mu(interpretedTeiDoc2sketchVertical2(root, meta))
       .chunk(10000)
-      .forEach(x => writeSync(verticalFile, x.join('\n') + '\n'))
+      .forEach((x) => writeSync(verticalFile, x.join('\n') + '\n'))
   }
 }

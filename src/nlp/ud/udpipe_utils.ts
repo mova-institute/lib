@@ -1,7 +1,6 @@
 import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { toUd, udFeatures2conlluString } from './tagset'
 
-
 export function buildNumeralMap() {
   let analyzer = createMorphAnalyzerSync()
   let map = analyzer.getNumeralMap()

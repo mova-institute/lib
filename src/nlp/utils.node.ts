@@ -3,7 +3,6 @@ import { parseXml } from '../xml/utils.node'
 import { LibxmljsElement } from '../xml/xmlapi_libxmljs/libxmljs_element'
 import * as he from 'he'
 
-
 export function markWordwiseDiffStr(mineStr: string, theirsStr: string) {
   let mine = parseXml(mineStr)
   return {
@@ -22,13 +21,15 @@ export function normalizeCorpusTextTxt(xmlstr: string) {
 }
 
 const mustEscapeInText = new Set(['lt', 'amp'])
-export function normalizeEntities(text: string) {  // todo: wait for libxmljs issues resolved
+export function normalizeEntities(text: string) {
+  // todo: wait for libxmljs issues resolved
   text = text.replace(/&(\w+);/g, (match, p1) => {
     if (mustEscapeInText.has(p1)) {
       return match
     }
     let decoded = he.escape(match)
-    if (/^\s$/.test(decoded)) {  // todo: wait for unicode
+    if (/^\s$/.test(decoded)) {
+      // todo: wait for unicode
       return ''
     }
     return decoded

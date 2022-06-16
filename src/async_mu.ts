@@ -23,43 +23,49 @@ export class AMu<T> implements AsyncIterable<T> {
   iterator: AsyncIterator<T>
 
   static chain<T>(...iterables: Array<AsyncIterable<T> | T>) {
-    return amu((async function* () {
-      for await (let it of iterables) {
-        if (isIterable(it)) {
-          yield* (it as AsyncIterable<T>)
-        } else {
-          yield it as T
+    return amu(
+      (async function* () {
+        for await (let it of iterables) {
+          if (isIterable(it)) {
+            yield* it as AsyncIterable<T>
+          } else {
+            yield it as T
+          }
         }
-      }
-    })())
+      })(),
+    )
   }
 
   static zip<T>(...iterables: Array<AsyncIterable<T> | T>): AMu<Array<T>> {
-    return amu((async function* () {
-      let iterators = iterables.map(x => x[Symbol.asyncIterator]())
+    return amu(
+      (async function* () {
+        let iterators = iterables.map((x) => x[Symbol.asyncIterator]())
 
-      let toyield: Array<T> = []
-      while (true) {
-        for await (let it of iterators) {
-          let { done, value } = it.next()
-          if (done) {
-            return
+        let toyield: Array<T> = []
+        while (true) {
+          for await (let it of iterators) {
+            let { done, value } = it.next()
+            if (done) {
+              return
+            }
+            toyield.push(value)
           }
-          toyield.push(value)
+          yield toyield
+          toyield = []
         }
-        yield toyield
-        toyield = []
-      }
-    })())
+      })(),
+    )
   }
 
   static seq(start = 0, step = 1) {
-    return amu((async function* () {
-      while (true) {
-        yield start
-        start += step
-      }
-    })())
+    return amu(
+      (async function* () {
+        while (true) {
+          yield start
+          start += step
+        }
+      })(),
+    )
   }
 
   constructor(iterable: AsyncIterable<T>) {
@@ -73,61 +79,67 @@ export class AMu<T> implements AsyncIterable<T> {
   chunk(n: number) {
     let buf = new Array<T>()
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (buf.length >= n) {
-          yield buf
-          buf = []
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (buf.length >= n) {
+            yield buf
+            buf = []
+          }
+          buf.push(x)
         }
-        buf.push(x)
-      }
-      if (buf.length) {
-        yield buf
-      }
-    })())
+        if (buf.length) {
+          yield buf
+        }
+      })(),
+    )
   }
 
   chunkByMax(n: number, lengther: (x: T) => number) {
     let buf = new Array<T>()
     let curLength = 0
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        let xLength = lengther(x)
-        if (curLength + xLength > n && buf.length) {
-          yield buf
-          buf = []
-          curLength = 0
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          let xLength = lengther(x)
+          if (curLength + xLength > n && buf.length) {
+            yield buf
+            buf = []
+            curLength = 0
+          }
+          buf.push(x)
+          curLength += xLength
         }
-        buf.push(x)
-        curLength += xLength
-      }
-      if (buf.length) {
-        yield buf
-      }
-    })())
+        if (buf.length) {
+          yield buf
+        }
+      })(),
+    )
   }
 
   split(fn: Predicate<T>) {
     let buf = new Array<T>()
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (fn(x)) {
-          yield [buf, x] as [Array<T>, T]
-          buf = []
-        } else {
-          buf.push(x)
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (fn(x)) {
+            yield [buf, x] as [Array<T>, T]
+            buf = []
+          } else {
+            buf.push(x)
+          }
         }
-      }
-      if (buf.length) {
-        yield [buf, undefined] as [Array<T>, T]
-      }
-    })())
+        if (buf.length) {
+          yield [buf, undefined] as [Array<T>, T]
+        }
+      })(),
+    )
   }
 
   split0(fn: Predicate<T>) {
-    return this.split(fn).map(x => x[0])
+    return this.split(fn).map((x) => x[0])
   }
 
   async window(n: number, focus = 0) {
@@ -138,69 +150,79 @@ export class AMu<T> implements AsyncIterable<T> {
 
     let buf = new Array<T>(focus)
     let topush = await this.take(n - 1 - focus).toArray()
-    buf.push(...topush)  // todo
+    buf.push(...topush) // todo
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        buf.push(x)
-        yield [...buf]
-        buf.shift()
-      }
-      while (buf.length > focus) {
-        yield [...buf]
-        buf.shift()
-      }
-    })())
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          buf.push(x)
+          yield [...buf]
+          buf.shift()
+        }
+        while (buf.length > focus) {
+          yield [...buf]
+          buf.shift()
+        }
+      })(),
+    )
   }
 
   take(n: number) {
     const thiss = this
-    return amu((async function* () {
-      if (n < 1) {
-        return
-      }
-      let i = 0
-      for await (let x of thiss) {
-        yield x
-        if (++i >= n) {
-          break
+    return amu(
+      (async function* () {
+        if (n < 1) {
+          return
         }
-      }
-    })())
+        let i = 0
+        for await (let x of thiss) {
+          yield x
+          if (++i >= n) {
+            break
+          }
+        }
+      })(),
+    )
   }
 
   takeWhile(fn: Predicate<T>) {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (!fn(x)) {
-          return
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (!fn(x)) {
+            return
+          }
+          yield x
         }
-        yield x
-      }
-    })())
+      })(),
+    )
   }
 
   takeWhileIncluding(fn: Predicate<T>) {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        yield x
-        if (!fn(x)) {
-          return
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          yield x
+          if (!fn(x)) {
+            return
+          }
         }
-      }
-    })())
+      })(),
+    )
   }
 
   entries() {
     const thiss = this
     let i = 0
-    return amu((async function* () {
-      for await (let x of thiss) {
-        yield [i++, x] as [number, T]
-      }
-    })())
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          yield [i++, x] as [number, T]
+        }
+      })(),
+    )
   }
 
   async forEach(fn: (x: T, i: number) => any) {
@@ -213,104 +235,122 @@ export class AMu<T> implements AsyncIterable<T> {
 
   filter(fn: Predicate<T>) {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (fn(x)) {
-          yield x
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (fn(x)) {
+            yield x
+          }
         }
-      }
-    })())
+      })(),
+    )
   }
 
   findAllIndexes(fn: PredicateWithIndex<T>) {
     const thiss = this
     let i = 0
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (fn(x, i)) {
-          yield i
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (fn(x, i)) {
+            yield i
+          }
+          ++i
         }
-        ++i
-      }
-    })())
+      })(),
+    )
   }
 
   unique() {
     const thiss = this
     const seen = new Set()
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (!seen.has(x)) {
-          yield x
-          seen.add(x)
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (!seen.has(x)) {
+            yield x
+            seen.add(x)
+          }
         }
-      }
-      seen.clear()
-    })())
+        seen.clear()
+      })(),
+    )
   }
 
   flattenShallowNaive() {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        yield* x as any
-      }
-    })())
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          yield* x as any
+        }
+      })(),
+    )
   }
 
   flatten(shallow = false): AMu<any> {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (typeof x !== 'string' && isIterable(x)) {
-          if (shallow) {
-            yield* (x as any)
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (typeof x !== 'string' && isIterable(x)) {
+            if (shallow) {
+              yield* x as any
+            } else {
+              yield* amu(x as any).flatten()
+            }
           } else {
-            yield* amu(x as any).flatten()
+            yield x
           }
-        } else {
-          yield x
         }
-      }
-    })())
+      })(),
+    )
   }
 
   map<MappedT>(fn: (x: T) => MappedT) {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        yield fn(x)
-      }
-    })())
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          yield fn(x)
+        }
+      })(),
+    )
   }
 
   mapAwait<MappedT>(fn: (x: T) => Promise<MappedT>) {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        yield await fn(x) as MappedT
-      }
-    })())
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          yield (await fn(x)) as MappedT
+        }
+      })(),
+    )
   }
 
   transform(fn: (x: T, i: number) => void) {
     const thiss = this
     let i = 0
-    return amu((async function* () {
-      for await (let x of thiss) {
-        fn(x, i++)
-        yield x
-      }
-    })())
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          fn(x, i++)
+          yield x
+        }
+      })(),
+    )
   }
 
   pluck(prop: string | number) {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        yield x[prop]
-      }
-    })())
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          yield x[prop]
+        }
+      })(),
+    )
   }
 
   /*
@@ -338,7 +378,7 @@ export class AMu<T> implements AsyncIterable<T> {
   }
 
   has(thing: T) {
-    return this.some(x => x === thing)
+    return this.some((x) => x === thing)
   }
 
   async every(fn: Predicate<T>) {
@@ -379,14 +419,16 @@ export class AMu<T> implements AsyncIterable<T> {
 
   drop(n = 1) {
     const thiss = this
-    return amu((async function* () {
-      for await (let x of thiss) {
-        if (--n >= 0) {
-          continue
+    return amu(
+      (async function* () {
+        for await (let x of thiss) {
+          if (--n >= 0) {
+            continue
+          }
+          yield x
         }
-        yield x
-      }
-    })())
+      })(),
+    )
   }
 
   first() {

@@ -12,7 +12,9 @@ import { fetchText } from '../request'
 import * as f from '../nlp/morph_features'
 import { Token } from '../nlp/token'
 import {
-  serializeMiDocument, tokenStream2sentences, mixml2tokenStream,
+  serializeMiDocument,
+  tokenStream2sentences,
+  mixml2tokenStream,
   tokenStream2plaintextString,
   createMultitokenElement,
   createTokenElement,
@@ -38,8 +40,6 @@ import { uniq } from 'lodash'
 import { clusterize, stableSort } from '../algo'
 import { tuple, shallowEqualArrays } from '../lang'
 
-
-
 const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
 const INSERTION_RE = /#<(\S+)/
 
@@ -51,20 +51,13 @@ interface CliArgs {
 }
 
 // temp
-const KNOWN_NONDIC_LEMMAS = new Set([
-  'п.',
-  'неповчальний',
-  'і.',
-  'телеведучий',
-])
+const KNOWN_NONDIC_LEMMAS = new Set(['п.', 'неповчальний', 'і.', 'телеведучий'])
 
 const ukMonthsGen = new Set(ukMonthMap.keys())
 
 async function main() {
   let args = minimist<CliArgs>(process.argv.slice(2), {
-    boolean: [
-      'afterAnnotator',
-    ],
+    boolean: ['afterAnnotator'],
   })
   let files = glob.sync(args.glob)
   let tokenCount = 0
@@ -79,7 +72,6 @@ async function main() {
     console.log(`removing legacy namespaces & autofixing xml…`)
     autofixXml(files)
   }
-
 
   console.log(`applying autofixes…`)
 
@@ -124,12 +116,11 @@ async function main() {
       }
 
       // do safe transforms
-      interpLoop:
-      while (true) {
+      interpLoop: while (true) {
         let interpEls = root.evaluateElements('//w_/w')
         for (let interpEl of interpEls) {
           // continue
-          let form = interpEl.text() as string  // todo: remove as
+          let form = interpEl.text() as string // todo: remove as
           let tag = interpEl.attribute('ana')
           let lemma = interpEl.attribute('lemma')
           if (!tag || !lemma) {
@@ -138,19 +129,25 @@ async function main() {
           let interp: MorphInterp
           try {
             interp = MorphInterp.fromVesumStr(
-              interpEl.attribute('ana'), interpEl.attribute('lemma'), undefined, true)
+              interpEl.attribute('ana'),
+              interpEl.attribute('lemma'),
+              undefined,
+              true,
+            )
           } catch (e) {
             console.error(e.message)
             continue
           }
 
           let interpsInDict = analyzer.tag(form)
-          let presentInDict = interpsInDict.some(dictInterp => dictInterp.featurewiseEquals(interp))
+          let presentInDict = interpsInDict.some((dictInterp) =>
+            dictInterp.featurewiseEquals(interp),
+          )
           // console.log(presentInDict)
           if (!presentInDict) {
             // negativity
             let newInterp = interp.clone().setIsNegative()
-            if (interpsInDict.some(x => x.featurewiseEquals(newInterp))) {
+            if (interpsInDict.some((x) => x.featurewiseEquals(newInterp))) {
               interp = newInterp
             }
           }
@@ -167,7 +164,7 @@ async function main() {
 
           // advp lemmas
           if (interp.isConverb()) {
-            let dictInterps = analyzer.tag(form).filter(x => x.isConverb)
+            let dictInterps = analyzer.tag(form).filter((x) => x.isConverb)
             if (dictInterps.length) {
               interp.lemma = dictInterps[0].lemma
             }
@@ -178,24 +175,31 @@ async function main() {
           if (interp.isAdjectiveAsNoun() && !lemma2) {
             let adjLemma = lemma2 || interp.lemma
             interpEl.setAttribute('lemma2', adjLemma)
-            let lexeme = dict.lookupLexemesByLemma(adjLemma)
-              .find(([{ flags }]) => MorphInterp.fromVesumStr(flags).isAdjective())
+            let lexeme = dict
+              .lookupLexemesByLemma(adjLemma)
+              .find(([{ flags }]) =>
+                MorphInterp.fromVesumStr(flags).isAdjective(),
+              )
             if (lexeme) {
-              let nounLemma =
-                lexeme.find(({ flags }) => {
-                  let cursor = MorphInterp.fromVesumStr(flags)
-                  let ret = !cursor.isUncontracted()
-                    && ((cursor.isPlural() && cursor.features.number === interp.features.number)
-                      || cursor.features.gender === interp.features.gender)
-                  return ret
-                })
+              let nounLemma = lexeme.find(({ flags }) => {
+                let cursor = MorphInterp.fromVesumStr(flags)
+                let ret =
+                  !cursor.isUncontracted() &&
+                  ((cursor.isPlural() &&
+                    cursor.features.number === interp.features.number) ||
+                    cursor.features.gender === interp.features.gender)
+                return ret
+              })
               if (nounLemma) {
                 interp.lemma = nounLemma.form
               } else {
                 console.log(`Nothingo ${interp.lemma}`)
                 // console.log(`Nothingo ${interp.lemma}`)
               }
-            } else if (!interp.isOrdinalNumeral() && !KNOWN_NONDIC_LEMMAS.has(interp.lemma)) {
+            } else if (
+              !interp.isOrdinalNumeral() &&
+              !KNOWN_NONDIC_LEMMAS.has(interp.lemma)
+            ) {
               console.log(`CAUTION: no paradigm in dict: ${interp.lemma}`)
             }
           }
@@ -225,7 +229,7 @@ async function main() {
       // assign id's
       if (idSequence !== undefined) {
         const xpath = ['doc', 'p', 'sb', 's', 'w_', 'pc']
-          .map(x => `//${x}[not(@id) or string-length(@id)=0]`)
+          .map((x) => `//${x}[not(@id) or string-length(@id)=0]`)
           .join('|')
         let tokenEls = root.evaluateElements(xpath).toArray()
         for (let token of tokenEls) {
@@ -249,16 +253,17 @@ async function main() {
         var transormIds = new Set(args.tranformIds.trim().split(/\s+/g))
       }
 
-
       let documentTokens = mu(mixml2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
       for (let { nodes, multitokens } of sentenceStream) {
         // testTokenization(nodes, multitokens, analyzer)
 
-        let roots = nodes.filter(x => x.isRoot())
+        let roots = nodes.filter((x) => x.isRoot())
         let sentenceHasOneRoot = roots.length === 1
 
-        for (let [index, [prevNode, node, nextNode]] of mu(nodes).window(2, 1).entries()) {
+        for (let [index, [prevNode, node, nextNode]] of mu(nodes)
+          .window(2, 1)
+          .entries()) {
           let token = node.node
           let parent = node.parent && node.parent.node
           let interp = token.interp
@@ -272,7 +277,7 @@ async function main() {
               let match = token.comment.match(REPLACE_RE)
               if (match) {
                 let [, tag, lemma] = match
-                tag = tag.replace('&amp;', '&')  // sometimes it's copyped from xml
+                tag = tag.replace('&amp;', '&') // sometimes it's copyped from xml
                 lemma = lemma || interp.lemma
                 if (tag.startsWith(':')) {
                   interp.setFromVesumStr(tag.substr(1), lemma)
@@ -285,14 +290,18 @@ async function main() {
             // token insertion
             {
               let match: RegExpMatchArray
-              while (match = token.comment.match(INSERTION_RE)) {
+              while ((match = token.comment.match(INSERTION_RE))) {
                 let insertionPoint = id2el.get(token.id)
                 let [, formToInsert] = match
-                let interps = analyzer.tag(formToInsert, token.getForm())
-                  .filter(x => x.lemma !== 'бути' || !x.isAuxillary())
-                  .filter(x => !x.isColloquial())
-                let toInsert = createTokenElement(insertionPoint.document(), formToInsert,
-                  interps.map(x => x.toVesumStrMorphInterp()))
+                let interps = analyzer
+                  .tag(formToInsert, token.getForm())
+                  .filter((x) => x.lemma !== 'бути' || !x.isAuxillary())
+                  .filter((x) => !x.isColloquial())
+                let toInsert = createTokenElement(
+                  insertionPoint.document(),
+                  formToInsert,
+                  interps.map((x) => x.toVesumStrMorphInterp()),
+                )
                 toInsert.setAttributes({
                   id: id2str(idSequence++),
                   ellipsis: 'predicate',
@@ -306,19 +315,22 @@ async function main() {
           // remove duplicates
           if (token.deps.length > 1) {
             let n = token.deps.length
-            token.deps = _.uniqWith(token.deps, (a, b) =>
-              a.headId === b.headId && a.relation === b.relation)
+            token.deps = _.uniqWith(
+              token.deps,
+              (a, b) => a.headId === b.headId && a.relation === b.relation,
+            )
           }
 
           if (token.getForm() !== token.form) {
             interp.setIsTypo(false)
           }
 
-          if (token.rel
-            && interp.isPunctuation()
-            && !(uEqSome(token.rel, ['flat']) && token.interp.lemma === '*')
+          if (
+            token.rel &&
+            interp.isPunctuation() &&
+            !(uEqSome(token.rel, ['flat']) && token.interp.lemma === '*')
           ) {
-            token.deps.forEach(x => x.relation = 'punct')
+            token.deps.forEach((x) => (x.relation = 'punct'))
           }
 
           if (interp.isX()) {
@@ -335,33 +347,52 @@ async function main() {
             interp.setIsAnimate().setIsProper()
           }
 
-          if (PREDICATES.isAuxWithNoCopAux(node)
-            || sentenceHasOneRoot && node.isRoot() && node.node.interp.isAuxillary()) {
+          if (
+            PREDICATES.isAuxWithNoCopAux(node) ||
+            (sentenceHasOneRoot &&
+              node.isRoot() &&
+              node.node.interp.isAuxillary())
+          ) {
             node.node.interp.setIsAuxillary(false)
           }
 
-          if (interp.isVerb()
-            && g.COPULA_LEMMAS.includes(interp.lemma)
-            && uEqSome(token.rel, ['cop', 'aux'])
+          if (
+            interp.isVerb() &&
+            g.COPULA_LEMMAS.includes(interp.lemma) &&
+            uEqSome(token.rel, ['cop', 'aux'])
           ) {
             interp.setIsAuxillary()
           }
 
-          if (token.rel === 'mark' && token.interp.isAdverb() && token.interp.isRelative()) {
-            token.rel = 'advmod'
-          }
-
-          if (token.rel
-            && token.interp.isParticle()
-            && token.interp.isNegative()
-            && !token.isPromoted
-            && !node.children.some(x => uEq(x.node.rel, 'fixed'))
-            && !uEqSome(token.rel, ['fixed', 'parataxis', 'conj:parataxis', 'conj', 'goeswith'])
+          if (
+            token.rel === 'mark' &&
+            token.interp.isAdverb() &&
+            token.interp.isRelative()
           ) {
             token.rel = 'advmod'
           }
 
-          if (token.form.toLowerCase() === 'то' && token.interp.isSubordinative()) {
+          if (
+            token.rel &&
+            token.interp.isParticle() &&
+            token.interp.isNegative() &&
+            !token.isPromoted &&
+            !node.children.some((x) => uEq(x.node.rel, 'fixed')) &&
+            !uEqSome(token.rel, [
+              'fixed',
+              'parataxis',
+              'conj:parataxis',
+              'conj',
+              'goeswith',
+            ])
+          ) {
+            token.rel = 'advmod'
+          }
+
+          if (
+            token.form.toLowerCase() === 'то' &&
+            token.interp.isSubordinative()
+          ) {
             if (token.rel) {
               token.rel = 'discourse'
             }
@@ -369,10 +400,15 @@ async function main() {
             saveToken(token, id2el.get(token.id), nodes)
           }
 
-          if (['це', 'то'].includes(token.form.toLowerCase())
-            && token.interp.isParticle()
-            && token.rel === 'expl') {
-            interp.resetFromVesumStr('noun:inanim:n:v_naz:&pron:dem', token.interp.lemma)
+          if (
+            ['це', 'то'].includes(token.form.toLowerCase()) &&
+            token.interp.isParticle() &&
+            token.rel === 'expl'
+          ) {
+            interp.resetFromVesumStr(
+              'noun:inanim:n:v_naz:&pron:dem',
+              token.interp.lemma,
+            )
           }
 
           if (token.rel === 'punct' && token.interp.isCoordinating()) {
@@ -380,63 +416,76 @@ async function main() {
           }
 
           if (token.interp.isInterjection()) {
-            let newInterp = analyzer.tag(token.form).find(x => x.isInstant())
+            let newInterp = analyzer.tag(token.form).find((x) => x.isInstant())
             if (newInterp) {
             }
           }
 
-          if (!node.isRoot()
-            && interp.isPreposition()
-            && !uEqSome(token.rel, ['conj', 'flat:title', 'fixed'])
-            && !g.hasChild(node, 'fixed')
+          if (
+            !node.isRoot() &&
+            interp.isPreposition() &&
+            !uEqSome(token.rel, ['conj', 'flat:title', 'fixed']) &&
+            !g.hasChild(node, 'fixed')
           ) {
             token.rel = 'case'
           }
 
-          if (uEq(token.rel, 'obl')
-            && interp.isDative()
-            && !node.children.some(x => uEq(x.node.rel, 'case'))
+          if (
+            uEq(token.rel, 'obl') &&
+            interp.isDative() &&
+            !node.children.some((x) => uEq(x.node.rel, 'case'))
           ) {
             // не хочеться вечеряти самій; треба було самому вибирати
             // token.rel = 'iobj'
           }
 
-          if (uEqSome(token.rel, ['det'])
-            && udInterp.pos === 'DET'
-            && interp.isCardinalNumeral()
+          if (
+            uEqSome(token.rel, ['det']) &&
+            udInterp.pos === 'DET' &&
+            interp.isCardinalNumeral()
           ) {
-            if (token.interp.features.case === node.parent.node.interp.features.case) {
+            if (
+              token.interp.features.case ===
+              node.parent.node.interp.features.case
+            ) {
               token.rel = 'det:nummod'
-            } else if ((interp.isNominative() || interp.isAccusative())
-              && node.parent.node.interp.isGenitive()
+            } else if (
+              (interp.isNominative() || interp.isAccusative()) &&
+              node.parent.node.interp.isGenitive()
             ) {
               token.rel = 'det:numgov'
             }
           }
 
-          if (interp.isCardinalNumeral()
-            && interp.isPronominal()
-            && uEq(token.rel, 'nummod')
+          if (
+            interp.isCardinalNumeral() &&
+            interp.isPronominal() &&
+            uEq(token.rel, 'nummod')
           ) {
             token.rel = 'det'
           }
 
-          if (g.canBeDecimalFraction(node)
-            && token.rel === 'nummod'
-            && parent.interp.getFeature(f.Case) !== interp.getFeature(f.Case)
+          if (
+            g.canBeDecimalFraction(node) &&
+            token.rel === 'nummod' &&
+            parent.interp.getFeature(f.Case) !== interp.getFeature(f.Case)
           ) {
             token.rel = 'nummod:gov'
           }
 
-          if (g.isGoverning(token.rel)
-            && token.interp.features.case === node.parent.node.interp.features.case
+          if (
+            g.isGoverning(token.rel) &&
+            token.interp.features.case === node.parent.node.interp.features.case
           ) {
-            if (node.parent.children.some(x => x.node.interp.isPreposition()
-              && x.node.interp.features.requiredCase as number === token.interp.features.case)
+            if (
+              node.parent.children.some(
+                (x) =>
+                  x.node.interp.isPreposition() &&
+                  (x.node.interp.features.requiredCase as number) ===
+                    token.interp.features.case,
+              )
             ) {
-              token.rel = udInterp.pos === 'DET'
-                ? 'det:nummod'
-                : 'nummod'
+              token.rel = udInterp.pos === 'DET' ? 'det:nummod' : 'nummod'
             }
           }
 
@@ -445,7 +494,9 @@ async function main() {
           }
 
           if (0 && interp.isAdverb()) {
-            let csubj = node.children.find(x => uEqSome(x.node.rel, ['csubj']))
+            let csubj = node.children.find((x) =>
+              uEqSome(x.node.rel, ['csubj']),
+            )
             if (csubj) {
               if (token.isPromoted) {
                 // console.error(`PROMOKA ${token.id}`)
@@ -461,34 +512,42 @@ async function main() {
             }
           }
 
-          if (uEq(token.rel, 'discourse')
-            && interp.lemma === 'це'
-            && interp.isParticle()
-            && node.parent.children.some(x => uEqSome(x.node.rel, ['nsubj', 'csubj']))
-            && !parent.interp.isVerb()
+          if (
+            uEq(token.rel, 'discourse') &&
+            interp.lemma === 'це' &&
+            interp.isParticle() &&
+            node.parent.children.some((x) =>
+              uEqSome(x.node.rel, ['nsubj', 'csubj']),
+            ) &&
+            !parent.interp.isVerb()
             // && false
           ) {
-            interp.resetFromVesumStr('noun:inanim:n:v_naz:&pron:dem', interp.lemma)
+            interp.resetFromVesumStr(
+              'noun:inanim:n:v_naz:&pron:dem',
+              interp.lemma,
+            )
             token.rel = 'expl'
           }
 
-          if (interp.hasPronominalType()
-            && !interp.isParticle() // todo: separate :pers
+          if (
+            interp.hasPronominalType() &&
+            !interp.isParticle() // todo: separate :pers
           ) {
             interp.setIsPronoun()
           }
 
-          if (!g.isGoverning(token.rel)
-            && (uEq(token.rel, 'det')
-              // || uEq(token.rel, 'amod')
-            )
+          if (
+            !g.isGoverning(token.rel) &&
+            uEq(token.rel, 'det') &&
+            // || uEq(token.rel, 'amod')
             // && !interp.isBeforeadj()
             // && !parent.interp.isForeign()
             // && !parent.isGraft
             // && !node.parent.children.some(x => uEq(x.node.rel, 'conj'))
             // && (interp.isNounish() || interp.isAdjective())
-            && udInterp.pos === 'DET' && ['його', 'її', 'їх'].includes(interp.lemma)
-            && !parent.interp.isXForeign()
+            udInterp.pos === 'DET' &&
+            ['його', 'її', 'їх'].includes(interp.lemma) &&
+            !parent.interp.isXForeign()
             // && false
           ) {
             interp.features.case = parent.interp.features.case
@@ -507,13 +566,18 @@ async function main() {
             token.rel = 'det'
           }
 
-          if (udInterp.pos !== 'DET' && uEq(token.rel, 'det') && interp.isAdjective()) {
+          if (
+            udInterp.pos !== 'DET' &&
+            uEq(token.rel, 'det') &&
+            interp.isAdjective()
+          ) {
             token.rel = 'amod'
           }
 
-          if (!interp.isAccusative() && (
-            interp.features.grammaticalAnimacy !== undefined
-            || interp.features.requiredAnimacy !== undefined)
+          if (
+            !interp.isAccusative() &&
+            (interp.features.grammaticalAnimacy !== undefined ||
+              interp.features.requiredAnimacy !== undefined)
           ) {
             interp.features.grammaticalAnimacy = undefined
             interp.features.requiredAnimacy = undefined
@@ -541,28 +605,31 @@ async function main() {
 
           if (g.isQuantitativeAdverbModifierCandidate(node)) {
             token.rel = 'advmod:amtgov'
-            if (node.parent.node.interp.isPlural()
-              && interp.lemma === 'багато'
-              && !parent.interp.isNoSingular()
+            if (
+              node.parent.node.interp.isPlural() &&
+              interp.lemma === 'багато' &&
+              !parent.interp.isNoSingular()
             ) {
               interp.resetFromVesumStr('numr:p:v_naz:&pron:ind', 'багато')
               token.rel = 'nummod:gov'
             }
           }
 
-          if (uEqSome(token.rel, ['obj'/* , 'iobj' */])
+          if (
+            uEqSome(token.rel, ['obj' /* , 'iobj' */]) &&
             // && parent.interp.isAdjective()
-            && parent.interp.isVerbial()
+            parent.interp.isVerbial() &&
             // && parent.interp.isReversive()
-            && interp.isInstrumental()
+            interp.isInstrumental()
           ) {
             // token.rel = 'obl'
             // console.log(token.id)
           }
 
-          if (token.rel === 'xcomp'
-            && !token.isPromoted
-            && !g.isInfinitiveAnalytically(node)
+          if (
+            token.rel === 'xcomp' &&
+            !token.isPromoted &&
+            !g.isInfinitiveAnalytically(node)
           ) {
             token.rel = 'ccomp'
           }
@@ -572,20 +639,28 @@ async function main() {
           }
           interp.dropFeature(f.PunctuationSide)
 
-          if (token.getForm(false) === token.getForm(true)
-            && [f.Pos.adverb, f.Pos.conjunction, f.Pos.interjection,
-            f.Pos.particle, f.Pos.preposition, f.Pos.punct, f.Pos.sym]
-              .includes(interp.getFeature(f.Pos))
-            && !(interp.lemma.endsWith('.') && !token.form.endsWith('.'))
+          if (
+            token.getForm(false) === token.getForm(true) &&
+            [
+              f.Pos.adverb,
+              f.Pos.conjunction,
+              f.Pos.interjection,
+              f.Pos.particle,
+              f.Pos.preposition,
+              f.Pos.punct,
+              f.Pos.sym,
+            ].includes(interp.getFeature(f.Pos)) &&
+            !(interp.lemma.endsWith('.') && !token.form.endsWith('.'))
           ) {
             // interp.lemma = token.form.replace('\'', '’').toLocaleLowerCase()
           }
 
           // remove unnecessary Promoted
-          if (token.isPromoted
-            && node.parents.some(x => x.node.isElided())
+          if (
+            token.isPromoted &&
+            node.parents.some((x) => x.node.isElided()) &&
             // workaround for: стояла на буржуазних позиціях, а її донька на *марксистських*
-            && interp.isVerbial()
+            interp.isVerbial()
           ) {
             let tags = token.getAttribute('tags')
             if (tags) {
@@ -593,44 +668,50 @@ async function main() {
             }
           }
 
-          if (interp.isPronominal()
-            && interp.isAdjectiveAsNoun()
-            && !interp.isNeuter()
+          if (
+            interp.isPronominal() &&
+            interp.isAdjectiveAsNoun() &&
+            !interp.isNeuter()
           ) {
             interp.dropAdjectiveAsNounFeatures()
           }
 
-          if (interp.isPunctuation()
+          if (
+            interp.isPunctuation()
             // interp.hasFeature(f.PunctuationSide)
             // && [')', '(', '«', '»', '"', '“', '”'].includes(interp.lemma)
           ) {
             interp.dropFeature(f.PunctuationSide)
           }
 
-          if (g.SOME_QUOTES.test(token.getForm())
-            && !interp.hasFeature(f.PunctuationType)
+          if (
+            g.SOME_QUOTES.test(token.getForm()) &&
+            !interp.hasFeature(f.PunctuationType)
           ) {
             interp.setFeature(f.PunctuationType, f.PunctuationType.quote)
           }
 
           for (let edep of token.edeps) {
-            if (edep.relation === 'nsubj:x'
-              && nodes[edep.headIndex].node.rel === 'xcomp:sp'
+            if (
+              edep.relation === 'nsubj:x' &&
+              nodes[edep.headIndex].node.rel === 'xcomp:sp'
             ) {
               edep.relation = 'nsubj:sp'
             }
           }
 
-          if (token.rel === 'advmod'
-            && ['cop', 'aux'].includes(node.parent.node.rel)
+          if (
+            token.rel === 'advmod' &&
+            ['cop', 'aux'].includes(node.parent.node.rel)
           ) {
             token.deps[0].headId = node.parent.parent.node.id
             token.dedicatedTags.add('phrasemod')
           }
 
-          if ((token.hasTag('xsubj-is-phantom-iobj')
-            || token.hasTag('xsubj-is-phantom-obj'))
-            && token.rel === 'ccomp'
+          if (
+            (token.hasTag('xsubj-is-phantom-iobj') ||
+              token.hasTag('xsubj-is-phantom-obj')) &&
+            token.rel === 'ccomp'
           ) {
             token.rel = 'xcomp'
           }
@@ -660,13 +741,18 @@ async function main() {
 
           // addRefRelation(node)
 
-
           // ↓↓↓↓ breaks the tree, keep last!
 
-
           // switch compound numerals from flat to compound
-          if (0 && uEq(token.rel, 'nummod') /* || uEq(token.rel, 'amod') && interp.isOrdinalNumeral() */) {
-            let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
+          if (
+            0 &&
+            uEq(
+              token.rel,
+              'nummod',
+            ) /* || uEq(token.rel, 'amod') && interp.isOrdinalNumeral() */
+          ) {
+            let flatChildren = node.children
+              .filter((x) => uEq(x.node.rel, 'flat'))
               .sort((a, b) => a.node.index - b.node.index)
             let newHead = _.last(flatChildren)
             // let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
@@ -676,38 +762,47 @@ async function main() {
                 console.error(`Not numeral ${newHead.node.id}`)
                 continue
               }
-              newHead.node.deps.forEach(x => {
+              newHead.node.deps.forEach((x) => {
                 x.headId = node.parent.node.id
                 x.relation = token.rel
-              });
-              [node, ...node.children].filter(x => x !== newHead)
-                .forEach(x => x.node.deps.forEach(xx => {
-                  xx.headId = newHead.node.id
-                  if (x.node.interp.isCardinalNumeral()) {
-                    xx.relation = 'compound'
-                  }
-                }))
+              })
+              ;[node, ...node.children]
+                .filter((x) => x !== newHead)
+                .forEach((x) =>
+                  x.node.deps.forEach((xx) => {
+                    xx.headId = newHead.node.id
+                    if (x.node.interp.isCardinalNumeral()) {
+                      xx.relation = 'compound'
+                    }
+                  }),
+                )
             }
             continue
           }
 
-          if (interp.isBeforeadj()
-            && !node.isRoot()
-            && !(uEq(token.rel, 'compound') && parent.interp.isBeforeadj())
-            && !(uEq(token.rel, 'compound')
-              && parent.interp.isAdjective()
-              && token.index < parent.index)
+          if (
+            interp.isBeforeadj() &&
+            !node.isRoot() &&
+            !(uEq(token.rel, 'compound') && parent.interp.isBeforeadj()) &&
+            !(
+              uEq(token.rel, 'compound') &&
+              parent.interp.isAdjective() &&
+              token.index < parent.index
+            )
           ) {
             // console.log(token)
 
             let middlers = node.children
-              .map(x => x.node)
-              .filter(x => x.rel === 'compound')
+              .map((x) => x.node)
+              .filter((x) => x.rel === 'compound')
             if (middlers.length) {
               let newHead = middlers.pop()
               newHead.deps[0] = token.deps[0]
-              nodes.filter(x => !x.isRoot() && x.node.deps[0].headId === token.id)
-                .forEach(x => x.node.deps[0].headId = newHead.id)
+              nodes
+                .filter(
+                  (x) => !x.isRoot() && x.node.deps[0].headId === token.id,
+                )
+                .forEach((x) => (x.node.deps[0].headId = newHead.id))
               let toChange = [token, ...middlers]
               for (let [i, t] of toChange.entries()) {
                 t.deps = [{ relation: 'compound', headId: newHead.id }]
@@ -755,9 +850,8 @@ async function main() {
           }
         }
 
-
         // save to xml doc
-        nodes.forEach(x => {
+        nodes.forEach((x) => {
           // console.log(x)
           let element = id2el.get(x.node.id)
           if (element) {
@@ -766,8 +860,6 @@ async function main() {
           }
         })
       }
-
-
 
       let content = serializeMiDocument(root, true)
       // content = beautify(content, { indent_size: 2 })
@@ -790,10 +882,12 @@ function testTokenization(
   multitokens: Array<MultitokenDescriptor>,
   analyzer: MorphAnalyzer,
 ) {
-  let tokens = nodes.map(x => x.node).filter(x => !x.isElided())
-  let plaintext = mu(tokenStream2plaintext(tokens, multitokens, false)).join(' ')
-  let goldenForms = tokens.map(x => x.form)
-  let tokenizedForms = tokenizeUk(plaintext, analyzer).map(x => x.token)
+  let tokens = nodes.map((x) => x.node).filter((x) => !x.isElided())
+  let plaintext = mu(tokenStream2plaintext(tokens, multitokens, false)).join(
+    ' ',
+  )
+  let goldenForms = tokens.map((x) => x.form)
+  let tokenizedForms = tokenizeUk(plaintext, analyzer).map((x) => x.token)
   if (!shallowEqualArrays(goldenForms, tokenizedForms)) {
     console.error(`###########`)
     console.error(`Tokenization mismatch, #${nodes[0].node.id}`)
@@ -806,7 +900,9 @@ function isNegated(form: string, interp: MorphInterp, analyzer: MorphAnalyzer) {
   let lc = form.toLowerCase()
   if (lc.startsWith('не')) {
     let stem = lc.substr(2)
-    let interps = analyzer.tag(stem).filter(x => x.gramfeaturewiseEquals(interp))
+    let interps = analyzer
+      .tag(stem)
+      .filter((x) => x.gramfeaturewiseEquals(interp))
     if (interps.length) {
       return true
     }
@@ -823,17 +919,23 @@ function addShchojijiCoreference(node: GraphNode<Token>) {
 }
 
 function makeDatesPromoted(node: GraphNode<Token>) {
-  if (ukMonthsGen.has(node.node.form)
-    && node.parent
-    && node.parent.node.interp.isOrdinalNumeral()
+  if (
+    ukMonthsGen.has(node.node.form) &&
+    node.parent &&
+    node.parent.node.interp.isOrdinalNumeral()
   ) {
     node.parent.node.dedicatedTags.add('promoted')
   }
 }
 
-function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNode<Token>>) {
-  Object.entries(token.getAttributes())
-    .forEach(([k, v]) => element.setAttribute(k, v || undefined))
+function saveToken(
+  token: Token,
+  element: AbstractElement,
+  nodes: Array<GraphNode<Token>>,
+) {
+  Object.entries(token.getAttributes()).forEach(([k, v]) =>
+    element.setAttribute(k, v || undefined),
+  )
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)
@@ -842,31 +944,34 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
   {
     let [deps, edeps, hdeps] = clusterize(
       token.deps,
-      t => g.classifyRelation(t.relation),
-      [[], [], []]
+      (t) => g.classifyRelation(t.relation),
+      [[], [], []],
     )
     token.deps = deps
     token.edeps.push(...edeps)
     token.hdeps.push(...hdeps)
   }
 
-  stableSort(token.deps, (a, b) => Number(nodes[a.headIndex].node.isElided())
-    - Number(nodes[b.headIndex].node.isElided()))
+  stableSort(
+    token.deps,
+    (a, b) =>
+      Number(nodes[a.headIndex].node.isElided()) -
+      Number(nodes[b.headIndex].node.isElided()),
+  )
 
   let config = tuple(
     tuple(token.deps, 'dep'),
     tuple(token.hdeps, 'hdep'),
-    tuple(token.edeps, 'edep')
+    tuple(token.edeps, 'edep'),
   )
   for (let [deps, attr] of config) {
-    let dep = uniq(deps.map(x => `${x.headId}-${x.relation}`))
-      .join('|')
+    let dep = uniq(deps.map((x) => `${x.headId}-${x.relation}`)).join('|')
     if (dep) {
       element.setAttribute(attr, dep)
     }
   }
 
-  let coref = uniq(token.corefs.map(x => `${x.headId}-${x.type}`)).join('|')
+  let coref = uniq(token.corefs.map((x) => `${x.headId}-${x.type}`)).join('|')
   if (coref) {
     element.setAttribute('coref', coref)
   }
@@ -885,42 +990,38 @@ function saveInterp(el: AbstractElement, interp: MorphInterp) {
 
 function renameStructures(root: AbstractElement) {
   // rename sentence boundaries
-  mu(root.evaluateElements('//se'))
-    .forEach(x => {
-      x.insertAfter(root.document().createElement('sb'))
-      x.remove()
-    })
+  mu(root.evaluateElements('//se')).forEach((x) => {
+    x.insertAfter(root.document().createElement('sb'))
+    x.remove()
+  })
 
   // let elems = root.evaluateElements('chunk').filter(x => !x.ancestors().find(xx => xx.localName() === 'chunk')).toArray()
   // elems.forEach(x => x)
 
-  const DOC_META_ATTRS = [
-    'src',
-    'title',
-    'author',
-    'date',
-  ]
-  root.evaluateElements('//doc').forEach(doc =>
-    DOC_META_ATTRS.forEach(attr =>
-      !doc.attribute(attr) && doc.setAttribute(attr, '')))
-
+  const DOC_META_ATTRS = ['src', 'title', 'author', 'date']
+  root
+    .evaluateElements('//doc')
+    .forEach((doc) =>
+      DOC_META_ATTRS.forEach(
+        (attr) => !doc.attribute(attr) && doc.setAttribute(attr, ''),
+      ),
+    )
 }
 
 function lowercaseOddballLemmas(token: Token) {
   let interp = token.interp
-  if (!interp.lemma.includes('’')
-    && (
-      interp.isParticle()
-      || interp.isConjunction()
-      || interp.isPreposition()
-      || interp.isAdverb()
-      || interp.isInterjection()
-      || interp.isUninflectable()
-    )
-    || interp.isPunctuation()
-    || interp.isSymbol()
-    || interp.isX()
-    || interp.isError()
+  if (
+    (!interp.lemma.includes('’') &&
+      (interp.isParticle() ||
+        interp.isConjunction() ||
+        interp.isPreposition() ||
+        interp.isAdverb() ||
+        interp.isInterjection() ||
+        interp.isUninflectable())) ||
+    interp.isPunctuation() ||
+    interp.isSymbol() ||
+    interp.isX() ||
+    interp.isError()
   ) {
     if (strUtils.isAllLower(interp.lemma)) {
       interp.lemma = token.getForm().toLowerCase()
@@ -930,7 +1031,11 @@ function lowercaseOddballLemmas(token: Token) {
   }
 }
 
-function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer: MorphAnalyzer) {
+function fixtestMorpho(
+  node: GraphNode<Token>,
+  nextNode: GraphNode<Token>,
+  analyzer: MorphAnalyzer,
+) {
   let token = node.node
   let interp = node.node.interp
   token.form = token.getForm()
@@ -945,11 +1050,12 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   }
 
   // missing case
-  if (g2.inflectsCase(interp.features.pos)
-    && !interp.isBeforeadj()
-    && !interp.isStem()
-    && !interp.isForeign()
-    && !interp.hasCase()
+  if (
+    g2.inflectsCase(interp.features.pos) &&
+    !interp.isBeforeadj() &&
+    !interp.isStem() &&
+    !interp.isForeign() &&
+    !interp.hasCase()
   ) {
     console.error(`no case in "${token.form}" #${token.id}`)
     interp.features.case = f.Case.nominative
@@ -970,9 +1076,12 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   // missing gender for noun
   if (interp.isNounish()) {
     // missing gender for noun
-    if (!interp.hasGender()
-      && !g.GENDERLESS_PRONOUNS.includes(interp.lemma) && !(
-        interp.isNoSingular() || interp.isSingular() && interp.features.person === 1
+    if (
+      !interp.hasGender() &&
+      !g.GENDERLESS_PRONOUNS.includes(interp.lemma) &&
+      !(
+        interp.isNoSingular() ||
+        (interp.isSingular() && interp.features.person === 1)
       )
     ) {
       // console.error(`no gender for ${token2string(node.node)}`)
@@ -980,10 +1089,13 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   }
 
   // missing animacy
-  if (interp.isNounish() && !interp.hasAnimacy()
-    && !g.EMPTY_ANIMACY_NOUNS.includes(interp.lemma)
-    && !(interp.features.pronominalType === f.PronominalType.personal
-      && interp.features.person === 3
+  if (
+    interp.isNounish() &&
+    !interp.hasAnimacy() &&
+    !g.EMPTY_ANIMACY_NOUNS.includes(interp.lemma) &&
+    !(
+      interp.features.pronominalType === f.PronominalType.personal &&
+      interp.features.person === 3
     )
   ) {
     console.error(`no animacy for ${token2string(node.node)}`)
@@ -992,7 +1104,7 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   // missing punctuation type
   if (!interp.hasFeature(f.PunctuationType) && !interp.isSymbol()) {
     let interps = analyzer.tag(token.getForm())
-    let firstWithType = interps.find(x => x.hasFeature(f.PunctuationType))
+    let firstWithType = interps.find((x) => x.hasFeature(f.PunctuationType))
     if (firstWithType) {
       token.interp = firstWithType
     }
@@ -1005,12 +1117,16 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   }
 
   // missing in dict
-  if (!interp.isStem()  // temp
-    && !interp.isPunctuation()  // temp
-    && !interp.isBeforeadj()  // temp
-    && !interp.lemma.includes('-')  // temp
+  if (
+    !interp.isStem() && // temp
+    !interp.isPunctuation() && // temp
+    !interp.isBeforeadj() && // temp
+    !interp.lemma.includes('-') // temp
   ) {
-    let interpsFromDict = analyzer.tag(token.getForm(), nextNode && nextNode.node.getForm())
+    let interpsFromDict = analyzer.tag(
+      token.getForm(),
+      nextNode && nextNode.node.getForm(),
+    )
 
     let closestFixable = findClosestFixable(token.interp, interpsFromDict)
     if (closestFixable) {
@@ -1018,9 +1134,15 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
     } else if (canBeNameFromCommon(token.interp, interpsFromDict)) {
       // console.error(`canBeNameFromCommon`)
     } else {
-      let interpsFromDictStr = interpsFromDict.map(x => `${x.toVesumStr()}@${x.lemma}`)
-      let message = `>>> interp not in dict: ${
-        token2stringRaw(token.id, token.getForm(), token.interp.lemma, token.interp.toVesumStr())}`
+      let interpsFromDictStr = interpsFromDict.map(
+        (x) => `${x.toVesumStr()}@${x.lemma}`,
+      )
+      let message = `>>> interp not in dict: ${token2stringRaw(
+        token.id,
+        token.getForm(),
+        token.interp.lemma,
+        token.interp.toVesumStr(),
+      )}`
       if (interpsFromDictStr.length) {
         // message += ` dict:\n${interpsFromDictStr.slice(0, 10).join('\n' )}\n=========`
       }
@@ -1069,14 +1191,16 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let paradigmOmonym = inCorp.getFeature(f.ParadigmOmonym)
 
   let inCorp2 = inCorp.clone().dropFeature(f.ParadigmOmonym)
-  let inDict2 = inDict.map(x => x.clone().dropFeature(f.ParadigmOmonym))
+  let inDict2 = inDict.map((x) => x.clone().dropFeature(f.ParadigmOmonym))
 
   for (let [i, feature] of DROP_ORDER.entries()) {
     inCorp2.dropFeature(feature)
-    inDict2.forEach(x => x.dropFeature(feature))
-    let index = inDict2.findIndex(x => inCorp.isAdjectiveAsNoun()
-      ? x.featurewiseEquals(inCorp2)
-      : x.equals(inCorp2))
+    inDict2.forEach((x) => x.dropFeature(feature))
+    let index = inDict2.findIndex((x) =>
+      inCorp.isAdjectiveAsNoun()
+        ? x.featurewiseEquals(inCorp2)
+        : x.equals(inCorp2),
+    )
     if (index >= 0) {
       if (i > 3) {
         let ret = inDict[index].setFeature(f.ParadigmOmonym, paradigmOmonym)
@@ -1092,8 +1216,8 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   // now try lemma
   if (!inCorp.isProper()) {
     inCorp2.lemma = ''
-    inDict2.forEach(x => x.lemma = '')
-    let index = inDict2.findIndex(x => x.featurewiseEquals(inCorp2))
+    inDict2.forEach((x) => (x.lemma = ''))
+    let index = inDict2.findIndex((x) => x.featurewiseEquals(inCorp2))
     if (index >= 0) {
       return inDict[index]
     }
@@ -1103,14 +1227,15 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
 const ALLOWED_TO_BE_EMPTY = ['g', 'sb', 'gap', 'br', 'coref-split']
 function killEmptyElements(root: AbstractElement) {
   mu(root.evaluateElements(`//*[not(normalize-space())]`))
-    .filter(x => !ALLOWED_TO_BE_EMPTY.includes(x.localName()))
+    .filter((x) => !ALLOWED_TO_BE_EMPTY.includes(x.localName()))
     .toArray()
-    .forEach(x => x.remove())
+    .forEach((x) => x.remove())
 }
 
 function insertSb(root: AbstractElement) {
   let firstWs = mu(root.evaluateElements('//doc'))
-    .map(x => x.evaluateElement('.//w_')).flatten()
+    .map((x) => x.evaluateElement('.//w_'))
+    .flatten()
   for (let firstW of firstWs) {
     // walkUpUntil()
     let prev = firstW.previousElementSibling()
@@ -1130,16 +1255,25 @@ function swapSb(root: AbstractElement) {
 }
 
 function cloneAsBareAdjective(fromInterp: MorphInterp) {
-  return fromInterp.cloneWithFeatures([f.Gender, f.MorphNumber, f.Case])
+  return fromInterp
+    .cloneWithFeatures([f.Gender, f.MorphNumber, f.Case])
     .setLemma(fromInterp.lemma.toLowerCase())
 }
 
 function cloneAsBareNoun(fromInterp: MorphInterp) {
-  return fromInterp.cloneWithFeatures([f.Animacy, f.Gender, f.MorphNumber, f.Case])
+  return fromInterp.cloneWithFeatures([
+    f.Animacy,
+    f.Gender,
+    f.MorphNumber,
+    f.Case,
+  ])
   // .setLemma(fromInterp.lemma.toLowerCase())
 }
 
-function createInterpWithFeatures(fromInterp: MorphInterp, features: Array<any>) {
+function createInterpWithFeatures(
+  fromInterp: MorphInterp,
+  features: Array<any>,
+) {
   let ret = new MorphInterp()
   for (let feature of features) {
     ret.setFeature(feature, fromInterp.getFeature(feature))
@@ -1151,19 +1285,19 @@ function createInterpWithFeatures(fromInterp: MorphInterp, features: Array<any>)
 function canBeNameFromCommon(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let inCorp2 = cloneAsBareAdjective(inCorp)
   let inDict2 = inDict.map(cloneAsBareAdjective)
-  if (inDict2.some(x => x.equals(inCorp2))) {
+  if (inDict2.some((x) => x.equals(inCorp2))) {
     return true
   }
 
   inCorp2 = cloneAsBareNoun(inCorp)
   inDict2 = inDict.map(cloneAsBareNoun)
-  if (inDict2.some(x => x.equals(inCorp2))) {
+  if (inDict2.some((x) => x.equals(inCorp2))) {
     return true
   }
 
   inCorp2.setIsAnimate(false)
-  inDict2.forEach(x => x.setIsAnimate(false))
-  if (inDict2.some(x => x.equals(inCorp2))) {
+  inDict2.forEach((x) => x.setIsAnimate(false))
+  if (inDict2.some((x) => x.equals(inCorp2))) {
     return true
   }
 
@@ -1195,14 +1329,20 @@ function token2stringRaw(id: string, form: string, lemma: string, tag: string) {
 }
 
 function token2string(token: Token) {
-  return token2stringRaw(token.id, token.getForm(), token.interp.lemma, token.interp.toVesumStr())
+  return token2stringRaw(
+    token.id,
+    token.getForm(),
+    token.interp.lemma,
+    token.interp.toVesumStr(),
+  )
 }
 
 function insertGlueIfNeeded(el: AbstractElement) {
-  if (el.firstElementChild().text() === ','
-    && el.previousElementSibling()
+  if (
+    el.firstElementChild().text() === ',' &&
+    el.previousElementSibling() &&
     // && el.nextElementSibling()
-    && el.previousElementSibling().localName() !== 'g'
+    el.previousElementSibling().localName() !== 'g'
     // && el.nextElementSibling().localName() !== 'g'
     // && /\d+/.test(el.previousElementSibling().firstElementChild().text())
     // && /\d+/.test(el.nextElementSibling().firstElementChild().text())
@@ -1212,7 +1352,11 @@ function insertGlueIfNeeded(el: AbstractElement) {
   }
 }
 
-function splitIndefinite(token: Token, element: AbstractElement, idSequence: number) {
+function splitIndefinite(
+  token: Token,
+  element: AbstractElement,
+  idSequence: number,
+) {
   if (token.interp.lemma.endsWith('-небудь')) {
     token.interp.lemma = token.interp.lemma.slice(0, -'-небудь'.length)
     token.form = token.form.slice(0, -'-небудь'.length)
@@ -1221,24 +1365,30 @@ function splitIndefinite(token: Token, element: AbstractElement, idSequence: num
     let dashId = id2str(idSequence++)
     let nebudId = id2str(idSequence++)
 
-    let dashW_ = element.document().createElement('w_').setAttributes({
-      id: dashId,
-      dep: `${nebudId}-punct`,
-    })
+    let dashW_ = element
+      .document()
+      .createElement('w_')
+      .setAttributes({
+        id: dashId,
+        dep: `${nebudId}-punct`,
+      })
     let dashW = element.document().createElement('w').setAttributes({
       ana: 'punct:hyphen',
-      lemma: '-'
+      lemma: '-',
     })
     dashW.text('-')
     dashW_.appendChild(dashW)
 
-    let nebudW_ = element.document().createElement('w_').setAttributes({
-      dep: `${token.id}-discourse`,
-      id: nebudId,
-    })
+    let nebudW_ = element
+      .document()
+      .createElement('w_')
+      .setAttributes({
+        dep: `${token.id}-discourse`,
+        id: nebudId,
+      })
     let nebudW = element.document().createElement('w').setAttributes({
       ana: 'part',
-      lemma: 'небудь'
+      lemma: 'небудь',
     })
     nebudW.text('небудь')
     nebudW_.appendChild(nebudW)
@@ -1257,24 +1407,30 @@ function splitIndefinite(token: Token, element: AbstractElement, idSequence: num
     let dashId = id2str(idSequence++)
     let budId = id2str(idSequence++)
 
-    let dashW_ = element.document().createElement('w_').setAttributes({
-      id: dashId,
-      dep: `${budId}-punct`,
-    })
+    let dashW_ = element
+      .document()
+      .createElement('w_')
+      .setAttributes({
+        id: dashId,
+        dep: `${budId}-punct`,
+      })
     let dashW = element.document().createElement('w').setAttributes({
       ana: 'punct:hyphen',
-      lemma: '-'
+      lemma: '-',
     })
     dashW.text('-')
     dashW_.appendChild(dashW)
 
-    let nebudW_ = element.document().createElement('w_').setAttributes({
-      dep: `${token.id}-discourse`,
-      id: budId,
-    })
+    let nebudW_ = element
+      .document()
+      .createElement('w_')
+      .setAttributes({
+        dep: `${token.id}-discourse`,
+        id: budId,
+      })
     let nebudW = element.document().createElement('w').setAttributes({
       ana: 'part',
-      lemma: 'будь'
+      lemma: 'будь',
     })
     nebudW.text('будь')
     nebudW_.appendChild(nebudW)
@@ -1303,24 +1459,31 @@ function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
       let punctElId = id2str(idSequence++)
       let fracElId = id2str(idSequence++)
 
-
-      let fracEl = token.document().createElement('w_').setAttributes({
-        id: fracElId,
-        dep: `${token.attribute('id')}-compound`,
-      })
-      let fracInterpEl = token.document().createElement('w').setAttributes({
-        lemma: fracPart,
-        ana: interpEl.attribute('ana'),
-      })
+      let fracEl = token
+        .document()
+        .createElement('w_')
+        .setAttributes({
+          id: fracElId,
+          dep: `${token.attribute('id')}-compound`,
+        })
+      let fracInterpEl = token
+        .document()
+        .createElement('w')
+        .setAttributes({
+          lemma: fracPart,
+          ana: interpEl.attribute('ana'),
+        })
       fracInterpEl.text(fracPart)
       fracEl.appendChild(fracInterpEl)
       token.insertAfter(fracEl)
 
-
-      let punctEl = token.document().createElement('w_').setAttributes({
-        id: punctElId,
-        dep: `${fracElId}-punct`,
-      })
+      let punctEl = token
+        .document()
+        .createElement('w_')
+        .setAttributes({
+          id: punctElId,
+          dep: `${fracElId}-punct`,
+        })
       let punctInterpEl = token.document().createElement('w').setAttributes({
         lemma: punct,
         ana: 'punct',
@@ -1374,7 +1537,9 @@ async function addDocMeta(root: AbstractElement) {
           attributes.genre = 'коментар'
         } else if (url.hostname.endsWith('twitter.com')) {
           attributes.genre = 'твіт'
-        } else if (attributes.src.includes('ababahalamaha.com.ua/uk/Special:Guestbook')) {
+        } else if (
+          attributes.src.includes('ababahalamaha.com.ua/uk/Special:Guestbook')
+        ) {
           attributes.genre = 'коментар'
         }
       } else {
@@ -1399,14 +1564,19 @@ async function addDocMeta(root: AbstractElement) {
       }
 
       if (!attributes.author || !attributes.date) {
-        if (url.hostname.match(/\bfacebook\.com$/) && attributes.date.length !== '2017-08-08 22:09:36'.length) {
+        if (
+          url.hostname.match(/\bfacebook\.com$/) &&
+          attributes.date.length !== '2017-08-08 22:09:36'.length
+        ) {
           // let meta = await getFbPostMeta(attributes.src)
           // console.log(meta)
           // await sleep(2000)
           // attributes = { ...attributes, ...meta }
         } else if (attributes.src.includes('tereveni.org')) {
           let html = await fetchText(attributes.src)
-          let meta = mu(tereveni.streamDocs(html)).find(x => x.url === attributes.src)
+          let meta = mu(tereveni.streamDocs(html)).find(
+            (x) => x.url === attributes.src,
+          )
           console.log(meta)
           attributes.author = meta.author
           attributes.date = meta.date
@@ -1416,7 +1586,7 @@ async function addDocMeta(root: AbstractElement) {
     }
     if (!attributes.title) {
       let tokens = mu(mixml2tokenStream(docEl))
-        .filter(x => x.isWord() || x.isGlue())
+        .filter((x) => x.isWord() || x.isGlue())
         .take(8)
         .toArray()
       let isFullDoc = tokens.length < 8
@@ -1441,8 +1611,9 @@ async function addDocMeta(root: AbstractElement) {
 async function getFbPostMeta(url: string) {
   let html = await fetchText(url, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15'
-    }
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15',
+    },
   })
   let author = strUtils.singleMatchOrThrow(html, /actorname\s*:\s*"([^"]+)"/, 1)
   let dateStr = strUtils.singleMatchOrThrow(html, /data-utime\s*=\s*"(\d+)"/, 1)
@@ -1454,7 +1625,6 @@ async function getFbPostMeta(url: string) {
   return { author, date }
 }
 
-
 const TRANSFORMS = {
   toObl(t: GraphNode<Token>) {
     t.node.rel = 'obl'
@@ -1465,13 +1635,16 @@ const TRANSFORMS = {
 }
 
 function prepareIds(path: string) {
-  return new Set(fs.readFileSync(path, 'utf8')
-    .trim()
-    .split(/\n+/g)
-    .map(x => x.trim())
-    .filter(x => !x.startsWith('#'))
-    .join(' ')
-    .split(/\s+/g))
+  return new Set(
+    fs
+      .readFileSync(path, 'utf8')
+      .trim()
+      .split(/\n+/g)
+      .map((x) => x.trim())
+      .filter((x) => !x.startsWith('#'))
+      .join(' ')
+      .split(/\s+/g),
+  )
 }
 
 function splitFusedProns(
@@ -1503,9 +1676,7 @@ function splitFusedProns(
     ['немає', [nemayeInterps[0]]],
     [newForm, [interp]],
   ])
-  interpEl.parent()
-    .insertAfter(multitokenEl)
-    .remove()
+  interpEl.parent().insertAfter(multitokenEl).remove()
 }
 
 function splitPiv(
@@ -1520,23 +1691,22 @@ function splitPiv(
   let prefix = strUtils.firstMatch(form, /^(пів['’\-]?).+/, 1)
   if (prefix) {
     let base = form.substr(prefix.length)
-    let filtered = analyzer.tag(base)
-      .filter(x => x.isNoun())
-    let isPiv = interp.isNoPlural() && interp.isUninflectable()
-      || filtered.length
-      && filtered.every(x => x.isUninflectable())
+    let filtered = analyzer.tag(base).filter((x) => x.isNoun())
+    let isPiv =
+      (interp.isNoPlural() && interp.isUninflectable()) ||
+      (filtered.length && filtered.every((x) => x.isUninflectable()))
     if (isPiv) {
       console.error(`пів-: ${form}`)
-      let pivInterp = MorphInterp.fromVesumStr('numr:v_naz:nv:alt', 'пів')
-        .setCase(interp.getFeature(f.Case))
-      let nounInterp = filtered.find(x => x.isGenitive())
+      let pivInterp = MorphInterp.fromVesumStr(
+        'numr:v_naz:nv:alt',
+        'пів',
+      ).setCase(interp.getFeature(f.Case))
+      let nounInterp = filtered.find((x) => x.isGenitive())
       let multitokenEl = createMultitokenElement(interpEl.document(), form, [
         ['пів', [pivInterp]],
         [base, [nounInterp]],
       ])
-      interpEl.parent()
-        .insertAfter(multitokenEl)
-        .remove()
+      interpEl.parent().insertAfter(multitokenEl).remove()
 
       return true
     }
@@ -1544,7 +1714,6 @@ function splitPiv(
 
   return false
 }
-
 
 if (require.main === module) {
   main()

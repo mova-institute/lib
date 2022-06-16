@@ -7,14 +7,16 @@ import { FsMap } from '../../fs_map'
 import { fetchText } from '../../request'
 import { allMatchesArr } from '../../string'
 
-
 interface Args {
   workspace: string
   todaysNumber: number
   oldNumber: number
 }
 
-const articleHrefRe = new RegExp(String.raw`<a\s.*href="/number/(\d+)/(\d+)/(\d+)/"`, 'g')
+const articleHrefRe = new RegExp(
+  String.raw`<a\s.*href="/number/(\d+)/(\d+)/(\d+)/"`,
+  'g',
+)
 
 if (require.main === module) {
   const args = minimist<Args>(process.argv.slice(2), {
@@ -30,12 +32,13 @@ if (require.main === module) {
   main(args)
 }
 
-
 async function main(args: Args) {
   try {
     let fetchedArticlesDir = path.join(args.workspace, 'data')
     mkdirpSync(fetchedArticlesDir)
-    let numbersRegistry = new FileSavedSet<number>(path.join(args.workspace, 'fully_fetched_numbers.txt'))
+    let numbersRegistry = new FileSavedSet<number>(
+      path.join(args.workspace, 'fully_fetched_numbers.txt'),
+    )
     let articleRegistry = new FsMap(fetchedArticlesDir)
     let curNumber = args.todaysNumber
     while (curNumber-- >= args.oldNumber) {
@@ -43,13 +46,19 @@ async function main(args: Args) {
         continue
       }
       console.log(`fetching №${curNumber}`)
-      let numberContent = await fetchText(`http://www.umoloda.kiev.ua/number/${curNumber}/`)
-      let hrefs = allMatchesArr(numberContent, articleHrefRe).filter(x => x[1] !== '0')
+      let numberContent = await fetchText(
+        `http://www.umoloda.kiev.ua/number/${curNumber}/`,
+      )
+      let hrefs = allMatchesArr(numberContent, articleHrefRe).filter(
+        (x) => x[1] !== '0',
+      )
       for (let [, a, b, c] of hrefs) {
         let filename = `${a}_${b}_${c}.html`
         if (!articleRegistry.has(filename)) {
           console.log(`fetching ${filename}`)
-          let articleContent = await fetchText(`http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`)
+          let articleContent = await fetchText(
+            `http://www.umoloda.kiev.ua/number/${a}/${b}/${c}/`,
+          )
           articleRegistry.set(filename, articleContent)
           // await sleep(400)
         }

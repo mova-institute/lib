@@ -2,8 +2,6 @@ import * as fs from 'fs'
 import { dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
 
-
-
 export interface Tostringable {
   toString(): string
 }
@@ -14,7 +12,9 @@ export class FileSavedSet<T extends Tostringable> {
 
   constructor(filePath: string) {
     if (fs.existsSync(filePath)) {
-      fs.readFileSync(filePath, 'utf8').split('\n').forEach(x => this.set.add(x))
+      fs.readFileSync(filePath, 'utf8')
+        .split('\n')
+        .forEach((x) => this.set.add(x))
       this.file = fs.openSync(filePath, 'a')
     } else {
       mkdirpSync(dirname(filePath))

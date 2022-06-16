@@ -1,8 +1,9 @@
 import { mu } from './mu'
 import { last, shallowEqualObj } from './lang'
 
-
-export type DirectedGraphPath<NodeAttrib, ArrowAttrib> = Array<Arrow<NodeAttrib, ArrowAttrib>>
+export type DirectedGraphPath<NodeAttrib, ArrowAttrib> = Array<
+  Arrow<NodeAttrib, ArrowAttrib>
+>
 
 export interface PathTraversalParams<NodeAttrib, ArrowAttrib> {
   cutAndFilter?: (path: DirectedGraphPath<NodeAttrib, ArrowAttrib>) => any
@@ -25,17 +26,14 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
   readonly incomingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()
   readonly outgoingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()
 
-  constructor(
-    public node: NodeAttrib
-  ) {
-  }
+  constructor(public node: NodeAttrib) {}
 
   get incomingNodes() {
-    return mu(this.incomingArrows).map(x => x.start)
+    return mu(this.incomingArrows).map((x) => x.start)
   }
 
   get outgoingNodes() {
-    return mu(this.outgoingArrows).map(x => x.end)
+    return mu(this.outgoingArrows).map((x) => x.end)
   }
 
   hasIncoming() {
@@ -46,7 +44,12 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return !!this.outgoingArrows.length
   }
 
-  addIncomingArrow(from: this, attrib: ArrowAttrib, dupePolicy = DupePolicy.throw, throwOnLoop = false) {
+  addIncomingArrow(
+    from: this,
+    attrib: ArrowAttrib,
+    dupePolicy = DupePolicy.throw,
+    throwOnLoop = false,
+  ) {
     if (throwOnLoop && from === this) {
       throw new Error(`Trying to add a self-loop`)
     }
@@ -58,7 +61,9 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     }
 
     if (dupePolicy !== DupePolicy.insert) {
-      let dupe = this.incomingArrows.find(x => x.start === from && x.end === this && x.attrib === attrib)
+      let dupe = this.incomingArrows.find(
+        (x) => x.start === from && x.end === this && x.attrib === attrib,
+      )
       if (dupe) {
         if (dupePolicy === DupePolicy.throw) {
           throw new Error(`Trying to add a duplicate arrow`)
@@ -73,7 +78,12 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     return arrow
   }
 
-  addOutgoingArrow(to: this, attrib: ArrowAttrib, dupePolicy = DupePolicy.throw, throwOnLoop = false) {
+  addOutgoingArrow(
+    to: this,
+    attrib: ArrowAttrib,
+    dupePolicy = DupePolicy.throw,
+    throwOnLoop = false,
+  ) {
     return to.addIncomingArrow(this, attrib, dupePolicy, throwOnLoop)
   }
 
@@ -106,7 +116,11 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     for (let arrow of this[inOrOutArrows]) {
       let firstStep = [arrow]
       if (!params || !params.cutAndFilter || !params.cutAndFilter(firstStep)) {
-        if (!params || !params.cutAndInclude || !params.cutAndInclude(firstStep)) {
+        if (
+          !params ||
+          !params.cutAndInclude ||
+          !params.cutAndInclude(firstStep)
+        ) {
           activePaths.add(firstStep)
         }
         yield firstStep
@@ -116,10 +130,19 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
     while (activePaths.size) {
       for (let path of [...activePaths]) {
         for (let newSegment of last(path)[startOrEnd][inOrOutArrows]) {
-          if (!path.includes(newSegment)) {  // no cycle
+          if (!path.includes(newSegment)) {
+            // no cycle
             let newPath = [...path, newSegment]
-            if (!params || !params.cutAndFilter || !params.cutAndFilter(newPath)) {
-              if (!params || !params.cutAndInclude || !params.cutAndInclude(newPath)) {
+            if (
+              !params ||
+              !params.cutAndFilter ||
+              !params.cutAndFilter(newPath)
+            ) {
+              if (
+                !params ||
+                !params.cutAndInclude ||
+                !params.cutAndInclude(newPath)
+              ) {
                 activePaths.add(newPath)
               }
               yield newPath
@@ -136,8 +159,7 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
   }
 
   walkForwardWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
-    return this.pathsForwardWidth(params)
-      .map(x => last(x))
+    return this.pathsForwardWidth(params).map((x) => last(x))
   }
 
   pathsBackWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
@@ -145,7 +167,6 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
   }
 
   walkBackWidth(params?: PathTraversalParams<NodeAttrib, ArrowAttrib>) {
-    return this.pathsBackWidth(params)
-      .map(x => last(x))
+    return this.pathsBackWidth(params).map((x) => last(x))
   }
 }

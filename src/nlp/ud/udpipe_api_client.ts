@@ -1,13 +1,7 @@
 import { reqJson } from '../../request'
 
-
-
 export class UdpipeApiClient {
-  constructor(
-    private endpoint?: string,
-    private model?,
-  ) {
-  }
+  constructor(private endpoint?: string, private model?) {}
 
   setEndpoint(value: string) {
     this.endpoint = value
@@ -81,7 +75,7 @@ export class UdpipeApiClient {
       method: 'post',
       formData,
     })
-    res = res.result.replace(/\t\t\t/g, '\t_\t_\t')  // hack for literal underscore
+    res = res.result.replace(/\t\t\t/g, '\t_\t_\t') // hack for literal underscore
     return res as string
   }
 }

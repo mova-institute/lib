@@ -4,8 +4,6 @@ import { generateRegistryFileUk } from '../registry_file_builder'
 
 import minimist from 'minimist'
 
-
-
 function main() {
   const args = minimist<any>(process.argv.slice(2))
   delete args._

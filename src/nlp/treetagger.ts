@@ -13,8 +13,6 @@ import { sync as globSync } from 'glob'
 import * as fs from 'fs'
 import { join } from 'path'
 
-
-
 export interface Args {
   corpusPath: string
   outPath: string
@@ -30,28 +28,39 @@ export function build4TreeTagger(args: Args) {
   let newStandardFiles = globSync(join(args.corpusPath, '*.xml'))
   mu(newStandardFiles)
     .map(parseXmlFileSync)
-    .map(x => mu(mixml2tokenStream(x)))
-    .forEach(x => x.forEach(tok => {
-      if (tok.isWord()) {
-        let interp = tok.interps[0]
-        if (isJohojiji(interp)) {
-          interp = MorphInterp.fromVesumStr('noun:n:v_rod:&pron:pers:3', interp.lemma)
+    .map((x) => mu(mixml2tokenStream(x)))
+    .forEach((x) =>
+      x.forEach((tok) => {
+        if (tok.isWord()) {
+          let interp = tok.interps[0]
+          if (isJohojiji(interp)) {
+            interp = MorphInterp.fromVesumStr(
+              'noun:n:v_rod:&pron:pers:3',
+              interp.lemma,
+            )
+          }
+          fs.writeSync(trainFile, `${tok.form}\t${interp.toMte()}\n`)
+          // fs.writeSync(trainFile, `${tok.form}\t${interp.toMte()}\t${interp.lemma}\n`)
+          if (!startsWithCapital(interp.lemma)) {
+            tok.form = tok.form.toLowerCase()
+          }
+          if (
+            !/^\d+$/.test(tok.form) &&
+            !interp.isPunctuation() &&
+            !interp.isX()
+          ) {
+            lexicon.add(`${tok.form}\t${interp.toMte()} ${interp.lemma}`)
+          }
         }
-        fs.writeSync(trainFile, `${tok.form}\t${interp.toMte()}\n`)
-        // fs.writeSync(trainFile, `${tok.form}\t${interp.toMte()}\t${interp.lemma}\n`)
-        if (!startsWithCapital(interp.lemma)) {
-          tok.form = tok.form.toLowerCase()
-        }
-        if (!/^\d+$/.test(tok.form) && !interp.isPunctuation() && !interp.isX()) {
-          lexicon.add(`${tok.form}\t${interp.toMte()} ${interp.lemma}`)
-        }
-      }
-    }))
+      }),
+    )
 
   console.log(`Building depechemode…`)
-  parseXmlFileSync(join(args.corpusPath, 'old_standard', 'serhii_zhadan__depesh_mod.xml'))
+  parseXmlFileSync(
+    join(args.corpusPath, 'old_standard', 'serhii_zhadan__depesh_mod.xml'),
+  )
     .evaluateElements('//tei:body//tei:w|//tei:body//tei:pc', NS)
-    .forEach(el => {
+    .forEach((el) => {
       // console.error(el.text())
       let form = el.text()
       if (el.localName() === 'pc') {
@@ -94,5 +103,9 @@ export function build4TreeTagger(args: Args) {
 }
 
 function isJohojiji(interp: MorphInterp) {
-  return (interp.lemma === 'його' || interp.lemma === 'її') && interp.isAdjective() && interp.isPronominal()
+  return (
+    (interp.lemma === 'його' || interp.lemma === 'її') &&
+    interp.isAdjective() &&
+    interp.isPronominal()
+  )
 }

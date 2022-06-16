@@ -2,8 +2,6 @@ import { LibxmljsElement } from './libxmljs_element'
 import { LibxmljsNode } from './libxmljs_node'
 import { LibxmljsAttribute } from './libxmljs_attribute'
 
-
-
 export function nodeOrElement(wrapee): LibxmljsNode | LibxmljsElement {
   switch (wrapee.type()) {
     case 'element':
@@ -24,7 +22,9 @@ export function nodeOrElementOrNull(wrapee): LibxmljsNode | LibxmljsElement {
   return nodeOrElement(wrapee)
 }
 
-export function nodeOrElementOrAttribute(wrapee): LibxmljsNode | LibxmljsElement | LibxmljsAttribute {
+export function nodeOrElementOrAttribute(
+  wrapee,
+): LibxmljsNode | LibxmljsElement | LibxmljsAttribute {
   switch (wrapee.type()) {
     case 'element':
       return new LibxmljsElement(wrapee)

@@ -3,8 +3,6 @@
 import { linesBackpressedStdPipeable } from '../../utils.node'
 import { unescape } from 'he'
 
-
-
 function main() {
   let newContextOn = new RegExp(process.argv[2] || '^</doc>')
 

@@ -6,17 +6,19 @@ import { writeFileSync } from 'fs'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { NS } from '../xml/utils'
 
-
-
 function main() {
   let [destPath, sourcePath] = process.argv.slice(2)
-  let [destRoot, sourceRoot] = [destPath, sourcePath]
-    .map(x => parseXmlFileSync(x))
+  let [destRoot, sourceRoot] = [destPath, sourcePath].map((x) =>
+    parseXmlFileSync(x),
+  )
   adoptMorphDisambs(destRoot, sourceRoot)
   writeFileSync(destPath, serializeMiDocument(destRoot, true))
 }
 
-function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
+function adoptMorphDisambs(
+  destRoot: AbstractElement,
+  sourceRoot: AbstractElement,
+) {
   let attr = sourceRoot.evaluateElement(`//mi:w_[@n]`, NS) ? 'n' : 'nn'
   for (let miwSource of sourceRoot.evaluateElements(`//mi:w_`, NS)) {
     let n = miwSource.attribute(attr)
@@ -28,10 +30,13 @@ function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElemen
     let sourceW = miwSource.firstElementChild()
     if (sourceW) {
       miwDest.clear()
-      let w = miwSource.document().createElement('w').setAttributes({
-        ana: sourceW.attribute('ana'),
-        lemma: sourceW.attribute('lemma'),
-      })
+      let w = miwSource
+        .document()
+        .createElement('w')
+        .setAttributes({
+          ana: sourceW.attribute('ana'),
+          lemma: sourceW.attribute('lemma'),
+        })
       w.text(sourceW.text())
       miwDest.appendChild(w)
     }

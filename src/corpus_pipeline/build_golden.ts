@@ -17,8 +17,6 @@ import { mu } from '../mu'
 import { keyvalue2attributesNormalized } from '../nlp/noske'
 import { standartizeMorphoForUd2_11 } from '../nlp/ud/uk_grammar'
 
-
-
 interface Args {
   inputRoot: string
   inputGlob: string
@@ -27,12 +25,9 @@ interface Args {
 
 function getArgs() {
   return minimist<Args>(process.argv.slice(2), {
-    boolean: [
-    ],
-    alias: {
-    },
-    default: {
-    },
+    boolean: [],
+    alias: {},
+    default: {},
   })
 }
 
@@ -79,7 +74,9 @@ function main() {
       let outDirVector = path.join(args.outDir, '4vec', relDirname)
       let outPathVector = path.join(outDirVector, `${basename}_0.4vec`)
       mkdirp.sync(outDirVector)
-      let forvecForms = mu(stream4vec(root)).map(([forms]) => forms).join('\n', true)
+      let forvecForms = mu(stream4vec(root))
+        .map(([forms]) => forms)
+        .join('\n', true)
       fs.writeFileSync(outPathVector, forvecForms)
     }
   }
@@ -111,8 +108,16 @@ function* streamVertical(root: AbstractElement, docMeta) {
       }
       standartizeMorphoForUd2_11(token.interp, token.form)
       let { pos, features } = toUd(token.interp)
-      yield token2verticalLineUk(token.form, token.interp.lemma,
-        pos, features, token.rel, token.index, token.headIndex, token.getAttribute('id'))
+      yield token2verticalLineUk(
+        token.form,
+        token.interp.lemma,
+        pos,
+        features,
+        token.rel,
+        token.index,
+        token.headIndex,
+        token.getAttribute('id'),
+      )
       if (token.gluedNext) {
         yield '<g/>'
       }
@@ -128,10 +133,10 @@ function* stream4vec(root: AbstractElement) {
   let tokenStream = mixml2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))
   for (let { tokens } of sentenceStream) {
-    tokens = tokens.filter(x => !x.interp.isPunctuation())
+    tokens = tokens.filter((x) => !x.interp.isPunctuation())
     if (tokens) {
-      let forms = tokens.map(x => x.form).join(' ')
-      let lemmas = tokens.map(x => x.interp.lemma).join(' ')
+      let forms = tokens.map((x) => x.form).join(' ')
+      let lemmas = tokens.map((x) => x.interp.lemma).join(' ')
       yield [forms, lemmas]
     }
   }

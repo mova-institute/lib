@@ -4,8 +4,6 @@ import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 
 import { escape } from 'he'
 
-
-
 export interface ConlluAndMeta2verticalOptions {
   formOnly?: boolean
   meta?: any
@@ -40,9 +38,10 @@ export function* conlluStreamAndMeta2vertical(
     if (tok.structure) {
       if (tok.structure.type === Structure.document) {
         continue
-      } else if (tok.structure.type === Structure.paragraph
-        && options.pGapIndexes
-        && options.pGapIndexes.length
+      } else if (
+        tok.structure.type === Structure.paragraph &&
+        options.pGapIndexes &&
+        options.pGapIndexes.length
       ) {
         if (tok.structure.opening) {
           if (options.pGapIndexes[gapPointer] === 0) {
@@ -59,10 +58,11 @@ export function* conlluStreamAndMeta2vertical(
       toyield += '>'
       yield toyield
 
-      if (tok.structure.type === Structure.paragraph
-        && !tok.structure.opening
-        && options.pGapIndexes
-        && options.pGapIndexes.length
+      if (
+        tok.structure.type === Structure.paragraph &&
+        !tok.structure.opening &&
+        options.pGapIndexes &&
+        options.pGapIndexes.length
       ) {
         ++pCount
         if (pCount === options.pGapIndexes[gapPointer]) {
@@ -76,7 +76,11 @@ export function* conlluStreamAndMeta2vertical(
         yield escape(tok.token.form)
       } else {
         if (options.featsOrder) {
-          yield tokenOrMulti2verticalLineGeneric(tok.token, tok.multitoken, options.featsOrder)
+          yield tokenOrMulti2verticalLineGeneric(
+            tok.token,
+            tok.multitoken,
+            options.featsOrder,
+          )
         } else {
           yield tokenObj2verticalLineUk(tok.token)
         }

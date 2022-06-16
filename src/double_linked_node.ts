@@ -2,8 +2,7 @@ export class DoubleLinkedNode<T> {
   private prev: DoubleLinkedNode<T> | undefined
   private next: DoubleLinkedNode<T> | undefined
 
-  constructor(private wrapee: T) {
-  }
+  constructor(private wrapee: T) {}
 
   value() {
     return this.wrapee

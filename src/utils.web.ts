@@ -2,8 +2,6 @@
 
 import { xmlNsResolver, removeXmlns } from './xml/utils'
 
-
-
 let xmlSerializer: XMLSerializer
 function getXmlSerializer() {
   return xmlSerializer || (xmlSerializer = new XMLSerializer())
@@ -14,7 +12,8 @@ function getDomParser() {
   return domParser || (domParser = new DOMParser())
 }
 
-export function isMacos() {  // todo: do it right
+export function isMacos() {
+  // todo: do it right
   return window.navigator.platform.startsWith('Mac')
 }
 
@@ -22,10 +21,16 @@ export function isModifierKeyPressed(e: MouseEvent) {
   return isMacos() ? e.metaKey : e.ctrlKey
 }
 
-export function parseXml(str: string) {  // todo: test in non-chrome
+export function parseXml(str: string) {
+  // todo: test in non-chrome
   let doc = getDomParser().parseFromString(str, 'application/xml')
-  let error = doc.evaluate('//xhtml:parsererror', doc, xmlNsResolver as any,
-    XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue
+  let error = doc.evaluate(
+    '//xhtml:parsererror',
+    doc,
+    xmlNsResolver as any,
+    XPathResult.ANY_UNORDERED_NODE_TYPE,
+    null,
+  ).singleNodeValue
 
   return error ? null : doc
 }
@@ -60,7 +65,23 @@ function dataDownloadOrOpen(data, mime: string, filename?: string) {
   }
 
   let e = document.createEvent('MouseEvents')
-  e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+  e.initMouseEvent(
+    'click',
+    true,
+    false,
+    window,
+    0,
+    0,
+    0,
+    0,
+    0,
+    false,
+    false,
+    false,
+    false,
+    0,
+    null,
+  )
 
   a.dispatchEvent(e)
 }
@@ -77,10 +98,17 @@ export function scrolledToEnd(endIsTop: boolean) {
   if (endIsTop) {
     return !window.scrollY
   }
-  return window.scrollY + document.documentElement.clientHeight >= document.documentElement.offsetHeight
+  return (
+    window.scrollY + document.documentElement.clientHeight >=
+    document.documentElement.offsetHeight
+  )
 }
 
-export function openLocalFile(accept: string, multiple: boolean, cb: (files: FileList) => any) {
+export function openLocalFile(
+  accept: string,
+  multiple: boolean,
+  cb: (files: FileList) => any,
+) {
   let fileInput = document.createElement('input')
   fileInput.setAttribute('type', 'file')
   fileInput.setAttribute('accept', accept)

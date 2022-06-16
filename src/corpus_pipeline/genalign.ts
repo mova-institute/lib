@@ -7,7 +7,6 @@ import { isSentenceStart, getId } from './id2i'
 import { last } from '../lang'
 import { linesSync, readTsvMapSync, forEachLine } from '../utils.node'
 
-
 if (require.main === module) {
   let args = minimist(process.argv.slice(2))
   // main2(args._[0], args._[1], args._[2])
@@ -22,14 +21,24 @@ async function main2(id2iLPath: string, id2idsGlob: string, id2iRPath: string) {
   for (let path of globSync(id2idsGlob)) {
     for (let line of linesSync(path)) {
       if (line.startsWith('<link ')) {
-        let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/)[1].split(';')
+        let [idsStrL, idsStrR] = line
+          .match(/\sxtargets='([^']+)'/)[1]
+          .split(';')
         if (!idsStrL.startsWith('uk')) {
-          [idsStrL, idsStrR] = [idsStrR, idsStrL]
+          ;[idsStrL, idsStrR] = [idsStrR, idsStrL]
         }
-        let indexesL = idsStrL.split(' ').map(x => id2i.get(x)).filter(x => x !== undefined)
-        let indexesR = idsStrR.split(' ').map(x => id2i.get(x)).filter(x => x !== undefined)
+        let indexesL = idsStrL
+          .split(' ')
+          .map((x) => id2i.get(x))
+          .filter((x) => x !== undefined)
+        let indexesR = idsStrR
+          .split(' ')
+          .map((x) => id2i.get(x))
+          .filter((x) => x !== undefined)
         if (indexesL.length || indexesR.length) {
-          process.stdout.write(`${indexArr2val(indexesL)}\t${indexArr2val(indexesR)}\n`)
+          process.stdout.write(
+            `${indexArr2val(indexesL)}\t${indexArr2val(indexesR)}\n`,
+          )
         }
       }
     }
@@ -43,12 +52,12 @@ async function main(id2idsGlob: string, id2iRPath: string) {
     // console.error(id2iR)
 
     let id2ids = new Map<string, Array<string>>()
-    globSync(id2idsGlob).forEach(x => readTeiMapping(id2ids, x))
+    globSync(id2idsGlob).forEach((x) => readTeiMapping(id2ids, x))
     console.error(`read TEI mappings`)
     // console.error(id2ids)
 
     let i = 0
-    await forEachLine(process.stdin, line => {
+    await forEachLine(process.stdin, (line) => {
       if (isSentenceStart(line)) {
         let idL = getId(line)
         if (idL && id2ids.has(idL) && id2ids.get(idL).length) {
@@ -82,8 +91,8 @@ function readTeiMapping(target: Map<string, Array<string>>, path: string) {
   for (let line of linesSync(path)) {
     if (line.startsWith('<link ')) {
       let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/)[1].split(';')
-      let idsL = idsStrL.split(' ').filter(x => x)
-      let idsR = idsStrR.split(' ').filter(x => x)
+      let idsL = idsStrL.split(' ').filter((x) => x)
+      let idsR = idsStrR.split(' ').filter((x) => x)
       // if (!idsL.length) {
       //   idsR.forEach(x => target.set(x, ['-1']))
       // } else if (!idsR.length) {
@@ -110,14 +119,25 @@ function readTeiMapping(target: Map<string, Array<string>>, path: string) {
   return target
 }
 
-function* buildSketchAlingmentMap(id2indexMap: Map<string, string>, alingmentGlob: string) {
+function* buildSketchAlingmentMap(
+  id2indexMap: Map<string, string>,
+  alingmentGlob: string,
+) {
   for (let path of globSync(alingmentGlob)) {
     // console.error(path)
     for (let line of linesSync(path)) {
       if (line.startsWith('<link ')) {
-        let [idsStrL, idsStrR] = line.match(/\sxtargets='([^']+)'/)[1].split(';')
-        let indexesL = idsStrL.split(' ').map(x => id2indexMap.get(x)).filter(x => x !== undefined)
-        let indexesR = idsStrR.split(' ').map(x => id2indexMap.get(x)).filter(x => x !== undefined)
+        let [idsStrL, idsStrR] = line
+          .match(/\sxtargets='([^']+)'/)[1]
+          .split(';')
+        let indexesL = idsStrL
+          .split(' ')
+          .map((x) => id2indexMap.get(x))
+          .filter((x) => x !== undefined)
+        let indexesR = idsStrR
+          .split(' ')
+          .map((x) => id2indexMap.get(x))
+          .filter((x) => x !== undefined)
         yield [indexArr2val(indexesL), indexArr2val(indexesR)]
       }
     }

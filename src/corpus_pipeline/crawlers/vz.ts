@@ -8,8 +8,6 @@ import { fetchText } from '../../request'
 import { parseHtml } from '../../xml/utils.node'
 import { mu } from '../../mu'
 
-
-
 interface Args {
   workspace: string
   offset: number
@@ -22,8 +20,8 @@ const baseUrl = 'http://wz.lviv.ua'
 if (require.main === module) {
   const args = minimist<Args>(process.argv.slice(2), {
     alias: {
-      'workspace': ['ws'],
-      'lastPage': ['last-page'],
+      workspace: ['ws'],
+      lastPage: ['last-page'],
     },
     default: {
       workspace: './vz',
@@ -36,14 +34,15 @@ if (require.main === module) {
   main(args)
 }
 
-
 async function main(args: Args) {
   let fetchedArticlesDir = path.join(args.workspace, 'data')
   mkdirpSync(fetchedArticlesDir)
   let articleRegistry = new FsMap(fetchedArticlesDir)
 
   for (let i = args.offset; ; i += args.step) {
-    console.log(`fetching offset ${i} ==========================================`)
+    console.log(
+      `fetching offset ${i} ==========================================`,
+    )
 
     try {
       var root = parseHtml(await fetchText(`${baseUrl}/archive?start=${i}`))
@@ -51,8 +50,12 @@ async function main(args: Args) {
       console.error(e)
       continue
     }
-    let hrefs = mu(root.evaluateAttributes('//div[@class="blog-article"]//a[@itemprop="url"]/@href'))
-      .map(x => x.value().substr(1))
+    let hrefs = mu(
+      root.evaluateAttributes(
+        '//div[@class="blog-article"]//a[@itemprop="url"]/@href',
+      ),
+    )
+      .map((x) => x.value().substr(1))
       .toArray()
 
     if (!hrefs.length) {

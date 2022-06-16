@@ -28,7 +28,11 @@ export function* allMatches(str: string, re: RegExp) {
   }
 }
 
-export function singleMatchOrThrow(str: string, regexp: RegExp, groupIndex = 0) {
+export function singleMatchOrThrow(
+  str: string,
+  regexp: RegExp,
+  groupIndex = 0,
+) {
   regexp = cloneWithGlobal(regexp)
   let match = regexp.exec(str)
   if (!match) {
@@ -56,12 +60,15 @@ export function firstMatch(str: string, regex: RegExp, groupIndex = 0) {
 }
 
 export function allcaps2titlecaseDirty(str: string) {
-  return str.split(/\s+/).map(word => {
-    if (isAllcaps(word)) {
-      return titlecase(word)
-    }
-    return word
-  }).join(' ')
+  return str
+    .split(/\s+/)
+    .map((word) => {
+      if (isAllcaps(word)) {
+        return titlecase(word)
+      }
+      return word
+    })
+    .join(' ')
 }
 
 export function isAllcaps(str: string) {
@@ -109,15 +116,20 @@ export function titlecase(str: string) {
 export function regexMatchIndexes(str: string, regex: RegExp) {
   let ret = new Array<number>()
   let match: RegExpExecArray | null
-  while (match = regex.exec(str)) {
+  while ((match = regex.exec(str))) {
     ret.push(match.index)
   }
   return ret
 }
 
 /** replaceCaseAware('ГагаГа', /г/ig, 'ґ') === 'ҐаґаҐа' */
-export function replaceCaseAware(str: string, substr: string | RegExp, newSubStr: string) {
-  return str.replace(substr as any, (match) => {  // todo
+export function replaceCaseAware(
+  str: string,
+  substr: string | RegExp,
+  newSubStr: string,
+) {
+  return str.replace(substr as any, (match) => {
+    // todo
     if (match.length !== newSubStr.length) {
       throw new Error(`Replace string length mismatch: ${match} ~ ${newSubStr}`)
     }
@@ -129,10 +141,11 @@ export function replaceCaseAware(str: string, substr: string | RegExp, newSubStr
 export function loopReplace(
   str: string,
   pattern: RegExp | string,
-  replacer: string | ((substring: string, ...args: Array<any>) => string)
+  replacer: string | ((substring: string, ...args: Array<any>) => string),
 ) {
   let ret: string
-  while ((ret = str.replace(pattern, replacer as any)) !== str) {  // todo: post a bug
+  while ((ret = str.replace(pattern, replacer as any)) !== str) {
+    // todo: post a bug
     str = ret
   }
   return ret
@@ -144,7 +157,9 @@ export function uppercaseMask(str: string) {
 }
 
 export function applyUppercaseMask(str: string, mask: Array<boolean>) {
-  return [...str].map((x, i) => mask[i] ? x.toUpperCase() : x.toLowerCase()).join('')
+  return [...str]
+    .map((x, i) => (mask[i] ? x.toUpperCase() : x.toLowerCase()))
+    .join('')
 }
 
 export function startsWithCapital(str: string) {
@@ -188,7 +203,11 @@ export function findAllIndexes(str: string, char: string) {
   return ret
 }
 
-export function insertAtIndexes(str: string, indexes: Array<number>, what: string) {
+export function insertAtIndexes(
+  str: string,
+  indexes: Array<number>,
+  what: string,
+) {
   if (!indexes.length) {
     return str
   }
@@ -205,13 +224,23 @@ export function insertAtIndexes(str: string, indexes: Array<number>, what: strin
   return ret
 }
 
-export function toPercent(nominator: number, denominator: number, aftercomma = 0) {
+export function toPercent(
+  nominator: number,
+  denominator: number,
+  aftercomma = 0,
+) {
   return ((nominator / denominator) * 100).toFixed(aftercomma)
 }
 
-export function toFloorPercent(nominator: number, denominator: number, aftercomma = 0) {
+export function toFloorPercent(
+  nominator: number,
+  denominator: number,
+  aftercomma = 0,
+) {
   let exp = 10 ** aftercomma
-  return (Math.floor(nominator / denominator * exp * 100) / exp).toFixed(aftercomma)
+  return (Math.floor((nominator / denominator) * exp * 100) / exp).toFixed(
+    aftercomma,
+  )
 }
 
 export function escapeRe(str: string) {

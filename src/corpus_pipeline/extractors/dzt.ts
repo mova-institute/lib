@@ -2,8 +2,6 @@ import { CorpusDoc } from '../doc_meta'
 import { parseHtml } from '../../xml/utils.node'
 import { textOf, textsOf } from './utils'
 
-
-
 export function extract(html: string) {
   let root = parseHtml(html)
 

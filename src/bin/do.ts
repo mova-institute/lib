@@ -6,17 +6,9 @@ import { parseXml } from '../xml/utils.node'
 import { BufferedBackpressWriter } from '../backpressing_writer'
 import { logErrAndExit } from '../utils.node'
 
-
-
 async function main() {
   const args = require('minimist')(process.argv.slice(2), {
-    boolean: [
-      'xml',
-      'inplace',
-      'v',
-      'byline',
-      'lined',
-    ],
+    boolean: ['xml', 'inplace', 'v', 'byline', 'lined'],
   })
 
   let [path, funcName, filename1, filename2] = args._
@@ -45,9 +37,7 @@ async function main() {
         if (typeof res === 'string') {
           output.write(res)
         } else {
-          output.write((res || root)
-            .document()
-            .serialize(true))
+          output.write((res || root).document().serialize(true))
         }
       } else {
         let res = func(inputStr)

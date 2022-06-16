@@ -4,8 +4,6 @@ import { linesBackpressedStdPipeable } from '../utils.node'
 
 import { Buffer } from 'buffer'
 
-
-
 function main() {
   let findRe = new RegExp(process.argv[2])
 
@@ -24,10 +22,11 @@ function main() {
   })
 
   if (curOffset) {
-    process.stdout.write(`${lastOffset}\t${curOffset - lastOffset}\t${lastHit}\n`)
+    process.stdout.write(
+      `${lastOffset}\t${curOffset - lastOffset}\t${lastHit}\n`,
+    )
   }
 }
-
 
 if (require.main === module) {
   main()

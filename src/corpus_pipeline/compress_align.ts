@@ -2,13 +2,11 @@
 
 import { forEachLine } from '../utils.node'
 
-
-
 async function main() {
   try {
     let compressorA = new Compressor()
     let compressorB = new Compressor()
-    await forEachLine(process.stdin, line => {
+    await forEachLine(process.stdin, (line) => {
       let [l, r] = line.split('\t')
       let res = compressorA.feed(l, r)
       if (res) {

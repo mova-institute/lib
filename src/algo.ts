@@ -1,7 +1,6 @@
 import { isOddball, isNumber, last } from './lang'
-import { HashSet } from './data_structures'  // todo remove dep
+import { HashSet } from './data_structures' // todo remove dep
 import { Dict, Predicate, Comparator } from './types'
-
 
 export function compare(a, b) {
   if (isOddball(a) && !isOddball(b)) {
@@ -36,7 +35,9 @@ export function chainComparators<T>(...comparators: Array<Comparator<T>>) {
 }
 
 export function comparatorBy<ArgT, CompT>(
-  comparator: Comparator<CompT>, transformation: (a: ArgT) => CompT) {
+  comparator: Comparator<CompT>,
+  transformation: (a: ArgT) => CompT,
+) {
   return (a: ArgT, b: ArgT) => comparator(transformation(a), transformation(b))
 }
 
@@ -54,13 +55,17 @@ export function stableSort<T>(
   comparator = lexCompare,
   ...comparators: Array<Comparator<T>>
 ) {
-  let stableComparator = chainComparators(comparator, ...comparators, indexComparator(array))
+  let stableComparator = chainComparators(
+    comparator,
+    ...comparators,
+    indexComparator(array),
+  )
   return array.sort(stableComparator)
 }
 
 export function flipObjMap(map: Dict<string>) {
   let ret = {}
-  Object.entries(map).forEach(([k, v]) => ret[v] = k)
+  Object.entries(map).forEach(([k, v]) => (ret[v] = k))
   return ret
 }
 
@@ -77,7 +82,7 @@ export function uniqValuedMap2array(map) {
 }
 
 export function* findIndexwiseDiff(input: Array<any>) {
-  let maxLen = Math.max(...input.map(x => x.length))
+  let maxLen = Math.max(...input.map((x) => x.length))
   let curDiffLen = 0
   for (let j = 0; j < maxLen; ++j) {
     let cur = input[0][j]
@@ -97,13 +102,14 @@ export function* findIndexwiseDiff(input: Array<any>) {
   }
 }
 
-export function longestCommonSubstring(strings: Array<string>) {  // naive
+export function longestCommonSubstring(strings: Array<string>) {
+  // naive
   let ret = ''
   if (strings.length) {
     for (let i = 0; i < strings[0].length; ++i) {
       for (let j = 0; j < strings[0].length - i + 1; ++j) {
         let candidate = strings[0].substring(i, i + j)
-        if (j > ret.length && strings.every(x => x.indexOf(candidate) >= 0)) {
+        if (j > ret.length && strings.every((x) => x.indexOf(candidate) >= 0)) {
           ret = candidate
         }
       }
@@ -113,7 +119,10 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
   return ret
 }
 
-export function groupTableBy<T>(table: Array<T>, groupProp: string | number | symbol) {
+export function groupTableBy<T>(
+  table: Array<T>,
+  groupProp: string | number | symbol,
+) {
   let ret = new Map<string | number | symbol, Array<T>>()
 
   for (let row of table) {
@@ -126,10 +135,13 @@ export function groupTableBy<T>(table: Array<T>, groupProp: string | number | sy
 }
 
 export function indexTableByColumn<T>(table: Array<T>, propName: string) {
-  return new Map(table.map(x => [x[propName], x] as [string, T]))
+  return new Map(table.map((x) => [x[propName], x] as [string, T]))
 }
 
-export function indexTableByColumns(table: Array<Object>, propNames: Array<any>) {
+export function indexTableByColumns(
+  table: Array<Object>,
+  propNames: Array<any>,
+) {
   let ret = new Map()
 
   for (let row of table) {
@@ -169,7 +181,10 @@ export function combinations<T>(arr: Array<Array<T>>) {
   return [..._combinations(arr)]
 }
 
-function* _combinations<T>(arr: Array<Array<T>>, state = new Array<T>()): Iterable<Array<T>> {
+function* _combinations<T>(
+  arr: Array<Array<T>>,
+  state = new Array<T>(),
+): Iterable<Array<T>> {
   if (state.length < arr.length) {
     for (let x of arr[state.length]) {
       state.push(x)
@@ -182,7 +197,7 @@ function* _combinations<T>(arr: Array<Array<T>>, state = new Array<T>()): Iterab
 }
 
 export function overflowNegative(value: number) {
-  return value & 0x7FFFFFFF  // todo: MAX_SAFE_INTEGER?
+  return value & 0x7fffffff // todo: MAX_SAFE_INTEGER?
 }
 
 export function uniq<T>(array: Array<T>) {
@@ -236,7 +251,7 @@ export function commonPrefixLen2(a: string, b: string) {
 }
 
 export function commonPrefixLen(strings: Array<string>) {
-  let minLen = Math.min(...strings.map(x => x.length))
+  let minLen = Math.min(...strings.map((x) => x.length))
 
   outer: for (var ret = 0; ret < minLen; ++ret) {
     for (let i = 1; i < strings.length; ++i) {
@@ -297,7 +312,7 @@ export function deleteIndexes<T>(array: Array<T>, indexes: Array<number>) {
 }
 
 export function transformUntilNoChange<T>(value: T, f: (value: T) => T) {
-  while ((value = f(value)) !== value) { }
+  while ((value = f(value)) !== value) {}
   return value
 }
 
@@ -334,5 +349,5 @@ export function cartesian(...arrays: Array<Array<any>>) {
 }
 
 function cartesianInline(a: Array<any>, b: Array<any>) {
-  return [].concat(...a.map(aa => b.map(bb => [].concat(aa, bb))))
+  return [].concat(...a.map((aa) => b.map((bb) => [].concat(aa, bb))))
 }

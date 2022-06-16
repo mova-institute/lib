@@ -11,9 +11,11 @@ export class Grouping<ElementType, GroupType> {
   }
 
   areSameGroup(element1: ElementType, element2: ElementType) {
-    return this.has(element1)
-      && this.has(element2)
-      && this.getGroup(element1) === this.getGroup(element2)
+    return (
+      this.has(element1) &&
+      this.has(element2) &&
+      this.getGroup(element1) === this.getGroup(element2)
+    )
   }
 
   has(element: ElementType) {
@@ -29,7 +31,10 @@ export class Grouping<ElementType, GroupType> {
   }
 }
 
-export class SimpleGrouping<ElementType> extends Grouping<ElementType, ElementType> {
+export class SimpleGrouping<ElementType> extends Grouping<
+  ElementType,
+  ElementType
+> {
   engroupAsDeafault(element: ElementType, as: ElementType) {
     this.selfgroup(as)
     this.engroup(element, as)

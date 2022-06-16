@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-
 import { createInterface } from 'readline'
 import * as fs from 'fs'
 
@@ -10,8 +9,6 @@ import * as columnify from 'columnify'
 import { getLibRootRelative } from '../../lib_path.node'
 import { Dict } from '../../types'
 // import { toPercent } from '../../string_utils'
-
-
 
 function main() {
   const args = minimist<any>(process.argv.slice(2))
@@ -23,7 +20,21 @@ function main() {
   let stats: { [arrowId: string]: { user: string; timestamp: Date } } = {}
   createInterface({ input: process.stdin })
     .on('line', (line: string) => {
-      let [dateStr, timeStr, user, path, document, step, action, head, dependant, relation, , oldRelation, oldDependant] = line.trim().split(/\s+/g)
+      let [
+        dateStr,
+        timeStr,
+        user,
+        path,
+        document,
+        step,
+        action,
+        head,
+        dependant,
+        relation,
+        ,
+        oldRelation,
+        oldDependant,
+      ] = line.trim().split(/\s+/g)
 
       if (args.from && args.from > `${dateStr} ${timeStr}`) {
         return
@@ -44,12 +55,14 @@ function main() {
           // }
         }
       }
-
-    }).on('close', () => {
+    })
+    .on('close', () => {
       let grandTotal = 0
       // tslint:disable-next-line:no-object-literal-type-assertion
       let counts = {} as Dict<any>
-      for (let [arrowId, { user }] of Object.entries(stats).filter(x => x[1])) {
+      for (let [arrowId, { user }] of Object.entries(stats).filter(
+        (x) => x[1],
+      )) {
         if (user === undefined) {
           continue
         }
@@ -58,16 +71,16 @@ function main() {
         ++grandTotal
       }
 
-      let nameMap = JSON.parse(fs.readFileSync(getLibRootRelative('..', 'data', 'name-map.json'), 'utf8'))
-      let results = [...Object.entries(counts)]
-        .sort((a, b) => b[1] - a[1])
-
-      let percentage = (Math.floor(grandTotal / 20000 * 100))
-      results.push(
-        ['', ''],
-        ['ВСЬОГО', grandTotal],
-        [`МЕТИ`, `${percentage}%`],
+      let nameMap = JSON.parse(
+        fs.readFileSync(
+          getLibRootRelative('..', 'data', 'name-map.json'),
+          'utf8',
+        ),
       )
+      let results = [...Object.entries(counts)].sort((a, b) => b[1] - a[1])
+
+      let percentage = Math.floor((grandTotal / 20000) * 100)
+      results.push(['', ''], ['ВСЬОГО', grandTotal], [`МЕТИ`, `${percentage}%`])
       let columns = results.map(([user, count]) => ({
         name: nameMap[user] || user,
         count,
@@ -76,14 +89,16 @@ function main() {
       console.log()
       console.log(new Date().toLocaleString('uk'))
       console.log()
-      console.log(columnify(columns, {
-        showHeaders: false,
-        config: {
-          count: {
-            align: 'right',
+      console.log(
+        columnify(columns, {
+          showHeaders: false,
+          config: {
+            count: {
+              align: 'right',
+            },
           },
-        },
-      }))
+        }),
+      )
       console.log()
       // .map(([user, count]) => `${nameMap[user]}\t${count}`)
       // .join('\n')
@@ -95,6 +110,5 @@ function main() {
 if (require.main === module) {
   main()
 }
-
 
 // 2017-01-16 21:17:35,634	username	/treebank/ud2/natalia_m/	zakon_tvaryny_28	START	createArc	T36	T35	case	None	None	None	None

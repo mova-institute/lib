@@ -5,45 +5,50 @@ import { IStringMorphInterp } from '../interfaces'
 import { HashSet } from '../../data_structures'
 import { mu, Mu } from '../../mu'
 
-
-
 export class Dictionary {
   constructor(
     private words: MapDawg<string, WordDawgPayload>,
     private paradigms: Array<Uint16Array>,
     private suffixes: Array<string>,
-    private flags: Array<string>) {
-  }
+    private flags: Array<string>,
+  ) {}
 
   hasAnyCase(token: string) {
     return this.words.has(token) || this.words.has(token.toLowerCase())
   }
 
   lookup(word: string) {
-    return this.words.getArray(word).map(x => this.buildInterp(word, x))
+    return this.words.getArray(word).map((x) => this.buildInterp(word, x))
   }
 
   lookupVariants(words: Iterable<string>) {
-    return new HashSet(IStringMorphInterp.hash, Mu.chain(...mu(words).map(x => this.lookup(x))))
+    return new HashSet(
+      IStringMorphInterp.hash,
+      Mu.chain(...mu(words).map((x) => this.lookup(x))),
+    )
   }
 
   lookupLexemesByLemma(lemma: string) {
-    return this.words.getArray(lemma)
-      .filter(x => x.indexInPradigm === 0)  // lemmas
-      .map(x => [...this.buildLexeme(x.paradigmId, lemma)])
+    return this.words
+      .getArray(lemma)
+      .filter((x) => x.indexInPradigm === 0) // lemmas
+      .map((x) => [...this.buildLexeme(x.paradigmId, lemma)])
   }
 
   private nthInParadigm(paradigm: Uint16Array, n: number) {
     let suffix = this.suffixes[paradigm[n]]
     let flags = this.flags[paradigm[paradigm.length / 3 + n]]
-    let prefix = ''  // todo
+    let prefix = '' // todo
 
     return { suffix, flags, prefix }
   }
 
   private buildInterp(word: string, paraIndex: WordDawgPayload) {
     let paradigm = this.paradigms[paraIndex.paradigmId]
-    let { suffix, flags, prefix } = this.nthInParadigm(paradigm, paraIndex.indexInPradigm)
+    let { suffix, flags, prefix } = this.nthInParadigm(
+      paradigm,
+      paraIndex.indexInPradigm,
+    )
 
     let lemmaSuffix = this.suffixes[paradigm[0]]
     let lemma = word.slice(0, -suffix.length || word.length) + lemmaSuffix

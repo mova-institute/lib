@@ -1,7 +1,10 @@
 import { Token } from '../token'
 import { uEq, uEqSome } from './utils'
 import {
-  TokenNode, SUBJECTS, isPromoted, EnhancedNode,
+  TokenNode,
+  SUBJECTS,
+  isPromoted,
+  EnhancedNode,
   EnhancedArrow,
   CLAUSAL_MODIFIERS,
   CLAUSAL_TO_PLAIN,
@@ -10,8 +13,6 @@ import {
 } from './uk_grammar'
 import { DirectedGraphNode, DupePolicy } from '../../directed_graph'
 import { UdPos, toUd } from './tagset'
-
-
 
 // http://universaldependencies.org/u/overview/enhanced-syntax.html
 //
@@ -41,12 +42,10 @@ import { UdPos, toUd } from './tagset'
 // todo: findRelationAnalog
 // todo: Недарма казали в народі : " Не той козак , хто переміг , а той , хто викрутився
 //
-export function generateEnhancedDeps2(
-  basicNodes: Array<TokenNode>,
-) {
+export function generateEnhancedDeps2(basicNodes: Array<TokenNode>) {
   let enhancedNodes = buildEnhancedTreeFromBasic(basicNodes)
-  connectEphemeralRoot(enhancedNodes)  // to conj-propagate root
-  loadEnhancedGraphFromTokens(enhancedNodes)  // read manual enhanced annotation
+  connectEphemeralRoot(enhancedNodes) // to conj-propagate root
+  loadEnhancedGraphFromTokens(enhancedNodes) // read manual enhanced annotation
   propagateConjuncts(enhancedNodes)
   addRelclBackwardLinks(enhancedNodes)
   // propagateConjuncts(enhancedNodes, true)  // propagate what we've just generated
@@ -58,14 +57,18 @@ function connectEphemeralRoot(enhancedNodes: Array<EnhancedNode>) {
   let ephemeralRootNode = new DirectedGraphNode<Token, string>(new Token())
   ephemeralRootNode.node.index = -1
 
-  enhancedNodes.filter(x => !x.hasIncoming())
-    .forEach(x => x.addIncomingArrow(ephemeralRootNode, 'root', DupePolicy.throw, true))
+  enhancedNodes
+    .filter((x) => !x.hasIncoming())
+    .forEach((x) =>
+      x.addIncomingArrow(ephemeralRootNode, 'root', DupePolicy.throw, true),
+    )
 }
 
 function addRelclBackwardLinks(enhancedNodes: Array<EnhancedNode>) {
   for (let node of enhancedNodes) {
     for (let arrow of node.incomingArrows) {
-      if (uEq(arrow.attrib, 'ref')) {  // annotated manually
+      if (uEq(arrow.attrib, 'ref')) {
+        // annotated manually
         let ref = arrow
         let isNonverbalPredication = isNonverbialPredicateEnh(ref.end)
         if (ref.end.node.interp.isRelative()) {
@@ -90,16 +93,25 @@ function addRelclBackwardLinks(enhancedNodes: Array<EnhancedNode>) {
 
 function addFromRelclBackToAntecedent(refArrow: EnhancedArrow) {
   refArrow.end.incomingArrows
-    .filter(x => x !== refArrow && !uEqSome(x.attrib, ['conj', 'ref']))
-    .forEach(incomingArrow => {
-      let newRel = findRelationAnalog(incomingArrow, refArrow.end, refArrow.start)
-      incomingArrow.start.addOutgoingArrow(refArrow.start, relativizeRel(newRel),
-        DupePolicy.ignore, true)
+    .filter((x) => x !== refArrow && !uEqSome(x.attrib, ['conj', 'ref']))
+    .forEach((incomingArrow) => {
+      let newRel = findRelationAnalog(
+        incomingArrow,
+        refArrow.end,
+        refArrow.start,
+      )
+      incomingArrow.start.addOutgoingArrow(
+        refArrow.start,
+        relativizeRel(newRel),
+        DupePolicy.ignore,
+        true,
+      )
     })
 }
 
 function relativizeRel(relation: string) {
-  if (relation.includes(':')) {  // todo
+  if (relation.includes(':')) {
+    // todo
     return relation
   }
   return `${relation}:rel`
@@ -107,12 +119,21 @@ function relativizeRel(relation: string) {
 
 function addFromNominalRelclHeadBackToAntecedent(refArrow: EnhancedArrow) {
   refArrow.end.outgoingArrows
-    .filter(x => uEqSome(x.attrib, SUBJECTS))
-    .forEach(subjArrow => refArrow.start.addOutgoingArrow(
-      subjArrow.end, `${subjArrow.attrib}:relnompred`, DupePolicy.throw, true))
+    .filter((x) => uEqSome(x.attrib, SUBJECTS))
+    .forEach((subjArrow) =>
+      refArrow.start.addOutgoingArrow(
+        subjArrow.end,
+        `${subjArrow.attrib}:relnompred`,
+        DupePolicy.throw,
+        true,
+      ),
+    )
 }
 
-function propagateConjuncts(enhancedTree: Array<EnhancedNode>, dupesExpected = false) {
+function propagateConjuncts(
+  enhancedTree: Array<EnhancedNode>,
+  dupesExpected = false,
+) {
   // _Paul and Mary+Zina are watching a movie or rapidly (reading or eating)._
 
   let dupePolicy = dupesExpected ? DupePolicy.ignore : DupePolicy.throw
@@ -120,43 +141,57 @@ function propagateConjuncts(enhancedTree: Array<EnhancedNode>, dupesExpected = f
   // 1: conjuncts are governors: eating->rapidly, reading->Paul, eating->Paul
   // if (!dupesExpected) {
   for (let node of enhancedTree) {
-    let firstConjChain = node.walkBackMu(({ attrib: rel }) => uEq(rel, 'conj') && rel !== 'conj:parataxis')
-      .map(x => x.start)
+    let firstConjChain = node
+      .walkBackMu(
+        ({ attrib: rel }) => uEq(rel, 'conj') && rel !== 'conj:parataxis',
+      )
+      .map((x) => x.start)
     for (let firstConj of firstConjChain) {
       firstConj.outgoingArrows
-        .filter(x => x.end !== node
-          // todo: share ref depending on helpers for :relcl
-          && (/* uEq(x.attrib, 'ref') || */ x.end.node.hdeps.some(helperDep => helperDep.headId === firstConj.node.id
-            && (['distrib', 'collect'].includes(helperDep.relation)
-              // || uEqSome(x.attrib, ['nsubj', 'csubj'])  // temp
-            )
-          )
-          )
+        .filter(
+          (x) =>
+            x.end !== node &&
+            // todo: share ref depending on helpers for :relcl
+            /* uEq(x.attrib, 'ref') || */ x.end.node.hdeps.some(
+              (helperDep) =>
+                helperDep.headId === firstConj.node.id &&
+                ['distrib', 'collect'].includes(helperDep.relation),
+                // || uEqSome(x.attrib, ['nsubj', 'csubj'])  // temp
+            ),
         )
-        .forEach(x => x.end.addIncomingArrow(node, x.attrib, dupePolicy, !dupesExpected))
+        .forEach((x) =>
+          x.end.addIncomingArrow(node, x.attrib, dupePolicy, !dupesExpected),
+        )
     }
   }
   // }
 
   // 2: conjuncts are dependents: _a long and wide river_
   for (let node of enhancedTree) {
-    let topConj = node.walkBackMu(({ attrib: rel }) => uEq(rel, 'conj'))
-      .map(x => x.start)
+    let topConj = node
+      .walkBackMu(({ attrib: rel }) => uEq(rel, 'conj'))
+      .map((x) => x.start)
       .last()
     if (topConj) {
       topConj.incomingArrows
-        .filter(x => !uEqSome(x.attrib, ['parataxis']))
-        .forEach(x => node.addIncomingArrow(
-          x.start,
-          findRelationAnalog(x, x.start, node),  // todo
-          dupePolicy,
-          !dupesExpected)
+        .filter((x) => !uEqSome(x.attrib, ['parataxis']))
+        .forEach((x) =>
+          node.addIncomingArrow(
+            x.start,
+            findRelationAnalog(x, x.start, node), // todo
+            dupePolicy,
+            !dupesExpected,
+          ),
         )
     }
   }
 }
 
-function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode, newDependent: EnhancedNode) {
+function findRelationAnalog(
+  existingArrow: EnhancedArrow,
+  newStart: EnhancedNode,
+  newDependent: EnhancedNode,
+) {
   let existingRel = existingArrow.attrib
   let existingDependent = existingArrow.start
   let { pos: newDepPos } = toUd(newDependent.node.interp)
@@ -169,17 +204,19 @@ function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode
     return existingRel
   }
 
-  if (uEqSome(existingRel, [
-    'cop',
-    'aux',
-    'mark',
-    'case',
-    'dep',
-    'cc',
-    'vocative',
-    'xcomp',  // ~
-    'appos',  // ~
-  ])) {
+  if (
+    uEqSome(existingRel, [
+      'cop',
+      'aux',
+      'mark',
+      'case',
+      'dep',
+      'cc',
+      'vocative',
+      'xcomp', // ~
+      'appos', // ~
+    ])
+  ) {
     return existingRel
   }
 
@@ -197,7 +234,10 @@ function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode
   if (uEq(existingRel, 'det') && newDepPos === 'ADJ') {
     return 'amod'
   }
-  if (uEqSome(existingRel, ['amod', 'det']) && newDependent.node.interp.isNounish()) {
+  if (
+    uEqSome(existingRel, ['amod', 'det']) &&
+    newDependent.node.interp.isNounish()
+  ) {
     return 'nmod'
   }
 
@@ -205,9 +245,10 @@ function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode
   //   return existingRel
   // }
 
-  if (uEq(existingRel, 'advcl')
-    && existingDependent.node.interp.isConverb()
-    && newDependent.node.interp.isAdjective()
+  if (
+    uEq(existingRel, 'advcl') &&
+    existingDependent.node.interp.isConverb() &&
+    newDependent.node.interp.isAdjective()
   ) {
     return 'advcl:sp'
   }
@@ -225,10 +266,10 @@ function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode
   // }
 
   if (newDepPos === existingDepPos) {
-    return existingRel  // risky
+    return existingRel // risky
   }
 
-  return existingRel  // last resort
+  return existingRel // last resort
 }
 
 function dumbDownUdPos(upos: UdPos) {
@@ -245,33 +286,50 @@ export function loadEnhancedGraphFromTokens(nodes: Array<EnhancedNode>) {
         console.error(node.node.id)
         console.error(nodes)
       }
-      node.addIncomingArrow(nodes[edep.headIndex], edep.relation, DupePolicy.throw, true)
+      node.addIncomingArrow(
+        nodes[edep.headIndex],
+        edep.relation,
+        DupePolicy.throw,
+        true,
+      )
     }
   }
 }
 
 export function buildEnhancedGraphFromTokens(basicNodes: Array<TokenNode>) {
-  let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
+  let ret = basicNodes.map((x) => new DirectedGraphNode<Token, string>(x.node))
   loadEnhancedGraphFromTokens(ret)
 
   return ret
 }
 
 export function buildEnhancedTreeFromBasic(basicNodes: Array<TokenNode>) {
-  let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
+  let ret = basicNodes.map((x) => new DirectedGraphNode<Token, string>(x.node))
 
   for (let [i, basicNode] of basicNodes.entries()) {
     if (!isPromoted(basicNode)) {
       // 1: copy basic arrows except for orphans
-      basicNode.node.deps.forEach(x =>
-        ret[i].addIncomingArrow(ret[x.headIndex], x.relation, DupePolicy.throw, true))
+      basicNode.node.deps.forEach((x) =>
+        ret[i].addIncomingArrow(
+          ret[x.headIndex],
+          x.relation,
+          DupePolicy.throw,
+          true,
+        ),
+      )
     } else {
       // 2: add deps touching elided tokens
       // UD: “Null nodes for elided predicates”
       basicNode.node.deps
-        .filter(x => basicNodes[x.headIndex].node.isElided())
-        .forEach(x =>
-          ret[i].addIncomingArrow(ret[x.headIndex], x.relation, DupePolicy.throw, true))
+        .filter((x) => basicNodes[x.headIndex].node.isElided())
+        .forEach((x) =>
+          ret[i].addIncomingArrow(
+            ret[x.headIndex],
+            x.relation,
+            DupePolicy.throw,
+            true,
+          ),
+        )
     }
   }
 
@@ -283,7 +341,7 @@ export function saveEnhancedGraphToTokens(
   clean: boolean,
 ) {
   for (let node of enhancedNodes) {
-    let edeps = node.incomingArrows.map(x => ({
+    let edeps = node.incomingArrows.map((x) => ({
       headId: x.start.node.id,
       headIndex: x.start.node.index,
       relation: x.attrib,

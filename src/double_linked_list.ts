@@ -1,13 +1,10 @@
 import { DoubleLinkedNode } from './double_linked_node'
 
-
-
 export class DoubleLinkedList<T> {
   private head: DoubleLinkedNode<T>
   private tail: DoubleLinkedNode<T>
   size = 0
-  constructor() {
-  }
+  constructor() {}
 
   pushFront(value: T) {
     let node = new DoubleLinkedNode(value)

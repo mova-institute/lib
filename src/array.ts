@@ -1,22 +1,23 @@
 import { last } from './lang'
 
-
-
 export function flatten2d<T>(array: Iterable<Array<T>>) {
   return ([] as Array<T>).concat(...array)
 }
 
-export function trimBack<T>(array: Array<T>, trimPred = x => !x) {
+export function trimBack<T>(array: Array<T>, trimPred = (x) => !x) {
   while (array.length && trimPred(last(array))) {
     array.pop()
   }
 }
 
-export function trimFront<T>(array: Array<T>, trimPred = x => !x) {
-  array.splice(0, array.findIndex(x => !trimPred(x)))
+export function trimFront<T>(array: Array<T>, trimPred = (x) => !x) {
+  array.splice(
+    0,
+    array.findIndex((x) => !trimPred(x)),
+  )
 }
 
-export function trim<T>(array: Array<T>, trimPred = x => !x) {
+export function trim<T>(array: Array<T>, trimPred = (x) => !x) {
   trimBack(array, trimPred)
   trimFront(array, trimPred)
 }

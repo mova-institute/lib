@@ -1,6 +1,5 @@
 import { NS, nameNs } from '../xml/utils'
 
-
 export const W = nameNs(NS.tei, 'w')
 export const W_ = nameNs(NS.mi, 'w_')
 export const S = nameNs(NS.tei, 's')

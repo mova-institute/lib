@@ -4,13 +4,12 @@ import { Dictionary } from '../dictionary/dictionary'
 
 import { readStringMapDawg } from 'dawgjs/factories'
 
-
 export function createMorphAnalyser(
   wordsBuf: ArrayBuffer,
   paradigmsBuf: ArrayBuffer,
   suffixes: Array<string>,
-  tags: Array<string>) {
-
+  tags: Array<string>,
+) {
   let paradigms = new Array<Uint16Array>()
   let paradigmsView = new DataView(paradigmsBuf)
   let curByte = 0

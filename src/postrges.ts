@@ -3,9 +3,8 @@ const types = require('pg').types
 import camelCase = require('camelcase')
 import decamelize = require('decamelize')
 
-
-
-export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcodes-appendix.html
+export const PG_ERR = {
+  // http://www.postgresql.org/docs/current/static/errcodes-appendix.html
   serialization_failure: '40001',
 }
 
@@ -16,8 +15,6 @@ export const PG_TYPES = {
   jsonb: 3802,
 }
 
-
-
 types.setTypeParser(PG_TYPES.json, camelizeParseJson)
 types.setTypeParser(PG_TYPES.jsonb, camelizeParseJson)
 
@@ -25,13 +22,16 @@ export class PgClient {
   private client: Client
   private done: Function
 
-  static async transaction(config: ClientConfig, f: (client: PgClient) => Promise<any>) {
+  static async transaction(
+    config: ClientConfig,
+    f: (client: PgClient) => Promise<any>,
+  ) {
     let client = await PgClient.create(config)
 
     let ret
     for (let i = 1; ; ++i) {
       try {
-        await client.query('BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE')  // todo: remove await?
+        await client.query('BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE') // todo: remove await?
         ret = await f(client)
         await client.query('COMMIT')
       } catch (e) {
@@ -66,7 +66,7 @@ export class PgClient {
     return ret
   }
 
-  constructor() { }
+  constructor() {}
 
   release() {
     this.client = null
@@ -116,11 +116,18 @@ export class PgClient {
     return query1Client(this.client, queryStr, params)
   }
 
-  private doInsert(table: string, dict: Object, onConflict: string, returning: string) {
+  private doInsert(
+    table: string,
+    dict: Object,
+    onConflict: string,
+    returning: string,
+  ) {
     dict = snakize(dict)
 
     let keys = Object.keys(dict)
-    let queryStr = `INSERT INTO ${table}(${keys.join(',')}) VALUES (${nDollars(keys.length)})`
+    let queryStr = `INSERT INTO ${table}(${keys.join(',')}) VALUES (${nDollars(
+      keys.length,
+    )})`
     if (onConflict) {
       queryStr += ' ON CONFLICT DO ' + onConflict
     }
@@ -128,12 +135,16 @@ export class PgClient {
       queryStr += ' RETURNING ' + returning
     }
 
-    return query1Client(this.client, queryStr, keys.map(x => dict[x]))
+    return query1Client(
+      this.client,
+      queryStr,
+      keys.map((x) => dict[x]),
+    )
   }
 }
 
 export function getClient(config: ClientConfig) {
-  return new Promise<{ client: Client, done }>((resolve, reject) => {
+  return new Promise<{ client: Client; done }>((resolve, reject) => {
     connect(config, (err, client, done) => {
       if (err) {
         reject(err)
@@ -144,7 +155,11 @@ export function getClient(config: ClientConfig) {
   })
 }
 
-export function query(client: Client, queryStr: string, params: Array<any> = []) {
+export function query(
+  client: Client,
+  queryStr: string,
+  params: Array<any> = [],
+) {
   return new Promise<QueryResult>(async (resolve, reject) => {
     client.query(queryStr, params, (err, res) => {
       if (err) {
@@ -156,7 +171,11 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
   })
 }
 
-export async function query1Client(client: Client, queryStr: string, params: Array<any> = []) {
+export async function query1Client(
+  client: Client,
+  queryStr: string,
+  params: Array<any> = [],
+) {
   let ret = null
   let res = await query(client, queryStr, params)
   if (res && res.rows.length) {
@@ -167,14 +186,16 @@ export async function query1Client(client: Client, queryStr: string, params: Arr
   return ret
 }
 
-
-
 function camelizeParseJson(jsonStr: string) {
-  let camelized = jsonStr.replace(/"(\w+)"\s*:/g, (a, b) => `"${camelCase(b)}":`)
+  let camelized = jsonStr.replace(
+    /"(\w+)"\s*:/g,
+    (a, b) => `"${camelCase(b)}":`,
+  )
   return JSON.parse(camelized)
 }
 
-function snakize(obj) {  // first-level only
+function snakize(obj) {
+  // first-level only
   for (let key of Object.keys(obj)) {
     let snake = decamelize(key)
     if (snake !== key) {

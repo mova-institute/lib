@@ -2,9 +2,25 @@ import * as express from 'express'
 import { PgClient } from '../postrges'
 import { genAccessToken } from '../crypto'
 import { IReq, HttpError } from './server'
-import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business'
-import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node'
-import { firstNWords, morphReinterpretGently, morphReinterpret, keepDisambedOnly, enumerateWords, adoptMorphDisambs } from '../nlp/utils'
+import {
+  mergeXmlFragments,
+  nextTaskStep,
+  canDisownTask,
+  canEditTask,
+} from './business'
+import {
+  markConflicts,
+  markResolveConflicts,
+  adoptMorphDisambsStr,
+} from './business.node'
+import {
+  firstNWords,
+  morphReinterpretGently,
+  morphReinterpret,
+  keepDisambedOnly,
+  enumerateWords,
+  adoptMorphDisambs,
+} from '../nlp/utils'
 import { NS, encloseInRootNs } from '../xml/utils'
 import * as assert from 'assert'
 import * as columnify from 'columnify'
@@ -12,11 +28,10 @@ import { parseXml } from '../xml/utils.node'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { getLibRootRelative } from '../lib_path.node'
 
-
-
 // const dbProceduresAllowedToBeCalledDirectly = new Set(['assign_task_for_resolve'])
-let analyzer = createMorphAnalyzerSync(getLibRootRelative('../data/dict/vesum'))
-  .setExpandAdjectivesAsNouns()
+let analyzer = createMorphAnalyzerSync(
+  getLibRootRelative('../data/dict/vesum'),
+).setExpandAdjectivesAsNouns()
 
 const COOKIE_CONFIG = {
   maxAge: 1000 * 3600 * 24 * 100,
@@ -28,20 +43,24 @@ export async function callDb(req, res: express.Response, client: PgClient) {
    let result = await client.call(req.query.name, req.user.id, ...req.query.params)
    res.json(result)
    }*/
-
   // todo
 }
 
 export async function getRoles(req, res: express.Response, client: PgClient) {
-  res.json(req.bag.user && req.bag.user.roles || null)
+  res.json((req.bag.user && req.bag.user.roles) || null)
 }
 
-export async function getInviteDetails(req, res: express.Response, client: PgClient) {
+export async function getInviteDetails(
+  req,
+  res: express.Response,
+  client: PgClient,
+) {
   let details = await client.call('get_invite_details', req.query.token)
   res.json(details)
 }
 
-export async function join(req, res: express.Response, client: PgClient) {  // todo: implement uppriv, prevent underpriv
+export async function join(req, res: express.Response, client: PgClient) {
+  // todo: implement uppriv, prevent underpriv
 
   let invite = await client.select('invite', 'token=$1', req.body.invite)
   if (!invite || invite.usedBy !== null) {
@@ -54,14 +73,24 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
   if (login) {
     if (!login.accessToken) {
       login.accessToken = await genAccessToken()
-      await client.update('login', 'access_token=$1', 'id=$2', login.accessToken, login.id)
+      await client.update(
+        'login',
+        'access_token=$1',
+        'id=$2',
+        login.accessToken,
+        login.id,
+      )
     }
     res.cookie('accessToken', login.accessToken, COOKIE_CONFIG)
   } else {
-    personId = await client.insert('person', {
-      nameFirst: req.body.profile.given_name,
-      nameLast: req.body.profile.family_name,
-    }, 'id')
+    personId = await client.insert(
+      'person',
+      {
+        nameFirst: req.body.profile.given_name,
+        nameLast: req.body.profile.family_name,
+      },
+      'id',
+    )
 
     accessToken = await genAccessToken()
     await client.insert('login', {
@@ -84,7 +113,13 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
     role: invite.role,
   })
 
-  await client.update('invite', 'used_by=$1', 'token=$2', personId, req.body.invite)
+  await client.update(
+    'invite',
+    'used_by=$1',
+    'token=$2',
+    personId,
+    req.body.invite,
+  )
 
   let user = await client.call('get_user_by_token', accessToken)
 
@@ -99,18 +134,32 @@ export async function login(req, res: express.Response, client: PgClient) {
 
   if (!login.accessToken) {
     login.accessToken = await genAccessToken()
-    await client.update('login', 'access_token=$1', 'id=$2', login.accessToken, login.id)
+    await client.update(
+      'login',
+      'access_token=$1',
+      'id=$2',
+      login.accessToken,
+      login.id,
+    )
   }
   let user = await client.call('get_user_by_token', login.accessToken)
 
   res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(user.roles)
 }
 
-export async function logout(req: IReq, res: express.Response, client: PgClient) {
+export async function logout(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   res.clearCookie('accessToken').json('ok')
 }
 
-export async function checkDocName(req: IReq, res: express.Response, client: PgClient) {
+export async function checkDocName(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   if (req.bag.user.roles[req.query.projectName as string] !== 'supervisor') {
     throw new HttpError(400)
   }
@@ -119,8 +168,18 @@ export async function checkDocName(req: IReq, res: express.Response, client: PgC
   res.json({ isFree: false })
 }
 
-export async function addText(req: IReq, res: express.Response, client: PgClient) {  // todo
-  let projectId = await client.select1('project', 'id', 'name=$1', req.body.projectName)
+export async function addText(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
+  // todo
+  let projectId = await client.select1(
+    'project',
+    'id',
+    'name=$1',
+    req.body.projectName,
+  )
   if (projectId === null) {
     throw new HttpError(400)
   }
@@ -130,12 +189,16 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   }
   // morphInterpret(root, analyzer)
 
-  let docId = await client.insert('document', {
-    name: req.body.name,
-    content: req.body.content,  //root.serialize(),
-    createdBy: req.bag.user.id,
-    projectId,
-  }, 'id')
+  let docId = await client.insert(
+    'document',
+    {
+      name: req.body.name,
+      content: req.body.content, //root.serialize(),
+      createdBy: req.bag.user.id,
+      projectId,
+    },
+    'id',
+  )
 
   for (let [i, fragment] of req.body.fragments.entries()) {
     await client.insert('fragment_version', {
@@ -159,15 +222,18 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
     }
   }
 
-
   for (let segment of segments) {
-    let taskId = await client.insert('task', {
-      docId,
-      type: ['disambiguate_morphologically'],
-      fragmentStart: segment[0],
-      fragmentEnd: segment[1],
-      name: req.body.fragments[segment[0]].firstWords.join(' '),
-    }, 'id')
+    let taskId = await client.insert(
+      'task',
+      {
+        docId,
+        type: ['disambiguate_morphologically'],
+        fragmentStart: segment[0],
+        fragmentEnd: segment[1],
+        name: req.body.fragments[segment[0]].firstWords.join(' '),
+      },
+      'id',
+    )
 
     for (let i = segment[0]; i <= segment[1]; ++i) {
       await client.insert('fragment_version', {
@@ -182,19 +248,43 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   res.json({ result: 'ok' })
 }
 
-export async function assignTask(req: IReq, res: express.Response, client: PgClient) {  // todo: rename +forAnnotation?
-  if (!req.bag.user.roles[req.query.projectName  as string]) {
+export async function assignTask(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
+  // todo: rename +forAnnotation?
+  if (!req.bag.user.roles[req.query.projectName as string]) {
     throw new HttpError(400)
   }
 
-  let projectId = await client.select1('project', 'id', 'name=$1', req.query.projectName)
-  let id = await client.call('assign_task_for_annotation', req.bag.user.id, projectId)
+  let projectId = await client.select1(
+    'project',
+    'id',
+    'name=$1',
+    req.query.projectName,
+  )
+  let id = await client.call(
+    'assign_task_for_annotation',
+    req.bag.user.id,
+    projectId,
+  )
 
   res.json(wrapData(id))
 }
 
-export async function assignResolveTask(req: IReq, res: express.Response, client: PgClient) {
-  if (!(await client.call('assign_task_for_resolve', req.bag.user.id, req.query.id))) {
+export async function assignResolveTask(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
+  if (
+    !(await client.call(
+      'assign_task_for_resolve',
+      req.bag.user.id,
+      req.query.id,
+    ))
+  ) {
     throw new HttpError(400)
   }
 
@@ -202,7 +292,11 @@ export async function assignResolveTask(req: IReq, res: express.Response, client
   res.json(wrapData(ret))
 }
 
-export async function disownTask(req: IReq, res: express.Response, client: PgClient) {
+export async function disownTask(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   let task = await client.call('get_task', req.bag.user.id, req.query.id)
   if (!canDisownTask(task)) {
     throw new HttpError(400)
@@ -212,31 +306,57 @@ export async function disownTask(req: IReq, res: express.Response, client: PgCli
   res.json('ok')
 }
 
-export async function getResolvePool(req: IReq, res: express.Response, client: PgClient) {
+export async function getResolvePool(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   let ret = await client.call('get_resolve_pool', req.bag.user.id)
   res.json(wrapData(ret))
 }
 
-export async function getTaskList(req: IReq, res: express.Response, client: PgClient) {
-  let ret = await client.call('get_task_list', req.bag.user.id, req.query.step, null)
+export async function getTaskList(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
+  let ret = await client.call(
+    'get_task_list',
+    req.bag.user.id,
+    req.query.step,
+    null,
+  )
   res.json(wrapData(ret))
 }
 
-export async function getTaskCount(req: IReq, res: express.Response, client: PgClient) {
+export async function getTaskCount(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   let ret = await client.call('get_task_count', req.bag.user.id)
   res.json(wrapData(ret))
 }
 
-export async function getTask(req: IReq, res: express.Response, client: PgClient) {
+export async function getTask(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   let task = await client.call('get_task', req.bag.user.id, req.query.id)
   if (task) {
-    task.content = mergeXmlFragments(task.fragments.map(x => x.content))
+    task.content = mergeXmlFragments(task.fragments.map((x) => x.content))
     delete task.fragments
 
     if (isReinterpNeeded(task)) {
       let root = parseXml(task.content)
       if (task.step === 'annotate') {
-        morphReinterpret(root.evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS).toArray(), analyzer)
+        morphReinterpret(
+          root
+            .evaluateElements('//mi:w_|//w[not(ancestor::mi:w_)]', NS)
+            .toArray(),
+          analyzer,
+        )
       } else {
         morphReinterpretGently(root, analyzer)
       }
@@ -246,11 +366,18 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
   res.json(wrapData(task))
 }
 
-export async function saveTask(req: IReq, res: express.Response, client: PgClient) {
+export async function saveTask(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   let ret: any = { msg: 'ok' }
 
   let taskInDb = await client.call('get_task', req.bag.user.id, req.body.id)
-  if (!canEditTask(taskInDb) || req.body.fragments.length !== taskInDb.fragments.length) {
+  if (
+    !canEditTask(taskInDb) ||
+    req.body.fragments.length !== taskInDb.fragments.length
+  ) {
     throw new HttpError(400)
   }
 
@@ -268,7 +395,6 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
     let tocheck = await client.call('complete_task', req.body.id)
 
     for (let task of tocheck) {
-
       if (taskInDb.step === 'review') {
         await onReviewConflicts(task, client)
       } else if (taskInDb.step === 'resolve') {
@@ -276,24 +402,36 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
         let markedFragments = []
         let diffsTotal = 0
         for (let fragment of task.fragments) {
-          assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts')
+          assert.equal(
+            fragment.annotations[0].userId,
+            task.userId,
+            'wrong sort in array of conflicts',
+          )
           let [mine, theirs] = fragment.annotations
-          let { marked, numDiffs } = markConflicts(taskInDb.step, mine.content, theirs.content)
+          let { marked, numDiffs } = markConflicts(
+            taskInDb.step,
+            mine.content,
+            theirs.content,
+          )
           markedFragments.push(marked)
           diffsTotal += numDiffs
         }
 
         if (diffsTotal) {
           let taskToReview = await client.select('task', 'id=$1', task.taskId)
-          let reviewTaskId = await client.insert('task', {
-            docId: task.docId,
-            userId: task.userId,
-            type: ['disambiguate_morphologically'],  // todo
-            step: nextTaskStep(taskToReview.step),
-            fragmentStart: taskToReview.fragmentStart,
-            fragmentEnd: taskToReview.fragmentEnd,
-            name: taskToReview.name,
-          }, 'id')
+          let reviewTaskId = await client.insert(
+            'task',
+            {
+              docId: task.docId,
+              userId: task.userId,
+              type: ['disambiguate_morphologically'], // todo
+              step: nextTaskStep(taskToReview.step),
+              fragmentStart: taskToReview.fragmentStart,
+              fragmentEnd: taskToReview.fragmentEnd,
+              name: taskToReview.name,
+            },
+            'id',
+          )
 
           for (let [i, fragment] of markedFragments.entries()) {
             await client.insert('fragment_version', {
@@ -309,16 +447,32 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
     }
   }
 
-
   if (req.body.grabNext) {
-    let projectId = await client.select1('document', 'project_id', 'id=$1', taskInDb.docId)
-    let reviewTasks: Array<any> = await client.call('get_task_list', req.bag.user.id, 'review', null)
+    let projectId = await client.select1(
+      'document',
+      'project_id',
+      'id=$1',
+      taskInDb.docId,
+    )
+    let reviewTasks: Array<any> = await client.call(
+      'get_task_list',
+      req.bag.user.id,
+      'review',
+      null,
+    )
     let nextTaskId
-    if (reviewTasks.length) {  // todo: take review from current project if can
-      let doc = (reviewTasks.find(x => x.projectId === projectId) || reviewTasks[0]).documents[0]
+    if (reviewTasks.length) {
+      // todo: take review from current project if can
+      let doc = (
+        reviewTasks.find((x) => x.projectId === projectId) || reviewTasks[0]
+      ).documents[0]
       nextTaskId = doc.tasks[0].id
     } else {
-      nextTaskId = await client.call('assign_task_for_annotation', req.bag.user.id, projectId)
+      nextTaskId = await client.call(
+        'assign_task_for_annotation',
+        req.bag.user.id,
+        projectId,
+      )
     }
 
     ret.data = nextTaskId || null
@@ -327,9 +481,18 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
   res.json(ret)
 }
 
-export async function getAnnotatedDoc(req: IReq, res: express.Response, client: PgClient) {
+export async function getAnnotatedDoc(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   // todo: credentials
-  let originalXml = await client.select1('document', 'content', 'id=$1', req.query.id)
+  let originalXml = await client.select1(
+    'document',
+    'content',
+    'id=$1',
+    req.query.id,
+  )
   if (!originalXml) {
     throw new HttpError(404)
   }
@@ -345,14 +508,21 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
         // }
         if (task.type[0] === 'disambiguate_morphologically') {
           let latestFragments = task.fragments
-            .filter(x => x.isDone || x.latestAnnotations.some(xx => xx.status === 'done'))
-            .map(x => x.latestAnnotations.find(xx => xx.step === 'resolve')
-              || x.latestAnnotations.find(xx => xx.step === 'review')
-              || x.latestAnnotations.find(xx => xx.step === 'annotate'))
-            .map(x => x.content)
+            .filter(
+              (x) =>
+                x.isDone ||
+                x.latestAnnotations.some((xx) => xx.status === 'done'),
+            )
+            .map(
+              (x) =>
+                x.latestAnnotations.find((xx) => xx.step === 'resolve') ||
+                x.latestAnnotations.find((xx) => xx.step === 'review') ||
+                x.latestAnnotations.find((xx) => xx.step === 'annotate'),
+            )
+            .map((x) => x.content)
           try {
             // throw new Error('Words are not numerated')
-            latestFragments.forEach(x => adoptMorphDisambsStr(docRoot, x))
+            latestFragments.forEach((x) => adoptMorphDisambsStr(docRoot, x))
           } catch (e) {
             if (e.message === 'Words are not numerated') {
               enumerateWords(docRoot)
@@ -372,7 +542,8 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
       }
     }
     return res.end(docRoot.document().serialize(true))
-  } catch (e) {  // somebody forgot --numerate
+  } catch (e) {
+    // somebody forgot --numerate
     // let content = '<root>'
     // for (let doc of docs) {
     //   for (let task of doc.taskTypes) {
@@ -392,7 +563,11 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
   }
 }
 
-export async function getStats(req: IReq, res: express.Response, client: PgClient) {
+export async function getStats(
+  req: IReq,
+  res: express.Response,
+  client: PgClient,
+) {
   const QUERY = `
   select * from annotator.fragment_version
   join annotator.task on fragment_version.task_id=task.id
@@ -403,12 +578,20 @@ export async function getStats(req: IReq, res: express.Response, client: PgClien
   let stats = {} as Record<string, any>
   for (let { content, name_last } of rows) {
     stats[name_last] = stats[name_last] || { count: 0 }
-    let numWords = parseXml(encloseInRootNs(content)).evaluateNumber('count(//*[local-name()="w_"]|//mi:w_)', NS)
+    let numWords = parseXml(encloseInRootNs(content)).evaluateNumber(
+      'count(//*[local-name()="w_"]|//mi:w_)',
+      NS,
+    )
     // console.log(numWords)
     stats[name_last].count += numWords
   }
-  let cols = Object.entries(stats).map(([user, { count }]) => ({ user, count })).sort((a, b) => b.count - a.count)
-  cols.push({ user: 'TOTAL', count: cols.map(x => x.count).reduce((a, b) => a + b, 0) })
+  let cols = Object.entries(stats)
+    .map(([user, { count }]) => ({ user, count }))
+    .sort((a, b) => b.count - a.count)
+  cols.push({
+    user: 'TOTAL',
+    count: cols.map((x) => x.count).reduce((a, b) => a + b, 0),
+  })
   let tosend = columnify(cols, {
     config: {
       count: {
@@ -422,29 +605,50 @@ export async function getStats(req: IReq, res: express.Response, client: PgClien
 }
 
 async function onReviewConflicts(task, client: PgClient) {
-
   for (let fragment of task.fragments) {
-    assert.equal(fragment.annotations[0].userId, task.userId, 'wrong sort in array of conflicts')
+    assert.equal(
+      fragment.annotations[0].userId,
+      task.userId,
+      'wrong sort in array of conflicts',
+    )
 
     let [his, her] = fragment.annotations
-    let hisName = his.userId + ':' + (await client.call('get_user_details', his.userId)).nameLast
-    let herName = her.userId + ':' + (await client.call('get_user_details', her.userId)).nameLast
-    let { markedStr, markedDoc, numDiffs } = markResolveConflicts(hisName, his.content, herName, her.content)
+    let hisName =
+      his.userId +
+      ':' +
+      (await client.call('get_user_details', his.userId)).nameLast
+    let herName =
+      her.userId +
+      ':' +
+      (await client.call('get_user_details', her.userId)).nameLast
+    let { markedStr, markedDoc, numDiffs } = markResolveConflicts(
+      hisName,
+      his.content,
+      herName,
+      her.content,
+    )
 
     if (numDiffs) {
       // console.error(marked)
-      let alreadyTask = await client.select('task', "doc_id=$1 and fragment_start=$2 and step='resolve'",
-        task.docId, fragment.index)
+      let alreadyTask = await client.select(
+        'task',
+        "doc_id=$1 and fragment_start=$2 and step='resolve'",
+        task.docId,
+        fragment.index,
+      )
       if (!alreadyTask) {
-
-        let newTaskId = await client.insert('task', {
-          docId: task.docId,
-          type: ['disambiguate_morphologically'],  // todo, test
-          step: 'resolve',
-          fragmentStart: fragment.index,
-          fragmentEnd: fragment.index,
-          name: firstNWords(4, markedDoc.root()).join(' '),  // todo
-        }, 'id')
+        let newTaskId = await client.insert(
+          'task',
+          {
+            docId: task.docId,
+            type: ['disambiguate_morphologically'], // todo, test
+            step: 'resolve',
+            fragmentStart: fragment.index,
+            fragmentEnd: fragment.index,
+            name: firstNWords(4, markedDoc.root()).join(' '), // todo
+          },
+          'id',
+        )
 
         await client.insert('fragment_version', {
           taskId: newTaskId,
@@ -465,6 +669,8 @@ function wrapData(data) {
 }
 
 function isReinterpNeeded(task) {
-  return (task.step === 'annotate' || task.step === 'review')
-    && task.type.find(x => x === 'disambiguate_morphologically')
+  return (
+    (task.step === 'annotate' || task.step === 'review') &&
+    task.type.find((x) => x === 'disambiguate_morphologically')
+  )
 }

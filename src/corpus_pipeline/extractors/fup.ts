@@ -4,15 +4,16 @@ import { dayUkmonthYearTime2date, toSortableDatetime } from '../../date'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { textOf, nameFromLoginAtDomain } from './utils'
 
-
-
 export function* streamDocs(html: string) {
   let root = parseHtml(html)
   let posts = root.evaluateElements('//div[@class="message"]').toArray()
   for (let postRoot of posts) {
     let title = textOf(postRoot, './/a[@class="themelink"]').trim()
     let url = textOf(postRoot, './/a[@class="themelink"]/@href')
-    let author = textOf(postRoot, './/div[contains(@class, "message-author")]//a/text()')
+    let author = textOf(
+      postRoot,
+      './/div[contains(@class, "message-author")]//a/text()',
+    )
     author = nameFromLoginAtDomain(author, 'forum.pravda.com.ua')
     let date = textOf(postRoot, './/span[@class="datetimeinfo"]/text()').trim()
     try {
@@ -37,20 +38,25 @@ export function* streamDocs(html: string) {
   }
 }
 
-const allowedTextElems = ['a', 'b', 'i', 'strike', 'em', 'strong']  // no <s>!
+const allowedTextElems = ['a', 'b', 'i', 'strike', 'em', 'strong'] // no <s>!
 function getPostParagraphs(contentRoot: AbstractElement) {
   let ret = new Array<string>()
   let oldStyleQuotes = false
 
   let cur = ''
   for (let [child, next] of contentRoot.children().window(2)) {
-    if (child.isText()
-      || child.isElement() && allowedTextElems.includes(child.asElement().localName())
+    if (
+      child.isText() ||
+      (child.isElement() &&
+        allowedTextElems.includes(child.asElement().localName()))
     ) {
       cur += child.text()
     }
 
-    if (child.isElement() && child.asElement().localName() === 'br' || !next) {
+    if (
+      (child.isElement() && child.asElement().localName() === 'br') ||
+      !next
+    ) {
       let toPush = cur
       cur = ''
 
@@ -72,5 +78,5 @@ function getPostParagraphs(contentRoot: AbstractElement) {
     }
   }
 
-  return ret.filter(x => x)
+  return ret.filter((x) => x)
 }

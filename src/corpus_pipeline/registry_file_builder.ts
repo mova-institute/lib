@@ -3,8 +3,6 @@ import { clone } from 'lodash'
 import { Dict } from '../types'
 import { mu } from '../mu'
 
-
-
 const positionalAttrsBase = [
   ['pos', 'ЧМ'],
   ['upos', 'універсальна ЧМ'],
@@ -82,16 +80,13 @@ export const STRUCTURE_G = `STRUCTURE g {
   DEFAULTVALUE ""
 }\n`
 
-export function generateRegistryFile(descr: RegistryFileDescriptor) {
-
-}
+export function generateRegistryFile(descr: RegistryFileDescriptor) {}
 
 export function generateRegistryFileUk(params: RegistryFileParams) {
   let positionalAttrs = clone(positionalAttrsBase) as Array<any>
   if (params.hasTokenIds) {
     positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
   }
-
 
   let ret = `
 
@@ -132,7 +127,9 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
     transquery: 'yes',
   })
 
-  ret += positionalAttrs.map(([name, label]) => positionalAttrHuge(name, label)).join('\n')
+  ret += positionalAttrs
+    .map(([name, label]) => positionalAttrHuge(name, label))
+    .join('\n')
   if (params.hasDictTags) {
     ret += positionalAttrHuge('tag_dic', 'повна міта зі словника', {
       multivalue: 'yes',
@@ -298,7 +295,6 @@ export function generateRegistryFileUkGolden(params: RegistryFileParams) {
   positionalAttrs.pop()
   positionalAttrs.push(['id', 'код токена', ['UNIQUE yes']])
 
-
   let ret = `
 NAME "${params.title}"
 INFOHREF "https://mova.institute/corpus"
@@ -333,7 +329,9 @@ NONWORDRE "[^АаБбВвГгҐґДдЕеЄєЖжЗзИиІіЇїЙйКкЛлМ�
     transquery: 'yes',
   })
 
-  ret += positionalAttrs.map(([name, label]) => positionalAttr(name, label)).join('\n')
+  ret += positionalAttrs
+    .map(([name, label]) => positionalAttr(name, label))
+    .join('\n')
   if (params.hasDictTags) {
     ret += positionalAttr('tag_dic', 'повна міта зі словника', {
       multivalue: 'yes',
@@ -432,12 +430,15 @@ WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,при
 
 export function renderFeatvals(featvals: Dict<string>) {
   return mu(Object.entries(featvals))
-    .filter(x => x[1] !== undefined)
+    .filter((x) => x[1] !== undefined)
     .map(([k, v]) => attr(k, v))
     .join('\n', true)
 }
 
-export function positionalAttrGeneric(name: string, options: Dict<string> = {}) {
+export function positionalAttrGeneric(
+  name: string,
+  options: Dict<string> = {},
+) {
   let ret = `ATTRIBUTE ${name}`
 
   let keys = Object.keys(options)
@@ -446,12 +447,11 @@ export function positionalAttrGeneric(name: string, options: Dict<string> = {}) 
   }
 
   ret += ` {`
-  ret += keys.map(x => `\n  ${x.toUpperCase()} "${options[x]}"`).join('\n')
+  ret += keys.map((x) => `\n  ${x.toUpperCase()} "${options[x]}"`).join('\n')
   ret += `\n}`
 
   return ret
 }
-
 
 const uiSettings = {
   uilang: 'uk',
@@ -472,7 +472,11 @@ const uiSettings = {
   use_noflash: '0',
 }
 
-function positionalAttr(name: string, label: string, options: Dict<string> = {}) {
+function positionalAttr(
+  name: string,
+  label: string,
+  options: Dict<string> = {},
+) {
   options.type = 'FD_FGD'
   let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} [${name}]"\n  DEFAULTVALUE ""`
   for (let [k, v] of Object.entries(options)) {
@@ -482,7 +486,11 @@ function positionalAttr(name: string, label: string, options: Dict<string> = {})
   return ret
 }
 
-function positionalAttrHuge(name: string, label: string, options: Dict<string> = {}) {
+function positionalAttrHuge(
+  name: string,
+  label: string,
+  options: Dict<string> = {},
+) {
   options.type = 'FD_FGD'
   return positionalAttr(name, label, options)
 }

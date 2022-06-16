@@ -4,14 +4,15 @@ import { allLinesFromStdin } from '../utils.node'
 import { parseIntStrict } from '../lang'
 import { stableSort } from '../algo'
 
-
 if (require.main === module) {
   main()
 }
 
 async function main() {
-  let lines = (await allLinesFromStdin())
-    .map(x => [x.split('\t').map(xx => parseIntStrict(xx.split(/[:,]/)[0])), x]) as Array<[Array<number>, string]>
+  let lines = (await allLinesFromStdin()).map((x) => [
+    x.split('\t').map((xx) => parseIntStrict(xx.split(/[:,]/)[0])),
+    x,
+  ]) as Array<[Array<number>, string]>
 
   stableSort(lines, (lineA, lineB) => {
     let a = lineA[0]
@@ -31,5 +32,5 @@ async function main() {
     throw new Error()
   })
 
-  lines.forEach(x => process.stdout.write(`${x[1]}\n`))
+  lines.forEach((x) => process.stdout.write(`${x[1]}\n`))
 }

@@ -1,13 +1,17 @@
 import { WebapiDocument } from './webapi_document'
 import { WebapiElement } from './webapi_element'
 import { WebapiAttribute } from './webapi_attribute'
-import { nodeOrElement, nodeOrElementOrNull, nodeOrElementOrAttribute,
-  generateFromXpathResultIterator, generateFromXpathResultSnapshot, isNode } from './utils'
+import {
+  nodeOrElement,
+  nodeOrElementOrNull,
+  nodeOrElementOrAttribute,
+  generateFromXpathResultIterator,
+  generateFromXpathResultSnapshot,
+  isNode,
+} from './utils'
 import { AbstractNode, XmlapiXpathResult } from '../xmlapi/abstract_node'
 import { wrappedOrNull, isOddball, NS_XML } from '../xmlapi/utils'
 import { mu, Mu } from '../../mu'
-
-
 
 export class WebapiNode extends AbstractNode {
   constructor(protected wrapee: Node) {
@@ -45,7 +49,6 @@ export class WebapiNode extends AbstractNode {
       return this.wrapee.textContent
     }
   }
-
 
   type(): 'element' | 'text' | 'comment' | 'cdata' {
     switch (this.wrapee.nodeType) {
@@ -91,12 +94,17 @@ export class WebapiNode extends AbstractNode {
   }
 
   getPath(): string {
-    throw new Error('Not implemented')  // todo
+    throw new Error('Not implemented') // todo
   }
 
   evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult {
     let result = this.wrapee.ownerDocument.evaluate(
-      xpath, this.wrapee, createNsResolver(nsMap), XPathResult.ANY_TYPE, null)
+      xpath,
+      this.wrapee,
+      createNsResolver(nsMap),
+      XPathResult.ANY_TYPE,
+      null,
+    )
 
     switch (result.resultType) {
       case XPathResult.BOOLEAN_TYPE:
@@ -106,24 +114,33 @@ export class WebapiNode extends AbstractNode {
       case XPathResult.STRING_TYPE:
         return result.stringValue
       case XPathResult.FIRST_ORDERED_NODE_TYPE:
-  // @ts-ignore
-  return nodeOrElementOrNull(result.singleNodeValue)
+        // @ts-ignore
+        return nodeOrElementOrNull(result.singleNodeValue)
       case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
       case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
-  // @ts-ignore
-  return mu(generateFromXpathResultIterator(result)).map(x => nodeOrElementOrAttribute(x))
+        // @ts-ignore
+        return mu(generateFromXpathResultIterator(result)).map((x) =>
+          nodeOrElementOrAttribute(x),
+        )
       case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
       case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
-  // @ts-ignore
-  return mu(generateFromXpathResultSnapshot(result)).map(x => nodeOrElementOrAttribute(x))
+        // @ts-ignore
+        return mu(generateFromXpathResultSnapshot(result)).map((x) =>
+          nodeOrElementOrAttribute(x),
+        )
       default:
         throw new Error('Unexpected XPath result type')
     }
   }
 
   evaluateNode(xpath: string, nsMap?: Object) {
-    let wrapee = this.wrapee.ownerDocument.evaluate(xpath, this.wrapee, createNsResolver(nsMap),
-      XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
+    let wrapee = this.wrapee.ownerDocument.evaluate(
+      xpath,
+      this.wrapee,
+      createNsResolver(nsMap),
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null,
+    ).singleNodeValue
     if (!wrapee) {
       return null
     }
@@ -145,8 +162,13 @@ export class WebapiNode extends AbstractNode {
   }
 
   evaluateAttribute(xpath: string, nsMap?: Object) {
-    let wrapee = this.wrapee.ownerDocument.evaluate(xpath, this.wrapee, createNsResolver(nsMap),
-      XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
+    let wrapee = this.wrapee.ownerDocument.evaluate(
+      xpath,
+      this.wrapee,
+      createNsResolver(nsMap),
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null,
+    ).singleNodeValue
     if (!wrapee) {
       return null
     }
@@ -157,8 +179,8 @@ export class WebapiNode extends AbstractNode {
   }
 
   evaluateNodes(xpath: string, nsMap?: Object): Mu<AbstractNode> {
-  // @ts-ignore
-  return this._evaluateManyOrdered(xpath, nsMap).map(x => {
+    // @ts-ignore
+    return this._evaluateManyOrdered(xpath, nsMap).map((x) => {
       if (!isNode(x)) {
         throw new Error('Xpath result is not a list of attributes')
       }
@@ -168,7 +190,7 @@ export class WebapiNode extends AbstractNode {
 
   // @ts-ignore
   evaluateElements(xpath: string, nsMap?: Object) {
-    return this._evaluateManyOrdered(xpath, nsMap).map(x => {
+    return this._evaluateManyOrdered(xpath, nsMap).map((x) => {
       if (x.nodeType !== Node.ELEMENT_NODE) {
         throw new Error('Xpath result is not a list of elements')
       }
@@ -177,7 +199,7 @@ export class WebapiNode extends AbstractNode {
   }
 
   evaluateAttributes(xpath: string, nsMap?: Object) {
-    return this._evaluateManyOrdered(xpath, nsMap).map(x => {
+    return this._evaluateManyOrdered(xpath, nsMap).map((x) => {
       if (x.nodeType !== Node.ATTRIBUTE_NODE) {
         throw new Error('Xpath result is not a list of attributes')
       }
@@ -186,7 +208,7 @@ export class WebapiNode extends AbstractNode {
   }
 
   serialize(): string {
-    throw new Error('Not implemented')  // todo
+    throw new Error('Not implemented') // todo
   }
 
   // @ts-ignore
@@ -196,19 +218,22 @@ export class WebapiNode extends AbstractNode {
 
   protected _evaluateManyOrdered(xpath: string, nsMap?: Object) {
     let result = this.wrapee.ownerDocument.evaluate(
-      xpath, this.wrapee, createNsResolver(nsMap), XPathResult.ORDERED_NODE_ITERATOR_TYPE, null)
+      xpath,
+      this.wrapee,
+      createNsResolver(nsMap),
+      XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+      null,
+    )
     return mu(generateFromXpathResultIterator(result))
   }
 }
 
-
-
 export function createNsResolver(nsMap: Object) {
   const defaultNsMap = {
-    'xml': NS_XML,
+    xml: NS_XML,
   }
   if (nsMap) {
-    nsMap = {...defaultNsMap, ...nsMap}
+    nsMap = { ...defaultNsMap, ...nsMap }
   } else {
     nsMap = defaultNsMap
   }

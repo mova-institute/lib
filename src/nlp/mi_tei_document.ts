@@ -1,8 +1,6 @@
 import { $t } from './text_token'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 
-
-
 export const NS = {
   xml: 'http://www.w3.org/XML/1998/namespace',
   xhtml: 'http://www.w3.org/1999/xhtml',
@@ -15,13 +13,17 @@ export function $d(root: AbstractElement) {
 }
 
 export class MiTeiDocument {
-  constructor(private root: AbstractElement) {
-  }
+  constructor(private root: AbstractElement) {}
 
   getTitle() {
     let title = this.root.evaluateElement('//tei:title[1]', NS)
     if (title) {
-      return title.evaluateElements('//mi:w_', NS).map(x => $t(x).text()).toArray().join(' ').trim()
+      return title
+        .evaluateElements('//mi:w_', NS)
+        .map((x) => $t(x).text())
+        .toArray()
+        .join(' ')
+        .trim()
     }
   }
 

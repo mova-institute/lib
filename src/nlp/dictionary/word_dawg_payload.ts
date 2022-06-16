@@ -2,7 +2,8 @@ export class WordDawgPayload {
   paradigmId: number
   indexInPradigm: number
 
-  static create(bytes: Uint8Array) {  // todo: reference constructor directly
+  static create(bytes: Uint8Array) {
+    // todo: reference constructor directly
     return new WordDawgPayload(bytes)
   }
 

@@ -1,7 +1,5 @@
 import { Response } from 'express'
 
-
-
 export function makeErrObj(code: number, message?: string) {
   return {
     error: {

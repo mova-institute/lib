@@ -5,16 +5,23 @@ import minimist from 'minimist'
 import * as glob from 'glob'
 
 import { mu } from '../mu'
-import { tokenStream2bratSynt, tokenStream2bratPlaintext, tokenStream2bratCoref } from '../nlp/ud/utils'
-import { mixml2tokenStream, tokenStream2sentences, SentenceStream, SentenceStreamElement } from '../nlp/utils'
+import {
+  tokenStream2bratSynt,
+  tokenStream2bratPlaintext,
+  tokenStream2bratCoref,
+} from '../nlp/ud/utils'
+import {
+  mixml2tokenStream,
+  tokenStream2sentences,
+  SentenceStream,
+  SentenceStreamElement,
+} from '../nlp/utils'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { zerofillMax, trimExtension } from '../string'
 
 import { Token } from '../nlp/token'
 import { writeFileSyncMkdirp } from '../utils.node'
 import * as g from '../nlp/ud/uk_grammar'
-
-
 
 interface Args {
   maxWordsPerFile: number
@@ -32,17 +39,19 @@ const zones: Array<BratZoneConfig> = [
     enabled: false,
     dirPath: ['treebank', 'conjpropagation_only'],
     sentenceFilter(sentence: SentenceStreamElement) {
-      return g.isCompleteSentence(sentence.nodes)
-        && sentence.nodes.some(x => g.isAmbigCoordModifier(x))
-    }
-  }
+      return (
+        g.isCompleteSentence(sentence.nodes) &&
+        sentence.nodes.some((x) => g.isAmbigCoordModifier(x))
+      )
+    },
+  },
 ]
 
 function main() {
   const args = minimist<Args>(process.argv.slice(2), {
     default: {
-      'maxWordsPerFile': 55,
-      'dest': '.',
+      maxWordsPerFile: 55,
+      dest: '.',
     },
   })
 
@@ -56,20 +65,24 @@ function main() {
       let root = parseXmlFileSync(file)
 
       let tokens = mu(mixml2tokenStream(root))
-        .transform(x => x.form = x.getForm())  // todo
+        .transform((x) => (x.form = x.getForm())) // todo
         .toArray()
 
       let sentences = [...tokenStream2sentences(tokens)]
       allSentences.push(...sentences)
 
-      doUd(sentences, args.maxWordsPerFile, join(args.dest, 'treebank', 'by_file', base))
+      doUd(
+        sentences,
+        args.maxWordsPerFile,
+        join(args.dest, 'treebank', 'by_file', base),
+      )
       doCoref(tokens, join(args.dest, 'coref', 'by_file', base))
     } catch (e) {
       console.error(`Error processing ${file}`)
       throw e
     }
   }
-  zones.forEach(x => doGeneric(x, allSentences, args.dest))
+  zones.forEach((x) => doGeneric(x, allSentences, args.dest))
 }
 
 function doGeneric(
@@ -83,8 +96,8 @@ function doGeneric(
 
   let chunks = mu(sentences)
     .filter(config.sentenceFilter)
-    .map(x => x.nodes)
-    .chunkByMax(55, x => mu(x).count(xx => xx.node.isWord()))
+    .map((x) => x.nodes)
+    .chunkByMax(55, (x) => mu(x).count((xx) => xx.node.isWord()))
     .toArray()
 
   for (let [i, chunk] of chunks.entries()) {
@@ -93,25 +106,25 @@ function doGeneric(
     let str = mu(tokenStream2bratSynt(chunk)).join('\n', true)
     writeFileSyncMkdirp(join(dest, ...config.dirPath, `${filename}.ann`), str)
 
-    let chunkTokens = chunk.map(x => x.map(xx => xx.node))
+    let chunkTokens = chunk.map((x) => x.map((xx) => xx.node))
     str = mu(tokenStream2bratPlaintext(chunkTokens)).join('\n', true)
     writeFileSyncMkdirp(join(dest, ...config.dirPath, `${filename}.txt`), str)
   }
 }
 
-function doCoref(
-  tokens: Array<Token>,
-  dest: string,
-) {
+function doCoref(tokens: Array<Token>, dest: string) {
   let docs = mu(tokens)
-    .split(x => x.isDocumentStart())
+    .split((x) => x.isDocumentStart())
     .window(2, 1)
     .drop(1)
-    .map(([[, doc], [docTokens]]) => ({ id: doc.getAttribute('id'), docTokens }))
+    .map(([[, doc], [docTokens]]) => ({
+      id: doc.getAttribute('id'),
+      docTokens,
+    }))
 
   for (let { id, docTokens } of docs) {
     let subdocs = mu(docTokens)
-      .split0(x => x.isClosingStructure('coref-split'))
+      .split0((x) => x.isClosingStructure('coref-split'))
       .toArray()
     for (let [i, subdoc] of subdocs.entries()) {
       let filename = id
@@ -120,7 +133,7 @@ function doCoref(
       }
 
       let paragraps = mu(subdoc)
-        .split0(x => x.isClosingStructure('paragraph'))
+        .split0((x) => x.isClosingStructure('paragraph'))
         .toArray()
 
       let str = mu(tokenStream2bratCoref(paragraps)).join('\n', true)
@@ -138,8 +151,8 @@ function doUd(
   dest: string,
 ) {
   let chunks = mu(sentenceStream)
-    .map(x => x.nodes)
-    .chunkByMax(maxWordsPerFile, x => mu(x).count(xx => xx.node.isWord()))
+    .map((x) => x.nodes)
+    .chunkByMax(maxWordsPerFile, (x) => mu(x).count((xx) => xx.node.isWord()))
     .toArray()
 
   for (let [i, chunk] of chunks.entries()) {
@@ -148,12 +161,11 @@ function doUd(
     let str = mu(tokenStream2bratSynt(chunk)).join('\n', true)
     writeFileSyncMkdirp(join(dest, `${filename}.ann`), str)
 
-    let chunkTokens = chunk.map(x => x.map(xx => xx.node))
+    let chunkTokens = chunk.map((x) => x.map((xx) => xx.node))
     str = mu(tokenStream2bratPlaintext(chunkTokens)).join('\n', true)
     writeFileSyncMkdirp(join(dest, `${filename}.txt`), str)
   }
 }
-
 
 if (require.main === module) {
   main()

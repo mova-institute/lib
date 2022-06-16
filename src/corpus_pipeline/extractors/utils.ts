@@ -1,8 +1,6 @@
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { mu } from '../../mu'
 
-
-
 export const GENITIVE_UK_MON_MAP = new Map([
   ['січня', '01'],
   ['лютого', '02'],
@@ -17,7 +15,6 @@ export const GENITIVE_UK_MON_MAP = new Map([
   ['листопада', '11'],
   ['грудня', '12'],
 ])
-
 
 export function canonical(root: AbstractElement) {
   return textOf(root, '/html/head/link[@rel="canonical"]/@href')
@@ -37,8 +34,8 @@ export function textOf(root: AbstractElement, xpath: string) {
 
 export function textsOf(root: AbstractElement, xpath: string) {
   return mu(root.evaluateElements(xpath))
-  .map(x => x.text())
-  .toArray()
+    .map((x) => x.text())
+    .toArray()
 }
 
 export function brbr2paragraphs(root: AbstractElement) {

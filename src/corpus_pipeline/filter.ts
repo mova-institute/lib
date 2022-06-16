@@ -1,6 +1,9 @@
 import {
-  LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE, WCHAR_UK,
-  WCHAR_OTHER, WORDCHAR_UK_RE
+  LETTER_UK_UPPERCASE,
+  LETTER_UK_LOWERCASE,
+  WCHAR_UK,
+  WCHAR_OTHER,
+  WORDCHAR_UK_RE,
 } from '../nlp/static'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { last, r } from '../lang'
@@ -17,17 +20,20 @@ import { parse } from 'url'
 import { FasttextClient } from '../ext/fasstext_client'
 import { CorpusDoc } from './doc_meta'
 
-
-
 //------------------------------------------------------------------------------
 const lengthThreshold = 60000
 const ukSpecLettersRe = /[ґїєі]/i
 const ruSpecLettersRe = /[эёъы]/i
 const beSpecLettersRe = /[ў]/i
-const previewAbruptRe = /(…|\.{3,})[)\]]?\s*((читати|дізнатися) більше|\|\s*детальніше|(Читати|Показати) повністю)?\s*$/i
+const previewAbruptRe =
+  /(…|\.{3,})[)\]]?\s*((читати|дізнатися) більше|\|\s*детальніше|(Читати|Показати) повністю)?\s*$/i
 const caseCollisionRe = new RegExp(
-  `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`)
-const spacedWordRe = new RegExp(`(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`, 'i')
+  `[${LETTER_UK_UPPERCASE}A-Z] [${LETTER_UK_UPPERCASE}A-Z]{4}[${LETTER_UK_LOWERCASE}a-z]{2}`,
+)
+const spacedWordRe = new RegExp(
+  `(^| )([a-z${WCHAR_UK}${WCHAR_OTHER}] ){4}`,
+  'i',
+)
 
 //------------------------------------------------------------------------------
 const domainsRejectingDoc = [
@@ -37,7 +43,8 @@ const domainsRejectingDoc = [
   'liferules.com.ua',
 ]
 const domainsRejectingDocRe = new RegExp(
-  domainsRejectingDoc.map(x => r`\.?${escapeRe(x)}$`).join('|'))
+  domainsRejectingDoc.map((x) => r`\.?${escapeRe(x)}$`).join('|'),
+)
 
 //------------------------------------------------------------------------------
 const regsRejectingParagraph: Array<[RegExp, string]> = [
@@ -59,15 +66,12 @@ const regsRejectingDoc: Array<[RegExp, string]> = [
 ]
 
 //------------------------------------------------------------------------------
-const wordsRejectingDocRe = new RegExp(`^(${[
-  'ьй',
-  'ьм',
-].join('')})$`, 'i')
+const wordsRejectingDocRe = new RegExp(`^(${['ьй', 'ьм'].join('')})$`, 'i')
 
 //------------------------------------------------------------------------------
 const functionsKillingParagraph: Array<[(p: string) => boolean, string]> = [
-  [p => ruSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `ru but not uk`],
-  [p => beSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `be but not uk`],
+  [(p) => ruSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `ru but not uk`],
+  [(p) => beSpecLettersRe.test(p) && !ukSpecLettersRe.test(p), `be but not uk`],
   // [p => ,],
 ]
 
@@ -105,19 +109,13 @@ const stringsRejectingParagraph = [
   'This book made available by the Internet Archive',
   '▶▶ЗАВАНТАЖИТИ',
   // '',
-].map(x => x.toLowerCase())
+].map((x) => x.toLowerCase())
 
 //------------------------------------------------------------------------------
-const titleRegsRejectingDoc = [
-  /^Перегляд вихідного коду сторінки/,
-  /�/,
-  /\\"/,
-]
+const titleRegsRejectingDoc = [/^Перегляд вихідного коду сторінки/, /�/, /\\"/]
 
 //------------------------------------------------------------------------------
-const urlRegsRejectingDoc = [
-  /�/,
-]
+const urlRegsRejectingDoc = [/�/]
 
 //------------------------------------------------------------------------------
 const urlsRejectingDoc = joinAsReOfLiterals([
@@ -138,8 +136,7 @@ export class ZvidusilDocFilter {
   constructor(
     private analyzer = createMorphAnalyzerSync(),
     private options = defaultOptions,
-  ) {
-  }
+  ) {}
 
   setFasttextHandle(value: string) {
     this.fasttextClient = value ? new FasttextClient(value) : undefined
@@ -156,12 +153,12 @@ export class ZvidusilDocFilter {
     return this
   }
 
-  async filter2(
-    doc: CorpusDoc,
-  ) {
+  async filter2(doc: CorpusDoc) {
     // let's first feed it to fasstext
     if (this.fasttextClient) {
-      let [lang, prob] = await this.fasttextClient.classify(doc.paragraphs.join(' '))
+      let [lang, prob] = await this.fasttextClient.classify(
+        doc.paragraphs.join(' '),
+      )
       if (!(lang === 'uk' && prob > 0.94)) {
         return {
           docValid: false,
@@ -181,18 +178,29 @@ export class ZvidusilDocFilter {
     let gapFollowerIndexes = new Array<number>()
 
     let { docValid, filteredIndexes, message } = filterParagraphedDoc(
-      doc, this.analyzer, this.options, this.ruLexicon)
+      doc,
+      this.analyzer,
+      this.options,
+      this.ruLexicon,
+    )
 
     if (!docValid) {
-      return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes, message }
+      return {
+        docValid,
+        filteredIndexes,
+        filteredParagraphs,
+        gapFollowerIndexes,
+        message,
+      }
     }
 
     let ii = 0
     filteredIndexes.sort(compareAscending)
     for (let i = 0; i < doc.paragraphs.length; ++i) {
       if (i === filteredIndexes[ii]) {
-        if (!gapFollowerIndexes.length
-          || last(gapFollowerIndexes) !== filteredParagraphs.length
+        if (
+          !gapFollowerIndexes.length ||
+          last(gapFollowerIndexes) !== filteredParagraphs.length
         ) {
           gapFollowerIndexes.push(filteredParagraphs.length)
         }
@@ -202,7 +210,13 @@ export class ZvidusilDocFilter {
       filteredParagraphs.push(doc.paragraphs[i])
     }
 
-    return { docValid, filteredIndexes, filteredParagraphs, gapFollowerIndexes, message }
+    return {
+      docValid,
+      filteredIndexes,
+      filteredParagraphs,
+      gapFollowerIndexes,
+      message,
+    }
   }
 }
 
@@ -211,7 +225,7 @@ export function filterParagraphedDoc(
   doc: CorpusDoc,
   analyzer: MorphAnalyzer,
   options = defaultOptions,
-  ruLexicon?: Dawg<string>
+  ruLexicon?: Dawg<string>,
 ) {
   if (doc) {
     if (doc.title) {
@@ -243,8 +257,7 @@ export function filterParagraphedDoc(
   let filtered = new Array<number>()
   let internalHypens = new Array<string>()
 
-  ploop:
-  for (let i = 0; i < pp.length; ++i) {
+  ploop: for (let i = 0; i < pp.length; ++i) {
     let p = pp[i]
 
     // reject by substr
@@ -260,13 +273,13 @@ export function filterParagraphedDoc(
       }
     }
 
-    let naiveSplit = tokenizeUk(p).map(x => x.token)
+    let naiveSplit = tokenizeUk(p).map((x) => x.token)
     internalHypens.push(...findInternalHypenations(naiveSplit, analyzer))
     if (internalHypens.length > 1) {
       return invalidDoc(`Too many internal hypens ${internalHypens}`, filtered)
     }
 
-    let stopword = naiveSplit.find(x => wordsRejectingDocRe.test(x))
+    let stopword = naiveSplit.find((x) => wordsRejectingDocRe.test(x))
     if (stopword) {
       return invalidDoc(`met stopword "${stopword}"`, filtered)
     }
@@ -278,7 +291,7 @@ export function filterParagraphedDoc(
     }
 
     if (options.filterPreviews && i + 3 < pp.length) {
-      if ([p, pp[i + 1], pp[i + 2]].every(x => previewAbruptRe.test(x))) {
+      if ([p, pp[i + 1], pp[i + 2]].every((x) => previewAbruptRe.test(x))) {
         for (let i2 = i; i2 < pp.length && previewAbruptRe.test(pp[i2]); ++i2) {
           reportRmPar(i, pp[i2], `preview`)
           filtered.push(i2)
@@ -320,21 +333,29 @@ export function filterParagraphedDoc(
       continue ploop
     }
 
-    let isSuspicious = [ruSpecLettersRe, /[ђњџћүө¤≥]/].some(x => x.test(p))
+    let isSuspicious = [ruSpecLettersRe, /[ђњџћүө¤≥]/].some((x) => x.test(p))
     if (isSuspicious) {
-      let numNondict = mu(naiveSplit).count(x => !analyzer.tag(x).length)
+      let numNondict = mu(naiveSplit).count((x) => !analyzer.tag(x).length)
       if (numNondict / naiveSplit.length > 0.06) {
-        reportRmPar(i, p, `out-of-dict threshold: ${numNondict}/${naiveSplit.length}`)
+        reportRmPar(
+          i,
+          p,
+          `out-of-dict threshold: ${numNondict}/${naiveSplit.length}`,
+        )
         filtered.push(i)
         continue ploop
       }
     } else {
       let sample = uniformSubarray(naiveSplit, 0.1)
-      let numNondict = mu(sample).count(x => !analyzer.tag(x).length)
+      let numNondict = mu(sample).count((x) => !analyzer.tag(x).length)
       if (numNondict / sample.length > 0.23) {
-        let unknowns = mu(naiveSplit).filter(x => !analyzer.tag(x).length).toArray()
+        let unknowns = mu(naiveSplit)
+          .filter((x) => !analyzer.tag(x).length)
+          .toArray()
         if (unknowns.length / naiveSplit.length > 0.23) {
-          let unknownsOfUkLetters = unknowns.filter(x => WORDCHAR_UK_RE.test(x))
+          let unknownsOfUkLetters = unknowns.filter((x) =>
+            WORDCHAR_UK_RE.test(x),
+          )
           if (unknownsOfUkLetters.length / unknowns.length < 0.9) {
             reportRmPar(i, p, `out-of-dict soft threshold`)
             filtered.push(i)
@@ -372,19 +393,28 @@ function reportRmDoc(reason: string) {
 }
 
 //------------------------------------------------------------------------------
-function findInternalHypenations(tokens: Array<string>, analyzer: MorphAnalyzer) {
-  return mu(tokens).window(3).filter(([l, m, r]) =>
-    (m === '-' || m === '¬')
-    && l
-    && r
-    && l.toLowerCase() !== r.toLowerCase()
-    && !(isTitlecase(l) && isTitlecase(r))
-    && !analyzer.hasInterps(l + m + r)
-    && !['улю-лю', 'ку-рі', 'кіо-кушинкай', 'офф-лайн'].includes((l + m + r).toLowerCase())
-    && !analyzer.hasInterps(l)
-    && !analyzer.hasInterps(r)
-    && analyzer.hasInterps(l + r)
-  ).map(x => x.join(''))
+function findInternalHypenations(
+  tokens: Array<string>,
+  analyzer: MorphAnalyzer,
+) {
+  return mu(tokens)
+    .window(3)
+    .filter(
+      ([l, m, r]) =>
+        (m === '-' || m === '¬') &&
+        l &&
+        r &&
+        l.toLowerCase() !== r.toLowerCase() &&
+        !(isTitlecase(l) && isTitlecase(r)) &&
+        !analyzer.hasInterps(l + m + r) &&
+        !['улю-лю', 'ку-рі', 'кіо-кушинкай', 'офф-лайн'].includes(
+          (l + m + r).toLowerCase(),
+        ) &&
+        !analyzer.hasInterps(l) &&
+        !analyzer.hasInterps(r) &&
+        analyzer.hasInterps(l + r),
+    )
+    .map((x) => x.join(''))
 }
 
 /*

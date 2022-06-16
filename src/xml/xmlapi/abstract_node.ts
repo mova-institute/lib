@@ -3,14 +3,14 @@ import { AbstractElement } from './abstract_element'
 import { AbstractAttribute } from './abstract_attribute'
 import { mu, Mu } from '../../mu'
 
-
-
-export type XmlapiXpathResult = boolean | number | string | AbstractNode
+export type XmlapiXpathResult =
+  | boolean
+  | number
+  | string
+  | AbstractNode
   | Mu<AbstractNode | AbstractAttribute>
 
-
 export abstract class AbstractNode {
-
   /*
    * properties
    */
@@ -36,7 +36,7 @@ export abstract class AbstractNode {
   }
 
   isRoot() {
-    return this.document().root().isSame(this)  // todo: fragments?
+    return this.document().root().isSame(this) // todo: fragments?
   }
 
   lang(): string {
@@ -45,7 +45,6 @@ export abstract class AbstractNode {
     }
     return this.parent().lang()
   }
-
 
   /*
    * traversal
@@ -64,7 +63,9 @@ export abstract class AbstractNode {
   }
 
   previousElementSiblings() {
-    return this.previousSiblings().filter(x => x.isElement()) as Mu<AbstractElement>
+    return this.previousSiblings().filter((x) =>
+      x.isElement(),
+    ) as Mu<AbstractElement>
   }
 
   previousElementSibling() {
@@ -78,7 +79,9 @@ export abstract class AbstractNode {
   }
 
   nextElementSiblings() {
-    return this.nextSiblings().filter(x => x.isElement()) as Mu<AbstractElement>
+    return this.nextSiblings().filter((x) =>
+      x.isElement(),
+    ) as Mu<AbstractElement>
   }
 
   nextElementSibling() {
@@ -86,7 +89,8 @@ export abstract class AbstractNode {
   }
 
   /** Document order */
-  next(): AbstractNode {  // todo: why return type is not inferred?
+  next(): AbstractNode {
+    // todo: why return type is not inferred?
     if (this.isElement()) {
       let firstChild = this.asElement().firstChild()
       if (firstChild) {
@@ -94,20 +98,24 @@ export abstract class AbstractNode {
       }
     }
     // todo: wait for tail call optimization, check it jumps
-    return this.nextSibling() || this.ancestors().map(x => x.nextSibling()).find(x => !!x) || null
+    return (
+      this.nextSibling() ||
+      this.ancestors()
+        .map((x) => x.nextSibling())
+        .find((x) => !!x) ||
+      null
+    )
   }
-
 
   /*
    * manipulation
    */
 
   abstract remove(): AbstractNode
-  abstract replace(replacement: AbstractNode)  // todo: what to return, naming
+  abstract replace(replacement: AbstractNode) // todo: what to return, naming
   // abstract replaceWithElement(name: string, nsUri: string): AbstractNode;
-  abstract insertBefore(newNode: AbstractNode)  // todo: what to return
+  abstract insertBefore(newNode: AbstractNode) // todo: what to return
   abstract insertAfter(newNode: AbstractNode)
-
 
   /*
    * XPath
@@ -119,7 +127,10 @@ export abstract class AbstractNode {
   abstract evaluateElement(xpath: string, nsMap?: Object): AbstractElement
   abstract evaluateElements(xpath: string, nsMap?: Object): Mu<AbstractElement>
   abstract evaluateAttribute(xpath: string, nsMap?: Object): AbstractAttribute
-  abstract evaluateAttributes(xpath: string, nsMap?: Object): Mu<AbstractAttribute>
+  abstract evaluateAttributes(
+    xpath: string,
+    nsMap?: Object,
+  ): Mu<AbstractAttribute>
 
   evaluateBoolean(xpath: string, nsMap?: Object) {
     let ret = this.evaluate(xpath, nsMap)
@@ -145,20 +156,19 @@ export abstract class AbstractNode {
     return ret
   }
 
-
   /*
    * other
    */
 
   abstract isSame(other: AbstractNode): boolean
-  abstract serialize(): string  // todo: pretty params
+  abstract serialize(): string // todo: pretty params
   abstract clone(): AbstractNode
 
   asElement() {
     if (!this.isElement()) {
       throw new Error('asElement() called on non-element')
     }
-    return ((this as any) as AbstractElement)  // todo: wait for ts 2.0
+    return this as any as AbstractElement // todo: wait for ts 2.0
   }
 
   // isAttached() {
@@ -173,25 +183,33 @@ export abstract class AbstractNode {
   //   }
   // }
 
-
   /*
    * private
    */
 
-  /*protected*/ *_ancestors() {  // todo: investigate "protected/private" bug
+  /*protected*/ *_ancestors() {
+    // todo: investigate "protected/private" bug
     for (let pointer = this.parent(); pointer; pointer = pointer.parent()) {
       yield pointer
     }
   }
 
   /*protected*/ *_previousSiblings() {
-    for (let pointer = this.previousSibling(); pointer; pointer = pointer.previousSibling()) {
+    for (
+      let pointer = this.previousSibling();
+      pointer;
+      pointer = pointer.previousSibling()
+    ) {
       yield pointer
     }
   }
 
   /*protected*/ *_nextSiblings() {
-    for (let pointer = this.nextSibling(); pointer; pointer = pointer.nextSibling()) {
+    for (
+      let pointer = this.nextSibling();
+      pointer;
+      pointer = pointer.nextSibling()
+    ) {
       yield pointer
     }
   }

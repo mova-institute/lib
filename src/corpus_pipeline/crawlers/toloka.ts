@@ -2,14 +2,12 @@
 
 import { Crawler } from './crawler'
 
-
-
 async function main() {
   let crawler = new Crawler('saved_web')
     .setTimeout(3000)
     .setUrlsToSave(({ path }) => isTopicPage(path))
     .setUrlsToFollow([
-      x => x.hostname === 'toloka.to' && /^\/f\d+$/.test(x.path)
+      (x) => x.hostname === 'toloka.to' && /^\/f\d+$/.test(x.path),
     ])
 
   await crawler.seed('https://toloka.to')

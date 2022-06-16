@@ -8,8 +8,6 @@ import * as intersection from 'lodash.intersection'
 import { linesSync } from '../../utils.node'
 import { zipLongest, last } from '../../lang'
 
-
-
 function main() {
   const workspace = '.'
   const goldDir = join(workspace, 'data', 'golden')
@@ -22,13 +20,16 @@ function main() {
   let positivesTotal = 0
   let falseNegativesTotal = 0
 
-  let [goldenFiles, testFiles] = [goldDir, testDir]
-    .map(x => glob.sync(join(x, '*.txt')).map(xx => path.basename(xx)))
+  let [goldenFiles, testFiles] = [goldDir, testDir].map((x) =>
+    glob.sync(join(x, '*.txt')).map((xx) => path.basename(xx)),
+  )
   let commonFiles = intersection(goldenFiles, testFiles)
   if (goldenFiles.length !== testFiles.length) {
     console.error(`WARNING: numbers of golden and test files do not match`)
   }
-  console.log(`Evaluating ${commonFiles.length} files: ${commonFiles.join(' ')}`)
+  console.log(
+    `Evaluating ${commonFiles.length} files: ${commonFiles.join(' ')}`,
+  )
   for (let goldFile of commonFiles) {
     let goldIt = iterateCg(linesSync(join(goldDir, goldFile)))
     let testIt = iterateCg(linesSync(join(testDir, goldFile)))
@@ -36,21 +37,36 @@ function main() {
     let diffCohorts = zipLongest(goldIt, testIt)
     for (let [[golden, lineG], [test, lineT]] of diffCohorts) {
       if (golden.surface !== test.surface) {
-        throw new Error(`Logic error: "${golden.surface}" !== "${test.surface}"`)
+        throw new Error(
+          `Logic error: "${golden.surface}" !== "${test.surface}"`,
+        )
       }
 
-      let positives = test.readings.filter(x => !x.removedBy)
-      let negatives = test.readings.filter(x => x.removedBy)
-      let truePositives = positives.filter(x => golden.readings.find(xx => xx.equals(x)))
-      let falseNegatives = negatives.filter(x => golden.readings.find(xx => xx.equals(x)))
+      let positives = test.readings.filter((x) => !x.removedBy)
+      let negatives = test.readings.filter((x) => x.removedBy)
+      let truePositives = positives.filter((x) =>
+        golden.readings.find((xx) => xx.equals(x)),
+      )
+      let falseNegatives = negatives.filter((x) =>
+        golden.readings.find((xx) => xx.equals(x)),
+      )
 
-      if (truePositives.length + falseNegatives.length !== golden.readings.length) {
+      if (
+        truePositives.length + falseNegatives.length !==
+        golden.readings.length
+      ) {
         console.error(golden.readings)
         console.error(positives)
         console.error(negatives)
         console.error(truePositives)
         console.error(falseNegatives)
-        console.error(truePositives.length, falseNegatives.length, golden.readings.length, lineG, lineT)
+        console.error(
+          truePositives.length,
+          falseNegatives.length,
+          golden.readings.length,
+          lineG,
+          lineT,
+        )
         process.exit()
       }
       negativesTotal += negatives.length
@@ -59,18 +75,18 @@ function main() {
       truePositivesTotal += truePositives.length
 
       falseNegativesTotal += falseNegatives.length
-      ruleCounter.account(...falseNegatives.map(x => x.removedBy))
-      falseNegatives.forEach(x => ruleCounter.account())
+      ruleCounter.account(...falseNegatives.map((x) => x.removedBy))
+      falseNegatives.forEach((x) => ruleCounter.account())
     }
   }
   let readingsTotal = negativesTotal + positivesTotal
   let recall = truePositivesTotal / goldenPositivesTotal
   let precision = truePositivesTotal / positivesTotal
-  let fMeasure = 2 * precision * recall / (precision + recall)
+  let fMeasure = (2 * precision * recall) / (precision + recall)
 
   let topBadRules = [...ruleCounter.entries()]
     .sort((a, b) => b[1] - a[1])
-    .map(x => x.join('\t'))
+    .map((x) => x.join('\t'))
     .join('\n  ')
 
   console.log(`
@@ -90,7 +106,6 @@ Top bad rules:
   ${topBadRules}
   `)
 }
-
 
 class UniqueCounter<T> {
   private map = new Map<T, number>()
@@ -126,7 +141,9 @@ class CgCohort {
   readings = new Array<CgReading>()
 }
 
-function* iterateCg(lines: Iterable<string>): IterableIterator<[CgCohort, number]> {
+function* iterateCg(
+  lines: Iterable<string>,
+): IterableIterator<[CgCohort, number]> {
   let i = 0
   let cohort: CgCohort
   let cohortLine: number
@@ -197,4 +214,3 @@ function isCgCohortStart(line: string) {
 if (require.main === module) {
   main()
 }
-

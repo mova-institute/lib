@@ -2,8 +2,6 @@ import { parseTagStr } from '../xml/utils'
 import { Dict } from '../types'
 import he = require('he')
 
-
-
 export class PrevertDocBuilder {
   private meta: Dict<string>
   private paragraphs: Array<string>

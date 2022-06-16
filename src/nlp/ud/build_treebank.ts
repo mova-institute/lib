@@ -13,7 +13,11 @@ import * as g from './uk_grammar'
 
 import { parseXmlFileSync } from '../../xml/utils.node'
 import { escapeText } from '../../xml/utils'
-import { mixml2tokenStream, tokenStream2sentencesRaw, initIndexes } from '../utils'
+import {
+  mixml2tokenStream,
+  tokenStream2sentencesRaw,
+  initIndexes,
+} from '../utils'
 import * as algo from '../../algo'
 import { parseJsonFileSync } from '../../utils.node'
 import { Dict } from '../../types'
@@ -28,15 +32,18 @@ import { createMorphAnalyzerSync } from '../morph_analyzer/factories.node'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 import { buildCoreferenceClusters } from '../coreference'
 import { ibool } from '../../lang'
-import { generateEnhancedDeps2, buildEnhancedGraphFromTokens, loadEnhancedGraphFromTokens, buildEnhancedTreeFromBasic } from './enhanced'
+import {
+  generateEnhancedDeps2,
+  buildEnhancedGraphFromTokens,
+  loadEnhancedGraphFromTokens,
+  buildEnhancedTreeFromBasic,
+} from './enhanced'
 import { TrebankStatister } from './trebank_statister'
-
-
 
 interface CliArgs {
   addIdToFeats: boolean
   addValency: boolean
-  datasetReroute: string  // --datasetReroute "->train test->train"
+  datasetReroute: string // --datasetReroute "->train test->train"
   datasetSchema: string
   dryRun: boolean
   id2bratPath: string
@@ -61,8 +68,12 @@ function main() {
 
   let [globStr, outDir] = cliArgs._
   let xmlPaths = glob.sync(globStr)
-  let id2bratPath: Dict<[string, number]> = cliArgs.id2bratPath ? parseJsonFileSync(cliArgs.id2bratPath) : {}
-  let morphonlyThreshold = cliArgs.noMorphonly ? 2 : Number.parseFloat(cliArgs.morphonlyThreshold)
+  let id2bratPath: Dict<[string, number]> = cliArgs.id2bratPath
+    ? parseJsonFileSync(cliArgs.id2bratPath)
+    : {}
+  let morphonlyThreshold = cliArgs.noMorphonly
+    ? 2
+    : Number.parseFloat(cliArgs.morphonlyThreshold)
   let rerouteMap = createDatasetRerouteMap(cliArgs.datasetReroute)
   console.error(`Reroutes:`, rerouteMap)
 
@@ -89,15 +100,22 @@ function main() {
 
     let root = parseXmlFileSync(xmlPath)
     let docTokens = mu(mixml2tokenStream(root, cliArgs.datasetSchema))
-      .transform(x => x.interp && g.denormalizeInterp(x.interp))
+      .transform((x) => x.interp && g.denormalizeInterp(x.interp))
       .toArray()
     let corefClusterization = buildCoreferenceClusters(docTokens)
     let sentenceStreamRaw = tokenStream2sentencesRaw(docTokens)
     let sentenceStream = initIndexes(sentenceStreamRaw)
 
     for (let sentence of sentenceStream) {
-      let { tokens, multitokens, nodes, sentenceId, dataset,
-        documentAttribs, paragraphAttribs, } = sentence
+      let {
+        tokens,
+        multitokens,
+        nodes,
+        sentenceId,
+        dataset,
+        documentAttribs,
+        paragraphAttribs,
+      } = sentence
 
       let manualEnhancedNodesOnly = buildEnhancedGraphFromTokens(nodes)
       let enhancedNodes = buildEnhancedTreeFromBasic(nodes)
@@ -116,7 +134,9 @@ function main() {
           }
         }
         if (cliArgs.addValency) {
-          tokens.forEach(x => g.fillWithValencyFromDict(x.interp, valencyDict))
+          tokens.forEach((x) =>
+            g.fillWithValencyFromDict(x.interp, valencyDict),
+          )
         }
       }
 
@@ -125,14 +145,17 @@ function main() {
       // x => !x.deps.find(xx => !g.HELPER_RELATIONS.has(xx.relation))).toArray()
       let numComplete = tokens.length - roots.length + 1
       let isComplete = roots.length === 1
-      let completionRatio = tokens.length === 1
-        ? 1
-        : 1 - ((roots.length - 1) / (tokens.length - 1))
-      let hasMorphErrors = tokens.some(x => x.interp.isError())
+      let completionRatio =
+        tokens.length === 1 ? 1 : 1 - (roots.length - 1) / (tokens.length - 1)
+      let hasMorphErrors = tokens.some((x) => x.interp.isError())
       let curDocId = documentAttribs['id']
       let curParId = paragraphAttribs['id']
 
-      dataset = cliArgs.oneSet || rerouteMap.get(dataset || '') || dataset || 'unassigned'
+      dataset =
+        cliArgs.oneSet ||
+        rerouteMap.get(dataset || '') ||
+        dataset ||
+        'unassigned'
       setRegistry[dataset] = setRegistry[dataset] || new DatasetDescriptor()
       let curDataset = setRegistry[dataset]
       let opensDoc = curDataset.curDocId !== curDocId
@@ -140,14 +163,16 @@ function main() {
       curDataset.update(curDocId, curParId)
 
       let sentLevelInfo = {
-        'sent_id': sentenceId,
-        'newpar id': opensPar && curParId || undefined,
-        'newdoc id': opensDoc && curDocId || undefined,
+        sent_id: sentenceId,
+        'newpar id': (opensPar && curParId) || undefined,
+        'newdoc id': (opensDoc && curDocId) || undefined,
       }
       if (opensDoc) {
         sentLevelInfo['doc_title'] = documentAttribs['title'] || ''
       } else if (prevSet !== dataset) {
-        Object.values(setRegistry).forEach(set => set.followsAnnotationalGap = false)
+        Object.values(setRegistry).forEach(
+          (set) => (set.followsAnnotationalGap = false),
+        )
       }
       prevSet = dataset
 
@@ -163,16 +188,22 @@ function main() {
         } else if (!isComplete && cliArgs.reportHoles) {
           sentenseHoles.push({
             sentenceId,
-            problems: [{
-              message: `речення недороблене, ${tokens.length} ток.`,
-              indexes: roots,
-            }],
+            problems: [
+              {
+                message: `речення недороблене, ${tokens.length} ток.`,
+                indexes: roots,
+              },
+            ],
             tokens,
           })
         }
 
         let hasProblems = false
-        if (cliArgs.reportErrors === 'all' || cliArgs.reportErrors === 'complete' && isComplete || cliArgs.validOnly) {
+        if (
+          cliArgs.reportErrors === 'all' ||
+          (cliArgs.reportErrors === 'complete' && isComplete) ||
+          cliArgs.validOnly
+        ) {
           let problems = validateSentenceSyntax(
             nodes,
             multitokens,
@@ -180,7 +211,7 @@ function main() {
             enhancedNodes,
             analyzer,
             corefClusterization,
-            valencyDict
+            valencyDict,
           )
           hasProblems = !!problems.length
           if (hasProblems && cliArgs.reportErrors) {
@@ -196,7 +227,7 @@ function main() {
           continue
         }
 
-        if (cliArgs.validOnly && hasProblems || hasMorphErrors) {
+        if ((cliArgs.validOnly && hasProblems) || hasMorphErrors) {
           curDataset.accountBlocked(numComplete, tokens.length)
         } else {
           if (isComplete || cliArgs.includeIncomplete) {
@@ -219,14 +250,24 @@ function main() {
             if (!cliArgs.noStandartizing) {
               g.standartizeSentenceForUd2_11(nodes)
             }
-            let filename = set2filename(outDir, cliArgs.datasetSchema || 'mi', dataset)
-            let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-            let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfoSynt, {
-              xpos: cliArgs.xpos,
-              addIdToFeats: cliArgs.addIdToFeats,
-              translit: !cliArgs.noTranslit,
-              // noBasic: args.noBasic,
-            })
+            let filename = set2filename(
+              outDir,
+              cliArgs.datasetSchema || 'mi',
+              dataset,
+            )
+            let file = (openedFiles[filename] =
+              openedFiles[filename] || fs.openSync(filename, 'w'))
+            let conlluedSentence = sentence2conllu(
+              tokens,
+              multitokens,
+              sentLevelInfoSynt,
+              {
+                xpos: cliArgs.xpos,
+                addIdToFeats: cliArgs.addIdToFeats,
+                translit: !cliArgs.noTranslit,
+                // noBasic: args.noBasic,
+              },
+            )
             fs.writeSync(file, conlluedSentence + '\n\n')
           } else {
             curDataset.accountBlocked(numComplete, tokens.length)
@@ -237,10 +278,12 @@ function main() {
         if (cliArgs.reportHoles && !skipReportingEmptyFromDocs.has(curDocId)) {
           sentenseHoles.push({
             sentenceId,
-            problems: [{
-              message: `речення незаймане, ${tokens.length} ток.`,
-              indexes: [],
-            }],
+            problems: [
+              {
+                message: `речення незаймане, ${tokens.length} ток.`,
+                indexes: [],
+              },
+            ],
             tokens,
           })
         }
@@ -250,7 +293,8 @@ function main() {
         continue
       }
 
-      setRegistryMorpho[dataset] = setRegistryMorpho[dataset] || new DatasetDescriptor()
+      setRegistryMorpho[dataset] =
+        setRegistryMorpho[dataset] || new DatasetDescriptor()
 
       if (completionRatio >= morphonlyThreshold && !hasMorphErrors) {
         // standartizeMorpho(tokens)
@@ -258,12 +302,18 @@ function main() {
           g.standartizeSentenceForUd2_11(nodes)
         }
         let filename = path.join(outDir, `uk-mi-${dataset}.morphonly.conllu`)
-        let file = openedFiles[filename] = openedFiles[filename] || fs.openSync(filename, 'w')
-        let conlluedSentence = sentence2conllu(tokens, multitokens, sentLevelInfo, {
-          // morphOnly: true,
-          xpos: cliArgs.xpos,
-          addIdToFeats: cliArgs.addIdToFeats,
-        })
+        let file = (openedFiles[filename] =
+          openedFiles[filename] || fs.openSync(filename, 'w'))
+        let conlluedSentence = sentence2conllu(
+          tokens,
+          multitokens,
+          sentLevelInfo,
+          {
+            // morphOnly: true,
+            xpos: cliArgs.xpos,
+            addIdToFeats: cliArgs.addIdToFeats,
+          },
+        )
         fs.writeSync(file, conlluedSentence + '\n\n')
         setRegistryMorpho[dataset].accountExported(tokens.length)
       } else {
@@ -276,8 +326,14 @@ function main() {
   printStats(setRegistry, 'synt')
   printStats(setRegistryMorpho, 'morpho')
 
-  let valencyCoverage = toPercent(numVerbsCoveredByValencyDict, numVerbsTotal, 2)
-  console.error(`\n${numVerbsCoveredByValencyDict}/${numVerbsTotal} (${valencyCoverage}%) verb hits covered by valency dict`)
+  let valencyCoverage = toPercent(
+    numVerbsCoveredByValencyDict,
+    numVerbsTotal,
+    2,
+  )
+  console.error(
+    `\n${numVerbsCoveredByValencyDict}/${numVerbsTotal} (${valencyCoverage}%) verb hits covered by valency dict`,
+  )
   console.error(`Uncovered are ${verbsUncoveredByValencyDict.size} lemmas`)
   // console.error(mu(verbsUncoveredByValencyDict).toArray().sort(ukComparator).join('\n'))
 
@@ -286,24 +342,38 @@ function main() {
   console.error()
 }
 
-function writeErrors(sentenseErrors, sentenseHoles, outDir: string, id2bratPath: Dict<[string, number]>) {
+function writeErrors(
+  sentenseErrors,
+  sentenseHoles,
+  outDir: string,
+  id2bratPath: Dict<[string, number]>,
+) {
   if (sentenseErrors.length) {
     sentenseErrors = transposeProblems(sentenseErrors)
-    fs.writeFileSync(path.join(outDir, 'errors.html'), formatProblemsHtml(sentenseErrors, id2bratPath))
+    fs.writeFileSync(
+      path.join(outDir, 'errors.html'),
+      formatProblemsHtml(sentenseErrors, id2bratPath),
+    )
   }
 
   if (sentenseHoles.length) {
     let comparator = algo.chainComparators<any>(
       // (a, b) => b.tokens.filter(x => x.hasDeps()).length - a.tokens.filter(x => x.hasDeps()).length,
-      (a, b) => ibool(b.problems[0].indexes.length) - ibool(a.problems[0].indexes.length),  //
-      (a, b) => (a.problems[0].indexes.length - 1) / a.tokens.length
-        - (b.problems[0].indexes.length - 1) / b.tokens.length,
+      (a, b) =>
+        ibool(b.problems[0].indexes.length) -
+        ibool(a.problems[0].indexes.length), //
+      (a, b) =>
+        (a.problems[0].indexes.length - 1) / a.tokens.length -
+        (b.problems[0].indexes.length - 1) / b.tokens.length,
       (a, b) => a.problems[0].indexes.length - b.problems[0].indexes.length,
-      (a, b) => b.tokens.length - a.tokens.length,  // prefer longer sents
-      algo.indexComparator(sentenseHoles),  // for stability
+      (a, b) => b.tokens.length - a.tokens.length, // prefer longer sents
+      algo.indexComparator(sentenseHoles), // for stability
     )
     sentenseHoles.sort(comparator)
-    fs.writeFileSync(path.join(outDir, 'holes.html'), formatProblemsHtml(sentenseHoles, id2bratPath))
+    fs.writeFileSync(
+      path.join(outDir, 'holes.html'),
+      formatProblemsHtml(sentenseHoles, id2bratPath),
+    )
   }
 }
 
@@ -316,79 +386,100 @@ function transposeProblems(problems: Array<any>) {
       problemsByType.push(sentWithOneProblem)
     }
   }
-  problemsByType = _.sortBy(problemsByType, x => x.problems[0].message)
+  problemsByType = _.sortBy(problemsByType, (x) => x.problems[0].message)
 
   return problemsByType
 }
 
 function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
-  let stats = Object.entries(datasetRegistry)
-    .map(([set, { counts: { tokensBlocked, sentsBlocked, tokensExported,
-      tokensInUnfinishedSentenses, sentencesExported } }]) => ({
-        set,
-        'blocked': tokensBlocked,
-        'blocked s': sentsBlocked,
-        'holes': tokensInUnfinishedSentenses - tokensBlocked,
-        'exported': tokensExported,
-        'exported s': sentencesExported,
-      }))
+  let stats = Object.entries(datasetRegistry).map(
+    ([
+      set,
+      {
+        counts: {
+          tokensBlocked,
+          sentsBlocked,
+          tokensExported,
+          tokensInUnfinishedSentenses,
+          sentencesExported,
+        },
+      },
+    ]) => ({
+      set,
+      blocked: tokensBlocked,
+      'blocked s': sentsBlocked,
+      holes: tokensInUnfinishedSentenses - tokensBlocked,
+      exported: tokensExported,
+      'exported s': sentencesExported,
+    }),
+  )
   stats.push({
-    'set': 'TOTAL',
-    'blocked': stats.map(x => x['blocked']).reduce((a, b) => a + b, 0),
-    'blocked s': stats.map(x => x['blocked s']).reduce((a, b) => a + b, 0),
-    'holes': stats.map(x => x['holes']).reduce((a, b) => a + b, 0),
-    'exported': stats.map(x => x['exported']).reduce((a, b) => a + b, 0),
-    'exported s': stats.map(x => x['exported s']).reduce((a, b) => a + b, 0),
+    set: 'TOTAL',
+    blocked: stats.map((x) => x['blocked']).reduce((a, b) => a + b, 0),
+    'blocked s': stats.map((x) => x['blocked s']).reduce((a, b) => a + b, 0),
+    holes: stats.map((x) => x['holes']).reduce((a, b) => a + b, 0),
+    exported: stats.map((x) => x['exported']).reduce((a, b) => a + b, 0),
+    'exported s': stats.map((x) => x['exported s']).reduce((a, b) => a + b, 0),
   })
 
   console.error(`\n${header}`)
-  console.error(columnify(stats, {
-    config: {
-      align: 'right',
-      blocked: {
+  console.error(
+    columnify(stats, {
+      config: {
         align: 'right',
+        blocked: {
+          align: 'right',
+        },
+        'blocked s': {
+          align: 'right',
+        },
+        exported: {
+          align: 'right',
+        },
+        holes: {
+          align: 'right',
+        },
+        'exported s': {
+          align: 'right',
+        },
       },
-      'blocked s': {
-        align: 'right',
-      },
-      exported: {
-        align: 'right',
-      },
-      holes: {
-        align: 'right',
-      },
-      'exported s': {
-        align: 'right',
-      },
-    },
-  }))
+    }),
+  )
   // console.error(`\n`)
 }
 
 function formatProblemsHtml(
   sentenceProblems: Array<any>,
-  id2bratPath: Dict<[string, number]>
+  id2bratPath: Dict<[string, number]>,
 ) {
   let body = ''
-  for (let [i, { sentenceId, problems, tokens }] of sentenceProblems.entries()) {
-    let firsProblemTokenId = problems.length && problems[0].indexes && problems[0].indexes.length
-      ? tokens[problems[0].indexes[0]].id
-      : tokens[0].id
+  for (let [
+    i,
+    { sentenceId, problems, tokens },
+  ] of sentenceProblems.entries()) {
+    let firsProblemTokenId =
+      problems.length && problems[0].indexes && problems[0].indexes.length
+        ? tokens[problems[0].indexes[0]].id
+        : tokens[0].id
     let [bratPath, bratIndex] = id2bratPath[firsProblemTokenId] || ['', 0]
     let tbRelativePath = bratPath.split('/').slice(2).join('/')
-    let href = `https://lab.mova.institute/brat/#/${bratPath}?focus=T${bratIndex + 1}`
+    let href = `https://lab.mova.institute/brat/#/${bratPath}?focus=T${
+      bratIndex + 1
+    }`
     let problemNumber = zerofillMax(i + 1, sentenceProblems.length)
 
     body += `<div><b>№${problemNumber}</b> реч#${sentenceId}: <a href="${href}" target="_blank">${tbRelativePath}</a><br/>`
     for (let { indexes, message } of problems) {
       body += `<p class="message">- ${escapeText(message)}`
       if (indexes !== undefined) {
-        let ids = indexes.map(x => tokens[x].id).join(` `)
+        let ids = indexes.map((x) => tokens[x].id).join(` `)
         body += ` <input type="checkbox" value="${ids}" onchange="copyIds()" /> ${ids}</p>`
 
         for (let j = 0; j < tokens.length; ++j) {
           if (indexes.length < tokens.length && indexes.includes(j)) {
-            body += `<span class="error">${escapeText(tokens[j].getForm())}</span> `
+            body += `<span class="error">${escapeText(
+              tokens[j].getForm(),
+            )}</span> `
           } else {
             body += `${tokens[j].getForm()} `
           }
@@ -442,7 +533,9 @@ function standartizeMorpho(sentence: Array<Token>) {
     token.interp.setIsAuxillary(false)
 
     if (token.interp.isForeign()) {
-      token.interps = [MorphInterp.fromVesumStr('x:foreign', token.interp.lemma)]
+      token.interps = [
+        MorphInterp.fromVesumStr('x:foreign', token.interp.lemma),
+      ]
     }
 
     if (token.interp.isTypo()) {
@@ -459,7 +552,11 @@ function standartizeMorpho(sentence: Array<Token>) {
       token.interp.setIsOrdinalNumeral(false)
     }
 
-    if (token.interp.lemma === 'бути' && ['є', 'Є'].includes(token.form) && token.interp.isVerb()) {
+    if (
+      token.interp.lemma === 'бути' &&
+      ['є', 'Є'].includes(token.form) &&
+      token.interp.isVerb()
+    ) {
       token.interp.features.person = undefined
       token.interp.features.number = undefined
     }
@@ -467,7 +564,10 @@ function standartizeMorpho(sentence: Array<Token>) {
 }
 
 function createDatasetRerouteMap(definition: string) {
-  let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as Array<[string, string]>
+  let pairs = definition
+    .trim()
+    .split(/\s+/g)
+    .map((x) => x.split('->')) as Array<[string, string]>
   return new Map<string, string>(pairs)
 }
 
@@ -477,8 +577,8 @@ const skipReportingEmptyFromDocs = new Set([
   '0djd',
   '0a7t',
   '0i7x',
-  '0clh',  // Про злидні
-  '2wie',  // Безталанна
+  '0clh', // Про злидні
+  '2wie', // Безталанна
 ])
 
 class DatasetDescriptor {
@@ -525,7 +625,7 @@ class DatasetDescriptor {
 
 function* dropElided(sentences: ReturnType<typeof tokenStream2sentencesRaw>) {
   for (let sentence of sentences) {
-    sentence.tokens = sentence.tokens.filter(x => !x.isElided())
+    sentence.tokens = sentence.tokens.filter((x) => !x.isElided())
     yield sentence
   }
 }

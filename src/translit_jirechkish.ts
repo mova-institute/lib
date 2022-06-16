@@ -2,8 +2,6 @@ import { last } from './lang'
 import { capitalizeFirst } from './string'
 import { APOSTROPHES_COMMON } from './nlp/static'
 
-
-
 const palatalizationMap = new Map([
   ['д', 'ď'],
   ['з', 'ź'],
@@ -21,17 +19,13 @@ const palatalIotations = new Map([
   ['є', 'е'],
 ])
 
-const iotations = new Set([
-  ...palatalIotations.keys(),
-  'ї'
-])
+const iotations = new Set([...palatalIotations.keys(), 'ї'])
 
 const cyrToLatMap = new Map([
   ['ї', 'ji'],
   ['ю', 'ju'],
   ['я', 'ja'],
   ['є', 'je'],
-
 
   ['а', 'a'],
   ['б', 'b'],
@@ -81,7 +75,7 @@ const consonants = new Set([
   'т',
   'х',
   'ц',
-  'ч',  // todo
+  'ч', // todo
   'ш',
 ])
 
@@ -108,11 +102,14 @@ export function cyrToJirechekish(cyrStr: string) {
       let lat = palatalizationMap.get(lc) || cyrToLatMap.get(lc)
       if (lat !== undefined) {
         ret += toCapitalizedIf(lat, isUpper)
-        ret += toCapitalizedIf(palatalIotations.get(nextLc), cyr[i + 1] !== nextLc)
+        ret += toCapitalizedIf(
+          palatalIotations.get(nextLc),
+          cyr[i + 1] !== nextLc,
+        )
         ++i
       }
     } else if (APOSTROPHES_COMMON.includes(lc) && iotations.has(nextLc)) {
-      continue  // todo: test
+      continue // todo: test
     } else {
       ret += convertSingle(cyr[i])
     }

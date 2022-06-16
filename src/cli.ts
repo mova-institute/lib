@@ -6,16 +6,18 @@ import { sync as mkdirpSync } from 'mkdirp'
 const minimist = require('minimist')
 tmp.setGracefulCleanup()
 
-
-
 // todo: input, output types
-export async function ioArgs(filename1: string, filename2: string, f: (input, output) => any) {
+export async function ioArgs(
+  filename1: string,
+  filename2: string,
+  f: (input, output) => any,
+) {
   let input
   let output
   let tmpFile
 
   if (filename2) {
-    input = createReadStream(filename1, 'utf8')  // todo
+    input = createReadStream(filename1, 'utf8') // todo
     tmpFile = tmp.fileSync()
     output = createWriteStream(undefined, { fd: tmpFile.fd })
   } else if (filename1) {
@@ -46,13 +48,16 @@ export async function ioArgs(filename1: string, filename2: string, f: (input, ou
   }
 }
 
-export function ioArgsPlain(f: (input, output) => any, args = minimist(process.argv.slice(2))._) {
+export function ioArgsPlain(
+  f: (input, output) => any,
+  args = minimist(process.argv.slice(2))._,
+) {
   let [filename1, filename2] = args
   ioArgs(filename1, filename2, f)
 }
 
 export function objToLongParams(obj) {
   return Object.entries(obj)
-    .map(([k, v]) => v === true ? `--${k}` : `--${k}=${v}`)
+    .map(([k, v]) => (v === true ? `--${k}` : `--${k}=${v}`))
     .join(' ')
 }

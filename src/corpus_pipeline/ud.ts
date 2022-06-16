@@ -1,13 +1,25 @@
-import { UdPos, UdFeats, ud2conlluishString, UdNumType, UdVerbForm } from '../nlp/ud/tagset'
+import {
+  UdPos,
+  UdFeats,
+  ud2conlluishString,
+  UdNumType,
+  UdVerbForm,
+} from '../nlp/ud/tagset'
 import { trimAfterLast } from '../string'
 import { ConlluToken, ConlluMultitoken } from '../nlp/ud/conllu'
 
 import * as _ from 'lodash'
 
-
 export function tokenObj2verticalLineUk(token: ConlluToken) {
-  return token2verticalLineUk(token.form, token.lemma, token.upos, token.feats as any,
-    token.rel, token.index, token.head)
+  return token2verticalLineUk(
+    token.form,
+    token.lemma,
+    token.upos,
+    token.feats as any,
+    token.rel,
+    token.index,
+    token.head,
+  )
 }
 
 export function tokenOrMulti2verticalLineGeneric(
@@ -16,21 +28,34 @@ export function tokenOrMulti2verticalLineGeneric(
   featsOrder: Array<string>,
 ) {
   if (token) {
-    return tokenObj2verticalColsGeneric(token, featsOrder)
-      .join('\t')
+    return tokenObj2verticalColsGeneric(token, featsOrder).join('\t')
   }
 
-  let rows = multitoken.tokens.map(x => tokenObj2verticalColsGeneric(x, featsOrder))
+  let rows = multitoken.tokens.map((x) =>
+    tokenObj2verticalColsGeneric(x, featsOrder),
+  )
   const MULTISEP = '||'
-  let cols = _.unzip(rows).map(x => _.uniq(x).sort().join(MULTISEP))
-  cols[0] = multitoken.surfaceForm  // todo: do not assume
+  let cols = _.unzip(rows).map((x) => _.uniq(x).sort().join(MULTISEP))
+  cols[0] = multitoken.surfaceForm // todo: do not assume
 
   return cols.join('\t')
 }
 
-export function tokenObj2verticalColsGeneric(token: ConlluToken, featsOrder: Array<string>) {
-  return token2verticalColsGeneric(token.form, token.lemma, token.upos, token.feats as any,
-    featsOrder, token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
+export function tokenObj2verticalColsGeneric(
+  token: ConlluToken,
+  featsOrder: Array<string>,
+) {
+  return token2verticalColsGeneric(
+    token.form,
+    token.lemma,
+    token.upos,
+    token.feats as any,
+    featsOrder,
+    token.rel,
+    token.index,
+    token.head,
+    token.misc.SpaceAfter !== 'No',
+  )
 }
 
 export function token2verticalLineUk(
@@ -46,7 +71,7 @@ export function token2verticalLineUk(
 ) {
   let domesticatedPos = domesticateUdPos(upos, feats.NumType, feats.VerbForm)
   let urel = prepareUrel(rel)
-  let headStr = head === undefined ? '' : (head + 1)
+  let headStr = head === undefined ? '' : head + 1
   let relativeHead = prepareRelativeHead(head, sentIndex)
   let tag = ud2conlluishString(upos, feats)
   let nameType = feats.NameType || (upos === 'PROPN' && 'Oth') || ''
@@ -119,7 +144,7 @@ export function token2verticalColsGeneric(
     form,
     lemma,
     prepareFeatValue(upos),
-    ...featsOrder.map(x => prepareFeatValue(feats[x])),
+    ...featsOrder.map((x) => prepareFeatValue(feats[x])),
     tag,
     ...[
       sentIndex + 1,
@@ -128,7 +153,7 @@ export function token2verticalColsGeneric(
       head + 1,
       relativeHead,
       // gluedNext ? 'no' : '',
-    ].map(x => prepareFeatValue(x))
+    ].map((x) => prepareFeatValue(x)),
   ]
   if (id !== undefined) {
     ret.push(id)
@@ -137,7 +162,11 @@ export function token2verticalColsGeneric(
   return ret
 }
 
-export function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVerbForm): UdPos {
+export function domesticateUdPos(
+  upos: UdPos,
+  numType: UdNumType,
+  verbForm: UdVerbForm,
+): UdPos {
   if (upos === 'PROPN' || upos === 'PRON') {
     return 'NOUN'
   }
@@ -175,10 +204,10 @@ function prepareRelativeHead(head: number, index: number) {
   return head - index
 }
 
-function prepareFeatValue(feat: (string | number)) {
+function prepareFeatValue(feat: string | number) {
   return feat === undefined ? '' : feat.toString().toLowerCase()
 }
 
 function feats2line(feats: Array<string | number>) {
-  return feats.map(x => prepareFeatValue(x)).join('\t')
+  return feats.map((x) => prepareFeatValue(x)).join('\t')
 }

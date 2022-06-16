@@ -1,7 +1,5 @@
 import { randomBytes, createHash } from 'crypto'
 
-
-
 export async function genAccessToken() {
   return new Promise((resolve, reject) => {
     randomBytes(32, (e, buf) => {

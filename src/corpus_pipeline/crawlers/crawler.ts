@@ -8,8 +8,6 @@ import he = require('he')
 
 import { resolve, parse, Url } from 'url'
 
-
-
 export type StringPredicate = (value: string) => any
 export type UrlPredicate = (value: Url) => any
 
@@ -90,9 +88,10 @@ export class Crawler {
 
   async seed(urlStr: string) {
     let url = parse(urlStr)
-    if (this.visited.has(url.href)
-      || this.visiting.has(url.href)
-      || this.failed.has(url.href)
+    if (
+      this.visited.has(url.href) ||
+      this.visiting.has(url.href) ||
+      this.failed.has(url.href)
     ) {
       return
     }
@@ -162,13 +161,16 @@ export class Crawler {
   private extractHrefs(curHref: string, content: string) {
     let urls = extractHrefs(content)
       .map(this.urlTransformer)
-      .map(x => parse(resolve(curHref, x)))
+      .map((x) => parse(resolve(curHref, x)))
 
-    let urlsToSave = urls.filter(x => x && this.isUrlToSave(x))
-    let urlsToFollow = urls.filter(x => x && this.isUrlToFollow.some(xx => xx(x)))
-      .sort((a, b) =>
-        (this.isUrlToFollow.findIndex(x => x(a)) - this.isUrlToFollow.findIndex(x => x(b)))
-        || (a > b ? 1 : (a === b ? 0 : -1))
+    let urlsToSave = urls.filter((x) => x && this.isUrlToSave(x))
+    let urlsToFollow = urls
+      .filter((x) => x && this.isUrlToFollow.some((xx) => xx(x)))
+      .sort(
+        (a, b) =>
+          this.isUrlToFollow.findIndex((x) => x(a)) -
+            this.isUrlToFollow.findIndex((x) => x(b)) ||
+          (a > b ? 1 : a === b ? 0 : -1),
       )
 
     return { urlsToSave, urlsToFollow }
@@ -207,7 +209,7 @@ export class Crawler {
 
 function extractHrefs(html: string) {
   return allMatchesArr(html, /<\s*a\b[^>]+\bhref="([^"]+)"/g)
-    .map(x => he.unescape(x[1]))
-    .map(x => trimAfterFirst(x, '#'))
-    .filter(x => x.startsWith('http') || !/^\w+:/.test(x))
+    .map((x) => he.unescape(x[1]))
+    .map((x) => trimAfterFirst(x, '#'))
+    .filter((x) => x.startsWith('http') || !/^\w+:/.test(x))
 }

@@ -6,13 +6,9 @@ import { PgClient } from '../postrges'
 import { parseJsonFileSync } from '../utils.node'
 import jwt = require('express-jwt')
 
-
-
-
 export interface IReq extends express.Request {
   bag: any
 }
-
 
 let config = parseJsonFileSync(process.argv[3])
 let jwtCheck = jwt(config.jwt)
@@ -28,7 +24,6 @@ app.use(reqBag)
 app.use(errorHandler)
 app.use('/api/login', jwtCheck)
 app.use('/api/join', jwtCheck)
-
 
 app.all('/api/*', async (req, res) => {
   let actionName = req.params[0]
@@ -56,8 +51,6 @@ app.all('/api/*', async (req, res) => {
 
 app.listen(process.argv[2])
 
-
-
 function errorHandler(err, req, res: express.Response, next) {
   console.error(err)
   console.error(err.stack)
@@ -65,7 +58,11 @@ function errorHandler(err, req, res: express.Response, next) {
 }
 
 async function preauth(action: string, req: IReq, client: PgClient) {
-  if (action === 'login' || action === 'getInviteDetails' || action === 'join') {
+  if (
+    action === 'login' ||
+    action === 'getInviteDetails' ||
+    action === 'join'
+  ) {
     return true
   }
 
@@ -91,7 +88,11 @@ export function makeErrObj(code: number, message?: string) {
   }
 }
 
-export function sendError(res: express.Response, code: number, message?: string) {
+export function sendError(
+  res: express.Response,
+  code: number,
+  message?: string,
+) {
   res.status(code).json(makeErrObj(code, message))
 }
 

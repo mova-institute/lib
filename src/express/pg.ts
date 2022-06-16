@@ -4,9 +4,12 @@ import { Request, Response } from 'express'
 import { PgClient } from '../postrges'
 import { sendError } from './utils'
 
-
-
-export async function pgTransactionWrap(action, config: pg.ClientConfig, req: Request, res: Response) {
+export async function pgTransactionWrap(
+  action,
+  config: pg.ClientConfig,
+  req: Request,
+  res: Response,
+) {
   try {
     await PgClient.transaction(config, async (client) => {
       // if (!(await preauth(actionName, req, client))) {

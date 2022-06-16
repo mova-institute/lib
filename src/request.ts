@@ -4,8 +4,6 @@ import * as conv from 'iconv-lite'
 import request from 'request-promise-native'
 import { RequestPromiseOptions } from 'request-promise-native'
 
-
-
 export async function fetchText(url: string, options?: RequestPromiseOptions) {
   options = {
     gzip: true,
@@ -14,14 +12,18 @@ export async function fetchText(url: string, options?: RequestPromiseOptions) {
     encoding: null,
     resolveWithFullResponse: true,
     headers: {
-      ...options && options.headers || {},
-      'User-Agent': 'Mozilla/5.0 (compatible; MovaInstituteBot; +https://mova.institute/bot)',
-    }
+      ...((options && options.headers) || {}),
+      'User-Agent':
+        'Mozilla/5.0 (compatible; MovaInstituteBot; +https://mova.institute/bot)',
+    },
   }
 
   let response = await request(url, options)
-  let encoding = firstMatch(response.headers['content-type'] as string,
-    /.*\bcharset=([\w\-]+)/, 1)
+  let encoding = firstMatch(
+    response.headers['content-type'] as string,
+    /.*\bcharset=([\w\-]+)/,
+    1,
+  )
   if (encoding) {
     if (conv.encodingExists(encoding)) {
       return conv.decode(response.body, encoding)
@@ -30,8 +32,11 @@ export async function fetchText(url: string, options?: RequestPromiseOptions) {
   } else {
     // assume utf8 to get html
     let asUtf8 = conv.decode(response.body, 'utf8')
-    encoding = firstMatch(asUtf8,
-      /<meta\s[^>]*http-equiv\s*=\s*['"]\s*Content-Type\s*['"]\s*[^>]*charset\s*=\s*([\w\-]+)/i, 1)
+    encoding = firstMatch(
+      asUtf8,
+      /<meta\s[^>]*http-equiv\s*=\s*['"]\s*Content-Type\s*['"]\s*[^>]*charset\s*=\s*([\w\-]+)/i,
+      1,
+    )
     if (encoding) {
       if (/utf-?8/i.test(encoding)) {
         return asUtf8

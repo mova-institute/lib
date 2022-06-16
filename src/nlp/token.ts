@@ -5,8 +5,6 @@ import { CONJ_PROPAGATION_RELS } from './ud/uk_grammar'
 import { CoolSet } from '../data_structures/cool_set'
 import { uEq } from './ud/utils'
 
-
-
 export type TokenType = 'word' | 'glue'
 export type CoreferenceType = 'equality' | 'bridge'
 export type Structure =
@@ -22,19 +20,15 @@ export type Structure =
 
 export type TokenTag =
   | 'bad'
-
   | 'promoted'
   | 'graft'
-
   | 'adjdet'
   | 'nestedpunct'
   | 'error'
   | 'nomvoc'
   | 'gendisagr'
   | 'numdisagr'
-
   | 'phrasemod'
-
   | 'commed_conj'
   | 'legal_alien'
   | 'conj_no_cc'
@@ -85,7 +79,7 @@ export class Token {
   interps = new Array<MorphInterp>()
   id: string
   gluedNext: boolean
-  opensParagraph: boolean  // temp
+  opensParagraph: boolean // temp
   deps = new Array<Dependency>()
   edeps = new Array<Dependency>()
   pdeps = new Array<Dependency>()
@@ -156,21 +150,27 @@ export class Token {
     return this
   }
 
-  getStructureName() { return this.structure }
-  getAttributes() { return this.attributes }
+  getStructureName() {
+    return this.structure
+  }
+  getAttributes() {
+    return this.attributes
+  }
   getAttribute(name: string) {
     return this.attributes && this.attributes[name]
   }
   getConjPropagation() {
-    let rel = this.deps.find(x => CONJ_PROPAGATION_RELS.has(x.relation))
+    let rel = this.deps.find((x) => CONJ_PROPAGATION_RELS.has(x.relation))
     if (rel) {
       return rel.relation
     }
   }
   isStructure() {
-    return !!this.structure || this.isGlue()  // todo
+    return !!this.structure || this.isGlue() // todo
   }
-  isWord() { return !!this.form }
+  isWord() {
+    return !!this.form
+  }
 
   isSentenceBoundary() {
     return this.structure === 'sentence' && this.closing
@@ -181,12 +181,18 @@ export class Token {
   }
 
   isSentenceStartDeprecated() {
-    return (this.structure === 'sentence' || this.structure === 'paragraph')
-      && !this.closing
+    return (
+      (this.structure === 'sentence' || this.structure === 'paragraph') &&
+      !this.closing
+    )
   }
 
-  isGlue() { return this.type === 'glue' }
-  isClosing() { return this.closing }
+  isGlue() {
+    return this.type === 'glue'
+  }
+  isClosing() {
+    return this.closing
+  }
   isClosingStructure(name: Structure) {
     return this.isClosing() && (!name || this.getStructureName() === name)
   }
@@ -241,7 +247,7 @@ export class Token {
   }
 
   hasUDep(relation: string) {
-    return this.deps.some(x => uEq(x.relation, relation))
+    return this.deps.some((x) => uEq(x.relation, relation))
   }
 
   getForm(corrected = true) {

@@ -12,8 +12,6 @@ import { morphReinterpretGently } from '../nlp/utils'
 import { mixml2cg } from '../nlp/cg/utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 
-
-
 interface Args {
   clean: boolean
   golden: string
@@ -21,9 +19,7 @@ interface Args {
 
 function main() {
   const args = minimist<Args>(process.argv.slice(2), {
-    boolean: [
-      'clean',
-    ],
+    boolean: ['clean'],
   }) as any
 
   const verbs = ['init']
@@ -38,17 +34,23 @@ function main() {
     let folders = ['golden', 'input', 'test']
     let analyzer = createMorphAnalyzerSync()
     if (args.clean) {
-      folders.forEach(x => rimraf.sync(path.join(dest, x)))
+      folders.forEach((x) => rimraf.sync(path.join(dest, x)))
     }
-    folders.forEach(x => mkdirp.sync(path.join(dest, x)))
+    folders.forEach((x) => mkdirp.sync(path.join(dest, x)))
     let goldenXmls = glob.sync(path.join(args.golden, '*.xml'))
     for (let goldenXml of goldenXmls) {
       let basename = path.basename(goldenXml).slice(0, -'.xml'.length)
       let root = parseXmlFileSync(goldenXml)
-      fs.writeFileSync(path.join(dest, 'golden', `${basename}.txt`), mixml2cg(root))
+      fs.writeFileSync(
+        path.join(dest, 'golden', `${basename}.txt`),
+        mixml2cg(root),
+      )
 
       morphReinterpretGently(root, analyzer)
-      fs.writeFileSync(path.join(dest, 'input', `${basename}.txt`), mixml2cg(root))
+      fs.writeFileSync(
+        path.join(dest, 'input', `${basename}.txt`),
+        mixml2cg(root),
+      )
     }
   }
 }

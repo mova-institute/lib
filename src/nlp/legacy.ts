@@ -3,8 +3,6 @@ import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { sortInterps } from './utils'
 import { NS, traverseDepthGen2, tagStr2 } from '../xml/utils'
 
-
-
 export function* polishXml2verticalStream(root: AbstractElement) {
   let iterator = traverseDepthGen2(root)
   let pointer = iterator.next()
@@ -36,14 +34,13 @@ export function* polishXml2verticalStream(root: AbstractElement) {
   }
 }
 
-export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename xmlns
+export function oldZhyto2newerFormat(root: AbstractElement) {
+  // todo: rename xmlns
   let miwords = root.evaluateElements('//mi:w_', NS)
   for (let miw of miwords) {
     // rename attributes
     miw.renameAttributeIfExists('ana', 'disamb')
     miw.renameAttributeIfExists('word-id', 'n')
-
-
 
     // select unambig dict interps
     if (miw.elementChildren().count() === 1 && !miw.attribute('disamb')) {

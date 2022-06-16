@@ -8,8 +8,6 @@ export class CoolMap<K, V> extends Map<K, V> {
   // setNew(key: K, value: V) {
   //   this.set(key, value)
   // }
-
-
 }
 
 export class CoolMapInt<K> extends CoolMap<K, number> {

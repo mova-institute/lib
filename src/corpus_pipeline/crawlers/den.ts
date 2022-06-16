@@ -8,8 +8,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { sync as mkdirpSync } from 'mkdirp'
 
-
-
 interface Args {
   saveDir: string
   workspace: string
@@ -18,7 +16,7 @@ interface Args {
 
 type LinkExtractor = (html: string) => Array<string>
 class Crawler {
-  private visited = new Set<string>()//: FileSavedSet<string>
+  private visited = new Set<string>() //: FileSavedSet<string>
   private visiting = new Set<string>()
   private saveLinkExtractor: LinkExtractor
   private followLinkExtractor: LinkExtractor
@@ -67,10 +65,15 @@ class Crawler {
   }
 }
 
-
 const basUrl = 'http://day.kyiv.ua'
-const monthIndexHrefRe = new RegExp(String.raw`uk/archivenewspaper?archive_date[value][month]=\d+.*[year]=\d{4}(&page=\d+)?`, 'g')
-const numberIndexHrefRe = new RegExp(String.raw`"(/uk/arhiv/no[\d\-]+(\?page=\d+)?)"`, 'g')
+const monthIndexHrefRe = new RegExp(
+  String.raw`uk/archivenewspaper?archive_date[value][month]=\d+.*[year]=\d{4}(&page=\d+)?`,
+  'g',
+)
+const numberIndexHrefRe = new RegExp(
+  String.raw`"(/uk/arhiv/no[\d\-]+(\?page=\d+)?)"`,
+  'g',
+)
 const articleHrefRe = new RegExp(String.raw`"(/uk/article/[^"]+)"`, 'g')
 const articleSavePath = new RegExp(String.raw`/uk/article/(.+)`)
 
@@ -85,19 +88,20 @@ if (require.main === module) {
   main(args)
 }
 
-
 async function main(args: Args) {
   try {
     mkdirpSync(args.saveDir)
 
-    let crawler = new Crawler(path.join(args.workspace, 'fully_fetched_urls.txt'))
-      .setSaveLinkExtractor(content => {
-        return allMatchesArr(content, articleHrefRe).map(x => basUrl + x[1])
+    let crawler = new Crawler(
+      path.join(args.workspace, 'fully_fetched_urls.txt'),
+    )
+      .setSaveLinkExtractor((content) => {
+        return allMatchesArr(content, articleHrefRe).map((x) => basUrl + x[1])
       })
-      .setFollowLinkExtractor(content => {
-        let ret = allMatchesArr(content, monthIndexHrefRe).map(x => x[0])
-        ret.push(...allMatchesArr(content, numberIndexHrefRe).map(x => x[1]))
-        ret = ret.map(x => basUrl + x)
+      .setFollowLinkExtractor((content) => {
+        let ret = allMatchesArr(content, monthIndexHrefRe).map((x) => x[0])
+        ret.push(...allMatchesArr(content, numberIndexHrefRe).map((x) => x[1]))
+        ret = ret.map((x) => basUrl + x)
         return ret
       })
 
@@ -108,8 +112,9 @@ async function main(args: Args) {
     for (; monthCrist <= monthNow; ++monthCrist) {
       let month = monthCrist % 12
       let year = Math.floor(monthCrist / 12)
-      let seedUrl = `http://day.kyiv.ua/uk/archivenewspaper?archive_date%5Bvalue%5D%5Bmonth%5D=${month}`
-        + `&archive_date%5Bvalue%5D%5Byear%5D=${year}`
+      let seedUrl =
+        `http://day.kyiv.ua/uk/archivenewspaper?archive_date%5Bvalue%5D%5Bmonth%5D=${month}` +
+        `&archive_date%5Bvalue%5D%5Byear%5D=${year}`
       try {
         await crawler.seed(seedUrl)
       } catch (e) {

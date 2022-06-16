@@ -3,15 +3,17 @@ import { zerofill } from '../../string'
 import { parseIntStrict, last } from '../../lang'
 import { mu } from '../../mu'
 import {
-  textOf, textsOf, ogValue, canonical,
-  GENITIVE_UK_MON_MAP, brbr2paragraphs,
+  textOf,
+  textsOf,
+  ogValue,
+  canonical,
+  GENITIVE_UK_MON_MAP,
+  brbr2paragraphs,
 } from './utils'
 import { CorpusDoc } from '../doc_meta'
 
 import * as Url from 'url'
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
@@ -21,9 +23,10 @@ export function extract(html: string) {
     return
   }
 
-  root.evaluateElements('//script')  // todo
+  root
+    .evaluateElements('//script') // todo
     .toArray()
-    .forEach(x => x.remove())
+    .forEach((x) => x.remove())
 
   let title = ogValue(root, 'title')
   if (!title) {
@@ -46,14 +49,19 @@ export function extract(html: string) {
     return
   }
 
-  if (url.hostname.startsWith('www.pravda.com.ua') && url.pathname.startsWith('/news')) {
+  if (
+    url.hostname.startsWith('www.pravda.com.ua') &&
+    url.pathname.startsWith('/news')
+  ) {
     let date = getDate(root, '//div[@class="post_news__date"]')
     let paragraphs = textsOf(root, '//div[@class="post_news__text"]/p')
     if (!paragraphs.length) {
       paragraphs = textsOf(root, '//div[@class="post_news__text"]/div/p')
     }
     if (!paragraphs.length) {
-      paragraphs = brbr2paragraphs(root.evaluateElement('//div[@class="post_news__text"]'))
+      paragraphs = brbr2paragraphs(
+        root.evaluateElement('//div[@class="post_news__text"]'),
+      )
     }
 
     trimCopyrightish(paragraphs)
@@ -82,12 +90,16 @@ export function extract(html: string) {
       '//div[@class="post_news__text"]/p',
       '//div[@class="text"]/p',
       '//div[contains(@class, "text ")]/p',
-    ]).map(x => textsOf(root, x)).find(x => x.length)
+    ])
+      .map((x) => textsOf(root, x))
+      .find((x) => x.length)
 
     if (!paragraphs) {
-      paragraphs = brbr2paragraphs(root.evaluateElement('//div[@class="post_news__text"]'))
+      paragraphs = brbr2paragraphs(
+        root.evaluateElement('//div[@class="post_news__text"]'),
+      )
     }
-    paragraphs = paragraphs.filter(x => x)
+    paragraphs = paragraphs.filter((x) => x)
     trimCopyrightish(paragraphs)
 
     let author = textOf(root, '//div[@class="post_news__author"]')
@@ -134,7 +146,6 @@ function getDate(root: AbstractElement, xpath: string) {
 
   return ret
 }
-
 
 //------------------------------------------------------------------------------
 function trimCopyrightish(paragraphs: Array<string>) {

@@ -12,8 +12,6 @@ import { basename } from 'path'
 import * as readline from 'readline'
 import minimist from 'minimist'
 
-
-
 interface Args {
   vertical: string | Array<string>
   verticalList: string
@@ -27,7 +25,6 @@ interface Args {
   bonitoDataPath: string
 }
 
-
 if (require.main === module) {
   const args = minimist<Args>(process.argv.slice(2), {
     alias: {
@@ -38,7 +35,6 @@ if (require.main === module) {
 
   main(args)
 }
-
 
 function main(args: Args) {
   const user = args.user || process.env.MI_CORP_USER
@@ -56,10 +52,12 @@ function main(args: Args) {
   if (args.vertical) {
     verticalPaths = arrayed(args.vertical)
   } else {
-    verticalPaths = readFileSync(args.verticalList, 'utf8').split('\n').filter(x => x)
+    verticalPaths = readFileSync(args.verticalList, 'utf8')
+      .split('\n')
+      .filter((x) => x)
   }
 
-  let nonExistentFiles = verticalPaths.filter(x => !existsSync(x))
+  let nonExistentFiles = verticalPaths.filter((x) => !existsSync(x))
   if (nonExistentFiles.length) {
     throw new Error(`File(s) not found:\n${nonExistentFiles.join('\n')}`)
   }
@@ -71,7 +69,8 @@ function main(args: Args) {
   let corpusParams: CorpusParams = {
     verticalPaths,
     config,
-    subcorpConfig: args.subcorpConfig && readFileSync(args.subcorpConfig, 'utf8'),
+    subcorpConfig:
+      args.subcorpConfig && readFileSync(args.subcorpConfig, 'utf8'),
     name: args.name,
     alignmentPaths: args.alignmentPath,
   }
@@ -85,7 +84,6 @@ function main(args: Args) {
 
   indexCorpusRemote(corpusParams, remoteParams)
 }
-
 
 interface CorpusParams {
   verticalPaths: Array<string>
@@ -102,7 +100,10 @@ interface RemoteParams {
   bonitoDataPath: string
 }
 
-async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
+async function indexCorpusRemote(
+  params: CorpusParams,
+  remoteParams: RemoteParams,
+) {
   const upload = (content: string, path: string) =>
     putFileSshSync(remoteParams.hostname, remoteParams.user, path, content)
 
@@ -118,8 +119,11 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
 
   const sshCreds = `${remoteParams.user}@${remoteParams.hostname}`
 
-  execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user,
-    `rm -rfv '${manateePath}/${tempName}'`)  // just in case
+  execRemoteInlpaceSync(
+    remoteParams.hostname,
+    remoteParams.user,
+    `rm -rfv '${manateePath}/${tempName}'`,
+  ) // just in case
 
   // upload temp configs
   let tempConfig = nameCorpusInConfig(tempName, manateePath, params.config)
@@ -136,35 +140,49 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
   // upload alingments
   if (params.alignmentPaths) {
     console.log(`uploading alingments`)
-    var tempAlingmentPaths = params.alignmentPaths.map(x => `${verticalPath}/temp_${basename(x)}`)
+    var tempAlingmentPaths = params.alignmentPaths.map(
+      (x) => `${verticalPath}/temp_${basename(x)}`,
+    )
     tempConfig = addAlingmentsPaths(tempAlingmentPaths, tempConfig)
     for (let path of params.alignmentPaths) {
       let filename = basename(path)
-      upload(readFileSync(path, 'utf8'), `${verticalPath}/temp_${basename(filename)}`)  // todo
+      upload(
+        readFileSync(path, 'utf8'),
+        `${verticalPath}/temp_${basename(filename)}`,
+      ) // todo
     }
   }
   // console.log(tempConfig)
   // process.exit(0)
   upload(tempConfig, `${registryPath}/${tempName}`)
 
-
   // upload verticals
-  console.log(`uploading vertical file from ${params.verticalPaths.length} parts`)
+  console.log(
+    `uploading vertical file from ${params.verticalPaths.length} parts`,
+  )
   let uploadCommand = `gzip -9 | ssh ${sshCreds} 'cat - > ${tempVerticalPath}'`
   console.log(uploadCommand)
-  await execPipe(uploadCommand, new CatStream(params.verticalPaths), process.stdout)
-
+  await execPipe(
+    uploadCommand,
+    new CatStream(params.verticalPaths),
+    process.stdout,
+  )
 
   // call compilecorp
   console.log(`indexing corpus`)
-  let compileCommand = `time compilecorp`
-    + ` --no-ske`
-    + ` --recompile-corpus`
-    + ` --recompile-subcorpora`
-    + ` --recompile-align`
-    + ` ${tempName}`
+  let compileCommand =
+    `time compilecorp` +
+    ` --no-ske` +
+    ` --recompile-corpus` +
+    ` --recompile-subcorpora` +
+    ` --recompile-align` +
+    ` ${tempName}`
   console.log(`\n${compileCommand}\n`)
-  execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user, compileCommand)
+  execRemoteInlpaceSync(
+    remoteParams.hostname,
+    remoteParams.user,
+    compileCommand,
+  )
   // process.exit(0)
 
   const overwrite = (name: string) => {
@@ -174,24 +192,33 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
       newConfig = addSubcorpToConfig(newSubcorpConfigPath, newConfig)
     }
     if (params.alignmentPaths) {
-      let alingmentPaths = params.alignmentPaths.map(x => `${verticalPath}/${basename(x)}`)
+      let alingmentPaths = params.alignmentPaths.map(
+        (x) => `${verticalPath}/${basename(x)}`,
+      )
       newConfig = addAlingmentsPaths(alingmentPaths, newConfig)
     }
 
     upload(newConfig, tempConfigPath)
 
-    let command = ``
-      + `rm -rfv "${manateePath}/${name}"`
-      + ` && mv "${manateePath}/${tempName}" "${manateePath}/${name}"`
-      + ` && mv "${tempConfigPath}" "${registryPath}/${name}"`
-      + ` && sudo -u www-data rm -rf "${remoteParams.bonitoDataPath}/cache/${name}"`
-      + ` && sudo -u kontext rm -rf "/srv/corpora/kontext/redis-conc-cache/${name}"`
+    let command =
+      `` +
+      `rm -rfv "${manateePath}/${name}"` +
+      ` && mv "${manateePath}/${tempName}" "${manateePath}/${name}"` +
+      ` && mv "${tempConfigPath}" "${registryPath}/${name}"` +
+      ` && sudo -u www-data rm -rf "${remoteParams.bonitoDataPath}/cache/${name}"` +
+      ` && sudo -u kontext rm -rf "/srv/corpora/kontext/redis-conc-cache/${name}"`
     if (params.subcorpConfig) {
       command += ` && mv "${tempSubcorpConfigPath}" "${newSubcorpConfigPath}"`
     }
     if (params.alignmentPaths) {
-      command += tempAlingmentPaths.map(x =>
-        ` && mv "${x}" "${verticalPath}/${basename(x).substr('temp_'.length)}"`).join('')
+      command += tempAlingmentPaths
+        .map(
+          (x) =>
+            ` && mv "${x}" "${verticalPath}/${basename(x).substr(
+              'temp_'.length,
+            )}"`,
+        )
+        .join('')
     }
     console.log(command)
     execRemoteInlpaceSync(remoteParams.hostname, remoteParams.user, command)
@@ -205,15 +232,19 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
       output: process.stdout,
     })
 
-    const question = () => rl.question('Name the new corpus (¡CAUTION: it overwrites!)@> ', answer => {
-      let newName = answer.trim()
-      if (!/^[\da-z]+$/.test(answer)) {
-        console.error(r`Corpus name must match /^[\da-z]+$/`)
-        return question()
-      }
-      overwrite(newName)
-      rl.close()
-    })
+    const question = () =>
+      rl.question(
+        'Name the new corpus (¡CAUTION: it overwrites!)@> ',
+        (answer) => {
+          let newName = answer.trim()
+          if (!/^[\da-z]+$/.test(answer)) {
+            console.error(r`Corpus name must match /^[\da-z]+$/`)
+            return question()
+          }
+          overwrite(newName)
+          rl.close()
+        },
+      )
     question()
   }
 }
@@ -236,5 +267,8 @@ function addAlingmentsPaths(paths: Array<string>, config: string) {
 }
 
 function checkConfigIsSane(config: string, remoteManatee: string) {
-  return config && new RegExp(String.raw`(^|\n)\s*PATH "${remoteManatee}`).test(config)
+  return (
+    config &&
+    new RegExp(String.raw`(^|\n)\s*PATH "${remoteManatee}`).test(config)
+  )
 }

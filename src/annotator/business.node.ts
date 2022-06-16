@@ -6,11 +6,12 @@ import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { LibxmljsDocument } from '../xml/xmlapi_libxmljs/libxmljs_document'
 import * as business from './business'
 
-
-
 export function markConflicts(taskType: string, mine: string, theirs: string) {
   if (taskType === 'annotate') {
-    let res: any = markWordwiseDiffStr(encloseInRootNs(mine), encloseInRootNs(theirs))
+    let res: any = markWordwiseDiffStr(
+      encloseInRootNs(mine),
+      encloseInRootNs(theirs),
+    )
     res.marked = removeXmlns(removeRoot(res.marked.document().serialize()))
     return res
   }
@@ -18,7 +19,12 @@ export function markConflicts(taskType: string, mine: string, theirs: string) {
   throw new Error('Not implemented: markConflicts')
 }
 
-export function markResolveConflicts(hisName: string, hisStr: string, herName: string, herStr: string) {
+export function markResolveConflicts(
+  hisName: string,
+  hisStr: string,
+  herName: string,
+  herStr: string,
+) {
   let his = parseXml(encloseInRootNs(hisStr))
   let her = parseXml(encloseInRootNs(herStr))
 
@@ -30,7 +36,10 @@ export function markResolveConflicts(hisName: string, hisStr: string, herName: s
   }
 }
 
-export function adoptMorphDisambsStr(destRoot: AbstractElement, sourceRootStr: string) {
+export function adoptMorphDisambsStr(
+  destRoot: AbstractElement,
+  sourceRootStr: string,
+) {
   let sourceRoot = parseXml(encloseInRootNs(sourceRootStr))
   return adoptMorphDisambs(destRoot, sourceRoot)
 }

@@ -1,6 +1,10 @@
 import { AbstractElement } from '../../xml/xmlapi/abstract_element'
 import { parseHtmlFileSync, parseHtml } from '../../xml/utils.node'
-import { autofixDirtyText, plaintext2paragraphsTrimmed, tokenizeUkNew } from '../../nlp/utils'
+import {
+  autofixDirtyText,
+  plaintext2paragraphsTrimmed,
+  tokenizeUkNew,
+} from '../../nlp/utils'
 import { mu } from '../../mu'
 import { CorpusDoc } from '../doc_meta'
 import { execSync } from 'child_process'
@@ -17,8 +21,6 @@ import { parse } from 'url'
 import * as fs from 'fs'
 import * as path from 'path'
 
-
-
 const docFormatBooktypes = [
   'Байка',
   'Драма',
@@ -28,7 +30,7 @@ const docFormatBooktypes = [
   'Легенда/Міт',
   'Новела',
   'Оповідання',
-  'П\'єса',
+  "П'єса",
   'Повість',
   'Поезія',
   'Поема',
@@ -37,7 +39,10 @@ const docFormatBooktypes = [
   'Спогади',
 ]
 
-export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer }) {
+export function* streamDocs(
+  filePath: string,
+  opts: { analyzer: MorphAnalyzer },
+) {
   if (filePath.endsWith('.meta.html')) {
     return
   }
@@ -47,7 +52,6 @@ export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer })
     basePath = trimExtension(basePath)
   }
   let metaPath = `${basePath}.meta.html`
-
 
   // todo: skip словники?
   try {
@@ -61,7 +65,7 @@ export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer })
       // 'djvu',
       // 'pdf',
       'epub.dir',
-    ].find(x => fs.existsSync(`${basePath}.${x}`))
+    ].find((x) => fs.existsSync(`${basePath}.${x}`))
 
     if (!format) {
       console.log(`format not supported ${basePath}`)
@@ -85,7 +89,10 @@ export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer })
     meta.source = 'Чтиво'
 
     if (format === 'doc') {
-      if (meta.documentType && !docFormatBooktypes.find(x => x === meta.documentType)) {
+      if (
+        meta.documentType &&
+        !docFormatBooktypes.find((x) => x === meta.documentType)
+      ) {
         console.error(`Forbidden genre for a .doc: ${meta.documentType}`)
         return
       }
@@ -110,26 +117,33 @@ export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer })
         // content = renameTag(content, 'stanza', 'lg type="stanza"')
         // content = renameTag(content, 'v', 'l')
         let root = parseHtml(content)
-        mu(root.evaluateElements('//a[@type="notes"]')).toArray().forEach(x => x.remove())
-        let paragraphs = mu(root.evaluateElements('//body[not(@name) or @name!="notes"]//p'))
+        mu(root.evaluateElements('//a[@type="notes"]'))
+          .toArray()
+          .forEach((x) => x.remove())
+        let paragraphs = mu(
+          root.evaluateElements('//body[not(@name) or @name!="notes"]//p'),
+        )
           // todo: inline verses
-          .map(x => autofixDirtyText(x.text().trim()))
-          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+          .map((x) => autofixDirtyText(x.text().trim()))
+          .filter((x) => x && !/^\s*(©|\([cс]\))/.test(x)) // todo: DRY
           .toArray()
 
         yield { paragraphs, ...meta } as CorpusDoc
       } else if (format === 'htm' || format === 'html') {
         let root = parseHtml(content)
-        let paragraphsIt = root.evaluateElements(
-          // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
-          '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]')
-          .map(x => normalizeText(x.text()).replace(/\n+/g, ' '))
-          .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))
+        let paragraphsIt = root
+          .evaluateElements(
+            // '//p[not(@*) and not(descendant::a) and preceding::h2[descendant::*/text() != "Зміст"]]')
+            '//p[not(@*) and not(descendant::*) or @class="MsoNormal"]',
+          )
+          .map((x) => normalizeText(x.text()).replace(/\n+/g, ' '))
+          .filter((x) => x && !/^\s*(©|\([cс]\))/.test(x))
         let paragraphs = paragraphsIt.toArray()
 
         yield { paragraphs, ...meta } as CorpusDoc
       } else if (format === 'txt') {
-        if (/\.(djvu|pdf)\.txt$/.test(dataPath)) {  // skip OCR for now
+        if (/\.(djvu|pdf)\.txt$/.test(dataPath)) {
+          // skip OCR for now
           return
         }
         content = extractTextFromTxt(content)
@@ -151,11 +165,12 @@ export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer })
 
 function processEpub(dataPath: string) {
   // caution, out of order possible
-  return glob.sync(`${dataPath}/**/*.{html,xhtml}`)
+  return glob
+    .sync(`${dataPath}/**/*.{html,xhtml}`)
     .map(parseHtmlFileSync)
-    .map(x => x.evaluateElements(`//p`).toArray())
+    .map((x) => x.evaluateElements(`//p`).toArray())
     .flat()
-    .map(x => x.text())
+    .map((x) => x.text())
   // console.error(els)
   // return els
 }
@@ -169,13 +184,13 @@ function* processPdf(dataPath: string, meta, analyzer: MorphAnalyzer) {
     return
   }
   if (!hasImages) {
-    let toTxt = execSync(`pdf2txt -M 3 -L 0.6 "${dataPath}"`, { encoding: 'utf8' })
+    let toTxt = execSync(`pdf2txt -M 3 -L 0.6 "${dataPath}"`, {
+      encoding: 'utf8',
+    })
     let paragraphs = postprocessPdf2txt(toTxt, analyzer)
     yield { paragraphs, ...meta, source_type: 'pdf-txt' } as CorpusDoc
   } else if (!hasFonts) {
-
   } else {
-
   }
 }
 
@@ -186,17 +201,24 @@ function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
   let title = getTextByClassName(root, 'h1', 'book_name')
   title = autofixDirtyText(title)
   let isForeign = /\([а-яєґїі]{2,8}\.\)$/.test(title)
-  let translator = root.evaluateString('string(//div[@class="translator_pseudo_book"]/a/text())')
+  let translator = root.evaluateString(
+    'string(//div[@class="translator_pseudo_book"]/a/text())',
+  )
   translator = autofixDirtyText(translator.trim())
-  let originalAutor = root.evaluateString('string(//div[@class="author_name_book"]/a/text())')
+  let originalAutor = root.evaluateString(
+    'string(//div[@class="author_name_book"]/a/text())',
+  )
   originalAutor = autofixDirtyText(originalAutor.trim())
   if (originalAutor === 'народ Український') {
     originalAutor = 'народ'
   }
   let documentType = getTextByClassName(root, 'div', 'book_type')
   let section = root.evaluateString(
-    `string(//table[@class="books"]//strong[text()="Розділ:"]/parent::*/following-sibling::td/a/text())`)
-  let urlStr = root.evaluateString('string(//meta[@property="og:url"]/@content)')
+    `string(//table[@class="books"]//strong[text()="Розділ:"]/parent::*/following-sibling::td/a/text())`,
+  )
+  let urlStr = root.evaluateString(
+    'string(//meta[@property="og:url"]/@content)',
+  )
 
   if (!urlStr) {
     throw new Error(`No url in chtyvo meta`)
@@ -211,7 +233,7 @@ function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
     title,
     date: translator ? undefined : year,
     author: translator || originalAutor,
-    original_author: translator && originalAutor || undefined,
+    original_author: (translator && originalAutor) || undefined,
     domain: section === 'Історична' ? 'історія' : undefined,
     chtyvo_type: documentType,
     chtyvo_section: section,
@@ -222,11 +244,18 @@ function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
 
 function getTableValue(root: AbstractElement, key: string) {
   return root.evaluateString(
-    `string(//table[@class="books"]//strong[text()="${key}:"]/parent::*/following-sibling::td/text())`)
+    `string(//table[@class="books"]//strong[text()="${key}:"]/parent::*/following-sibling::td/text())`,
+  )
 }
 
-function getTextByClassName(root: AbstractElement, elName: string, className: string) {
-  return root.evaluateString(`string(//${elName}[@class="${className}"]/text())`)
+function getTextByClassName(
+  root: AbstractElement,
+  elName: string,
+  className: string,
+) {
+  return root.evaluateString(
+    `string(//${elName}[@class="${className}"]/text())`,
+  )
 }
 
 function hasSmashedEncoding(str: string) {
@@ -243,10 +272,14 @@ function readFileSyncAutodetect(path: string) {
 }
 
 function extractTextFromTxt(str: string) {
-  return str.replace(/^[\s\S]{0,300}-{9,}/, '')
+  return str
+    .replace(/^[\s\S]{0,300}-{9,}/, '')
     .replace(/\n[\s\-]*---\s*КІНЕЦЬ[\s\S]{0,5000}$/, '')
     .replace(/-{4,}[\s\S]{0,400}$/, '')
-    .replace(/-{5,}[\s\S]+(Бібліографія|Примітки:)([\s\S]{0,10000}|(\[\d+\])+\s+[^\n]+(\n|$))$/, '')
+    .replace(
+      /-{5,}[\s\S]+(Бібліографія|Примітки:)([\s\S]{0,10000}|(\[\d+\])+\s+[^\n]+(\n|$))$/,
+      '',
+    )
 }
 
 function killReferences(str: string) {
@@ -260,8 +293,10 @@ function normalizeText(str: string) {
 }
 
 function extractParsFromDocWithLibre(filePath: string) {
-  execSync(`timeout 60s soffice --headless --convert-to html `  // hangs for xhtml
-    + `"${filePath}" --outdir tmp`)
+  execSync(
+    `timeout 60s soffice --headless --convert-to html ` + // hangs for xhtml
+      `"${filePath}" --outdir tmp`,
+  )
   let convertedPath = path.basename(filePath)
   convertedPath = trimExtension(convertedPath)
   convertedPath = path.join('tmp', `${convertedPath}.html`)
@@ -271,54 +306,58 @@ function extractParsFromDocWithLibre(filePath: string) {
     console.log(`bad encoding`)
     return
   }
-  content = content.replace(/<head>[\s\S]*<\/head>/, '')  // needed
+  content = content.replace(/<head>[\s\S]*<\/head>/, '') // needed
   content = content.replace(/<br[^>]>/g, ' ')
   let root = parseHtml(content)
   let paragraphs = mu(root.evaluateElements('//p|//li'))
-    .map(x => (x.text().trim()))
-    .filter(x => x && !/^\s*(©|\([cс]\))/.test(x))  // todo: DRY
+    .map((x) => x.text().trim())
+    .filter((x) => x && !/^\s*(©|\([cс]\))/.test(x)) // todo: DRY
     .toArray()
 
   return paragraphs
 }
 
 function getNumImagesInPdfSync(filePath: string) {
-  let outLines = execSync(`pdfimages -list "${filePath}" 2> /dev/null`, { encoding: 'utf8' })
+  let outLines = execSync(`pdfimages -list "${filePath}" 2> /dev/null`, {
+    encoding: 'utf8',
+  })
     .trim()
     .split('\n')
   return outLines.length - 2
 }
 
 function getNumFontsInPdfSync(filePath: string) {
-  let outLines = execSync(`pdffonts "${filePath}" 2> /dev/null`, { encoding: 'utf8' })
+  let outLines = execSync(`pdffonts "${filePath}" 2> /dev/null`, {
+    encoding: 'utf8',
+  })
     .trim()
     .split('\n')
   return outLines.length - 2
 }
 
 function postprocessPdf2txt(txt: string, analyzer: MorphAnalyzer) {
-  let pages = txt.trim()
+  let pages = txt
+    .trim()
     .split('\f')
-    .map(x => x.split('\n')
-      .map(xx => xx.trim())
-    )
+    .map((x) => x.split('\n').map((xx) => xx.trim()))
 
   // remove headers
-  pages.forEach(x => x.pop())  // this usually is an empty line if no headers
+  pages.forEach((x) => x.pop()) // this usually is an empty line if no headers
 
   for (let lines of pages) {
     trim(lines)
-    trimBack(lines, x => /^\d+$|^[~─]\s*\d+\s*[~─]$/.test(x))  // page numbers
+    trimBack(lines, (x) => /^\d+$|^[~─]\s*\d+\s*[~─]$/.test(x)) // page numbers
     trimBack(lines)
   }
 
-  let lines = pages.map(x => x.map((xx, i) => [xx, i === x.length - 1] as [string, boolean]))
+  let lines = pages
+    .map((x) => x.map((xx, i) => [xx, i === x.length - 1] as [string, boolean]))
     .flat()
   let paragraphs = new Array<string>()
   let curPar = ''
   for (let [[line, isLastOnPage], nextLineDescr] of mu(lines).window(2)) {
     let nextLine = nextLineDescr && nextLineDescr[0]
-    if (!line || isLastOnPage && nextLine && isAllcaps(nextLine[0])) {
+    if (!line || (isLastOnPage && nextLine && isAllcaps(nextLine[0]))) {
       paragraphs.push(curPar)
       curPar = ''
       continue
@@ -331,7 +370,8 @@ function postprocessPdf2txt(txt: string, analyzer: MorphAnalyzer) {
         let [, rightie] = match(nextLine, /^(\S+)/)
         rightie = mu(tokenizeUkNew(rightie, analyzer)).first()[0]
         let hyphenFriends = leftie + hyphen + rightie
-        if (!analyzer.canBeToken(hyphenFriends)) {  // it’s syllabication
+        if (!analyzer.canBeToken(hyphenFriends)) {
+          // it’s syllabication
           line = line.slice(0, -1)
         }
       } else {

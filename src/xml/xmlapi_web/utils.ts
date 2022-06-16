@@ -2,8 +2,6 @@ import { WebapiElement } from './webapi_element'
 import { WebapiNode } from './webapi_node'
 import { WebapiAttribute } from './webapi_attribute'
 
-
-
 export function nodeOrElement(wrapee: Node): WebapiNode | WebapiElement {
   switch (wrapee.nodeType) {
     case Node.ELEMENT_NODE:
@@ -23,7 +21,9 @@ export function nodeOrElementOrNull(wrapee: Node): WebapiNode | WebapiElement {
   return nodeOrElement(wrapee)
 }
 
-export function nodeOrElementOrAttribute(wrapee: Node): WebapiNode | WebapiElement | WebapiAttribute {
+export function nodeOrElementOrAttribute(
+  wrapee: Node,
+): WebapiNode | WebapiElement | WebapiAttribute {
   switch (wrapee.nodeType) {
     case Node.ELEMENT_NODE:
       return new WebapiElement(wrapee as HTMLElement)
@@ -38,7 +38,9 @@ export function nodeOrElementOrAttribute(wrapee: Node): WebapiNode | WebapiEleme
   }
 }
 
-export function nodeOrElementOrAttributeOrNull(wrapee: Node): WebapiNode | WebapiElement | WebapiAttribute {
+export function nodeOrElementOrAttributeOrNull(
+  wrapee: Node,
+): WebapiNode | WebapiElement | WebapiAttribute {
   if (!wrapee) {
     return null
   }
@@ -46,7 +48,11 @@ export function nodeOrElementOrAttributeOrNull(wrapee: Node): WebapiNode | Webap
 }
 
 export function* generateFromXpathResultIterator(xpathResult: XPathResult) {
-  for (let node = xpathResult.iterateNext(); node; node = xpathResult.iterateNext()) {
+  for (
+    let node = xpathResult.iterateNext();
+    node;
+    node = xpathResult.iterateNext()
+  ) {
     yield node
   }
 }

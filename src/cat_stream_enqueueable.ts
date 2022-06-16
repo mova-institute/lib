@@ -1,8 +1,6 @@
 import { createReadStream, ReadStream } from 'fs'
 import { Readable, ReadableOptions } from 'stream'
 
-
-
 export class CatStreamEnqueueable extends Readable {
   private queue = new Array<string>()
   private currentReadStream: ReadStream
@@ -34,7 +32,7 @@ export class CatStreamEnqueueable extends Readable {
   private streamNext() {
     if (this.queue.length) {
       this.currentReadStream = createReadStream(this.queue.shift())
-        .on('data', chunk => {
+        .on('data', (chunk) => {
           if (!this.push(chunk)) {
             this.currentReadStream.pause()
           }

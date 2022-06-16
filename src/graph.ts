@@ -4,7 +4,7 @@ export class GraphNode<T> {
   parents = new Array<GraphNode<T>>()
   children = new Array<GraphNode<T>>()
 
-  constructor(public node: T) { }
+  constructor(public node: T) {}
 
   addParent(node: GraphNode<T>) {
     this.parents.push(node)
@@ -29,7 +29,8 @@ export class GraphNode<T> {
   }
 
   *walkThisAndUp0() {
-    for (let p = this; p; p = p.parent as any) { // todo
+    for (let p = this; p; p = p.parent as any) {
+      // todo
       yield p
     }
   }
@@ -44,7 +45,10 @@ export class GraphNode<T> {
 }
 
 // naive, callstack-unbounded
-export function* walkDepth<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) => boolean): IterableIterator<GraphNode<T>> {
+export function* walkDepth<T>(
+  node: GraphNode<T>,
+  cutOff?: (node: GraphNode<T>) => boolean,
+): IterableIterator<GraphNode<T>> {
   if (cutOff && cutOff(node)) {
     return
   }
@@ -55,7 +59,10 @@ export function* walkDepth<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) 
 }
 
 // naive, callstack-unbounded
-export function* walkDepthNoSelf<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) => boolean): IterableIterator<GraphNode<T>> {
+export function* walkDepthNoSelf<T>(
+  node: GraphNode<T>,
+  cutOff?: (node: GraphNode<T>) => boolean,
+): IterableIterator<GraphNode<T>> {
   for (let child of node.children) {
     yield* walkDepth(child, cutOff)
   }

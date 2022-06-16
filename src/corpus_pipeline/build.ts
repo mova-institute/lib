@@ -13,13 +13,14 @@ import * as path from 'path'
 import { processDoc } from './utils'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 
-
-
 interface SpecificExtractor {
-  streamDocs?(inputStr: string, opts: {
-    filename?: string
-    analyzer: MorphAnalyzer
-  }): Iterable<CorpusDoc>
+  streamDocs?(
+    inputStr: string,
+    opts: {
+      filename?: string
+      analyzer: MorphAnalyzer
+    },
+  ): Iterable<CorpusDoc>
   extract?(inputStr: string): CorpusDoc
 }
 
@@ -31,11 +32,15 @@ function main(args: Args) {
     .setKeepN2adj(true)
 
   let inputFiles = globInforming(args.inputRoot, args.inputGlob)
-  let specificExtractor = require(`./extractors/${args.part}`) as SpecificExtractor
+  let specificExtractor =
+    require(`./extractors/${args.part}`) as SpecificExtractor
   let docCounter = 0
 
   for (let [fileI, filePath] of inputFiles.entries()) {
-    let tolog = `extracted ${fileI} files (${toFloorPercent(fileI, inputFiles.length)}%), ${docCounter} docs, doing ${filePath}`
+    let tolog = `extracted ${fileI} files (${toFloorPercent(
+      fileI,
+      inputFiles.length,
+    )}%), ${docCounter} docs, doing ${filePath}`
 
     let relPath = path.relative(args.inputRoot, filePath)
     if (specificExtractor.extract) {
@@ -48,11 +53,13 @@ function main(args: Args) {
       processDoc(specificExtractor.extract(fileStr), outPath, analyzer)
       ++docCounter
     } else if (specificExtractor.streamDocs) {
-      if (fs.existsSync(join(outDir, relPath))) {  // if _dir_ exists
+      if (fs.existsSync(join(outDir, relPath))) {
+        // if _dir_ exists
         continue
       }
       console.log(tolog)
-      let inputStr = args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
+      let inputStr =
+        args.part === 'chtyvo' ? filePath : fs.readFileSync(filePath, 'utf8')
       let i = 0
       for (let doc of specificExtractor.streamDocs(inputStr, { analyzer })) {
         let outPath = join(outDir, relPath, `${zerofill(i++, 4)}.json`)
@@ -89,8 +96,7 @@ if (require.main === module) {
       workspace: '.',
       inputGlob: '**/*',
     },
-    boolean: [
-    ],
+    boolean: [],
   }) as any
 
   main(args)

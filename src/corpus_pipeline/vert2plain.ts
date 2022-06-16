@@ -2,8 +2,6 @@
 
 import { forEachLine } from '../utils.node'
 
-
-
 if (require.main === module) {
   main()
 }
@@ -18,7 +16,7 @@ async function main() {
   // } catch (e) {
   //   console.error(e.stack)
   // }
-  forEachLine(process.stdin, line => {
+  forEachLine(process.stdin, (line) => {
     if (line.startsWith('<')) {
       // if (/^<g\s*\/>/.test(line)) {
 
@@ -41,7 +39,7 @@ async function main() {
 // }
 
 function vert2vec() {
-  forEachLine(process.stdin, line => {
+  forEachLine(process.stdin, (line) => {
     if (line.startsWith('<')) {
       if (line.startsWith('</p>')) {
         process.stdout.write(`\n`)

@@ -6,8 +6,6 @@ import { AbstractElement } from '../xmlapi/abstract_element'
 import { Mu } from '../../mu'
 import { wrappedOrNull } from '../../lang'
 
-
-
 @mixin(AbstractElement)
 export class WebapiElement extends WebapiNode implements AbstractElement {
   constructor(protected wrapee: HTMLElement) {
@@ -22,7 +20,8 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
     return this.wrapee.namespaceURI
   }
 
-  namespacePrefix() {  // todo: track https://bugzilla.mozilla.org/show_bug.cgi?id=312019
+  namespacePrefix() {
+    // todo: track https://bugzilla.mozilla.org/show_bug.cgi?id=312019
     return this.wrapee.lookupPrefix(this.namespaceUri())
   }
 
@@ -63,7 +62,8 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
   }
 
   // @ts-ignore
-  child(index: number) {  // todo
+  child(index: number) {
+    // todo
     return nodeOrElementOrNull(this.wrapee.childNodes.item(index))
   }
 
@@ -81,7 +81,7 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
 
   // @ts-ignore
   appendChild(child: WebapiNode) {
-    this.wrapee.appendChild((child as WebapiElement).wrapee)  // see http://stackoverflow.com/a/13723325/5271870
+    this.wrapee.appendChild((child as WebapiElement).wrapee) // see http://stackoverflow.com/a/13723325/5271870
     return child
   }
 
@@ -145,12 +145,11 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
     return super.clone() as WebapiElement
   }
 
-
   // mixins
   name: () => string
   attributeUp: (name: string) => string
   // @ts-ignore
-   prependChild: () => WebapiNode
+  prependChild: () => WebapiNode
   // @ts-ignore
   children: () => Mu<WebapiNode | WebapiElement>
   // @ts-ignore

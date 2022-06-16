@@ -1,8 +1,6 @@
 import { AbstractAttribute } from '../xmlapi/abstract_attribute'
 import { isOddball } from '../xmlapi/utils'
 
-
-
 export class WebapiAttribute extends AbstractAttribute {
   constructor(private wrapee: Node) {
     super()

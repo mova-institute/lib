@@ -3,8 +3,6 @@ import { parseHtml } from '../../xml/utils.node'
 // import { normalizeCorpusTextString as normalize } from '../../nlp/utils'
 import { GENITIVE_UK_MON_MAP, textOf, textsOf } from './utils'
 
-
-
 export function extract(html: string) {
   try {
     var root = parseHtml(html)
@@ -31,8 +29,9 @@ export function extract(html: string) {
 
   let author = textOf(root, '//div[@class="node_author"]//text()')
 
-  let pXpath = '//div[contains(@property, "articlebody")]/p'
-    + '|//div[contains(@property, "articlebody")]/center/p'
+  let pXpath =
+    '//div[contains(@property, "articlebody")]/p' +
+    '|//div[contains(@property, "articlebody")]/center/p'
   let paragraphs = textsOf(root, pXpath)
 
   return {

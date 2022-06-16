@@ -2,8 +2,6 @@ import request from 'request-promise-native'
 import * as path from 'path'
 import { Agent } from 'http'
 
-
-
 export class ObjApiClient {
   agent = new Agent({ keepAlive: true })
 

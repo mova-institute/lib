@@ -10,7 +10,7 @@ if (require.main === module) {
 }
 
 function main() {
-  forEachLine(process.stdin, line => {
+  forEachLine(process.stdin, (line) => {
     if (canBeConlluLine(line)) {
       let cols = line.split('\t')
       let interp = MorphInterp.fromVesumStr(cols[4], cols[2])

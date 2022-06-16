@@ -5,8 +5,6 @@ import { AbstractElement } from '../xmlapi/abstract_element'
 import { mixin } from '../xmlapi/utils'
 import { Mu } from '../../mu'
 
-
-
 @mixin(AbstractElement)
 export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   constructor(wrapee) {
@@ -71,22 +69,29 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   }
 
   hasAttributes() {
-    return !!this.wrapee.attrs().length  // todo: try constant time
+    return !!this.wrapee.attrs().length // todo: try constant time
   }
 
   attributes() {
-    return this.wrapee.attrs()
-      .map(x => new LibxmljsAttribute(x)) as Array<LibxmljsAttribute>
+    return this.wrapee
+      .attrs()
+      .map((x) => new LibxmljsAttribute(x)) as Array<LibxmljsAttribute>
   }
 
   attribute(name: string) {
     let attr = this.wrapee.attr(name)
-    return attr === null ? null : attr.value() as string
+    return attr === null ? null : (attr.value() as string)
   }
 
   attributeNs(nsUri: string, localName: string) {
-    let attr = this.wrapee.attrs().find(
-      x => x.namespace() && x.namespace().href() === nsUri && x.name() === localName)
+    let attr = this.wrapee
+      .attrs()
+      .find(
+        (x) =>
+          x.namespace() &&
+          x.namespace().href() === nsUri &&
+          x.name() === localName,
+      )
     if (attr) {
       return attr.value()
     }
@@ -101,7 +106,7 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
       this.wrapee.attr({ [name]: value.toString() })
     }
 
-    return this as LibxmljsElement  // todo
+    return this as LibxmljsElement // todo
   }
 
   renameAttributeIfExists(nameOld: string, nameNew: string) {
@@ -120,7 +125,7 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   }
 
   appendChild(child: LibxmljsNode) {
-    this.wrapee.addChild(child.native())  // see http://stackoverflow.com/a/13723325/5271870
+    this.wrapee.addChild(child.native()) // see http://stackoverflow.com/a/13723325/5271870
     return child
   }
 
@@ -141,7 +146,6 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   clone() {
     return super.clone() as LibxmljsElement
   }
-
 
   // mixins
   name: () => string

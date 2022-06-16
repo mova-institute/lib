@@ -2,13 +2,11 @@ import { streamparseConllu, Structure } from '../nlp/ud/conllu'
 import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 import { tokenizeUkNew } from '../nlp/utils'
 
-
-
 export function* fixUdpipeTokenization(
   stream: ReturnType<typeof streamparseConllu>,
   analyzer: MorphAnalyzer,
 ) {
-  let buf/* : {
+  let buf /* : {
     structure
     token
     multitoken
@@ -24,7 +22,7 @@ export function* fixUdpipeTokenization(
             token: {
               ...buf.token,
               form: x[0],
-            }
+            },
           }
           if (i < split.length - 1) {
             delete copy.token.misc.SpaceAfter
@@ -52,8 +50,9 @@ export function* fixUdpipeTokenization(
       yield tok
     } else {
       if (buf) {
-        if (buf.token.misc.SpaceAfter === 'No'
-          && (buf.token.form.endsWith('-') || tok.token.form.startsWith('-'))
+        if (
+          buf.token.misc.SpaceAfter === 'No' &&
+          (buf.token.form.endsWith('-') || tok.token.form.startsWith('-'))
         ) {
           buf.token.form += tok.token.form
           buf.token.misc.SpaceAfter = tok.token.misc.SpaceAfter

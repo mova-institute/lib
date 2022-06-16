@@ -4,8 +4,6 @@ import minimist from 'minimist'
 import { getLibRootRelative } from '../lib_path.node'
 import { exitOnStdoutPipeError } from '../utils.node'
 
-
-
 exitOnStdoutPipeError()
 const args = minimist(process.argv.slice(2))
 

@@ -3,8 +3,6 @@ import { UdPos } from './tagset'
 import { makeObject, mapInplace } from '../../lang'
 import { Dict } from '../../types'
 
-
-
 export enum ConlluField {
   id,
   form,
@@ -42,7 +40,11 @@ export class ConlluMultitoken {
   }
 }
 
-export const enum Structure { document, paragraph, sentence }
+export const enum Structure {
+  document,
+  paragraph,
+  sentence,
+}
 
 export interface StructureToken {
   type: Structure
@@ -55,10 +57,14 @@ export function getCol(line: string, col: ConlluField) {
 
 export function parseConlluSentences(lines: Iterable<string>) {
   return mu(streamparseConllu(lines))
-    .filter(x => !x.structure || x.structure.type === Structure.sentence && !x.structure.opening)
-    .map(x => x.structure ? undefined : x.token)
-    .split0(x => !x)
-    .filter(x => x.length)
+    .filter(
+      (x) =>
+        !x.structure ||
+        (x.structure.type === Structure.sentence && !x.structure.opening),
+    )
+    .map((x) => (x.structure ? undefined : x.token))
+    .split0((x) => !x)
+    .filter((x) => x.length)
 }
 
 export function* streamparseConllu(lines: Iterable<string>) {
@@ -91,7 +97,8 @@ export function* streamparseConllu(lines: Iterable<string>) {
         insideSent = true
       }
 
-      if (/^\d+\./.test(line)) {  // skip empty nodes
+      if (/^\d+\./.test(line)) {
+        // skip empty nodes
         continue
       }
 
@@ -131,22 +138,35 @@ export function parseConlluTokenLine(value: string) {
 }
 
 export function parseConlluTokenCells(value: Array<string>) {
-  mapInplace(value, x => x === '_' ? '' : x, 3)
-  let [indexStr, form, lemma, upos, xpos, featsStr, headStr, rel, , miscStr] = value
+  mapInplace(value, (x) => (x === '_' ? '' : x), 3)
+  let [indexStr, form, lemma, upos, xpos, featsStr, headStr, rel, , miscStr] =
+    value
 
   let index = Number(indexStr)
   let head = Number(headStr)
   let feats = parseUdKeyvalues(featsStr)
   let misc = parseUdKeyvalues(miscStr)
 
-  return { index, form, lemma, upos, xpos, feats, head, rel, misc } as ConlluToken
+  return {
+    index,
+    form,
+    lemma,
+    upos,
+    xpos,
+    feats,
+    head,
+    rel,
+    misc,
+  } as ConlluToken
 }
 
 function parseUdKeyvalues(keyvals: string) {
   if (!keyvals) {
     return makeObject<string>([])
   }
-  return makeObject(keyvals.split('|').map(x => x.split('=')) as Array<[string, string]>)
+  return makeObject(
+    keyvals.split('|').map((x) => x.split('=')) as Array<[string, string]>,
+  )
 }
 
 function makeStructure(type: Structure, opening: boolean) {

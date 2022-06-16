@@ -1,8 +1,6 @@
 import { mu } from './mu'
 import { numThreads } from './os'
 
-
-
 export type TaskFunc<Result> = () => Promise<Result>
 
 export class AsyncTaskRunner<Result = void> {
@@ -62,9 +60,11 @@ export class AsyncTaskRunner<Result = void> {
   }
 
   private wrappedTasks() {
-    return mu(this.tasksRunning).map(promise => (async () => {
-      let result = await promise
-      return { promise, result }
-    })())
+    return mu(this.tasksRunning).map((promise) =>
+      (async () => {
+        let result = await promise
+        return { promise, result }
+      })(),
+    )
   }
 }

@@ -4,8 +4,6 @@ import { linesBackpressedStdPipeable } from '../../utils.node'
 
 import minimist from 'minimist'
 
-
-
 interface Args {
   surfaceColumn: number
   uposColumn: number
@@ -16,10 +14,7 @@ interface Args {
 
 function main() {
   const args = minimist<Args>(process.argv.slice(2), {
-    boolean: [
-      'lowercase',
-      'noPunct',
-    ]
+    boolean: ['lowercase', 'noPunct'],
   }) as any
 
   args.newContextOn = args.newContextOn || 'doc'
