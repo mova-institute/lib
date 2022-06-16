@@ -3,7 +3,7 @@
 import { createInterface } from 'readline'
 
 import * as glob from 'glob'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 
 //------------------------------------------------------------------------------

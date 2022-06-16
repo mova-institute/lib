@@ -1,6 +1,6 @@
 #!/usr/bin/env node --max-old-space-size=5120
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import { getLibRootRelative } from '../lib_path.node'
 import { exitOnStdoutPipeError } from '../utils.node'
 

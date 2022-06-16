@@ -1,15 +1,13 @@
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
+import express from 'express'
+import bodyParser from 'body-parser'
 import * as actions from './api'
-import * as cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 import { PgClient } from '../postrges'
-import * as debugFactory from 'debug'
 import { parseJsonFileSync } from '../utils.node'
 import jwt = require('express-jwt')
 
 
 
-export const debug = debugFactory('annotator')
 
 export interface IReq extends express.Request {
   bag: any
@@ -32,13 +30,13 @@ app.use('/api/login', jwtCheck)
 app.use('/api/join', jwtCheck)
 
 
-app.all('/api/*', async (req: IReq, res: express.Response) => {
+app.all('/api/*', async (req, res) => {
   let actionName = req.params[0]
   if (actionName in actions) {
     let action = actions[actionName]
     try {
       await PgClient.transaction(config, async (client) => {
-        if (!(await preauth(actionName, req, client))) {
+        if (!(await preauth(actionName, req as IReq, client))) {
           throw new HttpError(403)
         }
         await action(req, res, client)

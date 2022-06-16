@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { join, basename } from 'path'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import * as glob from 'glob'
 
 import { mu } from '../mu'

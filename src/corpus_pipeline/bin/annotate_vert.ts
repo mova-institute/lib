@@ -12,7 +12,7 @@ import { MorphAnalyzer } from '../../nlp/morph_analyzer/morph_analyzer'
 import { toConlluishString } from '../../nlp/ud/tagset'
 import { BufferedBackpressWriter } from '../../backpressing_writer'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 import * as os from 'os'
 import { UdpipeApiClient } from '../../nlp/ud/udpipe_api_client'

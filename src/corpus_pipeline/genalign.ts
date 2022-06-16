@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { sync as globSync } from 'glob'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 import { isSentenceStart, getId } from './id2i'
 import { last } from '../lang'

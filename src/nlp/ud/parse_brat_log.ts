@@ -4,7 +4,7 @@
 import { createInterface } from 'readline'
 import * as fs from 'fs'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import * as columnify from 'columnify'
 
 import { getLibRootRelative } from '../../lib_path.node'

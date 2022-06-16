@@ -9,7 +9,7 @@ import { mu, Mu } from '../../mu'
 
 import * as glob from 'glob'
 import * as mkdirp from 'mkdirp'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 import * as path from 'path'
 import * as fs from 'fs'

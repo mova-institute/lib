@@ -45,7 +45,7 @@ export class PgClient {
           throw new Error('Max transaction retries exceeded')
         }
 
-        if (e instanceof Error && e.code === PG_ERR.serialization_failure) {
+        if (e.code === PG_ERR.serialization_failure) {
           continue
         }
 

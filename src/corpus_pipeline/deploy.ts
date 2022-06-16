@@ -10,7 +10,7 @@ import { generateRegistryFileUkGolden } from './registry_file_builder'
 import { readFileSync, existsSync } from 'fs'
 import { basename } from 'path'
 import * as readline from 'readline'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 
 

@@ -23,7 +23,7 @@ import { CorpusDoc } from '../doc_meta'
 import { toSortableDatetime } from '../../date'
 import { RedisClientPromisified } from '../../redis'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 
 //------------------------------------------------------------------------------

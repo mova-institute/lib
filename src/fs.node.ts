@@ -1,6 +1,6 @@
-import * as mkdirpLib from 'mkdirp'
+import mkdirpLib from 'mkdirp'
 import * as tmp from 'tmp'
-import * as rimraf from 'rimraf'
+import rimraf from 'rimraf'
 
 import { promises as fsp, PathLike } from 'fs'
 import * as pth from 'path'
@@ -46,7 +46,7 @@ export async function mktempdirp(options: tmp.Options = {}) {
 
 ////////////////////////////////////////////////////////////////////////////////
 export function rmrf(path: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     rimraf(path, e => e ? reject(e) : resolve())
   })
 }

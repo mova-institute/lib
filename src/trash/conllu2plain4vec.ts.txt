@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { forEachLine } from '../utils.node'
-import { BufferedSyncWriter } from '../buffered_writer'
+import { DrainwaitingBufferedWriter } from '../drainwaiting_buffered_writer'
 
 
 
@@ -9,7 +9,7 @@ async function main() {
   let i = process.argv[2] === '--lemma' ? 1 : 0
 
   let prevLine: string
-  let writer = new BufferedSyncWriter(1)
+  let writer = new DrainwaitingBufferedWriter(1)
   await forEachLine(process.stdin, line => {
     if (line.startsWith('#')) {
       return

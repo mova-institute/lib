@@ -1,7 +1,7 @@
 import * as express from 'express'
 import { PgClient } from '../postrges'
 import { genAccessToken } from '../crypto'
-import { IReq, debug, HttpError } from './server'
+import { IReq, HttpError } from './server'
 import { mergeXmlFragments, nextTaskStep, canDisownTask, canEditTask } from './business'
 import { markConflicts, markResolveConflicts, adoptMorphDisambsStr } from './business.node'
 import { firstNWords, morphReinterpretGently, morphReinterpret, keepDisambedOnly, enumerateWords, adoptMorphDisambs } from '../nlp/utils'
@@ -282,7 +282,6 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
 
   if (req.body.complete) {
     let tocheck = await client.call('complete_task', req.body.id)
-    debug(JSON.stringify(tocheck, null, 2))
 
     for (let task of tocheck) {
 
@@ -419,7 +418,7 @@ export async function getStats(req: IReq, res: express.Response, client: PgClien
   where task.step='annotate' and fragment_version.status='done'
   `
   let rows = (await client.query(QUERY)).rows
-  let stats = {} as any
+  let stats = {} as Record<string, any>
   for (let { content, name_last } of rows) {
     stats[name_last] = stats[name_last] || { count: 0 }
     let numWords = parseXml(encloseInRootNs(content)).evaluateNumber('count(//*[local-name()="w_"]|//mi:w_)', NS)

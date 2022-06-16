@@ -16,7 +16,7 @@ import * as xmlutils from '../xml/utils'
 import { createReadStream } from 'fs'
 import { getLibRootRelative } from '../lib_path.node'
 import { mu } from '../mu'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import { tokenStream2conllu, tokenStream2bratSynt, tokenStream2bratPlaintext } from '../nlp/ud/utils'
 
 

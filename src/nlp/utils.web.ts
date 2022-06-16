@@ -2,6 +2,7 @@ import { xmlNsResolver } from '../xml/utils'
 import { xpath } from '../xml/utils.web'
 import { serializeXmlNoNs } from '../utils.web'
 import { WebapiElement } from '../xml/xmlapi_web/webapi_element'
+import { firstNWords } from './utils'
 
 
 
@@ -34,9 +35,9 @@ export function fragmentCorpusText(doc: Document) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-export function textFragmentCorpusText(doc: Document) {
-  return fragmentCorpusText(doc).map(x => ({
-    xmlstr: serializeXmlNoNs(x),
-    firstWords: firstNWords(4, new WebapiElement(x.firstElementChild)),
-  }))
-}
+// export function textFragmentCorpusText(doc: Document) {
+//   return fragmentCorpusText(doc).map(x => ({
+//     xmlstr: serializeXmlNoNs(x),
+//     firstWords: firstNWords(4, new WebapiElement(x.firstElementChild)),
+//   }))
+// }

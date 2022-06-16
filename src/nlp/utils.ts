@@ -1438,7 +1438,7 @@ export function* tokenStream2sentencesRaw(stream: Iterable<Token>) {
 }
 
 //------------------------------------------------------------------------------
-function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
+export function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
   for (let [i, token] of sentence.entries()) {
     token.index = i

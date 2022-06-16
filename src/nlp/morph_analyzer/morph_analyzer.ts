@@ -16,7 +16,7 @@ import * as algo from '../../algo'
 import { CachedValue } from '../../cached_value'
 import { parseIntStrict } from '../../lang'
 import * as stringUtils from '../../string'
-import * as Lru from 'lru-cache'
+import Lru from 'lru-cache'
 
 
 const dictOverride = new Map([

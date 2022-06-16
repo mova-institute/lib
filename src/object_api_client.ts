@@ -1,4 +1,4 @@
-import * as request from 'request-promise-native'
+import request from 'request-promise-native'
 import * as path from 'path'
 import { Agent } from 'http'
 

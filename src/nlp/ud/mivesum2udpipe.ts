@@ -7,7 +7,7 @@ import { MorphInterp } from '../morph_interp'
 import { standartizeMorphoForUd2_11, fillWithValencyFromDict } from './uk_grammar'
 import { createValencyDictFromKotsybaTsvs } from '../valency_dictionary/factories.node'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 
 

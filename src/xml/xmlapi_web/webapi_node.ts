@@ -19,18 +19,22 @@ export class WebapiNode extends AbstractNode {
     return this.wrapee
   }
 
+  // @ts-ignore
   document() {
     return wrappedOrNull(WebapiDocument, this.wrapee.ownerDocument)
   }
 
+  // @ts-ignore
   parent() {
     return wrappedOrNull(WebapiElement, this.wrapee.parentElement)
   }
 
+  // @ts-ignore
   previousSibling() {
     return nodeOrElementOrNull(this.wrapee.previousSibling)
   }
 
+  // @ts-ignore
   nextSibling() {
     return nodeOrElementOrNull(this.wrapee.nextSibling)
   }
@@ -59,24 +63,29 @@ export class WebapiNode extends AbstractNode {
     }
   }
 
+  // @ts-ignore
   isSame(other: WebapiNode) {
     return !isOddball(other) && other.wrapee === this.wrapee
   }
 
+  // @ts-ignore
   remove() {
     this.wrapee.parentNode.removeChild(this.wrapee)
     return this
   }
 
+  // @ts-ignore
   replace(replacement: WebapiNode) {
     this.wrapee.parentNode.replaceChild(replacement.wrapee, this.wrapee)
   }
 
+  // @ts-ignore
   insertBefore(newNode: WebapiNode) {
     this.wrapee.parentNode.insertBefore(newNode.wrapee, this.wrapee)
     return this
   }
 
+  // @ts-ignore
   insertAfter(newNode: WebapiNode) {
     this.wrapee.parentNode.insertBefore(newNode.wrapee, this.wrapee.nextSibling)
     return this
@@ -98,13 +107,16 @@ export class WebapiNode extends AbstractNode {
       case XPathResult.STRING_TYPE:
         return result.stringValue
       case XPathResult.FIRST_ORDERED_NODE_TYPE:
-        return nodeOrElementOrNull(result.singleNodeValue)
+  // @ts-ignore
+  return nodeOrElementOrNull(result.singleNodeValue)
       case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
       case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
-        return mu(generateFromXpathResultIterator(result)).map(x => nodeOrElementOrAttribute(x))
+  // @ts-ignore
+  return mu(generateFromXpathResultIterator(result)).map(x => nodeOrElementOrAttribute(x))
       case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
       case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
-        return mu(generateFromXpathResultSnapshot(result)).map(x => nodeOrElementOrAttribute(x))
+  // @ts-ignore
+  return mu(generateFromXpathResultSnapshot(result)).map(x => nodeOrElementOrAttribute(x))
       default:
         throw new Error('Unexpected XPath result type')
     }
@@ -146,7 +158,8 @@ export class WebapiNode extends AbstractNode {
   }
 
   evaluateNodes(xpath: string, nsMap?: Object): Mu<AbstractNode> {
-    return this._evaluateManyOrdered(xpath, nsMap).map(x => {
+  // @ts-ignore
+  return this._evaluateManyOrdered(xpath, nsMap).map(x => {
       if (!isNode(x)) {
         throw new Error('Xpath result is not a list of attributes')
       }
@@ -154,6 +167,7 @@ export class WebapiNode extends AbstractNode {
     })
   }
 
+  // @ts-ignore
   evaluateElements(xpath: string, nsMap?: Object) {
     return this._evaluateManyOrdered(xpath, nsMap).map(x => {
       if (x.nodeType !== Node.ELEMENT_NODE) {
@@ -176,6 +190,7 @@ export class WebapiNode extends AbstractNode {
     throw new Error('Not implemented')  // todo
   }
 
+  // @ts-ignore
   clone() {
     return nodeOrElement(this.wrapee.cloneNode(true))
   }

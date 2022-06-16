@@ -2,7 +2,7 @@ import { sleep } from '../../lang'
 import { fetchText } from '../../request'
 import { allMatchesArr } from '../../string'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 import * as path from 'path'
 import * as fs from 'fs'

@@ -2,7 +2,7 @@
 
 import { generateRegistryFileUk } from '../registry_file_builder'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 
 

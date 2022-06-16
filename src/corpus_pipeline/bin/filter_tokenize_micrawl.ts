@@ -15,7 +15,7 @@ import { AsyncTaskRunner } from '../../async_task_runner'
 import { prepareZvidusilMeta } from '../utils'
 import { CorpusDoc } from '../doc_meta'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import { streamparseConllu } from '../../nlp/ud/conllu'
 import { fixUdpipeTokenization } from '../fix_udpipe_tokenization'
 

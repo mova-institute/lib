@@ -2,7 +2,7 @@
 
 import * as path from 'path'
 import * as fs from 'fs'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import * as rimraf from 'rimraf'
 import * as mkdirp from 'mkdirp'
 import * as glob from 'glob'

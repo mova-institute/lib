@@ -9,3 +9,4 @@ export type Unpacked<T> =
   T extends (...args: Array<any>) => infer U ? U :
   T extends Promise<infer U> ? U :
   T
+export type Timeout = ReturnType<typeof setTimeout>

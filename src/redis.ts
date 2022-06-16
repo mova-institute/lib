@@ -1,17 +1,17 @@
-import * as redis from 'redis'
+import {RedisClientOptions, RedisClientType, createClient} from 'redis'
 
 import { promisify } from 'util'
 
 
 ////////////////////////////////////////////////////////////////////////////////
-export class RedisClientPromisified {
-  static create(options?: redis.ClientOpts) {
-    return new RedisClientPromisified(redis.createClient(options))
-  }
+// export class RedisClientPromisified {
+//   static create(options?: RedisClientOptions) {
+//     return new RedisClientPromisified(createClient(options))
+//   }
 
-  sadd = promisify(this.client.sadd).bind(this.client)
-  quit = promisify(this.client.quit).bind(this.client)
+//   sadd = promisify(this.client.sAdd).bind(this.client)
+//   quit = promisify(this.client.quit).bind(this.client)
 
-  constructor(private client: redis.RedisClient) {
-  }
-}
+//   constructor(private client: RedisClientType) {
+//   }
+// }

@@ -1,28 +1,13 @@
 {
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "target": "es2018",
-    "sourceMap": false,
-    "outDir": "lib",
-    "declaration": true,
-    "module": "commonjs",
-    "emitDecoratorMetadata": true,
-    "noFallthroughCasesInSwitch": true,
-    "pretty": true,
-    "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true,
-    // "strictNullChecks": true,
-    // "noImplicitAny": true,
-    "noImplicitThis": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ]
+    "noImplicitAny": false,
+    "outDir": "lib",
+    "strictNullChecks": false,
+    "useUnknownInCatchVariables": false
   },
   "include": [
     "src/**/*.ts"
-  ],
-  "exclude": [
-    "src/trash/**"
   ]
 }

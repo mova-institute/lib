@@ -3,7 +3,7 @@
 import * as fs from 'fs'
 import { basename } from 'path'
 import * as glob from 'glob'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import * as _ from 'lodash'
 import { parseXmlFileSync } from '../xml/utils.node'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'

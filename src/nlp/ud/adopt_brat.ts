@@ -14,7 +14,7 @@ import { HELPER_RELATIONS, classifyRelation } from './uk_grammar'
 import { Dict } from '../../types'
 
 import * as glob from 'glob'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 
 

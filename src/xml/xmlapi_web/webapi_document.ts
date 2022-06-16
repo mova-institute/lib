@@ -39,14 +39,17 @@ export class WebapiDocument extends AbstractDocument {
     return this.wrapee
   }
 
+  // @ts-ignore
   root() {
     return wrappedOrNull(WebapiElement, this.wrapee.documentElement)
   }
 
+  // @ts-ignore
   equals(other: WebapiDocument) {
     return !isOddball(other) && other.wrapee === this.wrapee
   }
 
+  // @ts-ignore
   createElement(name: string) {  // todo: ns
     let [, prefix] = name.split(':').reverse()
     let uri = this.wrapee.lookupNamespaceURI(prefix || null)
@@ -55,6 +58,7 @@ export class WebapiDocument extends AbstractDocument {
     return new WebapiElement(elem as HTMLElement)  // todo
   }
 
+  // @ts-ignore
   createTextNode(value: string) {
     return new WebapiNode(this.wrapee.createTextNode(value))
   }

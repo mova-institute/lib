@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { xmlNsResolver, removeXmlns } from './xml/utils'
 
 
@@ -48,7 +50,7 @@ export async function readFile(file: File) {
   return new Promise<string>((resolve, reject) => {
     let reader = new FileReader()
     reader.onload = () => {
-      resolve(reader.result)
+      resolve(reader.result.toString())
     }
     reader.readAsText(file)
   })

@@ -5,7 +5,7 @@ import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
 import { zerofill, toFloorPercent } from '../string'
 
 import { sync as globSync } from 'glob'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 import { join } from 'path'
 import * as fs from 'fs'

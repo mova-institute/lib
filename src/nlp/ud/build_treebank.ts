@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import * as glob from 'glob'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import * as mkdirp from 'mkdirp'
 import * as columnify from 'columnify'
 import * as _ from 'lodash'

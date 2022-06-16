@@ -10,7 +10,7 @@ export class WebapiAttribute extends AbstractAttribute {
   }
 
   namespaceUri() {
-    return this.wrapee.namespaceURI
+    return this.wrapee instanceof Element ? this.wrapee.namespaceURI : undefined
   }
 
   namespacePrefix() {
@@ -18,7 +18,7 @@ export class WebapiAttribute extends AbstractAttribute {
   }
 
   nameLocal() {
-    return this.wrapee.localName
+    return this.wrapee instanceof Element ? this.wrapee.localName : undefined
   }
 
   namePrefixed() {

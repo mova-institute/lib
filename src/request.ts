@@ -1,7 +1,7 @@
 import { firstMatch } from './string'
 
 import * as conv from 'iconv-lite'
-import * as request from 'request-promise-native'
+import request from 'request-promise-native'
 import { RequestPromiseOptions } from 'request-promise-native'
 
 

@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 import { FileSavedSet } from '../../file_saved_set.node'
 import { FsMap } from '../../fs_map'

@@ -2,7 +2,7 @@
 
 import { linesBackpressedStdPipeable } from '../../utils.node'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
 
 

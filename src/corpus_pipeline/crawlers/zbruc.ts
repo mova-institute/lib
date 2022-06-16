@@ -3,7 +3,7 @@ import { fetchText } from '../../request'
 import { allMatchesArr } from '../../string'
 
 import { sync as mkdirpSync } from 'mkdirp'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import * as _ from 'lodash'
 
 import * as path from 'path'

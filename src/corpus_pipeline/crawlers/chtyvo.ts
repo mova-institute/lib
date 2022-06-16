@@ -6,7 +6,7 @@ import { trimBeforeFirst, trimBeforeLast } from '../../string'
 import { logErrAndExit } from '../../utils.node'
 import { parseIntStrict } from '../../lang'
 
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import * as _ from 'lodash'
 import { get } from 'request'
 import chalk from 'chalk'

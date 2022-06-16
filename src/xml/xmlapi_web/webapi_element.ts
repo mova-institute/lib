@@ -48,18 +48,22 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
     return ret
   }
 
+  // @ts-ignore
   firstChild() {
     return nodeOrElementOrNull(this.wrapee.firstChild)
   }
 
+  // @ts-ignore
   lastChild() {
     return nodeOrElementOrNull(this.wrapee.lastChild)
   }
 
+  // @ts-ignore
   lastElementChild() {
     return wrappedOrNull(WebapiElement, this.wrapee.lastElementChild)
   }
 
+  // @ts-ignore
   child(index: number) {  // todo
     return nodeOrElementOrNull(this.wrapee.childNodes.item(index))
   }
@@ -76,6 +80,7 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
     return wrappedOrNull(WebapiElement, this.wrapee.nextElementSibling)
   }
 
+  // @ts-ignore
   appendChild(child: WebapiNode) {
     this.wrapee.appendChild((child as WebapiElement).wrapee)  // see http://stackoverflow.com/a/13723325/5271870
     return child
@@ -89,10 +94,12 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
     return this.wrapee.getAttributeNS(nsUri, localName)
   }
 
+  // @ts-ignore
   attributesObj() {
     throw new Error('Not implemented')
   }
 
+  // @ts-ignore
   setAttribute(name: string, value: string | number) {
     if (value === undefined) {
       this.removeAttribute(name)
@@ -134,6 +141,7 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
     return this.wrapee.innerHTML
   }
 
+  // @ts-ignore
   clone() {
     return super.clone() as WebapiElement
   }
@@ -142,16 +150,23 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
   // mixins
   name: () => string
   attributeUp: (name: string) => string
-  prependChild: () => WebapiNode
+  // @ts-ignore
+   prependChild: () => WebapiNode
+  // @ts-ignore
   children: () => Mu<WebapiNode | WebapiElement>
+  // @ts-ignore
   rchildren: () => Mu<WebapiNode | WebapiElement>
+  // @ts-ignore
   elementChildren: () => Mu<WebapiElement>
   elementChild: (index: number) => WebapiElement
   countChildren: () => number
   countElementChildren: () => number
   getElementChild: (index: number) => WebapiElement
   clear: () => void
+  // @ts-ignore
   setAttributes: (keyvalue: Object) => WebapiElement
+  // @ts-ignore
   unwrap: () => WebapiElement
+  // @ts-ignore
   rewrap: (replacement: WebapiElement) => WebapiElement
 }

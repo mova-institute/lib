@@ -29,7 +29,7 @@ export class GraphNode<T> {
   }
 
   *walkThisAndUp0() {
-    for (let p = this; p; p = p.parent) {
+    for (let p = this; p; p = p.parent as any) { // todo
       yield p
     }
   }

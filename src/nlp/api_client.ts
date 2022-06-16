@@ -1,6 +1,6 @@
 import { UdpipeApiClient } from './ud/udpipe_api_client'
 
-import * as request from 'request-promise-native'
+import request from 'request-promise-native'
 
 import { Agent } from 'http'
 import { mu, Mu } from '../mu'
