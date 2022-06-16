@@ -40,7 +40,6 @@ if (require.main === module) {
 }
 
 
-//------------------------------------------------------------------------------
 function main(args: Args) {
   const user = args.user || process.env.MI_CORP_USER
   const hostname = args.host || process.env.MI_CORP_HOST
@@ -103,7 +102,6 @@ interface RemoteParams {
   bonitoDataPath: string
 }
 
-//------------------------------------------------------------------------------
 async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParams) {
   const upload = (content: string, path: string) =>
     putFileSshSync(remoteParams.hostname, remoteParams.user, path, content)
@@ -220,28 +218,23 @@ async function indexCorpusRemote(params: CorpusParams, remoteParams: RemoteParam
   }
 }
 
-//------------------------------------------------------------------------------
 function normalizePath(path: string) {
   return path.replace(/\/{2,}/, '/')
 }
 
-//------------------------------------------------------------------------------
 function nameCorpusInConfig(name: string, manateePath: string, config: string) {
   let path = normalizePath(`${manateePath}/${name}`)
   return `${config}\nPATH "${path}"\n`
 }
 
-//------------------------------------------------------------------------------
 function addSubcorpToConfig(path: string, config: string) {
   return `${config}\nSUBCDEF "${path}"\n`
 }
 
-//------------------------------------------------------------------------------
 function addAlingmentsPaths(paths: Array<string>, config: string) {
   return `${config}\nALIGNDEF "${paths.join(',')}"\n`
 }
 
-//------------------------------------------------------------------------------
 function checkConfigIsSane(config: string, remoteManatee: string) {
   return config && new RegExp(String.raw`(^|\n)\s*PATH "${remoteManatee}`).test(config)
 }

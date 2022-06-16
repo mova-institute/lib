@@ -6,7 +6,6 @@ import * as fs from 'fs'
 
 
 
-//------------------------------------------------------------------------------
 async function main() {
   let file = process.argv[2]
   await linesNoSpillStdPipeable(async line => {
@@ -29,7 +28,6 @@ async function main() {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(e => console.error(e))
 }

@@ -33,7 +33,6 @@ import { TrebankStatister } from './trebank_statister'
 
 
 
-//------------------------------------------------------------------------------
 interface CliArgs {
   addIdToFeats: boolean
   addValency: boolean
@@ -57,7 +56,6 @@ interface CliArgs {
   xpos: any
 }
 
-//------------------------------------------------------------------------------
 function main() {
   let cliArgs = getArgs()
 
@@ -288,7 +286,6 @@ function main() {
   console.error()
 }
 
-//------------------------------------------------------------------------------
 function writeErrors(sentenseErrors, sentenseHoles, outDir: string, id2bratPath: Dict<[string, number]>) {
   if (sentenseErrors.length) {
     sentenseErrors = transposeProblems(sentenseErrors)
@@ -310,7 +307,6 @@ function writeErrors(sentenseErrors, sentenseHoles, outDir: string, id2bratPath:
   }
 }
 
-//------------------------------------------------------------------------------
 function transposeProblems(problems: Array<any>) {
   let problemsByType = []
   for (let sentence of problems) {
@@ -325,7 +321,6 @@ function transposeProblems(problems: Array<any>) {
   return problemsByType
 }
 
-//------------------------------------------------------------------------------
 function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
   let stats = Object.entries(datasetRegistry)
     .map(([set, { counts: { tokensBlocked, sentsBlocked, tokensExported,
@@ -370,7 +365,6 @@ function printStats(datasetRegistry: Dict<DatasetDescriptor>, header: string) {
   // console.error(`\n`)
 }
 
-//------------------------------------------------------------------------------
 function formatProblemsHtml(
   sentenceProblems: Array<any>,
   id2bratPath: Dict<[string, number]>
@@ -435,12 +429,10 @@ function formatProblemsHtml(
   </html>`
 }
 
-//------------------------------------------------------------------------------
 function set2filename(dir: string, setSchema: string, setName: string) {
   return path.join(dir, `uk-${setSchema}-${setName}.conllu`)
 }
 
-//------------------------------------------------------------------------------
 // const FOREIGN = MorphInterp.fromVesumStr('x:foreign')
 function standartizeMorpho(sentence: Array<Token>) {
   for (let token of sentence) {
@@ -474,7 +466,6 @@ function standartizeMorpho(sentence: Array<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function createDatasetRerouteMap(definition: string) {
   let pairs = definition.trim().split(/\s+/g).map(x => x.split('->')) as Array<[string, string]>
   return new Map<string, string>(pairs)
@@ -490,7 +481,6 @@ const skipReportingEmptyFromDocs = new Set([
   '2wie',  // Безталанна
 ])
 
-//------------------------------------------------------------------------------
 class DatasetDescriptor {
   file: number
   counts = {
@@ -533,7 +523,6 @@ class DatasetDescriptor {
   }
 }
 
-//------------------------------------------------------------------------------
 function* dropElided(sentences: ReturnType<typeof tokenStream2sentencesRaw>) {
   for (let sentence of sentences) {
     sentence.tokens = sentence.tokens.filter(x => !x.isElided())
@@ -541,7 +530,6 @@ function* dropElided(sentences: ReturnType<typeof tokenStream2sentencesRaw>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function getArgs() {
   return minimist<CliArgs>(process.argv.slice(2), {
     boolean: [
@@ -577,7 +565,6 @@ function getArgs() {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

@@ -2,7 +2,6 @@ import { writePromiseDrain } from './stream.node'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class AwaitingWriter {
   private buf = ''
   private bufLength = 1 * 1024 ** 2

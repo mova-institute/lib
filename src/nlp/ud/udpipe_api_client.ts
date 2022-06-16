@@ -2,7 +2,6 @@ import { reqJson } from '../../request'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class UdpipeApiClient {
   constructor(
     private endpoint?: string,

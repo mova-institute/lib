@@ -2,7 +2,6 @@ import { CorpusDoc } from '../doc_meta'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(wikiExtractorFileStr: string): Iterable<CorpusDoc> {
   for (let line of wikiExtractorFileStr.trim().split('\n')) {
     let { url, text, title } = JSON.parse(line)

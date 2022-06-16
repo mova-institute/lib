@@ -10,7 +10,6 @@ import shuffle = require('lodash.shuffle')
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function processDoc(
   // args: Args,
   doc: CorpusDoc,
@@ -42,7 +41,6 @@ export function processDoc(
   writeFileSyncMkdirp(outPath, JSON.stringify(doc, undefined, 2))
 }
 
-//------------------------------------------------------------------------------
 function normalizeDocNondestructive(doc: CorpusDoc) {
   doc.paragraphs = mapInplace(doc.paragraphs, normalizeZvidusilParaNondestructive).filter(x => x)
   doc.title = doc.title && normalizeZvidusilParaNondestructive(doc.title)
@@ -51,7 +49,6 @@ function normalizeDocNondestructive(doc: CorpusDoc) {
   doc.date = doc.date && doc.date.trim()
 }
 
-//------------------------------------------------------------------------------
 function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer) {
   const THRESHOLD = 0.2
 
@@ -81,7 +78,6 @@ function isConsideredUkrainan(paragraphs: Array<string>, analyzer: MorphAnalyzer
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function prepareZvidusilMeta(value) {
   if (value.url) {
     value.tld = getDomain(value.url)

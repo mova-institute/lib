@@ -6,7 +6,6 @@ import { RequestPromiseOptions } from 'request-promise-native'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export async function fetchText(url: string, options?: RequestPromiseOptions) {
   options = {
     gzip: true,
@@ -45,7 +44,6 @@ export async function fetchText(url: string, options?: RequestPromiseOptions) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function reqJson(url: string, options?: RequestPromiseOptions) {
   let resStr = await request(url, options)
   return JSON.parse(resStr)

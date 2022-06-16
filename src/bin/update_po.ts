@@ -10,7 +10,6 @@ import * as fs from 'fs'
 
 
 
-//------------------------------------------------------------------------------
 async function main() {
   let [pyGlob, poFilePath] = process.argv.slice(2)
 
@@ -39,7 +38,6 @@ async function main() {
   fs.writeFileSync(poFilePath, out)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(logErrAndExit)
 }

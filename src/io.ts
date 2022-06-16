@@ -3,7 +3,6 @@ import { lines as rawLines, liness, createWriteStreamMkdirpSync } from './utils.
 import { amu } from './async_mu'
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class Io {
   static std() {
     return new Io(process.stdin)

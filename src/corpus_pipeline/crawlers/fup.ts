@@ -7,7 +7,6 @@ import { Url } from 'url'
 
 
 
-//------------------------------------------------------------------------------
 async function main() {
   let crawler = new Crawler('saved_web', {
     delay: 3000,
@@ -29,13 +28,11 @@ async function main() {
   await crawler.seed('https://forum.pravda.com.ua/')
 }
 
-//------------------------------------------------------------------------------
 function isFup(url: Url) {
   return url.protocol === 'https:' && url.hostname === 'forum.pravda.com.ua'
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

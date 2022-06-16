@@ -3,10 +3,8 @@ import { numThreads } from './os'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export type TaskFunc<Result> = () => Promise<Result>
 
-////////////////////////////////////////////////////////////////////////////////
 export class AsyncTaskRunner<Result = void> {
   private concurrency = numThreads()
   private tasksRunning = new Set<Promise<Result>>()

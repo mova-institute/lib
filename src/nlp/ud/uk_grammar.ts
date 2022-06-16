@@ -14,13 +14,11 @@ import { initLocalHeadIndexes } from '../utils';
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export type TokenNode = GraphNode<Token>
 export type EnhancedNode = DirectedGraphNode<Token, string>
 export type EnhancedArrow = Arrow<Token, string>
 export type Node2indexMap = Map<TokenNode, number>
 
-////////////////////////////////////////////////////////////////////////////////
 export function isAmbigCoordModifier(node: GraphNode<Token>) {
   return node.parent
     && node.parent.children.some(x => uEq(x.node.rel, 'conj')
@@ -45,7 +43,6 @@ export function isAmbigCoordModifier(node: GraphNode<Token>) {
     && !node.node.hdeps.some(xx => uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isFeasibleRelclWithoutRel(node: TokenNode) {
   return uEq(node.node.rel, 'acl')
     && node.children.some(x => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що')
@@ -54,7 +51,6 @@ export function isFeasibleRelclWithoutRel(node: TokenNode) {
   // && nsubjAgreesWithPredicate(node.parent, node)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nsubjAgreesWithPredicate(noun: TokenNode, predicate: TokenNode) {
   if (noun.node.interp.isX() || noun.node.isGraft) {
     return true
@@ -104,12 +100,10 @@ export function nsubjAgreesWithPredicate(noun: TokenNode, predicate: TokenNode) 
   return true
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNemaje(interp: MorphInterp) {
   return ['немати', 'ні'].includes(interp.lemma) && interp.isVerb()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isConjlikeNmod(node: TokenNode) {
   return uEq(node.node.rel, 'nmod')
     && node.node.interp.isInstrumental()
@@ -118,18 +112,15 @@ export function isConjlikeNmod(node: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isValidGenderlesNoun(node: TokenNode) {
   return node.node.interp.isPronominal()
     && ['хтось', 'ніхто', 'я', 'ти'].includes(node.node.interp.lemma)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isPromoted(node: TokenNode) {
   return !node.node.isElided() && node.parents.some(p => p.node.isElided())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNonprojective(node: TokenNode) {
   let indexes = mu(walkDepth(node))
     .map(x => x.node.index)
@@ -145,12 +136,10 @@ export function isNonprojective(node: TokenNode) {
   return false
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isSecondaryPredication(rel: string) {
   return rel === 'advcl:sp' || rel === 'xcomp:sp'
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findRelationAnalog(newDependent: TokenNode, existingDependent: TokenNode) {
   let { pos: newDepPos } = toUd(newDependent.node.interp)
   let { pos: existingDepPos } = toUd(existingDependent.node.interp)
@@ -229,14 +218,12 @@ export function findRelationAnalog(newDependent: TokenNode, existingDependent: T
   // todo: хто і як слухатиме його
 }
 
-//------------------------------------------------------------------------------
 function definitelyIsPredicate(node: TokenNode) {
   return hasChild(node, 'nsubj')
     || hasChild(node, 'csubj')
     || hasChild(node, 'cop')
 }
 
-//------------------------------------------------------------------------------
 function dumbDownUdPos(upos: UdPos) {
   if (upos === 'PROPN' || upos === 'PRON') {
     return 'NOUN'
@@ -244,7 +231,6 @@ function dumbDownUdPos(upos: UdPos) {
   return upos
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findXcompSubject(node: TokenNode) {
   let topParent = node.ancestors0().find(x =>
     !uEqSome(x.node.rel, ['xcomp', 'conj', 'parataxis'])/*  || x.node.rel === 'conj:parataxis' */)
@@ -255,42 +241,35 @@ export function findXcompSubject(node: TokenNode) {
     .first()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isRootOrHole(node: TokenNode) {
   return !node.node.deps.some(x => !uEq(x.relation, 'orphan'))
   // || !node.parents.every(x => hasChild(x, 'orphan')
   //   && !x.parents.some(xx => xx.node.isElided()))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function calcNumRoots(nodes: Iterable<TokenNode>) {
   return mu(nodes).count(isRootOrHole)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isCompleteSentence(nodes: Iterable<TokenNode>) {
   return calcNumRoots(nodes) === 1
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findClauseRoot(node: TokenNode) {
   return mu(node.walkThisAndUp0())
     .find(x => uEqSome(x.node.rel, CLAUSE_RELS))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findClauseArrows(node: EnhancedNode) {
   return node.walkBackWidth()
     .filter(x => uEqSome(x.attrib, CLAUSE_RELS))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findRelativeClauseRootsEnh(relative: EnhancedNode) {
   return findClauseArrows(relative)
     .filter(a => uEq(a.attrib, 'acl'))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findRelativeClauseRoot(relative: TokenNode) {
   if (!relative.node.interp.isRelative()) {
     return
@@ -313,7 +292,6 @@ export function findRelativeClauseRoot(relative: TokenNode) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isRelclByRef(aclArrow: EnhancedArrow) {
   if (!uEq(aclArrow.attrib, 'acl')) {
     return false
@@ -327,7 +305,6 @@ export function isRelclByRef(aclArrow: EnhancedArrow) {
     .some(arrow => relativesFromStart.includes(arrow.end))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findShchojijiAntecedent(node: TokenNode) {
   if (!node.node.interp.isPersonal() || !node.node.interp.isNounish()) {
     return
@@ -344,7 +321,6 @@ export function findShchojijiAntecedent(node: TokenNode) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // foofil
 export function findNeighbourAncestor(
   sentence: Array<TokenNode>,
@@ -364,7 +340,6 @@ export function findNeighbourAncestor(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isDativeValencyAdjective(t: Token) {
   return t.interp.isAdjective() && (
     DAT_VALENCY_ADJECTIVES.has(t.interp.lemma)
@@ -372,7 +347,6 @@ export function isDativeValencyAdjective(t: Token) {
   )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isValencyHavingAdjective(t: Token) {
   return t.interp.isAdjective()
     && (
@@ -381,13 +355,11 @@ export function isValencyHavingAdjective(t: Token) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isInfValencyAdjective(t: Token) {
   return t.interp.isAdjective()
     && INF_VALENCY_ADJECTIVES.includes(t.interp.lemma)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export const PREDICATES = {
   isAuxWithNoCopAux(t: TokenNode) {
     return t.node.interp.isAuxillary()
@@ -396,33 +368,27 @@ export const PREDICATES = {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNumericModifier(rel: string) {
   return uEq(rel, 'nummod') || rel === 'det:nummod' || rel === 'det:numgov'
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isGoverning(relation: string) {
   return relation === 'nummod:gov' || relation === 'det:numgov'
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNumeralModified(t: TokenNode) {
   return t.children.some(x => isNumericModifier(x.node.rel))
     || isQuantitativeAdverbModified(t)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isQuantitativeAdverbModified(t: TokenNode) {
   return t.children.some(x => isQuantitativeAdverbModifier(x))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isQuantitativeAdverbModifier(t: TokenNode) {
   return t.node.rel === 'advmod:amtgov'// && t.parent.node.interp.isGenitive()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isQuantitativeAdverbModifierCandidate(t: TokenNode) {
   return !t.isRoot()
     && t.parent.node.interp.isGenitive()
@@ -430,7 +396,6 @@ export function isQuantitativeAdverbModifierCandidate(t: TokenNode) {
     && QAUNTITATIVE_ADVERBS.includes(t.node.interp.lemma)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function thisOrGovernedCase(t: TokenNode) {
   let governer = t.children.find(x => isGoverning(x.node.rel))
   if (governer) {
@@ -439,7 +404,6 @@ export function thisOrGovernedCase(t: TokenNode) {
   return t.node.interp.features.case
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNmodConj(t: TokenNode) {
   return uEq(t.node.rel, 'nummod')
     && t.node.interp.isInstrumental()
@@ -448,12 +412,10 @@ export function isNmodConj(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasNmodConj(t: TokenNode) {
   return t.children.some(x => isNmodConj(x))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNegativeExistentialPseudosubject(t: TokenNode) {
   return uEq(t.node.rel, 'nsubj')
     && t.node.interp.isGenitive()
@@ -462,7 +424,6 @@ export function isNegativeExistentialPseudosubject(t: TokenNode) {
     && [...COPULA_LEMMAS, 'існувати', 'мати'].includes(t.parent.node.interp.lemma)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isQuantificationalNsubj(t: TokenNode) {
   return uEq(t.node.rel, 'nsubj')
     && t.node.interp.isGenitive()
@@ -473,7 +434,6 @@ export function isQuantificationalNsubj(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isPunctInParenthes(t: TokenNode) {
   return t.node.interp.isPunctuation()
     && t.children.length === 2
@@ -483,7 +443,6 @@ export function isPunctInParenthes(t: TokenNode) {
     && t.children[1].node.interp.isPunctuation()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isDenUDen(t: TokenNode) {
   // console.log(t.node.indexInSentence)
   return (t.node.interp.isNounish() || t.node.interp.isAdjective() && t.node.interp.isPronominal())
@@ -502,7 +461,6 @@ export function isDenUDen(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nounAdjectiveAgreed(noun: TokenNode, adjective: TokenNode) {
   return thisOrGovernedCase(noun) === adjective.node.interp.getFeature(f.Case)
     && (adjective.node.interp.isPlural() && noun.node.interp.isPlural()
@@ -512,27 +470,22 @@ export function nounAdjectiveAgreed(noun: TokenNode, adjective: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nounNounAgreed(interp1: MorphInterp, interp2: MorphInterp) {
   return interp1.equalsByFeatures(interp2, [f.MorphNumber, f.Gender, f.Case])
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasCopula(t: TokenNode) {
   return t.children.some(x => uEqSome(x.node.rel, ['cop']))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasChild(t: TokenNode, rel: string) {
   return t.children.some(x => uEqSome(x.node.rel, [rel]))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasSiblink(t: TokenNode, rel: string) {
   return t.parent && t.parent.children.some(x => x !== t && uEqSome(x.node.rel, [rel]))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isDeceimalFraction(t: TokenNode) {
   return t.node.interp.isCardinalNumeral()
     && /^\d+$/.test(t.node.form)
@@ -543,7 +496,6 @@ export function isDeceimalFraction(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNegated(t: TokenNode) {
   return t.node.interp.isNegative()
     || t.node.interp.isNegativePron()
@@ -553,7 +505,6 @@ export function isNegated(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isModalAdv(t: TokenNode) {
   return t.node.interp.isAdverb()
     && SOME_MODAL_ADVS.includes(t.node.interp.lemma)
@@ -564,7 +515,6 @@ export function isModalAdv(t: TokenNode) {
     && hasChild(t, 'csubj')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNumAdvAmbig(lemma: string) {
   if (NUM_ADV_AMBIG.includes(lemma)) {
     return true
@@ -573,7 +523,6 @@ export function isNumAdvAmbig(lemma: string) {
   return NUM_ADV_AMBIG.some(x => lemma.startsWith(x) || lemma.endsWith(x))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isConjWithoutCcOrPunct(t: TokenNode) {
   let ret = uEq(t.node.rel, 'conj')
     && !t.children.some(x => uEqSome(x.node.rel, ['cc'])
@@ -597,7 +546,6 @@ export function isConjWithoutCcOrPunct(t: TokenNode) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isCompounSvcCandidate(t: TokenNode) {
   return !t.isRoot()
     && t.node.interp.isVerb()
@@ -607,41 +555,34 @@ export function isCompounSvcCandidate(t: TokenNode) {
     && !t.node.interp.isPast()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isInfinitive(t: TokenNode) {
   return t.node.interp.isInfinitive()
     && !t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isFinite())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasInfinitiveCop(t: TokenNode) {
   return t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isInfinitive())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isInfinitiveCop(t: TokenNode) {
   return !t.node.interp.isVerb() && hasInfinitiveCop(t)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isInfinitiveAnalytically(t: TokenNode) {
   return isInfinitive(t) || isInfinitiveCop(t)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isFinite(t: TokenNode) {
   return t.node.interp.isVerb() && !t.node.interp.isInfinitive()
     || t.children.some(x => uEqSome(x.node.rel, ['aux', 'cop']) && !x.node.interp.isFinite())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasOwnRelative(t: TokenNode) {
   return mu(walkDepthNoSelf(t, x => uEqSome(x.node.rel, SUBORDINATE_CLAUSES)
     || x.node.rel === 'parataxis:rel')
   ).some(x => x.node.interp.isRelative())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isAdverbialAcl(t: TokenNode) {
   return t.parent
     && t.parent.node.interp.isNounish()
@@ -652,7 +593,6 @@ export function isAdverbialAcl(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function canBeDecimalFraction(t: TokenNode) {
   return t.node.interp.isCardinalNumeral()
     && /^\d+$/.test(t.node.interp.lemma)
@@ -667,13 +607,11 @@ export function canBeDecimalFraction(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isAdvmodParticle(t: TokenNode) {
   return t.node.interp.isParticle()
     && ADVMOD_NONADVERBIAL_LEMMAS.includes(t.node.interp.lemma)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function canBeAsSomethingForXcomp2(t: TokenNode) {
   return t.node.interp.isNounish()
     && [f.Case.nominative, f.Case.accusative].includes(t.node.interp.getFeature(f.Case))
@@ -682,7 +620,6 @@ export function canBeAsSomethingForXcomp2(t: TokenNode) {
     )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function setTenseIfConverb(interp: MorphInterp, form: string) {
   if (interp.isConverb()) {
     if (/ши(с[ья])?$/.test(form)) {
@@ -697,7 +634,6 @@ export function setTenseIfConverb(interp: MorphInterp, form: string) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function denormalizeInterp(interp: MorphInterp) {
   if (
     (interp.isVerb() || interp.isAdjective() || interp.isNoun())
@@ -708,7 +644,6 @@ export function denormalizeInterp(interp: MorphInterp) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function standartizeMorphoForUd2_11(interp: MorphInterp, form: string) {
   denormalizeInterp(interp)
 
@@ -759,7 +694,6 @@ export function standartizeMorphoForUd2_11(interp: MorphInterp, form: string) {
   }
 }
 
-//------------------------------------------------------------------------------
 const validPronominalAjectivesAsNouns = new Set([
   'всяке',
   'інше',
@@ -767,7 +701,6 @@ const validPronominalAjectivesAsNouns = new Set([
   'і',
 ])
 
-////////////////////////////////////////////////////////////////////////////////
 export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNode>) {
   // leave the rightest punct head only
   let [nonpunts, puncts] = clusterize(
@@ -783,7 +716,6 @@ export function normalizePunct(deps: Array<Dependency>, sentence: Array<TokenNod
   return deps
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function standartizeSentForUd2_11BeforeEnhGeneration(
   basicNodes: Array<TokenNode>,
 ) {
@@ -855,7 +787,6 @@ export function standartizeSentForUd2_11BeforeEnhGeneration(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function standartizeSentenceForUd2_11(basicNodes: Array<TokenNode>) {
   for (let node of basicNodes) {
     let t = node.node
@@ -914,7 +845,6 @@ export function standartizeSentenceForUd2_11(basicNodes: Array<TokenNode>) {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 // todo: move out
 export function thisOrConjHead(node: GraphNode<Token>, predicate/* : TreedSentencePredicate */) {
   for (let t of node.walkThisAndUp0()) {
@@ -924,7 +854,6 @@ export function thisOrConjHead(node: GraphNode<Token>, predicate/* : TreedSenten
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isFeasibleAdvclHead(head: TokenNode) {
   return head.node.interp.isVerbial()
     || head.node.interp.isAdverb()
@@ -932,14 +861,12 @@ export function isFeasibleAdvclHead(head: TokenNode) {
     || isNonverbialPredicate(head)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isFeasibleAdvmod(head: TokenNode, dep: TokenNode) {
   return isFeasibleAdvclHead(head)
     || thisOrConjHead(head, x => uEq(x.node.rel, 'obl'))
     || isAdvmodParticle(dep)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isPassive(t: TokenNode) {
   if (uEqSome(t.node.rel, SUBJECTS)) {
     if (t.parent.node.interp.isPassive()) {
@@ -955,7 +882,6 @@ export function isPassive(t: TokenNode) {
   return false
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function fillWithValencyFromDict(interp: MorphInterp, valencyDict: ValencyDict) {
   if (interp.isVerb()) {
     interp.features.dictValency = valencyDict.lookupVerb(interp.lemma)
@@ -964,21 +890,18 @@ export function fillWithValencyFromDict(interp: MorphInterp, valencyDict: Valenc
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNonverbialPredicate(t: TokenNode) {
   return (t.node.interp.isNounish() || t.node.interp.isAdjective()) && t.children.some(
     x => uEqSome(x.node.rel, ['cop', 'nsubj', 'csubj'])
   )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNonverbialPredicateEnh(t: EnhancedNode) {
   return (t.node.interp.isNounish() || t.node.interp.isAdjective()) && t.outgoingArrows.some(
     x => uEqSome(x.attrib, ['cop', 'nsubj', 'csubj'])
   )
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasPredication(t: TokenNode) {
   return t.node.hasTag('itsubj')
     // || t.node.hasTag('subjless-predication')
@@ -988,7 +911,6 @@ export function hasPredication(t: TokenNode) {
     || isFinite(t)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function areOkToBeGlued(t: TokenNode, tNext: TokenNode) {
   return t.node.interp.isPunctuation()
     || tNext.node.isElided()
@@ -998,25 +920,20 @@ export function areOkToBeGlued(t: TokenNode, tNext: TokenNode) {
     || ['%', '°', '+', '×', '$'].includes(tNext.node.interp.lemma)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isEnhanced(relation: string) {
   return ENHANCED_RELATIONS.includes(relation)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isHelper(relation: string) {
   return HELPER_RELATIONS.has(relation)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isProposition(relation: string) {
   return PROPBANK_RELATIONS.has(relation)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export const enum DependencyType { basic, enhanced, proposition, helper }
 
-////////////////////////////////////////////////////////////////////////////////
 export function classifyRelation(relation: string) {
   if (isEnhanced(relation)) {
     return DependencyType.enhanced
@@ -1031,14 +948,12 @@ export function classifyRelation(relation: string) {
   return DependencyType.basic
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export const ADVMOD_NONADVERBIAL_LEMMAS = [
   'не',
   'ні',
   'ані',
 ]
 
-////////////////////////////////////////////////////////////////////////////////
 export const SUBORDINATE_CLAUSES = [
   'csubj',
   'ccomp',
@@ -1047,7 +962,6 @@ export const SUBORDINATE_CLAUSES = [
   'acl',
 ]
 
-////////////////////////////////////////////////////////////////////////////////
 export const SOME_MODAL_ADVS = [
   'важко',
   'важливо',
@@ -1476,7 +1390,6 @@ export const POSES_NEVER_ROOT: Array<UdPos> = [
   'PUNCT',
 ]
 
-////////////////////////////////////////////////////////////////////////////////
 export const CLAUSAL_TO_PLAIN = new Map([
   ['csubj', 'nsubj'],
   ['ccomp', 'obj'],
@@ -1719,7 +1632,6 @@ export const ENHANCED_RELATIONS = [
 
 export const SOME_QUOTES = /^[«»"”“„']+$/
 
-//------------------------------------------------------------------------------
 const UD_23_OFFICIAL_SUBRELS = new Set([
   'acl:adv',
   'acl:relcl',
@@ -1747,7 +1659,6 @@ const UD_23_OFFICIAL_SUBRELS = new Set([
   'vocative:cl',
 ])
 
-//------------------------------------------------------------------------------
 const UD_23_OFFICIAL_SUBRELS_ENHANCED = new Set([
   ...UD_23_OFFICIAL_SUBRELS,
   ...ENHANCED_RELATIONS.filter(x => x.includes(':'))

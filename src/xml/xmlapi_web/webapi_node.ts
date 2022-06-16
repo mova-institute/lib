@@ -9,7 +9,6 @@ import { mu, Mu } from '../../mu'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class WebapiNode extends AbstractNode {
   constructor(protected wrapee: Node) {
     super()
@@ -204,7 +203,6 @@ export class WebapiNode extends AbstractNode {
 
 
 
-//--------------------------------------------------------------------
 export function createNsResolver(nsMap: Object) {
   const defaultNsMap = {
     'xml': NS_XML,

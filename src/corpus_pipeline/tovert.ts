@@ -6,7 +6,6 @@ import { escape } from 'he'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export interface ConlluAndMeta2verticalOptions {
   formOnly?: boolean
   meta?: any
@@ -14,7 +13,6 @@ export interface ConlluAndMeta2verticalOptions {
   featsOrder?: Array<string>
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* conlluStrAndMeta2vertical(
   conlluLines: string,
   options: ConlluAndMeta2verticalOptions = {},
@@ -22,7 +20,6 @@ export function* conlluStrAndMeta2vertical(
   yield* conlluAndMeta2vertical(conlluLines.split('\n'), options)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* conlluStreamAndMeta2vertical(
   stream: ReturnType<typeof streamparseConllu>,
   options: ConlluAndMeta2verticalOptions = {},
@@ -93,7 +90,6 @@ export function* conlluStreamAndMeta2vertical(
   yield `</doc>`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* conlluAndMeta2vertical(
   conlluLines: Iterable<string>,
   options: ConlluAndMeta2verticalOptions = {},

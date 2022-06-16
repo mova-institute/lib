@@ -6,7 +6,6 @@ import minimist from 'minimist'
 
 
 
-//------------------------------------------------------------------------------
 function main() {
   const args = minimist<any>(process.argv.slice(2))
   delete args._
@@ -14,7 +13,6 @@ function main() {
   process.stdout.write(res)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

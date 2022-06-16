@@ -9,7 +9,6 @@ import { textOf, textsOf } from './utils'
 
 const baseUrl = 'http://zbruc.eu'
 
-////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
   let root = tryParseHtml(html)
   if (!root) {

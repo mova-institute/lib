@@ -2,7 +2,6 @@ import { Readable } from 'stream'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function writePromiseDrain(
   to: NodeJS.WritableStream,
   what: string | Buffer,
@@ -18,7 +17,6 @@ export function writePromiseDrain(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeBackpressing(
   to: NodeJS.WritableStream,
   backpressee: NodeJS.ReadableStream,
@@ -30,12 +28,10 @@ export function writeBackpressing(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeBackpressedStd(what: string | Buffer) {
   return writeBackpressing(process.stdout, process.stdin, what)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
   return new Promise((resolve, reject) => {
 
@@ -54,7 +50,6 @@ export function readNBytes(n: number, istream: Readable): Promise<Buffer> {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function readTillEnd(istream: Readable): Promise<string> {
   let ret = ''
 

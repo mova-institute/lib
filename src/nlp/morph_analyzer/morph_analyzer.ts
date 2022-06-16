@@ -199,7 +199,6 @@ const REPLACINGS = [
   ['лянд', 'ланд'],
 ]
 
-//------------------------------------------------------------------------------
 const PREFIX_SPECS = [
   {
     prefixesRegex: new RegExp(`^(${gluedPrefixes.join('|')})+`, 'g'),
@@ -246,7 +245,6 @@ const PREFIX_SPECS = [
   },
 ]
 
-//------------------------------------------------------------------------------
 function postrpocessPerfPrefixedVerb(x: MorphInterp) {
   x.setIsPerfect()
   if (x.isPresent()) {
@@ -256,7 +254,6 @@ function postrpocessPerfPrefixedVerb(x: MorphInterp) {
 
 type NumeralMapObj = { digit: number, form: string, interp: MorphInterp, lemma: string }
 
-////////////////////////////////////////////////////////////////////////////////
 export class MorphAnalyzer {
   private numeralMap = new CachedValue<Array<NumeralMapObj>>(this.buildNumeralMap.bind(this))
   private pivInterps: Array<MorphInterp>
@@ -650,8 +647,7 @@ export class MorphAnalyzer {
 
 
 
-    //~~~~~~~~~~~~~~
-    // expand/add
+        // expand/add
     for (let interp of res) {
       if (interp.isNoun() && interp.canBeOrdinalNumeral()) {
         // fix dict problem: create мільйон numr from мільйон noun
@@ -856,7 +852,6 @@ export class MorphAnalyzer {
 
 
 
-//------------------------------------------------------------------------------
 const allUkUppercaseWchar = new RegExp(`^[${WCHAR_UK_UPPERCASE}]+$`)
 function varyLetterCases(value: string) {
   let lowercase = value.toLowerCase()
@@ -871,7 +866,6 @@ function varyLetterCases(value: string) {
   return ret
 }
 
-//------------------------------------------------------------------------------
 const ignoreLemmas = new Set(['ввесь', 'його', 'її', 'весь', 'увесь', 'який'])
 function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: string) {
   yield flags
@@ -887,7 +881,6 @@ function* expandInterp(expandAdjectivesAsNouns: boolean, flags: string, lemma: s
   }
 }
 
-//------------------------------------------------------------------------------
 function capitalizeFirst(value: string) {
   return value.charAt(0).toLocaleUpperCase() + value.slice(1)
 }

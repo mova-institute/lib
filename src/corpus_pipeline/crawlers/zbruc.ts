@@ -30,7 +30,6 @@ if (require.main === module) {
   main(args)
 }
 
-//------------------------------------------------------------------------------
 async function main(args: Args) {
   let latestNode = await getLatestNode()
   console.error(`Latest node is ${latestNode}`)
@@ -61,7 +60,6 @@ async function main(args: Args) {
   }
 }
 
-//------------------------------------------------------------------------------
 async function getLatestNode() {
   let indexCOntent = await fetchText(`https://zbruc.eu?theme=zbruc`)
   let nodes = allMatchesArr(indexCOntent, /href="\/node\/(\d+)"/g)

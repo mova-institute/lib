@@ -3,7 +3,6 @@ import { Readable, ReadableOptions } from 'stream'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class CatStream extends Readable {
   private currentReadStream: ReadStream
   private iterator: Iterator<string>

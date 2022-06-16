@@ -7,7 +7,6 @@ import * as pth from 'path'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export async function exists(path: PathLike) {
   try {
     await fsp.stat(path)
@@ -17,18 +16,15 @@ export async function exists(path: PathLike) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function mkdirp(path: string) {
   return new Promise((resolve, reject) =>
     mkdirpLib(path, (err, made) => err ? reject(err) : resolve(made)))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeJson(path: PathLike, obj, indent = 0) {
   return fsp.writeFile(path, JSON.stringify(obj, undefined, indent))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function mktempdir(options: tmp.Options = {}) {
   return new Promise<string>((resolve, reject) => {
     tmp.dir(options, (err, path, cleanupCallback) =>
@@ -36,7 +32,6 @@ export function mktempdir(options: tmp.Options = {}) {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function mktempdirp(options: tmp.Options = {}) {
   if (options.dir) {
     await mkdirp(options.dir)
@@ -44,14 +39,12 @@ export async function mktempdirp(options: tmp.Options = {}) {
   return mktempdir(options)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function rmrf(path: string) {
   return new Promise<void>((resolve, reject) => {
     rimraf(path, e => e ? reject(e) : resolve())
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function renamep(oldPath: string, newPath: string) {
   await mkdirp(pth.dirname(newPath))
   return fsp.rename(oldPath, newPath)

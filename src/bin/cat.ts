@@ -9,11 +9,9 @@ import minimist = require('minimist')
 
 
 
-//------------------------------------------------------------------------------
 interface Args {
 }
 
-//------------------------------------------------------------------------------
 function main() {
   const args = minimist<Args>(process.argv.slice(2))
   let [fileWithNames] = args._
@@ -31,7 +29,6 @@ function main() {
   stream.pipe(process.stdout)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

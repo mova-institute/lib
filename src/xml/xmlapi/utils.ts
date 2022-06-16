@@ -1,11 +1,9 @@
 export const NS_XML = 'http://www.w3.org/XML/1998/namespace'
 
-////////////////////////////////////////////////////////////////////////////////
 export function wrappedOrNull<T>(ctor: { new (val): T; }, val): T {
   return val ? new ctor(val) : null
 }
 
-////////////////////////////////////////////////////////////////////////////////
 /** class decorator, see http://www.typescriptlang.org/docs/handbook/mixins.html */
 export function mixin(...baseCtors: Array<any>) {
   return derivedCtor => {
@@ -20,7 +18,6 @@ export function mixin(...baseCtors: Array<any>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function countGenerated<T>(generator: Iterator<T>) {
   let i = 0
   while (!generator.next().done) {
@@ -30,7 +27,6 @@ export function countGenerated<T>(generator: Iterator<T>) {
   return i
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function ithGenerated<T>(generator: Iterator<T>, index: number) {
   let cur = generator.next()
   while (index-- && !cur.done) {
@@ -40,12 +36,10 @@ export function ithGenerated<T>(generator: Iterator<T>, index: number) {
   return cur.value
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isOddball(value) {
   return value === null || value === undefined
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // edited from https://github.com/vkiryukhin/pretty-data
 export function prettify(xmlstr: string, gentle = false) {
   let shift = ['\n'] // array of shifts

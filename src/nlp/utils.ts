@@ -32,17 +32,14 @@ import uniq = require('lodash.uniq')
 import sortedUniq = require('lodash.sorteduniq')
 
 
-////////////////////////////////////////////////////////////////////////////////
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'p'),
   nameNs(NS.tei, 'body'),
   nameNs(NS.tei, 'text'),
 ])
 
-//------------------------------------------------------------------------------
 const WORD_TAGS = new Set([W, W_])
 
-//------------------------------------------------------------------------------
 // todo: more grace with apostrophes
 
 const latMixinsGentleReLeft = new RegExp(
@@ -62,7 +59,6 @@ const cyrMixinsReLeft = new RegExp(
 const cyrMixinsReRight = new RegExp(
   r`([${LETTER_LAT_EXCLUSIVE}][${APOSTROPHES_COMMON}]?)([${cyrMixins}])`, 'g')
 
-////////////////////////////////////////////////////////////////////////////////
 export function fixLatinMixin(text: string, reLeft: RegExp, reRight: RegExp) {
   text = text.replace(reLeft, (match, lat, cyr) =>
     latToCyr[lat] + cyr)
@@ -73,7 +69,6 @@ export function fixLatinMixin(text: string, reLeft: RegExp, reRight: RegExp) {
   return text
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function fixCyrillicMixin(text: string, reLeft: RegExp, reRight: RegExp) {
   text = text.replace(reLeft, (match, cyr, lat) =>
     cyrToLat[cyr] + lat)
@@ -84,35 +79,28 @@ export function fixCyrillicMixin(text: string, reLeft: RegExp, reRight: RegExp) 
   return text
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function fixLatinMixinGentle(text: string) {
   return fixLatinMixin(text, latMixinsGentleReLeft, latMixinsGentleReRight)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function fixCyrillicMixinGentle(text: string) {
   return fixCyrillicMixin(text, cyrMixinsReLeft, cyrMixinsReRight)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function fixLatinMixinRude(text: string) {
   return fixLatinMixin(text, latMixinsRudeReLeft, latMixinsRudeReRight)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // export function fixCyrillicMixinRude(text: string) {
 //   return fixCyrillicMixin(text, cyrMixinsReLeft, cyrMixinsReRight)
 // }
 
-////////////////////////////////////////////////////////////////////////////////
 export function hasLatCyrMix(text: string) {
   // return latMixinsReLeft.test(text) || latMixinsReRight.test(text)
   return /[а-яА-ЯґҐїЇєЄіІ]/.test(text) && /[a-zA-Z]/.test(text)
 }
 
-//------------------------------------------------------------------------------
 const latMixinRe = new RegExp(`[${latMixins}]`, 'g')
-////////////////////////////////////////////////////////////////////////////////
 export function fixLatinMixinDict(token: string, analyzer: MorphAnalyzer, includeSolid = false) {
   if (includeSolid || hasLatCyrMix(token)) {
     let replaced = token.replace(latMixinRe, match => latToCyr[match])
@@ -123,7 +111,6 @@ export function fixLatinMixinDict(token: string, analyzer: MorphAnalyzer, includ
   return token
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // todo: add MC
 export function fixRomanNumeralCyrMixin(text: string) {
   text = loopReplace(text, /([XVI])([ХІ])/g, (match, lat, cyr) => lat + cyrToLat[cyr])
@@ -132,7 +119,6 @@ export function fixRomanNumeralCyrMixin(text: string) {
   return text
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function fixRomanNumeralCyrMixinToken(token: string, analyzer: MorphAnalyzer) {
   if (token.length === 1) {
     return token
@@ -163,11 +149,9 @@ export function fixRomanNumeralCyrMixinToken(token: string, analyzer: MorphAnaly
   return token
 }
 
-//------------------------------------------------------------------------------
 const cyrMixinRe = new RegExp(`[${cyrMixins}]`, 'g')
 const latExclusiveRe = new RegExp(`[${LETTER_LAT_EXCLUSIVE}]`)
 const cyrExclusiveRe = new RegExp(`[${LETTER_CYR_EXCLUSIVE}]`)
-////////////////////////////////////////////////////////////////////////////////
 export function fixCyrMixin(token: string) {
   if (latExclusiveRe.test(token) && !cyrExclusiveRe.test(token)) {
     return token.replace(cyrMixinRe, match => cyrToLat[match])
@@ -175,7 +159,6 @@ export function fixCyrMixin(token: string) {
   return token
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeRenderedHypenation(str: string, analyzer: MorphAnalyzer) {
   let re = new RegExp(r`(^|[^${WORDCHAR}])([${WORDCHAR}]+)[\u00AD\-¬]\s+([${WORDCHAR}]+|$)`, 'g')
   return str.replace(re, (match, beforeLeft, left, right) => {
@@ -200,12 +183,10 @@ export function removeRenderedHypenation(str: string, analyzer: MorphAnalyzer) {
     .replace(/\u00AD/g, '')  // just kill the rest
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeInvisibles(value: string) {
   return value.replace(INVISIBLES_RE, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function normalizeZvidusilParaNondestructive(value: string) {
   value = removeInvisibles(value)
   value = value.replace(/[\s\n\r]+/g, ' ')
@@ -216,7 +197,6 @@ export function normalizeZvidusilParaNondestructive(value: string) {
   return value
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // expects normalizeZvidusilParaNondestructive() upstream
 export function normalizeZvidusilParaAggressive(
   para: string,
@@ -247,10 +227,8 @@ export function normalizeZvidusilParaAggressive(
   return para
 }
 
-//------------------------------------------------------------------------------
 const autofixApostrophesRe = /([бпвмфгґкхжчшр])([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])([єїюя])/gi
 const autofixApostrophesEndRe = /^([а-яєіїґ]+)([“᾽ˈי»᾿ʹ\uF0A2\u0313”´΄ʾ᾽‘´`*'’ʼ\"])(?:\s|$)/gi
-////////////////////////////////////////////////////////////////////////////////
 export function fixApostrophes(token: string, to = '’') {
   token = token.replace(autofixApostrophesRe, (match, left, apos, right) =>
     `${left}${to}${right}`)
@@ -260,27 +238,22 @@ export function fixApostrophes(token: string, to = '’') {
   return token
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function plaintext2paragraphsTrimmed(plaintext: string) {
   return plaintext.trim().split(/(?:\s*\n+\s*)+/g)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function normalizeApostrophes(val: string, to = '’') {
   return val.replace(/['’`]/g, to)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeCombiningAccent(val: string) {
   return val.replace(/\u0301/g, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeSoftHypen(val: string) {
   return val.replace(/\u00AD/g, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function normalizeDiacritics(str: string) {
   return str
     .replace(/[ії]\s*\u{308}/gui, x => startsWithCapital(x) ? 'Ї' : 'ї')
@@ -288,7 +261,6 @@ export function normalizeDiacritics(str: string) {
   // .replace(/[\u{306}\u{308}]/gui, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function normalizeDash(form: string, analyzer: MorphAnalyzer) {
   let replaced = form.replace(/[–—―־‑]/g, '-')
   if (replaced !== form && replaced.length === form.length) {
@@ -300,7 +272,6 @@ export function normalizeDash(form: string, analyzer: MorphAnalyzer) {
   return form
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetween(tagA: string, textA: string, tagB: string, textB: string) {
   if (!tagA || !tagB) {
     return
@@ -340,15 +311,12 @@ export function haveSpaceBetween(tagA: string, textA: string, tagB: string, text
   return null
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function haveSpaceBetweenEl(a: AbstractElement, b: AbstractElement): boolean {
   return haveSpaceBetween(a.name(), a.text(), b.name(), b.text())
 }
 
-//------------------------------------------------------------------------------
 const SPLIT_REGEX = new RegExp(`((?:${EMOJI_RE_STR})|${ANY_PUNC}|[^${WORDCHAR}])`, '')
 // todo: unicode flag breaks compound emojis: `mi-tag --tokenize -t 'aa👨‍🚒bb'`
-////////////////////////////////////////////////////////////////////////////////
 export function tokenizeUk(val: string, analyzer?: MorphAnalyzer, regex = SPLIT_REGEX) {
   let ret: Array<{ token: string, glue: boolean }> = []
   let toks = val.trim().split(regex)
@@ -369,7 +337,6 @@ export function tokenizeUk(val: string, analyzer?: MorphAnalyzer, regex = SPLIT_
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer, regex = SPLIT_REGEX) {
   for (let chunk of val.trim().split(/\s+/g)) {
     if (chunk) {
@@ -378,7 +345,6 @@ export function* tokenizeUkNew(val: string, analyzer: MorphAnalyzer, regex = SPL
   }
 }
 
-//------------------------------------------------------------------------------
 // let rrr = new Regex(`(${ANY_PUNC})`)
 function* splitNospace(val: string, analyzer: MorphAnalyzer) {
   if (analyzer.canBeToken(val)) {
@@ -390,7 +356,6 @@ function* splitNospace(val: string, analyzer: MorphAnalyzer) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
   return mu((function* () {
     let tokens = [...tokenizeUkNew(val, analyzer)]
@@ -409,7 +374,6 @@ export function string2tokenStream(val: string, analyzer: MorphAnalyzer) {
   })())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
   let tagSerializer = mte
     ? (x: MorphInterp) => x.toMte()
@@ -430,10 +394,8 @@ export function tokenStream2plainVertical(stream: Mu<Token>, mte: boolean) {
   })
 }
 
-//------------------------------------------------------------------------------
 const TOSKIP = new Set(['w', 'mi:w_', 'w_', 'abbr', 'mi:sb', 'sb'])
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenizeMixml(root: AbstractElement, tagger: MorphAnalyzer) {
   let subroots = root.evaluateNodes('//tei:title|//tei:text', NS).toArray()
   if (!subroots.length) {
@@ -469,7 +431,6 @@ export function tokenizeMixml(root: AbstractElement, tagger: MorphAnalyzer) {
   return root
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function elementFromToken(token: string, document: AbstractDocument) {
   let ret = document.createElement('w'/*, NS.tei*/)
   ret.text(token)
@@ -477,7 +438,6 @@ export function elementFromToken(token: string, document: AbstractDocument) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function createMultitokenElement(
   doc: AbstractDocument,
   surfaceForm: string,
@@ -492,7 +452,6 @@ export function createMultitokenElement(
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function createTokenElement(
   doc: AbstractDocument,
   form: string,
@@ -505,7 +464,6 @@ export function createTokenElement(
   return ret
 }
 
-//------------------------------------------------------------------------------
 function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterable<IStringMorphInterp>) {
   let doc = miw.document()
   for (let morphTag of morphTags) {
@@ -519,7 +477,6 @@ function fillInterpElement(miw: AbstractElement, form: string, morphTags: Iterab
   return miw
 }
 
-//------------------------------------------------------------------------------
 function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
   let miw = createTokenElement(
     el.document(),
@@ -531,24 +488,20 @@ function tagWord(el: AbstractElement, morphTags: Iterable<IStringMorphInterp>) {
   return miw
 }
 
-//------------------------------------------------------------------------------
 function tagOrXVesum(interps: Array<MorphInterp>) {
   return interps.map(x => x.toVesumStrMorphInterp())
 }
 
-//------------------------------------------------------------------------------
 function tagOrXMte(interps: Array<MorphInterp>) {
   let res = interps.map(x => x.toMteMorphInterp())
   return uniqJson(res)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isRegularizedFlowElement(el: AbstractElement) {
   let ret = !(el.localName() === 'orig' && el.parent() && el.parent().localName() === 'choice')
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function iterateCorpusTokens(
   root: AbstractElement,
   elementsOfInterest = new Set(
@@ -583,12 +536,10 @@ export function iterateCorpusTokens(
   })())
 }
 
-//------------------------------------------------------------------------------
 function findNextToken(el: AbstractElement) {
   return el.nextElementSiblings().find(x => x.localName() === 'w')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, mte = false) {
   let tagFunction = mte ? tagOrXMte : tagOrXVesum
 
@@ -634,7 +585,6 @@ export function morphInterpret(root: AbstractElement, analyzer: MorphAnalyzer, m
   return root
 }
 
-//------------------------------------------------------------------------------
 function orX(form: string, interps: Array<MorphInterp>) {  // todo
   if (!interps.length) {
     interps = [MorphInterp.fromVesumStr('x', form)]
@@ -642,7 +592,6 @@ function orX(form: string, interps: Array<MorphInterp>) {  // todo
   return interps
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function morphReinterpret(words: Array<AbstractElement>, analyzer: MorphAnalyzer) {
   // let stream = mu(words.map(x => $t(x))).window(3)
   for (let el of words) {
@@ -678,7 +627,6 @@ export function morphReinterpret(words: Array<AbstractElement>, analyzer: MorphA
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAnalyzer) {
   // console.log([...root.evaluateElements('//mi:w_', NS)])
   let tokens = root.evaluateElements('//mi:w_', NS).map(x => $t(x))
@@ -690,14 +638,12 @@ export function morphReinterpretGently(root: AbstractElement, analyzer: MorphAna
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function enumerateWords(root: AbstractElement, attributeName = 'n', idGen = 0) {
   root.evaluateElements('//mi:w_|//w_', NS)  // todo: NS bug
     .forEach(x => x.setAttribute(attributeName, (idGen++).toString()))
   return idGen
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function numerateTokensGently(root: AbstractElement, attributeName = 'n') {
   let numbers = mu(root.evaluateAttributes(`//@${attributeName}`))
     .map(x => x.value())
@@ -714,7 +660,6 @@ export function numerateTokensGently(root: AbstractElement, attributeName = 'n')
   return idGen
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function newline2paragraph(root: AbstractElement) {
   root.evaluateNodes('.//text()').forEach(node => {
     let text = node.text()
@@ -732,7 +677,6 @@ export function newline2paragraph(root: AbstractElement) {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function cantBeLowerCase(word: string) {
   if (word.length < 2) {
     return false
@@ -741,18 +685,15 @@ export function cantBeLowerCase(word: string) {
   return subsr !== subsr.toLowerCase()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isSaneLemma(value: string) {
   return !/\s/.test(value)
   // return new RegExp(`^[${WCHAR_UK}]+\.?$`).test(value) || /^\d+$/.test(value)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isSaneMte5Tag(value: string) {
   return /^[A-Z][a-z0-9\-]*$/.test(value)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* dictFormLemmaTag(lines: Array<string>) {
   let lemma
   for (let line of lines) {
@@ -768,7 +709,6 @@ export function* dictFormLemmaTag(lines: Array<string>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement) {
   let wordPairs = Mu.zip(mine.evaluateElements('//mi:w_', NS), theirs.evaluateElements('//mi:w_', NS))
   let numDiffs = 0
@@ -785,7 +725,6 @@ export function markWordwiseDiff(mine: AbstractElement, theirs: AbstractElement)
   return numDiffs
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function firstNWords(n: number, from: AbstractElement) {
   let words = from.evaluateElements(`(//mi:w_)[position() <= ${n}]`, NS)
     .map(x => x.firstElementChild().text())
@@ -793,7 +732,6 @@ export function firstNWords(n: number, from: AbstractElement) {
   return words
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function sortInterps(root: AbstractElement) {
   for (let miw of root.evaluateElements('//mi:w_', NS).toArray()) {
 
@@ -821,7 +759,6 @@ export function sortInterps(root: AbstractElement) {
   return root
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function untag(root: AbstractElement) {
   let doc = root.document()
   for (let miw of root.evaluateElements('//mi:w_', NS).toArray()) {
@@ -833,7 +770,6 @@ export function untag(root: AbstractElement) {
   return root
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function getTeiDocName(doc: AbstractDocument) {  // todo
   let title = doc.root().evaluateElement('//tei:title[1]', NS)
   if (title) {
@@ -841,7 +777,6 @@ export function getTeiDocName(doc: AbstractDocument) {  // todo
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
   // let stream = mixml2tokenStream(sourceRoot)
   let attr = !!sourceRoot.evaluateElement(`//mi:w_[@n]`, NS) ? 'n' : 'nn'
@@ -872,12 +807,10 @@ export function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: Abstrac
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function keepDisambedOnly(root: AbstractElement) {
   root.evaluateElements('//mi:w_', NS).forEach(x => $t(x).keepOnlyDisambed())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
   let ret = removeInvisibles(value)
     .replace(/\r/g, '\n')
@@ -897,7 +830,6 @@ export function autofixDirtyText(value: string, analyzer?: MorphAnalyzer) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 const unboxElems = new Set(['nobr', 'img'])
 const removeElems = new Set(['br'])
 export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnalyzer) {
@@ -925,7 +857,6 @@ export function normalizeCorpusText(root: AbstractElement, analyzer?: MorphAnaly
   // invisible spaces, libxmljs set entities
 }
 
-////////////////////////////////////////////////////////////////////////////////
 const MULTISEP = '|'
 const teiStructuresToCopy = makeObject(['s', 'p', 'l', 'lg', 'div']
   .map(x => [x, x] as [string, string]))
@@ -988,7 +919,6 @@ const structureNameToSketchTag = new Map<Structure, string>([
   ['stanza', 'lg'],
   ['line', 'l'],
 ])
-////////////////////////////////////////////////////////////////////////////////
 export function token2sketchVertical(token: Token) {
   if (token.isWord()) {
     if (token.interps.length) {
@@ -1021,7 +951,6 @@ export function token2sketchVertical(token: Token) {
   throw new Error('Unknown token')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenizedMixml2sketchVertical(
   root: AbstractElement, analyzer: MorphAnalyzer, meta: any = {}) {
 
@@ -1041,21 +970,18 @@ export function* tokenizedMixml2sketchVertical(
   yield `</doc>`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVertical(root: AbstractElement, meta: any = {}) {
   yield `<doc ${keyvalue2attributesNormalized(meta)}>`
   yield* interpretedTeiDoc2sketchVerticalTokens(root)
   yield `</doc>`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVertical2(root: AbstractElement, meta: any = {}) {
   yield `<doc ${keyvalue2attributesNormalized(meta)}>`
   yield* mu(mixml2tokenStream(root)).map(x => token2sketchVertical(x))
   yield `</doc>`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* interpretedTeiDoc2sketchVerticalTokens(root: AbstractElement) {
   for (let { el, entering } of iterateCorpusTokens(root)) {
     let line = element2sketchVertical(el, entering)
@@ -1065,17 +991,14 @@ export function* interpretedTeiDoc2sketchVerticalTokens(root: AbstractElement) {
   }
 }
 
-//------------------------------------------------------------------------------
 function sketchLine(token: string, lemma: string, mteTag: string, vesumTag: string) {
   return tsvLine(token, lemma, mteTag, vesumTag)
 }
 
-//------------------------------------------------------------------------------
 function tsvLine(...values: Array<string>) {
   return values.join('\t')
 }
 
-//------------------------------------------------------------------------------
 function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
   let doc = root.document()
   for (let textNode of root.evaluateNodes('./text()', NS)) {
@@ -1090,7 +1013,6 @@ function paragraphBySpaceBeforeNewLine(root: AbstractElement) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function oldMteDisamb2mivesum(root: AbstractElement) {
   for (let w of root.evaluateElements('//tei:w', NS)) {
     let form = w.text()
@@ -1100,7 +1022,6 @@ export function oldMteDisamb2mivesum(root: AbstractElement) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 const miteiTransforms = {
   normalize: normalizeCorpusText,
   paragraphBySpaceBeforeNewLine,
@@ -1116,7 +1037,6 @@ export function applyMiTeiDocTransforms(root: AbstractElement) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function looksLikeMiTei(value: string) {
   return /^<[^>]*xmlns:mi="http:\/\/mova\.institute\/ns\/corpora\/0\.1"/.test(value)
 }
@@ -1133,7 +1053,6 @@ const structureElementName2type = new Map<string, Structure>([
   // ['', ''],
 ])
 
-////////////////////////////////////////////////////////////////////////////////
 export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: string) {
   for (let { el, entering } of iterateCorpusTokens(root)) {
     let name = el.localName()
@@ -1233,14 +1152,12 @@ export function* mixml2tokenStream(root: AbstractElement, sentenceSetSchema?: st
   }
 }
 
-//------------------------------------------------------------------------------
 function parseDepStr(value: string) {
   return value.split('|')
     .map(x => x.split('-'))
     .map(([headId, relation]) => ({ headId, relation }))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* splitNSentences(stream: Iterable<Token>, n: number) {
   let i = 0
   let buf = new Array<Token>()
@@ -1265,7 +1182,6 @@ export function* splitNSentences(stream: Iterable<Token>, n: number) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2cg(stream: Iterable<Token>) {
   for (let tok of stream) {
     if (tok.isWord()) {
@@ -1283,7 +1199,6 @@ export function* tokenStream2cg(stream: Iterable<Token>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2plaintext(
   stream: Iterable<Token>,
   multitokens: Array<MultitokenDescriptor> = [],
@@ -1321,19 +1236,16 @@ export function* tokenStream2plaintext(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenStream2plaintextString(stream: Iterable<Token>) {
   return mu(tokenStream2plaintext(stream)).join('')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface MultitokenDescriptor {
   form: string
   startIndex: number
   spanLength: number
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* initIndexes(sentences: ReturnType<typeof tokenStream2sentencesRaw>) {
   for (let sentence of sentences) {
     initLocalHeadIndexes(sentence.tokens, sentence.sentenceId)
@@ -1344,16 +1256,13 @@ export function* initIndexes(sentences: ReturnType<typeof tokenStream2sentencesR
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenStream2sentences(stream: Iterable<Token>) {
   return initIndexes(tokenStream2sentencesRaw(stream))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export type SentenceStreamElement = Unpacked<ReturnType<typeof tokenStream2sentences>>
 export type SentenceStream = Iterable<SentenceStreamElement>
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2sentencesRaw(stream: Iterable<Token>) {
   let buf = new Array<Token>()
   let multitokens = new Array<MultitokenDescriptor>()
@@ -1437,7 +1346,6 @@ export function* tokenStream2sentencesRaw(stream: Iterable<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
 export function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string) {
   let id2i = new Map(sentence.map<[string, number]>((x, i) => [x.id, i]))
   for (let [i, token] of sentence.entries()) {
@@ -1453,7 +1361,6 @@ export function initLocalHeadIndexes(sentence: Array<Token>, sentenceId: string)
   }
 }
 
-//------------------------------------------------------------------------------
 function sentenceArray2treeNodes(sentence: Array<Token>) {
   let nodeArray = sentence.map(x => new GraphNode(x))
   for (let i = 0; i < nodeArray.length; ++i) {
@@ -1466,13 +1373,11 @@ function sentenceArray2treeNodes(sentence: Array<Token>) {
   return nodeArray
 }
 
-//------------------------------------------------------------------------------
 const miXmlFormatter = new XmlFormatter({
   preferSpaces: true,
   tabSize: 2,
 })
 
-////////////////////////////////////////////////////////////////////////////////
 export function serializeMiDocument(root: AbstractElement, prettify = false) {
   root.evaluateElements('//*').forEach(x => sortAttributes(x))
 
@@ -1486,7 +1391,6 @@ export function serializeMiDocument(root: AbstractElement, prettify = false) {
 }
 
 
-//------------------------------------------------------------------------------
 const ATTR_ORDER = arr2indexObj(['id', 'dep', 'tags', 'lemma', 'anna', 'mark'], 1)
 function sortAttributes(element: AbstractElement) {
   let attributes = Object.entries(element.attributesObj()).sort(([a], [b]) => {

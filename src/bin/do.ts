@@ -8,7 +8,6 @@ import { logErrAndExit } from '../utils.node'
 
 
 
-//------------------------------------------------------------------------------
 async function main() {
   const args = require('minimist')(process.argv.slice(2), {
     boolean: [
@@ -68,7 +67,6 @@ async function main() {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(logErrAndExit)
 }

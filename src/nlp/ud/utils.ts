@@ -13,7 +13,6 @@ import { cyrToJirechekish } from '../../translit_jirechkish'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos' | 'ud'
   morphOnly?: boolean
@@ -22,7 +21,6 @@ export interface Sentence2conlluParams {
   translit?: boolean
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function sentence2conllu(
   tokens: Array<Token>,
   multitokens: Array<MultitokenDescriptor>,
@@ -175,12 +173,10 @@ export function sentence2conllu(
   return lines.join('\n')
 }
 
-//------------------------------------------------------------------------------
 function escapeMiscVal(val: string) {
   return val.replace(/\\/g, '\\\\').replace(/\|/g, '\\p')
 }
 
-//------------------------------------------------------------------------------
 function buildConlluIndexMap(tokens: Array<Token>) {
   let ret = new Array<string>()
   let basicIndex = 0
@@ -198,7 +194,6 @@ function buildConlluIndexMap(tokens: Array<Token>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2conllu(stream: Iterable<Token>) {
   let tokenIndex = 1
   let sentenceId = 1
@@ -234,12 +229,10 @@ export function* tokenStream2conllu(stream: Iterable<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function sentenceIdLine(id: number | string) {
   return `# sent_id = ${id}`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2bratPlaintext(stream: Iterable<Array<Token>>) {
   for (let sentence of stream) {
     let toyield = tokenSentence2bratPlaintext(sentence)
@@ -249,17 +242,14 @@ export function* tokenStream2bratPlaintext(stream: Iterable<Array<Token>>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenSentence2bratPlaintext(sentence: Array<Token>) {
   return sentence.filter(x => x.isWord()).map(x => x.getForm()).join(' ')
 }
 
-//------------------------------------------------------------------------------
 function hasAmbigCoordDependents(node: GraphNode<Token>) {
   return node.children.some(x => isAmbigCoordModifier(x))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>) {
   let offset = 0
   let t = 1
@@ -345,7 +335,6 @@ export function* tokenStream2bratSynt(sentences: Array<Array<GraphNode<Token>>>)
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
   let offset = 0
   let t = 1
@@ -397,7 +386,6 @@ export function* tokenStream2bratCoref(sentences: Array<Array<Token>>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function mustHighlightHoles(sentence: Array<GraphNode<Token>>) {
   let numRoots = mu(sentence).count(x => isRootOrHole(x))
   if (numRoots === 1) {
@@ -411,7 +399,6 @@ function mustHighlightHoles(sentence: Array<GraphNode<Token>>) {
   return false
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* conll2sentenceStream(lines: Iterable<string>) {
   let buf: Array<Array<string>> = []
   for (let line of lines) {
@@ -426,12 +413,10 @@ export function* conll2sentenceStream(lines: Iterable<string>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function canBeConlluLine(line: string) {
   return !/^\s*#/.test(line) && /^([^\t]+\t){9}[^\t]+$/.test(line)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function interp2udVertFeatures(interp: MorphInterp) {
   let { pos, features } = toUd(interp)
   // CAUTION: sort this list by js comparator, not by UD site
@@ -460,7 +445,6 @@ export function interp2udVertFeatures(interp: MorphInterp) {
   ]
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function mergeAmbiguityFeaturewise(arr: Array<Array<any>>) {
   let ret = []
   for (let i = 0; i < arr[0].length; ++i) {
@@ -482,13 +466,11 @@ export function mergeAmbiguityFeaturewise(arr: Array<Array<any>>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface BratArrow {
   relation: string
   head: BratSpan
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface BratSpan {
   index: number
   form: string
@@ -497,7 +479,6 @@ export interface BratSpan {
   comment?: string
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseBratFile(lines: Iterable<string>) {
   let tokens: Dict<BratSpan> = {}
   let counter = 0
@@ -545,22 +526,18 @@ export function parseBratFile(lines: Iterable<string>) {
   return Object.values(tokens).sort((a, b) => a.index - b.index)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function stripSubrel(rel: string) {
   return trimAfterFirst(rel, ':')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function changeUniversal(specRel: string, to: string) {
   return `${to}:${trimBeforeFirst(specRel, ':')}`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uEq(rel: string, unirel: string) {  // universally equals
   return rel === unirel || rel && rel.startsWith(`${unirel}:`)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uEqSome(rel: string, unirels: Array<string>) {  // universally equals
   return unirels.some(x => uEq(rel, x))
 }

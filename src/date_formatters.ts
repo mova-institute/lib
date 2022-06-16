@@ -2,7 +2,6 @@ import { zerofill } from './string'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function formatSpanHhMmSs(msec: number) {
   let seconds = Math.floor(msec / 1000)
   let ss = seconds % 60
@@ -12,7 +11,6 @@ export function formatSpanHhMmSs(msec: number) {
   return [hh, mm, ss].map(x => zerofill(x, 2)).join(':')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function formatSpanMmSs(msec: number) {
   let seconds = Math.floor(msec / 1000)
   let ss = seconds % 60

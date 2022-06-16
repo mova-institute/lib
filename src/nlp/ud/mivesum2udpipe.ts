@@ -11,7 +11,6 @@ import minimist from 'minimist'
 
 
 
-//------------------------------------------------------------------------------
 async function main() {
   const args = minimist(process.argv.slice(2))
 
@@ -46,7 +45,6 @@ async function main() {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(logErrAndExit)
 }

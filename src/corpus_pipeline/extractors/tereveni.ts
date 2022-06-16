@@ -7,7 +7,6 @@ import { textOf, nameFromLoginAtDomain } from './utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(html: string) {
   let root = parseHtml(html)
   let posts = root.evaluateElements('//div[contains(@class, "post_wrap")]').toArray()
@@ -35,7 +34,6 @@ export function* streamDocs(html: string) {
   }
 }
 
-//------------------------------------------------------------------------------
 function getPostParagraphs(contentRoot: AbstractElement) {
   let ret = new Array<string>()
   let buf = ''

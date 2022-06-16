@@ -4,7 +4,6 @@ import { linesBackpressedStdPipeable } from '../../utils.node'
 import { unescape } from 'he'
 
 
-//------------------------------------------------------------------------------
 function main() {
   linesBackpressedStdPipeable((line, writer) => {
     if (!line.startsWith('<')) {
@@ -14,7 +13,6 @@ function main() {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

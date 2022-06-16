@@ -10,11 +10,9 @@ import { mu } from '../mu'
 
 
 
-//------------------------------------------------------------------------------
 const collator = new Intl.Collator('uk-UA')
 const NONLEMMA_PADDING = '  '
 
-////////////////////////////////////////////////////////////////////////////////
 export class DictCorpVizIterator {
   private lineIndex = -1
   private lemma: string
@@ -44,7 +42,6 @@ export class DictCorpVizIterator {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* iterateDictCorpVizLines(lines: Iterable<string>) {
   let iterator = new DictCorpVizIterator()
   for (let line of lines) {
@@ -66,7 +63,6 @@ function* chunkLexemes(lines: Iterable<string>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 let expandableFlags = [
   /:pers|:refl|:dem|:int|:rel|:neg|:ind|:gen|:emph/g,
   /:rv_rod|:rv_dav|:rv_zna|:rv_oru|:rv_mis/g,
@@ -95,7 +91,6 @@ export function* expandDictCorpViz(lines: Iterable<string>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* domesticateDictCorpViz(fileStr: string) {
   let lines = mu(fileStr.split('\n'))
     .filter(x => !/^\s*$/.test(x))
@@ -145,14 +140,12 @@ export function* domesticateDictCorpViz(fileStr: string) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function test(fileStr: string) {
   for (let { lemmaTag, tag } of iterateDictCorpVizLines(fileStr.split('\n'))) {
     MorphInterp.fromVesumStr(tag, undefined, lemmaTag)
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function presentTagsForDisamb(interps: Array<IStringMorphInterp>) {
   let mainTags = new Array<IStringMorphInterp>()
   let auxTags = new Array<IStringMorphInterp>()
@@ -163,7 +156,6 @@ export function presentTagsForDisamb(interps: Array<IStringMorphInterp>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function presentTagsForDisambOneBlock(interps: Array<IStringMorphInterp>) {
   let splitted = interps.map((x, index) => ({ index, lemma: x.lemma, flags: x.flags.split(':') }))
   let sorted = stableSort(splitted, (a, b) => compareTags(MorphInterp.fromVesum(a.flags), MorphInterp.fromVesum(b.flags)))
@@ -198,7 +190,6 @@ export function presentTagsForDisambOneBlock(interps: Array<IStringMorphInterp>)
   return ret
 }
 
-//------------------------------------------------------------------------------
 function alignTagList(flags: Array<Array<string>>) {
   let ret = new Array<Array<Array<string>>>()  // [pos][tag][flag]
 
@@ -240,7 +231,6 @@ function alignTagList(flags: Array<Array<string>>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findUnidentifiableRows(fileStr: string) {
   let set = new Set<string>()
   for (let { form, tag, lemma } of iterateDictCorpVizLines(fileStr.split('\n'))) {
@@ -252,7 +242,6 @@ export function findUnidentifiableRows(fileStr: string) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 const paradigmExplanations = new Map([
   [/</, 'істота'],
   [/\+/, 'прізвище'],
@@ -294,7 +283,6 @@ export function* gatherXps(lines: Iterable<string>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function isAdditionalTag(flags: string) {
   return /:&noun|:(in)?animish/.test(flags)
 }

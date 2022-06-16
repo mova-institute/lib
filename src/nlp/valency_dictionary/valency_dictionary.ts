@@ -6,21 +6,18 @@ import { CoolSet } from '../../data_structures/cool_set'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export const enum ValencyCase {
   intransitive,  // 0, 0_acc, '' // немає obj/ccomp
   accusative,  // {}, acc, acc_* не opt
   // optional, // acc_opt.*, acc|
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export const enum Valency {
   intransitive,
   accusative,
   ambiguous,
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class ValencyDict {
   valencies = new DefaultMap<string, CoolSet<ValencyCase>>(CoolSet)
   gerund2verb = new DefaultMap<string, CoolSet<string>>(CoolSet)
@@ -161,7 +158,6 @@ export class ValencyDict {
   }
 }
 
-//------------------------------------------------------------------------------
 function normalizeLemma(val: string) {
   let ret = normalizeApostrophes(val, `'`)
   ret = removeCombiningAccent(ret)

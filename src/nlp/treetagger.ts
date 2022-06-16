@@ -15,14 +15,12 @@ import { join } from 'path'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export interface Args {
   corpusPath: string
   outPath: string
   vesumPath: string
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function build4TreeTagger(args: Args) {
   mkdirpSync(args.outPath)
   let trainFile = fs.openSync(join(args.outPath, 'train.txt'), 'w')
@@ -95,7 +93,6 @@ export function build4TreeTagger(args: Args) {
   fs.writeFileSync(join(args.outPath, 'lexicon.txt'), array.join('\n'))
 }
 
-//------------------------------------------------------------------------------
 function isJohojiji(interp: MorphInterp) {
   return (interp.lemma === 'його' || interp.lemma === 'її') && interp.isAdjective() && interp.isPronominal()
 }

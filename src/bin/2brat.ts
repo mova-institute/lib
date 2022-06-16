@@ -16,13 +16,11 @@ import * as g from '../nlp/ud/uk_grammar'
 
 
 
-//------------------------------------------------------------------------------
 interface Args {
   maxWordsPerFile: number
   dest: string
 }
 
-//------------------------------------------------------------------------------
 interface BratZoneConfig {
   enabled: boolean
   dirPath: Array<string>
@@ -40,7 +38,6 @@ const zones: Array<BratZoneConfig> = [
   }
 ]
 
-//------------------------------------------------------------------------------
 function main() {
   const args = minimist<Args>(process.argv.slice(2), {
     default: {
@@ -75,7 +72,6 @@ function main() {
   zones.forEach(x => doGeneric(x, allSentences, args.dest))
 }
 
-//------------------------------------------------------------------------------
 function doGeneric(
   config: BratZoneConfig,
   sentences: SentenceStream,
@@ -103,7 +99,6 @@ function doGeneric(
   }
 }
 
-//------------------------------------------------------------------------------
 function doCoref(
   tokens: Array<Token>,
   dest: string,
@@ -137,7 +132,6 @@ function doCoref(
   }
 }
 
-//------------------------------------------------------------------------------
 function doUd(
   sentenceStream: SentenceStream,
   maxWordsPerFile: number,
@@ -161,7 +155,6 @@ function doUd(
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

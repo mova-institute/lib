@@ -37,7 +37,6 @@ const docFormatBooktypes = [
   'Спогади',
 ]
 
-////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer }) {
   if (filePath.endsWith('.meta.html')) {
     return
@@ -150,7 +149,6 @@ export function* streamDocs(filePath: string, opts: { analyzer: MorphAnalyzer })
   }
 }
 
-//------------------------------------------------------------------------------
 function processEpub(dataPath: string) {
   // caution, out of order possible
   return glob.sync(`${dataPath}/**/*.{html,xhtml}`)
@@ -162,7 +160,6 @@ function processEpub(dataPath: string) {
   // return els
 }
 
-//------------------------------------------------------------------------------
 function* processPdf(dataPath: string, meta, analyzer: MorphAnalyzer) {
   let hasImages = !!getNumImagesInPdfSync(dataPath)
   let hasFonts = !!getNumFontsInPdfSync(dataPath)
@@ -182,7 +179,6 @@ function* processPdf(dataPath: string, meta, analyzer: MorphAnalyzer) {
   }
 }
 
-//------------------------------------------------------------------------------
 function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
   let year = getTableValue(root, 'Написано')
   year = year.split(/\s/)[0]
@@ -224,23 +220,19 @@ function extractMeta(root: AbstractElement) /*: CorpusDocumentAttributes*/ {
   }
 }
 
-//------------------------------------------------------------------------------
 function getTableValue(root: AbstractElement, key: string) {
   return root.evaluateString(
     `string(//table[@class="books"]//strong[text()="${key}:"]/parent::*/following-sibling::td/text())`)
 }
 
-//------------------------------------------------------------------------------
 function getTextByClassName(root: AbstractElement, elName: string, className: string) {
   return root.evaluateString(`string(//${elName}[@class="${className}"]/text())`)
 }
 
-//------------------------------------------------------------------------------
 function hasSmashedEncoding(str: string) {
   return !str.includes('і') || str.includes('Ђ')
 }
 
-//------------------------------------------------------------------------------
 function readFileSyncAutodetect(path: string) {
   let bytes = fs.readFileSync(path)
   let encoding = detectCharacterEncoding(bytes).encoding
@@ -250,7 +242,6 @@ function readFileSyncAutodetect(path: string) {
   }
 }
 
-//------------------------------------------------------------------------------
 function extractTextFromTxt(str: string) {
   return str.replace(/^[\s\S]{0,300}-{9,}/, '')
     .replace(/\n[\s\-]*---\s*КІНЕЦЬ[\s\S]{0,5000}$/, '')
@@ -258,19 +249,16 @@ function extractTextFromTxt(str: string) {
     .replace(/-{5,}[\s\S]+(Бібліографія|Примітки:)([\s\S]{0,10000}|(\[\d+\])+\s+[^\n]+(\n|$))$/, '')
 }
 
-//------------------------------------------------------------------------------
 function killReferences(str: string) {
   return str.replace(/\s\[\d+\]/g, '')
 }
 
-//------------------------------------------------------------------------------
 function normalizeText(str: string) {
   let ret = autofixDirtyText(str)
   ret = killReferences(ret)
   return ret.trim()
 }
 
-//------------------------------------------------------------------------------
 function extractParsFromDocWithLibre(filePath: string) {
   execSync(`timeout 60s soffice --headless --convert-to html `  // hangs for xhtml
     + `"${filePath}" --outdir tmp`)
@@ -294,7 +282,6 @@ function extractParsFromDocWithLibre(filePath: string) {
   return paragraphs
 }
 
-//------------------------------------------------------------------------------
 function getNumImagesInPdfSync(filePath: string) {
   let outLines = execSync(`pdfimages -list "${filePath}" 2> /dev/null`, { encoding: 'utf8' })
     .trim()
@@ -302,7 +289,6 @@ function getNumImagesInPdfSync(filePath: string) {
   return outLines.length - 2
 }
 
-//------------------------------------------------------------------------------
 function getNumFontsInPdfSync(filePath: string) {
   let outLines = execSync(`pdffonts "${filePath}" 2> /dev/null`, { encoding: 'utf8' })
     .trim()
@@ -310,7 +296,6 @@ function getNumFontsInPdfSync(filePath: string) {
   return outLines.length - 2
 }
 
-//------------------------------------------------------------------------------
 function postprocessPdf2txt(txt: string, analyzer: MorphAnalyzer) {
   let pages = txt.trim()
     .split('\f')

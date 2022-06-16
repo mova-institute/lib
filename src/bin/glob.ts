@@ -6,7 +6,6 @@ import * as glob from 'glob'
 import minimist from 'minimist'
 
 
-//------------------------------------------------------------------------------
 function main() {
   let args = minimist(process.argv.splice(2))
 
@@ -19,7 +18,6 @@ function main() {
   }
 }
 
-//------------------------------------------------------------------------------
 function globAndWrite(globStr: string, args) {
   let paths = glob.sync(globStr, args)
   if (paths.length) {
@@ -28,7 +26,6 @@ function globAndWrite(globStr: string, args) {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

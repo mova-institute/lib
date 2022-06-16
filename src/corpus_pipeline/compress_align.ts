@@ -4,7 +4,6 @@ import { forEachLine } from '../utils.node'
 
 
 
-//------------------------------------------------------------------------------
 async function main() {
   try {
     let compressorA = new Compressor()
@@ -34,7 +33,6 @@ async function main() {
   }
 }
 
-//------------------------------------------------------------------------------
 class Compressor {
   private prevA: string
   private prevB: string
@@ -71,7 +69,6 @@ class Compressor {
   }
 }
 
-//------------------------------------------------------------------------------
 function write(left: string, right: string) {
   left = left.replace(',-1', '').replace('-1,', '')
   right = right.replace(',-1', '').replace('-1,', '')

@@ -15,7 +15,6 @@ if (require.main === module) {
   main(id2idsGlob, id2iRPath)
 }
 
-//------------------------------------------------------------------------------
 async function main2(id2iLPath: string, id2idsGlob: string, id2iRPath: string) {
   let id2i = readTsvMapSync(id2iLPath)
   readTsvMapSync(id2iRPath, id2i)
@@ -37,7 +36,6 @@ async function main2(id2iLPath: string, id2idsGlob: string, id2iRPath: string) {
   }
 }
 
-//------------------------------------------------------------------------------
 async function main(id2idsGlob: string, id2iRPath: string) {
   try {
     let id2iR = readTsvMapSync(id2iRPath)
@@ -80,7 +78,6 @@ async function main(id2idsGlob: string, id2iRPath: string) {
   }
 }
 
-//------------------------------------------------------------------------------
 function readTeiMapping(target: Map<string, Array<string>>, path: string) {
   for (let line of linesSync(path)) {
     if (line.startsWith('<link ')) {
@@ -113,7 +110,6 @@ function readTeiMapping(target: Map<string, Array<string>>, path: string) {
   return target
 }
 
-//------------------------------------------------------------------------------
 function* buildSketchAlingmentMap(id2indexMap: Map<string, string>, alingmentGlob: string) {
   for (let path of globSync(alingmentGlob)) {
     // console.error(path)
@@ -128,7 +124,6 @@ function* buildSketchAlingmentMap(id2indexMap: Map<string, string>, alingmentGlo
   }
 }
 
-//------------------------------------------------------------------------------
 function indexArr2val(indexes: Array<string>) {
   if (!indexes.length) {
     return '-1'

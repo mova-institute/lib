@@ -26,7 +26,6 @@ interface Args {
   udpipeModel?: string
 }
 
-//------------------------------------------------------------------------------
 async function main() {
   const args = minimist<Args>(process.argv.slice(2))
   exitOnStdoutPipeError()
@@ -68,7 +67,6 @@ async function main() {
   writer.flush()
 }
 
-//------------------------------------------------------------------------------
 function mergeConlluIntoVert(
   vertLines: Array<string>,
   conlluCells: Mu<Array<string>>,
@@ -97,7 +95,6 @@ function mergeConlluIntoVert(
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(e => console.error(e))
 }

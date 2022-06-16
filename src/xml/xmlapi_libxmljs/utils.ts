@@ -4,7 +4,6 @@ import { LibxmljsAttribute } from './libxmljs_attribute'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElement(wrapee): LibxmljsNode | LibxmljsElement {
   switch (wrapee.type()) {
     case 'element':
@@ -18,7 +17,6 @@ export function nodeOrElement(wrapee): LibxmljsNode | LibxmljsElement {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElementOrNull(wrapee): LibxmljsNode | LibxmljsElement {
   if (!wrapee) {
     return null
@@ -26,7 +24,6 @@ export function nodeOrElementOrNull(wrapee): LibxmljsNode | LibxmljsElement {
   return nodeOrElement(wrapee)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElementOrAttribute(wrapee): LibxmljsNode | LibxmljsElement | LibxmljsAttribute {
   switch (wrapee.type()) {
     case 'element':
@@ -42,7 +39,6 @@ export function nodeOrElementOrAttribute(wrapee): LibxmljsNode | LibxmljsElement
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNode(wrapee) {
   switch (wrapee.type()) {
     case 'element':

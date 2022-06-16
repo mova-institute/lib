@@ -82,7 +82,6 @@ if (require.main === module) {
 }
 
 
-//------------------------------------------------------------------------------
 function normalizeArgs(args: Args) {
   if (args.forMorphDisamb) {
     args.numerate = true
@@ -93,7 +92,6 @@ function normalizeArgs(args: Args) {
   }
 }
 
-//------------------------------------------------------------------------------
 function main(args: Args) {
   let inputStr: string
   if (args.text) {
@@ -229,7 +227,6 @@ function main(args: Args) {
 }
 
 
-//------------------------------------------------------------------------------
 function createAnalyzer(args: Args) {
   let dictName = args.dict || 'vesum'
   let dictDir = getLibRootRelative('../data/dict', dictName)

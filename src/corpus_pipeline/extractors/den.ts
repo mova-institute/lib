@@ -5,7 +5,6 @@ import { GENITIVE_UK_MON_MAP, textOf, textsOf } from './utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
   try {
     var root = parseHtml(html)

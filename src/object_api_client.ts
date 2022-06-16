@@ -4,7 +4,6 @@ import { Agent } from 'http'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class ObjApiClient {
   agent = new Agent({ keepAlive: true })
 

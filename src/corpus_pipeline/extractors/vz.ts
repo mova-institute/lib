@@ -4,7 +4,6 @@ import { CorpusDoc } from '../doc_meta'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
   let root = tryParseHtml(html)
   if (!root) {

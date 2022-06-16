@@ -6,7 +6,6 @@ export const COMPARATOR = new Intl.Collator('uk-UA').compare
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function compileDict(lexemes: Array<Array<[string, string]>>) {
   let allTags = new NumeratedSet<string>()
   let allWords = new Array<[string, number, number]>()
@@ -60,7 +59,6 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* lexemes(lines: Array<string>) {
   if (!lines.length) {
     return []
@@ -82,7 +80,6 @@ export function* lexemes(lines: Array<string>) {
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 function extractParadigm(lexeme: Array<[string, string]>, knownPrefixes) {
   let forms = lexeme.map(x => x[0])
   let stem = longestCommonSubstring(forms)
@@ -97,7 +94,6 @@ function extractParadigm(lexeme: Array<[string, string]>, knownPrefixes) {
   return { stem, forms, paradigm: { prefixes, suffixes, tags } }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 function linearizeParadigm(paradigm) {  // todo: type
   let ret = new Uint16Array(3 * paradigm.prefixes.length)
   let wiew = new DataView(ret.buffer)

@@ -1,4 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
 export class DoubleLinkedNode<T> {
   private prev: DoubleLinkedNode<T> | undefined
   private next: DoubleLinkedNode<T> | undefined

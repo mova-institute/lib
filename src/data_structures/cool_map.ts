@@ -1,4 +1,3 @@
-//////////////////////////////////////////////////////////////////////////////////
 export class CoolMap<K, V> extends Map<K, V> {
   addAll(iterable: Iterable<[K, V]>) {
     for (let [k, v] of iterable) {
@@ -13,7 +12,6 @@ export class CoolMap<K, V> extends Map<K, V> {
 
 }
 
-//////////////////////////////////////////////////////////////////////////////////
 export class CoolMapInt<K> extends CoolMap<K, number> {
   inc(key: K) {
     if (super.has(key)) {

@@ -3,7 +3,6 @@ import { allMatchesArr } from '../string'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class StanfordTaggerClient {
   constructor(private port: number, private host = 'localhost') {
 

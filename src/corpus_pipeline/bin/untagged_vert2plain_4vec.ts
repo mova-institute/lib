@@ -5,7 +5,6 @@ import { unescape } from 'he'
 
 
 
-//------------------------------------------------------------------------------
 function main() {
   let newContextOn = new RegExp(process.argv[2] || '^</doc>')
 
@@ -27,7 +26,6 @@ function main() {
   process.stdout.write('\n')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

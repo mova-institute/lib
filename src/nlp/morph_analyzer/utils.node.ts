@@ -4,7 +4,6 @@ import { join } from 'path'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeCompiledDict(path: string, compiledDict) {   // todo: type
   writeFileSync(path + '/tags.json', JSON.stringify(compiledDict.tags), 'utf8')
   writeFileSync(path + '/suffixes.json', JSON.stringify(compiledDict.suffixes), 'utf8')

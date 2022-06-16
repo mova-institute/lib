@@ -1,4 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
 export abstract class IStringMorphInterp {
   flags: string
   lemma: string
@@ -8,7 +7,6 @@ export abstract class IStringMorphInterp {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class StringMorphInterp implements IStringMorphInterp {
   constructor(public flags: string, public lemma: string) {
   }

@@ -23,7 +23,6 @@ const COOKIE_CONFIG = {
   httpOnly: true,
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function callDb(req, res: express.Response, client: PgClient) {
   /*if (dbProceduresAllowedToBeCalledDirectly.has(req.query.name)) {
    let result = await client.call(req.query.name, req.user.id, ...req.query.params)
@@ -33,18 +32,15 @@ export async function callDb(req, res: express.Response, client: PgClient) {
   // todo
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getRoles(req, res: express.Response, client: PgClient) {
   res.json(req.bag.user && req.bag.user.roles || null)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getInviteDetails(req, res: express.Response, client: PgClient) {
   let details = await client.call('get_invite_details', req.query.token)
   res.json(details)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function join(req, res: express.Response, client: PgClient) {  // todo: implement uppriv, prevent underpriv
 
   let invite = await client.select('invite', 'token=$1', req.body.invite)
@@ -95,7 +91,6 @@ export async function join(req, res: express.Response, client: PgClient) {  // t
   res.json(user.roles)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function login(req, res: express.Response, client: PgClient) {
   let login = await client.select('login', 'auth_id=$1', req.user.sub)
   if (!login) {
@@ -111,12 +106,10 @@ export async function login(req, res: express.Response, client: PgClient) {
   res.cookie('accessToken', login.accessToken, COOKIE_CONFIG).json(user.roles)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function logout(req: IReq, res: express.Response, client: PgClient) {
   res.clearCookie('accessToken').json('ok')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function checkDocName(req: IReq, res: express.Response, client: PgClient) {
   if (req.bag.user.roles[req.query.projectName as string] !== 'supervisor') {
     throw new HttpError(400)
@@ -126,7 +119,6 @@ export async function checkDocName(req: IReq, res: express.Response, client: PgC
   res.json({ isFree: false })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function addText(req: IReq, res: express.Response, client: PgClient) {  // todo
   let projectId = await client.select1('project', 'id', 'name=$1', req.body.projectName)
   if (projectId === null) {
@@ -190,7 +182,6 @@ export async function addText(req: IReq, res: express.Response, client: PgClient
   res.json({ result: 'ok' })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function assignTask(req: IReq, res: express.Response, client: PgClient) {  // todo: rename +forAnnotation?
   if (!req.bag.user.roles[req.query.projectName  as string]) {
     throw new HttpError(400)
@@ -202,7 +193,6 @@ export async function assignTask(req: IReq, res: express.Response, client: PgCli
   res.json(wrapData(id))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function assignResolveTask(req: IReq, res: express.Response, client: PgClient) {
   if (!(await client.call('assign_task_for_resolve', req.bag.user.id, req.query.id))) {
     throw new HttpError(400)
@@ -212,7 +202,6 @@ export async function assignResolveTask(req: IReq, res: express.Response, client
   res.json(wrapData(ret))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function disownTask(req: IReq, res: express.Response, client: PgClient) {
   let task = await client.call('get_task', req.bag.user.id, req.query.id)
   if (!canDisownTask(task)) {
@@ -223,25 +212,21 @@ export async function disownTask(req: IReq, res: express.Response, client: PgCli
   res.json('ok')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getResolvePool(req: IReq, res: express.Response, client: PgClient) {
   let ret = await client.call('get_resolve_pool', req.bag.user.id)
   res.json(wrapData(ret))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getTaskList(req: IReq, res: express.Response, client: PgClient) {
   let ret = await client.call('get_task_list', req.bag.user.id, req.query.step, null)
   res.json(wrapData(ret))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getTaskCount(req: IReq, res: express.Response, client: PgClient) {
   let ret = await client.call('get_task_count', req.bag.user.id)
   res.json(wrapData(ret))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getTask(req: IReq, res: express.Response, client: PgClient) {
   let task = await client.call('get_task', req.bag.user.id, req.query.id)
   if (task) {
@@ -261,7 +246,6 @@ export async function getTask(req: IReq, res: express.Response, client: PgClient
   res.json(wrapData(task))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function saveTask(req: IReq, res: express.Response, client: PgClient) {
   let ret: any = { msg: 'ok' }
 
@@ -343,7 +327,6 @@ export async function saveTask(req: IReq, res: express.Response, client: PgClien
   res.json(ret)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getAnnotatedDoc(req: IReq, res: express.Response, client: PgClient) {
   // todo: credentials
   let originalXml = await client.select1('document', 'content', 'id=$1', req.query.id)
@@ -409,7 +392,6 @@ export async function getAnnotatedDoc(req: IReq, res: express.Response, client: 
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function getStats(req: IReq, res: express.Response, client: PgClient) {
   const QUERY = `
   select * from annotator.fragment_version
@@ -439,9 +421,6 @@ export async function getStats(req: IReq, res: express.Response, client: PgClien
   res.end(tosend)
 }
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 async function onReviewConflicts(task, client: PgClient) {
 
   for (let fragment of task.fragments) {
@@ -481,12 +460,10 @@ async function onReviewConflicts(task, client: PgClient) {
   }
 }
 
-//------------------------------------------------------------------------------
 function wrapData(data) {
   return { data }
 }
 
-//------------------------------------------------------------------------------
 function isReinterpNeeded(task) {
   return (task.step === 'annotate' || task.step === 'review')
     && task.type.find(x => x === 'disambiguate_morphologically')

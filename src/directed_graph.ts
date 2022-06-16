@@ -2,30 +2,25 @@ import { mu } from './mu'
 import { last, shallowEqualObj } from './lang'
 
 
-////////////////////////////////////////////////////////////////////////////////
 export type DirectedGraphPath<NodeAttrib, ArrowAttrib> = Array<Arrow<NodeAttrib, ArrowAttrib>>
 
-////////////////////////////////////////////////////////////////////////////////
 export interface PathTraversalParams<NodeAttrib, ArrowAttrib> {
   cutAndFilter?: (path: DirectedGraphPath<NodeAttrib, ArrowAttrib>) => any
   cutAndInclude?: (path: DirectedGraphPath<NodeAttrib, ArrowAttrib>) => any
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface Arrow<NodeAttrib, ArrowAttrib> {
   start: DirectedGraphNode<NodeAttrib, ArrowAttrib>
   end: DirectedGraphNode<NodeAttrib, ArrowAttrib>
   attrib: ArrowAttrib
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export const enum DupePolicy {
   insert,
   ignore,
   throw,
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
   readonly incomingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()
   readonly outgoingArrows = new Array<Arrow<NodeAttrib, ArrowAttrib>>()

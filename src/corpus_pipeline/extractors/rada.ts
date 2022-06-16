@@ -9,14 +9,12 @@ import he = require('he')
 
 
 
-//------------------------------------------------------------------------------
 const lineClassifiers = [
   x => x.startsWith('<p align=center>'),
   x => x.startsWith('<p>'),
   x => true,
 ]
 
-////////////////////////////////////////////////////////////////////////////////
 export function extract(fileContents: string): CorpusDoc {
   /*
     Стенограма пленарного засідання

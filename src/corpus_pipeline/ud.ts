@@ -5,13 +5,11 @@ import { ConlluToken, ConlluMultitoken } from '../nlp/ud/conllu'
 import * as _ from 'lodash'
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenObj2verticalLineUk(token: ConlluToken) {
   return token2verticalLineUk(token.form, token.lemma, token.upos, token.feats as any,
     token.rel, token.index, token.head)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenOrMulti2verticalLineGeneric(
   token: ConlluToken,
   multitoken: ConlluMultitoken,
@@ -30,13 +28,11 @@ export function tokenOrMulti2verticalLineGeneric(
   return cols.join('\t')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tokenObj2verticalColsGeneric(token: ConlluToken, featsOrder: Array<string>) {
   return token2verticalColsGeneric(token.form, token.lemma, token.upos, token.feats as any,
     featsOrder, token.rel, token.index, token.head, token.misc.SpaceAfter !== 'No')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function token2verticalLineUk(
   form: string,
   lemma: string,
@@ -103,7 +99,6 @@ export function token2verticalLineUk(
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function token2verticalColsGeneric(
   form: string,
   lemma: string,
@@ -142,7 +137,6 @@ export function token2verticalColsGeneric(
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVerbForm): UdPos {
   if (upos === 'PROPN' || upos === 'PRON') {
     return 'NOUN'
@@ -163,7 +157,6 @@ export function domesticateUdPos(upos: UdPos, numType: UdNumType, verbForm: UdVe
   return upos
 }
 
-//------------------------------------------------------------------------------
 function prepareUrel(rel: string | undefined) {
   let ret: string
   if (rel) {
@@ -172,7 +165,6 @@ function prepareUrel(rel: string | undefined) {
   return ret
 }
 
-//------------------------------------------------------------------------------
 function prepareRelativeHead(head: number, index: number) {
   if (head === 0) {
     return 0
@@ -183,12 +175,10 @@ function prepareRelativeHead(head: number, index: number) {
   return head - index
 }
 
-//------------------------------------------------------------------------------
 function prepareFeatValue(feat: (string | number)) {
   return feat === undefined ? '' : feat.toString().toLowerCase()
 }
 
-//------------------------------------------------------------------------------
 function feats2line(feats: Array<string | number>) {
   return feats.map(x => prepareFeatValue(x)).join('\t')
 }

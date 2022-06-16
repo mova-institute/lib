@@ -5,7 +5,6 @@ import { firstMatch } from '../../string'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
   let root = tryParseHtml(html)
   if (!root) {

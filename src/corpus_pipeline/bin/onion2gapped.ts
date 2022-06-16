@@ -4,14 +4,12 @@ import { linesBackpressedStdPipeable } from '../../utils.node'
 
 
 
-//------------------------------------------------------------------------------
 const enum GapType {
   none,
   par,
   doc,
 }
 
-//------------------------------------------------------------------------------
 async function main() {
   let gap = GapType.none
   await linesBackpressedStdPipeable((line, writer) => {
@@ -32,7 +30,6 @@ async function main() {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

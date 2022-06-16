@@ -8,7 +8,6 @@ if (require.main === module) {
   main()
 }
 
-//------------------------------------------------------------------------------
 async function main() {
   try {
     await id2i(process.stdin, process.stdout)
@@ -17,7 +16,6 @@ async function main() {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function id2i(input: NodeJS.ReadableStream, output: NodeJS.WritableStream) {
   let i = 0
   return forEachLine(input as any, line => {
@@ -31,12 +29,10 @@ export function id2i(input: NodeJS.ReadableStream, output: NodeJS.WritableStream
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isSentenceStart(line: string) {
   return /^<s\b/.test(line)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function getId(line: string) {
   let match = line.match(/id="([^"]+)"/)
   if (match) {

@@ -10,7 +10,6 @@ import { createMorphAnalyzerSync } from './morph_analyzer/factories.node'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function toPlaintext() {
   linesBackpressedStdPipeable((line, writer) => {
     if (!line.trim()) {
@@ -21,14 +20,12 @@ export function toPlaintext() {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface EvaluateArgs {
   golden: string
   testee: string
   outDir: string
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function evaluate(args: EvaluateArgs) {
   args.outDir = args.outDir || dirname(args.testee)
 
@@ -70,7 +67,6 @@ export function evaluate(args: EvaluateArgs) {
   joinToFileSync(join(args.outDir, `${dest}.txt`), outLinesTestee)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface TestCase {
   plaintext: string
   johojiji: string
@@ -80,7 +76,6 @@ export interface TestCase {
   hasToBe: 'adj' | 'noun'
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseGoldSentence(line) {
   line = line.replace(/\s+/g, ' ')
 
@@ -116,7 +111,6 @@ export function parseGoldSentence(line) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function calcValencyDictCoverage(args) {
   let [morphDictDir, valDictDir, wordlist] = args._
   let analyzer = createMorphAnalyzerSync(morphDictDir)
@@ -146,7 +140,6 @@ export function calcValencyDictCoverage(args) {
 }
 
 
-//------------------------------------------------------------------------------
 function makeAnnotatedLine(testCase: TestCase) {
   return insert(testCase.plaintext, `/${testCase.hasToBe}`,
     testCase.johojijiIndex + testCase.johojiji.length)

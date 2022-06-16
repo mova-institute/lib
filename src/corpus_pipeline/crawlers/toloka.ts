@@ -4,7 +4,6 @@ import { Crawler } from './crawler'
 
 
 
-//------------------------------------------------------------------------------
 async function main() {
   let crawler = new Crawler('saved_web')
     .setTimeout(3000)
@@ -16,7 +15,6 @@ async function main() {
   await crawler.seed('https://toloka.to')
 }
 
-//------------------------------------------------------------------------------
 function isTopicPage(path: string) {
   let match = path.match(/^\/t\d+(-\d+)$/)
   if (!match) {
@@ -26,7 +24,6 @@ function isTopicPage(path: string) {
   return !match[1] || !(Number(match[1]) % 30)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

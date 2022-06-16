@@ -3,7 +3,6 @@ import {RedisClientOptions, RedisClientType, createClient} from 'redis'
 import { promisify } from 'util'
 
 
-////////////////////////////////////////////////////////////////////////////////
 // export class RedisClientPromisified {
 //   static create(options?: RedisClientOptions) {
 //     return new RedisClientPromisified(createClient(options))

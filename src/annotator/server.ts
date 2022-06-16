@@ -58,14 +58,12 @@ app.listen(process.argv[2])
 
 
 
-//------------------------------------------------------------------------------
 function errorHandler(err, req, res: express.Response, next) {
   console.error(err)
   console.error(err.stack)
   sendError(res, 500)
 }
 
-//------------------------------------------------------------------------------
 async function preauth(action: string, req: IReq, client: PgClient) {
   if (action === 'login' || action === 'getInviteDetails' || action === 'join') {
     return true
@@ -79,13 +77,11 @@ async function preauth(action: string, req: IReq, client: PgClient) {
   return req.bag.user || action === 'getRoles'
 }
 
-//------------------------------------------------------------------------------
 function reqBag(req, res: express.Response, next) {
   req.bag = req.bag || {}
   next()
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function makeErrObj(code: number, message?: string) {
   return {
     error: {
@@ -95,12 +91,10 @@ export function makeErrObj(code: number, message?: string) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function sendError(res: express.Response, code: number, message?: string) {
   res.status(code).json(makeErrObj(code, message))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class HttpError extends Error {
   constructor(public code: number, public message = '') {
     super(message)

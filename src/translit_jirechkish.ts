@@ -4,7 +4,6 @@ import { APOSTROPHES_COMMON } from './nlp/static'
 
 
 
-//------------------------------------------------------------------------------
 const palatalizationMap = new Map([
   ['д', 'ď'],
   ['з', 'ź'],
@@ -16,20 +15,17 @@ const palatalizationMap = new Map([
   ['ц', 'ć'],
 ])
 
-//------------------------------------------------------------------------------
 const palatalIotations = new Map([
   ['ю', 'u'],
   ['я', 'а'],
   ['є', 'е'],
 ])
 
-//------------------------------------------------------------------------------
 const iotations = new Set([
   ...palatalIotations.keys(),
   'ї'
 ])
 
-//------------------------------------------------------------------------------
 const cyrToLatMap = new Map([
   ['ї', 'ji'],
   ['ю', 'ju'],
@@ -68,7 +64,6 @@ const cyrToLatMap = new Map([
   ['щ', 'šč'],
 ])
 
-//------------------------------------------------------------------------------
 const consonants = new Set([
   'б',
   'г',
@@ -90,7 +85,6 @@ const consonants = new Set([
   'ш',
 ])
 
-////////////////////////////////////////////////////////////////////////////////
 export function cyrToJirechekish(cyrStr: string) {
   // todo: НАКАЗУЮ
   // todo: budžetiv
@@ -131,7 +125,6 @@ export function cyrToJirechekish(cyrStr: string) {
   return ret
 }
 
-//------------------------------------------------------------------------------
 function convertSingle(cyr: string) {
   let lc = cyr.toLowerCase()
   let isUpper = lc !== cyr
@@ -143,7 +136,6 @@ function convertSingle(cyr: string) {
   }
 }
 
-//------------------------------------------------------------------------------
 function toCapitalizedIf(what: string, when: boolean) {
   if (when) {
     return capitalizeFirst(what)

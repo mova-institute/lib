@@ -1,4 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
 export function getEndpoint(lang: string) {
   if (!(lang in udpipeApiLangMap)) {
     return
@@ -11,10 +10,8 @@ export function getEndpoint(lang: string) {
   return { url, model }
 }
 
-//------------------------------------------------------------------------------
 const LINDAT_API_ENDPOINT = 'https://lindat.mff.cuni.cz/services/udpipe/api/'
 
-//------------------------------------------------------------------------------
 const udpipeApiLangMap = {
   'uk': {
     model: 'uk-180610',
@@ -46,8 +43,7 @@ const udpipeApiLangMap = {
   'sk': {
     model: 'slovak-snk-ud-2.3-181115',
   },
-  ////////////////////////
-  'ar': {
+    'ar': {
     model: 'arabic-padt-ud-2.3-181115',
   },
   'bg': {

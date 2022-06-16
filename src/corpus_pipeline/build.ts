@@ -15,7 +15,6 @@ import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
 
 
 
-//------------------------------------------------------------------------------
 interface SpecificExtractor {
   streamDocs?(inputStr: string, opts: {
     filename?: string
@@ -24,7 +23,6 @@ interface SpecificExtractor {
   extract?(inputStr: string): CorpusDoc
 }
 
-//------------------------------------------------------------------------------
 function main(args: Args) {
   let outDir = join(args.workspace, args.part)
 
@@ -67,7 +65,6 @@ function main(args: Args) {
   }
 }
 
-//------------------------------------------------------------------------------
 function globInforming(inputRoot: string, inputGlob = '**/*') {
   let globStr = join(inputRoot, inputGlob)
   console.log(`globbing input files: ${globStr}`)
@@ -76,7 +73,6 @@ function globInforming(inputRoot: string, inputGlob = '**/*') {
   return ret
 }
 
-//------------------------------------------------------------------------------
 interface Args {
   workspace: string
   part: string
@@ -84,7 +80,6 @@ interface Args {
   inputRoot: string
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   const args = minimist<Args>(process.argv.slice(2), {
     alias: {

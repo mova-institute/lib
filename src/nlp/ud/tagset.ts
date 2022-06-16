@@ -357,7 +357,6 @@ export class UdFeats {
 }
 /* tslint:enable:variable-name */
 
-//------------------------------------------------------------------------------
 function mapFeatureValue2ud(featureName, value) {
   if (value === undefined) {
     return undefined
@@ -382,7 +381,6 @@ function mapFeatureValue2ud(featureName, value) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function toUd(interp: MorphInterp) {
   interp.denormalize()  // todo: remove
 
@@ -504,7 +502,6 @@ export function toUd(interp: MorphInterp) {
   return { pos, features }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 const comparator = new Intl.Collator('en', { sensitivity: 'base' }).compare
 export function udFeatures2conlluString(features: UdFeats, separator = '|') {
   return Object.keys(features)
@@ -513,7 +510,6 @@ export function udFeatures2conlluString(features: UdFeats, separator = '|') {
     .join(separator)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function ud2conlluishString(pos: UdPos, features: UdFeats, separator = '|') {
   let ret = pos
   let featuresConllu = udFeatures2conlluString(features, separator)
@@ -523,13 +519,11 @@ export function ud2conlluishString(pos: UdPos, features: UdFeats, separator = '|
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function toConlluishString(interp: MorphInterp) {
   let { pos, features } = toUd(interp)
   return ud2conlluishString(pos, features)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function toUdString(interp: MorphInterp) {
   return udFeatures2conlluString(toUd(interp).features)
 }

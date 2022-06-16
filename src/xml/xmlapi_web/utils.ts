@@ -4,7 +4,6 @@ import { WebapiAttribute } from './webapi_attribute'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElement(wrapee: Node): WebapiNode | WebapiElement {
   switch (wrapee.nodeType) {
     case Node.ELEMENT_NODE:
@@ -17,7 +16,6 @@ export function nodeOrElement(wrapee: Node): WebapiNode | WebapiElement {
       throw new Error('Unexpected node type')
   }
 }
-////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElementOrNull(wrapee: Node): WebapiNode | WebapiElement {
   if (!wrapee) {
     return null
@@ -25,7 +23,6 @@ export function nodeOrElementOrNull(wrapee: Node): WebapiNode | WebapiElement {
   return nodeOrElement(wrapee)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElementOrAttribute(wrapee: Node): WebapiNode | WebapiElement | WebapiAttribute {
   switch (wrapee.nodeType) {
     case Node.ELEMENT_NODE:
@@ -41,7 +38,6 @@ export function nodeOrElementOrAttribute(wrapee: Node): WebapiNode | WebapiEleme
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nodeOrElementOrAttributeOrNull(wrapee: Node): WebapiNode | WebapiElement | WebapiAttribute {
   if (!wrapee) {
     return null
@@ -49,21 +45,18 @@ export function nodeOrElementOrAttributeOrNull(wrapee: Node): WebapiNode | Webap
   return nodeOrElementOrAttribute(wrapee)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* generateFromXpathResultIterator(xpathResult: XPathResult) {
   for (let node = xpathResult.iterateNext(); node; node = xpathResult.iterateNext()) {
     yield node
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* generateFromXpathResultSnapshot(xpathResult: XPathResult) {
   for (let i = 0; i < xpathResult.snapshotLength; ++i) {
     yield xpathResult.snapshotItem(i)
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface DomCollection {
   length: number
   item(index: number): Node
@@ -74,7 +67,6 @@ export function* iterateDomCollection(nodeList: DomCollection) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function isNode(value: Node) {
   switch (value.nodeType) {
     case Node.ELEMENT_NODE:

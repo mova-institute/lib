@@ -6,7 +6,6 @@ import { Buffer } from 'buffer'
 
 
 
-//------------------------------------------------------------------------------
 function main() {
   let findRe = new RegExp(process.argv[2])
 
@@ -30,7 +29,6 @@ function main() {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

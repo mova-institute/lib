@@ -3,7 +3,6 @@ import { HashSet } from './data_structures'  // todo remove dep
 import { Dict, Predicate, Comparator } from './types'
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function compare(a, b) {
   if (isOddball(a) && !isOddball(b)) {
     return -1
@@ -20,12 +19,10 @@ export function compare(a, b) {
   return lexCompare(a, b)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function compareAscending(a: number, b: number) {
   return a - b
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function chainComparators<T>(...comparators: Array<Comparator<T>>) {
   return (a: T, b: T) => {
     for (let comparator of comparators) {
@@ -38,24 +35,20 @@ export function chainComparators<T>(...comparators: Array<Comparator<T>>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function comparatorBy<ArgT, CompT>(
   comparator: Comparator<CompT>, transformation: (a: ArgT) => CompT) {
   return (a: ArgT, b: ArgT) => comparator(transformation(a), transformation(b))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function lexCompare(a, b) {
   return String(a).localeCompare(String(b))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function indexComparator<T>(array: Array<T>) {
   let indexMap = arr2indexMap(array)
   return (a: T, b: T) => indexMap.get(a) - indexMap.get(b)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function stableSort<T>(
   array: Array<T>,
   comparator = lexCompare,
@@ -65,28 +58,24 @@ export function stableSort<T>(
   return array.sort(stableComparator)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function flipObjMap(map: Dict<string>) {
   let ret = {}
   Object.entries(map).forEach(([k, v]) => ret[v] = k)
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function flipMap<K, V>(map: Map<K, V>) {
   let ret = new Map<V, K>()
   map.forEach((v, k) => ret.set(v, k))
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uniqValuedMap2array(map) {
   return Object.keys(map).sort((a, b) => {
     return map[a] - map[b]
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* findIndexwiseDiff(input: Array<any>) {
   let maxLen = Math.max(...input.map(x => x.length))
   let curDiffLen = 0
@@ -108,7 +97,6 @@ export function* findIndexwiseDiff(input: Array<any>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function longestCommonSubstring(strings: Array<string>) {  // naive
   let ret = ''
   if (strings.length) {
@@ -125,7 +113,6 @@ export function longestCommonSubstring(strings: Array<string>) {  // naive
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function groupTableBy<T>(table: Array<T>, groupProp: string | number | symbol) {
   let ret = new Map<string | number | symbol, Array<T>>()
 
@@ -138,12 +125,10 @@ export function groupTableBy<T>(table: Array<T>, groupProp: string | number | sy
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function indexTableByColumn<T>(table: Array<T>, propName: string) {
   return new Map(table.map(x => [x[propName], x] as [string, T]))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function indexTableByColumns(table: Array<Object>, propNames: Array<any>) {
   let ret = new Map()
 
@@ -162,7 +147,6 @@ export function indexTableByColumns(table: Array<Object>, propNames: Array<any>)
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function arr2indexMap<T>(value: Array<T>) {
   let ret = new Map<T, number>()
   for (let i = 0; i < value.length; ++i) {
@@ -172,7 +156,6 @@ export function arr2indexMap<T>(value: Array<T>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function arr2indexObj<T>(value: Array<string>, shift = 0) {
   let ret = {} as { [index: string]: number }
   for (let i = 0; i < value.length; ++i) {
@@ -182,7 +165,6 @@ export function arr2indexObj<T>(value: Array<string>, shift = 0) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function combinations<T>(arr: Array<Array<T>>) {
   return [..._combinations(arr)]
 }
@@ -199,12 +181,10 @@ function* _combinations<T>(arr: Array<Array<T>>, state = new Array<T>()): Iterab
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function overflowNegative(value: number) {
   return value & 0x7FFFFFFF  // todo: MAX_SAFE_INTEGER?
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uniq<T>(array: Array<T>) {
   if (array.length === 1) {
     return array
@@ -212,17 +192,14 @@ export function uniq<T>(array: Array<T>) {
   return [...new Set(array)]
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uniqSmall(array: Array<any>) {
   return array.filter((x, i) => array.indexOf(x) === i)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uniqJson<T>(iterable: Iterable<T>) {
   return [...new HashSet<T>().addAll(iterable)]
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* findAllIndexes<T>(
   iterable: Iterable<T>,
   predicate: (value: T, index: number) => boolean,
@@ -235,7 +212,6 @@ export function* findAllIndexes<T>(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function findStringDiffIndexes(str1: string, str2: string) {
   let maxLen = Math.max(str1.length, str2.length)
   let ret = new Array<number>()
@@ -247,7 +223,6 @@ export function findStringDiffIndexes(str1: string, str2: string) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function commonPrefixLen2(a: string, b: string) {
   if (a === b) {
     return a.length
@@ -260,7 +235,6 @@ export function commonPrefixLen2(a: string, b: string) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function commonPrefixLen(strings: Array<string>) {
   let minLen = Math.min(...strings.map(x => x.length))
 
@@ -275,17 +249,14 @@ export function commonPrefixLen(strings: Array<string>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function commonPrefix(strings: Array<string>) {
   return strings[0].substr(0, commonPrefixLen(strings))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function commonPrefix2(a: string, b: string) {
   return a.substr(0, commonPrefixLen2(a, b))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function commonPrefixDestructive(strings: Array<string>) {
   if (strings.length === 0) {
     return ''
@@ -299,7 +270,6 @@ export function commonPrefixDestructive(strings: Array<string>) {
   return commonPrefix2(strings[0], last(strings))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uniformSubarray<T>(array: Array<T>, ratio: number) {
   let ret = new Array<T>()
   for (let i = 0; i < array.length; ++i) {
@@ -310,12 +280,10 @@ export function uniformSubarray<T>(array: Array<T>, ratio: number) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function uniformSubarray2<T>(array: Array<T>, n: number) {
   return uniformSubarray(array, n / array.length)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function deleteIndexes<T>(array: Array<T>, indexes: Array<number>) {
   indexes.sort(compareAscending)
   let ii = 0
@@ -328,13 +296,11 @@ export function deleteIndexes<T>(array: Array<T>, indexes: Array<number>) {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function transformUntilNoChange<T>(value: T, f: (value: T) => T) {
   while ((value = f(value)) !== value) { }
   return value
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function rfind<T>(array: Array<T>, predicate: Predicate<T>) {
   for (let i = array.length - 1; i >= 0; --i) {
     if (predicate(array[i])) {
@@ -343,7 +309,6 @@ export function rfind<T>(array: Array<T>, predicate: Predicate<T>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function clusterize<T>(
   values: Iterable<T>,
   clusterizer: (t: T) => number | boolean,
@@ -360,7 +325,6 @@ export function clusterize<T>(
   return clusters
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function cartesian(...arrays: Array<Array<any>>) {
   if (arrays.length === 1) {
     return arrays[0]
@@ -369,7 +333,6 @@ export function cartesian(...arrays: Array<Array<any>>) {
   return cartesian(cartesianInline(arrays.shift(), arrays.shift()), ...arrays)
 }
 
-//------------------------------------------------------------------------------
 function cartesianInline(a: Array<any>, b: Array<any>) {
   return [].concat(...a.map(aa => b.map(bb => [].concat(aa, bb))))
 }

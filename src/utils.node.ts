@@ -15,7 +15,6 @@ const readFile = promisify(fs.readFile)
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export async function* liness(readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] }) {
   let leftover = ''
   for await (let chunk of readable) {
@@ -29,7 +28,6 @@ export async function* liness(readable: NodeJS.ReadableStream & { [Symbol.asyncI
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function* lines(readable: NodeJS.ReadableStream & { [Symbol.asyncIterator] }) {
   let buf = ''
   for await (let chunk of readable) {
@@ -47,7 +45,6 @@ export async function* lines(readable: NodeJS.ReadableStream & { [Symbol.asyncIt
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function stdio() {
   exitOnStdoutPipeError()
 
@@ -58,7 +55,6 @@ export function stdio() {
   return { input, out, io }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // non-emply, trimmed, no-spill, pipeable
 export function superLinesStd(listener: (line: string) => Promise<any>) {
   return linesNoSpillStdPipeable(line => {
@@ -69,13 +65,11 @@ export function superLinesStd(listener: (line: string) => Promise<any>) {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function linesNoSpillStdPipeable(listener: (line: string) => Promise<any>) {
   exitOnStdoutPipeError()
   return linesNoSpill(process.stdin, listener)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // mimics syncronous iteration
 export function linesNoSpill(
   source: NodeJS.ReadableStream,
@@ -109,7 +103,6 @@ export function linesNoSpill(
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressed(
   source: NodeJS.ReadableStream,
   dest: NodeJS.WritableStream,
@@ -130,7 +123,6 @@ export function linesBackpressed(
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStdPipeable(
   listener: (line: string, writer: BufferedBackpressWriter) => void,
 ) {
@@ -138,7 +130,6 @@ export function linesBackpressedStdPipeable(
   return linesBackpressedStd(new StreamPauser(process.stdin), listener)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function linesBackpressedStd(
   pauser: StreamPauser,
   listener: (line: string, writer: BufferedBackpressWriter) => void,
@@ -146,7 +137,6 @@ export function linesBackpressedStd(
   return linesBackpressed(process.stdin, process.stdout, pauser, listener)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => void) {
   return new Promise<void>((resolve, reject) => {
     createInterface(stream)
@@ -156,21 +146,18 @@ export function forEachLine(stream: NodeJS.ReadableStream, f: (line: string) => 
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function allLinesFromStdin() {
   let ret = new Array<string>()
   await forEachLine(process.stdin, line => ret.push(line))
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* linesSync(filename: string) {  // todo: do not buffer file
   for (let line of readFileSync(filename, 'utf8').split(/\r?\n/)) {
     yield line
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* trimmedNonemptyLinesSync(filename: string) {  // todo: do not buffer file
   for (let line of linesSync(filename)) {
     line = line.trim()
@@ -180,7 +167,6 @@ export function* trimmedNonemptyLinesSync(filename: string) {  // todo: do not b
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function readTsvMapSync(filePath: string, to?: Map<string, string>) {
   let ret = to || new Map<string, string>()
   for (let line of linesSync(filePath)) {
@@ -190,12 +176,10 @@ export function readTsvMapSync(filePath: string, to?: Map<string, string>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function linesSyncArray(filePath: string) {
   return readFileSync(filePath, 'utf8').trim().split('\n')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function exitOnStdoutPipeError(code = 0) {
   process.stdout.on('error', err => {
     if (err.code === 'EPIPE') {
@@ -205,21 +189,18 @@ export function exitOnStdoutPipeError(code = 0) {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeFileSyncMkdirp(filePath: string, value: string) {
   mkdirpSync(path.dirname(filePath))
   fs.writeFileSync(filePath, value)
   return filePath
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function appendFileSyncMkdirp(filePath: string, value: string) {
   mkdirpSync(path.dirname(filePath))
   fs.appendFileSync(filePath, value)
   return filePath
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeLinesSyncMkdirp(filePath: string, lines: Array<string>) {
   let content = lines.join('\n')
   content += '\n'
@@ -227,7 +208,6 @@ export function writeLinesSyncMkdirp(filePath: string, lines: Array<string>) {
   return writeFileSyncMkdirp(filePath, content)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function appendLinesSyncMkdirp(filePath: string, lines: Array<string>) {
   let content = lines.join('\n')
   content += '\n'
@@ -235,45 +215,38 @@ export function appendLinesSyncMkdirp(filePath: string, lines: Array<string>) {
   return appendFileSyncMkdirp(filePath, content)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function openSyncMkdirp(filePath: string, flags: string) {
   mkdirpSync(path.dirname(filePath))
   return fs.openSync(filePath, flags)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function createWriteStreamMkdirpSync(filePath: string) {
   mkdirpSync(path.dirname(filePath))
   return fs.createWriteStream(filePath)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function parseJsonFile(filePath: string) {
   let fileStr = await readFile(filePath, 'utf8')
   let ret = JSON.parse(fileStr)
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseJsonFileSync(filePath: string) {
   let fileStr = fs.readFileSync(filePath, 'utf8')
   let ret = JSON.parse(fileStr)
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeToJsonSync(filePath: string, obj: any) {
   let json = JSON.stringify(obj)
   fs.writeFileSync(filePath, json)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeTojson(writer: { write(what) }, obj: any) {
   let json = JSON.stringify(obj)
   return writer.write(json)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function writeTojsonColored(writer: { write(what) }, obj: any) {
   let objDump = util.inspect(obj, {
     colors: true,
@@ -281,7 +254,6 @@ export function writeTojsonColored(writer: { write(what) }, obj: any) {
   return writer.write(objDump)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function writeJoin(
   what: Iterable<string>,
   where: { write(what: string): any },
@@ -293,7 +265,6 @@ export async function writeJoin(
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function writeLines(
   what: Iterable<string>,
   where: { write(what: string): any },
@@ -302,7 +273,6 @@ export async function writeLines(
   return writeJoin(what, where, '\n')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function joinToFileSync(
   //todo
   filePath: string,
@@ -313,13 +283,11 @@ export function joinToFileSync(
   fs.writeFileSync(filePath, mu(strings).join(joiner, trail))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function logErrAndExit(e) {
   console.error(`logErrAndExit at process ${process.pid}`, process.argv, e)
   process.exit(1)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function mbUsed() {
   return Math.ceil(process.memoryUsage().rss / 1024 ** 2)
 }

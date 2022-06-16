@@ -3,7 +3,6 @@ import { SimpleGrouping } from '../grouping'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function buildCoreferenceClusters(
   tokens: Array<Token>,
   idToToken?: Map<string, Token>,

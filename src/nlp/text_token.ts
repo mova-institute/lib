@@ -8,12 +8,10 @@ import { AbstractNode } from '../xml/xmlapi/abstract_node'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function $t(elem: AbstractElement) {
   return elem ? new TextToken(elem) : null
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class TextToken {
   private static TOKEN_ELEMS = new Set<string>(['w_'])
   private static FLAGS_X = 'x'

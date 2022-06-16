@@ -5,7 +5,6 @@ import { Dict } from '../../types'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export enum ConlluField {
   id,
   form,
@@ -19,7 +18,6 @@ export enum ConlluField {
   misc,
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface ConlluToken {
   index: number
   form: string
@@ -33,7 +31,6 @@ export interface ConlluToken {
   misc: Dict<string>
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class ConlluMultitoken {
   indexFrom: number
   surfaceForm: string
@@ -45,21 +42,17 @@ export class ConlluMultitoken {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export const enum Structure { document, paragraph, sentence }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface StructureToken {
   type: Structure
   opening: boolean
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function getCol(line: string, col: ConlluField) {
   return line.split('\t')[col]
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseConlluSentences(lines: Iterable<string>) {
   return mu(streamparseConllu(lines))
     .filter(x => !x.structure || x.structure.type === Structure.sentence && !x.structure.opening)
@@ -68,7 +61,6 @@ export function parseConlluSentences(lines: Iterable<string>) {
     .filter(x => x.length)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* streamparseConllu(lines: Iterable<string>) {
   let insideDoc = false
   let insidePar = false
@@ -134,12 +126,10 @@ export function* streamparseConllu(lines: Iterable<string>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseConlluTokenLine(value: string) {
   return parseConlluTokenCells(value.split('\t'))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseConlluTokenCells(value: Array<string>) {
   mapInplace(value, x => x === '_' ? '' : x, 3)
   let [indexStr, form, lemma, upos, xpos, featsStr, headStr, rel, , miscStr] = value
@@ -152,7 +142,6 @@ export function parseConlluTokenCells(value: Array<string>) {
   return { index, form, lemma, upos, xpos, feats, head, rel, misc } as ConlluToken
 }
 
-//------------------------------------------------------------------------------
 function parseUdKeyvalues(keyvals: string) {
   if (!keyvals) {
     return makeObject<string>([])
@@ -160,7 +149,6 @@ function parseUdKeyvalues(keyvals: string) {
   return makeObject(keyvals.split('|').map(x => x.split('=')) as Array<[string, string]>)
 }
 
-//------------------------------------------------------------------------------
 function makeStructure(type: Structure, opening: boolean) {
   return {
     structure: { type, opening } as StructureToken,
@@ -169,7 +157,6 @@ function makeStructure(type: Structure, opening: boolean) {
   }
 }
 
-//------------------------------------------------------------------------------
 function makeToken(token: ConlluToken) {
   return {
     structure: undefined as StructureToken,
@@ -178,7 +165,6 @@ function makeToken(token: ConlluToken) {
   }
 }
 
-//------------------------------------------------------------------------------
 function makeMultitoken(multitoken: ConlluMultitoken) {
   return {
     structure: undefined as StructureToken,

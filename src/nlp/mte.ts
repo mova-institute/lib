@@ -8,7 +8,6 @@ const MI_MTE_TAGS = [
 const allMteTags = new Set([...VANILLA_MTE_TAGS, ...MI_MTE_TAGS])
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function isValidMteTag(tag: string) {
   if (allMteTags.has(tag)) {
     return true

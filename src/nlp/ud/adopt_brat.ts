@@ -18,10 +18,8 @@ import minimist from 'minimist'
 
 
 
-//------------------------------------------------------------------------------
 const GUI_SUPPORTED_TAGS = ['Promoted', 'Graft', 'ItSubj']
 
-//------------------------------------------------------------------------------
 function main() {
   // const now = toSortableDatetime(new Date())
 
@@ -129,23 +127,19 @@ function main() {
   }
 }
 
-//------------------------------------------------------------------------------
 function bratArrowsToAttribute(arrows: Array<BratArrow>) {
   return arrows.map(bratArrowToAttibute).join('|') || undefined
 }
 
-//------------------------------------------------------------------------------
 function bratArrowToAttibute(value: BratArrow) {
   return `${value.head.annotations.N}-${value.relation}`
 }
 
-//------------------------------------------------------------------------------
 function basicRelationsFirstCompare(a: BratArrow, b: BratArrow) {
   return Number(HELPER_RELATIONS.has(a.relation))
     - Number(HELPER_RELATIONS.has(b.relation))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

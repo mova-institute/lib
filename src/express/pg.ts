@@ -6,7 +6,6 @@ import { sendError } from './utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export async function pgTransactionWrap(action, config: pg.ClientConfig, req: Request, res: Response) {
   try {
     await PgClient.transaction(config, async (client) => {

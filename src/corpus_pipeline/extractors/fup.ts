@@ -6,7 +6,6 @@ import { textOf, nameFromLoginAtDomain } from './utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function* streamDocs(html: string) {
   let root = parseHtml(html)
   let posts = root.evaluateElements('//div[@class="message"]').toArray()
@@ -38,9 +37,7 @@ export function* streamDocs(html: string) {
   }
 }
 
-//------------------------------------------------------------------------------
 const allowedTextElems = ['a', 'b', 'i', 'strike', 'em', 'strong']  // no <s>!
-//------------------------------------------------------------------------------
 function getPostParagraphs(contentRoot: AbstractElement) {
   let ret = new Array<string>()
   let oldStyleQuotes = false

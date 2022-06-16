@@ -4,7 +4,6 @@ import he = require('he')
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class PrevertDocBuilder {
   private meta: Dict<string>
   private paragraphs: Array<string>
@@ -64,7 +63,6 @@ export class PrevertDocBuilder {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function* itPrevertDocs(lines: AsyncIterableIterator<string>) {
   let docBuilder = new PrevertDocBuilder()
   for await (let line of lines) {

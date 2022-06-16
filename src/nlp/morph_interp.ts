@@ -446,7 +446,6 @@ for (let pos of Object.keys(FEATURE_ORDER)) {
 const POSWISE_COMPARATORS = {}
 Object.keys(Pos).filter(x => /^\d+$/.test(x)).forEach(x => POSWISE_COMPARATORS[x] = createVesumFlagCompare(x as any))
 
-////////////////////////////////////////////////////////////////////////////////
 export class Features {
   pos: Pos
   abbreviation: Abbreviation
@@ -498,7 +497,6 @@ export class Features {
   voice: Voice
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // represents a single unambiguous morphological interpretation
 export class MorphInterp {
   private static otherFlagsAllowed = new Set([
@@ -1209,12 +1207,10 @@ export class MorphInterp {
   }
 }
 
-//------------------------------------------------------------------------------
 function isUngrammaticalFeature(prop: string) {
   return NONGRAMMATICAL_FEATURES.includes(STRING_MAP_FEAT.get(prop) as any)
 }
 
-//------------------------------------------------------------------------------
 function tryMap2mte(feature, value) {
   let mappedFeature = MAP_VESUM_FEAT.get(feature)
   if (mappedFeature) {
@@ -1229,12 +1225,10 @@ function tryMap2mte(feature, value) {
   return ''
 }
 
-//------------------------------------------------------------------------------
 function map2mteOrDash(feature, value) {
   return tryMap2mte(feature, value) || '-'
 }
 
-//------------------------------------------------------------------------------
 function map2mte(feature, value) {
   let ret = tryMap2mte(feature, value)
   if (!ret) {
@@ -1243,7 +1237,6 @@ function map2mte(feature, value) {
   return ret
 }
 
-//------------------------------------------------------------------------------
 function defaultMteDefiniteness(gender: Gender, morphNumber: Number, morphCase: Case, requiredAnimacy: RequiredAnimacy) {  // todo: загалний
   if ((gender === Gender.feminine || gender === Gender.neuter
     || (morphNumber === MorphNumber.plural && requiredAnimacy !== RequiredAnimacy.animate))
@@ -1255,7 +1248,6 @@ function defaultMteDefiniteness(gender: Gender, morphNumber: Number, morphCase: 
   return 'f'
 }
 
-//------------------------------------------------------------------------------
 function createVesumFlagCompare(pos: Pos) {
   return (a: string, b: string) => {
     let rowA = tryMapVesumFlag(a)
@@ -1273,7 +1265,6 @@ function createVesumFlagCompare(pos: Pos) {
   }
 }
 
-//------------------------------------------------------------------------------
 function createVesumFlagComparator2(pos: Pos) {
   let order = FEATURE_ORDER[pos] || FEATURE_ORDER.other as Array<any>
   return (a, b) => {
@@ -1281,12 +1272,10 @@ function createVesumFlagComparator2(pos: Pos) {
   }
 }
 
-//------------------------------------------------------------------------------
 function considerAuxVerb(lemma: string) {
   return lemma === 'бути' || lemma === 'будучи' || lemma === 'бувши'
 }
 
-//------------------------------------------------------------------------------
 function trimTrailingDash(str: string) {
   let i = str.length
   while (i >= 0 && str.charAt(i - 1) === '-') {
@@ -1296,7 +1285,6 @@ function trimTrailingDash(str: string) {
   return str.substring(0, i)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tryMapVesumFlag(value: string) {
   let match = /^x[v](\d+)$/.exec(value)
   if (match) {
@@ -1312,7 +1300,6 @@ export function tryMapVesumFlag(value: string) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function mapVesumFlag(value: string) {
   let ret = tryMapVesumFlag(value)
   if (!ret) {
@@ -1322,7 +1309,6 @@ export function mapVesumFlag(value: string) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tryMapVesumFlagToFeature(value: string) {
   let row = tryMapVesumFlag(value)
   if (row && row.feat) {
@@ -1330,7 +1316,6 @@ export function tryMapVesumFlagToFeature(value: string) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function mapVesumFeatureValue(featureName: string, value) {
   if (featureName === 'paradigmOmonym') {
     return 'xp' + (value + 1)
@@ -1351,7 +1336,6 @@ export function mapVesumFeatureValue(featureName: string, value) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 const featureCompareOrder = new Set([
   Pos,
   AdjectiveAsNoun,

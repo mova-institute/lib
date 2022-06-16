@@ -21,7 +21,6 @@ import { fixUdpipeTokenization } from '../fix_udpipe_tokenization'
 
 
 
-//------------------------------------------------------------------------------
 interface Args {
   udpipeUrl: string
   udpipeModel: string
@@ -30,7 +29,6 @@ interface Args {
   mode: 'filenames' | 'json'
 }
 
-//------------------------------------------------------------------------------
 async function main() {
   const args: Args = minimist<Args>(process.argv.slice(2))
 
@@ -90,7 +88,6 @@ async function main() {
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(logErrAndExit)
 }

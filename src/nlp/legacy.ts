@@ -5,7 +5,6 @@ import { NS, traverseDepthGen2, tagStr2 } from '../xml/utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function* polishXml2verticalStream(root: AbstractElement) {
   let iterator = traverseDepthGen2(root)
   let pointer = iterator.next()
@@ -37,7 +36,6 @@ export function* polishXml2verticalStream(root: AbstractElement) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function oldZhyto2newerFormat(root: AbstractElement) {  // todo: rename xmlns
   let miwords = root.evaluateElements('//mi:w_', NS)
   for (let miw of miwords) {

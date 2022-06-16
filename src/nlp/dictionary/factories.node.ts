@@ -7,7 +7,6 @@ import { readStringMapDawgSync } from 'dawgjs'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function createDictionarySync(dictFolder = getLibRootRelative('../data/dict/vesum')) {
   let tags = JSON.parse(readFileSync(dictFolder + '/tags.json', 'utf8'))
   let suffixes = JSON.parse(readFileSync(dictFolder + '/suffixes.json', 'utf8'))

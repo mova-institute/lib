@@ -13,7 +13,6 @@ import { UdPos, toUd } from './tagset'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 // http://universaldependencies.org/u/overview/enhanced-syntax.html
 //
 // sent_id = 3bgj do not distribute to promoted!!
@@ -42,7 +41,6 @@ import { UdPos, toUd } from './tagset'
 // todo: findRelationAnalog
 // todo: Недарма казали в народі : " Не той козак , хто переміг , а той , хто викрутився
 //
-////////////////////////////////////////////////////////////////////////////////
 export function generateEnhancedDeps2(
   basicNodes: Array<TokenNode>,
 ) {
@@ -56,7 +54,6 @@ export function generateEnhancedDeps2(
   saveEnhancedGraphToTokens(enhancedNodes, true)
 }
 
-//------------------------------------------------------------------------------
 function connectEphemeralRoot(enhancedNodes: Array<EnhancedNode>) {
   let ephemeralRootNode = new DirectedGraphNode<Token, string>(new Token())
   ephemeralRootNode.node.index = -1
@@ -65,7 +62,6 @@ function connectEphemeralRoot(enhancedNodes: Array<EnhancedNode>) {
     .forEach(x => x.addIncomingArrow(ephemeralRootNode, 'root', DupePolicy.throw, true))
 }
 
-//------------------------------------------------------------------------------
 function addRelclBackwardLinks(enhancedNodes: Array<EnhancedNode>) {
   for (let node of enhancedNodes) {
     for (let arrow of node.incomingArrows) {
@@ -92,7 +88,6 @@ function addRelclBackwardLinks(enhancedNodes: Array<EnhancedNode>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function addFromRelclBackToAntecedent(refArrow: EnhancedArrow) {
   refArrow.end.incomingArrows
     .filter(x => x !== refArrow && !uEqSome(x.attrib, ['conj', 'ref']))
@@ -103,7 +98,6 @@ function addFromRelclBackToAntecedent(refArrow: EnhancedArrow) {
     })
 }
 
-//------------------------------------------------------------------------------
 function relativizeRel(relation: string) {
   if (relation.includes(':')) {  // todo
     return relation
@@ -111,7 +105,6 @@ function relativizeRel(relation: string) {
   return `${relation}:rel`
 }
 
-//------------------------------------------------------------------------------
 function addFromNominalRelclHeadBackToAntecedent(refArrow: EnhancedArrow) {
   refArrow.end.outgoingArrows
     .filter(x => uEqSome(x.attrib, SUBJECTS))
@@ -119,7 +112,6 @@ function addFromNominalRelclHeadBackToAntecedent(refArrow: EnhancedArrow) {
       subjArrow.end, `${subjArrow.attrib}:relnompred`, DupePolicy.throw, true))
 }
 
-//------------------------------------------------------------------------------
 function propagateConjuncts(enhancedTree: Array<EnhancedNode>, dupesExpected = false) {
   // _Paul and Mary+Zina are watching a movie or rapidly (reading or eating)._
 
@@ -164,7 +156,6 @@ function propagateConjuncts(enhancedTree: Array<EnhancedNode>, dupesExpected = f
   }
 }
 
-//------------------------------------------------------------------------------
 function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode, newDependent: EnhancedNode) {
   let existingRel = existingArrow.attrib
   let existingDependent = existingArrow.start
@@ -240,7 +231,6 @@ function findRelationAnalog(existingArrow: EnhancedArrow, newStart: EnhancedNode
   return existingRel  // last resort
 }
 
-//------------------------------------------------------------------------------
 function dumbDownUdPos(upos: UdPos) {
   if (upos === 'PROPN' || upos === 'PRON') {
     return 'NOUN'
@@ -248,7 +238,6 @@ function dumbDownUdPos(upos: UdPos) {
   return upos
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function loadEnhancedGraphFromTokens(nodes: Array<EnhancedNode>) {
   for (let node of nodes) {
     for (let edep of node.node.edeps) {
@@ -261,7 +250,6 @@ export function loadEnhancedGraphFromTokens(nodes: Array<EnhancedNode>) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function buildEnhancedGraphFromTokens(basicNodes: Array<TokenNode>) {
   let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
   loadEnhancedGraphFromTokens(ret)
@@ -269,7 +257,6 @@ export function buildEnhancedGraphFromTokens(basicNodes: Array<TokenNode>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function buildEnhancedTreeFromBasic(basicNodes: Array<TokenNode>) {
   let ret = basicNodes.map(x => new DirectedGraphNode<Token, string>(x.node))
 
@@ -291,7 +278,6 @@ export function buildEnhancedTreeFromBasic(basicNodes: Array<TokenNode>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function saveEnhancedGraphToTokens(
   enhancedNodes: Array<EnhancedNode>,
   clean: boolean,

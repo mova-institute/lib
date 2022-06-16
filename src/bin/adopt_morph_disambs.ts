@@ -8,7 +8,6 @@ import { NS } from '../xml/utils'
 
 
 
-//------------------------------------------------------------------------------
 function main() {
   let [destPath, sourcePath] = process.argv.slice(2)
   let [destRoot, sourceRoot] = [destPath, sourcePath]
@@ -17,7 +16,6 @@ function main() {
   writeFileSync(destPath, serializeMiDocument(destRoot, true))
 }
 
-//------------------------------------------------------------------------------
 function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElement) {
   let attr = sourceRoot.evaluateElement(`//mi:w_[@n]`, NS) ? 'n' : 'nn'
   for (let miwSource of sourceRoot.evaluateElements(`//mi:w_`, NS)) {
@@ -40,7 +38,6 @@ function adoptMorphDisambs(destRoot: AbstractElement, sourceRoot: AbstractElemen
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

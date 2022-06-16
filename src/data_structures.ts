@@ -1,4 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
 export class HashSet<T> /*implements Set<T>*/ {
   protected map = new Map<string, T>()
 
@@ -67,7 +66,6 @@ export class HashSet<T> /*implements Set<T>*/ {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface IMap<K, V> {
   has(key: K): boolean
   get(key: K): V
@@ -75,7 +73,6 @@ export interface IMap<K, V> {
   [Symbol.iterator]()
 }
 
-//------------------------------------------------------------------------------
 export class JsonCompareMap<K, V> implements IMap<K, V> {
   map = new Map<string, [K, V]>()
 
@@ -102,7 +99,6 @@ export class JsonCompareMap<K, V> implements IMap<K, V> {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class NumeratedSet<T> {  // todo move somewhere
   values = new Array<T>()
   ids: IMap<T, number>
@@ -145,7 +141,6 @@ export class NumeratedSet<T> {  // todo move somewhere
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class CachedFunctionResult<T> {
   private value: T
   private argsHash: string = undefined
@@ -173,7 +168,6 @@ export class CachedFunctionResult<T> {
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
 export class DefaultMap<K, V> extends Map<K, V> {
   constructor(
     private v: { new(): V; },

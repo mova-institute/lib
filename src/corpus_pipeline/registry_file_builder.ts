@@ -49,7 +49,6 @@ export interface StructureAttribute {
   isMulti?: boolean
 }
 
-///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileParams {
   title: string
   langCode: string
@@ -63,7 +62,6 @@ export interface RegistryFileParams {
   subcorpAttrs?: string
 }
 
-///////////////////////////////////////////////////////////////////////////////
 export interface RegistryFileDescriptor {
   title: string
   langCode: string
@@ -77,7 +75,6 @@ export interface RegistryFileDescriptor {
   subcorpAttrs?: string
 }
 
-///////////////////////////////////////////////////////////////////////////////
 export const STRUCTURE_G = `STRUCTURE g {
   TYPE file64
   DISPLAYTAG 0
@@ -85,12 +82,10 @@ export const STRUCTURE_G = `STRUCTURE g {
   DEFAULTVALUE ""
 }\n`
 
-////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFile(descr: RegistryFileDescriptor) {
 
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFileUk(params: RegistryFileParams) {
   let positionalAttrs = clone(positionalAttrsBase) as Array<any>
   if (params.hasTokenIds) {
@@ -298,7 +293,6 @@ WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,при
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function generateRegistryFileUkGolden(params: RegistryFileParams) {
   let positionalAttrs = clone(positionalAttrsBase) as Array<any>
   positionalAttrs.pop()
@@ -436,7 +430,6 @@ WPOSLIST ",іменник,.+(NOUN|PROPN|PRON).*,дієслово,.+VERB.*,при
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function renderFeatvals(featvals: Dict<string>) {
   return mu(Object.entries(featvals))
     .filter(x => x[1] !== undefined)
@@ -444,7 +437,6 @@ export function renderFeatvals(featvals: Dict<string>) {
     .join('\n', true)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function positionalAttrGeneric(name: string, options: Dict<string> = {}) {
   let ret = `ATTRIBUTE ${name}`
 
@@ -461,7 +453,6 @@ export function positionalAttrGeneric(name: string, options: Dict<string> = {}) 
 }
 
 
-//------------------------------------------------------------------------------
 const uiSettings = {
   uilang: 'uk',
   attrs: 'word',
@@ -481,7 +472,6 @@ const uiSettings = {
   use_noflash: '0',
 }
 
-//------------------------------------------------------------------------------
 function positionalAttr(name: string, label: string, options: Dict<string> = {}) {
   options.type = 'FD_FGD'
   let ret = `\nATTRIBUTE ${name} {\n  LABEL "${label} [${name}]"\n  DEFAULTVALUE ""`
@@ -492,18 +482,15 @@ function positionalAttr(name: string, label: string, options: Dict<string> = {})
   return ret
 }
 
-//------------------------------------------------------------------------------
 function positionalAttrHuge(name: string, label: string, options: Dict<string> = {}) {
   options.type = 'FD_FGD'
   return positionalAttr(name, label, options)
 }
 
-//------------------------------------------------------------------------------
 function attr(name: string, value: string) {
   return `${name.toUpperCase()} "${value}"`
 }
 
-//------------------------------------------------------------------------------
 function attrOrNothing(name: string, value: string) {
   if (value) {
     return attr(name, value)

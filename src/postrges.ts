@@ -5,12 +5,10 @@ import decamelize = require('decamelize')
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export const PG_ERR = {  // http://www.postgresql.org/docs/current/static/errcodes-appendix.html
   serialization_failure: '40001',
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // see https://github.com/brianc/node-pg-types
 // select typname, oid, typarray from pg_type where typtype = 'b'
 export const PG_TYPES = {
@@ -23,7 +21,6 @@ export const PG_TYPES = {
 types.setTypeParser(PG_TYPES.json, camelizeParseJson)
 types.setTypeParser(PG_TYPES.jsonb, camelizeParseJson)
 
-////////////////////////////////////////////////////////////////////////////////
 export class PgClient {
   private client: Client
   private done: Function
@@ -135,7 +132,6 @@ export class PgClient {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function getClient(config: ClientConfig) {
   return new Promise<{ client: Client, done }>((resolve, reject) => {
     connect(config, (err, client, done) => {
@@ -148,7 +144,6 @@ export function getClient(config: ClientConfig) {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function query(client: Client, queryStr: string, params: Array<any> = []) {
   return new Promise<QueryResult>(async (resolve, reject) => {
     client.query(queryStr, params, (err, res) => {
@@ -161,7 +156,6 @@ export function query(client: Client, queryStr: string, params: Array<any> = [])
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export async function query1Client(client: Client, queryStr: string, params: Array<any> = []) {
   let ret = null
   let res = await query(client, queryStr, params)
@@ -175,13 +169,11 @@ export async function query1Client(client: Client, queryStr: string, params: Arr
 
 
 
-//------------------------------------------------------------------------------
 function camelizeParseJson(jsonStr: string) {
   let camelized = jsonStr.replace(/"(\w+)"\s*:/g, (a, b) => `"${camelCase(b)}":`)
   return JSON.parse(camelized)
 }
 
-//------------------------------------------------------------------------------
 function snakize(obj) {  // first-level only
   for (let key of Object.keys(obj)) {
     let snake = decamelize(key)
@@ -194,7 +186,6 @@ function snakize(obj) {  // first-level only
   return obj
 }
 
-//------------------------------------------------------------------------------
 function nDollars(n: number) {
   let ret = ''
   if (n) {

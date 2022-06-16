@@ -4,7 +4,6 @@ import { tokenizeUkNew } from '../nlp/utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function* fixUdpipeTokenization(
   stream: ReturnType<typeof streamparseConllu>,
   analyzer: MorphAnalyzer,

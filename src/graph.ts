@@ -43,7 +43,6 @@ export class GraphNode<T> {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // naive, callstack-unbounded
 export function* walkDepth<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) => boolean): IterableIterator<GraphNode<T>> {
   if (cutOff && cutOff(node)) {
@@ -55,7 +54,6 @@ export function* walkDepth<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) 
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // naive, callstack-unbounded
 export function* walkDepthNoSelf<T>(node: GraphNode<T>, cutOff?: (node: GraphNode<T>) => boolean): IterableIterator<GraphNode<T>> {
   for (let child of node.children) {

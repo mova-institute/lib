@@ -4,7 +4,6 @@ import { BufferedBackpressWriter } from '../backpressing_writer'
 
 
 
-//------------------------------------------------------------------------------
 function main() {
   process.stdin.setEncoding('utf8')
   let writer = BufferedBackpressWriter.fromStreams(process.stdout, process.stdin)
@@ -13,7 +12,6 @@ function main() {
   }).on('close', () => writer.flush())
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

@@ -2,7 +2,6 @@ import { StreamPauser } from './stream_pauser'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class BufferedBackpressWriter {
   private buf = ''
   private bufSize = 1024 ** 2

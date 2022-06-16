@@ -3,7 +3,6 @@ import { Readable, ReadableOptions } from 'stream'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class CatStreamEnqueueable extends Readable {
   private queue = new Array<string>()
   private currentReadStream: ReadStream

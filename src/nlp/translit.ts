@@ -45,7 +45,6 @@ const ukChar = [...kabmin2010TranslitMap.keys()].join('')
 const splitRe = new RegExp(`([^${ukChar}]+)`, 'i')
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function translitKabmin2010(text: string) {
   let ret = ''
   let splitted = text.split(splitRe)
@@ -60,7 +59,6 @@ export function translitKabmin2010(text: string) {
   return ret
 }
 
-//------------------------------------------------------------------------------
 function translitKabmin2010Word(word: string) {  // todo: capitalization
   let ret = ''
   let i = 0

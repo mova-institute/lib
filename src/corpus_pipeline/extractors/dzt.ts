@@ -4,7 +4,6 @@ import { textOf, textsOf } from './utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
   let root = parseHtml(html)
 

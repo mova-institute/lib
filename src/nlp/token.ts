@@ -7,7 +7,6 @@ import { uEq } from './ud/utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export type TokenType = 'word' | 'glue'
 export type CoreferenceType = 'equality' | 'bridge'
 export type Structure =
@@ -21,7 +20,6 @@ export type Structure =
   | 'coref-split'
   | 'multitoken'
 
-////////////////////////////////////////////////////////////////////////////////
 export type TokenTag =
   | 'bad'
 
@@ -66,21 +64,18 @@ export type TokenTag =
   | 'nominal-ellipsis'
   | 'iobj-agent'
 
-////////////////////////////////////////////////////////////////////////////////
 export interface Dependency {
   relation: string
   headId: string
   headIndex?: number
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export interface Coreference {
   type: CoreferenceType
   headId: string
   // headIndex?: number
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class Token {
   private structure?: Structure
   private closing?: boolean
@@ -285,7 +280,6 @@ export class Token {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function buildDep(head: Token, relation = head.rel): Dependency {
   return {
     relation,

@@ -40,11 +40,9 @@ import { tuple, shallowEqualArrays } from '../lang'
 
 
 
-//------------------------------------------------------------------------------
 const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
 const INSERTION_RE = /#<(\S+)/
 
-//------------------------------------------------------------------------------
 interface CliArgs {
   tranformIds: string
   tranform: string
@@ -62,7 +60,6 @@ const KNOWN_NONDIC_LEMMAS = new Set([
 
 const ukMonthsGen = new Set(ukMonthMap.keys())
 
-//------------------------------------------------------------------------------
 async function main() {
   let args = minimist<CliArgs>(process.argv.slice(2), {
     boolean: [
@@ -788,7 +785,6 @@ async function main() {
   console.log(`${tokenCount} tokens`)
 }
 
-//------------------------------------------------------------------------------
 function testTokenization(
   nodes: Array<GraphNode<Token>>,
   multitokens: Array<MultitokenDescriptor>,
@@ -806,7 +802,6 @@ function testTokenization(
   }
 }
 
-//------------------------------------------------------------------------------
 function isNegated(form: string, interp: MorphInterp, analyzer: MorphAnalyzer) {
   let lc = form.toLowerCase()
   if (lc.startsWith('не')) {
@@ -818,7 +813,6 @@ function isNegated(form: string, interp: MorphInterp, analyzer: MorphAnalyzer) {
   }
 }
 
-//------------------------------------------------------------------------------
 function addShchojijiCoreference(node: GraphNode<Token>) {
   if (!node.node.hasTag('not-shchojiji')) {
     let antecedent = g.findShchojijiAntecedent(node)
@@ -828,7 +822,6 @@ function addShchojijiCoreference(node: GraphNode<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function makeDatesPromoted(node: GraphNode<Token>) {
   if (ukMonthsGen.has(node.node.form)
     && node.parent
@@ -838,7 +831,6 @@ function makeDatesPromoted(node: GraphNode<Token>) {
   }
 }
 
-//------------------------------------------------------------------------------
 function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNode<Token>>) {
   Object.entries(token.getAttributes())
     .forEach(([k, v]) => element.setAttribute(k, v || undefined))
@@ -882,18 +874,15 @@ function saveToken(token: Token, element: AbstractElement, nodes: Array<GraphNod
   element.setAttribute('tags', tags)
 }
 
-//------------------------------------------------------------------------------
 function id2str(n: number) {
   return n.toString(36).padStart(4, '0')
 }
 
-//------------------------------------------------------------------------------
 function saveInterp(el: AbstractElement, interp: MorphInterp) {
   el.setAttribute('ana', interp.toVesumStr())
   el.setAttribute('lemma', interp.lemma)
 }
 
-//------------------------------------------------------------------------------
 function renameStructures(root: AbstractElement) {
   // rename sentence boundaries
   mu(root.evaluateElements('//se'))
@@ -917,7 +906,6 @@ function renameStructures(root: AbstractElement) {
 
 }
 
-//------------------------------------------------------------------------------
 function lowercaseOddballLemmas(token: Token) {
   let interp = token.interp
   if (!interp.lemma.includes('’')
@@ -942,7 +930,6 @@ function lowercaseOddballLemmas(token: Token) {
   }
 }
 
-//------------------------------------------------------------------------------
 function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analyzer: MorphAnalyzer) {
   let token = node.node
   let interp = node.node.interp
@@ -1042,7 +1029,6 @@ function fixtestMorpho(node: GraphNode<Token>, nextNode: GraphNode<Token>, analy
   }
 }
 
-//------------------------------------------------------------------------------
 const DROP_ORDER = [
   f.ParadigmOmonym,
   f.Auto,
@@ -1079,7 +1065,6 @@ const DROP_ORDER = [
 
   // f.Pos,
 ]
-//------------------------------------------------------------------------------
 function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let paradigmOmonym = inCorp.getFeature(f.ParadigmOmonym)
 
@@ -1115,7 +1100,6 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   }
 }
 
-//==============================================================================
 const ALLOWED_TO_BE_EMPTY = ['g', 'sb', 'gap', 'br', 'coref-split']
 function killEmptyElements(root: AbstractElement) {
   mu(root.evaluateElements(`//*[not(normalize-space())]`))
@@ -1124,7 +1108,6 @@ function killEmptyElements(root: AbstractElement) {
     .forEach(x => x.remove())
 }
 
-//------------------------------------------------------------------------------
 function insertSb(root: AbstractElement) {
   let firstWs = mu(root.evaluateElements('//doc'))
     .map(x => x.evaluateElement('.//w_')).flatten()
@@ -1137,7 +1120,6 @@ function insertSb(root: AbstractElement) {
   }
 }
 
-//------------------------------------------------------------------------------
 function swapSb(root: AbstractElement) {
   for (let sb of root.evaluateElements('//sb').toArray()) {
     let next = sb.nextElementSibling()
@@ -1147,19 +1129,16 @@ function swapSb(root: AbstractElement) {
   }
 }
 
-//------------------------------------------------------------------------------
 function cloneAsBareAdjective(fromInterp: MorphInterp) {
   return fromInterp.cloneWithFeatures([f.Gender, f.MorphNumber, f.Case])
     .setLemma(fromInterp.lemma.toLowerCase())
 }
 
-//------------------------------------------------------------------------------
 function cloneAsBareNoun(fromInterp: MorphInterp) {
   return fromInterp.cloneWithFeatures([f.Animacy, f.Gender, f.MorphNumber, f.Case])
   // .setLemma(fromInterp.lemma.toLowerCase())
 }
 
-//------------------------------------------------------------------------------
 function createInterpWithFeatures(fromInterp: MorphInterp, features: Array<any>) {
   let ret = new MorphInterp()
   for (let feature of features) {
@@ -1169,7 +1148,6 @@ function createInterpWithFeatures(fromInterp: MorphInterp, features: Array<any>)
   return ret
 }
 
-//------------------------------------------------------------------------------
 function canBeNameFromCommon(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   let inCorp2 = cloneAsBareAdjective(inCorp)
   let inDict2 = inDict.map(cloneAsBareAdjective)
@@ -1192,7 +1170,6 @@ function canBeNameFromCommon(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
   return false
 }
 
-//------------------------------------------------------------------------------
 function autofixXml(files: Array<string>) {
   for (let filePath of files) {
     let xmlstr = fs.readFileSync(filePath, 'utf8')
@@ -1202,7 +1179,6 @@ function autofixXml(files: Array<string>) {
   }
 }
 
-//------------------------------------------------------------------------------
 // function isIncompleteNoun(interp: MorphInterp) {
 //   return
 //   interp.features.gender === undefined && !(
@@ -1214,17 +1190,14 @@ function autofixXml(files: Array<string>) {
 //     )
 // }
 
-//------------------------------------------------------------------------------
 function token2stringRaw(id: string, form: string, lemma: string, tag: string) {
   return `#${id} ${form} @ ${lemma} @@ ${tag}`
 }
 
-//------------------------------------------------------------------------------
 function token2string(token: Token) {
   return token2stringRaw(token.id, token.getForm(), token.interp.lemma, token.interp.toVesumStr())
 }
 
-//------------------------------------------------------------------------------
 function insertGlueIfNeeded(el: AbstractElement) {
   if (el.firstElementChild().text() === ','
     && el.previousElementSibling()
@@ -1239,7 +1212,6 @@ function insertGlueIfNeeded(el: AbstractElement) {
   }
 }
 
-//------------------------------------------------------------------------------
 function splitIndefinite(token: Token, element: AbstractElement, idSequence: number) {
   if (token.interp.lemma.endsWith('-небудь')) {
     token.interp.lemma = token.interp.lemma.slice(0, -'-небудь'.length)
@@ -1318,7 +1290,6 @@ function splitIndefinite(token: Token, element: AbstractElement, idSequence: num
   return idSequence
 }
 
-//------------------------------------------------------------------------------
 function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
   for (let token of tokens) {
     let interpEl = token.firstElementChild()
@@ -1363,7 +1334,6 @@ function splitFractions(tokens: Array<AbstractElement>, idSequence: number) {
   return idSequence
 }
 
-//------------------------------------------------------------------------------
 async function addDocMeta(root: AbstractElement) {
   for (let docEl of root.evaluateElements('//doc')) {
     let attributes = docEl.attributesObj()
@@ -1468,7 +1438,6 @@ async function addDocMeta(root: AbstractElement) {
   }
 }
 
-//------------------------------------------------------------------------------
 async function getFbPostMeta(url: string) {
   let html = await fetchText(url, {
     headers: {
@@ -1495,7 +1464,6 @@ const TRANSFORMS = {
   },
 }
 
-//------------------------------------------------------------------------------
 function prepareIds(path: string) {
   return new Set(fs.readFileSync(path, 'utf8')
     .trim()
@@ -1506,7 +1474,6 @@ function prepareIds(path: string) {
     .split(/\s+/g))
 }
 
-//------------------------------------------------------------------------------
 function splitFusedProns(
   form: string,
   interp: MorphInterp,
@@ -1541,7 +1508,6 @@ function splitFusedProns(
     .remove()
 }
 
-//------------------------------------------------------------------------------
 function splitPiv(
   form: string,
   interp: MorphInterp,
@@ -1580,7 +1546,6 @@ function splitPiv(
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

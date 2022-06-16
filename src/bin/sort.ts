@@ -4,7 +4,6 @@ import { linesSync } from '../utils.node'
 
 
 
-//------------------------------------------------------------------------------
 function main() {
   const args = require('minimist')(process.argv.slice(2), {
     boolean: [
@@ -36,7 +35,6 @@ function main() {
   // })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

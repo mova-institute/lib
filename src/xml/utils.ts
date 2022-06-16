@@ -13,19 +13,16 @@ export const NS = {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function cantBeXml(str: string) {
   return !/^\s*\</.test(str)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function escapeText(value: string) {   // todo: call he everywhere directly
   return value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function unescape(value: string) {
   return value
     .replace(/&amp;/g, '&')
@@ -35,56 +32,46 @@ export function unescape(value: string) {
     .replace(/&apos;/g, '\'')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function renameTag(xmlstr: string, from: string, to: string) {
   return xmlstr.replace(new RegExp(String.raw`<\s*${from}([\s>])`, 'g'), `<${to}$1`)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeTags(value: string) {
   return value.replace(/<[^>]+>/g, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeElements(xmlstr: string, names: Array<string>) {
   let namesRe = names.join('|')
   let re = new RegExp(String.raw`<\s*(${namesRe})[^>]*>[^<]*</\s*(${namesRe})\s*>`, 'g')
   return xmlstr.replace(re, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function xmlNsResolver(prefix: string) {
   return NS[prefix] || null
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nameNs(ns: string, name: string) {
   return `{${ns}}${name}`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function namePrefixed(prefix: string, name: string) {
   return prefix ? `${prefix}:${name}` : name
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeXmlns(xmlstr: string) {
   return xmlstr.replace(/ xmlns(:\w+)?\s*=\s*"[^"]+"/g, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeNamespacing(xmlstr: string) {
   let ret = removeXmlns(xmlstr)
   ret = ret.replace(/<\s*(\/)?\s*\w+:/g, '<$1')
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeRoot(xmlstr: string) {
   return xmlstr.replace(/^\s*(<\?xml[^>]+\?>)?\s*<[^>]+>/, '').replace(/<\/[^>]+>\s*$/, '')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function removeProcessingInstructions(xmlstr: string) {
   let len
   do {
@@ -95,12 +82,10 @@ export function removeProcessingInstructions(xmlstr: string) {
   return xmlstr
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function encloseInRoot(xmlstr: string, rootName = 'root') {
   return `<${rootName}>${xmlstr}</${rootName}>`
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function encloseInRootNs(value: string, rootName = 'mi:fragment', ns = ['tei', 'mi']) {
   let ret = '<' + rootName
   if (NS[ns[0]]) {
@@ -114,7 +99,6 @@ export function encloseInRootNs(value: string, rootName = 'mi:fragment', ns = ['
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = ['tei', 'mi']) {
   if (cantBeXml(value)) {
     value = encloseInRootNs(value, rootName, ns)
@@ -123,7 +107,6 @@ export function encloseInRootNsIf(value: string, rootName = 'mi:fragment', ns = 
   return value
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function keyvalue2attributesNormalized(obj: any) {
   return Object.keys(obj)
     .filter(key => key.trim() && obj[key] !== undefined)
@@ -135,7 +118,6 @@ export function keyvalue2attributesNormalized(obj: any) {
     .join(' ')
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseTagStr(value: string) {
   let match = value.match(
     /^<(\/)?([\w\-]+)((?:\s+[\w\-]+="[^"]*")*)*\s*(\/)?\s*>(?:([^<]*)<\/\2>)?$/)
@@ -151,7 +133,6 @@ export function parseTagStr(value: string) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function parseAttributeStr(value: string) {
   let ret: Dict<string> = {}
 
@@ -164,7 +145,6 @@ export function parseAttributeStr(value: string) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tagStr(open: boolean, prefix: string, elem: string, attrs = new Map()) {
   if (!open) {
     return `</${namePrefixed(prefix, elem)}>`
@@ -178,7 +158,6 @@ export function tagStr(open: boolean, prefix: string, elem: string, attrs = new 
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function tagStr2(name: string, closing: boolean, attrs?: any) {
   let res = '<'
   if (closing) {
@@ -195,7 +174,6 @@ export function tagStr2(name: string, closing: boolean, attrs?: any) {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
   let ret = new Map()
   for (let [name, , , val] of attrs) {
@@ -205,12 +183,10 @@ export function libxmlSaxAttrs(attrs: Array<[string, string, string, string]>) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function traverseDepthEl(node: AbstractNode, onEnter: (el: AbstractElement) => any, onLeave?: (el: AbstractElement) => any) {
   traverseDepth(node, callbackIfElement(onEnter), callbackIfElement(onLeave))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export type TraverseDirective = 'skip' | 'stop' | void
 export interface ITraverseCallback {
   (el: AbstractNode): TraverseDirective
@@ -236,7 +212,6 @@ export function traverseDepth(node: AbstractNode, onEnter: ITraverseCallback, on
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* traverseDepthGen2(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
   let directive = yield { node, entering: true }
   if (directive === 'stop') {
@@ -270,7 +245,6 @@ export function* traverseDepthGen(node: AbstractNode): IterableIterator<{ node: 
   yield { node, entering: false }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function* traverseDocumentOrderGen(node: AbstractNode): IterableIterator<{ node: AbstractNode, entering: boolean }> {
   let curNode = node
   for (; curNode; curNode = curNode.nextSibling()) {
@@ -284,7 +258,6 @@ export function* traverseDocumentOrderGen(node: AbstractNode): IterableIterator<
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCallback, onLeave?: ITraverseCallback) {
   let curNode = node
   for (; curNode; curNode = curNode.nextSibling()) {
@@ -302,12 +275,10 @@ export function traverseDocumentOrder(node: AbstractNode, onEnter: ITraverseCall
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function traverseDocumentOrderEl(node: AbstractNode, onEnter: (el: AbstractElement) => TraverseDirective, onLeave?: (el: AbstractElement) => TraverseDirective) {
   traverseDocumentOrder(node, callbackIfElement(onEnter), callbackIfElement(onLeave))
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Set<string>) {
   let ret: AbstractElement | undefined
   traverseDocumentOrder(context, callbackIfElement(el => {
@@ -320,7 +291,6 @@ export function nextElDocumentOrder(context: AbstractElement, elsOfInterest?: Se
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function walkUpUntil(node: AbstractNode, predicate: (node: AbstractNode) => boolean) {
   while (node && predicate(node.parent())) {
     node = node.parent()
@@ -329,7 +299,6 @@ export function walkUpUntil(node: AbstractNode, predicate: (node: AbstractNode) 
   return node
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function nLevelsDeep(node, n: number) {
   while (node && n--) {
     node = node.firstChild  // todo: element?
@@ -338,7 +307,6 @@ export function nLevelsDeep(node, n: number) {
   return node
 }
 
-////////////////////////////////////////////////////////////////////////////////
 function callbackIfElement(cb?: (el: AbstractElement) => TraverseDirective) {
   return node => {
     if (cb && node.isElement()) {
@@ -347,7 +315,6 @@ function callbackIfElement(cb?: (el: AbstractElement) => TraverseDirective) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function sortChildElements(el: AbstractElement, compare: (a: AbstractElement, b: AbstractElement) => number) {
   let childrenSorted = el.elementChildren().toArray().sort(compare)
   for (let child of childrenSorted) {
@@ -355,7 +322,6 @@ export function sortChildElements(el: AbstractElement, compare: (a: AbstractElem
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function autofixSomeEntitites(xmlstr: string) {
   return xmlstr
     .replace(/&(?!(amp|quot|lt|gt);)/g, '&amp;')

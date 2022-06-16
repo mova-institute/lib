@@ -19,14 +19,12 @@ import { standartizeMorphoForUd2_11 } from '../nlp/ud/uk_grammar'
 
 
 
-//------------------------------------------------------------------------------
 interface Args {
   inputRoot: string
   inputGlob: string
   outDir: string
 }
 
-//------------------------------------------------------------------------------
 function getArgs() {
   return minimist<Args>(process.argv.slice(2), {
     boolean: [
@@ -38,7 +36,6 @@ function getArgs() {
   })
 }
 
-//------------------------------------------------------------------------------
 function main() {
   let args = getArgs()
 
@@ -88,7 +85,6 @@ function main() {
   }
 }
 
-//------------------------------------------------------------------------------
 function buildExtTitle(meta) {
   let ret = meta.author || '(автор недоступний)'
   ret += ' — '
@@ -97,7 +93,6 @@ function buildExtTitle(meta) {
   return ret
 }
 
-//------------------------------------------------------------------------------
 function* streamVertical(root: AbstractElement, docMeta) {
   yield `<doc ${keyvalue2attributesNormalized(docMeta)}>`
   yield '<p>'
@@ -129,7 +124,6 @@ function* streamVertical(root: AbstractElement, docMeta) {
   yield '</doc>'
 }
 
-//------------------------------------------------------------------------------
 function* stream4vec(root: AbstractElement) {
   let tokenStream = mixml2tokenStream(root)
   let sentenceStream = mu(tokenStream2sentences(tokenStream))
@@ -143,7 +137,6 @@ function* stream4vec(root: AbstractElement) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

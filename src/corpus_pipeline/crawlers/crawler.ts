@@ -10,11 +10,9 @@ import { resolve, parse, Url } from 'url'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export type StringPredicate = (value: string) => any
 export type UrlPredicate = (value: Url) => any
 
-////////////////////////////////////////////////////////////////////////////////
 export interface CrawlerConfig {
   delay?: number
   retryTimeout?: number
@@ -26,7 +24,6 @@ export interface CrawlerConfig {
   readFromSaved?: boolean
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class Crawler {
   private saved: FsMap
   private visited = new Set<string>()
@@ -208,7 +205,6 @@ export class Crawler {
   }
 }
 
-//------------------------------------------------------------------------------
 function extractHrefs(html: string) {
   return allMatchesArr(html, /<\s*a\b[^>]+\bhref="([^"]+)"/g)
     .map(x => he.unescape(x[1]))

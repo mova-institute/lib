@@ -6,7 +6,6 @@ import { firstNWords } from './utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function fragmentCorpusText(doc: Document) {
   const NUM_WORDS = 80
   let ret = new Array<DocumentFragment>()
@@ -34,7 +33,6 @@ export function fragmentCorpusText(doc: Document) {
   return ret
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // export function textFragmentCorpusText(doc: Document) {
 //   return fragmentCorpusText(doc).map(x => ({
 //     xmlstr: serializeXmlNoNs(x),

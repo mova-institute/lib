@@ -8,7 +8,6 @@ if (require.main === module) {
   main()
 }
 
-//------------------------------------------------------------------------------
 async function main() {
   if (process.argv[2] === 'vert2vec') {
     vert2vec()

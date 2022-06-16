@@ -6,7 +6,6 @@ import { matchGroup } from '../../lang'
 import { textsOf } from './utils'
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function extract(html: string) {
   let root = tryParseHtml(html)
   if (!root) {

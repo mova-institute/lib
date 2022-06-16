@@ -6,7 +6,6 @@ import { Agent } from 'http'
 import { mu, Mu } from '../mu'
 
 
-////////////////////////////////////////////////////////////////////////////////
 export class ApiClient {
   private udpipeClient: UdpipeApiClient
 

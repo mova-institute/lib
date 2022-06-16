@@ -20,7 +20,6 @@ import { groupBy } from 'lodash'
 
 
 
-//------------------------------------------------------------------------------
 const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentencePredicate2]> = [
   [`discourse`,
     undefined,
@@ -41,7 +40,6 @@ const SIMPLE_RULES: Array<[string, string, SentencePredicate2, string, SentenceP
   [`flat:name`, `з іменника`, t => t.interp.isNounish(), ``, t => t],
 ]
 
-//------------------------------------------------------------------------------
 const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePredicateParent, string, TreedSentencePredicate]> = [
   // cc не в сурядний is a separate rule
   [`advcl:`,
@@ -234,7 +232,6 @@ const TREED_SIMPLE_RULES: Array<[string | Array<string>, string, TreedSentencePr
   [`dislocated`, `~з присудка`, t => canBePredicate(t), ``, t => t],
 ]
 
-//------------------------------------------------------------------------------
 interface ReoprtIf2Arg {
   n: GraphNode<Token>  // tree node
   t: Token  // token
@@ -249,7 +246,6 @@ interface ReoprtIf2Arg {
   pr: string
 }
 
-//------------------------------------------------------------------------------
 type SentencePredicate = (x: Token, i?: number) => any
 type SentencePredicate2 = (t: Token, s: Array<Token>, i: number/*, node: GraphNode<Token>*/) => any
 type TreedSentencePredicate = (t: GraphNode<Token>) => any
@@ -257,13 +253,11 @@ type EnhancedArrowPredicate = (arrow: EnhancedArrow) => any
 type TreedSentencePredicateParent = (parent: GraphNode<Token>, child?: GraphNode<Token>) => any
 type TreedSentencePredicate2 = (a: ReoprtIf2Arg) => any
 
-////////////////////////////////////////////////////////////////////////////////
 export interface Problem {
   message: string
   indexes: Array<number>
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export function validateSentenceSyntax(
   nodes: Array<GraphNode<Token>>,
   multitokens: Array<MultitokenDescriptor>,
@@ -2718,19 +2712,16 @@ export function validateSentenceSyntax(
   return problems
 }
 
-//------------------------------------------------------------------------------
 function findMultitoken(tokenIndex: number, multitokens: Array<MultitokenDescriptor>) {
   let ret = multitokens.find(x => x.startIndex <= tokenIndex && x.startIndex + x.spanLength > tokenIndex)
   // console.error(tokenIndex, multitokens)
   return ret
 }
 
-//------------------------------------------------------------------------------
 function hasChildrenOfUrel(node: GraphNode<Token>, urel: string) {
   return node.children.some(x => uEq(x.node.rel, urel))
 }
 
-//------------------------------------------------------------------------------
 function thisOrConj(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
   let nodes = [node]
   if (uEq(node.node.rel, 'conj')) {
@@ -2744,12 +2735,10 @@ function thisOrConj(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
   return false
 }
 
-//------------------------------------------------------------------------------
 function isSubordiateRoot(token: Token) {
   return g.SUBORDINATE_CLAUSES.some(x => uEq(token.rel, x))
 }
 
-//------------------------------------------------------------------------------
 function findHoles(array: Array<number>) {
   let ret = new Array<number>()
   if (array.length < 3) {
@@ -2764,7 +2753,6 @@ function findHoles(array: Array<number>) {
   return ret
 }
 
-//------------------------------------------------------------------------------
 function isContentWord(token: Token) {
   if (token.isPromoted) {
     return true
@@ -2774,12 +2762,10 @@ function isContentWord(token: Token) {
   return !FUNCTION_WORD_POSES.includes(token.interp.features.pos) && !token.interp.isAuxillary()
 }
 
-//------------------------------------------------------------------------------
 function isPassive(interp: MorphInterp) {
   return /*interp.isImpersonal() ||*/ interp.isPassive()
 }
 
-//------------------------------------------------------------------------------
 function isContinuous(array: Array<number>) {
   for (let i = 1; i < array.length; ++i) {
     if (array[i] - array[i - 1] !== 1) {
@@ -2789,7 +2775,6 @@ function isContinuous(array: Array<number>) {
   return true
 }
 
-//------------------------------------------------------------------------------
 function canBePredicate(t: GraphNode<Token>) {
   let token = t.node
   let interp = token.interp
@@ -2808,7 +2793,6 @@ function canBePredicate(t: GraphNode<Token>) {
   // || ((interp.isNounish() || interp.isAdjective()) && interp.isNominative())
 }
 
-//------------------------------------------------------------------------------
 function canBePredicateOld(token: Token, sentence: Array<Token>, index: number) {
   return !token.hasDeps()
     || uEq(token.rel, 'parataxis')
@@ -2824,7 +2808,6 @@ function canBePredicateOld(token: Token, sentence: Array<Token>, index: number) 
     || g.CLAUSAL_MODIFIERS.includes(token.rel)
 }
 
-//------------------------------------------------------------------------------
 function canActAsNoun(node: GraphNode<Token>) {
   return node.node.interp.isNounish()
     || node.node.isPromoted && (node.node.interp.isAdjectivish() || node.node.interp.isCardinalNumeral())
@@ -2833,12 +2816,10 @@ function canActAsNoun(node: GraphNode<Token>) {
     || node.node.interp.isSymbol()
 }
 
-//------------------------------------------------------------------------------
 function canTheoreticallyActAsNoun(node: GraphNode<Token>) {
   return node.node.interp.isAdjectivish() // && !node.hasChildren()
 }
 
-//------------------------------------------------------------------------------
 function canActAsNounForObj(node: GraphNode<Token>) {
   return canActAsNoun(node)
     || !node.isRoot()
@@ -2853,7 +2834,6 @@ function canActAsNounForObj(node: GraphNode<Token>) {
     )
 }
 
-//------------------------------------------------------------------------------
 function isEncolsedInQuotes(node: GraphNode<Token>) {
   let ret = node.children.length > 2
     && node.children[0].node.interp.isQuote()

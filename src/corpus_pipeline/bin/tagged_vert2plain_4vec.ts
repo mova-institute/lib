@@ -14,7 +14,6 @@ interface Args {
   newContextOn?: string
 }
 
-//------------------------------------------------------------------------------
 function main() {
   const args = minimist<Args>(process.argv.slice(2), {
     boolean: [
@@ -58,7 +57,6 @@ function main() {
   })
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main()
 }

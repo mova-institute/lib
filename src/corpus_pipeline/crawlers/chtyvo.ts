@@ -59,7 +59,6 @@ if (require.main === module) {
   main(args).catch(logErrAndExit)
 }
 
-////////////////////////////////////////////////////////////////////////////////
 async function main(args: Args) {
   let fetchThroughPage = await getMaxPages() - (args.oldNumPages || 0)
   console.log(chalk.bold(`Will scan pages from ${args.startWithPage} to ${fetchThroughPage}`))
@@ -149,7 +148,6 @@ async function main(args: Args) {
   }
 }
 
-//------------------------------------------------------------------------------
 async function getMaxPages() {
   let content = await fetchText(`http://chtyvo.org.ua/updates/`)
   let root = parseHtml(content)

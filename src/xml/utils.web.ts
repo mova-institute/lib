@@ -2,7 +2,6 @@ import { xmlNsResolver } from './utils'
 
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function xpath(context: Node, query: string, type: number) {
   let doc = context.ownerDocument || context as Document
   let res = doc.evaluate(query, context, xmlNsResolver, type, null)

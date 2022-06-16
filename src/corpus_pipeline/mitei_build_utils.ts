@@ -9,7 +9,6 @@ import { mu } from '../mu'
 import { $d } from '../nlp/mi_tei_document'
 
 
-////////////////////////////////////////////////////////////////////////////////
 export function buildMiteiVertical(miteiPath: string, analyzer: MorphAnalyzer, verticalFile: number) {
   let files = globSync(`${miteiPath}/**/*.xml`)
   for (let file of files) {

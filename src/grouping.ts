@@ -1,7 +1,6 @@
 import { DefaultMap } from './data_structures'
 import { CoolSet } from './data_structures/cool_set'
 
-////////////////////////////////////////////////////////////////////////////////
 export class Grouping<ElementType, GroupType> {
   protected groupMap = new DefaultMap<GroupType, CoolSet<ElementType>>(CoolSet)
   protected elemToGroup = new Map<ElementType, GroupType>()
@@ -30,7 +29,6 @@ export class Grouping<ElementType, GroupType> {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
 export class SimpleGrouping<ElementType> extends Grouping<ElementType, ElementType> {
   engroupAsDeafault(element: ElementType, as: ElementType) {
     this.selfgroup(as)
