@@ -4,14 +4,14 @@ import * as actions from './api'
 import cookieParser from 'cookie-parser'
 import { PgClient } from '../postrges'
 import { parseJsonFileSync } from '../utils.node'
-import jwt = require('express-jwt')
+import {expressjwt} from 'express-jwt'
 
 export interface IReq extends express.Request {
   bag: any
 }
 
 let config = parseJsonFileSync(process.argv[3])
-let jwtCheck = jwt(config.jwt)
+let jwtCheck = expressjwt(config.jwt)
 
 let app = express()
 app.disable('x-powered-by')

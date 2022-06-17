@@ -8,19 +8,14 @@ import minimist from 'minimist'
 import * as fs from 'fs'
 import { join } from 'path'
 
-
-
-//------------------------------------------------------------------------------
 interface Args {
 }
 
-//------------------------------------------------------------------------------
 async function main() {
   const args = minimist<Args>(process.argv.slice(2))
 
 }
 
-////////////////////////////////////////////////////////////////////////////////
 if (require.main === module) {
   main().catch(logErrAndExit)
 }
