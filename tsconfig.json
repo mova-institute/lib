@@ -3,9 +3,11 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "noImplicitAny": false,
-    "outDir": "lib",
+    "outDir": "dist",
     "strictNullChecks": false,
     "useUnknownInCatchVariables": false
   },
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts"
+  ]
 }
