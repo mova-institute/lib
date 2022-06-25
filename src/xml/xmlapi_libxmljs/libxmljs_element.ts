@@ -100,7 +100,7 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   }
 
   setAttribute(name: string, value: any) {
-    if (value === undefined) {
+    if (value === undefined || value === null) {
       this.removeAttribute(name)
     } else {
       this.wrapee.attr({ [name]: value.toString() })

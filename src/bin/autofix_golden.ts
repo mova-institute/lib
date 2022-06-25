@@ -121,11 +121,6 @@ async function main() {
         for (let interpEl of interpEls) {
           // continue
           let form = interpEl.text() as string // todo: remove as
-          let tag = interpEl.attribute('ana')
-          let lemma = interpEl.attribute('lemma')
-          if (!tag || !lemma) {
-            throw new Error(`No tag/lemma for ${form}`)
-          }
           let interp: MorphInterp
           try {
             interp = MorphInterp.fromVesumStr(
@@ -271,13 +266,20 @@ async function main() {
 
           let tokenElement = id2el.get(token.id)
 
+          if (
+            (!interp.hasFeatures() || !interp.lemma) &&
+            token.rel !== 'goeswith'
+          ) {
+            throw new Error(`No tag/lemma for ${token.form} (${token.id})`)
+          }
+
           if (token.comment) {
             // morpho alteration
             {
               let match = token.comment.match(REPLACE_RE)
               if (match) {
                 let [, tag, lemma] = match
-                tag = tag.replace('&amp;', '&') // sometimes it's copyped from xml
+                tag = tag.replace('&amp;', '&') // sometimes it's copyed from xml
                 lemma = lemma || interp.lemma
                 if (tag.startsWith(':')) {
                   interp.setFromVesumStr(tag.substr(1), lemma)
@@ -334,7 +336,7 @@ async function main() {
           }
 
           if (interp.isX()) {
-            interp.lemma = token.getForm()
+            // interp.lemma = token.getForm()
           }
 
           // lowercaseOddballLemmas(token)
@@ -872,7 +874,7 @@ async function main() {
   }
 
   if (args.seq) {
-    fs.writeFileSync(args.seq, idSequence)
+    fs.writeFileSync(args.seq, idSequence.toString())
   }
   console.log(`${tokenCount} tokens`)
 }

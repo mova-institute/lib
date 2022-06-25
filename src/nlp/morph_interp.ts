@@ -61,6 +61,7 @@ import {
   Feature,
   NONGRAMMATICAL_FEATURES,
 } from './morph_features'
+import { hasProperties } from '../object'
 
 export const featureObj2nameMap = new Map<any, string>([
   [Abbreviation, 'abbreviation'],
@@ -1505,7 +1506,7 @@ export class MorphInterp {
   }
 
   toVesum() {
-    let flags = [...this.otherFlags]
+    let flags = new Array<string>()
 
     for (let name of Object.keys(this.features)) {
       let value = this.features[name]
@@ -1522,6 +1523,7 @@ export class MorphInterp {
         flags.push(flag)
       }
     }
+    flags.push(...this.otherFlags)
 
     return flags.sort(POSWISE_COMPARATORS[this.features.pos])
   }
@@ -1801,6 +1803,10 @@ export class MorphInterp {
       this.setIsSingular()
     }
     return this
+  }
+
+  hasFeatures() {
+    return hasProperties(this.features)
   }
 
   getFeature(featEnum) {
