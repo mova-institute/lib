@@ -79,6 +79,8 @@ async function main() {
   let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
   let ids = new Set<string>()
 
+  let unknownPuncts = new Set<string>()
+
   for (let file of files) {
     try {
       console.log(`autofixing ${basename(file)}`)
@@ -813,6 +815,18 @@ async function main() {
             }
           }
 
+          if (interp.isPunctuation() && !interp.hasFeature(f.PunctuationType)) {
+            for (let [re, type] of punctFixMap) {
+              if (re.test(token.form)) {
+                // interp.setFeature(f.PunctuationType, type)
+              }
+            }
+            if (!interp.hasFeature(f.PunctuationType)) {
+              // console.log(`###> ${token.form}`)
+              unknownPuncts.add(token.form)
+            }
+          }
+
           if (0) {
             if (interp.isIndefinite() && interp.lemma.includes('-')) {
               idSequence = splitIndefinite(token, tokenElement, idSequence)
@@ -873,6 +887,7 @@ async function main() {
     }
   }
 
+  // console.log([...unknownPuncts].sort())
   if (args.seq) {
     fs.writeFileSync(args.seq, idSequence.toString())
   }
@@ -1716,6 +1731,19 @@ function splitPiv(
 
   return false
 }
+
+const punctFixMap: Array<[RegExp, f.PunctuationType]> = [
+  [/^\?+$/, f.PunctuationType.question],
+  [/^!+$/, f.PunctuationType.exclamation],
+  [/^\.{2,}$/, f.PunctuationType.ellipsis],
+  [/^,$/, f.PunctuationType.comma],
+  [/^\.$/, f.PunctuationType.period],
+  [/^[[\]]$/, f.PunctuationType.bracket],
+  [/^:$/, f.PunctuationType.colon],
+  [/^;$/, f.PunctuationType.semicolon],
+  [/^[()]$/, f.PunctuationType.bracket], // temp
+  // [/^;$/, f.PunctuationType.],
+]
 
 if (require.main === module) {
   main()

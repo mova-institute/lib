@@ -250,12 +250,20 @@ export enum Typo {
 }
 
 export enum PunctuationType {
-  bullet,
   dash,
+  quote,
+  bracket,
+  colon,
+  comma,
   ellipsis,
+  exclamation,
+  period,
+  question,
+  semicolon,
+  slash,
+  bullet,
   hyphen,
   ndash,
-  quote,
 }
 
 export enum PunctuationSide {

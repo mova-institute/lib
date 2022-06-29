@@ -816,8 +816,26 @@ export const FEATURE_TABLE = [
   {
     featStr: 'punctType',
     feat: PunctuationType,
+    vesum: PunctuationType.dash,
+    vesumStr: 'dash',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
     vesum: PunctuationType.quote,
     vesumStr: 'quote',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.bracket,
+    vesumStr: 'bracket',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.comma,
+    vesumStr: 'comma',
   },
   {
     featStr: 'punctType',
@@ -828,26 +846,50 @@ export const FEATURE_TABLE = [
   {
     featStr: 'punctType',
     feat: PunctuationType,
-    vesum: PunctuationType.hyphen,
-    vesumStr: 'hyphen',
+    vesum: PunctuationType.exclamation,
+    vesumStr: 'exclamation',
   },
   {
     featStr: 'punctType',
     feat: PunctuationType,
-    vesum: PunctuationType.dash,
-    vesumStr: 'dash',
+    vesum: PunctuationType.period,
+    vesumStr: 'period',
   },
   {
     featStr: 'punctType',
     feat: PunctuationType,
-    vesum: PunctuationType.ndash,
-    vesumStr: 'ndash',
+    vesum: PunctuationType.question,
+    vesumStr: 'question',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.semicolon,
+    vesumStr: 'semicolon',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.slash,
+    vesumStr: 'slash',
   },
   {
     featStr: 'punctType',
     feat: PunctuationType,
     vesum: PunctuationType.bullet,
     vesumStr: 'bullet',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.hyphen,
+    vesumStr: 'hyphen',
+  },
+  {
+    featStr: 'punctType',
+    feat: PunctuationType,
+    vesum: PunctuationType.ndash,
+    vesumStr: 'ndash',
   },
 
   {

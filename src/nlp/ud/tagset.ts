@@ -83,7 +83,21 @@ export type UdOrth = 'Alt'
 export type UdGrammaticalAnimacy = 'Anim' | 'Inan'
 export type UdPartType = 'Prs' | 'Conseq'
 export type UdPolite = 'Form'
-export type UdPunctType = 'Quot' | 'Ellip' | 'Hyph' | 'Dash' | 'Ndash' | 'Bull'
+export type UdPunctType =
+  | 'Dash'
+  | 'Quot'
+  | 'Brck'
+  | 'Colo'
+  | 'Comm'
+  | 'Elip'
+  | 'Excl'
+  | 'Peri'
+  | 'Qest'
+  | 'Semi'
+  | 'Slsh'
+  | 'Hyph'
+  // | 'Ndash'
+  | 'Bull'
 export type UdUninflect = UdBoolean
 export type UdReversivity = UdBoolean
 export type UdValency = 'Acc' | 'Intrans' | 'Ambig'
@@ -311,12 +325,20 @@ const partTypeMap = new Map<PartType, UdPartType>([
 ])
 
 const punctTypeMap = new Map<PunctuationType, UdPunctType>([
-  [PunctuationType.quote, 'Quot'],
-  [PunctuationType.ellipsis, 'Ellip'],
-  [PunctuationType.hyphen, 'Hyph'],
   [PunctuationType.dash, 'Dash'],
-  [PunctuationType.ndash, 'Ndash'],
+  [PunctuationType.quote, 'Quot'],
+  [PunctuationType.bracket, 'Brck'],
+  [PunctuationType.colon, 'Colo'],
+  [PunctuationType.comma, 'Comm'],
+  [PunctuationType.ellipsis, 'Elip'],
+  [PunctuationType.exclamation, 'Excl'],
+  [PunctuationType.period, 'Peri'],
+  [PunctuationType.question, 'Qest'],
+  [PunctuationType.semicolon, 'Semi'],
+  [PunctuationType.slash, 'Slsh'],
   [PunctuationType.bullet, 'Bull'],
+  [PunctuationType.hyphen, 'Hyph'],
+  // [PunctuationType.ndash, 'Ndash'],
 ])
 
 const valencyTypeMap = new Map<DictValency, UdValency>([
