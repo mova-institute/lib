@@ -213,7 +213,7 @@ function main() {
             corefClusterization,
             valencyDict,
           )
-          hasProblems = !!problems.length
+          hasProblems = Boolean(problems.length)
           if (hasProblems && cliArgs.reportErrors) {
             sentenseErrors.push({
               problems,

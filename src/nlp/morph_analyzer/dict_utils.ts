@@ -10,7 +10,7 @@ export function compileDict(lexemes: Array<Array<[string, string]>>) {
   let paradigmPopularity = new Array<number>()
 
   let paradigmIds = new JsonCompareMap<any, number>() // todo: type
-  let paradigms = new Array()
+  let paradigms = new Array<any>()
   let suffixBag = new Set<string>()
 
   for (let lexeme of lexemes) {

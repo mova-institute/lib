@@ -128,9 +128,8 @@ function convertSingle(cyr: string) {
   let lat = cyrToLatMap.get(lc)
   if (lat !== undefined) {
     return toCapitalizedIf(lat, isUpper)
-  } else {
-    return cyr
   }
+  return cyr
 }
 
 function toCapitalizedIf(what: string, when: boolean) {

@@ -19,7 +19,7 @@ export class FsMap {
   setStream(key: string, value: Stream) {
     return new Promise<void>((resolve, reject) => {
       value
-        .on('error', function (err) {
+        .on('error', (err) => {
           console.error(err)
           reject(err)
         })

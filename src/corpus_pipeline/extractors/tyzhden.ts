@@ -69,8 +69,8 @@ export function extract(html: string) {
   }
 
   let isValid =
-    !!paragraphs.length &&
-    !!url &&
+    Boolean(paragraphs.length) &&
+    Boolean(url) &&
     (paragraphs.length > 1 || author !== 'The Economist')
 
   if (isValid) {

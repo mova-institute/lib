@@ -2421,7 +2421,7 @@ function tryMap2mte(feature, value) {
   if (mappedFeature) {
     let mappedRow = mappedFeature.get(value)
     if (mappedRow) {
-      let mte = mappedRow.mte
+      let { mte } = mappedRow
       if (mte) {
         return mte as string
       }
@@ -2446,7 +2446,7 @@ function map2mte(feature, value) {
 
 function defaultMteDefiniteness(
   gender: Gender,
-  morphNumber: Number,
+  morphNumber: number,
   morphCase: Case,
   requiredAnimacy: RequiredAnimacy,
 ) {

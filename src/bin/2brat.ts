@@ -97,7 +97,7 @@ function doGeneric(
   sentences: SentenceStream,
   dest: string,
 ) {
-  if (config.enabled === false) {
+  if (!config.enabled) {
     return
   }
 

@@ -199,7 +199,7 @@ module.exports = {
     'prefer-numeric-literals': ['warn'],
     'prefer-rest-params': ['warn'],
     'prefer-spread': ['warn'],
-    'prefer-template': ['warn'],
+    'prefer-template': ['off'],
     'symbol-description': ['warn'],
 
     // todo: remove :unknown from catches after https://github.com/microsoft/TypeScript/pull/41013

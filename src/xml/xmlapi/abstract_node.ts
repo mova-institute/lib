@@ -102,7 +102,7 @@ export abstract class AbstractNode {
       this.nextSibling() ||
       this.ancestors()
         .map((x) => x.nextSibling())
-        .find((x) => !!x) ||
+        .find((x) => Boolean(x)) ||
       null
     )
   }

@@ -166,10 +166,10 @@ export class Token {
     }
   }
   isStructure() {
-    return !!this.structure || this.isGlue() // todo
+    return Boolean(this.structure) || this.isGlue() // todo
   }
   isWord() {
-    return !!this.form
+    return Boolean(this.form)
   }
 
   isSentenceBoundary() {
@@ -198,7 +198,7 @@ export class Token {
   }
 
   isElided() {
-    return !!this.attributes['ellipsis']
+    return Boolean(this.attributes['ellipsis'])
   }
 
   isElidedPredicate() {
@@ -243,7 +243,7 @@ export class Token {
   }
 
   hasDeps() {
-    return !!this.deps.length
+    return Boolean(this.deps.length)
   }
 
   hasUDep(relation: string) {

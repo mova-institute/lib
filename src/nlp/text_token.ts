@@ -32,7 +32,7 @@ export class TextToken {
   }
 
   isDisambed() {
-    return !!this.getDisambIndexes().length
+    return Boolean(this.getDisambIndexes().length)
   }
 
   clearDisamb() {
@@ -62,7 +62,7 @@ export class TextToken {
   }
 
   hasDefiniteInterps() {
-    return !!this.getDefiniteInterps().length // todo: optimize
+    return Boolean(this.getDefiniteInterps().length) // todo: optimize
   }
 
   hasInterp(flags: string, lemma?: string) {
@@ -127,7 +127,7 @@ export class TextToken {
     if (indexes.length) {
       let interpElems = this.elem.children().toArray()
       for (let i = 0; i < interpElems.length; ++i) {
-        if (indexes.indexOf(i) === -1) {
+        if (!indexes.includes(i)) {
           interpElems[i].remove()
         }
       }
@@ -142,8 +142,10 @@ export class TextToken {
   // }
 
   hasDisambedInterp(flags: string, lemma?: string) {
-    return !!this.getDisambedInterps().find(
-      (x) => flags === x.flags && (lemma === undefined || x.lemma === lemma),
+    return Boolean(
+      this.getDisambedInterps().find(
+        (x) => flags === x.flags && (lemma === undefined || x.lemma === lemma),
+      ),
     )
   }
 
@@ -169,7 +171,7 @@ export class TextToken {
   }
 
   isMarked() {
-    return !!this.elem.attribute('mark')
+    return Boolean(this.elem.attribute('mark'))
   }
 
   isToResolve() {
@@ -298,11 +300,12 @@ export class TextToken {
     let thisInterps = this.getDisambedInterps()
     let otherInterps = other.getDisambedInterps()
     if (thisInterps.length === otherInterps.length) {
-      return thisInterps.every(
-        (x) =>
-          !!otherInterps.find(
+      return thisInterps.every((x) =>
+        Boolean(
+          otherInterps.find(
             (xx) => xx.flags === x.flags && xx.lemma === x.lemma,
           ),
+        ),
       )
     }
     return false
@@ -336,7 +339,7 @@ export class TextToken {
 
   private toggleDisamb(index: number) {
     let disambIndexes = this.getDisambIndexes()
-    if (disambIndexes.indexOf(index) >= 0) {
+    if (disambIndexes.includes(index)) {
       this.setDisambIndexes(disambIndexes.filter((x) => x !== index))
     } else {
       disambIndexes.push(index)

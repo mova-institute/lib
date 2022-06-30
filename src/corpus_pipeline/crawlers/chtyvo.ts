@@ -108,7 +108,7 @@ async function main(args: Args) {
         .evaluateAttributes('//table[@class="books"]//a/@href')
         .map((x) => x.value())
         .filter(
-          (x) => !!x && /\/authors\/.*\./.test(x),
+          (x) => Boolean(x) && /\/authors\/.*\./.test(x),
           // && !['djvu', 'pdf'].some(xx => x.endsWith(`.${xx}`))
         )
         .map((x) => parse(x))

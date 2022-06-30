@@ -109,7 +109,7 @@ export function longestCommonSubstring(strings: Array<string>) {
     for (let i = 0; i < strings[0].length; ++i) {
       for (let j = 0; j < strings[0].length - i + 1; ++j) {
         let candidate = strings[0].substring(i, i + j)
-        if (j > ret.length && strings.every((x) => x.indexOf(candidate) >= 0)) {
+        if (j > ret.length && strings.every((x) => x.includes(candidate))) {
           ret = candidate
         }
       }
@@ -169,7 +169,7 @@ export function arr2indexMap<T>(value: Array<T>) {
 }
 
 export function arr2indexObj<T>(value: Array<string>, shift = 0) {
-  let ret = {} as { [index: string]: number }
+  let ret = {} as Record<string, number>
   for (let i = 0; i < value.length; ++i) {
     ret[value[i]] = i + shift
   }

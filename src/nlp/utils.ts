@@ -339,8 +339,8 @@ export function haveSpaceBetween(
   if (!tagA || !tagB) {
     return
   }
-  let spaceA = !!PUNC_SPACING[textA] && PUNC_SPACING[textA][1]
-  let spaceB = !!PUNC_SPACING[textB] && PUNC_SPACING[textB][0]
+  let spaceA = Boolean(PUNC_SPACING[textA]) && PUNC_SPACING[textA][1]
+  let spaceB = Boolean(PUNC_SPACING[textB]) && PUNC_SPACING[textB][0]
   let isWordA = WORD_TAGS.has(tagA)
   let isWordB = WORD_TAGS.has(tagB)
 
@@ -433,10 +433,9 @@ function* splitNospace(val: string, analyzer: MorphAnalyzer) {
     yield [val, false] as [string, boolean]
   } else {
     // console.log(val)
-    yield* tokenizeUk(val, analyzer).map(({ token, glue }) => [
-      token,
-      glue,
-    ]) as Array<[string, boolean]>
+    yield* tokenizeUk(val, analyzer).map(
+      ({ token, glue }) => [token, glue] as [string, boolean],
+    )
   }
 }
 
@@ -955,7 +954,7 @@ export function adoptMorphDisambs(
   sourceRoot: AbstractElement,
 ) {
   // let stream = mixml2tokenStream(sourceRoot)
-  let attr = !!sourceRoot.evaluateElement(`//mi:w_[@n]`, NS) ? 'n' : 'nn'
+  let attr = sourceRoot.evaluateElement(`//mi:w_[@n]`, NS) ? 'n' : 'nn'
   // console.error(`attr`, attr)
   for (let miwSource of sourceRoot.evaluateElements('//mi:w_', NS)) {
     let n = miwSource.attribute(attr)
@@ -1134,9 +1133,8 @@ export function token2sketchVertical(token: Token) {
         token.interps.map((x) => interp2udVertFeatures(x)),
       )
       return tsvLine(token.form, lemmas, mteTags, mivesumFlagss, ...ud)
-    } else {
-      return token.form
     }
+    return token.form
   }
   if (token.isGlue()) {
     return '<g/>'

@@ -40,7 +40,7 @@ export class GraphNode<T> {
   }
 
   hasChildren() {
-    return !!this.children.length
+    return Boolean(this.children.length)
   }
 }
 

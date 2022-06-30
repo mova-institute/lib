@@ -1,6 +1,6 @@
 export function assureUnicode(re: RegExp) {
   if (!re.unicode) {
-    re = new RegExp(re, re.flags + 'u')
+    re = new RegExp(re, `${re.flags}u`)
   }
   return re
 }

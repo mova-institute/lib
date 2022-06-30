@@ -25,7 +25,7 @@ export class FileSavedSet<T extends Tostringable> {
   add(value: T) {
     let str = value.toString()
     if (!this.set.has(str)) {
-      fs.writeSync(this.file, value + '\n')
+      fs.writeSync(this.file, `${value}\n`)
       this.set.add(str)
     }
   }

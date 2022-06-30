@@ -19,20 +19,19 @@ export class AsyncTaskRunner<Result = void> {
       this.tasksRunning.add(result)
       result.then(() => this.tasksRunning.delete(result))
       return [Promise.resolve(), result]
-    } else {
-      ++this.numQueued
-      let posted = this.slotAvail
-      this.slotAvail = (async () => {
-        await this.slotAvail
-        let { promise } = await Promise.race(this.wrappedTasks())
-        this.tasksRunning.delete(promise)
-        let result = task()
-        this.tasksRunning.add(result)
-        --this.numQueued
-        return result
-      })()
-      return [posted, this.slotAvail]
     }
+    ++this.numQueued
+    let posted = this.slotAvail
+    this.slotAvail = (async () => {
+      await this.slotAvail
+      let { promise } = await Promise.race(this.wrappedTasks())
+      this.tasksRunning.delete(promise)
+      let result = task()
+      this.tasksRunning.add(result)
+      --this.numQueued
+      return result
+    })()
+    return [posted, this.slotAvail]
   }
 
   setConcurrency(value: number) {

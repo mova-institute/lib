@@ -176,8 +176,8 @@ function processEpub(dataPath: string) {
 }
 
 function* processPdf(dataPath: string, meta, analyzer: MorphAnalyzer) {
-  let hasImages = !!getNumImagesInPdfSync(dataPath)
-  let hasFonts = !!getNumFontsInPdfSync(dataPath)
+  let hasImages = Boolean(getNumImagesInPdfSync(dataPath))
+  let hasFonts = Boolean(getNumFontsInPdfSync(dataPath))
 
   if (!hasImages && !hasFonts) {
     console.error(`PDF contains no images, no fonts`)
@@ -264,7 +264,7 @@ function hasSmashedEncoding(str: string) {
 
 function readFileSyncAutodetect(path: string) {
   let bytes = fs.readFileSync(path)
-  let encoding = detectCharacterEncoding(bytes).encoding
+  let { encoding } = detectCharacterEncoding(bytes)
   let content = decode(bytes, encoding)
   if (!hasSmashedEncoding(content)) {
     return content

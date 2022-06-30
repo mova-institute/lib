@@ -37,11 +37,11 @@ export class DirectedGraphNode<NodeAttrib, ArrowAttrib> {
   }
 
   hasIncoming() {
-    return !!this.incomingArrows.length
+    return Boolean(this.incomingArrows.length)
   }
 
   hasOutgoing() {
-    return !!this.outgoingArrows.length
+    return Boolean(this.outgoingArrows.length)
   }
 
   addIncomingArrow(

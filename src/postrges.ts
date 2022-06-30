@@ -1,5 +1,5 @@
 import { connect, Client, ClientConfig, QueryResult } from 'pg'
-const types = require('pg').types
+const { types } = require('pg')
 import camelCase = require('camelcase')
 import decamelize = require('decamelize')
 
@@ -110,7 +110,7 @@ export class PgClient {
   delete(table: string, where: string, returning: string, ...params) {
     let queryStr = `DELETE FROM ${table} WHERE ${where}`
     if (returning) {
-      queryStr += ' RETURNING ' + returning
+      queryStr += ` RETURNING ${returning}`
     }
 
     return query1Client(this.client, queryStr, params)
@@ -129,10 +129,10 @@ export class PgClient {
       keys.length,
     )})`
     if (onConflict) {
-      queryStr += ' ON CONFLICT DO ' + onConflict
+      queryStr += ` ON CONFLICT DO ${onConflict}`
     }
     if (returning) {
-      queryStr += ' RETURNING ' + returning
+      queryStr += ` RETURNING ${returning}`
     }
 
     return query1Client(
@@ -211,9 +211,9 @@ function nDollars(n: number) {
   let ret = ''
   if (n) {
     for (let i = 1; i < n; ++i) {
-      ret += '$' + i + ', '
+      ret += `$${i}, `
     }
-    ret += '$' + n
+    ret += `$${n}`
   }
 
   return ret

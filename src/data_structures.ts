@@ -126,7 +126,7 @@ export class NumeratedSet<T> {
     return ret
   }
 
-  constructor(mapConstructor: { new (): IMap<T, number> } = Map) {
+  constructor(mapConstructor: new () => IMap<T, number> = Map) {
     this.ids = new mapConstructor()
   }
 
@@ -171,7 +171,7 @@ export class CachedFunctionResult<T> {
 }
 
 export class DefaultMap<K, V> extends Map<K, V> {
-  constructor(private v: { new (): V }, iterable?: Iterable<[K, V]>) {
+  constructor(private v: new () => V, iterable?: Iterable<[K, V]>) {
     super(iterable)
   }
 

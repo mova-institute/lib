@@ -17,7 +17,7 @@ function main() {
   // if (args.from) {
   //   datetimeFrom = args.from
   // }
-  let stats: { [arrowId: string]: { user: string; timestamp: Date } } = {}
+  let stats: Record<string, { user: string; timestamp: Date }> = {}
   createInterface({ input: process.stdin })
     .on('line', (line: string) => {
       let [

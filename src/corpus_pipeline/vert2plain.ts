@@ -44,7 +44,6 @@ function vert2vec() {
       if (line.startsWith('</p>')) {
         process.stdout.write(`\n`)
       }
-      return
     } else {
       let [form, , mte] = line.split('\t', 3)
       if (mte !== 'U') {

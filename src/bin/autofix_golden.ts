@@ -122,7 +122,7 @@ async function main() {
         let interpEls = root.evaluateElements('//w_/w')
         for (let interpEl of interpEls) {
           // continue
-          let form = interpEl.text() as string // todo: remove as
+          let form = interpEl.text()
           let interp: MorphInterp
           try {
             interp = MorphInterp.fromVesumStr(
@@ -263,7 +263,7 @@ async function main() {
           .entries()) {
           let token = node.data
           let parent = node.parent && node.parent.data
-          let interp = token.interp
+          let { interp } = token
           const udInterp = toUd(interp.clone())
 
           let tokenElement = id2el.get(token.id)
@@ -1026,7 +1026,7 @@ function renameStructures(root: AbstractElement) {
 }
 
 function lowercaseOddballLemmas(token: Token) {
-  let interp = token.interp
+  let { interp } = token
   if (
     (!interp.lemma.includes('’') &&
       (interp.isParticle() ||
@@ -1054,7 +1054,7 @@ function fixtestMorpho(
   analyzer: MorphAnalyzer,
 ) {
   let token = node.data
-  let interp = node.data.interp
+  let { interp } = node.data
   token.form = token.getForm()
 
   if (interp.isForeign()) {

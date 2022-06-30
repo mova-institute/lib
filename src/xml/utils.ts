@@ -138,10 +138,10 @@ export function parseTagStr(value: string) {
     let [, closer, name, attributes, empty, content] = match
     return {
       name,
-      isClosing: !!closer,
+      isClosing: Boolean(closer),
       attributes:
         (attributes && parseAttributeStr(attributes.trim())) || undefined,
-      empty: !!empty,
+      empty: Boolean(empty),
       content,
     }
   }
@@ -210,9 +210,7 @@ export function traverseDepthEl(
 }
 
 export type TraverseDirective = 'skip' | 'stop' | void
-export interface ITraverseCallback {
-  (el: AbstractNode): TraverseDirective
-}
+export type ITraverseCallback = (el: AbstractNode) => TraverseDirective
 export function traverseDepth(
   node: AbstractNode,
   onEnter: ITraverseCallback,
@@ -228,7 +226,7 @@ export function traverseDepth(
       cur;
       cur = next, next = next && next.nextSibling()
     ) {
-      if (traverseDepth(cur, onEnter, onLeave) === false) {
+      if (!traverseDepth(cur, onEnter, onLeave)) {
         return false
       }
     }
@@ -302,15 +300,13 @@ export function traverseDocumentOrder(
 ) {
   let curNode = node
   for (; curNode; curNode = curNode.nextSibling()) {
-    if (traverseDepth(curNode, onEnter, onLeave) === false) {
+    if (!traverseDepth(curNode, onEnter, onLeave)) {
       return false
     }
   }
   for (curNode = node && node.parent(); curNode; curNode = curNode.parent()) {
     if (curNode.nextSibling()) {
-      if (
-        traverseDocumentOrder(curNode.nextSibling(), onEnter, onLeave) === false
-      ) {
+      if (!traverseDocumentOrder(curNode.nextSibling(), onEnter, onLeave)) {
         return false
       }
       break

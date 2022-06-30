@@ -16,9 +16,8 @@ export class CoolMapInt<K> extends CoolMap<K, number> {
       let newValue = super.get(key) + 1
       super.set(key, newValue)
       return newValue
-    } else {
-      super.set(key, 1)
-      return 1
     }
+    super.set(key, 1)
+    return 1
   }
 }

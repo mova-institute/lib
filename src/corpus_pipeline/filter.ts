@@ -287,7 +287,7 @@ export function filterParagraphedDoc(
     if (p.length > lengthThreshold) {
       reportRmPar(i, p, `longer than ${lengthThreshold} chars (${p.length})`)
       filtered.push(i)
-      continue ploop
+      continue
     }
 
     if (options.filterPreviews && i + 3 < pp.length) {
@@ -297,7 +297,7 @@ export function filterParagraphedDoc(
           filtered.push(i2)
           ++i
         }
-        continue ploop
+        continue
       }
     }
 
@@ -330,7 +330,7 @@ export function filterParagraphedDoc(
     if (unescaped.length !== prepared.length) {
       reportRmPar(i, p, 'html markup')
       filtered.push(i)
-      continue ploop
+      continue
     }
 
     let isSuspicious = [ruSpecLettersRe, /[ђњџћүө¤≥]/].some((x) => x.test(p))
@@ -343,7 +343,7 @@ export function filterParagraphedDoc(
           `out-of-dict threshold: ${numNondict}/${naiveSplit.length}`,
         )
         filtered.push(i)
-        continue ploop
+        continue
       }
     } else {
       let sample = uniformSubarray(naiveSplit, 0.1)
@@ -359,7 +359,7 @@ export function filterParagraphedDoc(
           if (unknownsOfUkLetters.length / unknowns.length < 0.9) {
             reportRmPar(i, p, `out-of-dict soft threshold`)
             filtered.push(i)
-            continue ploop
+            continue
           }
         }
       }

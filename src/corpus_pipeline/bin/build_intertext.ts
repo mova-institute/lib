@@ -539,7 +539,11 @@ function getFeatsFromConllu2(
 }
 
 //------------------------------------------------------------------------------
-function subobject<T>(from: T, props: Iterable<keyof T>, filter = (x) => !!x) {
+function subobject<T>(
+  from: T,
+  props: Iterable<keyof T>,
+  filter = (x) => Boolean(x),
+) {
   let ret = {}
   for (let prop of props) {
     if (prop in from && filter(from[prop])) {

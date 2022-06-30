@@ -53,17 +53,16 @@ async function main() {
       lines = []
       await runner.post(async () => {
         try {
-          var conllu = mu(
+          let conllu = mu(
             (await udpipe.tagParseConnluLines(inputAsConllu)).split('\n'),
           )
             .filter((x) => /^\d/.test(x))
             .map((x) => x.split('\t'))
-          var taggedVert = mergeConlluIntoVert(myLines, conllu, analyzer)
+          let taggedVert = mergeConlluIntoVert(myLines, conllu, analyzer)
           writer.write(taggedVert)
         } catch (e) {
           // console.error(`ERROR at doc ${docCount}`)
           console.error(e)
-          return
         }
       })
     }

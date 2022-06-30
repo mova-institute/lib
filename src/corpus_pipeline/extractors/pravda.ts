@@ -72,55 +72,54 @@ export function extract(html: string) {
       paragraphs,
       source: 'Українська правда',
     }
-  } else {
-    let date = getDate(root, '//div[@class="post_news__date"]')
-    if (!date) {
-      date = getDate(root, '//div[@class="post__time"]')
-    }
-    if (!date) {
-      let match = url.pathname.match(/^\/\w+\/(\d{4})\/(\d{1,2})\/(\d{1,2})/)
-      if (match) {
-        let [, y, m, d] = match
-        date = `${y}-${m}-${d}`
-      }
-    }
-    let paragraphs = mu([
-      '//div[@class="post__text"]/p',
-      '//article/p',
-      '//div[@class="post_news__text"]/p',
-      '//div[@class="text"]/p',
-      '//div[contains(@class, "text ")]/p',
-    ])
-      .map((x) => textsOf(root, x))
-      .find((x) => x.length)
-
-    if (!paragraphs) {
-      paragraphs = brbr2paragraphs(
-        root.evaluateElement('//div[@class="post_news__text"]'),
-      )
-    }
-    paragraphs = paragraphs.filter((x) => x)
-    trimCopyrightish(paragraphs)
-
-    let author = textOf(root, '//div[@class="post_news__author"]')
-    if (!author) {
-      author = textOf(root, '//div[@class="article"]/div[@class="dt1"]/b[1]')
-    }
-    if (!author || author === 'Українська правда') {
-      author = undefined
-    }
-
-    let [, source] = domainToSourceName.find(([re]) => re.test(url.hostname))
-
-    return {
-      title,
-      author,
-      url: url.href,
-      date,
-      paragraphs,
-      source,
-    } as CorpusDoc
   }
+  let date = getDate(root, '//div[@class="post_news__date"]')
+  if (!date) {
+    date = getDate(root, '//div[@class="post__time"]')
+  }
+  if (!date) {
+    let match = url.pathname.match(/^\/\w+\/(\d{4})\/(\d{1,2})\/(\d{1,2})/)
+    if (match) {
+      let [, y, m, d] = match
+      date = `${y}-${m}-${d}`
+    }
+  }
+  let paragraphs = mu([
+    '//div[@class="post__text"]/p',
+    '//article/p',
+    '//div[@class="post_news__text"]/p',
+    '//div[@class="text"]/p',
+    '//div[contains(@class, "text ")]/p',
+  ])
+    .map((x) => textsOf(root, x))
+    .find((x) => x.length)
+
+  if (!paragraphs) {
+    paragraphs = brbr2paragraphs(
+      root.evaluateElement('//div[@class="post_news__text"]'),
+    )
+  }
+  paragraphs = paragraphs.filter((x) => x)
+  trimCopyrightish(paragraphs)
+
+  let author = textOf(root, '//div[@class="post_news__author"]')
+  if (!author) {
+    author = textOf(root, '//div[@class="article"]/div[@class="dt1"]/b[1]')
+  }
+  if (!author || author === 'Українська правда') {
+    author = undefined
+  }
+
+  let [, source] = domainToSourceName.find(([re]) => re.test(url.hostname))
+
+  return {
+    title,
+    author,
+    url: url.href,
+    date,
+    paragraphs,
+    source,
+  } as CorpusDoc
 }
 
 //------------------------------------------------------------------------------

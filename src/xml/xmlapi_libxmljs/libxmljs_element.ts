@@ -69,7 +69,7 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   }
 
   hasAttributes() {
-    return !!this.wrapee.attrs().length // todo: try constant time
+    return Boolean(this.wrapee.attrs().length) // todo: try constant time
   }
 
   attributes() {
@@ -130,7 +130,7 @@ export class LibxmljsElement extends LibxmljsNode implements AbstractElement {
   }
 
   buildNsMap() {
-    let ret: { [prefix: string]: string } = {}
+    let ret: Record<string, string> = {}
     // for (let el of merge(this, this.walkAncestors())) {
     //   let wrapee = (el as LibxmlElement).wrapee;
     //   for (let ns of wrapee.namespaces()) {

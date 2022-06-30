@@ -158,7 +158,7 @@ export abstract class AbstractElement extends AbstractNode {
       .find((x) => x !== null)
   }
 
-  abstract buildNsMap(): { [prefix: string]: string }
+  abstract buildNsMap(): Record<string, string>
 
   unwrap() {
     while (this.firstChild()) {

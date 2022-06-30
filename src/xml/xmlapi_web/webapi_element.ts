@@ -38,7 +38,7 @@ export class WebapiElement extends WebapiNode implements AbstractElement {
   }
 
   attributes() {
-    let attributes = this.wrapee.attributes
+    let { attributes } = this.wrapee
     let ret = new Array<WebapiAttribute>()
     for (let i = 0; i < attributes.length; ++i) {
       ret.push(new WebapiAttribute(attributes.item(i)))

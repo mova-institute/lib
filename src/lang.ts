@@ -95,7 +95,7 @@ export function ibool(value: any) {
   return value ? 1 : 0
 }
 
-export function wrappedOrNull<T>(construct: { new (val): T }, val) {
+export function wrappedOrNull<T>(construct: new (val) => T, val) {
   return val ? new construct(val) : null
 }
 
@@ -215,7 +215,7 @@ export function createObject2(keys: Array<string>, values: Array<any>) {
 }
 
 export function makeObject<T>(keyvaluePairs: Array<[string, T]> /* todo */) {
-  let ret: { [key: string]: T } = {}
+  let ret: Record<string, T> = {}
   for (let [key, value] of keyvaluePairs) {
     ret[key] = value
   }
@@ -276,7 +276,7 @@ export function shallowEqualArrays<T>(arrA: Array<T>, arrB: Array<T>) {
     return false
   }
 
-  for (var i = 0; i < arrB.length; ++i) {
+  for (let i = 0; i < arrB.length; ++i) {
     if (arrA[i] !== arrB[i]) {
       return false
     }

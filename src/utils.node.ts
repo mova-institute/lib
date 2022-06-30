@@ -89,7 +89,7 @@ export function linesNoSpill(
           rl.pause()
           inProgress = true
 
-          for (var i = 0; i < buf.length; ++i) {
+          for (let i = 0; i < buf.length; ++i) {
             await listener(buf[i])
           }
           buf = []

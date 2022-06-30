@@ -15,7 +15,7 @@ export class StreamPauser {
   }
 
   isPaused() {
-    return !!this.pausers.size
+    return Boolean(this.pausers.size)
   }
 
   isPausedBy(pauser: any) {

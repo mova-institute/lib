@@ -833,9 +833,8 @@ export function validateSentenceSyntax(
     while (p && !hasChildrenOfUrel(p, 'case')) {
       if (!uEqSome(p.data.rel, ['appos', 'conj', 'flat'])) {
         return true
-      } else {
-        p = p.parent
       }
+      p = p.parent
     }
   })
 
@@ -1084,7 +1083,7 @@ export function validateSentenceSyntax(
       return false
     }
 
-    let interp = t.data.interp
+    let { interp } = t.data
     let subjFeats = t.data.interp.features
 
     let verbInterp = t.parent.data.interp
@@ -1147,7 +1146,7 @@ export function validateSentenceSyntax(
     if (t.isRoot()) {
       return
     }
-    let interp = t.data.interp
+    let { interp } = t.data
     let nounInterp = t.parent.data.interp
 
     let ret =
@@ -3611,7 +3610,7 @@ function isContinuous(array: Array<number>) {
 
 function canBePredicate(t: GraphNode<Token>) {
   let token = t.data
-  let interp = token.interp
+  let { interp } = token
   return (
     t.isRoot() ||
     uEq(token.rel, 'parataxis') ||

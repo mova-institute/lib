@@ -4,7 +4,7 @@ import * as actions from './api'
 import cookieParser from 'cookie-parser'
 import { PgClient } from '../postrges'
 import { parseJsonFileSync } from '../utils.node'
-import {expressjwt} from 'express-jwt'
+import { expressjwt } from 'express-jwt'
 
 export interface IReq extends express.Request {
   bag: any

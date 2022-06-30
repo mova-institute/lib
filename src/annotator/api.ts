@@ -574,7 +574,7 @@ export async function getStats(
   join common.person on task.user_id = person.id
   where task.step='annotate' and fragment_version.status='done'
   `
-  let rows = (await client.query(QUERY)).rows
+  let { rows } = await client.query(QUERY)
   let stats = {} as Record<string, any>
   for (let { content, name_last } of rows) {
     stats[name_last] = stats[name_last] || { count: 0 }
@@ -613,14 +613,12 @@ async function onReviewConflicts(task, client: PgClient) {
     )
 
     let [his, her] = fragment.annotations
-    let hisName =
-      his.userId +
-      ':' +
+    let hisName = `${his.userId}:${
       (await client.call('get_user_details', his.userId)).nameLast
-    let herName =
-      her.userId +
-      ':' +
+    }`
+    let herName = `${her.userId}:${
       (await client.call('get_user_details', her.userId)).nameLast
+    }`
     let { markedStr, markedDoc, numDiffs } = markResolveConflicts(
       hisName,
       his.content,
@@ -658,7 +656,7 @@ async function onReviewConflicts(task, client: PgClient) {
           content: markedStr,
         })
       } else {
-        console.error('task exists: ' + alreadyTask.id)
+        console.error(`task exists: ${alreadyTask.id}`)
       }
     }
   }

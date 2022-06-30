@@ -1,6 +1,6 @@
 export const NS_XML = 'http://www.w3.org/XML/1998/namespace'
 
-export function wrappedOrNull<T>(ctor: { new (val): T }, val): T {
+export function wrappedOrNull<T>(ctor: new (val) => T, val): T {
   return val ? new ctor(val) : null
 }
 
@@ -135,7 +135,7 @@ export function prettify(xmlstr: string, gentle = false) {
     }
   }
 
-  if (str[0] === '\n') {
+  if (str.startsWith('\n')) {
     str = str.slice(1)
   }
 
