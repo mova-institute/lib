@@ -9,12 +9,12 @@ export class TrebankStatister {
 
   feedSentence(nodes: Array<TokenNode>) {
     this.numNonprojective += nodes
-      .filter((x) => !x.node.isElided())
+      .filter((x) => !x.data.isElided())
       .some((x) => isNonprojective(x))
       ? 1
       : 0
 
-    this.tags.addAll(nodes.map((x) => toConlluishString(x.node.interp)))
+    this.tags.addAll(nodes.map((x) => toConlluishString(x.data.interp)))
   }
 
   accountGap() {

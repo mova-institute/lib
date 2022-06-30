@@ -104,7 +104,7 @@ function doGeneric(
   let chunks = mu(sentences)
     .filter(config.sentenceFilter)
     .map((x) => x.nodes)
-    .chunkByMax(55, (x) => mu(x).count((xx) => xx.node.isWord()))
+    .chunkByMax(55, (x) => mu(x).count((xx) => xx.data.isWord()))
     .toArray()
 
   for (let [i, chunk] of chunks.entries()) {
@@ -113,7 +113,7 @@ function doGeneric(
     let str = mu(tokenStream2bratSynt(chunk)).join('\n', true)
     writeFileSyncMkdirp(join(dest, ...config.dirPath, `${filename}.ann`), str)
 
-    let chunkTokens = chunk.map((x) => x.map((xx) => xx.node))
+    let chunkTokens = chunk.map((x) => x.map((xx) => xx.data))
     str = mu(tokenStream2bratPlaintext(chunkTokens)).join('\n', true)
     writeFileSyncMkdirp(join(dest, ...config.dirPath, `${filename}.txt`), str)
   }
@@ -159,7 +159,7 @@ function doUd(
 ) {
   let chunks = mu(sentenceStream)
     .map((x) => x.nodes)
-    .chunkByMax(maxWordsPerFile, (x) => mu(x).count((xx) => xx.node.isWord()))
+    .chunkByMax(maxWordsPerFile, (x) => mu(x).count((xx) => xx.data.isWord()))
     .toArray()
 
   for (let [i, chunk] of chunks.entries()) {
@@ -168,7 +168,7 @@ function doUd(
     let str = mu(tokenStream2bratSynt(chunk)).join('\n', true)
     writeFileSyncMkdirp(join(dest, `${filename}.ann`), str)
 
-    let chunkTokens = chunk.map((x) => x.map((xx) => xx.node))
+    let chunkTokens = chunk.map((x) => x.map((xx) => xx.data))
     str = mu(tokenStream2bratPlaintext(chunkTokens)).join('\n', true)
     writeFileSyncMkdirp(join(dest, `${filename}.txt`), str)
   }

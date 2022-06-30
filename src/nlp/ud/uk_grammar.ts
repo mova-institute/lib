@@ -23,9 +23,9 @@ export type Node2indexMap = Map<TokenNode, number>
 export function isAmbigCoordModifier(node: GraphNode<Token>) {
   return (
     node.parent?.children.some(
-      (x) => uEq(x.node.rel, 'conj') && !x.node.rel.endsWith(':parataxis'),
+      (x) => uEq(x.data.rel, 'conj') && !x.data.rel.endsWith(':parataxis'),
     ) &&
-    !uEqSome(node.node.rel, [
+    !uEqSome(node.data.rel, [
       'conj',
       'cc',
       'sconj',
@@ -38,12 +38,12 @@ export function isAmbigCoordModifier(node: GraphNode<Token>) {
       'compound',
     ]) &&
     !(
-      uEq(node.node.rel, 'discourse') &&
-      (node.node.interp.isConsequential() || node.node.interp.lemma === 'тощо')
+      uEq(node.data.rel, 'discourse') &&
+      (node.data.interp.isConsequential() || node.data.interp.lemma === 'тощо')
     ) &&
     // && uEqSome(node.node.rel, ['nsubj'])
     // && wiithNonempty(node.children.find(x => uEq(x.node.rel, 'conj')), x => x.children.some(xx => uEqSome(xx.node.rel, ['nsubj'])))
-    !node.node.hdeps.some((xx) =>
+    !node.data.hdeps.some((xx) =>
       uEqSome(xx.relation, CONJ_PROPAGATION_RELS_ARR),
     )
   )
@@ -51,9 +51,9 @@ export function isAmbigCoordModifier(node: GraphNode<Token>) {
 
 export function isFeasibleRelclWithoutRel(node: TokenNode) {
   return (
-    uEq(node.node.rel, 'acl') &&
+    uEq(node.data.rel, 'acl') &&
     node.children.some(
-      (x) => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що',
+      (x) => uEq(x.data.rel, 'mark') && x.data.interp.lemma === 'що',
     )
   )
   // && !node.children.some(x => uEqSome(x.node.rel, [/* 'obj', 'iobj', */ 'nsubj', 'csubj']))
@@ -65,17 +65,17 @@ export function nsubjAgreesWithPredicate(
   noun: TokenNode,
   predicate: TokenNode,
 ) {
-  if (noun.node.interp.isX() || noun.node.isGraft) {
+  if (noun.data.interp.isX() || noun.data.isGraft) {
     return true
   }
 
-  let verbInterp = predicate.node.interp
-  if (verbInterp.isInfinitive() || !predicate.node.interp.isVerb()) {
+  let verbInterp = predicate.data.interp
+  if (verbInterp.isInfinitive() || !predicate.data.interp.isVerb()) {
     let aux = predicate.children.find((x) =>
-      uEqSome(x.node.rel, ['aux', 'cop']),
+      uEqSome(x.data.rel, ['aux', 'cop']),
     )
     if (aux) {
-      verbInterp = aux.node.interp
+      verbInterp = aux.data.interp
     }
   }
 
@@ -86,7 +86,7 @@ export function nsubjAgreesWithPredicate(
   if (
     verbInterp.hasFeature(f.Person) &&
     verbInterp.getFeature(f.Person) !== f.Person.third &&
-    !verbInterp.equalsByFeature(noun.node.interp, f.Person)
+    !verbInterp.equalsByFeature(noun.data.interp, f.Person)
   ) {
     return false
   }
@@ -95,24 +95,24 @@ export function nsubjAgreesWithPredicate(
     verbInterp.hasGender() &&
     !isValidGenderlesNoun(noun) &&
     // && !(noun.node.interp.isPronominal() && !noun.node.interp.hasFeature(f.Gender))
-    !verbInterp.equalsByFeature(noun.node.interp, f.Gender)
+    !verbInterp.equalsByFeature(noun.data.interp, f.Gender)
   ) {
     return false
   }
 
   if (
-    !verbInterp.equalsByFeature(noun.node.interp, f.MorphNumber) &&
-    (noun.node.interp.hasGender() || noun.node.interp.hasNumber()) &&
+    !verbInterp.equalsByFeature(noun.data.interp, f.MorphNumber) &&
+    (noun.data.interp.hasGender() || noun.data.interp.hasNumber()) &&
     !(
       verbInterp.isPlural() &&
-      noun.children.some((x) => uEq(x.node.rel, 'conj') || isConjlikeNmod(x))
+      noun.children.some((x) => uEq(x.data.rel, 'conj') || isConjlikeNmod(x))
     ) &&
     !(
       verbInterp.isPlural() &&
       noun.children.some(
         (x) =>
-          (isGoverning(x.node.rel) && x.node.interp.isPlural()) ||
-          x.node.rel === 'advmod:amtgov',
+          (isGoverning(x.data.rel) && x.data.interp.isPlural()) ||
+          x.data.rel === 'advmod:amtgov',
       )
     )
   ) {
@@ -128,30 +128,30 @@ export function isNemaje(interp: MorphInterp) {
 
 export function isConjlikeNmod(node: TokenNode) {
   return (
-    uEq(node.node.rel, 'nmod') &&
-    node.node.interp.isInstrumental() &&
+    uEq(node.data.rel, 'nmod') &&
+    node.data.interp.isInstrumental() &&
     node.children.some(
       (x) =>
-        uEq(x.node.rel, 'case') &&
-        ['з', 'зі', 'із'].includes(x.node.interp.lemma),
+        uEq(x.data.rel, 'case') &&
+        ['з', 'зі', 'із'].includes(x.data.interp.lemma),
     )
   )
 }
 
 export function isValidGenderlesNoun(node: TokenNode) {
   return (
-    node.node.interp.isPronominal() &&
-    ['хтось', 'ніхто', 'я', 'ти'].includes(node.node.interp.lemma)
+    node.data.interp.isPronominal() &&
+    ['хтось', 'ніхто', 'я', 'ти'].includes(node.data.interp.lemma)
   )
 }
 
 export function isPromoted(node: TokenNode) {
-  return !node.node.isElided() && node.parents.some((p) => p.node.isElided())
+  return !node.data.isElided() && node.parents.some((p) => p.data.isElided())
 }
 
 export function isNonprojective(node: TokenNode) {
   let indexes = mu(walkDepth(node))
-    .map((x) => x.node.index)
+    .map((x) => x.data.index)
     .toArray()
     .sort(compareAscending)
 
@@ -172,13 +172,13 @@ export function findRelationAnalog(
   newDependent: TokenNode,
   existingDependent: TokenNode,
 ) {
-  let { pos: newDepPos } = toUd(newDependent.node.interp)
-  let { pos: existingDepPos } = toUd(existingDependent.node.interp)
-  let existingRel = existingDependent.node.rel
+  let { pos: newDepPos } = toUd(newDependent.data.interp)
+  let { pos: existingDepPos } = toUd(existingDependent.data.interp)
+  let existingRel = existingDependent.data.rel
   newDepPos = dumbDownUdPos(newDepPos)
   existingDepPos = dumbDownUdPos(existingDepPos)
 
-  if (newDependent.node.interp.isX()) {
+  if (newDependent.data.interp.isX()) {
     // what else can we do?..
     return existingRel
   }
@@ -199,11 +199,11 @@ export function findRelationAnalog(
     return existingRel
   }
 
-  if (uEq(existingRel, 'obl') && newDependent.node.interp.isAdverb()) {
+  if (uEq(existingRel, 'obl') && newDependent.data.interp.isAdverb()) {
     // todo: виколоти і т.д.
     return 'advmod'
   }
-  if (uEq(existingRel, 'advmod') && newDependent.node.interp.isNounish()) {
+  if (uEq(existingRel, 'advmod') && newDependent.data.interp.isNounish()) {
     // todo: то там, то сям, то те, то се; скрізь і всім допомагати
     return 'obl'
   }
@@ -212,7 +212,7 @@ export function findRelationAnalog(
   }
   if (
     uEqSome(existingRel, ['amod', 'det']) &&
-    newDependent.node.interp.isNounish()
+    newDependent.data.interp.isNounish()
   ) {
     return 'nmod'
   }
@@ -229,8 +229,8 @@ export function findRelationAnalog(
 
   if (
     uEq(existingRel, 'advcl') &&
-    existingDependent.node.interp.isConverb() &&
-    newDependent.node.interp.isAdjective()
+    existingDependent.data.interp.isConverb() &&
+    newDependent.data.interp.isAdjective()
   ) {
     return 'advcl:sp'
   }
@@ -239,7 +239,7 @@ export function findRelationAnalog(
     if (
       uEq(existingRel, clausal) &&
       !definitelyIsPredicate(newDependent) &&
-      !newDependent.node.interp.isVerbial()
+      !newDependent.data.interp.isVerbial()
     ) {
       // return plain
     }
@@ -276,7 +276,7 @@ export function findXcompSubject(node: TokenNode) {
     .ancestors0()
     .find(
       (x) =>
-        !uEqSome(x.node.rel, [
+        !uEqSome(x.data.rel, [
           'xcomp',
           'conj',
           'parataxis',
@@ -284,13 +284,13 @@ export function findXcompSubject(node: TokenNode) {
     )
 
   return mu(['obj', 'iobj', 'nsubj', 'csubj'])
-    .map((r) => topParent.children.find((x) => uEq(x.node.rel, r)))
+    .map((r) => topParent.children.find((x) => uEq(x.data.rel, r)))
     .filter((x) => x)
     .first()
 }
 
 export function isRootOrHole(node: TokenNode) {
-  return !node.node.deps.some((x) => !uEq(x.relation, 'orphan'))
+  return !node.data.deps.some((x) => !uEq(x.relation, 'orphan'))
   // || !node.parents.every(x => hasChild(x, 'orphan')
   //   && !x.parents.some(xx => xx.node.isElided()))
 }
@@ -304,7 +304,7 @@ export function isCompleteSentence(nodes: Iterable<TokenNode>) {
 }
 
 export function findClauseRoot(node: TokenNode) {
-  return mu(node.walkThisAndUp0()).find((x) => uEqSome(x.node.rel, CLAUSE_RELS))
+  return mu(node.walkThisAndUp0()).find((x) => uEqSome(x.data.rel, CLAUSE_RELS))
 }
 
 export function findClauseArrows(node: EnhancedNode) {
@@ -316,24 +316,24 @@ export function findRelativeClauseRootsEnh(relative: EnhancedNode) {
 }
 
 export function findRelativeClauseRoot(relative: TokenNode) {
-  if (!relative.node.interp.isRelative()) {
+  if (!relative.data.interp.isRelative()) {
     return
   }
   let clauseRoot = findClauseRoot(relative)
   if (!clauseRoot) {
     return
   }
-  if (uEq(clauseRoot.node.rel, 'acl')) {
+  if (uEq(clauseRoot.data.rel, 'acl')) {
     return clauseRoot
   }
 
-  if (clauseRoot.node.interp.isInfinitive()) {
+  if (clauseRoot.data.interp.isInfinitive()) {
     clauseRoot = mu(clauseRoot.walkUp0()).find((x) =>
-      uEqSome(x.node.rel, CLAUSE_RELS),
+      uEqSome(x.data.rel, CLAUSE_RELS),
     )
   }
 
-  if (clauseRoot && uEq(clauseRoot.node.rel, 'acl')) {
+  if (clauseRoot && uEq(clauseRoot.data.rel, 'acl')) {
     return clauseRoot
   }
 }
@@ -353,7 +353,7 @@ export function isRelclByRef(aclArrow: EnhancedArrow) {
 }
 
 export function findShchojijiAntecedent(node: TokenNode) {
-  if (!node.node.interp.isPersonal() || !node.node.interp.isNounish()) {
+  if (!node.data.interp.isPersonal() || !node.data.interp.isNounish()) {
     return
   }
   let clauseRoot = findRelativeClauseRoot(node)
@@ -363,9 +363,9 @@ export function findShchojijiAntecedent(node: TokenNode) {
   if (
     clauseRoot.parent &&
     clauseRoot.children.some(
-      (x) => x.node.interp.lemma === 'що' && uEq(x.node.rel, 'mark'),
+      (x) => x.data.interp.lemma === 'що' && uEq(x.data.rel, 'mark'),
     ) &&
-    clauseRoot.parent.node.interp.equalsByFeatures(node.node.interp, [
+    clauseRoot.parent.data.interp.equalsByFeatures(node.data.interp, [
       f.MorphNumber,
       f.Gender,
     ])
@@ -382,14 +382,14 @@ export function findNeighbourAncestor(
 ) {
   for (let i = focusIndex + 1; i < sentence.length; ++i) {
     let t = sentence[i]
-    if (t.node.interp.isPunctuation()) {
+    if (t.data.interp.isPunctuation()) {
       continue
     }
     if (t.ancestors0().some((x) => x === t)) {
       continue
     }
 
-    return t.ancestors0().find((x) => uEqSome(x.node.rel, [rel]))
+    return t.ancestors0().find((x) => uEqSome(x.data.rel, [rel]))
   }
 }
 
@@ -418,9 +418,9 @@ export function isInfValencyAdjective(t: Token) {
 export const PREDICATES = {
   isAuxWithNoCopAux(t: TokenNode) {
     return (
-      t.node.interp.isAuxillary() &&
+      t.data.interp.isAuxillary() &&
       t.parent &&
-      !['cop', 'aux'].some((x) => uEq(t.node.rel, x))
+      !['cop', 'aux'].some((x) => uEq(t.data.rel, x))
     )
   },
 }
@@ -435,7 +435,7 @@ export function isGoverning(relation: string) {
 
 export function isNumeralModified(t: TokenNode) {
   return (
-    t.children.some((x) => isNumericModifier(x.node.rel)) ||
+    t.children.some((x) => isNumericModifier(x.data.rel)) ||
     isQuantitativeAdverbModified(t)
   )
 }
@@ -445,34 +445,34 @@ export function isQuantitativeAdverbModified(t: TokenNode) {
 }
 
 export function isQuantitativeAdverbModifier(t: TokenNode) {
-  return t.node.rel === 'advmod:amtgov' // && t.parent.node.interp.isGenitive()
+  return t.data.rel === 'advmod:amtgov' // && t.parent.node.interp.isGenitive()
 }
 
 export function isQuantitativeAdverbModifierCandidate(t: TokenNode) {
   return (
     !t.isRoot() &&
-    t.parent.node.interp.isGenitive() &&
-    uEq(t.node.rel, 'advmod') &&
-    QAUNTITATIVE_ADVERBS.includes(t.node.interp.lemma)
+    t.parent.data.interp.isGenitive() &&
+    uEq(t.data.rel, 'advmod') &&
+    QAUNTITATIVE_ADVERBS.includes(t.data.interp.lemma)
   )
 }
 
 export function thisOrGovernedCase(t: TokenNode) {
-  let governer = t.children.find((x) => isGoverning(x.node.rel))
+  let governer = t.children.find((x) => isGoverning(x.data.rel))
   if (governer) {
-    return governer.node.interp.features.case
+    return governer.data.interp.features.case
   }
-  return t.node.interp.features.case
+  return t.data.interp.features.case
 }
 
 export function isNmodConj(t: TokenNode) {
   return (
-    uEq(t.node.rel, 'nummod') &&
-    t.node.interp.isInstrumental() &&
+    uEq(t.data.rel, 'nummod') &&
+    t.data.interp.isInstrumental() &&
     t.children.some(
       (x) =>
-        x.node.interp.isPreposition() &&
-        ['з', 'із', 'зі'].includes(x.node.interp.lemma),
+        x.data.interp.isPreposition() &&
+        ['з', 'із', 'зі'].includes(x.data.interp.lemma),
     )
   )
 }
@@ -483,58 +483,58 @@ export function hasNmodConj(t: TokenNode) {
 
 export function isNegativeExistentialPseudosubject(t: TokenNode) {
   return (
-    uEq(t.node.rel, 'nsubj') &&
-    t.node.interp.isGenitive() &&
-    t.parent.children.some((x) => x.node.interp.isNegative()) &&
-    t.parent.node.interp.isNeuter() &&
-    [...COPULA_LEMMAS, 'існувати', 'мати'].includes(t.parent.node.interp.lemma)
+    uEq(t.data.rel, 'nsubj') &&
+    t.data.interp.isGenitive() &&
+    t.parent.children.some((x) => x.data.interp.isNegative()) &&
+    t.parent.data.interp.isNeuter() &&
+    [...COPULA_LEMMAS, 'існувати', 'мати'].includes(t.parent.data.interp.lemma)
   )
 }
 
 export function isQuantificationalNsubj(t: TokenNode) {
   return (
-    uEq(t.node.rel, 'nsubj') &&
-    t.node.interp.isGenitive() &&
-    ((t.parent.node.interp.isAdverb() &&
-      QAUNTITATIVE_ADVERBS.includes(t.parent.node.interp.lemma)) ||
-      (t.parent.node.interp.isCardinalNumeral() &&
-        t.parent.node.interp.isNominative()))
+    uEq(t.data.rel, 'nsubj') &&
+    t.data.interp.isGenitive() &&
+    ((t.parent.data.interp.isAdverb() &&
+      QAUNTITATIVE_ADVERBS.includes(t.parent.data.interp.lemma)) ||
+      (t.parent.data.interp.isCardinalNumeral() &&
+        t.parent.data.interp.isNominative()))
   )
 }
 
 export function isPunctInParenthes(t: TokenNode) {
   return (
-    t.node.interp.isPunctuation() &&
+    t.data.interp.isPunctuation() &&
     t.children.length === 2 &&
-    t.children[0].node.form === '(' &&
-    t.children[0].node.interp.isPunctuation() &&
-    t.children[1].node.form === ')' &&
-    t.children[1].node.interp.isPunctuation()
+    t.children[0].data.form === '(' &&
+    t.children[0].data.interp.isPunctuation() &&
+    t.children[1].data.form === ')' &&
+    t.children[1].data.interp.isPunctuation()
   )
 }
 
 export function isDenUDen(t: TokenNode) {
   // console.log(t.node.indexInSentence)
   return (
-    (t.node.interp.isNounish() ||
-      (t.node.interp.isAdjective() && t.node.interp.isPronominal())) &&
+    (t.data.interp.isNounish() ||
+      (t.data.interp.isAdjective() && t.data.interp.isPronominal())) &&
     // && t.node.interp.isNominative()
     // && t.children.length === 1  // experimental
     wiith(
-      t.children.filter((x) => !x.node.interp.isPunctuation()),
+      t.children.filter((x) => !x.data.interp.isPunctuation()),
       (c) =>
-        c.every((x) => x.node.index > t.node.index) &&
+        c.every((x) => x.data.index > t.data.index) &&
         c.length === 1 &&
         c.some(
           (x) =>
-            uEq(x.node.rel, 'nmod') &&
+            uEq(x.data.rel, 'nmod') &&
             // && x.node.indexInSentence > t.node.indexInSentence
             // && x.children.some(xx => uEq(xx.node.rel, 'case'))
-            (x.node.interp.isNounish() ||
-              (x.node.interp.isAdjective() && x.node.interp.isPronominal())) &&
-            x.node.interp.lemma === t.node.interp.lemma &&
-            x.node.interp.getFeature(f.Case) !==
-              t.node.interp.getFeature(f.Case),
+            (x.data.interp.isNounish() ||
+              (x.data.interp.isAdjective() && x.data.interp.isPronominal())) &&
+            x.data.interp.lemma === t.data.interp.lemma &&
+            x.data.interp.getFeature(f.Case) !==
+              t.data.interp.getFeature(f.Case),
         ),
     )
   )
@@ -542,15 +542,15 @@ export function isDenUDen(t: TokenNode) {
 
 export function nounAdjectiveAgreed(noun: TokenNode, adjective: TokenNode) {
   return (
-    thisOrGovernedCase(noun) === adjective.node.interp.getFeature(f.Case) &&
-    ((adjective.node.interp.isPlural() && noun.node.interp.isPlural()) ||
-      noun.node.interp.getFeature(f.Gender) ===
-        adjective.node.interp.getFeature(f.Gender) ||
-      (adjective.node.interp.isPlural() &&
-        noun.node.interp.isSingular() &&
+    thisOrGovernedCase(noun) === adjective.data.interp.getFeature(f.Case) &&
+    ((adjective.data.interp.isPlural() && noun.data.interp.isPlural()) ||
+      noun.data.interp.getFeature(f.Gender) ===
+        adjective.data.interp.getFeature(f.Gender) ||
+      (adjective.data.interp.isPlural() &&
+        noun.data.interp.isSingular() &&
         hasChild(noun, 'conj')) ||
-      (adjective.node.interp.isSingular() &&
-        GENDERLESS_PRONOUNS.includes(noun.node.interp.lemma)))
+      (adjective.data.interp.isSingular() &&
+        GENDERLESS_PRONOUNS.includes(noun.data.interp.lemma)))
   )
 }
 
@@ -559,53 +559,53 @@ export function nounNounAgreed(interp1: MorphInterp, interp2: MorphInterp) {
 }
 
 export function hasCopula(t: TokenNode) {
-  return t.children.some((x) => uEqSome(x.node.rel, ['cop']))
+  return t.children.some((x) => uEqSome(x.data.rel, ['cop']))
 }
 
 export function hasChild(t: TokenNode, rel: string) {
-  return t.children.some((x) => uEqSome(x.node.rel, [rel]))
+  return t.children.some((x) => uEqSome(x.data.rel, [rel]))
 }
 
 export function hasSiblink(t: TokenNode, rel: string) {
   return (
     t.parent &&
-    t.parent.children.some((x) => x !== t && uEqSome(x.node.rel, [rel]))
+    t.parent.children.some((x) => x !== t && uEqSome(x.data.rel, [rel]))
   )
 }
 
 export function isDeceimalFraction(t: TokenNode) {
   return (
-    t.node.interp.isCardinalNumeral() &&
-    /^\d+$/.test(t.node.form) &&
+    t.data.interp.isCardinalNumeral() &&
+    /^\d+$/.test(t.data.form) &&
     t.children.some(
       (x) =>
-        /^\d+$/.test(x.node.form) &&
+        /^\d+$/.test(x.data.form) &&
         x.children.length === 1 &&
-        [',', '.'].includes(x.children[0].node.form) &&
-        x.node.index < t.node.index,
+        [',', '.'].includes(x.children[0].data.form) &&
+        x.data.index < t.data.index,
     )
   )
 }
 
 export function isNegated(t: TokenNode) {
   return (
-    t.node.interp.isNegative() ||
-    t.node.interp.isNegativePron() ||
+    t.data.interp.isNegative() ||
+    t.data.interp.isNegativePron() ||
     t.children.some(
       (x) =>
-        x.node.interp.isNegative() ||
-        (x.node.interp.isAuxillary() &&
-          x.children.some((xx) => xx.node.interp.isNegative())),
+        x.data.interp.isNegative() ||
+        (x.data.interp.isAuxillary() &&
+          x.children.some((xx) => xx.data.interp.isNegative())),
     )
   )
 }
 
 export function isModalAdv(t: TokenNode) {
   return (
-    t.node.interp.isAdverb() &&
-    SOME_MODAL_ADVS.includes(t.node.interp.lemma) &&
-    (uEqSome(t.node.rel, SUBORDINATE_CLAUSES) ||
-      uEqSome(t.node.rel, ['parataxis', 'conj']) ||
+    t.data.interp.isAdverb() &&
+    SOME_MODAL_ADVS.includes(t.data.interp.lemma) &&
+    (uEqSome(t.data.rel, SUBORDINATE_CLAUSES) ||
+      uEqSome(t.data.rel, ['parataxis', 'conj']) ||
       t.isRoot()) &&
     hasChild(t, 'csubj')
   )
@@ -621,15 +621,15 @@ export function isNumAdvAmbig(lemma: string) {
 
 export function isConjWithoutCcOrPunct(t: TokenNode) {
   let ret =
-    uEq(t.node.rel, 'conj') &&
+    uEq(t.data.rel, 'conj') &&
     !t.children.some(
       (x) =>
-        uEqSome(x.node.rel, ['cc']) ||
-        (uEq(x.node.rel, 'punct') &&
-          /[,;/\\]/.test(x.node.interp.lemma) &&
-          x.node.index < t.node.index),
+        uEqSome(x.data.rel, ['cc']) ||
+        (uEq(x.data.rel, 'punct') &&
+          /[,;/\\]/.test(x.data.interp.lemma) &&
+          x.data.index < t.data.index),
     ) &&
-    !t.node.hasTag('conj_no_cc')
+    !t.data.hasTag('conj_no_cc')
 
   if (!ret) {
     return ret
@@ -648,31 +648,31 @@ export function isConjWithoutCcOrPunct(t: TokenNode) {
 export function isCompounSvcCandidate(t: TokenNode) {
   return (
     !t.isRoot() &&
-    t.node.interp.isVerb() &&
-    ['давати', 'дати'].includes(t.parent.node.interp.lemma) &&
-    t.parent.node.interp.getFeature(f.Person) === f.Person.second &&
-    t.parent.node.interp.isImperative() &&
-    !t.node.interp.isPast()
+    t.data.interp.isVerb() &&
+    ['давати', 'дати'].includes(t.parent.data.interp.lemma) &&
+    t.parent.data.interp.getFeature(f.Person) === f.Person.second &&
+    t.parent.data.interp.isImperative() &&
+    !t.data.interp.isPast()
   )
 }
 
 export function isInfinitive(t: TokenNode) {
   return (
-    t.node.interp.isInfinitive() &&
+    t.data.interp.isInfinitive() &&
     !t.children.some(
-      (x) => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isFinite(),
+      (x) => uEqSome(x.data.rel, ['aux', 'cop']) && x.data.interp.isFinite(),
     )
   )
 }
 
 export function hasInfinitiveCop(t: TokenNode) {
   return t.children.some(
-    (x) => uEqSome(x.node.rel, ['aux', 'cop']) && x.node.interp.isInfinitive(),
+    (x) => uEqSome(x.data.rel, ['aux', 'cop']) && x.data.interp.isInfinitive(),
   )
 }
 
 export function isInfinitiveCop(t: TokenNode) {
-  return !t.node.interp.isVerb() && hasInfinitiveCop(t)
+  return !t.data.interp.isVerb() && hasInfinitiveCop(t)
 }
 
 export function isInfinitiveAnalytically(t: TokenNode) {
@@ -681,9 +681,9 @@ export function isInfinitiveAnalytically(t: TokenNode) {
 
 export function isFinite(t: TokenNode) {
   return (
-    (t.node.interp.isVerb() && !t.node.interp.isInfinitive()) ||
+    (t.data.interp.isVerb() && !t.data.interp.isInfinitive()) ||
     t.children.some(
-      (x) => uEqSome(x.node.rel, ['aux', 'cop']) && !x.node.interp.isFinite(),
+      (x) => uEqSome(x.data.rel, ['aux', 'cop']) && !x.data.interp.isFinite(),
     )
   )
 }
@@ -693,36 +693,36 @@ export function hasOwnRelative(t: TokenNode) {
     walkDepthNoSelf(
       t,
       (x) =>
-        uEqSome(x.node.rel, SUBORDINATE_CLAUSES) ||
-        x.node.rel === 'parataxis:rel',
+        uEqSome(x.data.rel, SUBORDINATE_CLAUSES) ||
+        x.data.rel === 'parataxis:rel',
     ),
-  ).some((x) => x.node.interp.isRelative())
+  ).some((x) => x.data.interp.isRelative())
 }
 
 export function isAdverbialAcl(t: TokenNode) {
   return (
     t.parent &&
-    t.parent.node.interp.isNounish() &&
-    !t.parent.children.some((x) => uEqSome(x.node.rel, ['cop', 'nsubj'])) &&
-    !uEqSome(t.parent.node.rel, ['obl']) &&
-    ((t.node.interp.isAdverb() && !t.hasChildren()) || // двері праворуч
-      (t.node.interp.isConverb() && !t.hasChildren())) // бокс лежачи
+    t.parent.data.interp.isNounish() &&
+    !t.parent.children.some((x) => uEqSome(x.data.rel, ['cop', 'nsubj'])) &&
+    !uEqSome(t.parent.data.rel, ['obl']) &&
+    ((t.data.interp.isAdverb() && !t.hasChildren()) || // двері праворуч
+      (t.data.interp.isConverb() && !t.hasChildren())) // бокс лежачи
   )
 }
 
 export function canBeDecimalFraction(t: TokenNode) {
   return (
-    t.node.interp.isCardinalNumeral() &&
-    /^\d+$/.test(t.node.interp.lemma) &&
+    t.data.interp.isCardinalNumeral() &&
+    /^\d+$/.test(t.data.interp.lemma) &&
     t.children.some(
       (x) =>
-        x.node.interp.isCardinalNumeral() &&
-        uEq(x.node.rel, 'compound') &&
-        x.node.index === t.node.index + 2 &&
-        /^\d+$/.test(x.node.interp.lemma) &&
+        x.data.interp.isCardinalNumeral() &&
+        uEq(x.data.rel, 'compound') &&
+        x.data.index === t.data.index + 2 &&
+        /^\d+$/.test(x.data.interp.lemma) &&
         x.children.length === 1 &&
-        x.children[0].node.index === t.node.index + 1 &&
-        [',', '.'].includes(x.children[0].node.interp.lemma) &&
+        x.children[0].data.index === t.data.index + 1 &&
+        [',', '.'].includes(x.children[0].data.interp.lemma) &&
         !x.children[0].hasChildren(),
     )
   )
@@ -730,19 +730,19 @@ export function canBeDecimalFraction(t: TokenNode) {
 
 export function isAdvmodParticle(t: TokenNode) {
   return (
-    t.node.interp.isParticle() &&
-    ADVMOD_NONADVERBIAL_LEMMAS.includes(t.node.interp.lemma)
+    t.data.interp.isParticle() &&
+    ADVMOD_NONADVERBIAL_LEMMAS.includes(t.data.interp.lemma)
   )
 }
 
 export function canBeAsSomethingForXcomp2(t: TokenNode) {
   return (
-    t.node.interp.isNounish() &&
+    t.data.interp.isNounish() &&
     [f.Case.nominative, f.Case.accusative].includes(
-      t.node.interp.getFeature(f.Case),
+      t.data.interp.getFeature(f.Case),
     ) &&
     t.children.some(
-      (x) => x.node.interp.lemma === 'як' && x.node.index < t.node.index,
+      (x) => x.data.interp.lemma === 'як' && x.data.index < t.data.index,
     )
   )
 }
@@ -841,7 +841,7 @@ export function normalizePunct(
   // leave the rightest punct head only
   let [nonpunts, puncts] = clusterize(
     deps,
-    (x) => uEq(x.relation, 'punct') && !sentence[x.headIndex].node.isElided(),
+    (x) => uEq(x.relation, 'punct') && !sentence[x.headIndex].data.isElided(),
     [[], []],
   )
   if (puncts.length) {
@@ -868,7 +868,7 @@ export function standartizeSentForUd2_11BeforeEnhGeneration(
   }
 
   for (let node of basicNodes) {
-    let t = node.node
+    let t = node.data
 
     t.deps = normalizePunct(t.deps, basicNodes)
 
@@ -893,7 +893,7 @@ export function standartizeSentForUd2_11BeforeEnhGeneration(
     // set the only iobj to obj
     if (
       uEq(t.rel, 'iobj') &&
-      !node.parent.children.some((x) => uEqSome(x.node.rel, CORE_COMPLEMENTS))
+      !node.parent.children.some((x) => uEqSome(x.data.rel, CORE_COMPLEMENTS))
     ) {
       // t.rel = changeUniversal(t.rel, 'obj')
       t.rel = 'obj'
@@ -902,8 +902,8 @@ export function standartizeSentForUd2_11BeforeEnhGeneration(
     // administratively make all participles have cop not aux
     if (t.interp.isParticiple()) {
       node.children
-        .filter((x) => uEq(x.node.rel, 'aux'))
-        .forEach((x) => (x.node.rel = 'cop'))
+        .filter((x) => uEq(x.data.rel, 'aux'))
+        .forEach((x) => (x.data.rel = 'cop'))
     }
 
     // change xcomp to ccomp
@@ -917,8 +917,8 @@ export function standartizeSentForUd2_11BeforeEnhGeneration(
     }
   }
 
-  let lastToken = last(basicNodes).node
-  let rootIndex = basicNodes.findIndex((x) => !x.node.hasDeps())
+  let lastToken = last(basicNodes).data
+  let rootIndex = basicNodes.findIndex((x) => !x.data.hasDeps())
 
   // todo: remove?
   // set parataxis punct to the root
@@ -929,7 +929,7 @@ export function standartizeSentForUd2_11BeforeEnhGeneration(
 
 export function standartizeSentenceForUd2_11(basicNodes: Array<TokenNode>) {
   for (let node of basicNodes) {
-    let t = node.node
+    let t = node.data
 
     // todo? set obj from rev to obl
     // todo: choose punct relation from the rigthtest token
@@ -947,27 +947,27 @@ export function standartizeSentenceForUd2_11(basicNodes: Array<TokenNode>) {
     }
 
     if (uEq(t.rel, 'goeswith')) {
-      node.parent.node.interp.setFeature(f.Typo, f.Typo.yes)
+      node.parent.data.interp.setFeature(f.Typo, f.Typo.yes)
     }
 
     // temp, bad, todo: raise an issue on github
     {
       if (
         ['discourse'].some((x) => uEq(t.rel, x)) &&
-        ['cc', 'mark', 'case'].some((x) => uEq(node.parent.node.rel, x))
+        ['cc', 'mark', 'case'].some((x) => uEq(node.parent.data.rel, x))
       ) {
         // node.node.deps[0].headId = node.parent.parent.node.id
-        node.node.deps[0].headIndex = basicNodes.findIndex(
-          (x) => x.node.id === node.parent.parent.node.id,
+        node.data.deps[0].headIndex = basicNodes.findIndex(
+          (x) => x.data.id === node.parent.parent.data.id,
         )
       }
       if (
         ['flat'].some((x) => uEq(t.rel, x)) &&
-        ['cc', 'mark', 'case'].some((x) => uEq(node.parent.node.rel, x))
+        ['cc', 'mark', 'case'].some((x) => uEq(node.parent.data.rel, x))
       ) {
         // node.node.deps[0].headId = node.parent.parent.node.id
         // node.node.deps[0].headIndex = basicNodes.findIndex(x => x.node.id=== node.parent.parent.node.id)
-        node.node.deps[0].relation = 'fixed'
+        node.data.deps[0].relation = 'fixed'
       }
     }
 
@@ -996,7 +996,7 @@ export function thisOrConjHead(
   predicate /* : TreedSentencePredicate */,
 ) {
   for (let t of node.walkThisAndUp0()) {
-    if (!uEq(t.node.rel, 'conj')) {
+    if (!uEq(t.data.rel, 'conj')) {
       return predicate(t)
     }
   }
@@ -1004,9 +1004,9 @@ export function thisOrConjHead(
 
 export function isFeasibleAdvclHead(head: TokenNode) {
   return (
-    head.node.interp.isVerbial() ||
-    head.node.interp.isAdverb() ||
-    (head.node.interp.isAdjective() && !head.node.interp.isPronominal()) ||
+    head.data.interp.isVerbial() ||
+    head.data.interp.isAdverb() ||
+    (head.data.interp.isAdjective() && !head.data.interp.isPronominal()) ||
     isNonverbialPredicate(head)
   )
 }
@@ -1020,16 +1020,16 @@ export function isFeasibleAdvmod(head: TokenNode, dep: TokenNode) {
 }
 
 export function isPassive(t: TokenNode) {
-  if (uEqSome(t.node.rel, SUBJECTS)) {
-    if (t.parent.node.interp.isPassive()) {
+  if (uEqSome(t.data.rel, SUBJECTS)) {
+    if (t.parent.data.interp.isPassive()) {
       return true
     }
     if (
       t.parent.children.some(
         (x) =>
-          uEq(x.node.rel, 'xcomp') &&
-          x.node.rel !== 'xcomp:sp' &&
-          x.node.interp.isPassive(),
+          uEq(x.data.rel, 'xcomp') &&
+          x.data.rel !== 'xcomp:sp' &&
+          x.data.interp.isPassive(),
       )
     ) {
       return true
@@ -1051,8 +1051,8 @@ export function fillWithValencyFromDict(
 
 export function isNonverbialPredicate(t: TokenNode) {
   return (
-    (t.node.interp.isNounish() || t.node.interp.isAdjective()) &&
-    t.children.some((x) => uEqSome(x.node.rel, ['cop', 'nsubj', 'csubj']))
+    (t.data.interp.isNounish() || t.data.interp.isAdjective()) &&
+    t.children.some((x) => uEqSome(x.data.rel, ['cop', 'nsubj', 'csubj']))
   )
 }
 
@@ -1065,9 +1065,9 @@ export function isNonverbialPredicateEnh(t: EnhancedNode) {
 
 export function hasPredication(t: TokenNode) {
   return (
-    t.node.hasTag('itsubj') ||
+    t.data.hasTag('itsubj') ||
     // || t.node.hasTag('subjless-predication')
-    t.children.some((x) => uEqSome(x.node.rel, SUBJECTS)) ||
+    t.children.some((x) => uEqSome(x.data.rel, SUBJECTS)) ||
     // || t.children.some(x => uEqSome(x.node.rel, ['cop']))
     // || t.node.interp.isVerb() && !isInfinitive(t)
     isFinite(t)
@@ -1076,14 +1076,14 @@ export function hasPredication(t: TokenNode) {
 
 export function areOkToBeGlued(t: TokenNode, tNext: TokenNode) {
   return (
-    t.node.interp.isPunctuation() ||
-    tNext.node.isElided() ||
-    tNext.node.interp.isPunctuation() ||
-    (tNext.node.interp.isSymbol() && uEqSome(tNext.node.rel, ['discourse'])) ||
+    t.data.interp.isPunctuation() ||
+    tNext.data.isElided() ||
+    tNext.data.interp.isPunctuation() ||
+    (tNext.data.interp.isSymbol() && uEqSome(tNext.data.rel, ['discourse'])) ||
     ['~', '$', '#', '+', '×', '№', '€', '-', '°'].includes(
-      t.node.interp.lemma,
+      t.data.interp.lemma,
     ) ||
-    ['%', '°', '+', '×', '$'].includes(tNext.node.interp.lemma)
+    ['%', '°', '+', '×', '$'].includes(tNext.data.interp.lemma)
   )
 }
 

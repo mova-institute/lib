@@ -261,8 +261,8 @@ async function main() {
         for (let [index, [prevNode, node, nextNode]] of mu(nodes)
           .window(2, 1)
           .entries()) {
-          let token = node.node
-          let parent = node.parent && node.parent.node
+          let token = node.data
+          let parent = node.parent && node.parent.data
           let interp = token.interp
           const udInterp = toUd(interp.clone())
 
@@ -355,9 +355,9 @@ async function main() {
             PREDICATES.isAuxWithNoCopAux(node) ||
             (sentenceHasOneRoot &&
               node.isRoot() &&
-              node.node.interp.isAuxillary())
+              node.data.interp.isAuxillary())
           ) {
-            node.node.interp.setIsAuxillary(false)
+            node.data.interp.setIsAuxillary(false)
           }
 
           if (
@@ -381,7 +381,7 @@ async function main() {
             token.interp.isParticle() &&
             token.interp.isNegative() &&
             !token.isPromoted &&
-            !node.children.some((x) => uEq(x.node.rel, 'fixed')) &&
+            !node.children.some((x) => uEq(x.data.rel, 'fixed')) &&
             !uEqSome(token.rel, [
               'fixed',
               'parataxis',
@@ -437,7 +437,7 @@ async function main() {
           if (
             uEq(token.rel, 'obl') &&
             interp.isDative() &&
-            !node.children.some((x) => uEq(x.node.rel, 'case'))
+            !node.children.some((x) => uEq(x.data.rel, 'case'))
           ) {
             // не хочеться вечеряти самій; треба було самому вибирати
             // token.rel = 'iobj'
@@ -450,12 +450,12 @@ async function main() {
           ) {
             if (
               token.interp.features.case ===
-              node.parent.node.interp.features.case
+              node.parent.data.interp.features.case
             ) {
               token.rel = 'det:nummod'
             } else if (
               (interp.isNominative() || interp.isAccusative()) &&
-              node.parent.node.interp.isGenitive()
+              node.parent.data.interp.isGenitive()
             ) {
               token.rel = 'det:numgov'
             }
@@ -479,13 +479,13 @@ async function main() {
 
           if (
             g.isGoverning(token.rel) &&
-            token.interp.features.case === node.parent.node.interp.features.case
+            token.interp.features.case === node.parent.data.interp.features.case
           ) {
             if (
               node.parent.children.some(
                 (x) =>
-                  x.node.interp.isPreposition() &&
-                  (x.node.interp.features.requiredCase as number) ===
+                  x.data.interp.isPreposition() &&
+                  (x.data.interp.features.requiredCase as number) ===
                     token.interp.features.case,
               )
             ) {
@@ -499,14 +499,14 @@ async function main() {
 
           if (0 && interp.isAdverb()) {
             let csubj = node.children.find((x) =>
-              uEqSome(x.node.rel, ['csubj']),
+              uEqSome(x.data.rel, ['csubj']),
             )
             if (csubj) {
               if (token.isPromoted) {
                 // console.error(`PROMOKA ${token.id}`)
                 throw new Error(`PROMOKA ${token.id}`)
               }
-              csubj.node.rel = 'ccomp'
+              csubj.data.rel = 'ccomp'
 
               let tagsElStr = tokenElement.attribute('tags') || ''
               tagsElStr += ' subjless-predication'
@@ -521,7 +521,7 @@ async function main() {
             interp.lemma === 'це' &&
             interp.isParticle() &&
             node.parent.children.some((x) =>
-              uEqSome(x.node.rel, ['nsubj', 'csubj']),
+              uEqSome(x.data.rel, ['nsubj', 'csubj']),
             ) &&
             !parent.interp.isVerb()
             // && false
@@ -604,13 +604,13 @@ async function main() {
           }
 
           if (g.isNegativeExistentialPseudosubject(node)) {
-            node.node.rel = 'obj'
+            node.data.rel = 'obj'
           }
 
           if (g.isQuantitativeAdverbModifierCandidate(node)) {
             token.rel = 'advmod:amtgov'
             if (
-              node.parent.node.interp.isPlural() &&
+              node.parent.data.interp.isPlural() &&
               interp.lemma === 'багато' &&
               !parent.interp.isNoSingular()
             ) {
@@ -662,7 +662,7 @@ async function main() {
           // remove unnecessary Promoted
           if (
             token.isPromoted &&
-            node.parents.some((x) => x.node.isElided()) &&
+            node.parents.some((x) => x.data.isElided()) &&
             // workaround for: стояла на буржуазних позиціях, а її донька на *марксистських*
             interp.isVerbial()
           ) {
@@ -698,7 +698,7 @@ async function main() {
           for (let edep of token.edeps) {
             if (
               edep.relation === 'nsubj:x' &&
-              nodes[edep.headIndex].node.rel === 'xcomp:sp'
+              nodes[edep.headIndex].data.rel === 'xcomp:sp'
             ) {
               edep.relation = 'nsubj:sp'
             }
@@ -706,9 +706,9 @@ async function main() {
 
           if (
             token.rel === 'advmod' &&
-            ['cop', 'aux'].includes(node.parent.node.rel)
+            ['cop', 'aux'].includes(node.parent.data.rel)
           ) {
-            token.deps[0].headId = node.parent.parent.node.id
+            token.deps[0].headId = node.parent.parent.data.id
             token.dedicatedTags.add('phrasemod')
           }
 
@@ -756,26 +756,26 @@ async function main() {
             ) /* || uEq(token.rel, 'amod') && interp.isOrdinalNumeral() */
           ) {
             let flatChildren = node.children
-              .filter((x) => uEq(x.node.rel, 'flat'))
-              .sort((a, b) => a.node.index - b.node.index)
+              .filter((x) => uEq(x.data.rel, 'flat'))
+              .sort((a, b) => a.data.index - b.data.index)
             let newHead = _.last(flatChildren)
             // let flatChildren = node.children.filter(x => uEq(x.node.rel, 'flat'))
             if (newHead) {
-              if (!newHead.node.interp.isCardinalNumeral()) {
+              if (!newHead.data.interp.isCardinalNumeral()) {
                 // throw new Error()
-                console.error(`Not numeral ${newHead.node.id}`)
+                console.error(`Not numeral ${newHead.data.id}`)
                 continue
               }
-              newHead.node.deps.forEach((x) => {
-                x.headId = node.parent.node.id
+              newHead.data.deps.forEach((x) => {
+                x.headId = node.parent.data.id
                 x.relation = token.rel
               })
               ;[node, ...node.children]
                 .filter((x) => x !== newHead)
                 .forEach((x) =>
-                  x.node.deps.forEach((xx) => {
-                    xx.headId = newHead.node.id
-                    if (x.node.interp.isCardinalNumeral()) {
+                  x.data.deps.forEach((xx) => {
+                    xx.headId = newHead.data.id
+                    if (x.data.interp.isCardinalNumeral()) {
                       xx.relation = 'compound'
                     }
                   }),
@@ -797,20 +797,20 @@ async function main() {
             // console.log(token)
 
             let middlers = node.children
-              .map((x) => x.node)
+              .map((x) => x.data)
               .filter((x) => x.rel === 'compound')
             if (middlers.length) {
               let newHead = middlers.pop()
               newHead.deps[0] = token.deps[0]
               nodes
                 .filter(
-                  (x) => !x.isRoot() && x.node.deps[0].headId === token.id,
+                  (x) => !x.isRoot() && x.data.deps[0].headId === token.id,
                 )
-                .forEach((x) => (x.node.deps[0].headId = newHead.id))
+                .forEach((x) => (x.data.deps[0].headId = newHead.id))
               let toChange = [token, ...middlers]
               for (let [i, t] of toChange.entries()) {
                 t.deps = [{ relation: 'compound', headId: newHead.id }]
-                nodes[t.index + 1].node.deps[0].headId = t.id
+                nodes[t.index + 1].data.deps[0].headId = t.id
               }
             }
           }
@@ -869,10 +869,10 @@ async function main() {
         // save to xml doc
         nodes.forEach((x) => {
           // console.log(x)
-          let element = id2el.get(x.node.id)
+          let element = id2el.get(x.data.id)
           if (element) {
             // console.log(x.node.form)
-            saveToken(x.node, element, nodes)
+            saveToken(x.data, element, nodes)
           }
         })
       }
@@ -899,7 +899,7 @@ function testTokenization(
   multitokens: Array<MultitokenDescriptor>,
   analyzer: MorphAnalyzer,
 ) {
-  let tokens = nodes.map((x) => x.node).filter((x) => !x.isElided())
+  let tokens = nodes.map((x) => x.data).filter((x) => !x.isElided())
   let plaintext = mu(tokenStream2plaintext(tokens, multitokens, false)).join(
     ' ',
   )
@@ -907,7 +907,7 @@ function testTokenization(
   let tokenizedForms = tokenizeUk(plaintext, analyzer).map((x) => x.token)
   if (!shallowEqualArrays(goldenForms, tokenizedForms)) {
     console.error(`###########`)
-    console.error(`Tokenization mismatch, #${nodes[0].node.id}`)
+    console.error(`Tokenization mismatch, #${nodes[0].data.id}`)
     console.error(`G: ${goldenForms.join('\t')}`)
     console.error(`A: ${tokenizedForms.join('\t')}`)
   }
@@ -927,21 +927,21 @@ function isNegated(form: string, interp: MorphInterp, analyzer: MorphAnalyzer) {
 }
 
 function addShchojijiCoreference(node: GraphNode<Token>) {
-  if (!node.node.hasTag('not-shchojiji')) {
+  if (!node.data.hasTag('not-shchojiji')) {
     let antecedent = g.findShchojijiAntecedent(node)
     if (antecedent) {
-      node.node.corefs.push({ headId: antecedent.node.id, type: 'equality' })
+      node.data.corefs.push({ headId: antecedent.data.id, type: 'equality' })
     }
   }
 }
 
 function makeDatesPromoted(node: GraphNode<Token>) {
   if (
-    ukMonthsGen.has(node.node.form) &&
+    ukMonthsGen.has(node.data.form) &&
     node.parent &&
-    node.parent.node.interp.isOrdinalNumeral()
+    node.parent.data.interp.isOrdinalNumeral()
   ) {
-    node.parent.node.dedicatedTags.add('promoted')
+    node.parent.data.dedicatedTags.add('promoted')
   }
 }
 
@@ -972,8 +972,8 @@ function saveToken(
   stableSort(
     token.deps,
     (a, b) =>
-      Number(nodes[a.headIndex].node.isElided()) -
-      Number(nodes[b.headIndex].node.isElided()),
+      Number(nodes[a.headIndex].data.isElided()) -
+      Number(nodes[b.headIndex].data.isElided()),
   )
 
   let config = tuple(
@@ -1053,8 +1053,8 @@ function fixtestMorpho(
   nextNode: GraphNode<Token>,
   analyzer: MorphAnalyzer,
 ) {
-  let token = node.node
-  let interp = node.node.interp
+  let token = node.data
+  let interp = node.data.interp
   token.form = token.getForm()
 
   if (interp.isForeign()) {
@@ -1086,7 +1086,7 @@ function fixtestMorpho(
   // missing gender for adj
   if (interp.isAdjective() && !interp.isStem() && !interp.isForeign()) {
     if (!interp.hasGender() && !interp.hasNumber()) {
-      console.error(`no gender/plural for ${token2string(node.node)}`)
+      console.error(`no gender/plural for ${token2string(node.data)}`)
     }
   }
 
@@ -1115,7 +1115,7 @@ function fixtestMorpho(
       interp.features.person === 3
     )
   ) {
-    console.error(`no animacy for ${token2string(node.node)}`)
+    console.error(`no animacy for ${token2string(node.data)}`)
   }
 
   // missing punctuation type
@@ -1142,7 +1142,7 @@ function fixtestMorpho(
   ) {
     let interpsFromDict = analyzer.tag(
       token.getForm(),
-      nextNode && nextNode.node.getForm(),
+      nextNode && nextNode.data.getForm(),
     )
 
     let closestFixable = findClosestFixable(token.interp, interpsFromDict)
@@ -1644,10 +1644,10 @@ async function getFbPostMeta(url: string) {
 
 const TRANSFORMS = {
   toObl(t: GraphNode<Token>) {
-    t.node.rel = 'obl'
+    t.data.rel = 'obl'
   },
   toIrrel(t: GraphNode<Token>) {
-    t.node.rel = 'acl:irrel'
+    t.data.rel = 'acl:irrel'
   },
 }
 

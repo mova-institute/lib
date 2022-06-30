@@ -79,29 +79,29 @@ const TREED_SIMPLE_RULES: Array<
     (t) => canBePredicate(t),
     `в називний/орудний іменник/прикметник`,
     (t) =>
-      (t.node.interp.isNominative() || t.node.interp.isInstrumental()) &&
-      (t.node.interp.isNoun() || t.node.interp.isAdjective()),
+      (t.data.interp.isNominative() || t.data.interp.isInstrumental()) &&
+      (t.data.interp.isNoun() || t.data.interp.isAdjective()),
   ],
   [
     `amod`,
     `з іменника`,
     (t) => canActAsNoun(t),
     `в прикметник без предикації`,
-    (t) => t.node.interp.isAdjective() && !g.hasPredication(t),
+    (t) => t.data.interp.isAdjective() && !g.hasPredication(t),
   ],
   [
     `nummod`,
     `з іменника`,
     (t) => canActAsNoun(t),
     `в незайменниковий числівник`,
-    (t) => t.node.interp.isCardinalNumeral() && !t.node.interp.isPronominal(),
+    (t) => t.data.interp.isCardinalNumeral() && !t.data.interp.isPronominal(),
   ],
   [
     `det:numgov`,
     `з іменника`,
     (t) => canActAsNoun(t),
     `в займенниковий числівник`,
-    (t) => t.node.interp.isCardinalNumeral() && t.node.interp.isPronominal(),
+    (t) => t.data.interp.isCardinalNumeral() && t.data.interp.isPronominal(),
   ],
   [
     `advmod:`,
@@ -109,35 +109,35 @@ const TREED_SIMPLE_RULES: Array<
     (t) => t,
     `в прислівник`,
     (t) =>
-      t.node.interp.isAdverb() ||
+      t.data.interp.isAdverb() ||
       g.isAdvmodParticle(t) ||
-      uEq(t.node.rel, 'fixed'),
+      uEq(t.data.rel, 'fixed'),
   ],
   [
     `advmod:amtgov`,
     `з родового`,
-    (t) => t.node.interp.isGenitive(),
+    (t) => t.data.interp.isGenitive(),
     `в числівниковий прислівник`,
     (t) =>
-      t.node.interp.isAdverb() &&
-      g.QAUNTITATIVE_ADVERBS.includes(t.node.interp.lemma),
+      t.data.interp.isAdverb() &&
+      g.QAUNTITATIVE_ADVERBS.includes(t.data.interp.lemma),
   ],
   [
     `advmod:det`,
     `з прикметника"`,
-    (t) => t.node.interp.isAdjective(),
+    (t) => t.data.interp.isAdjective(),
     `в DET _такий_/_якийсь_`,
     (t) =>
-      toUd(t.node.interp).pos === 'DET' &&
-      ['такий', 'такенький', 'якийсь', 'який'].includes(t.node.interp.lemma),
+      toUd(t.data.interp).pos === 'DET' &&
+      ['такий', 'такенький', 'якийсь', 'який'].includes(t.data.interp.lemma),
   ],
   [
     `det:`,
     `з іменника`,
-    (t) => canActAsNounForObj(t) || t.node.hasTag('adjdet'),
+    (t) => canActAsNounForObj(t) || t.data.hasTag('adjdet'),
     `в нечислівниковий DET`,
     (t) =>
-      toUd(t.node.interp).pos === 'DET' && !t.node.interp.isCardinalNumeral(),
+      toUd(t.data.interp).pos === 'DET' && !t.data.interp.isCardinalNumeral(),
   ],
   [
     `case`,
@@ -145,18 +145,18 @@ const TREED_SIMPLE_RULES: Array<
     (t) =>
       canActAsNounForObj(t) ||
       t.isRoot() || //&& todo: more than 1 root
-      (t.node.interp.isAdjective() && t.node.interp.isRelative()) || // todo: generalize
-      t.node.interp.isCardinalNumeral() || // todo
-      (t.node.interp.isInfinitive() && t.node.hasTag('inf_prep')) ||
-      (t.node.interp.isAdjective() && !uEq(t.node.rel, 'amod')) || // temp
-      (t.node.interp.isAdverb() &&
-        ['тоді', 'нікуди'].includes(t.node.interp.lemma)),
+      (t.data.interp.isAdjective() && t.data.interp.isRelative()) || // todo: generalize
+      t.data.interp.isCardinalNumeral() || // todo
+      (t.data.interp.isInfinitive() && t.data.hasTag('inf_prep')) ||
+      (t.data.interp.isAdjective() && !uEq(t.data.rel, 'amod')) || // temp
+      (t.data.interp.isAdverb() &&
+        ['тоді', 'нікуди'].includes(t.data.interp.lemma)),
     // && g.PREPS_HEADABLE_BY_NUMS.includes(
     //   t.children.find(x => x.node.rel === 'case').node.interp.lemma)
     `в прийменник`,
     (t) =>
-      t.node.interp.isPreposition() ||
-      t.children.some((t2) => uEq(t2.node.rel, 'fixed')),
+      t.data.interp.isPreposition() ||
+      t.children.some((t2) => uEq(t2.data.rel, 'fixed')),
   ],
   [
     `mark`,
@@ -164,8 +164,8 @@ const TREED_SIMPLE_RULES: Array<
     (t) => t,
     `в підрядний сполучник`,
     (t) =>
-      t.node.interp.isSubordinative() ||
-      (t.children.length && t.children.every((x) => uEq(x.node.rel, 'fixed'))),
+      t.data.interp.isSubordinative() ||
+      (t.children.length && t.children.every((x) => uEq(x.data.rel, 'fixed'))),
   ],
   [
     `nsubj:`,
@@ -177,35 +177,35 @@ const TREED_SIMPLE_RULES: Array<
   [
     `nsubj:x`,
     `з чистого xcomp’а`,
-    (t) => t.node.rel === 'xcomp',
+    (t) => t.data.rel === 'xcomp',
     `в іменникове`,
     (t) => canActAsNounForObj(t),
   ],
   [
     `nsubj:sp`,
     `з :sp’а`,
-    (t) => ['xcomp:sp', 'advcl:sp'].includes(t.node.rel),
+    (t) => ['xcomp:sp', 'advcl:sp'].includes(t.data.rel),
     `в іменникове`,
     (t) => canActAsNounForObj(t),
   ],
   [
     `csubj`,
     `з присудка чи валентного прикметника`,
-    (t) => canBePredicate(t) || g.isValencyHavingAdjective(t.node),
+    (t) => canBePredicate(t) || g.isValencyHavingAdjective(t.data),
     `в присудок`,
     (t) => canBePredicate(t),
   ],
   [
     `obj`,
     `з присудка чи валентного прикметника`,
-    (t) => t.node.interp.isVerbial() || g.isValencyHavingAdjective(t.node),
+    (t) => t.data.interp.isVerbial() || g.isValencyHavingAdjective(t.data),
     `в іменникове`,
     (t) => canActAsNounForObj(t) /* || canTheoreticallyActAsNoun(t) */,
   ],
   [
     `iobj`,
     `з присудка чи валентного прикметника`,
-    (t) => canBePredicate(t) || g.isDativeValencyAdjective(t.node),
+    (t) => canBePredicate(t) || g.isDativeValencyAdjective(t.data),
     `в іменникове`,
     (t) => canActAsNounForObj(t) /* || canTheoreticallyActAsNoun(t) */,
   ],
@@ -213,9 +213,9 @@ const TREED_SIMPLE_RULES: Array<
     `obl`,
     `з дієслова / прикм. / присл. / недієсл. присудка`,
     (t) =>
-      t.node.interp.isVerbial2() ||
-      t.node.interp.isAdverb() ||
-      (t.node.interp.isAdjective() && !t.node.interp.isPronominal()) ||
+      t.data.interp.isVerbial2() ||
+      t.data.interp.isAdverb() ||
+      (t.data.interp.isAdjective() && !t.data.interp.isPronominal()) ||
       g.isNonverbialPredicate(t),
     `в іменник / DET`,
     (t) =>
@@ -223,7 +223,7 @@ const TREED_SIMPLE_RULES: Array<
       // || t.node.interp.lemma === 'який' && (
       //   g.findRelativeClauseRoot(t) || t.parent.node.rel === 'flat:sibl'
       // )
-      (t.node.interp.isAdjective() && t.node.interp.isPronominal()) ||
+      (t.data.interp.isAdjective() && t.data.interp.isPronominal()) ||
       // && g.hasChild(t, 'flat:abs')
       1, // temp, todo
   ],
@@ -234,7 +234,7 @@ const TREED_SIMPLE_RULES: Array<
     `в іменник`,
     (t) =>
       canActAsNounForObj(t) ||
-      (t.node.interp.lemma === 'який' && g.findRelativeClauseRoot(t)) ||
+      (t.data.interp.lemma === 'який' && g.findRelativeClauseRoot(t)) ||
       g.isDenUDen(t.parent) || // temp
       canTheoreticallyActAsNoun(t),
   ],
@@ -242,46 +242,46 @@ const TREED_SIMPLE_RULES: Array<
     `aux`,
     `з дієслівного`,
     (t) =>
-      t.node.interp.isVerbial2() ||
-      (t.node.interp.isAdverb() &&
+      t.data.interp.isVerbial2() ||
+      (t.data.interp.isAdverb() &&
         t.children.some((x) =>
-          g.SUBJECTS.some((subj) => uEq(x.node.rel, subj)),
+          g.SUBJECTS.some((subj) => uEq(x.data.rel, subj)),
         )),
     `у ${g.AUX_LEMMAS.join('|')}`,
-    (t) => g.AUX_LEMMAS.includes(t.node.interp.lemma),
+    (t) => g.AUX_LEMMAS.includes(t.data.interp.lemma),
   ],
   [
     `acl`,
     `з іменника`,
     (t) =>
       canActAsNoun(t) ||
-      (!uEq(t.node.rel, 'det') &&
+      (!uEq(t.data.rel, 'det') &&
         [
           f.PronominalType.demonstrative,
           f.PronominalType.general,
           f.PronominalType.indefinite,
-        ].includes(t.node.interp.getFeature(f.PronominalType))),
+        ].includes(t.data.interp.getFeature(f.PronominalType))),
     `в присудок/інфінітив/:relless/:adv`,
     (t) =>
       g.hasPredication(t) ||
-      t.node.interp.isInfinitive() ||
-      t.node.rel === 'acl:relless' || // todo: comprehend
-      t.node.rel === 'acl:adv',
+      t.data.interp.isInfinitive() ||
+      t.data.rel === 'acl:relless' || // todo: comprehend
+      t.data.rel === 'acl:adv',
   ],
   [
     `acl:adv`,
     `з іменника`,
     (t) =>
       canActAsNoun(t) ||
-      (!uEq(t.node.rel, 'det') &&
+      (!uEq(t.data.rel, 'det') &&
         [
           f.PronominalType.demonstrative,
           f.PronominalType.general,
           f.PronominalType.indefinite,
-        ].includes(t.node.interp.getFeature(f.PronominalType))),
+        ].includes(t.data.interp.getFeature(f.PronominalType))),
     `в одинокий (діє)прислівник`,
     (t) =>
-      (t.node.interp.isAdverb() || t.node.interp.isConverb()) &&
+      (t.data.interp.isAdverb() || t.data.interp.isConverb()) &&
       !t.hasChildren(),
   ],
   [
@@ -289,24 +289,24 @@ const TREED_SIMPLE_RULES: Array<
     `зі слова`,
     (t) =>
       !t ||
-      !t.node.interp.isPunctuation() ||
-      t.node.hasTag('nestedpunct') ||
+      !t.data.interp.isPunctuation() ||
+      t.data.hasTag('nestedpunct') ||
       g.isPunctInParenthes(t),
     // t => !t /*temp*/ /*|| isContentWord(t)*/ || t.tags.includes('nestedpunct'),
     `в PUNCT`,
-    (t) => t.node.interp.isPunctuation(),
+    (t) => t.data.interp.isPunctuation(),
   ],
   [
     `flat:foreign`,
     `з :foreign`,
-    (t) => t.node.interp.isForeign(),
+    (t) => t.data.interp.isForeign(),
     `у :foreign`,
-    (t) => t.node.interp.isForeign(),
+    (t) => t.data.interp.isForeign(),
   ],
   [
     `xcomp:`,
     `з присудка / валентного прикметника`,
-    (t) => canBePredicate(t) || g.isInfValencyAdjective(t.node),
+    (t) => canBePredicate(t) || g.isInfValencyAdjective(t.data),
     `в інфінітив - присудок`,
     (t) =>
       (g.isInfinitiveAnalytically(t) || g.hasInfinitiveCop(t)) &&
@@ -317,8 +317,8 @@ const TREED_SIMPLE_RULES: Array<
     `з присудка / валентного прикметника`,
     (t) =>
       canBePredicate(t) ||
-      (g.isInfinitiveAnalytically(t) && g.isInfValencyAdjective(t.node)) ||
-      g.isValencyHavingAdjective(t.node),
+      (g.isInfinitiveAnalytically(t) && g.isInfValencyAdjective(t.data)) ||
+      g.isValencyHavingAdjective(t.data),
     `в присудок (тест: фінітний)`,
     (t) => canBePredicate(t),
   ],
@@ -328,10 +328,10 @@ const TREED_SIMPLE_RULES: Array<
     (t) => canBePredicate(t),
     `в називний/орудний іменник/прикметник чи в „як щось“`,
     (t) =>
-      ((t.node.interp.isNominative() || t.node.interp.isInstrumental()) &&
-        (t.node.interp.isNoun() || t.node.interp.isAdjective())) ||
+      ((t.data.interp.isNominative() || t.data.interp.isInstrumental()) &&
+        (t.data.interp.isNoun() || t.data.interp.isAdjective())) ||
       g.canBeAsSomethingForXcomp2(t) ||
-      t.node.isGraft,
+      t.data.isGraft,
   ],
   [
     `vocative:`,
@@ -339,10 +339,10 @@ const TREED_SIMPLE_RULES: Array<
     (t) => canBePredicate(t),
     `в кличний іменник`,
     (t) =>
-      t.node.interp.isXForeign() ||
-      t.node.interp.isForeign() ||
+      t.data.interp.isXForeign() ||
+      t.data.interp.isForeign() ||
       (canActAsNoun(t) &&
-        (t.node.interp.isVocative() || t.node.hasTag('nomvoc'))),
+        (t.data.interp.isVocative() || t.data.hasTag('nomvoc'))),
   ],
   [
     `vocative:cl`,
@@ -405,9 +405,9 @@ export function validateSentenceSyntax(
 ) {
   let problems = new Array<Problem>()
 
-  let tokens = nodes.map((x) => x.node)
+  let tokens = nodes.map((x) => x.data)
   let roots = nodes.filter((x) => x.isRoot())
-  let basicRoots = roots.filter((x) => !x.node.isElided())
+  let basicRoots = roots.filter((x) => !x.data.isElided())
   let sentenceHasOneRoot = roots.length === 1
   let node2index = new Map(
     nodes.map((x, i) => [x, i] as [GraphNode<Token>, number]),
@@ -442,16 +442,16 @@ export function validateSentenceSyntax(
       ...mu(nodes)
         .map((x) => ({
           n: x,
-          t: x.node,
-          r: x.node.rel,
-          i: x.node.interp,
-          l: x.node.interp.lemma,
+          t: x.data,
+          r: x.data.rel,
+          i: x.data.interp,
+          l: x.data.interp.lemma,
           c: x.children,
           p: x.parent,
-          pi: x.parent && x.parent.node.interp,
-          pt: x.parent && x.parent.node,
-          pl: x.parent && x.parent.node.interp.lemma,
-          pr: x.parent && x.parent.node.rel,
+          pi: x.parent && x.parent.data.interp,
+          pt: x.parent && x.parent.data,
+          pl: x.parent && x.parent.data.interp.lemma,
+          pr: x.parent && x.parent.data.rel,
         }))
         .findAllIndexes(fn)
         .map((index) => ({ message, indexes: [index] })),
@@ -473,8 +473,8 @@ export function validateSentenceSyntax(
   // ~~~~~~~ rules ~~~~~~~~
 
   // invalid roots
-  if (sentenceHasOneRoot && !roots[0].node.hasTag('ok-root')) {
-    let udPos = toUd(roots[0].node.interp).pos
+  if (sentenceHasOneRoot && !roots[0].data.hasTag('ok-root')) {
+    let udPos = toUd(roots[0].data.interp).pos
     if (g.POSES_NEVER_ROOT.includes(udPos)) {
       problems.push({
         indexes: [node2index.get(roots[0])],
@@ -553,13 +553,13 @@ export function validateSentenceSyntax(
       if (messageFrom && predicateFrom) {
         reportIf(
           `${relName} не ${messageFrom}`,
-          (t) => relMatcher(t.node.rel) && !predicateFrom(t.parent),
+          (t) => relMatcher(t.data.rel) && !predicateFrom(t.parent),
         )
       }
       if (messageTo && predicateTo) {
         reportIf(
           `${relName} не ${messageTo}`,
-          (t) => relMatcher(t.node.rel) && !predicateTo(t),
+          (t) => relMatcher(t.data.rel) && !predicateTo(t),
         )
       }
     }
@@ -595,59 +595,59 @@ export function validateSentenceSyntax(
     `декілька підметів (${g.SUBJECTS.join('|')})`,
     (t) =>
       t.children.filter(
-        (x) => uEqSome(x.node.rel, g.SUBJECTS) && !x.node.isElided(),
+        (x) => uEqSome(x.data.rel, g.SUBJECTS) && !x.data.isElided(),
       ).length > 1,
   )
   reportIf(
     `декілька прямих додатків`,
     (t) =>
       t.children.filter(
-        (x) => !x.node.isElided() && uEqSome(x.node.rel, g.CORE_COMPLEMENTS),
+        (x) => !x.data.isElided() && uEqSome(x.data.rel, g.CORE_COMPLEMENTS),
         // || uEq(x.node.rel, 'xcomp') && x.node.rel !== 'xcomp:sp'
       ).length > 1,
   )
   reportIf(
     `декілька непрямих додатків`,
-    (t) => t.children.filter((x) => uEq(x.node.rel, 'iobj')).length > 1,
+    (t) => t.children.filter((x) => uEq(x.data.rel, 'iobj')).length > 1,
   )
   reportIf(
     `декілька числівників`,
-    (t) => t.children.filter((x) => isNumericModifier(x.node.rel)).length > 1,
+    (t) => t.children.filter((x) => isNumericModifier(x.data.rel)).length > 1,
   )
   reportIf(
     `декілька gov-реляцій`,
-    (t) => t.children.filter((x) => isGoverning(x.node.rel)).length > 1,
+    (t) => t.children.filter((x) => isGoverning(x.data.rel)).length > 1,
   )
   reportIf(
     `декілька cc`,
     (t) =>
-      !t.node.hasTag('mult-cc') &&
-      t.children.filter((x) => uEq(x.node.rel, 'cc')).length > 1,
+      !t.data.hasTag('mult-cc') &&
+      t.children.filter((x) => uEq(x.data.rel, 'cc')).length > 1,
   )
   reportIf(
     `декілька mark’ів`,
-    (t) => t.children.filter((x) => uEq(x.node.rel, 'mark')).length > 1,
+    (t) => t.children.filter((x) => uEq(x.data.rel, 'mark')).length > 1,
   )
   reportIf(
     `декілька xcomp’ів`,
     (t) =>
       t.children.filter(
-        (x) => uEq(x.node.rel, 'xcomp') && x.node.rel !== 'xcomp:sp',
+        (x) => uEq(x.data.rel, 'xcomp') && x.data.rel !== 'xcomp:sp',
       ).length > 1,
   )
   reportIf(
     `декілька xcomp:sp`,
-    (t) => t.children.filter((x) => x.node.rel === 'xcomp:sp').length > 1,
+    (t) => t.children.filter((x) => x.data.rel === 'xcomp:sp').length > 1,
   )
   reportIf(
     `декілька cop’ів`,
-    (t) => t.children.filter((x) => uEq(x.node.rel, 'cop')).length > 1,
+    (t) => t.children.filter((x) => uEq(x.data.rel, 'cop')).length > 1,
   )
   reportIf(
     `декілька прийменників`,
     (t) =>
-      !t.node.isGraft &&
-      t.children.filter((x) => uEq(x.node.rel, 'case')).length > 1,
+      !t.data.isGraft &&
+      t.children.filter((x) => uEq(x.data.rel, 'case')).length > 1,
   )
 
   oldReportIf(`токен позначено error’ом`, (t) => t.hasTag('error'))
@@ -655,7 +655,7 @@ export function validateSentenceSyntax(
   reportIf(
     'більше однієї стрілки в токен',
     (t) =>
-      mu(t.node.deps)
+      mu(t.data.deps)
         .filter(
           (x) =>
             !uEq(x.relation, 'punct') &&
@@ -694,22 +694,22 @@ export function validateSentenceSyntax(
   reportIf(
     `cc не в сурядний`,
     (t) =>
-      uEq(t.node.rel, 'cc') &&
-      !t.node.interp.isCoordinating() &&
+      uEq(t.data.rel, 'cc') &&
+      !t.data.interp.isCoordinating() &&
       !g.hasChild(t, 'fixed'),
   )
 
   reportIf(
     `punct в двокрапку зліва`,
     (t) =>
-      t.node.index !== tokens.length - 1 && // not last in sentence
-      t.node.form === ':' &&
-      t.node.interp.isPunctuation() &&
-      t.node.headIndex < t.node.index &&
+      t.data.index !== tokens.length - 1 && // not last in sentence
+      t.data.form === ':' &&
+      t.data.interp.isPunctuation() &&
+      t.data.headIndex < t.data.index &&
       !(
         t.parent &&
-        (uEqSome(t.parent.node.rel, ['discourse']) ||
-          t.parent.node.rel === 'parataxis:discourse')
+        (uEqSome(t.parent.data.rel, ['discourse']) ||
+          t.parent.data.rel === 'parataxis:discourse')
       ),
   )
 
@@ -723,9 +723,9 @@ export function validateSentenceSyntax(
   reportIf(
     `у залежника xcomp є підмет`,
     (t) =>
-      uEq(t.node.rel, 'xcomp') &&
-      !t.node.isGraft &&
-      t.children.some((x) => uEqSome(x.node.rel, g.SUBJECTS)),
+      uEq(t.data.rel, 'xcomp') &&
+      !t.data.isGraft &&
+      t.children.some((x) => uEqSome(x.data.rel, g.SUBJECTS)),
   )
 
   oldReportIf(
@@ -741,18 +741,18 @@ export function validateSentenceSyntax(
     'не aux у б(и)',
     (t) =>
       !t.isRoot() &&
-      g.CONDITIONAL_AUX_LEMMAS.includes(t.node.form.toLowerCase()) &&
-      t.node.interp.isParticle() &&
-      !uEqSome(t.node.rel, [/* 'fixed', */ 'aux', 'goeswith']),
+      g.CONDITIONAL_AUX_LEMMAS.includes(t.data.form.toLowerCase()) &&
+      t.data.interp.isParticle() &&
+      !uEqSome(t.data.rel, [/* 'fixed', */ 'aux', 'goeswith']),
   )
 
   reportIf(
     'не advmod в не',
     (t) =>
-      t.node.interp.isParticle() &&
+      t.data.interp.isParticle() &&
       !g.hasChild(t, 'fixed') &&
-      ['не' /*'ні', 'лише'*/].includes(t.node.form.toLowerCase()) &&
-      !['advmod', undefined].includes(t.node.rel),
+      ['не' /*'ні', 'лише'*/].includes(t.data.form.toLowerCase()) &&
+      !['advmod', undefined].includes(t.data.rel),
   )
 
   oldReportIf(
@@ -765,38 +765,38 @@ export function validateSentenceSyntax(
     reportIf(
       `${leafrel} має залежників`,
       (t) =>
-        uEq(t.node.rel, leafrel) &&
-        !t.children.every((x) => x.node.interp.isPunctuation()),
+        uEq(t.data.rel, leafrel) &&
+        !t.children.every((x) => x.data.interp.isPunctuation()),
     )
   }
 
   reportIf(
     `сполучник виділено розділовим знаком`,
     (t) =>
-      t.node.interp.isConjunction() &&
-      t.children.some((ch) => ch.node.rel === 'punct') &&
+      t.data.interp.isConjunction() &&
+      t.children.some((ch) => ch.data.rel === 'punct') &&
       !t.isRoot() &&
-      !uEq(t.node.rel, 'conj') &&
-      !t.node.hasTag('commed_conj'),
+      !uEq(t.data.rel, 'conj') &&
+      !t.data.hasTag('commed_conj'),
   )
 
   reportIf(
     `підмет не в називному`,
     (t) =>
-      uEq(t.node.rel, 'nsubj') &&
-      !t.node.isGraft &&
-      !t.node.hasTag('ok-nonnom-subj') &&
+      uEq(t.data.rel, 'nsubj') &&
+      !t.data.isGraft &&
+      !t.data.hasTag('ok-nonnom-subj') &&
       ![f.Case.nominative, undefined].includes(g.thisOrGovernedCase(t)) &&
-      !t.node.interp.isForeign() &&
+      !t.data.interp.isForeign() &&
       !g.isQuantificationalNsubj(t) &&
       !g.isQuantitativeAdverbModified(t) &&
       !t.children.some(
         (x) =>
-          g.isNumericModifier(x.node.rel) &&
+          g.isNumericModifier(x.data.rel) &&
           x.children.some(
             (xx) =>
-              xx.node.interp.isPreposition() &&
-              ['близько', 'до', 'понад'].includes(xx.node.interp.lemma),
+              xx.data.interp.isPreposition() &&
+              ['близько', 'до', 'понад'].includes(xx.data.interp.lemma),
           ),
       ),
   )
@@ -805,33 +805,33 @@ export function validateSentenceSyntax(
 
   tmpxreportIf(
     `займенник :&noun`,
-    (t) => t.node.interp.isAdjectiveAsNoun() && t.node.interp.isPronominal(),
+    (t) => t.data.interp.isAdjectiveAsNoun() && t.data.interp.isPronominal(),
   )
 
   reportIf(
     `додаток в називному`,
     (t) =>
-      uEqSome(t.node.rel, ['obj', 'iobj', 'obl']) &&
+      uEqSome(t.data.rel, ['obj', 'iobj', 'obl']) &&
       g.thisOrGovernedCase(t) === f.Case.nominative &&
-      !t.node.interp.isXForeign() &&
-      !t.node.isGraft &&
-      t.parent.node.interp.isReversive() &&
-      !t.children.some((x) => x.node.rel === 'flat:abs') &&
-      !(uEqSome(t.node.rel, ['obl']) && ['сам'].includes(t.node.interp.lemma)),
+      !t.data.interp.isXForeign() &&
+      !t.data.isGraft &&
+      t.parent.data.interp.isReversive() &&
+      !t.children.some((x) => x.data.rel === 'flat:abs') &&
+      !(uEqSome(t.data.rel, ['obl']) && ['сам'].includes(t.data.interp.lemma)),
   )
 
   reportIf(`місцевий без прийменника`, (t) => {
     if (
-      !t.node.rel ||
-      uEq(t.node.rel, 'fixed') ||
-      !t.node.interp.isLocative() ||
+      !t.data.rel ||
+      uEq(t.data.rel, 'fixed') ||
+      !t.data.interp.isLocative() ||
       !canActAsNoun(t)
     ) {
       return
     }
     let p = t
     while (p && !hasChildrenOfUrel(p, 'case')) {
-      if (!uEqSome(p.node.rel, ['appos', 'conj', 'flat'])) {
+      if (!uEqSome(p.data.rel, ['appos', 'conj', 'flat'])) {
         return true
       } else {
         p = p.parent
@@ -842,82 +842,82 @@ export function validateSentenceSyntax(
   reportIf(
     `підрядне означальне відкриває що-іменник`,
     (t) =>
-      uEq(t.node.rel, 'acl') &&
+      uEq(t.data.rel, 'acl') &&
       t.children.some(
         (x) =>
-          x.node.form.toLowerCase() === 'що' && uEqSome(x.node.rel, ['nsubj']),
+          x.data.form.toLowerCase() === 'що' && uEqSome(x.data.rel, ['nsubj']),
       ),
   )
 
   reportIf(
     `cc без conj`,
     (t) =>
-      uEq(t.node.rel, 'cc') &&
+      uEq(t.data.rel, 'cc') &&
       !t.parent.isRoot() &&
-      !uEqSome(t.parent.node.rel, [
+      !uEqSome(t.parent.data.rel, [
         'conj',
         'flat:title',
         'flat:repeat',
         'parataxis:newsent',
       ]) &&
-      !t.parent.children.some((x) => uEq(x.node.rel, 'conj')),
+      !t.parent.children.some((x) => uEq(x.data.rel, 'conj')),
   )
 
   // todo
   xreportIf(
     `підрядне без сполучника`,
     (t) =>
-      uEqSome(t.node.rel, g.SUBORDINATE_CLAUSES) &&
-      !uEq(t.node.rel, 'xcomp') &&
+      uEqSome(t.data.rel, g.SUBORDINATE_CLAUSES) &&
+      !uEq(t.data.rel, 'xcomp') &&
       // && !t.parent.children[0].node.interp.isConsequential()
-      !t.children.some((x) => uEq(x.node.rel, 'mark')) &&
+      !t.children.some((x) => uEq(x.data.rel, 'mark')) &&
       !g.hasOwnRelative(t) &&
       // && !t.children.some(x => x.node.interp.isRelative())
       // && !g.isInfinitive(t)
-      !(uEq(t.node.rel, 'acl') && t.node.interp.isParticiple()) &&
-      !(uEq(t.node.rel, 'advcl') && t.node.interp.isConverb()) &&
-      !t.node.rel.endsWith(':sp'),
+      !(uEq(t.data.rel, 'acl') && t.data.interp.isParticiple()) &&
+      !(uEq(t.data.rel, 'advcl') && t.data.interp.isConverb()) &&
+      !t.data.rel.endsWith(':sp'),
   )
 
   xreportIf(
     `зворотне має два додатки`,
     (t) =>
-      t.node.interp.isReversive() &&
+      t.data.interp.isReversive() &&
       t.children.filter(
         (x) =>
-          uEqSome(x.node.rel, ['obj', 'iobj', 'ccomp']) && !x.node.isElided(),
+          uEqSome(x.data.rel, ['obj', 'iobj', 'ccomp']) && !x.data.isElided(),
       ).length > 1,
   )
 
   reportIf(
     `неузгодження відмінків прийменника`, // todo: додати conj
     (t) =>
-      uEq(t.node.rel, 'case') &&
-      (t.node.interp.features.requiredCase as number) !==
+      uEq(t.data.rel, 'case') &&
+      (t.data.interp.features.requiredCase as number) !==
         g.thisOrGovernedCase(t.parent) &&
-      !t.parent.node.interp.isXForeign() &&
-      !t.parent.node.interp.isForeign() && // todo
-      !t.parent.node.isGraft &&
+      !t.parent.data.interp.isXForeign() &&
+      !t.parent.data.interp.isForeign() && // todo
+      !t.parent.data.isGraft &&
       //   &&!t.children.some(x => uEq(x.node.rel, 'case')
       //   && x.node.interp.getFeature(f.RequiredCase)===
       // )
       !g.hasChild(t.parent, 'fixed') &&
       !(
-        t.node.interp.lemma === 'замість' &&
-        t.parent.node.interp.isVerb() &&
-        t.parent.node.interp.isInfinitive()
+        t.data.interp.lemma === 'замість' &&
+        t.parent.data.interp.isVerb() &&
+        t.parent.data.interp.isInfinitive()
       ) &&
       !(
-        t.parent.node.interp.isAdverb() &&
-        ['нікуди'].includes(t.parent.node.interp.lemma)
+        t.parent.data.interp.isAdverb() &&
+        ['нікуди'].includes(t.parent.data.interp.lemma)
       ),
   )
 
   reportIf(
     `неособове має підмет`,
     (t) =>
-      (t.node.interp.isImpersonal() || g.isInfinitive(t)) &&
-      t.children.some((x) => uEqSome(x.node.rel, g.SUBJECTS)),
+      (t.data.interp.isImpersonal() || g.isInfinitive(t)) &&
+      t.children.some((x) => uEqSome(x.data.rel, g.SUBJECTS)),
   )
 
   reportIf(
@@ -925,12 +925,12 @@ export function validateSentenceSyntax(
     (t) =>
       canActAsNounForObj(t) &&
       !t.isRoot() &&
-      t.node.interp.isAccusative() &&
-      !t.parent.node.interp.isAccusative() &&
-      !t.parent.node.isGraft &&
-      !t.children.some((x) => x.node.interp.isPreposition()) &&
-      !t.parent.node.interp.isVerbial2() &&
-      !uEqSome(t.node.rel, ['conj', 'flat', 'appos', 'orphan', 'fixed']), // todo
+      t.data.interp.isAccusative() &&
+      !t.parent.data.interp.isAccusative() &&
+      !t.parent.data.isGraft &&
+      !t.children.some((x) => x.data.interp.isPreposition()) &&
+      !t.parent.data.interp.isVerbial2() &&
+      !uEqSome(t.data.rel, ['conj', 'flat', 'appos', 'orphan', 'fixed']), // todo
     // && !thisOrTravelUp(t, tt =>
     //   tt.parent.node.interp.isVerbial()
     //   && tt.children.some(x => x.node.interp.isPreposition())
@@ -950,55 +950,55 @@ export function validateSentenceSyntax(
   xreportIf(
     `неузгодження в часі`,
     (t) =>
-      uEq(t.node.rel, 'aux') &&
-      t.node.interp.isVerb() &&
-      (t.node.interp.hasFeature(f.Tense) ||
-        t.parent.node.interp.hasFeature(f.Tense)) &&
-      !t.parent.node.interp.isInfinitive() &&
-      t.node.interp.getFeature(f.Tense) !==
-        t.parent.node.interp.getFeature(f.Tense) &&
-      !t.parent.node.interp.isImpersonal(),
+      uEq(t.data.rel, 'aux') &&
+      t.data.interp.isVerb() &&
+      (t.data.interp.hasFeature(f.Tense) ||
+        t.parent.data.interp.hasFeature(f.Tense)) &&
+      !t.parent.data.interp.isInfinitive() &&
+      t.data.interp.getFeature(f.Tense) !==
+        t.parent.data.interp.getFeature(f.Tense) &&
+      !t.parent.data.interp.isImpersonal(),
   )
 
   xreportIf(
     `ні допоміжне, ані повнозначне дієслово не має часу`,
     (t) =>
-      uEq(t.node.rel, 'aux') &&
-      t.node.interp.isVerb() &&
-      (t.node.interp.isInfinitive() || !t.node.interp.hasFeature(f.Tense)) &&
-      (t.parent.node.interp.isInfinitive() ||
-        !t.parent.node.interp.getFeature(f.Tense)),
+      uEq(t.data.rel, 'aux') &&
+      t.data.interp.isVerb() &&
+      (t.data.interp.isInfinitive() || !t.data.interp.hasFeature(f.Tense)) &&
+      (t.parent.data.interp.isInfinitive() ||
+        !t.parent.data.interp.getFeature(f.Tense)),
   )
 
   reportIf(
     `неузгодження підмет — прикметник-присудок`,
     (t) =>
-      uEq(t.node.rel, 'nsubj') &&
-      t.parent.node.interp.isAdjective() &&
-      !t.parent.node.isPromoted &&
+      uEq(t.data.rel, 'nsubj') &&
+      t.parent.data.interp.isAdjective() &&
+      !t.parent.data.isPromoted &&
       !g.nounAdjectiveAgreed(t, t.parent) &&
-      !(t.parent.node.interp.isInstrumental() && g.hasCopula(t.parent)),
+      !(t.parent.data.interp.isInstrumental() && g.hasCopula(t.parent)),
   )
 
   xreportIf(
     `неочікуваний відмінок іменника-присудка`,
     (t) =>
-      uEq(t.node.rel, 'nsubj') &&
-      t.parent.node.interp.isNounish() &&
+      uEq(t.data.rel, 'nsubj') &&
+      t.parent.data.interp.isNounish() &&
       // && !g.nounNounAgreed(t.node.interp, t.parent.node.interp)
-      !t.parent.node.interp.isNominative() &&
+      !t.parent.data.interp.isNominative() &&
       !g.hasChild(t.parent, 'case') &&
-      !(t.parent.node.interp.isInstrumental() && g.hasCopula(t.parent)),
+      !(t.parent.data.interp.isInstrumental() && g.hasCopula(t.parent)),
     // && !['це'].some(x => t.node.interp.lemma === x)
   )
 
   xreportIf(
     `неузгодження прикладки`, // todo: mark explicitly in tb
     (t) =>
-      uEq(t.node.rel, 'appos') &&
-      t.node.interp.isNounish() &&
-      t.parent.node.interp.isNounish() &&
-      !t.node.interp.isXForeign() &&
+      uEq(t.data.rel, 'appos') &&
+      t.data.interp.isNounish() &&
+      t.parent.data.interp.isNounish() &&
+      !t.data.interp.isXForeign() &&
       g.thisOrGovernedCase(t) !== g.thisOrGovernedCase(t.parent) &&
       // && !g.nounNounAgreed(t.node.interp, t.parent.node.interp)
       // && !t.node.interp.equalsByFeatures(t.parent.node.interp, [f.Case/* , f.MorphNumber */])
@@ -1009,7 +1009,7 @@ export function validateSentenceSyntax(
       // )
       !g.hasChild(t, 'mark') &&
       !t.children.some(
-        (x) => x.node.interp.lemma === '(' && x.node.interp.isPunctuation(),
+        (x) => x.data.interp.lemma === '(' && x.data.interp.isPunctuation(),
       ),
     // && !(t.children.length
     //   && t.children[0].node.interp.lemma === '('
@@ -1020,30 +1020,30 @@ export function validateSentenceSyntax(
   reportIf(
     `неузгодження відмінків однорідних іменників`,
     (t) =>
-      uEq(t.node.rel, 'conj') &&
-      !t.node.interp.equalsByFeatures(t.parent.node.interp, [
+      uEq(t.data.rel, 'conj') &&
+      !t.data.interp.equalsByFeatures(t.parent.data.interp, [
         f.Case /* , f.MorphNumber */,
       ]) &&
-      t.node.rel !== 'conj:parataxis' &&
-      !uEqSome(t.parent.node.rel, ['obl']) &&
-      t.node.interp.isNounish() &&
-      t.parent.node.interp.isNounish() &&
-      !t.node.interp.isXForeign() &&
+      t.data.rel !== 'conj:parataxis' &&
+      !uEqSome(t.parent.data.rel, ['obl']) &&
+      t.data.interp.isNounish() &&
+      t.parent.data.interp.isNounish() &&
+      !t.data.interp.isXForeign() &&
       g.thisOrGovernedCase(t) !== g.thisOrGovernedCase(t.parent) &&
       !g.isQuantitativeAdverbModified(t) &&
       // && !g.isQuantitativeAdverbModified(t.parent)
-      !(uEqSome(t.parent.node.rel, ['nmod']) && g.hasChild(t, 'case')),
+      !(uEqSome(t.parent.data.rel, ['nmod']) && g.hasChild(t, 'case')),
   )
 
   reportIf(
     `неузгодження однорідних прикметників`,
     (t) =>
-      uEq(t.node.rel, 'conj') &&
-      t.node.rel !== 'conj:parataxis' &&
+      uEq(t.data.rel, 'conj') &&
+      t.data.rel !== 'conj:parataxis' &&
       // && !uEqSome(t.parent.node.rel, ['obl'])
-      t.node.interp.isAdjective() &&
-      t.parent.node.interp.isAdjective() &&
-      !t.parent.node.interp.equalsByFeatures(t.node.interp, [
+      t.data.interp.isAdjective() &&
+      t.parent.data.interp.isAdjective() &&
+      !t.parent.data.interp.equalsByFeatures(t.data.interp, [
         f.Case /* , f.MorphNumber */,
       ]),
   )
@@ -1051,12 +1051,12 @@ export function validateSentenceSyntax(
   xreportIf(
     `неузгодження однорідних дієслів`,
     (t) =>
-      uEq(t.node.rel, 'conj') &&
-      t.node.rel !== 'conj:parataxis' &&
+      uEq(t.data.rel, 'conj') &&
+      t.data.rel !== 'conj:parataxis' &&
       // && !uEqSome(t.parent.node.rel, ['obl'])
-      t.node.interp.isVerbial() &&
-      t.parent.node.interp.isVerbial() &&
-      !t.parent.node.interp.equalsByFeatures(t.node.interp, [
+      t.data.interp.isVerbial() &&
+      t.parent.data.interp.isVerbial() &&
+      !t.parent.data.interp.equalsByFeatures(t.data.interp, [
         f.Tense,
         f.Person,
         f.MorphNumber,
@@ -1067,31 +1067,31 @@ export function validateSentenceSyntax(
   reportIf(
     `неузгодження підмет — присудок-дієслово`,
     (t) =>
-      uEq(t.node.rel, 'nsubj') &&
-      t.parent.node.interp.isVerb() &&
+      uEq(t.data.rel, 'nsubj') &&
+      t.parent.data.interp.isVerb() &&
       !g.nsubjAgreesWithPredicate(t, t.parent),
   )
 
   xreportIf(`неузгодження підмет-присудок`, (t) => {
     if (
       t.isRoot() ||
-      t.node.hasTag('graft') ||
-      !uEq(t.node.rel, 'nsubj') ||
-      !t.parent.node.interp.isVerbial2() ||
-      t.parent.node.interp.isImpersonal() ||
-      t.node.interp.isXForeign()
+      t.data.hasTag('graft') ||
+      !uEq(t.data.rel, 'nsubj') ||
+      !t.parent.data.interp.isVerbial2() ||
+      t.parent.data.interp.isImpersonal() ||
+      t.data.interp.isXForeign()
     ) {
       return false
     }
 
-    let interp = t.node.interp
-    let subjFeats = t.node.interp.features
+    let interp = t.data.interp
+    let subjFeats = t.data.interp.features
 
-    let verbInterp = t.parent.node.interp
+    let verbInterp = t.parent.data.interp
     if (verbInterp.isInfinitive()) {
-      let aux = t.parent.children.find((x) => uEqSome(x.node.rel, ['aux']))
+      let aux = t.parent.children.find((x) => uEqSome(x.data.rel, ['aux']))
       if (aux) {
-        verbInterp = aux.node.interp
+        verbInterp = aux.data.interp
       } else {
       }
     }
@@ -1114,7 +1114,7 @@ export function validateSentenceSyntax(
     if (
       verbInterp.hasGender() &&
       !(interp.isForeign() && !interp.hasGender()) &&
-      !t.node.hasTag('gendisagr') &&
+      !t.data.hasTag('gendisagr') &&
       !interp.isPlural() &&
       // && !(t.node.interp.isPronoun()
       //   && subjFeats.person === Person.first || subjFeats.person === Person.second)
@@ -1130,10 +1130,10 @@ export function validateSentenceSyntax(
     }
 
     if (
-      !t.children.some((x) => uEq(x.node.rel, 'conj')) &&
+      !t.children.some((x) => uEq(x.data.rel, 'conj')) &&
       !g.hasNmodConj(t) &&
-      !t.node.hasTag('numdisagr') &&
-      !(t.node.interp.isPronominal() && !t.node.interp.hasNumber()) &&
+      !t.data.hasTag('numdisagr') &&
+      !(t.data.interp.isPronominal() && !t.data.interp.hasNumber()) &&
       verbInterp.getFeature(f.MorphNumber) !==
         interp.getFeature(f.MorphNumber) &&
       !(g.isNumeralModified(t) /*  && interp.isGenitive() */) &&
@@ -1147,17 +1147,17 @@ export function validateSentenceSyntax(
     if (t.isRoot()) {
       return
     }
-    let interp = t.node.interp
-    let nounInterp = t.parent.node.interp
+    let interp = t.data.interp
+    let nounInterp = t.parent.data.interp
 
     let ret =
-      uEqSome(t.node.rel, ['amod', 'det']) ||
-      (uEqSome(t.node.rel, ['acl']) && nounInterp.isParticiple())
+      uEqSome(t.data.rel, ['amod', 'det']) ||
+      (uEqSome(t.data.rel, ['acl']) && nounInterp.isParticiple())
     ret =
       ret &&
       interp.isAdjective() &&
       !interp.isMock() &&
-      !t.parent.node.isGraft &&
+      !t.parent.data.isGraft &&
       !nounInterp.isXForeign() &&
       ((interp.hasGender() &&
         interp.features.gender !== nounInterp.features.gender &&
@@ -1170,9 +1170,9 @@ export function validateSentenceSyntax(
       !(
         interp.isGenitive() &&
         [f.Case.accusative, f.Case.nominative].includes(
-          t.parent.node.interp.getFeature(f.Case),
+          t.parent.data.interp.getFeature(f.Case),
         ) &&
-        t.parent.children.some((x) => x.node.rel === 'nummod')
+        t.parent.children.some((x) => x.data.rel === 'nummod')
       )
 
     return ret
@@ -1190,53 +1190,53 @@ export function validateSentenceSyntax(
   reportIf(
     `неузгодження істотовості`,
     (t) =>
-      uEqSome(t.node.rel, ['amod', 'det', 'nummod']) &&
-      t.node.interp.hasFeature(f.RequiredAnimacy) &&
-      t.parent.node.interp.hasFeature(f.Animacy) &&
-      (t.node.interp.features.requiredAnimacy as number) !==
-        t.parent.node.interp.features.animacy &&
-      (t.node.interp.features.requiredAnimacy as number) !==
-        t.parent.node.interp.features.grammaticalAnimacy,
+      uEqSome(t.data.rel, ['amod', 'det', 'nummod']) &&
+      t.data.interp.hasFeature(f.RequiredAnimacy) &&
+      t.parent.data.interp.hasFeature(f.Animacy) &&
+      (t.data.interp.features.requiredAnimacy as number) !==
+        t.parent.data.interp.features.animacy &&
+      (t.data.interp.features.requiredAnimacy as number) !==
+        t.parent.data.interp.features.grammaticalAnimacy,
     // todo: or ranim for promoted adj
   )
 
   reportIf(
     `неузгодження flat:name`,
     (t) =>
-      t.node.rel === 'flat:name' &&
-      !g.nounNounAgreed(t.parent.node.interp, t.node.interp),
+      t.data.rel === 'flat:name' &&
+      !g.nounNounAgreed(t.parent.data.interp, t.data.interp),
   )
 
   reportIf(
     `неузгодження flat:title`,
     (t) =>
-      t.node.rel === 'flat:title' &&
+      t.data.rel === 'flat:title' &&
       // && !g.nounNounAgreed(t.parent.node.interp, t.node.interp)
-      !t.parent.node.interp.equalsByFeatures(t.node.interp, [
+      !t.parent.data.interp.equalsByFeatures(t.data.interp, [
         /* f.MorphNumber, */ /* f.Gender, */ f.Case,
       ]) &&
       g.thisOrGovernedCase(t) !== f.Case.nominative &&
-      !t.node.interp.isForeign() &&
-      !t.node.interp.isSymbol() &&
-      !t.node.isGraft &&
+      !t.data.interp.isForeign() &&
+      !t.data.interp.isSymbol() &&
+      !t.data.isGraft &&
       !isEncolsedInQuotes(t),
   )
 
   xreportIf(`неузгодження однорідних`, (t) => {
-    if (!uEq(t.node.rel, 'conj') || t.node.rel === 'conj:parataxis') {
+    if (!uEq(t.data.rel, 'conj') || t.data.rel === 'conj:parataxis') {
       return
     }
 
     if (
-      t.node.interp.isNounish() &&
-      !t.parent.node.interp.equalsByFeatures(t.node.interp, [f.Case])
+      t.data.interp.isNounish() &&
+      !t.parent.data.interp.equalsByFeatures(t.data.interp, [f.Case])
     ) {
       // return true
     }
 
     if (
-      t.node.interp.isVerb() &&
-      !t.parent.node.interp.equalsByFeatures(t.node.interp, [
+      t.data.interp.isVerb() &&
+      !t.parent.data.interp.equalsByFeatures(t.data.interp, [
         f.VerbAuxilarity,
         f.VerbType,
         f.Gender,
@@ -1246,8 +1246,8 @@ export function validateSentenceSyntax(
     }
 
     if (
-      t.node.interp.isAdjective() &&
-      !t.parent.node.interp.equalsByFeatures(t.node.interp, [f.Case, f.Gender])
+      t.data.interp.isAdjective() &&
+      !t.parent.data.interp.equalsByFeatures(t.data.interp, [f.Case, f.Gender])
     ) {
       return true
     }
@@ -1256,151 +1256,151 @@ export function validateSentenceSyntax(
   reportIf(
     `gov-реляція між однаковими відмінками`,
     (t) =>
-      isGoverning(t.node.rel) &&
-      t.node.interp.features.case === t.parent.node.interp.features.case,
+      isGoverning(t.data.rel) &&
+      t.data.interp.features.case === t.parent.data.interp.features.case,
   )
 
   reportIf(
     `не gov-реляція між різними відмінками`,
     (t) =>
-      !isGoverning(t.node.rel) &&
-      ['nummod', 'det:nummod'].some((rel) => uEq(t.node.rel, rel)) &&
-      !t.parent.node.interp.isXForeign() &&
-      t.node.interp.features.case !== t.parent.node.interp.features.case &&
+      !isGoverning(t.data.rel) &&
+      ['nummod', 'det:nummod'].some((rel) => uEq(t.data.rel, rel)) &&
+      !t.parent.data.interp.isXForeign() &&
+      t.data.interp.features.case !== t.parent.data.interp.features.case &&
       !g.canBeDecimalFraction(t), // todo
   )
 
   reportIf(
     `керівний числівник не в називному/знахідному`,
     (t) =>
-      isGoverning(t.node.rel) &&
-      t.node.interp.features.case !== t.parent.node.interp.features.case &&
+      isGoverning(t.data.rel) &&
+      t.data.interp.features.case !== t.parent.data.interp.features.case &&
       ![f.Case.nominative, f.Case.accusative].includes(
-        t.node.interp.features.case,
+        t.data.interp.features.case,
       ),
   )
 
   reportIf(
     `множинний числівник керує одниною`,
     (t) =>
-      uEqSome(t.node.rel, ['nummod', 'det:nummod', 'det:numgov']) &&
-      !t.parent.node.interp.isPlural() &&
-      !t.node.interp.lemma.endsWith('1') &&
-      !['один', 'півтора', 'пів'].includes(t.node.interp.lemma) &&
+      uEqSome(t.data.rel, ['nummod', 'det:nummod', 'det:numgov']) &&
+      !t.parent.data.interp.isPlural() &&
+      !t.data.interp.lemma.endsWith('1') &&
+      !['один', 'півтора', 'пів'].includes(t.data.interp.lemma) &&
       !g.canBeDecimalFraction(t) &&
-      !t.parent.node.interp.isXForeign(),
+      !t.parent.data.interp.isXForeign(),
   )
 
   reportIf(`кероване числівником не в родовому`, (t) => {
-    let governer = t.children.find((x) => isGoverning(x.node.rel))
+    let governer = t.children.find((x) => isGoverning(x.data.rel))
     if (!governer) {
       return
     }
 
     return (
-      t.node.interp.features.case !== governer.node.interp.features.case &&
-      !t.node.interp.isGenitive()
+      t.data.interp.features.case !== governer.data.interp.features.case &&
+      !t.data.interp.isGenitive()
     )
   })
 
   reportIf(
     `mark не з кореня підрядного`,
     (t) =>
-      uEq(t.node.rel, 'mark') &&
+      uEq(t.data.rel, 'mark') &&
       // && !t.parent.isRoot()
-      ((sentenceHasOneRoot && !t.parent.node.rel) ||
-        (t.parent.node.rel &&
-          !uEqSome(t.parent.node.rel, g.MARK_ROOT_RELS) &&
+      ((sentenceHasOneRoot && !t.parent.data.rel) ||
+        (t.parent.data.rel &&
+          !uEqSome(t.parent.data.rel, g.MARK_ROOT_RELS) &&
           !(
-            uEq(t.parent.node.rel, 'conj') &&
-            g.SUBORDINATE_CLAUSES.some((x) => uEq(t.parent.parent.node.rel, x))
+            uEq(t.parent.data.rel, 'conj') &&
+            g.SUBORDINATE_CLAUSES.some((x) => uEq(t.parent.parent.data.rel, x))
           ))) &&
       !(
         t.parent.isRoot() &&
-        t.node.index ===
+        t.data.index ===
           nodes.findIndex(
             (x) =>
-              !x.node.interp.isPunctuation() &&
+              !x.data.interp.isPunctuation() &&
               !mu(x.walkThisAndUp0()).some((xx) =>
-                uEqSome(xx.node.rel, ['discourse']),
+                uEqSome(xx.data.rel, ['discourse']),
               ),
           )
       ) &&
       // використання як енергетичної сировини
       !(
-        t.parent.node.rel === 'nmod:xcompsp' &&
-        ['як'].includes(t.node.interp.lemma)
+        t.parent.data.rel === 'nmod:xcompsp' &&
+        ['як'].includes(t.data.interp.lemma)
       ),
   )
 
   reportIf(
     `parataxis під’єднано сполучником`,
     (t) =>
-      uEq(t.node.rel, 'parataxis') &&
-      t.node.rel !== 'parataxis:discourse' &&
-      t.node.rel !== 'parataxis:thatis' &&
-      t.node.rel !== 'parataxis:rel' &&
-      t.node.rel !== 'parataxis:newsent' &&
-      t.children.some((x) => uEqSome(x.node.rel, ['cc', 'mark'])) &&
+      uEq(t.data.rel, 'parataxis') &&
+      t.data.rel !== 'parataxis:discourse' &&
+      t.data.rel !== 'parataxis:thatis' &&
+      t.data.rel !== 'parataxis:rel' &&
+      t.data.rel !== 'parataxis:newsent' &&
+      t.children.some((x) => uEqSome(x.data.rel, ['cc', 'mark'])) &&
       !t.children.some(
-        (x) => x.node.interp.isQuote() && x.node.interp.isOpening(),
+        (x) => x.data.interp.isQuote() && x.data.interp.isOpening(),
       ),
   )
 
   reportIf(
     `parataxis має відносний`,
     (t) =>
-      uEq(t.node.rel, 'parataxis') &&
-      t.node.rel !== 'parataxis:rel' &&
-      t.node.rel !== 'parataxis:discourse' &&
+      uEq(t.data.rel, 'parataxis') &&
+      t.data.rel !== 'parataxis:rel' &&
+      t.data.rel !== 'parataxis:discourse' &&
       g.hasOwnRelative(t),
   )
 
   reportIf(
     `parataxis:rel не має відносного`,
-    (t) => t.node.rel === 'parataxis:rel' && !g.hasOwnRelative(t),
+    (t) => t.data.rel === 'parataxis:rel' && !g.hasOwnRelative(t),
   )
 
   reportIf(
     `xcomp зі сполучником`,
     (t) =>
-      uEq(t.node.rel, 'xcomp') &&
+      uEq(t.data.rel, 'xcomp') &&
       // && t.node.rel !== 'parataxis:discourse'
-      t.children.some((x) => uEqSome(x.node.rel, [/* 'cc',  */ 'mark'])) &&
+      t.children.some((x) => uEqSome(x.data.rel, [/* 'cc',  */ 'mark'])) &&
       !g.canBeAsSomethingForXcomp2(t) &&
-      !t.node.hasTag('xcomp_mark'),
+      !t.data.hasTag('xcomp_mark'),
   )
 
   reportIf(
     `flat:name не для імені`,
     (t) =>
-      (t.node.rel === 'flat:name' ||
-        t.children.some((x) => x.node.rel === 'flat:name')) &&
-      !t.node.interp.isName(),
+      (t.data.rel === 'flat:name' ||
+        t.children.some((x) => x.data.rel === 'flat:name')) &&
+      !t.data.interp.isName(),
   )
 
   reportIf(
     `підрядне речення з _то_`,
     (t) =>
-      t.node.interp.lemma === 'то' &&
+      t.data.interp.lemma === 'то' &&
       t.parent &&
-      uEqSome(t.parent.node.rel, g.SUBORDINATE_CLAUSES) &&
-      !t.node.interp.isNoun() &&
+      uEqSome(t.parent.data.rel, g.SUBORDINATE_CLAUSES) &&
+      !t.data.interp.isNoun() &&
       // todo: fasten
       !t.parent.children.some((x) =>
-        uEqSome(x.node.rel, ['advcl'] /* g.SUBORDINATE_CLAUSES */),
+        uEqSome(x.data.rel, ['advcl'] /* g.SUBORDINATE_CLAUSES */),
       ),
   )
 
   reportIf(`заперечення під’єднане не до cop/aux`, (t) => {
     if (
-      !uEq(t.node.rel, 'advmod') ||
-      !t.node.interp.isNegative() ||
-      t.parent.node.interp.isAuxillary()
+      !uEq(t.data.rel, 'advmod') ||
+      !t.data.interp.isNegative() ||
+      t.parent.data.interp.isAuxillary()
     ) {
       return
     }
-    let aux = t.parent.children.find((x) => x.node.interp.isAuxillary())
+    let aux = t.parent.children.find((x) => x.data.interp.isAuxillary())
     if (!aux) {
       return
     }
@@ -1413,26 +1413,26 @@ export function validateSentenceSyntax(
   reportIf(
     `parataxis:discourse в одне слово-недієслово`,
     (t) =>
-      t.node.rel === 'parataxis:discourse' &&
+      t.data.rel === 'parataxis:discourse' &&
       !t.children.length &&
-      !t.node.interp.isVerb(),
+      !t.data.interp.isVerb(),
   )
 
   xreportIf(
     `discourse у фразу`,
     (t) =>
-      uEq(t.node.rel, 'discourse') &&
-      t.children.filter((x) => !uEqSome(x.node.rel, ['fixed', 'punct'])).length,
+      uEq(t.data.rel, 'discourse') &&
+      t.children.filter((x) => !uEqSome(x.data.rel, ['fixed', 'punct'])).length,
   )
 
   reportIf(
     `кількісний прислівник модифікує множину`,
     (t) =>
-      t.node.rel === 'advmod:amtgov' &&
-      t.parent.node.interp.isPlural() &&
-      !t.parent.node.interp.isNoSingular() &&
-      !t.parent.node.interp.hasNonpositiveDegree() &&
-      !['чимало', 'трохи'].includes(t.node.interp.lemma),
+      t.data.rel === 'advmod:amtgov' &&
+      t.parent.data.interp.isPlural() &&
+      !t.parent.data.interp.isNoSingular() &&
+      !t.parent.data.interp.hasNonpositiveDegree() &&
+      !['чимало', 'трохи'].includes(t.data.interp.lemma),
   )
 
   if (basicRoots.length === 1) {
@@ -1441,7 +1441,7 @@ export function validateSentenceSyntax(
 
   // continuity/projectivity
   for (let token of nodes) {
-    if (uEqSome(token.node.rel, g.CONTINUOUS_REL)) {
+    if (uEqSome(token.data.rel, g.CONTINUOUS_REL)) {
       let rootFromHere = token.root()
 
       let indexes = mu(walkDepth(token))
@@ -1455,15 +1455,15 @@ export function validateSentenceSyntax(
         .filter(
           (x) =>
             !mu(x.walkThisAndUp0()).some((xx) =>
-              xx.node.hasTag('legal_alien'),
-            ) && !x.node.isElided(),
+              xx.data.hasTag('legal_alien'),
+            ) && !x.data.isElided(),
         )
         .map((x) => node2index.get(x))
 
       if (holes.length) {
         if (
-          token.parent.node.interp.isAdverb() &&
-          token.node.interp.isInfinitive()
+          token.parent.data.interp.isAdverb() &&
+          token.data.interp.isInfinitive()
         ) {
           continue
         }
@@ -1473,7 +1473,7 @@ export function validateSentenceSyntax(
         continue
         problems.push({
           indexes: [...holes],
-          message: `чужі токени всередині ${token.node.rel}`,
+          message: `чужі токени всередині ${token.data.rel}`,
         })
       }
     }
@@ -1482,30 +1482,30 @@ export function validateSentenceSyntax(
   {
     let lastToken = last(nodes)
     if (
-      lastToken.node.rel &&
-      !/[!?]|\.{3}|…/.test(lastToken.node.form) && // todo: add stricter condition
-      lastToken.node.interp.isPunctuation() &&
+      lastToken.data.rel &&
+      !/[!?]|\.{3}|…/.test(lastToken.data.form) && // todo: add stricter condition
+      lastToken.data.interp.isPunctuation() &&
       !lastToken.parents.some((x) => x.isRoot()) &&
       !lastToken.parents.some(
         (x) =>
-          x.node.interp.isAbbreviation() ||
-          uEq(x.node.rel, 'parataxis') ||
-          x.node.rel.endsWith(':parataxis'),
+          x.data.interp.isAbbreviation() ||
+          uEq(x.data.rel, 'parataxis') ||
+          x.data.rel.endsWith(':parataxis'),
       ) &&
-      !lastToken.node.interp.isQuote() &&
+      !lastToken.data.interp.isQuote() &&
       !(
-        lastToken.node.interp.isForeign() &&
-        lastToken.parent.node.form.length === 1
+        lastToken.data.interp.isForeign() &&
+        lastToken.parent.data.form.length === 1
       ) &&
-      !lastToken.parent.node.isGraft &&
+      !lastToken.parent.data.isGraft &&
       !(
-        lastToken.node.interp.isClosing() &&
-        lastToken.parent.children.some((x) => x.node.interp.isOpening())
+        lastToken.data.interp.isClosing() &&
+        lastToken.parent.children.some((x) => x.data.interp.isOpening())
       ) &&
       !(
-        lastToken.node.interp.isQuote() &&
+        lastToken.data.interp.isQuote() &&
         mu(lastToken.parent.children)
-          .filter((x) => x.node.interp.isQuote())
+          .filter((x) => x.data.interp.isQuote())
           .longerThan(1)
       )
     ) {
@@ -1522,12 +1522,12 @@ export function validateSentenceSyntax(
     let interests = nodes.filter(
       (t) =>
         !t.isRoot() &&
-        uEq(t.node.rel, 'advmod') &&
-        t.node.interp.isAdverb() &&
+        uEq(t.data.rel, 'advmod') &&
+        t.data.interp.isAdverb() &&
         g.isInfinitive(t.parent) &&
         // && t.parent.isRoot()
         // || !['acl', 'xcomp', 'c'].some(x => uEq(t.parent.node.rel, x)))
-        g.SOME_MODAL_ADVS.some((form) => t.node.interp.lemma === form),
+        g.SOME_MODAL_ADVS.some((form) => t.data.interp.lemma === form),
     )
     if (0 && interests.length) {
       problems.push({
@@ -1543,114 +1543,114 @@ export function validateSentenceSyntax(
     (t) =>
       t.children.some(
         (x) =>
-          x.node.interp.isInfinitive() &&
-          uEqSome(x.node.rel, ['xcomp', 'csubj', 'ccomp']),
-      ) && t.children.some((x) => uEqSome(x.node.rel, ['obl'])), // туду
+          x.data.interp.isInfinitive() &&
+          uEqSome(x.data.rel, ['xcomp', 'csubj', 'ccomp']),
+      ) && t.children.some((x) => uEqSome(x.data.rel, ['obl'])), // туду
   )
 
   reportIf(
     `cop без підмета`,
     (t) =>
-      uEq(t.node.rel, 'cop') &&
-      !t.parent.children.some((x) => uEqSome(x.node.rel, g.SUBJECTS)) &&
-      !t.parent.node.interp.isAdverb() &&
-      !t.parent.node.interp.isAdjective() &&
-      !t.parent.node.interp.isInstrumental() &&
-      !uEq(t.parent.node.rel, 'xcomp'),
+      uEq(t.data.rel, 'cop') &&
+      !t.parent.children.some((x) => uEqSome(x.data.rel, g.SUBJECTS)) &&
+      !t.parent.data.interp.isAdverb() &&
+      !t.parent.data.interp.isAdjective() &&
+      !t.parent.data.interp.isInstrumental() &&
+      !uEq(t.parent.data.rel, 'xcomp'),
   )
 
   reportIf(
     `conj без сполучника чи коми`,
-    (t) => g.isConjWithoutCcOrPunct(t) && t.node.rel !== 'conj:svc',
+    (t) => g.isConjWithoutCcOrPunct(t) && t.data.rel !== 'conj:svc',
   )
 
   reportIf(
     `conj без розділового чи сполучника (може conj:svc?)`,
     (t) =>
       g.isConjWithoutCcOrPunct(t) &&
-      t.node.rel !== 'conj:svc' &&
+      t.data.rel !== 'conj:svc' &&
       [
         f.VerbType.indicative,
         f.VerbType.infinitive,
         f.VerbType.imperative,
-      ].includes(t.node.interp.getFeature(f.VerbType)),
+      ].includes(t.data.interp.getFeature(f.VerbType)),
   )
 
   reportIf(
     `advcl без сполучування (може advcl:svc?)`,
     (t) =>
-      uEq(t.node.rel, 'advcl') &&
-      t.node.rel !== 'advcl:sp' &&
-      t.node.rel !== 'advcl:svc' &&
+      uEq(t.data.rel, 'advcl') &&
+      t.data.rel !== 'advcl:sp' &&
+      t.data.rel !== 'advcl:svc' &&
       [
         f.VerbType.indicative,
         f.VerbType.infinitive,
         f.VerbType.imperative,
         f.VerbType,
-      ].includes(t.node.interp.getFeature(f.VerbType)) &&
+      ].includes(t.data.interp.getFeature(f.VerbType)) &&
       !t.children.some(
         (x) =>
-          uEqSome(x.node.rel, ['mark']) ||
-          x.node.interp.isRelative() ||
-          x.node.interp.isPreposition(), // замість просто зробити
+          uEqSome(x.data.rel, ['mark']) ||
+          x.data.interp.isRelative() ||
+          x.data.interp.isPreposition(), // замість просто зробити
       ),
   )
 
   xreportIf(
     `ccomp:svc-test`,
     (t) =>
-      t.node.rel === 'ccomp' &&
+      t.data.rel === 'ccomp' &&
       [
         f.VerbType.indicative,
         f.VerbType.infinitive,
         f.VerbType.imperative,
-      ].includes(t.node.interp.getFeature(f.VerbType)) &&
+      ].includes(t.data.interp.getFeature(f.VerbType)) &&
       !t.children.some(
         (x) =>
-          uEqSome(x.node.rel, ['mark']) ||
-          x.node.interp.isRelative() ||
-          x.node.interp.isPreposition(), // замість просто зробити
+          uEqSome(x.data.rel, ['mark']) ||
+          x.data.interp.isRelative() ||
+          x.data.interp.isPreposition(), // замість просто зробити
       ),
   )
 
   xreportIf(
     `xcomp:svc-test`,
     (t) =>
-      t.node.rel === 'xcomp' &&
-      !t.parent.node.interp.isReversive() &&
+      t.data.rel === 'xcomp' &&
+      !t.parent.data.interp.isReversive() &&
       [
         f.VerbType.indicative,
         f.VerbType.infinitive,
         f.VerbType.imperative,
-      ].includes(t.node.interp.getFeature(f.VerbType)) &&
+      ].includes(t.data.interp.getFeature(f.VerbType)) &&
       !t.children.some(
         (x) =>
-          uEqSome(x.node.rel, ['mark']) ||
-          x.node.interp.isRelative() ||
-          x.node.interp.isPreposition(), // замість просто зробити
+          uEqSome(x.data.rel, ['mark']) ||
+          x.data.interp.isRelative() ||
+          x.data.interp.isPreposition(), // замість просто зробити
       ) &&
-      !g.SOME_FREQUENT_TRANSITIVE_VERBS.includes(t.parent.node.interp.lemma) &&
-      !t.parent.node.interp.isAdjective(),
+      !g.SOME_FREQUENT_TRANSITIVE_VERBS.includes(t.parent.data.interp.lemma) &&
+      !t.parent.data.interp.isAdjective(),
   )
 
   reportIf(
     `compound:svc неочікуваний`,
-    (t) => t.node.rel === 'compound:svc' && !g.isCompounSvcCandidate(t),
+    (t) => t.data.rel === 'compound:svc' && !g.isCompounSvcCandidate(t),
   )
 
   reportIf(
     `кандидат на compound:svc`,
-    (t) => g.isCompounSvcCandidate(t) && t.node.rel !== 'compound:svc',
+    (t) => g.isCompounSvcCandidate(t) && t.data.rel !== 'compound:svc',
   )
 
   xreportIf(
     `не csubj з модального прислівника `,
     (t) =>
       !t.isRoot() &&
-      t.parent.node.interp.isAdverb() &&
-      t.node.interp.isInfinitive() &&
-      !uEqSome(t.node.rel, ['csubj', 'conj']) &&
-      !t.children.some((x) => uEqSome(x.node.rel, ['mark'])),
+      t.parent.data.interp.isAdverb() &&
+      t.data.interp.isInfinitive() &&
+      !uEqSome(t.data.rel, ['csubj', 'conj']) &&
+      !t.children.some((x) => uEqSome(x.data.rel, ['mark'])),
   )
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1658,18 +1658,18 @@ export function validateSentenceSyntax(
   reportIf(
     `неочікувана реляція в прийменник`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isPreposition() &&
-      !uEqSome(t.node.rel, ['case', 'conj', 'fixed']) &&
-      !t.children.some((x) => uEqSome(x.node.rel, ['fixed'])),
+      t.data.rel &&
+      t.data.interp.isPreposition() &&
+      !uEqSome(t.data.rel, ['case', 'conj', 'fixed']) &&
+      !t.children.some((x) => uEqSome(x.data.rel, ['fixed'])),
   )
 
   reportIf(
     `неочікувана реляція в частку`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isParticle() &&
-      !uEqSome(t.node.rel, [
+      t.data.rel &&
+      t.data.interp.isParticle() &&
+      !uEqSome(t.data.rel, [
         'discourse',
         'advmod',
         'fixed',
@@ -1677,8 +1677,8 @@ export function validateSentenceSyntax(
         'goeswith',
       ]) &&
       !(
-        uEqSome(t.node.rel, ['aux']) &&
-        g.CONDITIONAL_AUX_LEMMAS.includes(t.node.interp.lemma)
+        uEqSome(t.data.rel, ['aux']) &&
+        g.CONDITIONAL_AUX_LEMMAS.includes(t.data.interp.lemma)
       ),
     // && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
@@ -1686,69 +1686,69 @@ export function validateSentenceSyntax(
   reportIf(
     `неочікувана реляція в вигук`,
     (t) =>
-      t.node.rel &&
-      !t.node.isGraft &&
-      t.node.interp.isInterjection() &&
-      !uEqSome(t.node.rel, ['discourse', 'flat:repeat']),
+      t.data.rel &&
+      !t.data.isGraft &&
+      t.data.interp.isInterjection() &&
+      !uEqSome(t.data.rel, ['discourse', 'flat:repeat']),
   )
 
   xreportIf(
     `неочікувана реляція в символ`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isSymbol() &&
-      !uEqSome(t.node.rel, ['discourse']),
+      t.data.rel &&
+      t.data.interp.isSymbol() &&
+      !uEqSome(t.data.rel, ['discourse']),
   )
 
   reportIf(
     `неочікувана реляція в :beforeadj`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isBeforeadj() &&
-      (t.node.rel !== 'compound' ||
-        t.parent.node.index < t.node.index ||
-        !t.parent.node.interp.isAdjective()),
+      t.data.rel &&
+      t.data.interp.isBeforeadj() &&
+      (t.data.rel !== 'compound' ||
+        t.parent.data.index < t.data.index ||
+        !t.parent.data.interp.isAdjective()),
   )
 
   reportIf(
     `:beforeadj не має дефіса-залежника`,
     (t) =>
-      t.node.interp.isBeforeadj() &&
+      t.data.interp.isBeforeadj() &&
       !t.isRoot() &&
       !t.children.some(
         (x) =>
-          /^[−\-\–\—]$/.test(x.node.interp.lemma) &&
-          x.node.index > t.node.index,
+          /^[−\-\–\—]$/.test(x.data.interp.lemma) &&
+          x.data.index > t.data.index,
       ) &&
-      !t.node.hasTag('no_dash'),
+      !t.data.hasTag('no_dash'),
   )
 
   reportIf(
     `неочікувана реляція в PUNCT`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isPunctuation() &&
-      !uEqSome(t.node.rel, ['punct']),
+      t.data.rel &&
+      t.data.interp.isPunctuation() &&
+      !uEqSome(t.data.rel, ['punct']),
   )
 
   reportIf(
     `неочікувана реляція в дієприслівник`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isConverb() &&
-      !uEqSome(t.node.rel, ['advcl', 'conj', 'parataxis:discourse']) &&
+      t.data.rel &&
+      t.data.interp.isConverb() &&
+      !uEqSome(t.data.rel, ['advcl', 'conj', 'parataxis:discourse']) &&
       !g.isAdverbialAcl(t) &&
       !(
-        uEq(t.node.rel, 'cop') && g.COPULA_LEMMAS.includes(t.node.interp.lemma)
+        uEq(t.data.rel, 'cop') && g.COPULA_LEMMAS.includes(t.data.interp.lemma)
       ),
   )
 
   reportIf(
     `неочікувана реляція в AUX`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isAuxillary() &&
-      !uEqSome(t.node.rel, ['aux', 'cop']),
+      t.data.rel &&
+      t.data.interp.isAuxillary() &&
+      !uEqSome(t.data.rel, ['aux', 'cop']),
     // && !(uEq(t.node.rel, 'aux') && CONDITIONSL_BY_LEMMAS.includes(t.node.interp.lemma))
     // && !t.children.some(x => uEqSome(x.node.rel, ['fixed']))
   )
@@ -1756,25 +1756,25 @@ export function validateSentenceSyntax(
   reportIf(
     `неочікувана реляція в сурядний`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isCoordinating() &&
-      !uEqSome(t.node.rel, ['cc', 'fixed']),
+      t.data.rel &&
+      t.data.interp.isCoordinating() &&
+      !uEqSome(t.data.rel, ['cc', 'fixed']),
   )
 
   reportIf(
     `неочікувана реляція в SCONJ`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isSubordinative() &&
-      !uEqSome(t.node.rel, ['mark', 'fixed']),
+      t.data.rel &&
+      t.data.interp.isSubordinative() &&
+      !uEqSome(t.data.rel, ['mark', 'fixed']),
   )
 
   xreportIf(
     `неочікувана реляція в іменник`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isNoun() &&
-      !uEqSome(t.node.rel, [
+      t.data.rel &&
+      t.data.interp.isNoun() &&
+      !uEqSome(t.data.rel, [
         'nsubj',
         'nmod',
         'appos',
@@ -1789,36 +1789,36 @@ export function validateSentenceSyntax(
         'parataxis:discourse',
       ]) &&
       !(
-        uEqSome(t.node.rel, ['advcl']) &&
-        t.children.some((x) => uEqSome(x.node.rel, ['mark']))
+        uEqSome(t.data.rel, ['advcl']) &&
+        t.children.some((x) => uEqSome(x.data.rel, ['mark']))
       ) &&
-      !uEqSome(t.node.rel, [...g.CLAUSAL_MODIFIERS]), // todo
+      !uEqSome(t.data.rel, [...g.CLAUSAL_MODIFIERS]), // todo
   )
 
   reportIf(
     `неочікувана реляція в дієслово`,
     (t) =>
-      t.node.rel &&
-      !t.node.isGraft &&
-      t.node.interp.isVerb() &&
-      !t.node.interp.isAuxillary() &&
-      !uEqSome(t.node.rel, [...g.CLAUSE_RELS, 'conj']) &&
+      t.data.rel &&
+      !t.data.isGraft &&
+      t.data.interp.isVerb() &&
+      !t.data.interp.isAuxillary() &&
+      !uEqSome(t.data.rel, [...g.CLAUSE_RELS, 'conj']) &&
       !['compound:svc', 'orphan', 'flat:repeat', 'flat:sibl'].includes(
-        t.node.rel,
+        t.data.rel,
       ) &&
-      !(uEq(t.node.rel, 'appos') /* && t.node.interp.isInfinitive() */) &&
-      !(uEq(t.node.rel, 'obl') && t.node.hasTag('inf_prep')),
+      !(uEq(t.data.rel, 'appos') /* && t.node.interp.isInfinitive() */) &&
+      !(uEq(t.data.rel, 'obl') && t.data.hasTag('inf_prep')),
   )
 
   reportIf(
     `неочікувана реляція в DET`,
     (t) =>
-      t.node.rel &&
+      t.data.rel &&
       // && !t.node.isPromoted
-      toUd(t.node.interp).pos === 'DET' && // todo: .isDet()
-      !uEqSome(t.node.rel, ['det', 'conj', 'fixed', 'xcomp:sp', 'advcl:sp']) &&
-      !uEqSome(t.node.rel, ['nsubj', 'obj', 'iobj', 'obl', 'nmod']) &&
-      !uEqSome(t.node.rel, ['advmod:det', 'flat:abs']) &&
+      toUd(t.data.interp).pos === 'DET' && // todo: .isDet()
+      !uEqSome(t.data.rel, ['det', 'conj', 'fixed', 'xcomp:sp', 'advcl:sp']) &&
+      !uEqSome(t.data.rel, ['nsubj', 'obj', 'iobj', 'obl', 'nmod']) &&
+      !uEqSome(t.data.rel, ['advmod:det', 'flat:abs']) &&
       !g.findRelativeClauseRoot(t),
   )
 
@@ -1826,23 +1826,23 @@ export function validateSentenceSyntax(
   xreportIf(
     `неочікувана реляція в кількісний числівник`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isCardinalNumeral() &&
-      !t.node.isPromoted &&
-      !uEqSome(t.node.rel, ['nummod', 'conj', 'flat:title']) &&
+      t.data.rel &&
+      t.data.interp.isCardinalNumeral() &&
+      !t.data.isPromoted &&
+      !uEqSome(t.data.rel, ['nummod', 'conj', 'flat:title']) &&
       !(
-        toUd(t.node.interp).pos === 'DET' &&
-        uEqSome(t.node.rel, ['det:nummod', 'det:numgov', 'conj'])
+        toUd(t.data.interp).pos === 'DET' &&
+        uEqSome(t.data.rel, ['det:nummod', 'det:numgov', 'conj'])
       ),
   )
 
   reportIf(
     `неочікувана реляція в кличний іменник`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isVocative() &&
-      t.node.interp.isNounish() &&
-      !uEqSome(t.node.rel, [
+      t.data.rel &&
+      t.data.interp.isVocative() &&
+      t.data.interp.isNounish() &&
+      !uEqSome(t.data.rel, [
         'vocative',
         'flat:name',
         'conj',
@@ -1856,10 +1856,10 @@ export function validateSentenceSyntax(
   reportIf(
     `неочікувана реляція в називний іменник`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isNominative() &&
-      t.node.interp.isNounish() &&
-      uEqSome(t.node.rel, ['nmod', 'orphan']),
+      t.data.rel &&
+      t.data.interp.isNominative() &&
+      t.data.interp.isNounish() &&
+      uEqSome(t.data.rel, ['nmod', 'orphan']),
     // && !uEqSome(t.node.rel, ['nsubj', 'flat:title', 'flat:name',
     //   'flat:repeat', 'parataxis', 'conj', 'appos', 'expl',
     // ])
@@ -1869,40 +1869,40 @@ export function validateSentenceSyntax(
   reportIf(
     `неочікувана реляція в :stem`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isStem() &&
-      !uEqSome(t.node.rel, ['compound']),
+      t.data.rel &&
+      t.data.interp.isStem() &&
+      !uEqSome(t.data.rel, ['compound']),
   )
 
   reportIf(
     `неочікувана реляція в прислівник з іменника`,
     (t) =>
       !t.isRoot() &&
-      t.node.interp.isAdverb() &&
-      t.parent.node.interp.isNounish() &&
-      t.node.rel !== 'acl:adv' &&
-      t.node.rel !== 'advmod:gerund' && // ліміт на пости туди
-      !t.node.interp.isAdjectiveAsNoun() && // цілком нове
+      t.data.interp.isAdverb() &&
+      t.parent.data.interp.isNounish() &&
+      t.data.rel !== 'acl:adv' &&
+      t.data.rel !== 'advmod:gerund' && // ліміт на пости туди
+      !t.data.interp.isAdjectiveAsNoun() && // цілком нове
       !g.thisOrConjHead(t, (x) => uEqSome(x.node.rel, ['obl'])) &&
-      !uEqSome(t.node.rel, ['discourse', 'parataxis', 'orphan']) &&
-      !uEqSome(t.parent.node.rel, ['orphan']) &&
-      !t.parent.children.some((x) => uEqSome(x.node.rel, ['nsubj', 'cop'])) &&
-      !(['не'].includes(t.node.interp.lemma) && t.node.interp.isNegative()) &&
+      !uEqSome(t.data.rel, ['discourse', 'parataxis', 'orphan']) &&
+      !uEqSome(t.parent.data.rel, ['orphan']) &&
+      !t.parent.children.some((x) => uEqSome(x.data.rel, ['nsubj', 'cop'])) &&
+      !(['не'].includes(t.data.interp.lemma) && t.data.interp.isNegative()) &&
       !g.isQuantitativeAdverbModifier(t) &&
       !g.isModalAdv(t) &&
-      !g.NOUN_MODIFIABLE_ADVS.includes(t.node.interp.lemma) &&
-      !(uEqSome(t.node.rel, g.CLAUSAL_MODIFIERS) && g.hasPredication(t)) &&
+      !g.NOUN_MODIFIABLE_ADVS.includes(t.data.interp.lemma) &&
+      !(uEqSome(t.data.rel, g.CLAUSAL_MODIFIERS) && g.hasPredication(t)) &&
       // [росте] ліщина колючого горіха, ялини , де-не-де берізки, берестина
-      !(uEqSome(t.node.rel, ['conj']) && g.hasChild(t, 'flat:sibl')),
+      !(uEqSome(t.data.rel, ['conj']) && g.hasChild(t, 'flat:sibl')),
   )
 
   xreportIf(
     `неочікувана реляція в прислівник`,
     (t) =>
-      t.node.rel &&
-      t.node.interp.isAdverb() &&
-      !t.parent.node.interp.isNounish() &&
-      !uEqSome(t.node.rel, ['advmod', 'discourse', 'conj', 'fixed']) &&
+      t.data.rel &&
+      t.data.interp.isAdverb() &&
+      !t.parent.data.interp.isNounish() &&
+      !uEqSome(t.data.rel, ['advmod', 'discourse', 'conj', 'fixed']) &&
       !g.isModalAdv(t),
   )
 
@@ -1911,12 +1911,12 @@ export function validateSentenceSyntax(
   tmpxreportIf(
     `означення при займеннику`,
     (t) =>
-      uEqSome(t.node.rel, ['amod', 'det']) &&
-      !g.isNumericModifier(t.node.rel) &&
-      t.parent.node.interp.isNoun() &&
-      t.parent.node.interp.isPronominal() &&
-      !t.parent.node.interp.isIndefinite() &&
-      !t.parent.node.interp.isGeneral(),
+      uEqSome(t.data.rel, ['amod', 'det']) &&
+      !g.isNumericModifier(t.data.rel) &&
+      t.parent.data.interp.isNoun() &&
+      t.parent.data.interp.isPronominal() &&
+      !t.parent.data.interp.isIndefinite() &&
+      !t.parent.data.interp.isGeneral(),
     // && ![
     //   ['весь', 'це'],
     // ].some(([adjLemma, pronLemma]) => t.node.interp.lemma === adjLemma
@@ -1927,54 +1927,54 @@ export function validateSentenceSyntax(
   reportIf(
     `nummod праворуч`,
     (t) =>
-      isNumericModifier(t.node.rel) &&
+      isNumericModifier(t.data.rel) &&
       node2index.get(t) > node2index.get(t.parent) &&
       !(
-        t.parent.node.interp.isGenitive() &&
-        t.parent.node.interp.isPlural() &&
-        t.node.interp.isAccusative()
+        t.parent.data.interp.isGenitive() &&
+        t.parent.data.interp.isPlural() &&
+        t.data.interp.isAccusative()
       ) &&
-      !g.CURRENCY_SYMBOLS.includes(t.parent.node.interp.lemma) &&
-      !t.node.hasTag('right-nummod'),
+      !g.CURRENCY_SYMBOLS.includes(t.parent.data.interp.lemma) &&
+      !t.data.hasTag('right-nummod'),
   )
 
   xreportIf(
     `підрядне наслідку — головне`,
     (t) =>
-      uEqSome(t.node.rel, ['advcl']) &&
+      uEqSome(t.data.rel, ['advcl']) &&
       // todo: generalize
       t.children.some(
         (x) =>
-          x.node.interp.lemma === 'тому' && x.node.interp.isDemonstrative(),
+          x.data.interp.lemma === 'тому' && x.data.interp.isDemonstrative(),
       ),
   )
 
   reportIf(
     `порядковий праворуч`,
     (t) =>
-      /^\d+$/.test(t.node.form) &&
-      uEqSome(t.node.rel, ['amod']) &&
-      t.node.interp.isOrdinalNumeral() &&
-      t.node.index > t.parent.node.index,
+      /^\d+$/.test(t.data.form) &&
+      uEqSome(t.data.rel, ['amod']) &&
+      t.data.interp.isOrdinalNumeral() &&
+      t.data.index > t.parent.data.index,
   )
 
   reportIf(
     `неочікуваний відмінок nmod`,
     (t) =>
-      uEqSome(t.node.rel, ['nmod']) &&
-      t.node.interp.isAccusative() &&
+      uEqSome(t.data.rel, ['nmod']) &&
+      t.data.interp.isAccusative() &&
       !g.hasChild(t, 'case') &&
       !t.children.some(
-        (x) => x.node.interp.lemma === '/' && x.node.index < t.node.index,
+        (x) => x.data.interp.lemma === '/' && x.data.index < t.data.index,
       ) &&
-      !(t.parent.node.interp.isParticiple() && t.parent.node.interp.isActive()),
+      !(t.parent.data.interp.isParticiple() && t.parent.data.interp.isActive()),
   )
 
   xreportIf(
     `неочікуваний орудний nmod`,
     (t) =>
-      uEqSome(t.node.rel, ['nmod']) &&
-      t.node.interp.isInstrumental() &&
+      uEqSome(t.data.rel, ['nmod']) &&
+      t.data.interp.isInstrumental() &&
       !g.hasChild(t, 'case'),
     // && !g.SOME_DATIVE_VALENCY_NOUNS.has(t.parent.node.interp.lemma)
   )
@@ -1982,48 +1982,48 @@ export function validateSentenceSyntax(
   reportIf(
     `неочікуваний давальний nmod`,
     (t) =>
-      uEqSome(t.node.rel, ['nmod']) &&
-      t.node.interp.isDative() &&
-      !g.SOME_DATIVE_VALENCY_NOUNS.has(t.parent.node.interp.lemma),
+      uEqSome(t.data.rel, ['nmod']) &&
+      t.data.interp.isDative() &&
+      !g.SOME_DATIVE_VALENCY_NOUNS.has(t.parent.data.interp.lemma),
   )
 
   reportIf(
     `неочікуваний відмінок прикметника-присудка`,
     (t) =>
       g.hasChild(t, 'nsubj') &&
-      t.node.interp.isAdjective() &&
-      !t.node.isPromoted &&
-      !t.node.interp.isNominative() &&
-      !t.node.interp.isDative() && // слава Україні
-      !(t.node.interp.isInstrumental() && g.hasCopula(t)),
+      t.data.interp.isAdjective() &&
+      !t.data.isPromoted &&
+      !t.data.interp.isNominative() &&
+      !t.data.interp.isDative() && // слава Україні
+      !(t.data.interp.isInstrumental() && g.hasCopula(t)),
   )
 
   reportIf(
     `родовий прямий додаток без заперечення`,
     (t) =>
-      uEqSome(t.node.rel, ['obj']) &&
+      uEqSome(t.data.rel, ['obj']) &&
       g.thisOrGovernedCase(t) === f.Case.genitive &&
-      t.parent.node.interp.isVerbial() &&
+      t.parent.data.interp.isVerbial() &&
       !g.isNegated(t.parent) &&
-      !t.parent.node.interp.isReversive() && // злякався кабана, стосується жителя
+      !t.parent.data.interp.isReversive() && // злякався кабана, стосується жителя
       !g.isQuantitativeAdverbModified(t) && // багато дощу
       !(
-        t.parent.node.interp.isInfinitive() &&
+        t.parent.data.interp.isInfinitive() &&
         t.parent.parent &&
-        t.parent.parent.children.some((x) => x.node.interp.isNegative())
+        t.parent.parent.children.some((x) => x.data.interp.isNegative())
       ) &&
       // пішло до 10 штук
       !t.children.some(
-        (x) => uEq(x.node.rel, 'nummod') && g.hasChild(x, 'case'),
+        (x) => uEq(x.data.rel, 'nummod') && g.hasChild(x, 'case'),
       ) &&
       // same form in acc exists
       analyzer
-        .tag(t.node.form)
+        .tag(t.data.form)
         .some(
           (x) =>
             x.isAccusative() &&
             !x.isGrammaticallyAnimate() &&
-            x.equalsByLemmaAndFeatures(t.node.interp, [
+            x.equalsByLemmaAndFeatures(t.data.interp, [
               f.Pos,
               f.MorphNumber,
               f.Gender,
@@ -2035,16 +2035,16 @@ export function validateSentenceSyntax(
   xreportIf(
     `омонімічний родовому знахідний прямий додаток без заперечення`,
     (t) =>
-      uEqSome(t.node.rel, ['obj']) &&
+      uEqSome(t.data.rel, ['obj']) &&
       g.thisOrGovernedCase(t) === f.Case.accusative &&
       !g.isNegated(t.parent) &&
       // same form in gen exists
       analyzer
-        .tag(t.node.getForm())
+        .tag(t.data.getForm())
         .some(
           (x) =>
             x.isGenitive() &&
-            x.equalsByLemmaAndFeatures(t.node.interp, [
+            x.equalsByLemmaAndFeatures(t.data.interp, [
               f.Pos,
               f.Animacy,
               f.Gender,
@@ -2057,18 +2057,18 @@ export function validateSentenceSyntax(
   xreportIf(
     `омонімічний родовому знахідний прямий додаток із запереченням`,
     (t) =>
-      uEqSome(t.node.rel, ['obj']) &&
+      uEqSome(t.data.rel, ['obj']) &&
       g.thisOrGovernedCase(t) === f.Case.accusative &&
       g.isNegated(t.parent) &&
-      !t.node.interp.isPersonal() && // temp
-      !['ніхто', 'ніщо'].includes(t.node.interp.lemma) && // temp
+      !t.data.interp.isPersonal() && // temp
+      !['ніхто', 'ніщо'].includes(t.data.interp.lemma) && // temp
       // same form in gen exists
       analyzer
-        .tag(t.node.getForm())
+        .tag(t.data.getForm())
         .some(
           (x) =>
             x.isGenitive() &&
-            x.equalsByLemmaAndFeatures(t.node.interp, [
+            x.equalsByLemmaAndFeatures(t.data.interp, [
               f.Pos,
               f.Animacy,
               f.Gender,
@@ -2086,29 +2086,29 @@ export function validateSentenceSyntax(
   xreportIf(
     `вказують як синонім`,
     (t) =>
-      (t.node.interp.isNounish() || t.node.interp.isAdjective()) &&
-      (t.node.interp.isNominative() || t.node.interp.isAccusative()) &&
-      t.children.some((x) => x.node.interp.lemma === 'як'),
+      (t.data.interp.isNounish() || t.data.interp.isAdjective()) &&
+      (t.data.interp.isNominative() || t.data.interp.isAccusative()) &&
+      t.children.some((x) => x.data.interp.lemma === 'як'),
   )
 
   reportIf(
     `„більш/менш ніж“ не fixed`,
     (t) =>
-      g.COMPARATIVE_SCONJS.includes(t.node.form) &&
-      tokens[t.node.index - 1] &&
-      g.COMPARATIVE_ADVS.includes(tokens[t.node.index - 1].form) &&
-      !uEq(t.node.rel, 'fixed'),
+      g.COMPARATIVE_SCONJS.includes(t.data.form) &&
+      tokens[t.data.index - 1] &&
+      g.COMPARATIVE_ADVS.includes(tokens[t.data.index - 1].form) &&
+      !uEq(t.data.rel, 'fixed'),
   )
 
   reportIf(
     `advcl під’єднане до порівняльного прислівника`,
     (t) =>
       !t.isRoot() &&
-      (t.parent.node.interp.isComparable() ||
-        t.parent.node.interp.isAdjective()) &&
+      (t.parent.data.interp.isComparable() ||
+        t.parent.data.interp.isAdjective()) &&
       g.hasChild(t, 'advcl') &&
-      t.node.interp.isAdverb() &&
-      t.node.interp.isComparative(),
+      t.data.interp.isAdverb() &&
+      t.data.interp.isComparative(),
   )
 
   // reportIf2(`advcl під’єднане до порівняльного прислівника`,
@@ -2123,7 +2123,7 @@ export function validateSentenceSyntax(
     `питальний займенник без „?“`,
     (t) =>
       !t.isRoot() &&
-      t.node.interp.isInterrogative() &&
+      t.data.interp.isInterrogative() &&
       !g.thisOrConjHead(t, (x) =>
         x.children.some((xx) => xx.node.interp.lemma.includes('?')),
       ) &&
@@ -2132,14 +2132,14 @@ export function validateSentenceSyntax(
       ) &&
       !mu(t.walkThisAndUp0()) &&
       //   .some(x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
-      !t.node.hasTag('no_qmark'),
+      !t.data.hasTag('no_qmark'),
   )
 
   reportIf(
     `непитальний займенник з „?“`,
     (t) =>
       !t.isRoot() &&
-      (t.node.interp.isRelative() || t.node.interp.isIndefinite()) &&
+      (t.data.interp.isRelative() || t.data.interp.isIndefinite()) &&
       // && !t.node.interp.isInterrogative()
       g.thisOrConjHead(t, (x) =>
         x.children.some((xx) => xx.node.interp.lemma.includes('?')),
@@ -2152,8 +2152,8 @@ export function validateSentenceSyntax(
   reportIf(
     `неочікуваний advmod`,
     (t) =>
-      uEq(t.node.rel, 'advmod') &&
-      t.node.rel !== 'advmod:amtgov' &&
+      uEq(t.data.rel, 'advmod') &&
+      t.data.rel !== 'advmod:amtgov' &&
       !g.isFeasibleAdvmod(t.parent, t),
   )
 
@@ -2166,24 +2166,24 @@ export function validateSentenceSyntax(
   xreportIf(
     `не flat:title в „№“`,
     (t) =>
-      t.node.interp.lemma.includes('№') &&
+      t.data.interp.lemma.includes('№') &&
       !t.isRoot() &&
-      !uEqSome(t.node.rel, ['flat:title', 'conj']),
+      !uEqSome(t.data.rel, ['flat:title', 'conj']),
   )
 
   reportIf(
     `не flat:title з „№“ в числівник`,
     (t) =>
       !t.isRoot() &&
-      t.parent.node.interp.lemma.includes('№') &&
-      t.node.interp.isCardinalNumeral() &&
-      !uEqSome(t.node.rel, ['flat:title']),
+      t.parent.data.interp.lemma.includes('№') &&
+      t.data.interp.isCardinalNumeral() &&
+      !uEqSome(t.data.rel, ['flat:title']),
   )
 
   reportIf(
     `еліпс наперед`,
     (t) =>
-      t.node.comment && /еліпс.* наперед/.test(t.node.comment.toLowerCase()),
+      t.data.comment && /еліпс.* наперед/.test(t.data.comment.toLowerCase()),
   )
 
   reportIf2(
@@ -2232,23 +2232,23 @@ export function validateSentenceSyntax(
   xreportIf2(
     `неузгодження acl`,
     ({ r, c }) =>
-      uEq(r, 'acl') && c.some((x) => x.node.interp.lemma === 'який'),
+      uEq(r, 'acl') && c.some((x) => x.data.interp.lemma === 'який'),
     // &&
   )
 
   reportIf(
     `flat:sibl не з conj / не з присудка`,
     (t) =>
-      t.node.rel === 'flat:sibl' &&
-      !uEq(t.parent.node.rel, 'conj') &&
-      !t.parent.children.some((x) => uEqSome(x.node.rel, ['conj', 'nsubj'])),
+      t.data.rel === 'flat:sibl' &&
+      !uEq(t.parent.data.rel, 'conj') &&
+      !t.parent.children.some((x) => uEqSome(x.data.rel, ['conj', 'nsubj'])),
   )
 
   xreportIf2(
     `іменник-числівник має неочікувані залежники`,
     ({ i, c }) =>
       i.isNounNumeral() &&
-      (c.length > 1 || (c.length && c[0].node.rel !== 'nmod')),
+      (c.length > 1 || (c.length && c[0].data.rel !== 'nmod')),
   )
 
   reportIf2(
@@ -2260,11 +2260,11 @@ export function validateSentenceSyntax(
   reportIf(
     `більше ніж один тип імені в пучку`,
     (t) =>
-      !t.node.hasTag('multi_names') &&
+      !t.data.hasTag('multi_names') &&
       Object.values(
         groupBy(
-          t.children.filter((x) => x.node.rel === 'flat:name'),
-          (x) => x.node.interp.getFeature(f.NameType),
+          t.children.filter((x) => x.data.rel === 'flat:name'),
+          (x) => x.data.interp.getFeature(f.NameType),
         ),
       ).some((x) => x.length > 1),
   )
@@ -2278,7 +2278,7 @@ export function validateSentenceSyntax(
 
   reportIf(
     'obj/iobj має прийменник',
-    (t) => uEqSome(t.node.rel, ['obj', 'iobj']) && g.hasChild(t, 'case'),
+    (t) => uEqSome(t.data.rel, ['obj', 'iobj']) && g.hasChild(t, 'case'),
   )
 
   // disablable
@@ -2286,104 +2286,104 @@ export function validateSentenceSyntax(
   xreportIf(
     `неорудний obl без прийменника`,
     (t) =>
-      uEq(t.node.rel, 'obl') &&
-      !t.node.hasTag('prepless_obl') &&
-      !t.node.isPromoted &&
+      uEq(t.data.rel, 'obl') &&
+      !t.data.hasTag('prepless_obl') &&
+      !t.data.isPromoted &&
       !hasChildrenOfUrel(t, 'case') &&
-      !t.node.interp.isInstrumental() &&
+      !t.data.interp.isInstrumental() &&
       !(
-        (t.node.interp.isAccusative() || t.node.interp.isGenitive()) &&
-        g.TEMPORAL_ACCUSATIVES.includes(t.node.interp.lemma)
+        (t.data.interp.isAccusative() || t.data.interp.isGenitive()) &&
+        g.TEMPORAL_ACCUSATIVES.includes(t.data.interp.lemma)
       ),
   )
 
   xreportIf(
     `орудний obl без прийменника`,
     (t) =>
-      uEq(t.node.rel, 'obl') &&
-      !t.node.hasTag('prepless_obl') &&
+      uEq(t.data.rel, 'obl') &&
+      !t.data.hasTag('prepless_obl') &&
       !hasChildrenOfUrel(t, 'case') &&
-      t.node.interp.isInstrumental(),
+      t.data.interp.isInstrumental(),
   )
 
   reportIf(
     `неочікуваний відмінок obj`,
     (t) =>
-      uEqSome(t.node.rel, ['obj']) &&
-      !t.node.isGraft &&
-      !(t.node.interp.isForeign() && !t.node.interp.hasCase()) &&
+      uEqSome(t.data.rel, ['obj']) &&
+      !t.data.isGraft &&
+      !(t.data.interp.isForeign() && !t.data.interp.hasCase()) &&
       g.thisOrGovernedCase(t) !== f.Case.accusative &&
       g.thisOrGovernedCase(t) !== f.Case.genitive &&
       !(
         (
           g.thisOrGovernedCase(t) === f.Case.instrumental &&
-          g.INS_VALENCY_VERBS.includes(t.parent.node.interp.lemma)
+          g.INS_VALENCY_VERBS.includes(t.parent.data.interp.lemma)
         ) // ~
       ) &&
       // legacy
       !(
-        t.node.interp.isDative() &&
-        !t.parent.children.some((x) => uEq(x.node.rel, 'iobj'))
+        t.data.interp.isDative() &&
+        !t.parent.children.some((x) => uEq(x.data.rel, 'iobj'))
       ) &&
-      !t.children.some((x) => uEqSome(x.node.rel, ['flat:abs'])),
+      !t.children.some((x) => uEqSome(x.data.rel, ['flat:abs'])),
     // && !t.parent.node.interp.isReversive()  // todo
   )
 
   reportIf(
     `орудний obl в орудному дієслові`,
     (t) =>
-      uEqSome(t.node.rel, ['obl']) &&
+      uEqSome(t.data.rel, ['obl']) &&
       g.thisOrGovernedCase(t) === f.Case.instrumental &&
-      g.INS_VALENCY_VERBS.includes(t.parent.node.interp.lemma),
+      g.INS_VALENCY_VERBS.includes(t.parent.data.interp.lemma),
   )
 
   reportIf(
     `неочікуваний відмінок iobj`,
     (t) =>
-      uEq(t.node.rel, 'iobj') &&
-      !t.node.isGraft &&
+      uEq(t.data.rel, 'iobj') &&
+      !t.data.isGraft &&
       g.thisOrGovernedCase(t) !== f.Case.dative &&
-      !(t.node.interp.isForeign() && !t.node.interp.hasCase()) &&
+      !(t.data.interp.isForeign() && !t.data.interp.hasCase()) &&
       !(
         t.parent.children.some(
           (x) =>
-            uEq(x.node.rel, 'obj') &&
+            uEq(x.data.rel, 'obj') &&
             g.thisOrGovernedCase(x) === f.Case.genitive,
         ) && g.thisOrGovernedCase(t) === f.Case.accusative
       ) &&
       !g.hasSiblink(t, 'ccomp') &&
-      !(t.node.interp.isNominative() && g.hasChild(t, 'flat:abs')),
+      !(t.data.interp.isNominative() && g.hasChild(t, 'flat:abs')),
   )
 
   reportIf(
     `неочікуваний відмінок obl`,
     (t) =>
-      uEq(t.node.rel, 'obl') &&
-      !t.node.isGraft &&
-      !(t.node.interp.isForeign() && !t.node.interp.hasCase()) &&
+      uEq(t.data.rel, 'obl') &&
+      !t.data.isGraft &&
+      !(t.data.interp.isForeign() && !t.data.interp.hasCase()) &&
       (g.thisOrGovernedCase(t) === f.Case.nominative ||
         g.thisOrGovernedCase(t) === f.Case.vocative) &&
       !g.isDenUDen(t) &&
       !(
-        t.node.interp.isNominative() &&
-        t.children.some((x) => uEqSome(x.node.rel, ['flat:abs']))
+        t.data.interp.isNominative() &&
+        t.children.some((x) => uEqSome(x.data.rel, ['flat:abs']))
       ) &&
-      !(t.node.interp.isNominative() && ['сам'].includes(t.node.interp.lemma)),
+      !(t.data.interp.isNominative() && ['сам'].includes(t.data.interp.lemma)),
   )
 
   reportIf(
     `cop/aux в наказовому`,
     (t) =>
-      uEqSome(t.node.rel, ['cop', 'aux']) &&
-      t.node.interp.isImperative() &&
-      !t.node.hasTag('ok-imp-cop'),
+      uEqSome(t.data.rel, ['cop', 'aux']) &&
+      t.data.interp.isImperative() &&
+      !t.data.hasTag('ok-imp-cop'),
   )
 
   reportIf(
     `наказовий має cop/aux`,
     (t) =>
-      t.node.interp.isImperative() &&
-      t.children.some((x) => uEqSome(x.node.rel, ['cop', 'aux'])),
+      t.data.interp.isImperative() &&
+      t.children.some((x) => uEqSome(x.data.rel, ['cop', 'aux'])),
   )
 
   xreportIf2(
@@ -2445,7 +2445,7 @@ export function validateSentenceSyntax(
       if (!antecedent) {
         return false
       }
-      return !corefClusterization.areSameGroup(antecedent.node, t)
+      return !corefClusterization.areSameGroup(antecedent.data, t)
     },
   )
 
@@ -2453,27 +2453,27 @@ export function validateSentenceSyntax(
     reportIf(
       `неперехідне дієслово має додаток`,
       (t) =>
-        uEqSome(t.node.rel, ['obj' /* , 'iobj' */]) &&
-        t.parent.node.interp.isVerb() &&
-        valencyDict.isIntransitiveOnlyVerb(t.parent.node.interp.lemma) &&
-        !(uEq(t.node.rel, 'obj') && t.node.interp.isDative()) &&
-        !t.node.interp.isGenitive() &&
+        uEqSome(t.data.rel, ['obj' /* , 'iobj' */]) &&
+        t.parent.data.interp.isVerb() &&
+        valencyDict.isIntransitiveOnlyVerb(t.parent.data.interp.lemma) &&
+        !(uEq(t.data.rel, 'obj') && t.data.interp.isDative()) &&
+        !t.data.interp.isGenitive() &&
         !(
           g.thisOrGovernedCase(t) === f.Case.instrumental &&
-          g.INS_VALENCY_VERBS.includes(t.parent.node.interp.lemma)
+          g.INS_VALENCY_VERBS.includes(t.parent.data.interp.lemma)
         ) &&
         !(
           g.thisOrGovernedCase(t) === f.Case.accusative &&
-          g.SOME_WORDS_WITH_ACC_VALENCY.has(t.parent.node.interp.lemma)
+          g.SOME_WORDS_WITH_ACC_VALENCY.has(t.parent.data.interp.lemma)
         ) &&
         !(
-          t.parent.node.interp.isNeuter() &&
-          t.parent.node.interp.isReversive() &&
+          t.parent.data.interp.isNeuter() &&
+          t.parent.data.interp.isReversive() &&
           (valencyDict.isAmbigiousVerb(
-            t.parent.node.interp.lemma.slice(0, -2),
+            t.parent.data.interp.lemma.slice(0, -2),
           ) ||
             g.SOME_WORDS_WITH_ACC_VALENCY.has(
-              t.parent.node.interp.lemma.slice(0, -2),
+              t.parent.data.interp.lemma.slice(0, -2),
             ))
         ),
     )
@@ -2481,17 +2481,17 @@ export function validateSentenceSyntax(
     xreportIf(
       `перехідне дієслово не має додатка`,
       (t) =>
-        t.node.interp.isVerb() &&
-        valencyDict.isAccusativeOnlyVerb(t.node.interp.lemma) &&
+        t.data.interp.isVerb() &&
+        valencyDict.isAccusativeOnlyVerb(t.data.interp.lemma) &&
         !thisOrConj(
           t,
           (tt) =>
             tt.children.length &&
             (tt.children.some((x) =>
-              uEqSome(x.node.rel, g.CORE_COMPLEMENTS_XCOMP),
+              uEqSome(x.data.rel, g.CORE_COMPLEMENTS_XCOMP),
             ) ||
               tt.children.some(
-                (x) => uEq(x.node.rel, 'iobj') && x.node.interp.isDative(),
+                (x) => uEq(x.data.rel, 'iobj') && x.data.interp.isDative(),
               )),
         ),
     )
@@ -2502,63 +2502,63 @@ export function validateSentenceSyntax(
     xreportIf(
       `${johojijiStr}-прикметник замість іменника`,
       (t) =>
-        johojiji.includes(t.node.form.toLowerCase()) &&
-        t.node.interp.isAdjective() &&
+        johojiji.includes(t.data.form.toLowerCase()) &&
+        t.data.interp.isAdjective() &&
         t.parent &&
-        t.parent.node.interp.isNoun() &&
-        valencyDict.isTransitiveOnlyGerund(t.parent.node.interp.lemma),
+        t.parent.data.interp.isNoun() &&
+        valencyDict.isTransitiveOnlyGerund(t.parent.data.interp.lemma),
     )
 
     xreportIf(
       `${johojijiStr}-прикметник замість іменника (потенційно)`,
       (t) =>
-        johojiji.includes(t.node.form.toLowerCase()) &&
-        t.node.interp.isAdjective() &&
+        johojiji.includes(t.data.form.toLowerCase()) &&
+        t.data.interp.isAdjective() &&
         t.parent &&
-        t.parent.node.interp.isNoun() &&
-        valencyDict.isAmbigiousGerund(t.parent.node.interp.lemma),
+        t.parent.data.interp.isNoun() &&
+        valencyDict.isAmbigiousGerund(t.parent.data.interp.lemma),
     )
 
     xreportIf(
       `${johojijiStr}-прикметник замість іменника (-ння)`,
       (t) =>
-        johojiji.includes(t.node.form.toLowerCase()) &&
-        t.node.interp.isAdjective() &&
+        johojiji.includes(t.data.form.toLowerCase()) &&
+        t.data.interp.isAdjective() &&
         t.parent &&
-        t.parent.node.interp.isNoun() &&
-        t.parent.node.interp.lemma.endsWith('ння') &&
-        !valencyDict.hasGerund(t.parent.node.interp.lemma),
+        t.parent.data.interp.isNoun() &&
+        t.parent.data.interp.lemma.endsWith('ння') &&
+        !valencyDict.hasGerund(t.parent.data.interp.lemma),
     )
 
     xreportIf(
       `${johojijiStr}-іменник замість прикметника`,
       (t) =>
-        johojiji.includes(t.node.form.toLowerCase()) &&
-        t.node.interp.isNoun() &&
+        johojiji.includes(t.data.form.toLowerCase()) &&
+        t.data.interp.isNoun() &&
         t.parent &&
-        t.parent.node.interp.isNoun() &&
-        valencyDict.isIntransitiveOnlyGerund(t.parent.node.interp.lemma),
+        t.parent.data.interp.isNoun() &&
+        valencyDict.isIntransitiveOnlyGerund(t.parent.data.interp.lemma),
     )
 
     xreportIf(
       `${johojijiStr}-іменник замість прикметника (потенційно)`,
       (t) =>
-        johojiji.includes(t.node.form.toLowerCase()) &&
-        t.node.interp.isNoun() &&
+        johojiji.includes(t.data.form.toLowerCase()) &&
+        t.data.interp.isNoun() &&
         t.parent &&
-        t.parent.node.interp.isNoun() &&
-        valencyDict.isAmbigiousGerund(t.parent.node.interp.lemma),
+        t.parent.data.interp.isNoun() &&
+        valencyDict.isAmbigiousGerund(t.parent.data.interp.lemma),
     )
 
     xreportIf(
       `${johojijiStr}-іменник замість прикметника (-ння)`,
       (t) =>
-        johojiji.includes(t.node.form.toLowerCase()) &&
-        t.node.interp.isNoun() &&
+        johojiji.includes(t.data.form.toLowerCase()) &&
+        t.data.interp.isNoun() &&
         t.parent &&
-        t.parent.node.interp.isNoun() &&
-        t.parent.node.interp.lemma.endsWith('ння') &&
-        !valencyDict.hasGerund(t.parent.node.interp.lemma),
+        t.parent.data.interp.isNoun() &&
+        t.parent.data.interp.lemma.endsWith('ння') &&
+        !valencyDict.hasGerund(t.parent.data.interp.lemma),
     )
 
     reportIf2(
@@ -2567,7 +2567,7 @@ export function validateSentenceSyntax(
         uEq(r, 'iobj') &&
         i.isGenitive() &&
         p.children.some(
-          (x) => uEq(x.node.rel, 'obj') && x.node.interp.isAccusative(),
+          (x) => uEq(x.data.rel, 'obj') && x.data.interp.isAccusative(),
         ),
     )
 
@@ -2576,13 +2576,13 @@ export function validateSentenceSyntax(
     reportIf2(
       `голова orphan’а не під’єднана до реконструкції пропуска`,
       ({ n, r }) =>
-        uEq(r, 'orphan') && !n.parent.parents.some((x) => x.node.isElided()),
+        uEq(r, 'orphan') && !n.parent.parents.some((x) => x.data.isElided()),
     )
 
     reportIf2(
       `orphan не під’єднаний до реконструкції пропуска`,
       ({ n, r }) =>
-        uEq(r, 'orphan') && !n.parents.some((x) => x.node.isElided()),
+        uEq(r, 'orphan') && !n.parents.some((x) => x.data.isElided()),
     )
 
     reportIf2(
@@ -2604,10 +2604,10 @@ export function validateSentenceSyntax(
     xreportIf(
       `ADV має іменникові інтерпретації`,
       (t) =>
-        t.node.interp.isAdverb() &&
-        analyzer.tag(t.node.form).some((x) => x.isNoun() && !x.isVocative()) &&
-        !g.VALID_ADVS_AMBIG_TO_NOUN.has(t.node.form.toLowerCase()) &&
-        !t.node.interp.isAbbreviation(),
+        t.data.interp.isAdverb() &&
+        analyzer.tag(t.data.form).some((x) => x.isNoun() && !x.isVocative()) &&
+        !g.VALID_ADVS_AMBIG_TO_NOUN.has(t.data.form.toLowerCase()) &&
+        !t.data.interp.isAbbreviation(),
     )
 
     /* reportIf(`wrong promotion precedence`,
@@ -2628,7 +2628,7 @@ export function validateSentenceSyntax(
         t.isPromoted &&
         !i.isAdjectivish() &&
         !i.isCardinalNumeral() &&
-        !n.parents.some((x) => x.node.isElided()) &&
+        !n.parents.some((x) => x.data.isElided()) &&
         !t.hasTag('promoted-not-adj') &&
         !t.hasTag('orphanless-elision') &&
         !t.hasTag('nominal-ellipsis'),
@@ -2645,25 +2645,25 @@ export function validateSentenceSyntax(
     reportIf(
       `недієслівна предикація праворуч`,
       (t) =>
-        uEqSome(t.node.rel, ['nsubj' /* , 'csubj' */]) &&
-        t.node.index > t.parent.node.index &&
-        !t.parent.node.interp.isVerbial() &&
-        !t.parent.node.interp.isAdjective() && // ~
-        !t.parent.node.interp.isAdverb() &&
-        !t.parent.node.interp.isInstrumental() &&
-        !t.parent.node.interp.isInterrogative() &&
+        uEqSome(t.data.rel, ['nsubj' /* , 'csubj' */]) &&
+        t.data.index > t.parent.data.index &&
+        !t.parent.data.interp.isVerbial() &&
+        !t.parent.data.interp.isAdjective() && // ~
+        !t.parent.data.interp.isAdverb() &&
+        !t.parent.data.interp.isInstrumental() &&
+        !t.parent.data.interp.isInterrogative() &&
         !g.hasChild(t.parent, 'expl') &&
-        !t.node.hasTag('pred-right'),
+        !t.data.hasTag('pred-right'),
     )
 
     xreportIf(
       `присудок є залежником`,
       (t) =>
-        uEqSome(t.node.rel, ['nsubj', 'csubj', 'cop']) &&
+        uEqSome(t.data.rel, ['nsubj', 'csubj', 'cop']) &&
         t.parent.parent &&
-        !uEqSome(t.parent.node.rel, [...g.CLAUSE_RELS, 'conj']) &&
-        !t.parent.node.isGraft &&
-        !['compound:svc', 'orphan'].includes(t.parent.node.rel),
+        !uEqSome(t.parent.data.rel, [...g.CLAUSE_RELS, 'conj']) &&
+        !t.parent.data.isGraft &&
+        !['compound:svc', 'orphan'].includes(t.parent.data.rel),
     )
 
     if (sentenceHasOneRoot) {
@@ -2687,24 +2687,24 @@ export function validateSentenceSyntax(
     xreportIf(
       `давальний з інфінітива`,
       (t) =>
-        uEqSome(t.node.rel, ['obj', 'iobj']) &&
-        t.node.interp.isDative() &&
+        uEqSome(t.data.rel, ['obj', 'iobj']) &&
+        t.data.interp.isDative() &&
         g.isInfinitive(t.parent) &&
-        !uEqSome(t.parent.node.rel, g.SUBORDINATE_CLAUSES),
+        !uEqSome(t.parent.data.rel, g.SUBORDINATE_CLAUSES),
     )
 
     // disablable
     xreportIf(
       `такий xxx не advmod:det`,
       (t) =>
-        g.ADVMOD_DETS.has(t.node.interp.lemma) &&
-        t.node.interp.isAdjective() &&
+        g.ADVMOD_DETS.has(t.data.interp.lemma) &&
+        t.data.interp.isAdjective() &&
         (t.parent || sentenceHasOneRoot) &&
-        tokens[t.node.index + 1] &&
+        tokens[t.data.index + 1] &&
         !(
-          t.parent === nodes[t.node.index + 1] && t.node.rel === 'advmod:det'
+          t.parent === nodes[t.data.index + 1] && t.data.rel === 'advmod:det'
         ) &&
-        tokens[t.node.index + 1].interp.equalsByFeatures(t.node.interp, [
+        tokens[t.data.index + 1].interp.equalsByFeatures(t.data.interp, [
           f.Pos,
           f.Case,
           f.Gender,
@@ -2714,24 +2714,24 @@ export function validateSentenceSyntax(
     xreportIf(
       `advmod:det в непорівнюване`,
       (t) =>
-        t.node.rel === 'advmod:det' && !t.parent.node.interp.isComparable(),
+        t.data.rel === 'advmod:det' && !t.parent.data.interp.isComparable(),
     )
 
     xreportIf(
       `advcl під’єднане напряму до вказівного`,
       (t) =>
-        uEq(t.node.rel, 'advmod') &&
-        t.node.interp.isDemonstrative() &&
-        t.children.some((x) => uEq(x.node.rel, 'advcl')),
+        uEq(t.data.rel, 'advmod') &&
+        t.data.interp.isDemonstrative() &&
+        t.children.some((x) => uEq(x.data.rel, 'advcl')),
     )
 
     tmpxreportIf(
       `advcl: під’єднане не напряму до вказівного`,
       (t) =>
-        uEq(t.node.rel, 'advmod') &&
-        t.node.interp.isDemonstrative() &&
+        uEq(t.data.rel, 'advmod') &&
+        t.data.interp.isDemonstrative() &&
         t.parent.children.some(
-          (x) => uEq(x.node.rel, 'advcl') && x.node.rel !== 'advcl:cmp',
+          (x) => uEq(x.data.rel, 'advcl') && x.data.rel !== 'advcl:cmp',
         ) &&
         !g.hasChild(t, 'advcl'),
       // todo: ~тому, тоді навпаки
@@ -2744,40 +2744,40 @@ export function validateSentenceSyntax(
     tmpxreportIf(
       `advcl:cmp під’єднане не напряму до вказівного`,
       (t) =>
-        uEq(t.node.rel, 'advmod') &&
-        t.node.interp.isDemonstrative() &&
+        uEq(t.data.rel, 'advmod') &&
+        t.data.interp.isDemonstrative() &&
         t.parent.children.some(
-          (x) => uEq(x.node.rel, 'advcl') && x.node.rel === 'advcl:cmp',
+          (x) => uEq(x.data.rel, 'advcl') && x.data.rel === 'advcl:cmp',
         ),
     )
 
     reportIf(
       `неочікуваний клей між цим і наступним словом`,
       (t) =>
-        t.node.index < tokens.length - 1 &&
-        t.node.gluedNext &&
-        !g.areOkToBeGlued(t, nodes[t.node.index + 1]) &&
-        !t.node.hasTag('ok-glued-next'),
+        t.data.index < tokens.length - 1 &&
+        t.data.gluedNext &&
+        !g.areOkToBeGlued(t, nodes[t.data.index + 1]) &&
+        !t.data.hasTag('ok-glued-next'),
     )
 
     reportIf(
       `дискурсивне слово не discourse`,
       (t) =>
         !t.isRoot() &&
-        !uEqSome(t.node.rel, ['discourse']) &&
-        ['наприклад'].includes(t.node.interp.lemma),
+        !uEqSome(t.data.rel, ['discourse']) &&
+        ['наприклад'].includes(t.data.interp.lemma),
     )
 
     xreportIf(
       `особовий в :irrel з _що_`,
       (t) =>
-        t.node.interp.isPersonal() &&
+        t.data.interp.isPersonal() &&
         wiith(
-          mu(t.walkThisAndUp0()).find((x) => x.node.rel === 'acl:irrel'),
+          mu(t.walkThisAndUp0()).find((x) => x.data.rel === 'acl:irrel'),
           (acl) =>
             acl &&
             acl.children.some(
-              (x) => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що',
+              (x) => uEq(x.data.rel, 'mark') && x.data.interp.lemma === 'що',
             ),
         ),
     )
@@ -2785,9 +2785,9 @@ export function validateSentenceSyntax(
     xreportIf(
       `нерозрізнений acl зі сполучником _що_`,
       (t) =>
-        uEq(t.node.rel, 'acl') &&
+        uEq(t.data.rel, 'acl') &&
         t.children.some(
-          (x) => uEq(x.node.rel, 'mark') && x.node.interp.lemma === 'що',
+          (x) => uEq(x.data.rel, 'mark') && x.data.interp.lemma === 'що',
         ),
       // && !g.isRelativeSpecificAcl(t.node.rel)
     )
@@ -2795,9 +2795,9 @@ export function validateSentenceSyntax(
     xreportIf(
       `нерозрізнений acl зі сполучником іншим від _що_`,
       (t) =>
-        uEq(t.node.rel, 'acl') &&
+        uEq(t.data.rel, 'acl') &&
         t.children.some(
-          (x) => uEq(x.node.rel, 'mark') && x.node.interp.lemma !== 'що',
+          (x) => uEq(x.data.rel, 'mark') && x.data.interp.lemma !== 'що',
         ),
       // && !g.isRelativeSpecificAcl(t.node.rel)
     )
@@ -2805,21 +2805,21 @@ export function validateSentenceSyntax(
     xreportIf(
       `нерозрізнений acl без сполучника`,
       (t) =>
-        uEq(t.node.rel, 'acl') &&
-        !t.children.some((x) => uEq(x.node.rel, 'mark')) &&
+        uEq(t.data.rel, 'acl') &&
+        !t.children.some((x) => uEq(x.data.rel, 'mark')) &&
         // && !g.isRelativeSpecificAcl(t.node.rel)
-        !['acl:adv'].includes(t.node.rel),
+        !['acl:adv'].includes(t.data.rel),
     )
 
     xreportIf(
       `нерозрізнений acl з відносним ADV`,
       (t) =>
-        t.node.interp.isRelative() &&
-        t.node.interp.isAdverb() &&
+        t.data.interp.isRelative() &&
+        t.data.interp.isAdverb() &&
         wiithNonempty(g.findRelativeClauseRoot(t), (relclRoot) =>
           // relclRoot.node.rel === 'acl'
           g.isRelclByRef(
-            enhancedNodes[relclRoot.node.index].incomingArrows.find((x) =>
+            enhancedNodes[relclRoot.data.index].incomingArrows.find((x) =>
               uEq(x.attrib, 'acl'),
             ),
           ),
@@ -2862,22 +2862,22 @@ export function validateSentenceSyntax(
     xreportIf(
       `відносний _що_ у acl:relfull`,
       (t) =>
-        t.node.form === 'що' &&
-        !uEqSome(t.node.rel, ['obl']) &&
-        t.node.interp.isRelative() &&
+        t.data.form === 'що' &&
+        !uEqSome(t.data.rel, ['obl']) &&
+        t.data.interp.isRelative() &&
         wiith(
           g.findRelativeClauseRoot(t),
-          (relclRoot) => relclRoot && relclRoot.node.rel === 'acl:relfull',
+          (relclRoot) => relclRoot && relclRoot.data.rel === 'acl:relfull',
         ),
     )
 
     reportIf(
       `acl:relless не має назаднього nsubj/obj`,
       (t) =>
-        t.node.rel === 'acl:relless' &&
-        !enhancedOnlyNodes[t.node.index].outgoingArrows.some(
+        t.data.rel === 'acl:relless' &&
+        !enhancedOnlyNodes[t.data.index].outgoingArrows.some(
           (x) =>
-            x.end.node.index === t.parent.node.index &&
+            x.end.node.index === t.parent.data.index &&
             uEqSome(x.attrib, ['obj', 'nsubj']),
         ),
     )
@@ -2885,8 +2885,8 @@ export function validateSentenceSyntax(
     reportIf(
       `acl:relpers без ref`,
       (t) =>
-        t.node.rel === 'acl:relpers' &&
-        !enhancedOnlyNodes[t.parent.node.index].outgoingArrows.some(
+        t.data.rel === 'acl:relpers' &&
+        !enhancedOnlyNodes[t.parent.data.index].outgoingArrows.some(
           (x) => x.attrib === 'ref',
         ),
     )
@@ -2894,30 +2894,30 @@ export function validateSentenceSyntax(
     reportIf(
       `відносний в нерозрізненому acl’і`,
       (t) =>
-        t.node.interp.isRelative() &&
-        !t.node.interp.isAdverb() &&
+        t.data.interp.isRelative() &&
+        !t.data.interp.isAdverb() &&
         wiith(
           g.findRelativeClauseRoot(t),
-          (relclRoot) => relclRoot && relclRoot.node.rel === 'acl',
+          (relclRoot) => relclRoot && relclRoot.data.rel === 'acl',
         ),
     )
 
     reportIf(`відносний в acl:irrel`, (t) =>
       wiith(
         g.findRelativeClauseRoot(t),
-        (relclRoot) => relclRoot && relclRoot.node.rel === 'acl:irrel',
+        (relclRoot) => relclRoot && relclRoot.data.rel === 'acl:irrel',
       ),
     )
 
     if (0) {
       let relRoots = nodes
-        .filter((x) => x.node.interp.isRelative())
+        .filter((x) => x.data.interp.isRelative())
         .map((x) => g.findRelativeClauseRoot(x))
       relRoots
         .filter((x, i) => relRoots.find((xx, ii) => ii !== i && xx === x))
         .forEach((x) =>
           problems.push({
-            indexes: [x.node.index],
+            indexes: [x.data.index],
             message: `не єдиний відносний`,
           }),
         )
@@ -2926,12 +2926,12 @@ export function validateSentenceSyntax(
     reportIf(
       `ccomp в інфінітив без #inf-ccomp`,
       (t) =>
-        uEq(t.node.rel, 'ccomp') &&
+        uEq(t.data.rel, 'ccomp') &&
         g.isInfinitiveAnalytically(t) &&
-        !t.node.hasTag('inf-ccomp'),
+        !t.data.hasTag('inf-ccomp'),
     )
 
-    xreportIf(`#inf-ccomp`, (t) => t.node.hasTag('inf-ccomp'))
+    xreportIf(`#inf-ccomp`, (t) => t.data.hasTag('inf-ccomp'))
 
     // todo: через advcl? https://lab.mova.institute/brat/#/ud/zvidusil__27/23?focus=T24
     // todo: кожі до xcomp’ів https://lab.mova.institute/brat/#/ud/zvidusil__26/76?focus=T21
@@ -2942,35 +2942,35 @@ export function validateSentenceSyntax(
     reportIf(
       `неочікуваний #xsubj-from-head`,
       (t) =>
-        t.node.hasTag('xsubj-from-head') &&
-        ((t.node.rel !== 'xcomp' && t.node.rel !== 'xcomp:sp') ||
-          t.parent.children.some((x) => uEqSome(x.node.rel, g.SUBJECTS))), // todo: conj
+        t.data.hasTag('xsubj-from-head') &&
+        ((t.data.rel !== 'xcomp' && t.data.rel !== 'xcomp:sp') ||
+          t.parent.children.some((x) => uEqSome(x.data.rel, g.SUBJECTS))), // todo: conj
     )
     reportIf(
       `неочікуваний #xsubj-is-phantom-iobj`,
       (t) =>
-        t.node.hasTag('xsubj-is-phantom-iobj') && // todo: rename
-        (t.node.rel !== 'xcomp' ||
-          t.parent.children.some((x) => uEqSome(x.node.rel, ['obj', 'iobj']))), // todo: conj
+        t.data.hasTag('xsubj-is-phantom-iobj') && // todo: rename
+        (t.data.rel !== 'xcomp' ||
+          t.parent.children.some((x) => uEqSome(x.data.rel, ['obj', 'iobj']))), // todo: conj
     )
     reportIf(
       `неочікуваний #xsubj-is-obl`,
       (t) =>
-        t.node.hasTag('xsubj-is-obl') && // todo: rename
-        (t.node.rel !== 'xcomp' ||
-          !t.parent.children.some((x) => uEqSome(x.node.rel, ['obl']))), // todo: conj
+        t.data.hasTag('xsubj-is-obl') && // todo: rename
+        (t.data.rel !== 'xcomp' ||
+          !t.parent.children.some((x) => uEqSome(x.data.rel, ['obl']))), // todo: conj
     )
 
     // todo: це — дірки
     reportIf(
       `xcomp без enhanced підмета`,
       (t) =>
-        t.node.rel === 'xcomp' &&
-        !t.node.hasTag('xsubj-from-head') &&
-        !t.node.hasTag('xsubj-is-phantom-iobj') &&
-        !t.node.hasTag('xsubj-is-obl') &&
-        !t.parent.node.interp.isConverb() &&
-        !enhancedOnlyNodes[t.node.index].outgoingArrows.some((x) =>
+        t.data.rel === 'xcomp' &&
+        !t.data.hasTag('xsubj-from-head') &&
+        !t.data.hasTag('xsubj-is-phantom-iobj') &&
+        !t.data.hasTag('xsubj-is-obl') &&
+        !t.parent.data.interp.isConverb() &&
+        !enhancedOnlyNodes[t.data.index].outgoingArrows.some((x) =>
           uEqSome(x.attrib, ['nsubj:x']),
         ),
       // && !t.parent.node.interp.isReversive()  // temp
@@ -2979,188 +2979,188 @@ export function validateSentenceSyntax(
     reportIf(
       `xcomp:sp без enhanced підмета`,
       (t) =>
-        t.node.rel === 'xcomp:sp' &&
-        !t.node.hasTag('xsubj-from-head') &&
-        !enhancedOnlyNodes[t.node.index].outgoingArrows.some((x) =>
+        t.data.rel === 'xcomp:sp' &&
+        !t.data.hasTag('xsubj-from-head') &&
+        !enhancedOnlyNodes[t.data.index].outgoingArrows.some((x) =>
           uEqSome(x.attrib, ['nsubj:sp']),
         ) &&
-        !t.parent.node.interp.isConverb(),
+        !t.parent.data.interp.isConverb(),
     )
 
     reportIf(
       `advcl:sp без enhanced підмета`,
       (t) =>
-        t.node.rel === 'advcl:sp' &&
-        !enhancedOnlyNodes[t.node.index].outgoingArrows.some((x) =>
+        t.data.rel === 'advcl:sp' &&
+        !enhancedOnlyNodes[t.data.index].outgoingArrows.some((x) =>
           uEqSome(x.attrib, ['nsubj:sp']),
         ) &&
-        !t.node.hasTag('xsubj-from-head'),
+        !t.data.hasTag('xsubj-from-head'),
     )
 
     reportIf(`емфатичний займенник (забули розбити?)`, (t) =>
-      t.node.interp.isEmphatic(),
+      t.data.interp.isEmphatic(),
     )
 
     xreportIf(
       `flat має неочікувані залежники`,
       (t) =>
         t.parent &&
-        !t.parent.node.isGraft &&
-        uEq(t.parent.node.rel, 'flat') &&
+        !t.parent.data.isGraft &&
+        uEq(t.parent.data.rel, 'flat') &&
         // && t.parent.node.rel !== 'flat:sibl'
         // && !uEqSome(t.node.rel, ['conj', 'flat', 'punct'])
-        uEqSome(t.node.rel, g.CLAUSE_RELS),
+        uEqSome(t.data.rel, g.CLAUSE_RELS),
     )
 
     xreportIf(
       `виразова реляція в безпре`,
       (t) =>
-        uEqSome(t.node.rel, g.CLAUSAL_MODIFIERS) &&
+        uEqSome(t.data.rel, g.CLAUSAL_MODIFIERS) &&
         !g.hasPredication(t) &&
         !g.isInfinitiveAnalytically(t) &&
-        !t.node.rel.endsWith(':sp'),
+        !t.data.rel.endsWith(':sp'),
     )
 
     xreportIf(
       `expl без підмета`,
       (t) =>
-        uEqSome(t.node.rel, ['expl']) &&
-        !t.parent.children.some((x) => uEqSome(x.node.rel, g.SUBJECTS)),
+        uEqSome(t.data.rel, ['expl']) &&
+        !t.parent.children.some((x) => uEqSome(x.data.rel, g.SUBJECTS)),
     )
 
     reportIf(
       `підмет з інфінітива`,
       (t) =>
-        uEqSome(t.node.rel, g.SUBJECTS) && g.isInfinitiveAnalytically(t.parent),
+        uEqSome(t.data.rel, g.SUBJECTS) && g.isInfinitiveAnalytically(t.parent),
     )
 
     xreportIf(
       `можливо пропущений присудок`,
       (t) =>
         !t.isRoot() &&
-        /^[\-–—]+$/.test(t.node.getForm()) &&
-        !t.parent.node.interp.isBeforeadj() &&
-        !uEqSome(t.parent.node.rel, ['appos', 'parataxis', 'compound']) &&
-        t.parent.node.rel !== 'flat:repeat' &&
-        t.parent.node.rel !== 'flat:title' &&
-        t.parent.node.rel !== 'flat:range' &&
-        t.parent.node.rel !== 'flat:name' &&
-        t.parent.node.rel !== 'conj:repeat' &&
-        t.node.index &&
-        !nodes[t.node.index - 1].node.isElided() &&
+        /^[\-–—]+$/.test(t.data.getForm()) &&
+        !t.parent.data.interp.isBeforeadj() &&
+        !uEqSome(t.parent.data.rel, ['appos', 'parataxis', 'compound']) &&
+        t.parent.data.rel !== 'flat:repeat' &&
+        t.parent.data.rel !== 'flat:title' &&
+        t.parent.data.rel !== 'flat:range' &&
+        t.parent.data.rel !== 'flat:name' &&
+        t.parent.data.rel !== 'conj:repeat' &&
+        t.data.index &&
+        !nodes[t.data.index - 1].data.isElided() &&
         !(
           g.hasChild(t.parent, 'nsubj') &&
-          (t.parent.node.interp.isNounish() ||
-            t.parent.node.interp.isAdjective())
+          (t.parent.data.interp.isNounish() ||
+            t.parent.data.interp.isAdjective())
         ) &&
         !(
           g.hasChild(t.parent, 'csubj') &&
-          (t.parent.node.interp.isNounish() ||
-            t.parent.node.interp.isAdjective())
+          (t.parent.data.interp.isNounish() ||
+            t.parent.data.interp.isAdjective())
         ) &&
         !(
-          t.parent.node.interp.lemma === 'пів' &&
-          t.parent.node.interp.isCardinalNumeral()
+          t.parent.data.interp.lemma === 'пів' &&
+          t.parent.data.interp.isCardinalNumeral()
         ) &&
         !(
           ['бо', 'но', 'то', 'от', 'таки'].includes(
-            t.parent.node.interp.lemma,
-          ) && t.parent.node.interp.isParticle()
+            t.parent.data.interp.lemma,
+          ) && t.parent.data.interp.isParticle()
         ),
     )
 
-    xreportIf(`list`, (t) => uEq(t.node.rel, 'list'))
+    xreportIf(`list`, (t) => uEq(t.data.rel, 'list'))
 
     reportIf(
       `M-dash без типу`,
       (t) =>
-        t.node.interp.isPunctuation() &&
-        /^[—]+$/.test(t.node.getForm()) &&
-        !t.node.interp.hasFeature(f.PunctuationType),
+        t.data.interp.isPunctuation() &&
+        /^[—]+$/.test(t.data.getForm()) &&
+        !t.data.interp.hasFeature(f.PunctuationType),
     )
     reportIf(
       `N-dash без типу`,
       (t) =>
-        t.node.interp.isPunctuation() &&
-        /^[–]+$/.test(t.node.getForm()) &&
-        !t.node.interp.hasFeature(f.PunctuationType),
+        t.data.interp.isPunctuation() &&
+        /^[–]+$/.test(t.data.getForm()) &&
+        !t.data.interp.hasFeature(f.PunctuationType),
     )
     reportIf(
       `hyphen без типу`,
       (t) =>
-        t.node.interp.isPunctuation() &&
-        /^[\-]+$/.test(t.node.getForm()) &&
-        !t.node.interp.hasFeature(f.PunctuationType),
+        t.data.interp.isPunctuation() &&
+        /^[\-]+$/.test(t.data.getForm()) &&
+        !t.data.interp.hasFeature(f.PunctuationType),
     )
     reportIf(
       `мінус без типу`,
       (t) =>
-        t.node.interp.isPunctuation() &&
-        /^[−]+$/.test(t.node.getForm()) &&
-        !t.node.interp.hasFeature(f.PunctuationType),
+        t.data.interp.isPunctuation() &&
+        /^[−]+$/.test(t.data.getForm()) &&
+        !t.data.interp.hasFeature(f.PunctuationType),
     )
     reportIf(
       `${g.SOME_QUOTES.source} без типу`,
       (t) =>
-        t.node.interp.isPunctuation() &&
-        g.SOME_QUOTES.test(t.node.getForm()) &&
-        !t.node.interp.hasFeature(f.PunctuationType),
+        t.data.interp.isPunctuation() &&
+        g.SOME_QUOTES.test(t.data.getForm()) &&
+        !t.data.interp.hasFeature(f.PunctuationType),
     )
 
     xreportIf(
       `_ csubj з прислівника`,
-      (t) => uEqSome(t.node.rel, ['csubj']) && t.parent.node.interp.isAdverb(),
+      (t) => uEqSome(t.data.rel, ['csubj']) && t.parent.data.interp.isAdverb(),
     )
     xreportIf(
       `_ nsubj з прислівника`,
-      (t) => uEqSome(t.node.rel, ['nsubj']) && t.parent.node.interp.isAdverb(),
+      (t) => uEqSome(t.data.rel, ['nsubj']) && t.parent.data.interp.isAdverb(),
     )
     reportIf(
       `ccomp з прислівника`,
-      (t) => uEqSome(t.node.rel, ['ccomp']) && t.parent.node.interp.isAdverb(),
+      (t) => uEqSome(t.data.rel, ['ccomp']) && t.parent.data.interp.isAdverb(),
     )
     reportIf(
       `xcomp з прислівника`,
-      (t) => uEqSome(t.node.rel, ['xcomp']) && t.parent.node.interp.isAdverb(),
+      (t) => uEqSome(t.data.rel, ['xcomp']) && t.parent.data.interp.isAdverb(),
     )
     xreportIf(
       `_ ccomp з прислівника без #subjless-predication`,
-      (t) => uEqSome(t.node.rel, ['ccomp']) && t.parent.node.interp.isAdverb(),
+      (t) => uEqSome(t.data.rel, ['ccomp']) && t.parent.data.interp.isAdverb(),
       // && t.node.hasTag('subjless-predication')
     )
     xreportIf(
       `_ nsubj -лося`,
       (t) =>
-        uEqSome(t.node.rel, ['nsubj']) &&
-        t.parent.node.interp.isVerb() &&
-        /лос[ья]$/.test(t.parent.node.getForm()),
+        uEqSome(t.data.rel, ['nsubj']) &&
+        t.parent.data.interp.isVerb() &&
+        /лос[ья]$/.test(t.parent.data.getForm()),
     )
     xreportIf(
       `_ csubj -лося`,
       (t) =>
-        uEqSome(t.node.rel, ['csubj']) &&
-        t.parent.node.interp.isVerb() &&
-        /лос[ья]$/.test(t.parent.node.getForm()),
+        uEqSome(t.data.rel, ['csubj']) &&
+        t.parent.data.interp.isVerb() &&
+        /лос[ья]$/.test(t.parent.data.getForm()),
     )
     xreportIf(
       `_ давальний додаток у прислівника з підметом`,
       (t) =>
-        uEqSome(t.node.rel, ['obj', 'iobj']) &&
-        t.node.interp.isDative() &&
-        t.parent.node.interp.isAdverb() &&
-        t.parent.children.some((x) => uEqSome(x.node.rel, g.SUBJECTS)),
+        uEqSome(t.data.rel, ['obj', 'iobj']) &&
+        t.data.interp.isDative() &&
+        t.parent.data.interp.isAdverb() &&
+        t.parent.children.some((x) => uEqSome(x.data.rel, g.SUBJECTS)),
     )
 
     reportIf(
       `розділовий у fixed’і`,
-      (t) => uEqSome(t.node.rel, ['fixed']) && t.node.interp.isPunctuation(),
+      (t) => uEqSome(t.data.rel, ['fixed']) && t.data.interp.isPunctuation(),
     )
 
     reportIf(
       `goeswith без пробіла поперед`,
       (t) =>
-        uEqSome(t.node.rel, ['goeswith']) &&
-        nodes[t.node.index - 1].node.gluedNext,
+        uEqSome(t.data.rel, ['goeswith']) &&
+        nodes[t.data.index - 1].data.gluedNext,
     )
     // reportIf(`relative clause не фінітний`, t =>
     //   g.isRelativeSpecificAcl(t.node.rel)
@@ -3169,25 +3169,25 @@ export function validateSentenceSyntax(
     // test сам >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     xreportIf(
       `сам obl`,
-      (t) => t.node.interp.lemma === 'сам' && uEq(t.node.rel, 'obl'),
+      (t) => t.data.interp.lemma === 'сам' && uEq(t.data.rel, 'obl'),
     )
     xreportIf(
       `сам det`,
-      (t) => t.node.interp.lemma === 'сам' && uEq(t.node.rel, 'det'),
+      (t) => t.data.interp.lemma === 'сам' && uEq(t.data.rel, 'det'),
     )
     xreportIf(
       `сам nsubj`,
-      (t) => t.node.interp.lemma === 'сам' && uEq(t.node.rel, 'nsubj'),
+      (t) => t.data.interp.lemma === 'сам' && uEq(t.data.rel, 'nsubj'),
     )
     xreportIf(
       `сам advcl:sp`,
-      (t) => t.node.interp.lemma === 'сам' && uEq(t.node.rel, 'advcl:sp'),
+      (t) => t.data.interp.lemma === 'сам' && uEq(t.data.rel, 'advcl:sp'),
     )
     xreportIf(
       `сам ?`,
       (t) =>
-        t.node.interp.lemma === 'сам' &&
-        !uEqSome(t.node.rel, [
+        t.data.interp.lemma === 'сам' &&
+        !uEqSome(t.data.rel, [
           'obl',
           'det',
           'nsubj',
@@ -3199,25 +3199,25 @@ export function validateSentenceSyntax(
     )
     xreportIf(
       `самий obl`,
-      (t) => t.node.interp.lemma === 'самий' && uEq(t.node.rel, 'obl'),
+      (t) => t.data.interp.lemma === 'самий' && uEq(t.data.rel, 'obl'),
     )
     xreportIf(
       `самий det`,
-      (t) => t.node.interp.lemma === 'самий' && uEq(t.node.rel, 'det'),
+      (t) => t.data.interp.lemma === 'самий' && uEq(t.data.rel, 'det'),
     )
     xreportIf(
       `самий nsubj`,
-      (t) => t.node.interp.lemma === 'самий' && uEq(t.node.rel, 'nsubj'),
+      (t) => t.data.interp.lemma === 'самий' && uEq(t.data.rel, 'nsubj'),
     )
     xreportIf(
       `самий advcl:sp`,
-      (t) => t.node.interp.lemma === 'самий' && uEq(t.node.rel, 'advcl:sp'),
+      (t) => t.data.interp.lemma === 'самий' && uEq(t.data.rel, 'advcl:sp'),
     )
     xreportIf(
       `самий ?`,
       (t) =>
-        t.node.interp.lemma === 'самий' &&
-        !uEqSome(t.node.rel, [
+        t.data.interp.lemma === 'самий' &&
+        !uEqSome(t.data.rel, [
           'obl',
           'det',
           'nsubj',
@@ -3230,7 +3230,7 @@ export function validateSentenceSyntax(
 
     xreportIf(`сусіди obl’и`, (t) =>
       wiithNonempty(
-        g.findNeighbourAncestor(nodes, t.node.index, 'obl'),
+        g.findNeighbourAncestor(nodes, t.data.index, 'obl'),
         (it) => it.parent !== t.parent,
       ),
     )
@@ -3238,12 +3238,12 @@ export function validateSentenceSyntax(
     reportIf(
       `неочікуваний розбір типу _разом з_`,
       (t) =>
-        t.node.interp.isAdverb() &&
-        ['разом'].includes(t.node.interp.lemma) &&
-        t.node.index < nodes.length &&
-        nodes[t.node.index + 1].node.interp.isPreposition() &&
+        t.data.interp.isAdverb() &&
+        ['разом'].includes(t.data.interp.lemma) &&
+        t.data.index < nodes.length &&
+        nodes[t.data.index + 1].data.interp.isPreposition() &&
         !wiith(
-          nodes[t.node.index + 1],
+          nodes[t.data.index + 1],
           (next) => next.parent && next.parent.parent === t,
         ),
     )
@@ -3251,17 +3251,17 @@ export function validateSentenceSyntax(
     reportIf(
       `неочікуваний розбір _все одно_`,
       (t) =>
-        ['одно', 'рівно'].includes(t.node.interp.lemma) &&
-        t.node.index > 0 &&
-        t.node.index < nodes.length &&
-        ['все', 'усе'].includes(nodes[t.node.index - 1].node.interp.lemma) &&
-        !(uEq(t.node.rel, 'fixed') && t.parent === nodes[t.node.index - 1]),
+        ['одно', 'рівно'].includes(t.data.interp.lemma) &&
+        t.data.index > 0 &&
+        t.data.index < nodes.length &&
+        ['все', 'усе'].includes(nodes[t.data.index - 1].data.interp.lemma) &&
+        !(uEq(t.data.rel, 'fixed') && t.parent === nodes[t.data.index - 1]),
       // todo: все-іменник
     )
 
     reportIf(
       `розбір позначено сумнівним`,
-      (t) => t.node.comment && t.node.comment.includes('~'),
+      (t) => t.data.comment && t.data.comment.includes('~'),
     )
 
     // trash >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3286,9 +3286,9 @@ export function validateSentenceSyntax(
       xreportIf(
         `flat:range?`,
         (t) =>
-          uEqSome(t.node.rel, ['conj']) &&
+          uEqSome(t.data.rel, ['conj']) &&
           t.children.some(
-            (x) => /[-–—]/.test(x.node.form) && x.node.index < t.node.index,
+            (x) => /[-–—]/.test(x.data.form) && x.data.index < t.data.index,
           ),
       )
       xreportIf2(
@@ -3298,19 +3298,19 @@ export function validateSentenceSyntax(
       xreportIf(
         `немає`,
         (t) =>
-          g.isNemaje(t.node.interp) &&
-          findMultitoken(t.node.index, multitokens),
+          g.isNemaje(t.data.interp) &&
+          findMultitoken(t.data.index, multitokens),
       )
       xreportIf(
         `:relfull має сполучник`,
-        (t) => t.node.rel === 'acl:relfull' && g.hasChild(t, 'mark'),
+        (t) => t.data.rel === 'acl:relfull' && g.hasChild(t, 'mark'),
       )
       xreportIf(
         `:relfull без Rel`,
         (t) =>
-          t.node.rel === 'acl:relfull' &&
+          t.data.rel === 'acl:relfull' &&
           !nodes.some((x) => g.findRelativeClauseRoot(x) === t) &&
-          !t.node.isElided(), // temp
+          !t.data.isElided(), // temp
       )
       {
         let cutoff = [
@@ -3319,10 +3319,10 @@ export function validateSentenceSyntax(
         xreportIf(
           `не єдиний відносний в acl:relfull`,
           (t) =>
-            t.node.rel === 'acl:relfull' &&
-            mu(walkDepthNoSelf(t, (x) => uEqSome(x.node.rel, cutoff)))
+            t.data.rel === 'acl:relfull' &&
+            mu(walkDepthNoSelf(t, (x) => uEqSome(x.data.rel, cutoff)))
               .filter(
-                (x) => x.node.interp.isRelative(),
+                (x) => x.data.interp.isRelative(),
                 // з ким і про що розмовляє президент
                 // && !(uEq(x.node.rel, 'conj') && x.parent.node.interp.isRelative())
               )
@@ -3550,12 +3550,12 @@ function findMultitoken(
 }
 
 function hasChildrenOfUrel(node: GraphNode<Token>, urel: string) {
-  return node.children.some((x) => uEq(x.node.rel, urel))
+  return node.children.some((x) => uEq(x.data.rel, urel))
 }
 
 function thisOrConj(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
   let nodes = [node]
-  if (uEq(node.node.rel, 'conj')) {
+  if (uEq(node.data.rel, 'conj')) {
     nodes.push(node.parent)
   }
   for (let x of nodes) {
@@ -3610,7 +3610,7 @@ function isContinuous(array: Array<number>) {
 }
 
 function canBePredicate(t: GraphNode<Token>) {
-  let token = t.node
+  let token = t.data
   let interp = token.interp
   return (
     t.isRoot() ||
@@ -3654,39 +3654,39 @@ function canBePredicateOld(
 
 function canActAsNoun(node: GraphNode<Token>) {
   return (
-    node.node.interp.isNounish() ||
-    (node.node.isPromoted &&
-      (node.node.interp.isAdjectivish() ||
-        node.node.interp.isCardinalNumeral())) ||
-    node.node.hasTag('graft') ||
-    node.node.interp.isXForeign() ||
-    node.node.interp.isSymbol()
+    node.data.interp.isNounish() ||
+    (node.data.isPromoted &&
+      (node.data.interp.isAdjectivish() ||
+        node.data.interp.isCardinalNumeral())) ||
+    node.data.hasTag('graft') ||
+    node.data.interp.isXForeign() ||
+    node.data.interp.isSymbol()
   )
 }
 
 function canTheoreticallyActAsNoun(node: GraphNode<Token>) {
-  return node.node.interp.isAdjectivish() // && !node.hasChildren()
+  return node.data.interp.isAdjectivish() // && !node.hasChildren()
 }
 
 function canActAsNounForObj(node: GraphNode<Token>) {
   return (
     canActAsNoun(node) ||
     (!node.isRoot() &&
-      node.node.interp.isRelative() &&
+      node.data.interp.isRelative() &&
       g.thisOrConjHead(node, (n) => isSubordiateRoot(n.parent.node))) ||
-    (node.node.interp.lemma === 'той' && node.node.interp.isDemonstrative()) ||
-    (node.node.interp.isAdjective() &&
-      node.node.interp.isPronominal() &&
-      ['один'].includes(node.node.interp.lemma) &&
-      node.children.some((x) => x.node.rel === 'flat:abs'))
+    (node.data.interp.lemma === 'той' && node.data.interp.isDemonstrative()) ||
+    (node.data.interp.isAdjective() &&
+      node.data.interp.isPronominal() &&
+      ['один'].includes(node.data.interp.lemma) &&
+      node.children.some((x) => x.data.rel === 'flat:abs'))
   )
 }
 
 function isEncolsedInQuotes(node: GraphNode<Token>) {
   let ret =
     node.children.length > 2 &&
-    node.children[0].node.interp.isQuote() &&
-    last(node.children).node.interp.isQuote()
+    node.children[0].data.interp.isQuote() &&
+    last(node.children).data.interp.isQuote()
 
   return ret
 }

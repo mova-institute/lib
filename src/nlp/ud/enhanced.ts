@@ -156,7 +156,7 @@ function propagateConjuncts(
               (helperDep) =>
                 helperDep.headId === firstConj.node.id &&
                 ['distrib', 'collect'].includes(helperDep.relation),
-                // || uEqSome(x.attrib, ['nsubj', 'csubj'])  // temp
+              // || uEqSome(x.attrib, ['nsubj', 'csubj'])  // temp
             ),
         )
         .forEach((x) =>
@@ -297,19 +297,19 @@ export function loadEnhancedGraphFromTokens(nodes: Array<EnhancedNode>) {
 }
 
 export function buildEnhancedGraphFromTokens(basicNodes: Array<TokenNode>) {
-  let ret = basicNodes.map((x) => new DirectedGraphNode<Token, string>(x.node))
+  let ret = basicNodes.map((x) => new DirectedGraphNode<Token, string>(x.data))
   loadEnhancedGraphFromTokens(ret)
 
   return ret
 }
 
 export function buildEnhancedTreeFromBasic(basicNodes: Array<TokenNode>) {
-  let ret = basicNodes.map((x) => new DirectedGraphNode<Token, string>(x.node))
+  let ret = basicNodes.map((x) => new DirectedGraphNode<Token, string>(x.data))
 
   for (let [i, basicNode] of basicNodes.entries()) {
     if (!isPromoted(basicNode)) {
       // 1: copy basic arrows except for orphans
-      basicNode.node.deps.forEach((x) =>
+      basicNode.data.deps.forEach((x) =>
         ret[i].addIncomingArrow(
           ret[x.headIndex],
           x.relation,
@@ -320,8 +320,8 @@ export function buildEnhancedTreeFromBasic(basicNodes: Array<TokenNode>) {
     } else {
       // 2: add deps touching elided tokens
       // UD: “Null nodes for elided predicates”
-      basicNode.node.deps
-        .filter((x) => basicNodes[x.headIndex].node.isElided())
+      basicNode.data.deps
+        .filter((x) => basicNodes[x.headIndex].data.isElided())
         .forEach((x) =>
           ret[i].addIncomingArrow(
             ret[x.headIndex],

@@ -277,7 +277,7 @@ export function* tokenStream2bratSynt(
   for (let sentence of sentences) {
     let highlightHoles = mustHighlightHoles(sentence)
     for (let node of sentence) {
-      let token = node.node
+      let token = node.data
       if (token.isStructure()) {
         continue
       }
@@ -342,14 +342,14 @@ export function* tokenStream2bratSynt(
   for (let sentence of sentences) {
     for (let token of sentence) {
       for (let deps of [
-        token.node.deps,
-        token.node.edeps,
-        token.node.pdeps,
-        token.node.hdeps,
+        token.data.deps,
+        token.data.edeps,
+        token.data.pdeps,
+        token.data.hdeps,
       ]) {
         for (let dep of deps) {
           let head = n2id[dep.headId]
-          let dependant = n2id[token.node.id]
+          let dependant = n2id[token.data.id]
           yield `R${rId++}\t${dep.relation.replace(
             ':',
             '_',

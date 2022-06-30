@@ -1,10 +1,10 @@
-import { mu, Mu } from './mu'
+import { mu } from './mu'
 
 export class GraphNode<T> {
   parents = new Array<GraphNode<T>>()
   children = new Array<GraphNode<T>>()
 
-  constructor(public node: T) {}
+  constructor(public data: T) {}
 
   addParent(node: GraphNode<T>) {
     this.parents.push(node)
