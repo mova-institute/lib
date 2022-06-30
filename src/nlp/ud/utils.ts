@@ -294,7 +294,7 @@ export function* tokenStream2bratSynt(
       let { pos, features } = toUd(token.interp)
 
       Object.keys(features)
-        .filter((x) => /[[\]]/.test(x))
+        .filter((x) => features[x] === undefined || /[[\]]/.test(x))
         .forEach((x) => delete features[x])
 
       if (isAmbigCoordModifier(node)) {
@@ -315,9 +315,8 @@ export function* tokenStream2bratSynt(
 
       yield `${tId}\t${pos} ${offset} ${rightOffset}\t${token.form}`
 
-      for (let feature of Object.keys(features)) {
+      for (let [feature, value] of Object.entries(features)) {
         let toyield = `A${a++}\t${feature} ${tId}`
-        let value = features[feature]
         if (value && value !== true) {
           toyield += ` ${value}`
         }

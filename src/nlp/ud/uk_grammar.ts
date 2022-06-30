@@ -22,8 +22,7 @@ export type Node2indexMap = Map<TokenNode, number>
 
 export function isAmbigCoordModifier(node: GraphNode<Token>) {
   return (
-    node.parent &&
-    node.parent.children.some(
+    node.parent?.children.some(
       (x) => uEq(x.node.rel, 'conj') && !x.node.rel.endsWith(':parataxis'),
     ) &&
     !uEqSome(node.node.rel, [

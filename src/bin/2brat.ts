@@ -36,13 +36,20 @@ interface BratZoneConfig {
 
 const zones: Array<BratZoneConfig> = [
   {
-    enabled: false,
+    enabled: true,
     dirPath: ['treebank', 'conjpropagation_only'],
     sentenceFilter(sentence: SentenceStreamElement) {
       return (
         g.isCompleteSentence(sentence.nodes) &&
         sentence.nodes.some((x) => g.isAmbigCoordModifier(x))
       )
+    },
+  },
+  {
+    enabled: true,
+    dirPath: ['treebank', 'unfinished'],
+    sentenceFilter(sentence: SentenceStreamElement) {
+      return !g.isCompleteSentence(sentence.nodes)
     },
   },
 ]
