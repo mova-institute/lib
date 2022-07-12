@@ -2124,10 +2124,10 @@ export function validateSentenceSyntax(
       !t.isRoot() &&
       t.data.interp.isInterrogative() &&
       !g.thisOrConjHead(t, (x) =>
-        x.children.some((xx) => xx.node.interp.lemma.includes('?')),
+        x.children.some((xx) => xx.node?.interp.lemma.includes('?')),
       ) &&
       !g.thisOrConjHead(t.parent, (x) =>
-        x.children.some((xx) => xx.node.interp.lemma.includes('?')),
+        x.children.some((xx) => xx.node?.interp.lemma.includes('?')),
       ) &&
       !mu(t.walkThisAndUp0()) &&
       //   .some(x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
@@ -2141,7 +2141,7 @@ export function validateSentenceSyntax(
       (t.data.interp.isRelative() || t.data.interp.isIndefinite()) &&
       // && !t.node.interp.isInterrogative()
       g.thisOrConjHead(t, (x) =>
-        x.children.some((xx) => xx.node.interp.lemma.includes('?')),
+        x.children.some((xx) => xx.node?.interp.lemma.includes('?')),
       ),
     // && mu(t.walkThisAndUp0())
     //   .some(x => x.children.some(xx => xx.node.interp.lemma.includes('?')))
