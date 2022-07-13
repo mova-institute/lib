@@ -823,8 +823,8 @@ export function standartizeMorphoForUd2_11(interp: MorphInterp, form: string) {
   // todo: bring back
   if (
     [
-      f.PunctuationType.bullet,
-      f.PunctuationType.hyphen,
+      // f.PunctuationType.bullet,
+      // f.PunctuationType.hyphen,
       f.PunctuationType.ndash,
     ].includes(interp.getFeature(f.PunctuationType))
   ) {
