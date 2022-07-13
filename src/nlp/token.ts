@@ -1,6 +1,5 @@
 import { MorphInterp } from './morph_interp'
 import { keyvalue2attributesNormalized } from '../xml/utils'
-import { Dict } from '../types'
 import { CONJ_PROPAGATION_RELS } from './ud/uk_grammar'
 import { CoolSet } from '../data_structures/cool_set'
 import { uEq } from './ud/utils'
@@ -73,7 +72,7 @@ export interface Coreference {
 export class Token {
   private structure?: Structure
   private closing?: boolean
-  private attributes: Dict<string> = {}
+  private attributes: Record<string, string> = {}
   private type: TokenType
   form?: string
   interps = new Array<MorphInterp>()

@@ -9,7 +9,7 @@ function main() {
     process.stdin,
   )
   process.stdin
-    .on('data', (data) => {
+    .on('data', (data: string) => {
       writer.write(data.toLowerCase())
     })
     .on('close', () => writer.flush())

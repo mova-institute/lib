@@ -16,10 +16,6 @@ export function hashString(value: string) {
   return createHash('sha256').update(value).digest('hex')
 }
 
-export function hashStringLatin1(value: string) {
-  return createHash('sha256').update(value).digest('latin1')
-}
-
 export function hashObj(value) {
   return hashString(JSON.stringify(value))
 }

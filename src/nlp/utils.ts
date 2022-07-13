@@ -43,6 +43,7 @@ import { GraphNode } from '../graph'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
 import { AbstractDocument } from '../xml/xmlapi/abstract_document'
 import { Unpacked } from '../types'
+import { DocumentAttributes } from './corpus'
 
 import uniq = require('lodash.uniq')
 import sortedUniq = require('lodash.sorteduniq')
@@ -1522,12 +1523,13 @@ export function* tokenStream2sentencesRaw(stream: Iterable<Token>) {
   let skip = false // todo: gap
 
   const makeYield = () => {
+    let documentAttribs = curDoc.getAttributes() as any as DocumentAttributes
     let ret = {
       sentenceId,
       tokens: buf,
       multitokens,
       dataset,
-      documentAttribs: curDoc.getAttributes(),
+      documentAttribs,
       paragraphAttribs: curPar.getAttributes(),
     }
 

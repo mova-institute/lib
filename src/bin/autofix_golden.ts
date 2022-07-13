@@ -36,9 +36,15 @@ import * as g2 from '../nlp/uk_grammar'
 import * as g from '../nlp/ud/uk_grammar'
 import * as tereveni from '../corpus_pipeline/extractors/tereveni'
 import { parse } from 'url'
-import { uniq } from 'lodash'
+import { truncate, uniq } from 'lodash'
 import { clusterize, stableSort } from '../algo'
 import { tuple, shallowEqualArrays } from '../lang'
+import {
+  buildAttribution,
+  DocumentAttributes,
+  isAttributionChecked,
+  moreLikelyIsPublicDomain,
+} from '../nlp/corpus'
 
 const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
 const INSERTION_RE = /#<(\S+)/
@@ -78,6 +84,9 @@ async function main() {
   let dict = createDictionarySync()
   let analyzer = new MorphAnalyzer(dict).setExpandAdjectivesAsNouns(true)
   let ids = new Set<string>()
+  let stats = {
+    numDocsToAttribute: 0,
+  }
 
   let unknownPuncts = new Set<string>()
 
@@ -90,6 +99,7 @@ async function main() {
       killEmptyElements(root)
       insertSb(root)
       swapSb(root)
+      stats.numDocsToAttribute += checkAttribution(root)
       await addDocMeta(root)
       // renameStructures(root)
 
@@ -892,6 +902,7 @@ async function main() {
     fs.writeFileSync(args.seq, idSequence.toString())
   }
   console.log(`${tokenCount} tokens`)
+  console.log({ stats })
 }
 
 function testTokenization(
@@ -1239,6 +1250,26 @@ function findClosestFixable(inCorp: MorphInterp, inDict: Array<MorphInterp>) {
       return inDict[index]
     }
   }
+}
+
+function checkAttribution(root: AbstractElement) {
+  return mu(root.evaluateElements('//doc')).count((doc) => {
+    let attrs = doc.attributesObj() as any as DocumentAttributes
+    let attribution = buildAttribution(attrs)
+    if (attribution) {
+      doc.removeAttribute('attribution')
+    } else if (!moreLikelyIsPublicDomain(attrs)) {
+      doc.setAttribute('attribution', '')
+      // console.log(attrs)
+    }
+
+    if (!isAttributionChecked(attrs)) {
+      console.log(attrs)
+      return true
+    }
+
+    return false
+  })
 }
 
 const ALLOWED_TO_BE_EMPTY = ['g', 'sb', 'gap', 'br', 'coref-split']

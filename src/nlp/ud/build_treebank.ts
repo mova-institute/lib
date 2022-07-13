@@ -39,6 +39,7 @@ import {
   buildEnhancedTreeFromBasic,
 } from './enhanced'
 import { TrebankStatister } from './trebank_statister'
+import { authorAttributionNeeded, urlAttributionNeeded } from '../corpus'
 
 interface CliArgs {
   addIdToFeats: boolean
@@ -148,7 +149,7 @@ function main() {
       let completionRatio =
         tokens.length === 1 ? 1 : 1 - (roots.length - 1) / (tokens.length - 1)
       let hasMorphErrors = tokens.some((x) => x.interp.isError())
-      let curDocId = documentAttribs['id']
+      let { id: curDocId, src, author } = documentAttribs
       let curParId = paragraphAttribs['id']
 
       dataset =
@@ -164,8 +165,12 @@ function main() {
 
       let sentLevelInfo = {
         sent_id: sentenceId,
-        'newpar id': (opensPar && curParId) || undefined,
-        'newdoc id': (opensDoc && curDocId) || undefined,
+        ...(opensPar && { 'newpar id': curParId }),
+        ...(opensDoc && {
+          'newdoc id': curDocId,
+          ...(urlAttributionNeeded(documentAttribs) && { source: src }),
+          ...(authorAttributionNeeded(documentAttribs) && { author }),
+        }),
       }
       if (opensDoc) {
         sentLevelInfo['doc_title'] = documentAttribs['title'] || ''
