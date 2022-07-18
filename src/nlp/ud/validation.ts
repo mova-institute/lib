@@ -1882,7 +1882,7 @@ export function validateSentenceSyntax(
       t.data.rel !== 'acl:adv' &&
       t.data.rel !== 'advmod:gerund' && // ліміт на пости туди
       !t.data.interp.isAdjectiveAsNoun() && // цілком нове
-      !g.thisOrConjHead(t, (x) => uEqSome(x.node.rel, ['obl'])) &&
+      !g.thisOrConjHead(t, (x) => uEqSome(x.node?.rel, ['obl'])) &&
       !uEqSome(t.data.rel, ['discourse', 'parataxis', 'orphan']) &&
       !uEqSome(t.parent.data.rel, ['orphan']) &&
       !t.parent.children.some((x) => uEqSome(x.data.rel, ['nsubj', 'cop'])) &&

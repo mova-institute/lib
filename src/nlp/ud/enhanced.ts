@@ -307,6 +307,7 @@ export function buildEnhancedTreeFromBasic(basicNodes: Array<TokenNode>) {
   let ret = basicNodes.map((x) => new DirectedGraphNode<Token, string>(x.data))
 
   for (let [i, basicNode] of basicNodes.entries()) {
+    // eslint-disable-next-line no-negated-condition
     if (!isPromoted(basicNode)) {
       // 1: copy basic arrows except for orphans
       basicNode.data.deps.forEach((x) =>

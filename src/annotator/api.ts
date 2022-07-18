@@ -17,7 +17,6 @@ import {
   firstNWords,
   morphReinterpretGently,
   morphReinterpret,
-  keepDisambedOnly,
   enumerateWords,
   adoptMorphDisambs,
 } from '../nlp/utils'

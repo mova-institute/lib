@@ -71,7 +71,8 @@ module.exports = {
     // '@typescript-eslint/no-type-alias': 'off',
     '@typescript-eslint/no-unnecessary-boolean-literal-compare': ['warn'],
     '@typescript-eslint/no-unnecessary-condition': [
-      'warn',
+      'off',
+      // 'warn',  // todo: turn on after strictNullChecks migration
       { allowConstantLoopConditions: true },
     ],
     '@typescript-eslint/no-unnecessary-qualifier': ['warn'],
