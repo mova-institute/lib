@@ -1,8 +1,8 @@
 import mkdirpLib from 'mkdirp'
-import * as tmp from 'tmp'
 import rimraf from 'rimraf'
+import * as tmp from 'tmp'
 
-import { promises as fsp, PathLike } from 'fs'
+import { PathLike, promises as fsp } from 'fs'
 import * as pth from 'path'
 
 export async function exists(path: PathLike) {

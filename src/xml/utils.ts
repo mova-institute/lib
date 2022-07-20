@@ -1,6 +1,6 @@
+import { Dict } from '../types'
 import { AbstractElement } from './xmlapi/abstract_element'
 import { AbstractNode } from './xmlapi/abstract_node'
-import { Dict } from '../types'
 
 // todo: move out
 export const NS = {

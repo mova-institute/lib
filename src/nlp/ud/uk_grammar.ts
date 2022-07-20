@@ -1,19 +1,18 @@
-import { GraphNode, walkDepthNoSelf, walkDepth } from '../../graph'
-import { Token, Dependency, TokenTag } from '../token'
-import { MorphInterp } from '../morph_interp'
-import { uEq, uEqSome, stripSubrel } from './utils'
+import { clusterize, compareAscending } from '../../algo'
+import { Arrow, DirectedGraphNode } from '../../directed_graph'
+import { GraphNode, walkDepth, walkDepthNoSelf } from '../../graph'
+import { last, wiith } from '../../lang'
 import { mu } from '../../mu'
-import { last, wiith, mapInplace } from '../../lang'
-import { UdPos, toUd } from './tagset'
-import { ValencyDict } from '../valency_dictionary/valency_dictionary'
-import { compareAscending, clusterize } from '../../algo'
-import { DirectedGraphNode, Arrow } from '../../directed_graph'
 import * as f from '../morph_features'
+import { MorphInterp } from '../morph_interp'
+import { Dependency, Token, TokenTag } from '../token'
+import { ValencyDict } from '../valency_dictionary/valency_dictionary'
 import {
   buildEnhancedTreeFromBasic,
   loadEnhancedGraphFromTokens,
 } from './enhanced'
-import { initLocalHeadIndexes } from '../utils'
+import { toUd, UdPos } from './tagset'
+import { stripSubrel, uEq, uEqSome } from './utils'
 
 export type TokenNode = GraphNode<Token>
 export type EnhancedNode = DirectedGraphNode<Token, string>

@@ -1,17 +1,17 @@
-import { WebapiDocument } from './webapi_document'
-import { WebapiElement } from './webapi_element'
-import { WebapiAttribute } from './webapi_attribute'
+import { mu, Mu } from '../../mu'
+import { AbstractNode, XmlapiXpathResult } from '../xmlapi/abstract_node'
+import { isOddball, NS_XML, wrappedOrNull } from '../xmlapi/utils'
 import {
-  nodeOrElement,
-  nodeOrElementOrNull,
-  nodeOrElementOrAttribute,
   generateFromXpathResultIterator,
   generateFromXpathResultSnapshot,
   isNode,
+  nodeOrElement,
+  nodeOrElementOrAttribute,
+  nodeOrElementOrNull,
 } from './utils'
-import { AbstractNode, XmlapiXpathResult } from '../xmlapi/abstract_node'
-import { wrappedOrNull, isOddball, NS_XML } from '../xmlapi/utils'
-import { mu, Mu } from '../../mu'
+import { WebapiAttribute } from './webapi_attribute'
+import { WebapiDocument } from './webapi_document'
+import { WebapiElement } from './webapi_element'
 
 export class WebapiNode extends AbstractNode {
   constructor(protected wrapee: Node) {

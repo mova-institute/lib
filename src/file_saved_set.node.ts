@@ -1,6 +1,6 @@
 import fs from 'fs'
-import { dirname } from 'path'
 import { sync as mkdirpSync } from 'mkdirp'
+import { dirname } from 'path'
 
 export interface Tostringable {
   toString(): string

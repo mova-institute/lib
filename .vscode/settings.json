@@ -16,5 +16,8 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "prettier.enable": true,
+  // "editor.codeActionsOnSave": {
+  //   "source.organizeImports": true
+  // },
   "editor.formatOnSave": true
 }

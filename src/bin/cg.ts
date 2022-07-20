@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
-import * as path from 'path'
 import * as fs from 'fs'
-import minimist from 'minimist'
-import * as rimraf from 'rimraf'
-import * as mkdirp from 'mkdirp'
 import * as glob from 'glob'
+import minimist from 'minimist'
+import * as mkdirp from 'mkdirp'
+import * as path from 'path'
+import * as rimraf from 'rimraf'
 
-import { parseXmlFileSync } from '../xml/utils.node'
-import { morphReinterpretGently } from '../nlp/utils'
 import { mixml2cg } from '../nlp/cg/utils'
 import { createMorphAnalyzerSync } from '../nlp/morph_analyzer/factories.node'
+import { morphReinterpretGently } from '../nlp/utils'
+import { parseXmlFileSync } from '../xml/utils.node'
 
 interface Args {
   clean: boolean

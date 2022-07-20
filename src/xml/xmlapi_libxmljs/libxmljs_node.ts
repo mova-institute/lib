@@ -1,16 +1,16 @@
-import { LibxmljsDocument } from './libxmljs_document'
-import { LibxmljsElement } from './libxmljs_element'
-import { LibxmljsAttribute } from './libxmljs_attribute'
-import {
-  nodeOrElement,
-  nodeOrElementOrNull,
-  isNode,
-  nodeOrElementOrAttribute,
-} from './utils'
 import { wrappedOrNull } from '../../lang'
+import { mu, Mu } from '../../mu'
 import { AbstractNode, XmlapiXpathResult } from '../xmlapi/abstract_node'
 import { isOddball } from '../xmlapi/utils'
-import { mu, Mu } from '../../mu'
+import { LibxmljsAttribute } from './libxmljs_attribute'
+import { LibxmljsDocument } from './libxmljs_document'
+import { LibxmljsElement } from './libxmljs_element'
+import {
+  isNode,
+  nodeOrElement,
+  nodeOrElementOrAttribute,
+  nodeOrElementOrNull,
+} from './utils'
 
 export class LibxmljsNode extends AbstractNode {
   constructor(protected wrapee) {

@@ -1,27 +1,27 @@
 #!/usr/bin/env node
 
-import { join, basename } from 'path'
-import minimist from 'minimist'
 import * as glob from 'glob'
+import minimist from 'minimist'
+import { basename, join } from 'path'
 
 import { mu } from '../mu'
 import {
-  tokenStream2bratSynt,
-  tokenStream2bratPlaintext,
   tokenStream2bratCoref,
+  tokenStream2bratPlaintext,
+  tokenStream2bratSynt,
 } from '../nlp/ud/utils'
 import {
   mixml2tokenStream,
-  tokenStream2sentences,
   SentenceStream,
   SentenceStreamElement,
+  tokenStream2sentences,
 } from '../nlp/utils'
+import { trimExtension, zerofillMax } from '../string'
 import { parseXmlFileSync } from '../xml/utils.node'
-import { zerofillMax, trimExtension } from '../string'
 
 import { Token } from '../nlp/token'
-import { writeFileSyncMkdirp } from '../utils.node'
 import * as g from '../nlp/ud/uk_grammar'
+import { writeFileSyncMkdirp } from '../utils.node'
 
 interface Args {
   maxWordsPerFile: number

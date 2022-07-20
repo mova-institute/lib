@@ -1,26 +1,26 @@
-import { Token } from '../token'
-import { toUd } from './tagset'
-import { UdMiRelation } from './syntagset'
-import { mu } from '../../mu'
+import { compareAscending } from '../../algo'
 import { GraphNode, walkDepth, walkDepthNoSelf } from '../../graph'
-import { MorphInterp } from '../morph_interp'
-import { last, arrayed, wiith, wiithNonempty } from '../../lang'
-import { uEq, uEqSome } from './utils'
+import { SimpleGrouping } from '../../grouping'
+import { arrayed, last, wiith, wiithNonempty } from '../../lang'
+import { mu } from '../../mu'
 import { startsWithCapital } from '../../string'
 import { MorphAnalyzer } from '../morph_analyzer/morph_analyzer'
+import * as f from '../morph_features'
+import { MorphInterp } from '../morph_interp'
+import { Token } from '../token'
+import { MultitokenDescriptor } from '../utils'
+import { ValencyDict } from '../valency_dictionary/valency_dictionary'
+import { UdMiRelation } from './syntagset'
+import { toUd } from './tagset'
+import * as g from './uk_grammar'
 import {
-  PREDICATES,
-  isNumericModifier,
-  isGoverning,
   EnhancedArrow,
   EnhancedNode,
+  isGoverning,
+  isNumericModifier,
+  PREDICATES,
 } from './uk_grammar'
-import { ValencyDict } from '../valency_dictionary/valency_dictionary'
-import { SimpleGrouping } from '../../grouping'
-import { compareAscending } from '../../algo'
-import { MultitokenDescriptor } from '../utils'
-import * as f from '../morph_features'
-import * as g from './uk_grammar'
+import { uEq, uEqSome } from './utils'
 
 import { groupBy } from 'lodash'
 

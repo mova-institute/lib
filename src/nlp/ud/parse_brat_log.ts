@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { createInterface } from 'readline'
 import * as fs from 'fs'
+import { createInterface } from 'readline'
 
-import minimist from 'minimist'
 import * as columnify from 'columnify'
+import minimist from 'minimist'
 
 import { getLibRootRelative } from '../../lib_path.node'
 import { Dict } from '../../types'

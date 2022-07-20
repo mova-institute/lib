@@ -1,7 +1,7 @@
-import { MorphInterp } from './morph_interp'
+import { NS, tagStr2, traverseDepthGen2 } from '../xml/utils'
 import { AbstractElement } from '../xml/xmlapi/abstract_element'
+import { MorphInterp } from './morph_interp'
 import { sortInterps } from './utils'
-import { NS, traverseDepthGen2, tagStr2 } from '../xml/utils'
 
 export function* polishXml2verticalStream(root: AbstractElement) {
   let iterator = traverseDepthGen2(root)

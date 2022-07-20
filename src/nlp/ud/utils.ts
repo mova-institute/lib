@@ -1,23 +1,19 @@
-import { Token, TokenTag } from '../token'
-import { toUd, udFeatures2conlluString } from './tagset'
+import { GraphNode } from '../../graph'
+import { mu } from '../../mu'
+import { titlecase, trimAfterFirst, trimBeforeFirst } from '../../string'
+import { cyrToJirechekish } from '../../translit_jirechkish'
+import { Dict } from '../../types'
 import { MorphInterp } from '../morph_interp'
+import { Token, TokenTag } from '../token'
 import {
   MultitokenDescriptor,
-  tokenStream2plaintext,
   removeCombiningAccent,
+  tokenStream2plaintext,
 } from '../utils'
-import { mu } from '../../mu'
-import { GraphNode } from '../../graph'
-import { titlecase, trimAfterFirst, trimBeforeFirst } from '../../string'
-import {
-  CONJ_PROPAGATION_RELS_ARR,
-  isRootOrHole,
-  isAmbigCoordModifier,
-} from './uk_grammar'
-import { Dict } from '../../types'
+import { toUd, udFeatures2conlluString } from './tagset'
+import { isAmbigCoordModifier, isRootOrHole } from './uk_grammar'
 
 import sortby = require('lodash.sortby')
-import { cyrToJirechekish } from '../../translit_jirechkish'
 
 export interface Sentence2conlluParams {
   xpos?: 'mte' | 'upos' | 'ud'

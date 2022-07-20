@@ -1,7 +1,7 @@
-import { LibxmljsElement } from './libxmljs_element'
-import { LibxmljsNode } from './libxmljs_node'
 import { AbstractDocument } from '../xmlapi/abstract_document'
 import { isOddball } from '../xmlapi/utils'
+import { LibxmljsElement } from './libxmljs_element'
+import { LibxmljsNode } from './libxmljs_node'
 
 declare const require // because libxmljs typings are wrong and outdated (May 2016)
 const libxmljs = require('libxmljs')

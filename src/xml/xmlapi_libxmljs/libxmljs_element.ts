@@ -1,9 +1,9 @@
-import { LibxmljsNode } from './libxmljs_node'
-import { LibxmljsAttribute } from './libxmljs_attribute'
-import { nodeOrElementOrNull } from './utils'
+import { Mu } from '../../mu'
 import { AbstractElement } from '../xmlapi/abstract_element'
 import { mixin } from '../xmlapi/utils'
-import { Mu } from '../../mu'
+import { LibxmljsAttribute } from './libxmljs_attribute'
+import { LibxmljsNode } from './libxmljs_node'
+import { nodeOrElementOrNull } from './utils'
 
 @mixin(AbstractElement)
 export class LibxmljsElement extends LibxmljsNode implements AbstractElement {

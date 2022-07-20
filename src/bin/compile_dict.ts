@@ -2,7 +2,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-import { lexemes, compileDict } from '../nlp/morph_analyzer/dict_utils'
+import { compileDict, lexemes } from '../nlp/morph_analyzer/dict_utils'
 import { writeCompiledDict } from '../nlp/morph_analyzer/utils.node'
 
 const mkdirp = require('mkdirp')

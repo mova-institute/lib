@@ -1,8 +1,8 @@
+import { wrappedOrNull } from '../../lang'
+import { AbstractDocument } from '../xmlapi/abstract_document'
+import { isOddball } from '../xmlapi/utils'
 import { WebapiElement } from './webapi_element'
 import { WebapiNode } from './webapi_node'
-import { AbstractDocument } from '../xmlapi/abstract_document'
-import { wrappedOrNull } from '../../lang'
-import { isOddball } from '../xmlapi/utils'
 
 export class WebapiDocument extends AbstractDocument {
   private static parser: DOMParser

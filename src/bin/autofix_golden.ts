@@ -1,50 +1,50 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs'
-import { basename } from 'path'
 import * as glob from 'glob'
-import minimist from 'minimist'
 import * as _ from 'lodash'
-import { parseXmlFileSync } from '../xml/utils.node'
-import { AbstractElement } from '../xml/xmlapi/abstract_element'
-import { MorphInterp } from '../nlp/morph_interp'
-import { fetchText } from '../request'
-import * as f from '../nlp/morph_features'
-import { Token } from '../nlp/token'
-import {
-  serializeMiDocument,
-  tokenStream2sentences,
-  mixml2tokenStream,
-  tokenStream2plaintextString,
-  createMultitokenElement,
-  createTokenElement,
-  tokenizeUk,
-  tokenStream2plaintext,
-  MultitokenDescriptor,
-} from '../nlp/utils'
-import { removeNamespacing, autofixSomeEntitites } from '../xml/utils'
-import { toSortableDatetime, fromUnixStr, ukMonthMap } from '../date'
-import { mu } from '../mu'
-import * as strUtils from '../string'
-import { createDictionarySync } from '../nlp/dictionary/factories.node'
-import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
-import { GraphNode } from '../graph'
-import { uEq, uEqSome } from '../nlp/ud/utils'
-import { toUd } from '../nlp/ud/tagset'
-import { PREDICATES } from '../nlp/ud/uk_grammar'
-import * as g2 from '../nlp/uk_grammar'
-import * as g from '../nlp/ud/uk_grammar'
-import * as tereveni from '../corpus_pipeline/extractors/tereveni'
+import { uniq } from 'lodash'
+import minimist from 'minimist'
+import { basename } from 'path'
 import { parse } from 'url'
-import { truncate, uniq } from 'lodash'
 import { clusterize, stableSort } from '../algo'
-import { tuple, shallowEqualArrays } from '../lang'
+import * as tereveni from '../corpus_pipeline/extractors/tereveni'
+import { fromUnixStr, toSortableDatetime, ukMonthMap } from '../date'
+import { GraphNode } from '../graph'
+import { shallowEqualArrays, tuple } from '../lang'
+import { mu } from '../mu'
 import {
   buildAttribution,
   DocumentAttributes,
   isAttributionChecked,
   moreLikelyIsPublicDomain,
 } from '../nlp/corpus'
+import { createDictionarySync } from '../nlp/dictionary/factories.node'
+import { MorphAnalyzer } from '../nlp/morph_analyzer/morph_analyzer'
+import * as f from '../nlp/morph_features'
+import { MorphInterp } from '../nlp/morph_interp'
+import { Token } from '../nlp/token'
+import { toUd } from '../nlp/ud/tagset'
+import * as g from '../nlp/ud/uk_grammar'
+import { PREDICATES } from '../nlp/ud/uk_grammar'
+import { uEq, uEqSome } from '../nlp/ud/utils'
+import * as g2 from '../nlp/uk_grammar'
+import {
+  createMultitokenElement,
+  createTokenElement,
+  mixml2tokenStream,
+  MultitokenDescriptor,
+  serializeMiDocument,
+  tokenizeUk,
+  tokenStream2plaintext,
+  tokenStream2plaintextString,
+  tokenStream2sentences,
+} from '../nlp/utils'
+import { fetchText } from '../request'
+import * as strUtils from '../string'
+import { autofixSomeEntitites, removeNamespacing } from '../xml/utils'
+import { parseXmlFileSync } from '../xml/utils.node'
+import { AbstractElement } from '../xml/xmlapi/abstract_element'
 
 const REPLACE_RE = /#>([^\s@]+)(?:@(\S+))?/
 const INSERTION_RE = /#<(\S+)/

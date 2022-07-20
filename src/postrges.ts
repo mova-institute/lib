@@ -1,4 +1,4 @@
-import { connect, Client, ClientConfig, QueryResult } from 'pg'
+import { Client, ClientConfig, connect, QueryResult } from 'pg'
 const { types } = require('pg')
 import camelCase = require('camelcase')
 import decamelize = require('decamelize')

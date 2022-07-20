@@ -1,10 +1,10 @@
-import { WebapiNode } from './webapi_node'
-import { WebapiAttribute } from './webapi_attribute'
-import { nodeOrElementOrNull } from './utils'
-import { mixin } from '../xmlapi/utils'
-import { AbstractElement } from '../xmlapi/abstract_element'
-import { Mu } from '../../mu'
 import { wrappedOrNull } from '../../lang'
+import { Mu } from '../../mu'
+import { AbstractElement } from '../xmlapi/abstract_element'
+import { mixin } from '../xmlapi/utils'
+import { nodeOrElementOrNull } from './utils'
+import { WebapiAttribute } from './webapi_attribute'
+import { WebapiNode } from './webapi_node'
 
 @mixin(AbstractElement)
 export class WebapiElement extends WebapiNode implements AbstractElement {

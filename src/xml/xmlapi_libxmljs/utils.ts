@@ -1,6 +1,6 @@
+import { LibxmljsAttribute } from './libxmljs_attribute'
 import { LibxmljsElement } from './libxmljs_element'
 import { LibxmljsNode } from './libxmljs_node'
-import { LibxmljsAttribute } from './libxmljs_attribute'
 
 export function nodeOrElement(wrapee): LibxmljsNode | LibxmljsElement {
   switch (wrapee.type()) {

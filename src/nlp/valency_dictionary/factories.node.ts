@@ -1,10 +1,10 @@
-import { LETTER_UK_UPPERCASE, LETTER_UK_LOWERCASE } from '../static'
-import { ValencyDict, ValencyCase } from './valency_dictionary'
-import { mu } from '../../mu'
-import { r } from '../../lang'
-import { linesSync } from '../../utils.node'
 import * as path from 'path'
+import { r } from '../../lang'
+import { mu } from '../../mu'
+import { linesSync } from '../../utils.node'
+import { LETTER_UK_LOWERCASE, LETTER_UK_UPPERCASE } from '../static'
 import { removeCombiningAccent } from '../utils'
+import { ValencyCase, ValencyDict } from './valency_dictionary'
 
 const formsRe = new RegExp(r`[${LETTER_UK_UPPERCASE}'#]{2,}`, 'g')
 const nounVerbFormsRe = new RegExp(r`[${LETTER_UK_LOWERCASE}'#]{2,}`, 'g')

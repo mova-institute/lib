@@ -2,34 +2,33 @@ import flatten from 'lodash/flatten'
 
 import { mu, Mu } from '../../mu'
 import { Dictionary } from '../dictionary/dictionary'
+import { Case, Gender, Pos } from '../morph_features'
 import { MorphInterp } from '../morph_interp'
-import { Case, Pos, Gender } from '../morph_features'
 import {
-  FOREIGN_RE,
-  WCHAR_UK_UPPERCASE,
   ANY_PUNC_OR_DASH_RE,
-  LETTER_UK_UPPERCASE,
-  LETTER_UK_LOWERCASE,
   APOSTROPES_REPLACE_RE,
-  URL_RE,
   ARABIC_NUMERAL_RE,
-  ROMAN_NUMERAL_RE,
-  SYMBOL_RE,
-  EMAIL_RE,
-  LITERAL_SMILE_RE,
-  EMOJI_RE,
-  SMILE_RE,
-  INTERJECTION_RE,
-  NUMERAL_PREFIXED_TOKEN_RE,
   DOMAIN_AS_NAME_RE,
+  EMAIL_RE,
+  EMOJI_RE,
+  INTERJECTION_RE,
+  LETTER_UK_LOWERCASE,
+  LETTER_UK_UPPERCASE,
+  LITERAL_SMILE_RE,
+  NUMERAL_PREFIXED_TOKEN_RE,
+  ROMAN_NUMERAL_RE,
+  SMILE_RE,
+  SYMBOL_RE,
+  URL_RE,
+  WCHAR_UK_UPPERCASE,
 } from '../static'
 
-import { HashSet } from '../../data_structures'
+import Lru from 'lru-cache'
 import * as algo from '../../algo'
 import { CachedValue } from '../../cached_value'
+import { HashSet } from '../../data_structures'
 import { parseIntStrict } from '../../lang'
 import * as stringUtils from '../../string'
-import Lru from 'lru-cache'
 
 const dictOverride = new Map([
   ['"', ['punct:quote:open', 'punct:quote:close']],

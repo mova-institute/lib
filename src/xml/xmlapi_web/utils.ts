@@ -1,6 +1,6 @@
+import { WebapiAttribute } from './webapi_attribute'
 import { WebapiElement } from './webapi_element'
 import { WebapiNode } from './webapi_node'
-import { WebapiAttribute } from './webapi_attribute'
 
 export function nodeOrElement(wrapee: Node): WebapiNode | WebapiElement {
   switch (wrapee.nodeType) {

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { parseXmlFileSync } from '../xml/utils.node'
-import { serializeMiDocument } from '../nlp/utils'
 import { writeFileSync } from 'fs'
-import { AbstractElement } from '../xml/xmlapi/abstract_element'
+import { serializeMiDocument } from '../nlp/utils'
 import { NS } from '../xml/utils'
+import { parseXmlFileSync } from '../xml/utils.node'
+import { AbstractElement } from '../xml/xmlapi/abstract_element'
 
 function main() {
   let [destPath, sourcePath] = process.argv.slice(2)

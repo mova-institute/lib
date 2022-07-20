@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { CatStreamEnqueueable } from '../cat_stream_enqueueable'
-import { trimmedNonemptyLinesSync } from '../utils.node'
 import { mu } from '../mu'
+import { trimmedNonemptyLinesSync } from '../utils.node'
 
 import { createInterface } from 'readline'
 import minimist = require('minimist')
