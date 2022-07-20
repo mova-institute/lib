@@ -164,7 +164,7 @@ export function isNonprojective(node: TokenNode) {
 }
 
 export function isSecondaryPredication(rel: string) {
-  return rel === 'advcl:sp' || rel === 'xcomp:sp'
+  return rel === 'advcl:pred' || rel === 'xcomp:pred'
 }
 
 export function findRelationAnalog(
@@ -231,7 +231,7 @@ export function findRelationAnalog(
     existingDependent.data.interp.isConverb() &&
     newDependent.data.interp.isAdjective()
   ) {
-    return 'advcl:sp'
+    return 'advcl:pred'
   }
 
   for (let [clausal, plain] of CLAUSAL_TO_PLAIN) {
@@ -1027,7 +1027,7 @@ export function isPassive(t: TokenNode) {
       t.parent.children.some(
         (x) =>
           uEq(x.data.rel, 'xcomp') &&
-          x.data.rel !== 'xcomp:sp' &&
+          x.data.rel !== 'xcomp:pred' &&
           x.data.interp.isPassive(),
       )
     ) {
@@ -1367,7 +1367,7 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'acl',
   'adv:gerund',
   'advcl:cmp',
-  'advcl:sp',
+  'advcl:pred',
   'advcl:svc',
   'advcl',
   'advmod:amtgov',
@@ -1433,7 +1433,7 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'root',
   'vocative:cl',
   'vocative',
-  'xcomp:sp',
+  'xcomp:pred',
   'xcomp',
 ]
 export const LEAF_RELATIONS = [
@@ -1727,8 +1727,8 @@ export const ENHANCED_RELATIONS = [
   'nsubj:x',
   'csubj:x',
 
-  'nsubj:sp',
-  'csubj:sp',
+  'nsubj:pred',
+  'csubj:pred',
 ]
 
 export const SOME_QUOTES = /^[«»"”“„']+$/
@@ -1737,7 +1737,7 @@ const UD_23_OFFICIAL_SUBRELS = new Set([
   'acl:adv',
   'acl:relcl',
   'admod:amtgov',
-  'advcl:sp',
+  'advcl:pred',
   'advcl:svc',
   'advmod:det',
   'ccomp:svc',
@@ -1756,7 +1756,7 @@ const UD_23_OFFICIAL_SUBRELS = new Set([
   'parataxis:discourse',
   'parataxis:newsent',
   'parataxis:rel',
-  'xcomp:sp',
+  'xcomp:pred',
   'vocative:cl',
 ])
 

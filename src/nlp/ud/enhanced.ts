@@ -250,7 +250,7 @@ function findRelationAnalog(
     existingDependent.node.interp.isConverb() &&
     newDependent.node.interp.isAdjective()
   ) {
-    return 'advcl:sp'
+    return 'advcl:pred'
   }
 
   // for (let [clausal, plain] of CLAUSAL_TO_PLAIN) {

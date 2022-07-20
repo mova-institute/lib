@@ -74,7 +74,7 @@ const TREED_SIMPLE_RULES: Array<
     (t) => g.hasPredication(t),
   ],
   [
-    `advcl:sp`,
+    `advcl:pred`,
     `з присудка`,
     (t) => canBePredicate(t),
     `в називний/орудний іменник/прикметник`,
@@ -182,9 +182,9 @@ const TREED_SIMPLE_RULES: Array<
     (t) => canActAsNounForObj(t),
   ],
   [
-    `nsubj:sp`,
-    `з :sp’а`,
-    (t) => ['xcomp:sp', 'advcl:sp'].includes(t.data.rel),
+    `nsubj:pred`,
+    `з :pred’а`,
+    (t) => ['xcomp:pred', 'advcl:pred'].includes(t.data.rel),
     `в іменникове`,
     (t) => canActAsNounForObj(t),
   ],
@@ -323,7 +323,7 @@ const TREED_SIMPLE_RULES: Array<
     (t) => canBePredicate(t),
   ],
   [
-    `xcomp:sp`,
+    `xcomp:pred`,
     `з присудка`,
     (t) => canBePredicate(t),
     `в називний/орудний іменник/прикметник чи в „як щось“`,
@@ -603,7 +603,7 @@ export function validateSentenceSyntax(
     (t) =>
       t.children.filter(
         (x) => !x.data.isElided() && uEqSome(x.data.rel, g.CORE_COMPLEMENTS),
-        // || uEq(x.node.rel, 'xcomp') && x.node.rel !== 'xcomp:sp'
+        // || uEq(x.node.rel, 'xcomp') && x.node.rel !== 'xcomp:pred'
       ).length > 1,
   )
   reportIf(
@@ -632,12 +632,12 @@ export function validateSentenceSyntax(
     `декілька xcomp’ів`,
     (t) =>
       t.children.filter(
-        (x) => uEq(x.data.rel, 'xcomp') && x.data.rel !== 'xcomp:sp',
+        (x) => uEq(x.data.rel, 'xcomp') && x.data.rel !== 'xcomp:pred',
       ).length > 1,
   )
   reportIf(
-    `декілька xcomp:sp`,
-    (t) => t.children.filter((x) => x.data.rel === 'xcomp:sp').length > 1,
+    `декілька xcomp:pred`,
+    (t) => t.children.filter((x) => x.data.rel === 'xcomp:pred').length > 1,
   )
   reportIf(
     `декілька cop’ів`,
@@ -875,7 +875,7 @@ export function validateSentenceSyntax(
       // && !g.isInfinitive(t)
       !(uEq(t.data.rel, 'acl') && t.data.interp.isParticiple()) &&
       !(uEq(t.data.rel, 'advcl') && t.data.interp.isConverb()) &&
-      !t.data.rel.endsWith(':sp'),
+      !t.data.rel.endsWith(':pred'),
   )
 
   xreportIf(
@@ -1579,7 +1579,7 @@ export function validateSentenceSyntax(
     `advcl без сполучування (може advcl:svc?)`,
     (t) =>
       uEq(t.data.rel, 'advcl') &&
-      t.data.rel !== 'advcl:sp' &&
+      t.data.rel !== 'advcl:pred' &&
       t.data.rel !== 'advcl:svc' &&
       [
         f.VerbType.indicative,
@@ -1783,7 +1783,7 @@ export function validateSentenceSyntax(
         'obl',
         'flat:title',
         'flat:name',
-        'xcomp:sp',
+        'xcomp:pred',
         'flat:repeat',
         'parataxis:discourse',
       ]) &&
@@ -1815,7 +1815,13 @@ export function validateSentenceSyntax(
       t.data.rel &&
       // && !t.node.isPromoted
       toUd(t.data.interp).pos === 'DET' && // todo: .isDet()
-      !uEqSome(t.data.rel, ['det', 'conj', 'fixed', 'xcomp:sp', 'advcl:sp']) &&
+      !uEqSome(t.data.rel, [
+        'det',
+        'conj',
+        'fixed',
+        'xcomp:pred',
+        'advcl:pred',
+      ]) &&
       !uEqSome(t.data.rel, ['nsubj', 'obj', 'iobj', 'obl', 'nmod']) &&
       !uEqSome(t.data.rel, ['advmod:det', 'flat:abs']) &&
       !g.findRelativeClauseRoot(t),
@@ -2942,7 +2948,7 @@ export function validateSentenceSyntax(
       `неочікуваний #xsubj-from-head`,
       (t) =>
         t.data.hasTag('xsubj-from-head') &&
-        ((t.data.rel !== 'xcomp' && t.data.rel !== 'xcomp:sp') ||
+        ((t.data.rel !== 'xcomp' && t.data.rel !== 'xcomp:pred') ||
           t.parent.children.some((x) => uEqSome(x.data.rel, g.SUBJECTS))), // todo: conj
     )
     reportIf(
@@ -2976,22 +2982,22 @@ export function validateSentenceSyntax(
     )
 
     reportIf(
-      `xcomp:sp без enhanced підмета`,
+      `xcomp:pred без enhanced підмета`,
       (t) =>
-        t.data.rel === 'xcomp:sp' &&
+        t.data.rel === 'xcomp:pred' &&
         !t.data.hasTag('xsubj-from-head') &&
         !enhancedOnlyNodes[t.data.index].outgoingArrows.some((x) =>
-          uEqSome(x.attrib, ['nsubj:sp']),
+          uEqSome(x.attrib, ['nsubj:pred']),
         ) &&
         !t.parent.data.interp.isConverb(),
     )
 
     reportIf(
-      `advcl:sp без enhanced підмета`,
+      `advcl:pred без enhanced підмета`,
       (t) =>
-        t.data.rel === 'advcl:sp' &&
+        t.data.rel === 'advcl:pred' &&
         !enhancedOnlyNodes[t.data.index].outgoingArrows.some((x) =>
-          uEqSome(x.attrib, ['nsubj:sp']),
+          uEqSome(x.attrib, ['nsubj:pred']),
         ) &&
         !t.data.hasTag('xsubj-from-head'),
     )
@@ -3017,7 +3023,7 @@ export function validateSentenceSyntax(
         uEqSome(t.data.rel, g.CLAUSAL_MODIFIERS) &&
         !g.hasPredication(t) &&
         !g.isInfinitiveAnalytically(t) &&
-        !t.data.rel.endsWith(':sp'),
+        !t.data.rel.endsWith(':pred'),
     )
 
     xreportIf(
@@ -3179,8 +3185,8 @@ export function validateSentenceSyntax(
       (t) => t.data.interp.lemma === 'сам' && uEq(t.data.rel, 'nsubj'),
     )
     xreportIf(
-      `сам advcl:sp`,
-      (t) => t.data.interp.lemma === 'сам' && uEq(t.data.rel, 'advcl:sp'),
+      `сам advcl:pred`,
+      (t) => t.data.interp.lemma === 'сам' && uEq(t.data.rel, 'advcl:pred'),
     )
     xreportIf(
       `сам ?`,
@@ -3209,8 +3215,8 @@ export function validateSentenceSyntax(
       (t) => t.data.interp.lemma === 'самий' && uEq(t.data.rel, 'nsubj'),
     )
     xreportIf(
-      `самий advcl:sp`,
-      (t) => t.data.interp.lemma === 'самий' && uEq(t.data.rel, 'advcl:sp'),
+      `самий advcl:pred`,
+      (t) => t.data.interp.lemma === 'самий' && uEq(t.data.rel, 'advcl:pred'),
     )
     xreportIf(
       `самий ?`,
@@ -3389,7 +3395,7 @@ export function validateSentenceSyntax(
   // lemmas for punct types
   // зробили реконструкцію, але забули зробити орфанами obl’и
   // conj:upperlevel з conj
-  // словник xcomp:sp
+  // словник xcomp:pred
   // може проводитись, якщо — advcl з може
   // окрім
   // надійшли рішення Дорогичівської сільської ради Заліщицького району — рішення в однині
@@ -3420,7 +3426,7 @@ export function validateSentenceSyntax(
   // conj:parataxis рівень
   // мусить щосьробити, щоб не _ — з мусить?
   // ні сполучник :neg
-  // злидні кинулись всі до дерева — всі advcl:sp чи просто det?
+  // злидні кинулись всі до дерева — всі advcl:pred чи просто det?
   // :repeat між однаковими
   // відмінки в іменниковій предикації
   // ccomp/obj з _можливо_
@@ -3482,7 +3488,7 @@ export function validateSentenceSyntax(
   // conj:parataxis не коли однорідні підрядні
   // ціль завбільшки з табуретку — consistent acl
   // рослина висотою сантиметр — flat:title?
-  // вказують як синонім — xcomp:sp
+  // вказують як синонім — xcomp:pred
   // кома-риска з-від праворуч
   // між двома inf коли друге без спол не підр зв
   // тобто, цебто, а саме, як-от, або, чи (у значенні “тобто”)
@@ -3503,12 +3509,12 @@ export function validateSentenceSyntax(
   // _будьте свідомі_ — що не буває копул в наказовому?
   // коли перед cc кома насправді зі звороту _, щоб…, але_
   // у graft йдуть тільки не clausal
-  // давальний самому — advcl:sp чи таки iobj?
+  // давальний самому — advcl:pred чи таки iobj?
   // obl чи advcl в inf_prep?
   // коми в складених присудках
   // закривні розділові зі своїх боків
   // будь ласка
-  // стала роллю — щоб не obj замість xcomp:sp
+  // стала роллю — щоб не obj замість xcomp:pred
   // ins obj з якимоось ще obj
   // NON_CHAINABLE_RELS
   // const NEVER_CONJUNCT_POS = [ 'PUNCT', 'SCONJ' ]

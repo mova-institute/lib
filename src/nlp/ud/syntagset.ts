@@ -38,7 +38,7 @@ export type Ud20UniversalRelation =
 export type Ud20MiSpecificRelation =
   | 'acl:adv'
   | 'advcl:cmp'
-  | 'advcl:sp'
+  | 'advcl:pred'
   | 'advcl:svc'
   | 'advmod:amtgov'
   | 'appos:nonnom'
@@ -62,6 +62,6 @@ export type Ud20MiSpecificRelation =
   | 'parataxis:newsent'
   | 'parataxis:thatis'
   | 'parataxis:rel'
-  | 'xcomp:sp'
+  | 'xcomp:pred'
 
 export type UdMiRelation = Ud20UniversalRelation | Ud20MiSpecificRelation
