@@ -291,7 +291,7 @@ const TREED_SIMPLE_RULES: Array<
       !t ||
       !t.data.interp.isPunctuation() ||
       t.data.hasTag('nestedpunct') ||
-      g.isPunctInParenthes(t),
+      g.isPunctInParentheses(t),
     // t => !t /*temp*/ /*|| isContentWord(t)*/ || t.tags.includes('nestedpunct'),
     `в PUNCT`,
     (t) => t.data.interp.isPunctuation(),

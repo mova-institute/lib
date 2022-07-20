@@ -502,7 +502,7 @@ export function isQuantificationalNsubj(t: TokenNode) {
   )
 }
 
-export function isPunctInParenthes(t: TokenNode) {
+export function isPunctInParentheses(t: TokenNode) {
   return (
     t.data.interp.isPunctuation() &&
     t.children.length === 2 &&
