@@ -3572,7 +3572,7 @@ function thisOrConj(node: GraphNode<Token>, predicate: TreedSentencePredicate) {
 }
 
 function isSubordiateRoot(token: Token) {
-  return g.SUBORDINATE_CLAUSES.some((x) => uEq(token.rel, x))
+  return g.SUBORDINATE_CLAUSES.some((x) => uEq(token?.rel, x))
 }
 
 function findHoles(array: Array<number>) {

@@ -1013,7 +1013,7 @@ export function isFeasibleAdvclHead(head: TokenNode) {
 export function isFeasibleAdvmod(head: TokenNode, dep: TokenNode) {
   return (
     isFeasibleAdvclHead(head) ||
-    thisOrConjHead(head, (x) => uEq(x.node.rel, 'obl')) ||
+    thisOrConjHead(head, (x) => uEq(x.node?.rel, 'obl')) ||
     isAdvmodParticle(dep)
   )
 }
