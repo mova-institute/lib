@@ -873,7 +873,7 @@ export function standartizeSentForUd2_11BeforeEnhGeneration(
 
     if (t.hasTag('iobj-agent')) {
       // todo
-      t.edeps = t.edeps.filter((x) => x.relation !== 'nsubj:x')
+      t.edeps = t.edeps.filter((x) => x.relation !== 'nsubj:xsubj')
     }
 
     // set :relles to :relcl
@@ -973,9 +973,6 @@ export function standartizeSentenceForUd2_11(basicNodes: Array<TokenNode>) {
     // https://github.com/UniversalDependencies/docs/issues/873
     for (let edep of t.edeps) {
       let [base, spec] = edep.relation.split(':', 2)
-      if (spec === 'x') {
-        spec = 'xsubj'
-      }
       if (spec === 'rel') {
         spec = ''
       }
@@ -1724,8 +1721,8 @@ export const ENHANCED_RELATIONS = [
   'obj:rel',
   'obl:rel',
 
-  'nsubj:x',
-  'csubj:x',
+  'nsubj:xsubj',
+  'csubj:xsubj',
 
   'nsubj:pred',
   'csubj:pred',

@@ -175,7 +175,7 @@ const TREED_SIMPLE_RULES: Array<
     (t) => canActAsNounForObj(t),
   ],
   [
-    `nsubj:x`,
+    `nsubj:xsubj`,
     `з чистого xcomp’а`,
     (t) => t.data.rel === 'xcomp',
     `в іменникове`,
@@ -2976,7 +2976,7 @@ export function validateSentenceSyntax(
         !t.data.hasTag('xsubj-is-obl') &&
         !t.parent.data.interp.isConverb() &&
         !enhancedOnlyNodes[t.data.index].outgoingArrows.some((x) =>
-          uEqSome(x.attrib, ['nsubj:x']),
+          uEqSome(x.attrib, ['nsubj:xsubj']),
         ),
       // && !t.parent.node.interp.isReversive()  // temp
     )

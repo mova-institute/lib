@@ -707,7 +707,7 @@ async function main() {
 
           for (let edep of token.edeps) {
             if (
-              edep.relation === 'nsubj:x' &&
+              edep.relation === 'nsubj:xsubj' &&
               nodes[edep.headIndex].data.rel === 'xcomp:pred'
             ) {
               edep.relation = 'nsubj:pred'
