@@ -58,7 +58,6 @@ function main() {
     })
     .on('close', () => {
       let grandTotal = 0
-      // tslint:disable-next-line:no-object-literal-type-assertion
       let counts = {} as Dict<any>
       for (let [arrowId, { user }] of Object.entries(stats).filter(
         (x) => x[1],

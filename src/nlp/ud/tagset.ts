@@ -380,7 +380,6 @@ const mapMap = new Map<any, any>([
   [DictValency, valencyTypeMap],
 ])
 
-/* tslint:disable:variable-name */
 export class UdFeats {
   // POS: UdPos
   Abbr: UdBoolean
@@ -414,7 +413,6 @@ export class UdFeats {
   Voice: UdVoice
   'Animacy[gram]': UdGrammaticalAnimacy
 }
-/* tslint:enable:variable-name */
 
 function mapFeatureValue2ud(featureName, value) {
   if (value === undefined) {

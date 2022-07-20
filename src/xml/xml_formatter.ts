@@ -1,7 +1,5 @@
 // https://github.com/DotJoshJohnson/vscode-xml/blob/master/src/services/XmlFormatter.ts
 
-/* tslint:disable */
-
 // Based on pretty-data (https://github.com/vkiryukhin/pretty-data)
 export class XmlFormatter {
   constructor(options?: IXmlFormatterOptions) {

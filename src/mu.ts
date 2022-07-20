@@ -1,5 +1,3 @@
-/* tslint:disable:no-this-assignment */
-
 export function mu<T>(iterable: Iterable<T> = []) {
   return new Mu(iterable)
 }

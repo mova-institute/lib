@@ -1,5 +1,3 @@
-/* tslint:disable:no-this-assignment */
-
 export function amu<T>(iterable: AsyncIterable<T>) {
   return new AMu(iterable)
 }
