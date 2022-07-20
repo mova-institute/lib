@@ -43,11 +43,10 @@ export class WebapiNode extends AbstractNode {
   }
 
   text(value?: string) {
-    if (value !== undefined) {
-      this.wrapee.textContent = value
-    } else {
+    if (value === undefined) {
       return this.wrapee.textContent
     }
+    this.wrapee.textContent = value
   }
 
   type(): 'element' | 'text' | 'comment' | 'cdata' {
@@ -61,7 +60,7 @@ export class WebapiNode extends AbstractNode {
       case Node.CDATA_SECTION_NODE:
         return 'cdata'
       default:
-        throw new Error('Unexpected Node type: ' + this.wrapee.nodeType)
+        throw new Error(`Unexpected Node type: ${this.wrapee.nodeType}`)
     }
   }
 
@@ -97,7 +96,7 @@ export class WebapiNode extends AbstractNode {
     throw new Error('Not implemented') // todo
   }
 
-  evaluate(xpath: string, nsMap?: Object): XmlapiXpathResult {
+  evaluate(xpath: string, nsMap?: Record<string, string>): XmlapiXpathResult {
     let result = this.wrapee.ownerDocument.evaluate(
       xpath,
       this.wrapee,
@@ -133,7 +132,7 @@ export class WebapiNode extends AbstractNode {
     }
   }
 
-  evaluateNode(xpath: string, nsMap?: Object) {
+  evaluateNode(xpath: string, nsMap?: Record<string, string>) {
     let wrapee = this.wrapee.ownerDocument.evaluate(
       xpath,
       this.wrapee,
@@ -150,7 +149,7 @@ export class WebapiNode extends AbstractNode {
     return nodeOrElement(wrapee)
   }
 
-  evaluateElement(xpath: string, nsMap?: Object) {
+  evaluateElement(xpath: string, nsMap?: Record<string, string>) {
     let ret = this.evaluateNode(xpath, nsMap)
     if (!ret) {
       return null
@@ -161,7 +160,7 @@ export class WebapiNode extends AbstractNode {
     return ret as WebapiElement
   }
 
-  evaluateAttribute(xpath: string, nsMap?: Object) {
+  evaluateAttribute(xpath: string, nsMap?: Record<string, string>) {
     let wrapee = this.wrapee.ownerDocument.evaluate(
       xpath,
       this.wrapee,
@@ -178,7 +177,10 @@ export class WebapiNode extends AbstractNode {
     return new WebapiAttribute(wrapee)
   }
 
-  evaluateNodes(xpath: string, nsMap?: Object): Mu<AbstractNode> {
+  evaluateNodes(
+    xpath: string,
+    nsMap?: Record<string, string>,
+  ): Mu<AbstractNode> {
     // @ts-ignore
     return this._evaluateManyOrdered(xpath, nsMap).map((x) => {
       if (!isNode(x)) {
@@ -189,7 +191,7 @@ export class WebapiNode extends AbstractNode {
   }
 
   // @ts-ignore
-  evaluateElements(xpath: string, nsMap?: Object) {
+  evaluateElements(xpath: string, nsMap?: Record<string, string>) {
     return this._evaluateManyOrdered(xpath, nsMap).map((x) => {
       if (x.nodeType !== Node.ELEMENT_NODE) {
         throw new Error('Xpath result is not a list of elements')
@@ -198,7 +200,7 @@ export class WebapiNode extends AbstractNode {
     })
   }
 
-  evaluateAttributes(xpath: string, nsMap?: Object) {
+  evaluateAttributes(xpath: string, nsMap?: Record<string, string>) {
     return this._evaluateManyOrdered(xpath, nsMap).map((x) => {
       if (x.nodeType !== Node.ATTRIBUTE_NODE) {
         throw new Error('Xpath result is not a list of attributes')
@@ -216,7 +218,10 @@ export class WebapiNode extends AbstractNode {
     return nodeOrElement(this.wrapee.cloneNode(true))
   }
 
-  protected _evaluateManyOrdered(xpath: string, nsMap?: Object) {
+  protected _evaluateManyOrdered(
+    xpath: string,
+    nsMap?: Record<string, string>,
+  ) {
     let result = this.wrapee.ownerDocument.evaluate(
       xpath,
       this.wrapee,
@@ -228,7 +233,7 @@ export class WebapiNode extends AbstractNode {
   }
 }
 
-export function createNsResolver(nsMap: Object) {
+export function createNsResolver(nsMap: Record<string, string>) {
   const defaultNsMap = {
     xml: NS_XML,
   }
