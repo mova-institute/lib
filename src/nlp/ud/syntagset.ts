@@ -60,6 +60,7 @@ export type Ud20MiSpecificRelation =
   | 'nummod:gov'
   | 'parataxis:discourse'
   | 'parataxis:newsent'
+  | 'parataxis:appos'
   | 'parataxis:thatis'
   | 'parataxis:rel'
   | 'xcomp:pred'

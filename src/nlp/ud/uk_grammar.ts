@@ -1424,6 +1424,7 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'parataxis:newsent',
   'parataxis:rel',
   'parataxis:thatis',
+  'parataxis:appos',
   'parataxis',
   'punct',
   'reparandum',

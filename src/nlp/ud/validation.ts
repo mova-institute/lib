@@ -1338,6 +1338,7 @@ export function validateSentenceSyntax(
       uEq(t.data.rel, 'parataxis') &&
       t.data.rel !== 'parataxis:discourse' &&
       t.data.rel !== 'parataxis:thatis' &&
+      t.data.rel !== 'parataxis:appos' &&
       t.data.rel !== 'parataxis:rel' &&
       t.data.rel !== 'parataxis:newsent' &&
       t.children.some((x) => uEqSome(x.data.rel, ['cc', 'mark'])) &&
