@@ -45,8 +45,9 @@ import { AbstractDocument } from '../xml/xmlapi/abstract_document'
 import { Unpacked } from '../types'
 import { DocumentAttributes } from './corpus'
 
-import uniq = require('lodash.uniq')
-import sortedUniq = require('lodash.sorteduniq')
+import uniq from 'lodash/uniq'
+import sortedUniq from 'lodash/sortedUniq'
+import { AbstractNode } from '../xml/xmlapi/abstract_node'
 
 export const ELEMS_BREAKING_SENTENCE_NS = new Set([
   nameNs(NS.tei, 'p'),
@@ -622,7 +623,10 @@ export function iterateCorpusTokens(
       let iterator = traverseDepthGen2(root)
       let pointer = iterator.next()
       while (!pointer.done) {
-        let { node, entering } = pointer.value
+        let { node, entering } = pointer.value as {
+          node: AbstractNode
+          entering: boolean
+        } // todo: why no types??
         if (node.isElement()) {
           let el = node.asElement()
           let name = el.localName()
@@ -1278,8 +1282,20 @@ export function* mixml2tokenStream(
   root: AbstractElement,
   sentenceSetSchema?: string,
 ) {
+  let skipping = false
   for (let { el, entering } of iterateCorpusTokens(root)) {
     let name = el.localName()
+    let attributes = el.attributesObj()
+
+    // skip marked sentences
+    if ('skip' in attributes) {
+      skipping = true
+    } else if (name === 'sb') {
+      skipping = false
+    }
+    if (skipping) {
+      continue
+    }
 
     let structureType = structureElementName2type.get(name)
     if (structureType) {
@@ -1321,9 +1337,9 @@ export function* mixml2tokenStream(
           break
         }
         case 's': // todo
-        case 'sb': // todo
+        case 'sb': {
+          // todo
           tok = Token.structure('sentence', true)
-          let attributes = el.attributesObj()
           if (sentenceSetSchema === '') {
             // attributes.set = el.attributeUp('dataset')
           } else if (sentenceSetSchema) {
@@ -1332,6 +1348,7 @@ export function* mixml2tokenStream(
           }
           tok.setAttributes(attributes)
           break
+        }
         case 'g':
           yield Token.glue()
           continue

@@ -1,0 +1,18 @@
+function markUnfinishedSentsIgnored(root: AbstractElement) {
+  let sents = tokenStream2sentences(mixml2tokenStream(root))
+  for (let {nodes} of sents)) {
+
+  }
+}
+        if (file.includes('danmer') && !sentenceHasOneRoot) {
+          console.log(sentenceId)
+          root
+            .evaluateElement(`//sb[@id="${sentenceId}"]`)
+            .setAttribute('skip', 'all')
+        }
+
+          // rename sentence boundaries
+  mu(root.evaluateElements('//se')).forEach((x) => {
+    x.insertAfter(root.document().createElement('sb'))
+    x.remove()
+  })

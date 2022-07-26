@@ -262,7 +262,7 @@ async function main() {
 
       let documentTokens = mu(mixml2tokenStream(root)).toArray()
       let sentenceStream = tokenStream2sentences(documentTokens)
-      for (let { nodes, multitokens } of sentenceStream) {
+      for (let { nodes, multitokens, sentenceId } of sentenceStream) {
         // testTokenization(nodes, multitokens, analyzer)
 
         let roots = nodes.filter((x) => x.isRoot())
@@ -1017,15 +1017,6 @@ function saveInterp(el: AbstractElement, interp: MorphInterp) {
 }
 
 function renameStructures(root: AbstractElement) {
-  // rename sentence boundaries
-  mu(root.evaluateElements('//se')).forEach((x) => {
-    x.insertAfter(root.document().createElement('sb'))
-    x.remove()
-  })
-
-  // let elems = root.evaluateElements('chunk').filter(x => !x.ancestors().find(xx => xx.localName() === 'chunk')).toArray()
-  // elems.forEach(x => x)
-
   const DOC_META_ATTRS = ['src', 'title', 'author', 'date']
   root
     .evaluateElements('//doc')
