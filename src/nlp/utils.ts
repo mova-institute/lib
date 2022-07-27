@@ -1282,18 +1282,18 @@ export function* mixml2tokenStream(
   root: AbstractElement,
   sentenceSetSchema?: string,
 ) {
-  let skipping = false
+  let skip = false
   for (let { el, entering } of iterateCorpusTokens(root)) {
     let name = el.localName()
     let attributes = el.attributesObj()
 
     // skip marked sentences
     if ('skip' in attributes) {
-      skipping = true
+      skip = true
     } else if (name === 'sb') {
-      skipping = false
+      skip = false
     }
-    if (skipping) {
+    if (skip) {
       continue
     }
 

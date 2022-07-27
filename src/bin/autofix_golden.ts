@@ -1262,7 +1262,7 @@ function checkAttribution(root: AbstractElement) {
     }
 
     if (!isAttributionChecked(attrs)) {
-      console.log(attrs)
+      // console.log(attrs)
       return true
     }
 
