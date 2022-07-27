@@ -18,6 +18,7 @@ export type Structure =
   | 'multitoken'
 
 export type TokenTag =
+  | 'nounnum'
   | 'bad'
   | 'promoted'
   | 'graft'

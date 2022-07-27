@@ -1402,6 +1402,7 @@ export const ALLOWED_RELATIONS /* : Array<UdMiRelation> */ = [
   'flat:range',
   'flat:repeat',
   'flat:sibl',
+  'flat:number',
   'flat:title',
   'flat',
   'goeswith',

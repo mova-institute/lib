@@ -837,6 +837,13 @@ async function main() {
             }
           }
 
+          if (interp.isNounNumeral() && uEq(token.rel, 'nummod')) {
+            interp.dropFeature(f.Animacy)
+            interp.dropFeature(f.Gender)
+            interp.dropFeature(f.NounNumeral)
+            interp.setPos(f.Pos.cardinalNumeral)
+          }
+
           if (0) {
             if (interp.isIndefinite() && interp.lemma.includes('-')) {
               idSequence = splitIndefinite(token, tokenElement, idSequence)

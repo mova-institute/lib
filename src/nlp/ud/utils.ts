@@ -321,7 +321,7 @@ export function* tokenStream2bratSynt(
 
       n2id[token.id] = id
       yield `A${a++}\tN ${tId} ${token.id}`
-      for (let tag of ['Promoted', 'Graft', 'ItSubj']) {
+      for (let tag of ['Promoted', 'NounNum', 'Graft', 'ItSubj']) {
         if (token.hasTag(tag.toLowerCase() as TokenTag)) {
           yield `A${a++}\t${tag} ${tId}`
         }

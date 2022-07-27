@@ -22,7 +22,7 @@ import {
 } from './uk_grammar'
 import { uEq, uEqSome } from './utils'
 
-import { groupBy } from 'lodash'
+import groupBy from 'lodash/groupBy'
 
 const SIMPLE_RULES: Array<
   [string, string, SentencePredicate2, string, SentencePredicate2]
@@ -566,6 +566,11 @@ export function validateSentenceSyntax(
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~ TESTS ~~~~~~~~~~~~~~~~~~~~~~
+
+  reportIf2(
+    `_тест: числівники-іменники`,
+    ({ t }) => t.interp.isNounNumeral() && !t.hasTag('nounnum'),
+  )
 
   xreportIf2(
     `_тест: числівники`,

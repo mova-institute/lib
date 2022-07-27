@@ -52,6 +52,7 @@ export type Ud20MiSpecificRelation =
   | 'det:numgov'
   | 'det:nummod'
   | 'flat:sibl'
+  | 'flat:number'
   | 'flat:foreign'
   | 'flat:name'
   | 'flat:repeat'

@@ -16,7 +16,7 @@ import { Dict } from '../../types'
 import * as glob from 'glob'
 import minimist from 'minimist'
 
-const GUI_SUPPORTED_TAGS = ['Promoted', 'Graft', 'ItSubj']
+const GUI_SUPPORTED_TAGS = ['Promoted', 'NounNum', 'Graft', 'ItSubj']
 
 function main() {
   // const now = toSortableDatetime(new Date())
