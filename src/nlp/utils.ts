@@ -1496,7 +1496,7 @@ export function* tokenStream2plaintext(
 }
 
 export function tokenStream2plaintextString(stream: Iterable<Token>) {
-  return mu(tokenStream2plaintext(stream)).join('')
+  return mu(tokenStream2plaintext(stream)).join('') // todo: trim?
 }
 
 export interface MultitokenDescriptor {
