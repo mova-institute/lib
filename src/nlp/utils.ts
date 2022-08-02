@@ -1327,12 +1327,18 @@ export function* mixml2tokenStream(
         case 'w': {
           tok = new Token().setForm(el.text())
           if (el.attribute('ana')) {
-            tok.addInterp(
-              MorphInterp.fromVesumStr(
-                el.attribute('ana'),
-                el.attribute('lemma'),
-              ),
+            let interp = MorphInterp.fromVesumStr(
+              el.attribute('ana'),
+              el.attribute('lemma'),
             )
+            let attributeNames = Object.keys(attributes)
+
+            let higherLemmas = attributeNames
+              .filter((x) => /^lemma\d$/.test(x))
+              .sort()
+              .map((x) => attributes[x])
+            interp.lemmas.push(...higherLemmas)
+            tok.addInterp(interp)
           }
           break
         }

@@ -974,6 +974,9 @@ function saveToken(
   let interp0 = element.firstElementChild()
   interp0.setAttribute('ana', token.interp.toVesumStr())
   interp0.setAttribute('lemma', token.interp.lemma)
+  for (let i = 1; i < token.interp.lemmas.length; ++i) {
+    interp0.setAttribute(`lemma${i + 1}`, token.interp.lemmas[i])
+  }
   interp0.text(token.form)
 
   {

@@ -1292,7 +1292,7 @@ export class MorphInterp {
     'instant',
   ])
 
-  lemma?: string
+  lemmas = new Array<string>()
   features = new Features()
   private otherFlags = new Set<string>()
 
@@ -1435,6 +1435,14 @@ export class MorphInterp {
     }
 
     return ret
+  }
+
+  get lemma() {
+    return this.lemmas[0]
+  }
+
+  set lemma(value: string) {
+    this.lemmas[0] = value
   }
 
   resetFromVesumStr(
@@ -1892,6 +1900,10 @@ export class MorphInterp {
     ret.sort(createVesumFlagComparator2(this.features.pos))
 
     return ret
+  }
+
+  hasHigherLemmas() {
+    return this.lemmas.length > 1
   }
 
   setLemma(lemma: string) {
