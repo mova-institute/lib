@@ -839,7 +839,7 @@ async function main() {
 
           if (interp.isNounNumeral() && uEq(token.rel, 'nummod')) {
             interp.dropFeature(f.Animacy)
-            interp.dropFeature(f.Gender)
+            interp.dropFeature(f.Gender) // todo: bring back
             interp.dropFeature(f.NounNumeral)
             interp.setPos(f.Pos.cardinalNumeral)
           }
@@ -850,35 +850,45 @@ async function main() {
             }
           }
 
-          // makeDatesPromoted(node)
-
-          // for (let coref of token.corefs) {
-          //   let newTokEl = id2el.get(coref.headId)
-          //   let newTok = mu(mixml2tokenStream(newTokEl)).first()
-          //   // console.error(newTok)
-          //   newTok.corefs2.push({ headId: token.id, type: coref.type })
-          //   saveToken(newTok, newTokEl)
-          // }
-
-          // if (interp.isUninflectable()) {
-          //   let form = token.form
-          //   if (interp.isAbbreviation() && interp.lemma.endsWith('.') && !form.endsWith('.')) {
-          //     form = `${form}.`
-          //   }
-          //   if (form.toLowerCase() !== interp.lemma.toLowerCase()) {
-          //     console.error(`form differs from lemma for :nv >> "${token.form}" #${token.id}`)
-          //   }
-          // }
-
-          // if (token.indexInSentence > 0
-          //   && !interp.isProper()
-          //   && startsWithCapital(token.form)
-          //   && !interp.isX()
-          // ) {
-          //   console.log(`велика літера без :prop, ${token2string(token)}`)
-          // }
+          if (interp.hasNonpositiveDegree() && !interp.hasHigherLemmas()) {
+            let positiveLemma = g2.toPositive(
+              interp.lemma,
+              interp.features.degree,
+            )
+            if (positiveLemma) {
+              // interp.lemmas.push(positiveLemma)
+            }
+          }
 
           if (0) {
+            // makeDatesPromoted(node)
+
+            // for (let coref of token.corefs) {
+            //   let newTokEl = id2el.get(coref.headId)
+            //   let newTok = mu(mixml2tokenStream(newTokEl)).first()
+            //   // console.error(newTok)
+            //   newTok.corefs2.push({ headId: token.id, type: coref.type })
+            //   saveToken(newTok, newTokEl)
+            // }
+
+            // if (interp.isUninflectable()) {
+            //   let form = token.form
+            //   if (interp.isAbbreviation() && interp.lemma.endsWith('.') && !form.endsWith('.')) {
+            //     form = `${form}.`
+            //   }
+            //   if (form.toLowerCase() !== interp.lemma.toLowerCase()) {
+            //     console.error(`form differs from lemma for :nv >> "${token.form}" #${token.id}`)
+            //   }
+            // }
+
+            // if (token.indexInSentence > 0
+            //   && !interp.isProper()
+            //   && startsWithCapital(token.form)
+            //   && !interp.isX()
+            // ) {
+            //   console.log(`велика літера без :prop, ${token2string(token)}`)
+            // }
+
             fixtestMorpho(node, nextNode, analyzer)
           }
         }
